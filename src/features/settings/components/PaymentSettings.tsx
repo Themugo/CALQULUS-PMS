@@ -4,11 +4,12 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { BankDetailsSettings } from "./BankDetailsSettings";
 import { MpesaSettings } from "./MpesaSettings";
 import { EWalletSettings } from "./EWalletSettings";
+import { StripeSettings } from "./StripeSettings";
 import {
   PropertyPaymentScopeSelector,
   type PropertyScope,
 } from "./PropertyPaymentScopeSelector";
-import { Banknote, Smartphone, Wallet } from "lucide-react";
+import { Banknote, Smartphone, Wallet, CreditCard } from "lucide-react";
 
 export const PaymentSettings = () => {
   const [propertyScope, setPropertyScope] = useState<PropertyScope>(null);
@@ -25,7 +26,7 @@ export const PaymentSettings = () => {
       </Card>
 
       <Tabs defaultValue="mpesa" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="bank" className="flex items-center gap-2">
             <Banknote className="h-4 w-4" />
             Bank details
@@ -33,6 +34,10 @@ export const PaymentSettings = () => {
           <TabsTrigger value="mpesa" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
             M-Pesa
+          </TabsTrigger>
+          <TabsTrigger value="stripe" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Stripe
           </TabsTrigger>
           <TabsTrigger value="ewallet" className="flex items-center gap-2">
             <Wallet className="h-4 w-4" />
@@ -49,6 +54,10 @@ export const PaymentSettings = () => {
 
         <TabsContent value="mpesa" className="mt-6">
           <MpesaSettings propertyId={propertyScope} />
+        </TabsContent>
+
+        <TabsContent value="stripe" className="mt-6">
+          <StripeSettings propertyId={propertyScope} />
         </TabsContent>
 
         <TabsContent value="ewallet" className="mt-6">
