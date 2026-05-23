@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentFlow FINAL — Full Project Breakdown</title>
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #e2e8f0; --text-muted: #94a3b8; --accent: #3b82f6; --accent2: #10b981; --accent3: #f59e0b; --radius: 8px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; }
+  h1 { font-size: 2rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.4rem; margin: 2rem 0 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 .75rem; color: var(--accent2); }
+  .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .stat-card .num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+  .stat-card .label { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .85rem; }
+  th, td { padding: .5rem .75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--card); color: var(--accent); font-weight: 600; position: sticky; top: 0; }
+  tr:hover td { background: rgba(59,130,246,.05); }
+  .badge { display: inline-block; padding: .15rem .5rem; border-radius: 999px; font-size: .7rem; font-weight: 600; }
+  .badge-green { background: rgba(16,185,129,.15); color: var(--accent2); }
+  .badge-blue { background: rgba(59,130,246,.15); color: var(--accent); }
+  .badge-amber { background: rgba(245,158,11,.15); color: var(--accent3); }
+  .badge-red { background: rgba(239,68,68,.15); color: #ef4444; }
+  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin: 1rem 0; }
+  ul { padding-left: 1.5rem; }
+  li { margin: .25rem 0; }
+  code { background: rgba(255,255,255,.08); padding: .1rem .35rem; border-radius: 4px; font-size: .8rem; }
+  .tree { font-family: 'SFMono-Regular',Consolas,monospace; font-size: .8rem; line-height: 1.5; }
+  .tree .folder { color: var(--accent2); }
+  .tree .file { color: var(--text-muted); }
+  .tree .depth-1 { padding-left: 1.5rem; }
+  .tree .depth-2 { padding-left: 3rem; }
+  .tree .depth-3 { padding-left: 4.5rem; }
+  .dep-group { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+  .dep { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: .2rem .6rem; font-size: .75rem; }
+  .dep .name { color: var(--accent); font-weight: 600; }
+  .dep .ver { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<h1>📊 RentFlow — FINAL Project Breakdown</h1>
+<p class="subtitle">Complete audit of all 448 source files across the RentFlow property management platform.</p>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card"><div class="num">448</div><div class="label">Total Files</div></div>
+  <div class="stat-card"><div class="num">5.18</div><div class="label">Total Size (MB)</div></div>
+  <div class="stat-card"><div class="num">283</div><div class="label">src/ Files</div></div>
+  <div class="stat-card"><div class="num">134</div><div class="label">supabase/ Files</div></div>
+  <div class="stat-card"><div class="num">88</div><div class="label">Edge Functions</div></div>
+  <div class="stat-card"><div class="num">36</div><div class="label">SQL Migrations</div></div>
+  <div class="stat-card"><div class="num">79</div><div class="label">Runtime Deps</div></div>
+  <div class="stat-card"><div class="num">22</div><div class="label">Dev Deps</div></div>
+</div>
+
+<!-- PROJECT INFO -->
+<div class="section-card">
+  <h2>Project Overview</h2>
+  <table>
+    <tr><th>Key</th><th>Value</th></tr>
+    <tr><td>Project Name</td><td>RentFlow - Property Management</td></tr>
+    <tr><td>Root Directory</td><td><code>C:\Users\hp\Desktop\rentflow-FINAL</code></td></tr>
+    <tr><td>GitHub Remote</td><td><code>https://github.com/Themugo/Rentflow-FINAL.git</code></td></tr>
+    <tr><td>Branch</td><td><code>main</code> (up to date)</td></tr>
+    <tr><td>Vercel Project</td><td><code>rentflow-final</code> — <code>https://app.rentflow.ink</code></td></tr>
+    <tr><td>Supabase Project</td><td><code>aelzsqxllkypbzslxyju</code></td></tr>
+    <tr><td>Framework</td><td>Vite 8 + React 18.3 + TypeScript 5.8</td></tr>
+    <tr><td>Styling</td><td>Tailwind CSS 3.4 + Radix UI (shadcn/ui components)</td></tr>
+    <tr><td>Backend</td><td>Supabase (PostgreSQL 17, Auth, Edge Functions)</td></tr>
+    <tr><td>Testing</td><td>Vitest 4.1 + React Testing Library</td></tr>
+    <tr><td>Native Wrapper</td><td>Capacitor 8 (Android + iOS)</td></tr>
+    <tr><td>Payment Channels</td><td>M-Pesa STK Push, M-Pesa Paybill/Till, Bank Transfer, Receipt Upload</td></tr>
+  </table>
+</div>
+
+<!-- DIRECTORY TREE -->
+<div class="section-card">
+  <h2>Directory Structure</h2>
+  <div class="tree">
+    <div>📁 <span class="folder">rentflow-FINAL/</span> (21 root files)</div>
+    <div class="depth-1">📁 <span class="folder">.vercel/</span> (2 files — project config)</div>
+    <div class="depth-1">📁 <span class="folder">public/</span> (8 files — PWA icons, manifest, favicon)</div>
+    <div class="depth-1">📁 <span class="folder">src/</span> (283 files)</div>
+    <div class="depth-2">📁 assets/ — (1 image: logo)</div>
+    <div class="depth-2">📁 features/</div>
+    <div class="depth-3">📁 auth/ — (15 files — AuthContext, login/signup pages for all roles)</div>
+    <div class="depth-3">📁 billing/ — (8 files — M-Pesa dialog, invoice CSV/PDF export)</div>
+    <div class="depth-3">📁 communications/ — (3 files — broadcast center, document entry)</div>
+    <div class="depth-3">📁 contracts/ — (8 files — editor, preview, templates, PDF export)</div>
+    <div class="depth-3">📁 dashboard/ — (12 files — charts, stats, activity log, onboarding)</div>
+    <div class="depth-3">📁 demo/ — (1 file — demo control panel)</div>
+    <div class="depth-3">📁 landlord/ — (8 files — dashboard, bank details, documents, messages)</div>
+    <div class="depth-3">📁 leases/ — (2 files — lease management with statements)</div>
+    <div class="depth-3">📁 legal/ — (1 file — legal page)</div>
+    <div class="depth-3">📁 maintenance/ — (4 files — requests, budget, PDF report)</div>
+    <div class="depth-3">📁 payments/ — (13 files — reconciliation, analytics, receipts, subscriptions)</div>
+    <div class="depth-3">📁 properties/ — (18 files — detail tabs, billing, landlords, leases)</div>
+    <div class="depth-3">📁 reports/ — (1 file — reporting dashboard)</div>
+    <div class="depth-3">📁 services/ — (3 files — marketplace, provider profiles)</div>
+    <div class="depth-3">📁 settings/ — (12 files — M-Pesa, bank, receipts, submanagers)</div>
+    <div class="depth-3">📁 submanager/ — (1 file — submanager dashboard)</div>
+    <div class="depth-3">📁 tenant-portal/ — (28 files — full tenant self-service portal)</div>
+    <div class="depth-3">📁 tenants/ — (13 files — tenant management, deposits, transfers)</div>
+    <div class="depth-3">📁 units/ — (5 files — billing config, inspections, key tracker)</div>
+    <div class="depth-3">📁 vacation-notices/ — (2 files — notices + PDF export)</div>
+    <div class="depth-3">📁 water/ — (1 file — water billing manager)</div>
+    <div class="depth-3">📁 webhost/ — (22 files — full platform admin dashboard)</div>
+    <div class="depth-2">📁 integrations/</div>
+    <div class="depth-3">📁 supabase/ — (3 files — client.ts, types.ts, supabase-extensions.ts)</div>
+    <div class="depth-2">📁 shared/</div>
+    <div class="depth-3">📁 components/ — (4 files — ErrorBoundary, NavLink, PageLoader, ProtectedRoute)</div>
+    <div class="depth-3">📁 components/layout/ — (5 files — Header, Sidebar, Layout, Search, Notifications)</div>
+    <div class="depth-3">📁 components/ui/ — (53 shadcn/ui components)</div>
+    <div class="depth-3">📁 constants/ — (1 file — propertyTypes)</div>
+    <div class="depth-3">📁 contexts/ — (2 files — ThemeContext, ViewOnlyContext)</div>
+    <div class="depth-3">📁 hooks/ — (10 hooks — RBAC, auth, biometric, currency, offline, push, toast)</div>
+    <div class="depth-3">📁 lib/ — (6 files — validations, errorLogger, dateFormat, storageUtils, utils)</div>
+    <div class="depth-3">📁 pages/ — (2 files — InstallApp, NotFound)</div>
+    <div class="depth-3">📁 services/ — (1 file — biometricService)</div>
+    <div class="depth-3">📁 types/ — (1 file — payment.ts)</div>
+    <div class="depth-2">📁 test/ — (5 files — 4 test suites, 13 tests pass)</div>
+    <div class="depth-1">📁 <span class="folder">supabase/</span> (134 files, 1.26 MB)</div>
+    <div class="depth-2">📁 migrations/ — 36 SQL files (base schema + 34 numbered migrations)</div>
+    <div class="depth-2">📁 functions/ — 90 directories (88 edge functions + _shared/cors + _shared/rateLimit)</div>
+    <div class="depth-2">📁 demo/ — 1 file (demo seed SQL)</div>
+    <div class="depth-2">📁 seed/ — 1 file (seed PowerShell script)</div>
+    <div class="depth-2">📁 .temp/ — 9 files (CLI link state)</div>
+  </div>
+</div>
+
+<!-- FEATURES BREAKDOWN -->
+<div class="section-card">
+  <h2>Feature Modules (src/features/)</h2>
+  <table>
+    <tr><th>Module</th><th>Files</th><th>Size</th><th>Purpose</th></tr>
+    <tr><td>auth</td><td>15</td><td>159.9 KB</td><td>Multi-role auth (manager, tenant, landlord, webhost, submanager) with biometric login</td></tr>
+    <tr><td>billing</td><td>8</td><td>158.7 KB</td><td>Invoice generation, M-Pesa payment dialog, CSV/PDF exports</td></tr>
+    <tr><td>communications</td><td>3</td><td>52.9 KB</td><td>Broadcast center, physical document entry</td></tr>
+    <tr><td>contracts</td><td>8</td><td>168.7 KB</td><td>Contract editor, preview, templates, e-signature via canvas</td></tr>
+    <tr><td>dashboard</td><td>12</td><td>85.0 KB</td><td>Manager dashboard with charts, activity log, quick actions</td></tr>
+    <tr><td>demo</td><td>1</td><td>20.4 KB</td><td>Demo control panel for testing</td></tr>
+    <tr><td>landlord</td><td>8</td><td>104.9 KB</td><td>Landlord dashboard, financial statements, bank details</td></tr>
+    <tr><td>leases</td><td>2</td><td>64.5 KB</td><td>Lease lifecycle with statement generation</td></tr>
+    <tr><td>legal</td><td>1</td><td>12.8 KB</td><td>Legal/terms page</td></tr>
+    <tr><td>maintenance</td><td>4</td><td>81.4 KB</td><td>Maintenance requests, budget dashboard, PDF export</td></tr>
+    <tr><td>payments</td><td>13</td><td>241.9 KB</td><td>Payment reconciliation, bank integration, subscription billing</td></tr>
+    <tr><td>properties</td><td>18</td><td>305.4 KB</td><td>Property detail with 11 tab panels (billing, landlords, leases, etc.)</td></tr>
+    <tr><td>reports</td><td>1</td><td>19.2 KB</td><td>Reporting dashboard</td></tr>
+    <tr><td>services</td><td>3</td><td>42.8 KB</td><td>Service marketplace + provider profiles</td></tr>
+    <tr><td>settings</td><td>12</td><td>182.0 KB</td><td>All settings: M-Pesa, bank, receipts, submanagers, roles, currency</td></tr>
+    <tr><td>submanager</td><td>1</td><td>32.2 KB</td><td>Submanager restricted dashboard</td></tr>
+    <tr><td>tenant-portal</td><td>28</td><td>441.9 KB</td><td>Complete tenant self-service: payments, documents, maintenance, inbox</td></tr>
+    <tr><td>tenants</td><td>13</td><td>224.6 KB</td><td>Tenant management, deposits, transfers, statements</td></tr>
+    <tr><td>units</td><td>5</td><td>102.8 KB</td><td>Unit management, inspections, key tracking</td></tr>
+    <tr><td>vacation-notices</td><td>2</td><td>23.5 KB</td><td>Vacation notice management + PDF</td></tr>
+    <tr><td>water</td><td>1</td><td>34.1 KB</td><td>Water billing manager</td></tr>
+    <tr><td>webhost</td><td>22</td><td>374.6 KB</td><td>Full platform admin: managers, billing, contracts, system settings</td></tr>
+  </table>
+</div>
+
+<!-- CONFIG FILES -->
+<div class="section-card">
+  <h2>Configuration Files</h2>
+  <table>
+    <tr><th>File</th><th>Purpose</th><th>Key Settings</th></tr>
+    <tr><td><code>vercel.json</code></td><td>Vercel deployment</td><td>Vite framework, SPA rewrites, 1-year asset cache, security headers, Node 22</td></tr>
+    <tr><td><code>vite.config.ts</code></td><td>Vite build config</td><td>SWC plugin, PWA, manual chunk splitting (6 vendor chunks), path alias @/</td></tr>
+    <tr><td><code>tsconfig.json</code></td><td>TypeScript root</td><td>References app + node configs</td></tr>
+    <tr><td><code>tsconfig.app.json</code></td><td>TypeScript app</td><td>ES2020, strict mode, @/ alias, lenient unused/noImplicitAny</td></tr>
+    <tr><td><code>tailwind.config.ts</code></td><td>Tailwind CSS</td><td>Class-based dark mode, Outfit font, custom HSL color palette, animations</td></tr>
+    <tr><td><code>postcss.config.js</code></td><td>PostCSS</td><td>tailwindcss + autoprefixer</td></tr>
+    <tr><td><code>eslint.config.js</code></td><td>ESLint</td><td>Flat config, typescript-eslint, react-hooks, react-refresh</td></tr>
+    <tr><td><code>capacitor.config.ts</code></td><td>Capacitor native</td><td>appId: ink.rentflow.app, server: rentflow.ink</td></tr>
+    <tr><td><code>components.json</code></td><td>shadcn/ui</td><td>Default style, slate base, CSS variables</td></tr>
+    <tr><td><code>netlify.toml</code></td><td>Netlify (alt deploy)</td><td>SPA redirect, Node 22</td></tr>
+    <tr><td><code>.gitignore</code></td><td>Git exclusions</td><td>node_modules, dist, .env*, backup folders, Capacitor builds</td></tr>
+  </table>
+</div>
+
+<!-- SUPABASE MIGRATIONS -->
+<div class="section-card">
+  <h2>Supabase Migrations (36 files)</h2>
+  <table>
+    <tr><th>#</th><th>Migration</th><th>Purpose</th></tr>
+    <tr><td>—</td><td><code>_base_schema.sql</code></td><td>Base tables: account_activations, admin_permissions, etc. (20.4 KB)</td></tr>
+    <tr><td>—</td><td><code>_run_all.sql</code></td><td>Mega-concatenation of ALL migrations (302.9 KB, 6922 lines)</td></tr>
+    <tr><td>1</td><td><code>20240001-unit-first-integrity.sql</code></td><td>Unit-First Data Integrity: invoice→lease→unit→property traceability</td></tr>
+    <tr><td>2</td><td><code>20260504055007_*.sql</code></td><td>Fix RLS: remove webhost read on M-Pesa; tenants read own unit</td></tr>
+    <tr><td>3</td><td><code>20260504055614_*.sql</code></td><td>M-Pesa property/unit scoping with unique index</td></tr>
+    <tr><td>4</td><td><code>20260506000000_*.sql</code></td><td>Fix properties.manager_id column name</td></tr>
+    <tr><td>5</td><td><code>20260506000001_*.sql</code></td><td>Landlord Role & Property Ownership tables</td></tr>
+    <tr><td>6</td><td><code>20260506000002_*.sql</code></td><td>Authority Structure v2: role separation (manager, landlord, submanager, tenant)</td></tr>
+    <tr><td>7</td><td><code>20260506000003_*.sql</code></td><td>Comprehensive payment schema: STK push, USSD, bank, receipt upload</td></tr>
+    <tr><td>8</td><td><code>20260506000004_*.sql</code></td><td>Unit-level charge config + invoice line items</td></tr>
+    <tr><td>9</td><td><code>20260506000005_*.sql</code></td><td>Unit-centric history, tenancy lifecycle, archiving</td></tr>
+    <tr><td>10</td><td><code>20260506000006_*.sql</code></td><td>Complete tenant-unit relationship layer</td></tr>
+    <tr><td>11</td><td><code>20260506000007_*.sql</code></td><td>Communication & Physical Document Layer</td></tr>
+    <tr><td>12</td><td><code>20260506000008_*.sql</code></td><td>Final tenant-portal completion</td></tr>
+    <tr><td>13</td><td><code>20260506000009_*.sql</code></td><td>Photos, checklists, water, pets/vehicles</td></tr>
+    <tr><td>14</td><td><code>20260506000010_*.sql</code></td><td>Compiled vs separate billing, unit management completion</td></tr>
+    <tr><td>15</td><td><code>20260506000011_*.sql</code></td><td>Landlord portal completion — independent landlord control layer</td></tr>
+    <tr><td>16</td><td><code>20260506000012_*.sql</code></td><td>Complete RBAC enforcement — 4-tier authority at DB level</td></tr>
+    <tr><td>17</td><td><code>20260506000013_*.sql</code></td><td>Submanager write permissions + audit log</td></tr>
+    <tr><td>18</td><td><code>20260506000014_*.sql</code></td><td>Manager/Agency relationship layer</td></tr>
+    <tr><td>19</td><td><code>20260506000015_*.sql</code></td><td>Scheduled jobs via pg_cron</td></tr>
+    <tr><td>20</td><td><code>20260506000016_*.sql</code></td><td>Multi-unit tenant support + payment details sync</td></tr>
+    <tr><td>21</td><td><code>20260506000017_*.sql</code></td><td>Platform monetisation enforcement</td></tr>
+    <tr><td>22</td><td><code>20260506000018_*.sql</code></td><td>Property type taxonomy + category-based billing</td></tr>
+    <tr><td>23</td><td><code>20260506000019_*.sql</code></td><td>Service providers, orphan tenants, payment records</td></tr>
+    <tr><td>24</td><td><code>20260506000020_*.sql</code></td><td>Security hardening: RLS gaps, rate limiting, webhook secrets, session audit</td></tr>
+    <tr><td>25</td><td><code>20260506000021_payment_idempotency.sql</code></td><td>Payment idempotency + process safety</td></tr>
+    <tr><td>26</td><td><code>20260506000021_water_company_paybills.sql</code></td><td>Kenya water company paybill numbers</td></tr>
+    <tr><td>27</td><td><code>20260506000022_invoice_number_sequence.sql</code></td><td>Deterministic invoice number sequence</td></tr>
+    <tr><td>28–30</td><td><code>20260506000022{b,c,d}_*.sql</code></td><td>Refinements: integrity, policy fixes, property scoping</td></tr>
+    <tr><td>31</td><td><code>20260506000023_*.sql</code></td><td>Missing platform tables: manager_invoices, manager_contracts</td></tr>
+    <tr><td>32</td><td><code>20260506000024_*.sql</code></td><td>Unit-Tenant-Landlord flow fixes</td></tr>
+    <tr><td>33</td><td><code>20260506000025_*.sql</code></td><td><span class="badge badge-green">NEW</span> Payment destination: manager vs landlord M-Pesa routing</td></tr>
+    <tr><td>34</td><td><code>20260506000026_*.sql</code></td><td><span class="badge badge-green">NEW</span> Tenant portability & orphan support</td></tr>
+  </table>
+</div>
+
+<!-- EDGE FUNCTIONS -->
+<div class="section-card">
+  <h2>Supabase Edge Functions (88 deliverable)</h2>
+  
+  <h3>verify_jwt = true (JWT required — 27 deployed)</h3>
+  <div class="dep-group">
+    <span class="dep"><span class="name">backfill-tenant-accounts</span></span>
+    <span class="dep"><span class="name">check-manager-subscription</span></span>
+    <span class="dep"><span class="name">claim-tenant</span> <span class="ver">🆕</span></span>
+    <span class="dep"><span class="name">create-invoice-checkout</span></span>
+    <span class="dep"><span class="name">create-manager-invoice-checkout</span></span>
+    <span class="dep"><span class="name">create-manager-subscription</span></span>
+    <span class="dep"><span class="name">get-payment-history</span></span>
+    <span class="dep"><span class="name">initiate-manager-mpesa-payment</span></span>
+    <span class="dep"><span class="name">initiate-mpesa-payment</span></span>
+    <span class="dep"><span class="name">initiate-mpesa-stk-push</span> <span class="ver">🔄</span></span>
+    <span class="dep"><span class="name">initiate-subscription-mpesa</span></span>
+    <span class="dep"><span class="name">manage-mpesa-settings</span> <span class="ver">🔄</span></span>
+    <span class="dep"><span class="name">parse-contract-document</span></span>
+    <span class="dep"><span class="name">parse-receipt</span></span>
+    <span class="dep"><span class="name">self-register-tenant</span> <span class="ver">🆕</span></span>
+    <span class="dep"><span class="name">send-bulk-sms</span></span>
+    <span class="dep"><span class="name">send-contract-notification</span></span>
+    <span class="dep"><span class="name">send-invoice-email</span></span>
+    <span class="dep"><span class="name">send-manager-approval-notification</span></span>
+    <span class="dep"><span class="name">send-manager-contract-notification</span></span>
+    <span class="dep"><span class="name">send-payment-confirmation</span></span>
+    <span class="dep"><span class="name">send-signature-notification</span></span>
+    <span class="dep"><span class="name">send-sms-notification</span></span>
+    <span class="dep"><span class="name">create-tenant-account</span></span>
+    <span class="dep"><span class="name">verify-mpesa-payment</span></span>
+    <span class="dep"><span class="name">verify-mpesa-stk-status</span> <span class="ver">🔄</span></span>
+    <span class="dep"><span class="name">notify-manager-payment</span></span>
+  </div>
+
+  <h3>verify_jwt = false (Anonymous/webhook — 22 deployed)</h3>
+  <div class="dep-group">
+    <span class="dep"><span class="name">activate-account</span></span>
+    <span class="dep"><span class="name">auto-generate-invoices</span></span>
+    <span class="dep"><span class="name">generate-manager-invoices</span></span>
+    <span class="dep"><span class="name">generate-monthly-invoices</span></span>
+    <span class="dep"><span class="name">mpesa-callback</span> <span class="ver">🔄</span></span>
+    <span class="dep"><span class="name">notify-manager-receipt-upload</span></span>
+    <span class="dep"><span class="name">notify-manager-tenant-signup</span></span>
+    <span class="dep"><span class="name">notify-new-manager-signup</span></span>
+    <span class="dep"><span class="name">process-due-invoice-notifications</span></span>
+    <span class="dep"><span class="name">send-bank-details-notification</span></span>
+    <span class="dep"><span class="name">send-invoice-due-push-notification</span></span>
+    <span class="dep"><span class="name">send-monthly-report</span></span>
+    <span class="dep"><span class="name">send-overdue-notifications</span></span>
+    <span class="dep"><span class="name">send-payment-push-notification</span></span>
+    <span class="dep"><span class="name">send-property-assignment-notification</span></span>
+    <span class="dep"><span class="name">send-push-notification</span></span>
+    <span class="dep"><span class="name">send-receipt-email</span></span>
+    <span class="dep"><span class="name">send-receipt-status-notification</span></span>
+    <span class="dep"><span class="name">send-tenant-invitation</span></span>
+    <span class="dep"><span class="name">send-welcome-email</span></span>
+    <span class="dep"><span class="name">send-whatsapp-notification</span></span>
+    <span class="dep"><span class="name">stripe-webhook</span></span>
+  </div>
+
+  <h3>Not in config.toml (39 additional — use default verify_jwt = true)</h3>
+  <div class="dep-group">
+    <span class="dep"><span class="name">accept-tenant-invite</span></span>
+    <span class="dep"><span class="name">apply-credit</span></span>
+    <span class="dep"><span class="name">apply-penalties</span></span>
+    <span class="dep"><span class="name">auto-send-receipt</span></span>
+    <span class="dep"><span class="name">bank-webhook</span></span>
+    <span class="dep"><span class="name">bootstrap-webhost</span></span>
+    <span class="dep"><span class="name">calculate-tenant-score</span></span>
+    <span class="dep"><span class="name">check-feature</span></span>
+    <span class="dep"><span class="name">create-dispute</span></span>
+    <span class="dep"><span class="name">create-payout</span></span>
+    <span class="dep"><span class="name">create-tenant</span></span>
+    <span class="dep"><span class="name">detect-fraud</span></span>
+    <span class="dep"><span class="name">execute-payout</span></span>
+    <span class="dep"><span class="name">export-excel</span></span>
+    <span class="dep"><span class="name">export-pdf</span></span>
+    <span class="dep"><span class="name">generate-cashflow</span></span>
+    <span class="dep"><span class="name">generate-landlord-statement</span></span>
+    <span class="dep"><span class="name">generate-pnl</span></span>
+    <span class="dep"><span class="name">log-audit</span></span>
+    <span class="dep"><span class="name">process-commission</span></span>
+    <span class="dep"><span class="name">process-payment</span> <span class="ver">🔄</span></span>
+    <span class="dep"><span class="name">reconcile</span></span>
+    <span class="dep"><span class="name">reconcile-bank</span></span>
+    <span class="dep"><span class="name">record-payment</span></span>
+    <span class="dep"><span class="name">resolve-dispute</span></span>
+    <span class="dep"><span class="name">seed-demo-data</span></span>
+    <span class="dep"><span class="name">seed-maintenance</span></span>
+    <span class="dep"><span class="name">send-deposit-refund-notification</span></span>
+    <span class="dep"><span class="name">send-invoice-notification</span></span>
+    <span class="dep"><span class="name">send-maintenance-notification</span></span>
+    <span class="dep"><span class="name">send-manager-invoice-notification</span></span>
+    <span class="dep"><span class="name">send-manager-receipt-email</span></span>
+    <span class="dep"><span class="name">send-overdue-maintenance-notifications</span></span>
+    <span class="dep"><span class="name">send-payment-reminders</span></span>
+    <span class="dep"><span class="name">send-tenant-invite</span></span>
+  </div>
+
+  <p style="margin-top: 1rem;"><span class="badge badge-green">🆕</span> Newly created &nbsp; <span class="badge badge-amber">🔄</span> Recently redeployed (with fixes)</p>
+</div>
+
+<!-- RUNTIME DEPENDENCIES -->
+<div class="section-card">
+  <h2>Runtime Dependencies (79 packages)</h2>
+  <div class="dep-group">
+    <span class="dep"><span class="name">react</span> <span class="ver">^18.3.1</span></span>
+    <span class="dep"><span class="name">react-dom</span> <span class="ver">^18.3.1</span></span>
+    <span class="dep"><span class="name">react-router-dom</span> <span class="ver">^7.12.0</span></span>
+    <span class="dep"><span class="name">@supabase/supabase-js</span> <span class="ver">^2.87.1</span></span>
+    <span class="dep"><span class="name">@tanstack/react-query</span> <span class="ver">^5.83.0</span></span>
+    <span class="dep"><span class="name">@radix-ui/*</span> <span class="ver">(27 components)</span></span>
+    <span class="dep"><span class="name">lucide-react</span> <span class="ver">^0.462.0</span></span>
+    <span class="dep"><span class="name">tailwindcss-animate</span> <span class="ver">^1.0.7</span></span>
+    <span class="dep"><span class="name">class-variance-authority</span> <span class="ver">^0.7.1</span></span>
+    <span class="dep"><span class="name">clsx</span> <span class="ver">^2.1.1</span></span>
+    <span class="dep"><span class="name">tailwind-merge</span> <span class="ver">^2.6.0</span></span>
+    <span class="dep"><span class="name">zod</span> <span class="ver">^3.25.76</span></span>
+    <span class="dep"><span class="name">react-hook-form</span> <span class="ver">^7.61.1</span></span>
+    <span class="dep"><span class="name">@hookform/resolvers</span> <span class="ver">^3.10.0</span></span>
+    <span class="dep"><span class="name">date-fns</span> <span class="ver">^3.6.0</span></span>
+    <span class="dep"><span class="name">recharts</span> <span class="ver">^2.15.4</span></span>
+    <span class="dep"><span class="name">sonner</span> <span class="ver">^1.7.4</span></span>
+    <span class="dep"><span class="name">jspdf</span> <span class="ver">^4.0.0</span></span>
+    <span class="dep"><span class="name">jspdf-autotable</span> <span class="ver">^5.0.7</span></span>
+    <span class="dep"><span class="name">dompurify</span> <span class="ver">^3.3.1</span></span>
+    <span class="dep"><span class="name">cmdk</span> <span class="ver">^1.1.1</span></span>
+    <span class="dep"><span class="name">embla-carousel-react</span> <span class="ver">^8.6.0</span></span>
+    <span class="dep"><span class="name">input-otp</span> <span class="ver">^1.4.2</span></span>
+    <span class="dep"><span class="name">qrcode.react</span> <span class="ver">^4.2.0</span></span>
+    <span class="dep"><span class="name">react-day-picker</span> <span class="ver">^8.10.1</span></span>
+    <span class="dep"><span class="name">react-easy-crop</span> <span class="ver">^5.5.6</span></span>
+    <span class="dep"><span class="name">react-resizable-panels</span> <span class="ver">^2.1.9</span></span>
+    <span class="dep"><span class="name">vaul</span> <span class="ver">^0.9.9</span></span>
+    <span class="dep"><span class="name">vite-plugin-pwa</span> <span class="ver">^1.3.0</span></span>
+    <span class="dep"><span class="name">@fontsource/outfit</span> <span class="ver">^5.2.8</span></span>
+    <span class="dep"><span class="name">next-themes</span> <span class="ver">^0.3.0</span></span>
+    <span class="dep"><span class="name">@swc/core</span> <span class="ver">^1.15.33</span></span>
+    <span class="dep"><span class="name">capacitor-*</span> <span class="ver">^8.0.0 (native)</span></span>
+    <span class="dep"><span class="name">capacitor-native-biometric</span> <span class="ver">^4.2.2</span></span>
+    <span class="dep"><span class="name">@types/dompurify</span> <span class="ver">^3.0.5</span></span>
+  </div>
+</div>
+
+<!-- DEV DEPENDENCIES -->
+<div class="section-card">
+  <h2>Dev Dependencies (22 packages)</h2>
+  <div class="dep-group">
+    <span class="dep"><span class="name">vite</span> <span class="ver">^8.0.13</span></span>
+    <span class="dep"><span class="name">@vitejs/plugin-react-swc</span> <span class="ver">^4.3.1</span></span>
+    <span class="dep"><span class="name">typescript</span> <span class="ver">^5.8.3</span></span>
+    <span class="dep"><span class="name">vitest</span> <span class="ver">^4.1.6</span></span>
+    <span class="dep"><span class="name">@testing-library/react</span> <span class="ver">^16.3.2</span></span>
+    <span class="dep"><span class="name">@testing-library/jest-dom</span> <span class="ver">^6.9.1</span></span>
+    <span class="dep"><span class="name">@testing-library/user-event</span> <span class="ver">^14.6.1</span></span>
+    <span class="dep"><span class="name">@testing-library/dom</span> <span class="ver">^10.4.1</span></span>
+    <span class="dep"><span class="name">jsdom</span> <span class="ver">^29.1.1</span></span>
+    <span class="dep"><span class="name">eslint</span> <span class="ver">^9.32.0</span></span>
+    <span class="dep"><span class="name">typescript-eslint</span> <span class="ver">^8.38.0</span></span>
+    <span class="dep"><span class="name">eslint-plugin-react-hooks</span> <span class="ver">^5.2.0</span></span>
+    <span class="dep"><span class="name">eslint-plugin-react-refresh</span> <span class="ver">^0.4.20</span></span>
+    <span class="dep"><span class="name">@eslint/js</span> <span class="ver">^9.32.0</span></span>
+    <span class="dep"><span class="name">tailwindcss</span> <span class="ver">^3.4.17</span></span>
+    <span class="dep"><span class="name">@tailwindcss/typography</span> <span class="ver">^0.5.16</span></span>
+    <span class="dep"><span class="name">autoprefixer</span> <span class="ver">^10.4.21</span></span>
+    <span class="dep"><span class="name">postcss</span> <span class="ver">^8.5.6</span></span>
+    <span class="dep"><span class="name">@types/node</span> <span class="ver">^22.16.5</span></span>
+    <span class="dep"><span class="name">@types/react</span> <span class="ver">^18.3.23</span></span>
+    <span class="dep"><span class="name">@types/react-dom</span> <span class="ver">^18.3.7</span></span>
+    <span class="dep"><span class="name">globals</span> <span class="ver">^15.15.0</span></span>
+  </div>
+</div>
+
+<!-- DEMO ACCOUNTS -->
+<div class="section-card">
+  <h2>Demo Accounts</h2>
+  <p>All passwords: <code>Demo@2026</code>. Seed via <code>supabase/functions/seed-demo-data</code> or Supabase Dashboard SQL Editor.</p>
+  <table>
+    <tr><th>Name</th><th>Email</th><th>Role</th><th>Portal Path</th><th>Notes</th></tr>
+    <tr><td>James Kariuki</td><td><code>demo.manager@rentflow.ink</code></td><td><span class="badge badge-blue">manager</span></td><td><code>/</code></td><td>3 properties, Pro tier, Paybill 522522</td></tr>
+    <tr><td>Grace Wanjiku</td><td><code>demo.tenant1@rentflow.ink</code></td><td><span class="badge badge-green">tenant</span></td><td><code>/portal</code></td><td>Flat A3, KES 8,500/mo, overdue</td></tr>
+    <tr><td>Brian Otieno</td><td><code>demo.tenant2@rentflow.ink</code></td><td><span class="badge badge-green">tenant</span></td><td><code>/portal</code></td><td>Bungalow B1, KES 35,000/mo, paid</td></tr>
+    <tr><td>Amina Hassan</td><td><code>demo.tenant3@rentflow.ink</code></td><td><span class="badge badge-amber">orphan</span></td><td><code>/portal</code></td><td>Orphan tenant, Ngara Apts, 3 self-logged payments</td></tr>
+    <tr><td>Peter Mwangi</td><td><code>demo.landlord@rentflow.ink</code></td><td><span class="badge badge-red">landlord</span></td><td><code>/landlord/dashboard</code></td><td>2 properties linked, receives reports</td></tr>
+    <tr><td>Fatuma Abubakar</td><td><code>demo.agent@rentflow.ink</code></td><td><span class="badge badge-amber">submanager</span></td><td><code>/submanager</code></td><td>Tenants + maintenance, no financials</td></tr>
+    <tr><td>Joseph Kamau</td><td><code>demo.provider@rentflow.ink</code></td><td><span class="badge badge-green">provider</span></td><td><code>/portal</code></td><td>Kamau Electrical Services, 4.7★ rating</td></tr>
+  </table>
+</div>
+
+<!-- TEST RESULTS -->
+<div class="section-card">
+  <h2>Test Suite</h2>
+  <table>
+    <tr><th>Suite</th><th>Tests</th><th>Status</th></tr>
+    <tr><td>setup.test.ts (smoke)</td><td>1</td><td><span class="badge badge-green">✅ Pass</span></td></tr>
+    <tr><td>utils.test.ts</td><td>4</td><td><span class="badge badge-green">✅ Pass</span></td></tr>
+    <tr><td>validations.test.ts</td><td>5</td><td><span class="badge badge-green">✅ Pass</span></td></tr>
+    <tr><td>Button.test.tsx</td><td>3</td><td><span class="badge badge-green">✅ Pass</span></td></tr>
+    <tr><th>Total</th><th>13</th><th><span class="badge badge-green">✅ All Pass</span></th></tr>
+  </table>
+</div>
+
+<!-- RECENT COMMITS -->
+<div class="section-card">
+  <h2>Recent Git History (top of main)</h2>
+  <table>
+    <tr><th>Hash</th><th>Message</th></tr>
+    <tr><td><code>f53cb3e</code></td><td>chore: remove committed env files, update .gitignore</td></tr>
+    <tr><td><code>5d2b7fb</code></td><td>fix: wrap app in top-level ErrorBoundary, guard localStorage access in ThemeContext and supabase client</td></tr>
+    <tr><td><code>f1f41da</code></td><td>chore: add self-register-tenant and claim-tenant to supabase config.toml</td></tr>
+    <tr><td><code>24c7d03</code></td><td>fix: update vite-plugin-pwa@1.3.0 for Vite 8 peer dep compat</td></tr>
+    <tr><td><code>da19799</code></td><td>First commit (all project files)</td></tr>
+  </table>
+</div>
+
+<!-- DELIVERABLES -->
+<div class="section-card">
+  <h2>What Was Delivered (This Session)</h2>
+  <ul>
+    <li><strong>GitHub push</strong> — Repository initialized at <code>https://github.com/Themugo/Rentflow-FINAL.git</code>, 5 commits on <code>main</code></li>
+    <li><strong>Vercel deploy</strong> — Site live at <code>https://app.rentflow.ink</code>, build ✓ 4.46s, 204 precached entries, PWA enabled</li>
+    <li><strong>Blank page fix</strong> — Top-level <code>ErrorBoundary</code> wraps entire app in <code>main.tsx</code>; localStorage guarded with try-catch in ThemeContext and Supabase client</li>
+    <li><strong>Vite 8 compat</strong> — Removed <code>lovable-tagger</code> (incompatible), updated <code>@vitejs/plugin-react-swc</code> to 4.3.1, updated <code>vite-plugin-pwa</code> to 1.3.0</li>
+    <li><strong>Schema migrations</strong> — 2 new migrations applied via Supabase Management API: payment destination routing (mgr vs landlord) + orphan tenant portability</li>
+    <li><strong>Edge functions deployed</strong> — <code>self-register-tenant</code>, <code>claim-tenant</code> (new); <code>initiate-mpesa-stk-push</code>, <code>process-payment</code>, <code>manage-mpesa-settings</code>, <code>verify-mpesa-stk-status</code> (redeployed with fixes)</li>
+    <li><strong>Tests</strong> — 13/13 pass (Vitest + React Testing Library); 0 ESLint warnings</li>
+    <li><strong>Payment routing</strong> — Property-scoped M-Pesa settings with <code>property_landlords.payment_destination</code> ('manager'|'landlord') routing to correct settings table</li>
+    <li><strong>Orphan tenant flow</strong> — Tenants can self-register without a manager; managers can claim orphans by email with full audit trail</li>
+  </ul>
+</div>
+
+</body>
+</html>

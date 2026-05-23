@@ -1,0 +1,56 @@
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") return preflightResponse(req);
+
+  try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { managerId, months = 6 } = await req.json();
+
+    const result: any[] = [];
+    const now = new Date();
+
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const start = d.toISOString().slice(0, 7) + "-01";
+      const end = new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10);
+      const label = d.toLocaleString("default", { month: "short", year: "2-digit" });
+
+      const { data: paid } = await supabase
+        .from("invoices")
+        .select("amount")
+        .eq("status", "paid")
+        .eq("manager_id", managerId)
+        .gte("paid_date", start)
+        .lte("paid_date", end);
+
+      const { data: pending } = await supabase
+        .from("invoices")
+        .select("amount")
+        .eq("status", "pending")
+        .eq("manager_id", managerId)
+        .gte("due_date", start)
+        .lte("due_date", end);
+
+      result.push({
+        month: label,
+        collected: (paid || []).reduce((s: number, i: any) => s + Number(i.amount), 0),
+        pending: (pending || []).reduce((s: number, i: any) => s + Number(i.amount), 0),
+      });
+    }
+
+    return new Response(JSON.stringify({ cashflow: result }), {
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
+  }
+});

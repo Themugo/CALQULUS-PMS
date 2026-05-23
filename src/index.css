@@ -1,0 +1,318 @@
+@import "@fontsource/outfit/400.css";
+@import "@fontsource/outfit/500.css";
+@import "@fontsource/outfit/600.css";
+@import "@fontsource/outfit/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* RentFlow.ink Design System - Smart Rental Management Made Simple */
+
+@layer base {
+  :root {
+    --background: 210 25% 98%;
+    --foreground: 215 50% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 50% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 50% 12%;
+
+    /* Primary: Deep Navy Blue from logo */
+    --primary: 215 70% 22%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 25% 93%;
+    --secondary-foreground: 215 50% 12%;
+
+    --muted: 210 25% 96%;
+    --muted-foreground: 215 20% 46%;
+
+    /* Accent: Bright Blue from logo cloud */
+    --accent: 208 80% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 208 80% 52%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar: Dark navy gradient matching logo */
+    --sidebar-background: 215 70% 15%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 208 80% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 70% 22%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 60% 25%;
+    --sidebar-ring: 208 80% 52%;
+    --sidebar-muted: 210 25% 65%;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(215 70% 18%) 0%, hsl(215 65% 28%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(208 80% 52%) 0%, hsl(200 85% 58%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 25% 99%) 100%);
+    --gradient-logo: linear-gradient(135deg, hsl(200 85% 58%) 0%, hsl(215 70% 22%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(215 70% 22% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(215 70% 22% / 0.1), 0 2px 4px -2px hsl(215 70% 22% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(215 70% 22% / 0.1), 0 4px 6px -4px hsl(215 70% 22% / 0.1);
+    --shadow-glow: 0 0 20px hsl(208 80% 52% / 0.3);
+  }
+
+  .dark {
+    --background: 215 50% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 215 50% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 215 50% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 208 80% 52%;
+    --primary-foreground: 215 50% 8%;
+
+    --secondary: 215 35% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 35% 18%;
+    --muted-foreground: 210 20% 65%;
+
+    --accent: 208 80% 52%;
+    --accent-foreground: 215 50% 8%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 35% 18%;
+    --input: 215 35% 18%;
+    --ring: 208 80% 52%;
+
+    --sidebar-background: 215 50% 6%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 208 80% 52%;
+    --sidebar-primary-foreground: 215 50% 8%;
+    --sidebar-accent: 215 50% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 50% 15%;
+    --sidebar-ring: 208 80% 52%;
+    --sidebar-muted: 210 20% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-accent);
+  }
+
+  .text-gradient-logo {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-logo);
+  }
+
+  .card-shadow {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-shadow-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar-gradient {
+    background: var(--gradient-primary);
+  }
+
+  .logo-gradient {
+    background: var(--gradient-logo);
+  }
+
+  /* Safe area for iOS devices */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* RentFlow brand button */
+  .btn-brand {
+    @apply bg-gradient-to-r from-accent to-primary text-white shadow-lg;
+    box-shadow: 0 4px 14px hsl(208 80% 52% / 0.35);
+  }
+
+  .btn-brand:hover {
+    @apply opacity-90;
+  }
+
+  /* Hide scrollbar for horizontal scroll areas */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Touch-friendly tap highlight */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: hsl(0 0% 100% / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(214 32% 91% / 0.5);
+  }
+
+  .dark .glass {
+    background: hsl(215 50% 11% / 0.7);
+    border: 1px solid hsl(215 35% 18% / 0.5);
+  }
+
+  .glass-strong {
+    background: hsl(0 0% 100% / 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(214 32% 91% / 0.6);
+  }
+
+  .dark .glass-strong {
+    background: hsl(215 50% 8% / 0.85);
+    border: 1px solid hsl(215 35% 18% / 0.6);
+  }
+
+  /* Frosted glass for cards */
+  .card-glass {
+    background: hsl(0 0% 100% / 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(214 32% 91% / 0.4);
+    box-shadow: 0 8px 32px hsl(215 70% 22% / 0.06);
+  }
+
+  .dark .card-glass {
+    background: hsl(215 50% 11% / 0.5);
+    border: 1px solid hsl(215 35% 18% / 0.4);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(214 32% 85%);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(214 32% 75%);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(215 35% 25%);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(215 35% 35%);
+  }
+
+  /* Smooth focus ring */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background transition-all duration-150;
+  }
+
+  /* Animated gradient background for auth pages */
+  .auth-gradient {
+    background: linear-gradient(-45deg, hsl(215 70% 22%), hsl(208 80% 52%), hsl(200 85% 58%), hsl(215 70% 15%));
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Subtle noise texture overlay */
+  .noise-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    pointer-events: none;
+  }
+
+  /* Card hover lift effect */
+  .card-hover {
+    transition: all 0.2s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px hsl(215 70% 22% / 0.1);
+  }
+
+  .dark .card-hover:hover {
+    box-shadow: 0 12px 24px hsl(215 70% 22% / 0.2);
+  }
+
+  /* Skeleton loading shimmer */
+  .shimmer {
+    background: linear-gradient(90deg, hsl(210 25% 96%) 25%, hsl(210 25% 92%) 50%, hsl(210 25% 96%) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .dark .shimmer {
+    background: linear-gradient(90deg, hsl(215 35% 18%) 25%, hsl(215 35% 22%) 50%, hsl(215 35% 18%) 75%);
+    background-size: 200% 100%;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}

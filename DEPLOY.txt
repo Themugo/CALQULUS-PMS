@@ -1,0 +1,134 @@
+# RentFlow — Final Deployment Instructions
+# ==========================================
+# Run these commands on your Windows machine (PowerShell or Git Bash)
+# ==========================================
+
+# ── STEP 1: Extract the bundle to C:\Users\hp\Desktop\rentflow-deploy ────────
+#
+# Option A: If you have Git Bash on Windows
+cd C:\Users\hp\Desktop
+git clone rentflow-FINAL.bundle rentflow-deploy
+cd rentflow-deploy
+
+# Option B: If using PowerShell
+# cd C:\Users\hp\Desktop
+# git clone rentflow-FINAL.bundle rentflow-deploy
+# cd rentflow-deploy
+
+
+# ── STEP 2: Set GitHub remote ────────────────────────────────────────────────
+git remote remove origin 2>nul || true
+git remote add origin https://github.com/Themugo/rentflowcom-42618f64.git
+
+# Verify
+git remote -v
+
+
+# ── STEP 3: Push to GitHub (force — replaces everything on main) ─────────────
+git push origin main --force
+
+# If it asks for credentials:
+# Username: Themugo
+# Password: your GitHub Personal Access Token (not your GitHub password)
+# Create one at: https://github.com/settings/tokens → New token → repo scope
+
+
+# ── STEP 4: Open in VS Code ──────────────────────────────────────────────────
+code .
+
+
+# ── STEP 5: Deploy to Vercel ─────────────────────────────────────────────────
+# Option A: Vercel CLI (recommended)
+npm install -g vercel
+vercel login
+vercel --prod
+
+# Option B: Vercel Dashboard (no CLI needed)
+# 1. Go to https://vercel.com/new
+# 2. Import from GitHub → select rentflowcom-42618f64
+# 3. Framework: Vite (auto-detected from vercel.json)
+# 4. Root Directory: . (leave as default)
+# 5. Add Environment Variables (see Step 6)
+# 6. Click Deploy
+
+
+# ── STEP 6: Environment Variables in Vercel Dashboard ───────────────────────
+# Go to: Vercel Project → Settings → Environment Variables
+# Add these (Production + Preview):
+#
+# VITE_SUPABASE_URL          = https://aelzsqxllkypbzslxyju.supabase.co
+# VITE_SUPABASE_PUBLISHABLE_KEY = your-supabase-anon-key
+#
+# (The anon key is in your Supabase Dashboard → Settings → API)
+
+
+# ── STEP 7: Supabase Edge Function Secrets ──────────────────────────────────
+# Go to: Supabase Dashboard → Edge Functions → Manage Secrets
+# Add:
+#
+# RESEND_API_KEY             = re_xxxx (from resend.com)
+# MPESA_CONSUMER_KEY         = from Safaricom Daraja portal
+# MPESA_CONSUMER_SECRET      = from Safaricom Daraja portal
+# MPESA_PASSKEY              = from Safaricom Daraja portal
+# MPESA_SHORTCODE            = your paybill or till number
+# MPESA_CALLBACK_SECRET      = any random secret string
+# MPESA_ENV                  = sandbox  (change to 'production' when going live)
+# AT_API_KEY                 = from Africa's Talking
+# SITE_URL                   = https://your-vercel-domain.vercel.app
+# DEMO_SECRET                = rentflow-demo-2026  (change for production)
+
+
+# ── STEP 8: Run database migrations ──────────────────────────────────────────
+# In Supabase Dashboard → SQL Editor, run migrations 001-025 in order
+# They are in: supabase/migrations/ (named 20260506000001_ through 20260506000021_)
+# OR use Supabase CLI:
+# supabase db push --project-ref aelzsqxllkypbzslxyju
+
+
+# ── STEP 9: Create first webhost admin ──────────────────────────────────────
+# In Supabase Dashboard → SQL Editor:
+#
+# 1. First sign up at your deployed app /auth with your admin email
+# 2. Get your user ID from: SELECT id FROM auth.users WHERE email='your@email.com';
+# 3. Run: INSERT INTO public.user_roles (user_id, role, approval_status)
+#         VALUES ('paste-your-uuid-here', 'webhost', 'approved');
+#
+# OR use the bootstrap-webhost edge function:
+# curl -X POST https://aelzsqxllkypbzslxyju.supabase.co/functions/v1/bootstrap-webhost \
+#   -H "Content-Type: application/json" \
+#   -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY" \
+#   -d '{"email":"admin@yourcompany.com","password":"StrongPass123!","fullName":"Admin Name"}'
+
+
+# ── STEP 10: Seed demo data ──────────────────────────────────────────────────
+# Visit: https://your-domain/demo
+# Click: ▶ SEED DEMO DATA
+# 
+# Demo accounts (password: Demo@2026):
+#   demo.manager@rentflow.ink    → / (manager dashboard)
+#   demo.tenant1@rentflow.ink    → /portal (overdue invoice)
+#   demo.tenant2@rentflow.ink    → /portal (all paid)
+#   demo.tenant3@rentflow.ink    → /portal (orphan)
+#   demo.landlord@rentflow.ink   → /landlord/dashboard
+#   demo.agent@rentflow.ink      → / (submanager)
+
+
+# ── STEP 11: Register Daraja callback URL ────────────────────────────────────
+# In Safaricom Daraja portal, register:
+# https://aelzsqxllkypbzslxyju.supabase.co/functions/v1/mpesa-callback?secret=YOUR_MPESA_CALLBACK_SECRET
+# (Replace YOUR_MPESA_CALLBACK_SECRET with what you set in Step 7)
+
+
+# ── STEP 12: Deploy Supabase edge functions ──────────────────────────────────
+# supabase functions deploy --project-ref aelzsqxllkypbzslxyju
+# OR they deploy automatically when you connect GitHub in Supabase Dashboard
+
+
+# ── VERIFY DEPLOYMENT ────────────────────────────────────────────────────────
+# Check these URLs work:
+#   /demo               → demo panel (public)
+#   /auth               → manager login
+#   /tenant/login       → tenant login
+#   /landlord           → landlord login
+#   /legal              → privacy policy / terms
+#   /webhost/login      → webhost admin login
