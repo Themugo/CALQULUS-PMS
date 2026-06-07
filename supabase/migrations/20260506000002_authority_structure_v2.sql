@@ -16,12 +16,8 @@ ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'landlord';
 ALTER TABLE public.admin_permissions
   ADD COLUMN IF NOT EXISTS can_manage_system_landlords boolean NOT NULL DEFAULT false;
 
--- Drop the tenant management permission column (replaced above)
--- We keep the column as false-locked so existing rows don't break,
--- and we'll stop reading it in the UI.
-UPDATE public.admin_permissions
-  SET can_manage_tenants = false
-  WHERE can_manage_tenants = true;
+-- can_manage_tenants column was removed as part of webhost tenant firewall
+-- No UPDATE needed since column no longer exists
 
 -- Super admins get system landlord management automatically
 UPDATE public.admin_permissions
@@ -128,11 +124,13 @@ ALTER TABLE public.payout_requests     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.landlord_invitations ENABLE ROW LEVEL SECURITY;
 
 -- property_landlords: landlord reads only their own rows
+DROP POLICY IF EXISTS "landlord_reads_own" ON public.property_landlords;
 CREATE POLICY "landlord_reads_own"
   ON public.property_landlords FOR SELECT
   USING (landlord_user_id = auth.uid());
 
 -- property_landlords: manager reads/manages only their linked properties
+DROP POLICY IF EXISTS "manager_manages_linked_landlords" ON public.property_landlords;
 CREATE POLICY "manager_manages_linked_landlords"
   ON public.property_landlords FOR ALL
   USING (manager_id = auth.uid())
@@ -143,11 +141,13 @@ CREATE POLICY "manager_manages_linked_landlords"
 -- The application must filter WHERE manager_id IS NULL for webhost queries
 
 -- payout_requests: landlord sees own requests
+DROP POLICY IF EXISTS "landlord_sees_own_payouts" ON public.payout_requests;
 CREATE POLICY "landlord_sees_own_payouts"
   ON public.payout_requests FOR SELECT
   USING (landlord_user_id = auth.uid());
 
 -- payout_requests: landlord creates requests
+DROP POLICY IF EXISTS "landlord_creates_payouts" ON public.payout_requests;
 CREATE POLICY "landlord_creates_payouts"
   ON public.payout_requests FOR INSERT
   WITH CHECK (landlord_user_id = auth.uid());
@@ -160,12 +160,14 @@ CREATE POLICY "manager_manages_payouts"
   WITH CHECK (manager_id = auth.uid());
 
 -- landlord_invitations: manager manages their invitations
+DROP POLICY IF EXISTS "manager_manages_invitations" ON public.landlord_invitations;
 CREATE POLICY "manager_manages_invitations"
   ON public.landlord_invitations FOR ALL
   USING (manager_id = auth.uid() AND invited_by_webhost = false)
   WITH CHECK (manager_id = auth.uid());
 
 -- landlord_invitations: public read by token (for accept flow)
+DROP POLICY IF EXISTS "public_read_invitation_by_token" ON public.landlord_invitations;
 CREATE POLICY "public_read_invitation_by_token"
   ON public.landlord_invitations FOR SELECT
   USING (true);

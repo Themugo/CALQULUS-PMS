@@ -263,45 +263,56 @@ ALTER TABLE public.physical_receipts     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.in_app_notifications  ENABLE ROW LEVEL SECURITY;
 
 -- messages: sender sees sent; recipient sees received; manager sees all for their tenants
+DROP POLICY IF EXISTS "sender_reads_sent_messages" ON public.messages;
 CREATE POLICY "sender_reads_sent_messages"
   ON public.messages FOR SELECT USING (sender_id = auth.uid());
+DROP POLICY IF EXISTS "recipient_reads_messages" ON public.messages;
 CREATE POLICY "recipient_reads_messages"
   ON public.messages FOR SELECT USING (recipient_id = auth.uid());
+DROP POLICY IF EXISTS "manager_manages_messages" ON public.messages;
 CREATE POLICY "manager_manages_messages"
   ON public.messages FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- broadcast_campaigns: manager only
+DROP POLICY IF EXISTS "manager_manages_campaigns" ON public.broadcast_campaigns;
 CREATE POLICY "manager_manages_campaigns"
   ON public.broadcast_campaigns FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- physical_invoices/receipts: manager manages; tenant reads own
+DROP POLICY IF EXISTS "manager_manages_physical_invoices" ON public.physical_invoices;
 CREATE POLICY "manager_manages_physical_invoices"
   ON public.physical_invoices FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
+DROP POLICY IF EXISTS "tenant_reads_physical_invoices" ON public.physical_invoices;
 CREATE POLICY "tenant_reads_physical_invoices"
   ON public.physical_invoices FOR SELECT
   USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
 
+DROP POLICY IF EXISTS "manager_manages_physical_receipts" ON public.physical_receipts;
 CREATE POLICY "manager_manages_physical_receipts"
   ON public.physical_receipts FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
+DROP POLICY IF EXISTS "tenant_reads_physical_receipts" ON public.physical_receipts;
 CREATE POLICY "tenant_reads_physical_receipts"
   ON public.physical_receipts FOR SELECT
   USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
 
 -- in_app_notifications: user reads/updates own
+DROP POLICY IF EXISTS "user_reads_own_notifications" ON public.in_app_notifications;
 CREATE POLICY "user_reads_own_notifications"
   ON public.in_app_notifications FOR SELECT USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "user_updates_own_notifications" ON public.in_app_notifications;
 CREATE POLICY "user_updates_own_notifications"
   ON public.in_app_notifications FOR UPDATE
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "manager_creates_notifications" ON public.in_app_notifications;
 CREATE POLICY "manager_creates_notifications"
   ON public.in_app_notifications FOR INSERT
   WITH CHECK (manager_id = auth.uid() OR manager_id IS NULL);
@@ -345,6 +356,7 @@ END;
 $$;
 
 -- Updated_at triggers
+DROP TRIGGER IF EXISTS broadcast_campaigns_upd ON public.broadcast_campaigns;
 CREATE TRIGGER broadcast_campaigns_upd
   BEFORE UPDATE ON public.broadcast_campaigns
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

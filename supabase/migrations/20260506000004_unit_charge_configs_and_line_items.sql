@@ -123,12 +123,14 @@ ALTER TABLE public.invoice_line_items   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.unit_deposit_ledger  ENABLE ROW LEVEL SECURITY;
 
 -- unit_charge_configs: manager manages their own
+DROP POLICY IF EXISTS "manager_manages_unit_charges" ON public.unit_charge_configs;
 CREATE POLICY "manager_manages_unit_charges"
   ON public.unit_charge_configs FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- invoice_line_items: tenant reads own invoices' lines
+DROP POLICY IF EXISTS "tenant_reads_own_line_items" ON public.invoice_line_items;
 CREATE POLICY "tenant_reads_own_line_items"
   ON public.invoice_line_items FOR SELECT
   USING (
@@ -138,6 +140,7 @@ CREATE POLICY "tenant_reads_own_line_items"
   );
 
 -- invoice_line_items: manager manages their invoices' lines
+DROP POLICY IF EXISTS "manager_manages_line_items" ON public.invoice_line_items;
 CREATE POLICY "manager_manages_line_items"
   ON public.invoice_line_items FOR ALL
   USING (
@@ -152,16 +155,19 @@ CREATE POLICY "manager_manages_line_items"
   );
 
 -- deposit_ledger: manager manages; tenant reads own
+DROP POLICY IF EXISTS "manager_manages_deposits" ON public.unit_deposit_ledger;
 CREATE POLICY "manager_manages_deposits"
   ON public.unit_deposit_ledger FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
+DROP POLICY IF EXISTS "tenant_reads_own_deposits" ON public.unit_deposit_ledger;
 CREATE POLICY "tenant_reads_own_deposits"
   ON public.unit_deposit_ledger FOR SELECT
   USING (tenant_id = auth.uid());
 
 -- ── 8. Updated_at triggers ───────────────────────────────────
+DROP TRIGGER IF EXISTS unit_charge_configs_updated_at ON public.unit_charge_configs;
 CREATE TRIGGER unit_charge_configs_updated_at
   BEFORE UPDATE ON public.unit_charge_configs
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
@@ -180,6 +186,7 @@ SELECT
   true
 FROM public.units u
 JOIN public.properties p ON p.id = u.property_id
+JOIN auth.users ON auth.users.id = p.manager_id
 WHERE p.manager_id IS NOT NULL
   AND NOT EXISTS (
     SELECT 1 FROM public.unit_charge_configs

@@ -215,35 +215,45 @@ ALTER TABLE public.bank_transactions        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.arrears_schedule         ENABLE ROW LEVEL SECURITY;
 
 -- payment_allocations: tenant sees own; manager sees theirs
+DROP POLICY IF EXISTS "tenant_sees_own_allocations" ON public.payment_allocations;
 CREATE POLICY "tenant_sees_own_allocations"
   ON public.payment_allocations FOR SELECT USING (tenant_id = auth.uid());
+DROP POLICY IF EXISTS "manager_manages_allocations" ON public.payment_allocations;
 CREATE POLICY "manager_manages_allocations"
   ON public.payment_allocations FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid());
 
 -- credit_ledger: tenant sees own; manager sees theirs
+DROP POLICY IF EXISTS "tenant_sees_own_credit" ON public.tenant_credit_ledger;
 CREATE POLICY "tenant_sees_own_credit"
   ON public.tenant_credit_ledger FOR SELECT USING (tenant_id = auth.uid());
+DROP POLICY IF EXISTS "manager_manages_credit" ON public.tenant_credit_ledger;
 CREATE POLICY "manager_manages_credit"
   ON public.tenant_credit_ledger FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid());
 
 -- bank settings: manager only
+DROP POLICY IF EXISTS "manager_manages_bank_settings" ON public.bank_integration_settings;
 CREATE POLICY "manager_manages_bank_settings"
   ON public.bank_integration_settings FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid());
 
 -- bank_transactions: manager only
+DROP POLICY IF EXISTS "manager_manages_bank_transactions" ON public.bank_transactions;
 CREATE POLICY "manager_manages_bank_transactions"
   ON public.bank_transactions FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid());
 
 -- arrears_schedule: tenant reads; manager manages
+DROP POLICY IF EXISTS "tenant_reads_own_arrears" ON public.arrears_schedule;
 CREATE POLICY "tenant_reads_own_arrears"
   ON public.arrears_schedule FOR SELECT USING (tenant_id = auth.uid());
+DROP POLICY IF EXISTS "manager_manages_arrears" ON public.arrears_schedule;
 CREATE POLICY "manager_manages_arrears"
   ON public.arrears_schedule FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid());
 
 -- updated_at triggers
+DROP TRIGGER IF EXISTS bank_integration_updated_at ON public.bank_integration_settings;
 CREATE TRIGGER bank_integration_updated_at
   BEFORE UPDATE ON public.bank_integration_settings
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DROP TRIGGER IF EXISTS arrears_schedule_updated_at ON public.arrears_schedule;
 CREATE TRIGGER arrears_schedule_updated_at
   BEFORE UPDATE ON public.arrears_schedule
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

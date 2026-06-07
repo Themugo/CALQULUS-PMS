@@ -94,44 +94,52 @@ ALTER TABLE public.payout_requests     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.landlord_invitations ENABLE ROW LEVEL SECURITY;
 
 -- property_landlords: landlord sees their own rows
+DROP POLICY IF EXISTS "landlord_reads_own_properties" ON public.property_landlords;
 CREATE POLICY "landlord_reads_own_properties"
   ON public.property_landlords FOR SELECT
   USING (landlord_user_id = auth.uid());
 
 -- property_landlords: manager sees properties they manage
+DROP POLICY IF EXISTS "manager_reads_managed_property_landlords" ON public.property_landlords;
 CREATE POLICY "manager_reads_managed_property_landlords"
   ON public.property_landlords FOR SELECT
   USING (manager_id = auth.uid());
 
 -- property_landlords: manager can insert/update/delete
+DROP POLICY IF EXISTS "manager_manages_property_landlords" ON public.property_landlords;
 CREATE POLICY "manager_manages_property_landlords"
   ON public.property_landlords FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- payout_requests: landlord sees own requests
+DROP POLICY IF EXISTS "landlord_reads_own_payouts" ON public.payout_requests;
 CREATE POLICY "landlord_reads_own_payouts"
   ON public.payout_requests FOR SELECT
   USING (landlord_user_id = auth.uid());
 
 -- payout_requests: landlord can create requests
+DROP POLICY IF EXISTS "landlord_creates_payout_requests" ON public.payout_requests;
 CREATE POLICY "landlord_creates_payout_requests"
   ON public.payout_requests FOR INSERT
   WITH CHECK (landlord_user_id = auth.uid());
 
 -- payout_requests: manager sees and manages payouts for their properties
+DROP POLICY IF EXISTS "manager_manages_payouts" ON public.payout_requests;
 CREATE POLICY "manager_manages_payouts"
   ON public.payout_requests FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- landlord_invitations: manager can manage their invitations
+DROP POLICY IF EXISTS "manager_manages_landlord_invitations" ON public.landlord_invitations;
 CREATE POLICY "manager_manages_landlord_invitations"
   ON public.landlord_invitations FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- landlord_invitations: anyone with valid token can read (for accept flow)
+DROP POLICY IF EXISTS "public_read_landlord_invitation_by_token" ON public.landlord_invitations;
 CREATE POLICY "public_read_landlord_invitation_by_token"
   ON public.landlord_invitations FOR SELECT
   USING (true);
@@ -145,10 +153,12 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS property_landlords_updated_at ON public.property_landlords;
 CREATE TRIGGER property_landlords_updated_at
   BEFORE UPDATE ON public.property_landlords
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS payout_requests_updated_at ON public.payout_requests;
 CREATE TRIGGER payout_requests_updated_at
   BEFORE UPDATE ON public.payout_requests
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

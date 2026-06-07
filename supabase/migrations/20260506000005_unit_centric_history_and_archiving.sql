@@ -315,22 +315,26 @@ ALTER TABLE public.unit_tenancy_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.unit_activity_log    ENABLE ROW LEVEL SECURITY;
 
 -- Tenancy history: manager reads all for their properties
+DROP POLICY IF EXISTS "manager_reads_unit_tenancy" ON public.unit_tenancy_history;
 CREATE POLICY "manager_reads_unit_tenancy"
   ON public.unit_tenancy_history FOR SELECT
   USING (manager_id = auth.uid());
 
 -- Tenancy history: manager manages
+DROP POLICY IF EXISTS "manager_manages_unit_tenancy" ON public.unit_tenancy_history;
 CREATE POLICY "manager_manages_unit_tenancy"
   ON public.unit_tenancy_history FOR ALL
   USING (manager_id = auth.uid())
   WITH CHECK (manager_id = auth.uid());
 
 -- Tenancy history: tenant reads their OWN records (portable history)
+DROP POLICY IF EXISTS "tenant_reads_own_tenancy_history" ON public.unit_tenancy_history;
 CREATE POLICY "tenant_reads_own_tenancy_history"
   ON public.unit_tenancy_history FOR SELECT
   USING (tenant_id = auth.uid());
 
 -- Activity log: manager reads all for their units
+DROP POLICY IF EXISTS "manager_reads_unit_activity" ON public.unit_activity_log;
 CREATE POLICY "manager_reads_unit_activity"
   ON public.unit_activity_log FOR ALL
   USING (
@@ -342,11 +346,13 @@ CREATE POLICY "manager_reads_unit_activity"
   );
 
 -- Activity log: tenant reads their own events
+DROP POLICY IF EXISTS "tenant_reads_own_activity" ON public.unit_activity_log;
 CREATE POLICY "tenant_reads_own_activity"
   ON public.unit_activity_log FOR SELECT
   USING (tenant_id = auth.uid());
 
 -- Updated_at triggers
+DROP TRIGGER IF EXISTS unit_tenancy_history_updated_at ON public.unit_tenancy_history;
 CREATE TRIGGER unit_tenancy_history_updated_at
   BEFORE UPDATE ON public.unit_tenancy_history
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

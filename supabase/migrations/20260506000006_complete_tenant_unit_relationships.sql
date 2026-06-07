@@ -557,6 +557,7 @@ BEGIN FOR t IN SELECT unnest(ARRAY[
   'unit_key_records','unit_inspections','tenant_guarantors',
   'tenant_notices','tenant_blacklist','tenant_references','unit_utility_meters'
 ]) LOOP
+  EXECUTE format('DROP POLICY IF EXISTS "manager_%1$s" ON public.%1$s', t);
   EXECUTE format(
     'CREATE POLICY "manager_%1$s" ON public.%1$s FOR ALL USING (manager_id = auth.uid()) WITH CHECK (manager_id = auth.uid())',
     t
@@ -564,15 +565,25 @@ BEGIN FOR t IN SELECT unnest(ARRAY[
 END LOOP; END $$;
 
 -- Tenant reads own records
+DROP POLICY IF EXISTS "tenant_reads_payers" ON public.payment_payers;
 CREATE POLICY "tenant_reads_payers"      ON public.payment_payers    FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
+DROP POLICY IF EXISTS "tenant_reads_pets" ON public.tenant_pets;
 CREATE POLICY "tenant_reads_pets"        ON public.tenant_pets       FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
+DROP POLICY IF EXISTS "tenant_reads_vehicles" ON public.tenant_vehicles;
 CREATE POLICY "tenant_reads_vehicles"    ON public.tenant_vehicles   FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
+DROP POLICY IF EXISTS "tenant_reads_notices" ON public.tenant_notices;
 CREATE POLICY "tenant_reads_notices"     ON public.tenant_notices    FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
+DROP POLICY IF EXISTS "tenant_reads_inspections" ON public.unit_inspections;
 CREATE POLICY "tenant_reads_inspections" ON public.unit_inspections  FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
+DROP POLICY IF EXISTS "tenant_reads_references" ON public.tenant_references;
 CREATE POLICY "tenant_reads_references"  ON public.tenant_references FOR SELECT USING (tenant_id IN (SELECT id FROM public.tenants WHERE id::text = auth.uid()::text));
 
 -- Updated_at triggers
+DROP TRIGGER IF EXISTS payment_payers_upd ON public.payment_payers;
 CREATE TRIGGER payment_payers_upd     BEFORE UPDATE ON public.payment_payers     FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DROP TRIGGER IF EXISTS unit_key_records_upd ON public.unit_key_records;
 CREATE TRIGGER unit_key_records_upd   BEFORE UPDATE ON public.unit_key_records   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DROP TRIGGER IF EXISTS unit_inspections_upd ON public.unit_inspections;
 CREATE TRIGGER unit_inspections_upd   BEFORE UPDATE ON public.unit_inspections   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DROP TRIGGER IF EXISTS unit_utility_meters_upd ON public.unit_utility_meters;
 CREATE TRIGGER unit_utility_meters_upd BEFORE UPDATE ON public.unit_utility_meters FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
