@@ -1,4 +1,4 @@
-# RentFlow – Agent Memory
+# CALQULUS RMS – Agent Memory
 
 ## Goal
 Realign all dashboards to the new role architecture (Webhost, Manager, Landlord, Tenant, Submanager) and implement the UI patterns shown in the HTML mockup files.

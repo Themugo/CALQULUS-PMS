@@ -35,8 +35,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "RentFlow - Property Management",
-        short_name: "RentFlow",
+        name: "CALQULUS RMS - Property Management",
+        short_name: "CALQULUS RMS",
         description: "Modern property management solution for landlords and tenants",
         theme_color: "#0f172a",
         background_color: "#0a0a0a",

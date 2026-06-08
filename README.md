@@ -1,4 +1,4 @@
-# RentFlow — Property Management Platform
+# CALQULUS RMS — Property Management Platform
 
 Modern property management SaaS for Kenya and East Africa.  
 **Stack:** React 19 + TypeScript 6 + Vite 8 + Supabase + Netlify/Vercel
@@ -20,8 +20,8 @@ Modern property management SaaS for Kenya and East Africa.
 ## Push from git bundle
 
 ```bash
-git clone rentflow-more-fixes.bundle rentflow-deploy
-cd rentflow-deploy
+git clone calqulus-rms-more-fixes.bundle calqulus-rms-deploy
+cd calqulus-rms-deploy
 git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push origin main --force
 ```
