@@ -1,44 +1,44 @@
 # Uptime Monitoring Setup
 
 ## Overview
-Uptime monitoring ensures that RentFlow services are available and responsive. This document outlines the setup for monitoring uptime using UptimeRobot or similar services.
+Uptime monitoring ensures that CALQULUS RMS services are available and responsive. This document outlines the setup for monitoring uptime using UptimeRobot or similar services.
 
 ## Monitoring Endpoints
 
 ### Primary Endpoints
 1. **Application Health Check**
-   - URL: `https://app.rentflow.ink/health`
+   - URL: `https://app.calqulusrms.com/health`
    - Expected: HTTP 200 with JSON response
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 2. **API Health Check**
-   - URL: `https://app.rentflow.ink/api/health`
+   - URL: `https://app.calqulusrms.com/api/health`
    - Expected: HTTP 200 with JSON response
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 3. **Database Connectivity**
-   - URL: `https://app.rentflow.ink/api/health/db`
+   - URL: `https://app.calqulusrms.com/api/health/db`
    - Expected: HTTP 200 with database status
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 ### Secondary Endpoints
 1. **Authentication Service**
-   - URL: `https://app.rentflow.ink/api/auth/health`
+   - URL: `https://app.calqulusrms.com/api/auth/health`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 3 consecutive failures
 
 2. **Payment Processing**
-   - URL: `https://app.rentflow.ink/api/payments/health`
+   - URL: `https://app.calqulusrms.com/api/payments/health`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 3 consecutive failures
 
 3. **Static Assets**
-   - URL: `https://app.rentflow.ink/static/logo.png`
+   - URL: `https://app.calqulusrms.com/static/logo.png`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 5 consecutive failures
@@ -49,10 +49,10 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 1. Create account at https://uptimerobot.com/
 2. Add monitors for each endpoint above
 3. Configure alert contacts:
-   - Email: alerts@rentflow.ink
-   - Slack: #rentflow-alerts
+   - Email: alerts@calqulusrms.com
+   - Slack: #calqulusrms-alerts
    - SMS: On-call engineer
-4. Set up status page: https://status.rentflow.ink
+4. Set up status page: https://status.calqulusrms.com
 
 ### Monitor Settings
 - **Type**: HTTPS
@@ -62,8 +62,8 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 - **Keyword Check**: Check for specific response content if needed
 
 ### Alert Contacts
-1. **Primary**: Email to alerts@rentflow.ink
-2. **Secondary**: Slack webhook to #rentflow-alerts
+1. **Primary**: Email to alerts@calqulusrms.com
+2. **Secondary**: Slack webhook to #calqulusrms-alerts
 3. **Critical**: SMS to on-call engineer (for P1 endpoints)
 4. **Status Page**: Public status page updates
 
@@ -151,7 +151,7 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 
 ### Level 1: First Alert
 - **Time**: Immediately after threshold reached
-- **Action**: Email to alerts@rentflow.ink, Slack message
+- **Action**: Email to alerts@calqulusrms.com, Slack message
 - **Response**: On-call engineer acknowledges within 15 minutes
 
 ### Level 2: Escalation
@@ -167,13 +167,13 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 ## Status Page
 
 ### Public Status Page
-- URL: https://status.rentflow.ink
+- URL: https://status.calqulusrms.com
 - Updates: Automatic from uptime monitoring
 - Historical data: 90 days
 - Incident reports: Public for major incidents
 
 ### Internal Status Dashboard
-- Grafana dashboard: https://grafana.rentflow.ink/d/uptime
+- Grafana dashboard: https://grafana.calqulusrms.com/d/uptime
 - Real-time metrics
 - Detailed incident logs
 - Team communication integration
@@ -191,8 +191,8 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 - Root cause analysis
 
 ### Slack Integration
-- Uptime alerts posted to #rentflow-alerts
-- Status updates in #rentflow-status
+- Uptime alerts posted to #calqulusrms-alerts
+- Status updates in #calqulusrms-status
 - Incident communication channels
 
 ## Maintenance
@@ -216,6 +216,6 @@ Uptime monitoring ensures that RentFlow services are available and responsive. T
 - UptimeRobot: https://uptimerobot.com/
 - Better Uptime: https://betteruptime.com/
 - Pingdom: https://www.pingdom.com/
-- Status Page: https://status.rentflow.ink
-- Grafana Dashboard: https://grafana.rentflow.ink/d/uptime
-- Slack: #rentflow-alerts
+- Status Page: https://status.calqulusrms.com
+- Grafana Dashboard: https://grafana.calqulusrms.com/d/uptime
+- Slack: #calqulusrms-alerts

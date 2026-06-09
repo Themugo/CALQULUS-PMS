@@ -1,8 +1,8 @@
 {
   "dashboard": {
-    "title": "RentFlow SLA Tracking",
-    "uid": "rentflow-sla-tracking",
-    "tags": ["rentflow", "sla", "uptime"],
+    "title": "CALQULUS RMS SLA Tracking",
+    "uid": "calqulusrms-sla-tracking",
+    "tags": ["calqulusrms", "sla", "uptime"],
     "timezone": "browser",
     "schemaVersion": 16,
     "version": 0,
@@ -15,7 +15,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
         "targets": [
           {
-            "expr": "avg_over_time(up{job='rentflow-app'}[30d]) * 100",
+            "expr": "avg_over_time(up{job='calqulusrms-app'}[30d]) * 100",
             "legendFormat": "Uptime %"
           }
         ],
@@ -41,7 +41,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) * 1000",
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) * 1000",
             "legendFormat": "P95 response time (ms)"
           }
         ],
@@ -67,7 +67,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
         "targets": [
           {
-            "expr": "rate(http_requests_total{job='rentflow-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='rentflow-app'}[5m]) * 100",
+            "expr": "rate(http_requests_total{job='calqulusrms-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='calqulusrms-app'}[5m]) * 100",
             "legendFormat": "Error rate %"
           }
         ],
@@ -119,7 +119,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
         "targets": [
           {
-            "expr": "up{job='rentflow-app'}",
+            "expr": "up{job='calqulusrms-app'}",
             "legendFormat": "Application status"
           }
         ],
@@ -137,11 +137,11 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) * 1000",
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) * 1000",
             "legendFormat": "P95 (ms)"
           },
           {
-            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) * 1000",
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) * 1000",
             "legendFormat": "P50 (ms)"
           }
         ],
@@ -159,7 +159,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
         "targets": [
           {
-            "expr": "rate(http_requests_total{job='rentflow-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='rentflow-app'}[5m]) * 100",
+            "expr": "rate(http_requests_total{job='calqulusrms-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='calqulusrms-app'}[5m]) * 100",
             "legendFormat": "Error rate %"
           }
         ],
@@ -195,17 +195,17 @@
         "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
         "targets": [
           {
-            "expr": "avg_over_time(up{job='rentflow-app'}[30d]) * 100",
+            "expr": "avg_over_time(up{job='calqulusrms-app'}[30d]) * 100",
             "legendFormat": "Uptime SLA (99.9%)",
             "format": "table"
           },
           {
-            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) * 1000",
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) * 1000",
             "legendFormat": "Response Time SLA (500ms)",
             "format": "table"
           },
           {
-            "expr": "rate(http_requests_total{job='rentflow-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='rentflow-app'}[5m]) * 100",
+            "expr": "rate(http_requests_total{job='calqulusrms-app',status=~\"5..\"}[5m]) / rate(http_requests_total{job='calqulusrms-app'}[5m]) * 100",
             "legendFormat": "Error Rate SLA (0.1%)",
             "format": "table"
           },

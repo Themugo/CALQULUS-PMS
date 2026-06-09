@@ -1,4 +1,4 @@
-# Sentry Configuration for RentFlow
+# Sentry Configuration for CALQULUS RMS
 # This file configures Sentry for production error tracking and performance monitoring
 
 # DSN (Data Source Name) - Set this in environment variables
@@ -8,7 +8,7 @@
 environment: production
 
 # Release tracking
-release: rentflow@1.0.0
+release: calqulusrms@1.0.0
 
 # Sample rate for performance monitoring (0-1)
 traces_sample_rate: 0.1
@@ -62,8 +62,8 @@ integrations:
     tracing_origins:
       - localhost
       - /^\//
-      - https://app.rentflow.ink
-      - https://www.rentflow.ink
+      - https://app.calqulusrms.com
+      - https://www.calqulusrms.com
 
 # Before send callback for filtering errors
 before_send:
@@ -101,7 +101,7 @@ tags:
   environment: production
   
   # Application tag
-  application: rentflow
+  application: calqulusrms
   
   # Version tag
   version: 1.0.0

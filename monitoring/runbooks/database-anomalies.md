@@ -8,7 +8,7 @@
 
 ## Detection
 - **Alert**: Database connection pool > 90%, slow queries > 1s, deadlocks detected
-- **Dashboard**: RentFlow Database Performance
+- **Dashboard**: CALQULUS RMS Database Performance
 - **Logs**: Supabase logs, query performance logs
 - **Sentry**: Database anomaly events
 
@@ -231,7 +231,7 @@ psql -h aelzsqxllkypbzslxyju.supabase.co -U postgres -d postgres -c "SELECT * FR
 - Supabase Status: https://status.supabase.com/
 - Supabase Dashboard: https://app.supabase.com/project/aelzsqxllkypbzslxyju
 - Grafana Dashboards:
-  - Database Performance: https://grafana.rentflow.ink/d/database-performance
-  - Application Performance: https://grafana.rentflow.ink/d/app-performance
-- Sentry: https://sentry.io/organizations/rentflow/
-- Status Page: https://status.rentflow.ink
+  - Database Performance: https://grafana.calqulusrms.com/d/database-performance
+  - Application Performance: https://grafana.calqulusrms.com/d/app-performance
+- Sentry: https://sentry.io/organizations/calqulusrms/
+- Status Page: https://status.calqulusrms.com

@@ -1,8 +1,8 @@
 {
   "dashboard": {
-    "title": "RentFlow Application Performance",
-    "uid": "rentflow-app-performance",
-    "tags": ["rentflow", "application", "performance"],
+    "title": "CALQULUS RMS Application Performance",
+    "uid": "calqulusrms-app-performance",
+    "tags": ["calqulusrms", "application", "performance"],
     "timezone": "browser",
     "schemaVersion": 16,
     "version": 0,
@@ -15,7 +15,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
         "targets": [
           {
-            "expr": "sum(rate(http_requests_total{job='rentflow-app'}[5m])) by (method, status)",
+            "expr": "sum(rate(http_requests_total{job='calqulusrms-app'}[5m])) by (method, status)",
             "legendFormat": "{{method}} {{status}}"
           }
         ],
@@ -33,15 +33,15 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
         "targets": [
           {
-            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) by (le))",
+            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) by (le))",
             "legendFormat": "P50"
           },
           {
-            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) by (le))",
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) by (le))",
             "legendFormat": "P95"
           },
           {
-            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) by (le))",
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) by (le))",
             "legendFormat": "P99"
           }
         ],
@@ -59,7 +59,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
         "targets": [
           {
-            "expr": "sum(rate(http_requests_total{job='rentflow-app',status=~\"5..\"}[5m])) by (endpoint) / sum(rate(http_requests_total{job='rentflow-app'}[5m])) by (endpoint)",
+            "expr": "sum(rate(http_requests_total{job='calqulusrms-app',status=~\"5..\"}[5m])) by (endpoint) / sum(rate(http_requests_total{job='calqulusrms-app'}[5m])) by (endpoint)",
             "legendFormat": "{{endpoint}}"
           }
         ],
@@ -77,7 +77,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8},
         "targets": [
           {
-            "expr": "http_active_connections{job='rentflow-app'}",
+            "expr": "http_active_connections{job='calqulusrms-app'}",
             "legendFormat": "Active connections"
           }
         ]
@@ -89,7 +89,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 18, "y": 8},
         "targets": [
           {
-            "expr": "process_resident_memory_bytes{job='rentflow-app'} / 1024 / 1024 / 1024",
+            "expr": "process_resident_memory_bytes{job='calqulusrms-app'} / 1024 / 1024 / 1024",
             "legendFormat": "Memory (GB)"
           }
         ],
@@ -107,7 +107,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
         "targets": [
           {
-            "expr": "rate(process_cpu_seconds_total{job='rentflow-app'}[5m])",
+            "expr": "rate(process_cpu_seconds_total{job='calqulusrms-app'}[5m])",
             "legendFormat": "CPU usage"
           }
         ],
@@ -125,7 +125,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
         "targets": [
           {
-            "expr": "sum(rate(http_request_duration_seconds_bucket{job='rentflow-app'}[5m])) by (le)",
+            "expr": "sum(rate(http_request_duration_seconds_bucket{job='calqulusrms-app'}[5m])) by (le)",
             "legendFormat": "{{le}}"
           }
         ]
@@ -137,7 +137,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
         "targets": [
           {
-            "expr": "topk(10, avg(rate(http_request_duration_seconds_sum{job='rentflow-app'}[5m])) by (endpoint) / avg(rate(http_request_duration_seconds_count{job='rentflow-app'}[5m])) by (endpoint))",
+            "expr": "topk(10, avg(rate(http_request_duration_seconds_sum{job='calqulusrms-app'}[5m])) by (endpoint) / avg(rate(http_request_duration_seconds_count{job='calqulusrms-app'}[5m])) by (endpoint))",
             "legendFormat": "{{endpoint}}"
           }
         ]
@@ -149,7 +149,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
         "targets": [
           {
-            "expr": "sum(rate(http_requests_total{job='rentflow-app'}[5m])) by (endpoint)",
+            "expr": "sum(rate(http_requests_total{job='calqulusrms-app'}[5m])) by (endpoint)",
             "legendFormat": "{{endpoint}}"
           }
         ]

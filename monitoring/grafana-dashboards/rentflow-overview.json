@@ -1,8 +1,8 @@
 {
   "dashboard": {
-    "title": "RentFlow Overview",
-    "uid": "rentflow-overview",
-    "tags": ["rentflow", "overview"],
+    "title": "CALQULUS RMS Overview",
+    "uid": "calqulusrms-overview",
+    "tags": ["calqulusrms", "overview"],
     "timezone": "browser",
     "schemaVersion": 16,
     "version": 0,

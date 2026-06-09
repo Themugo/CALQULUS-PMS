@@ -232,7 +232,7 @@ psql -h aelzsqxllkypbzslxyju.supabase.co -U postgres -d postgres -c "SELECT * FR
 ## Related Resources
 - Supabase Security: https://app.supabase.com/project/aelzsqxllkypbzslxyju/auth/policies
 - Grafana Dashboards:
-  - Security Monitoring: https://grafana.rentflow.ink/d/security-monitoring
-  - Application Performance: https://grafana.rentflow.ink/d/app-performance
-- Sentry: https://sentry.io/organizations/rentflow/
-- Status Page: https://status.rentflow.ink
+  - Security Monitoring: https://grafana.calqulusrms.com/d/security-monitoring
+  - Application Performance: https://grafana.calqulusrms.com/d/app-performance
+- Sentry: https://sentry.io/organizations/calqulusrms/
+- Status Page: https://status.calqulusrms.com

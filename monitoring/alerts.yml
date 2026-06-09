@@ -1,8 +1,8 @@
-# Alerting Rules for RentFlow
+# Alerting Rules for CALQULUS RMS
 # Prometheus alerting rules for production monitoring
 
 groups:
-  - name: rentflow_alerts
+  - name: calqulusrms_alerts
     interval: 30s
     rules:
       # High error rate alert

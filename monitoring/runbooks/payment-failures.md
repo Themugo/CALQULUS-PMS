@@ -8,7 +8,7 @@
 
 ## Detection
 - **Alert**: Payment failure rate > 5% for 5 minutes
-- **Dashboard**: RentFlow Payment Monitoring
+- **Dashboard**: CALQULUS RMS Payment Monitoring
 - **Logs**: Supabase logs, payment provider dashboards
 - **Sentry**: Payment failure events
 
@@ -46,7 +46,7 @@ supabase logs --project-id aelzsqxllkypbzslxyju
    - Check status page for API outages
 
 2. **Verify Callback URL**
-   - Ensure callback URL is accessible: `https://app.rentflow.ink/api/payments/mpesa/callback`
+   - Ensure callback URL is accessible: `https://app.calqulusrms.com/api/payments/mpesa/callback`
    - Check SSL certificate validity
    - Verify firewall rules allow Safaricom IPs
 
@@ -93,7 +93,7 @@ supabase logs --project-id aelzsqxllkypbzslxyju
 3. Check firewall rules allow payment provider IPs
 4. Test callback endpoint manually:
 ```bash
-curl -X POST https://app.rentflow.ink/api/payments/mpesa/callback \
+curl -X POST https://app.calqulusrms.com/api/payments/mpesa/callback \
   -H "Content-Type: application/json" \
   -d '{"test": true}'
 ```
@@ -167,7 +167,7 @@ curl -X POST https://app.rentflow.ink/api/payments/mpesa/callback \
   - M-Pesa: https://developer.safaricom.co.ke/
   - Stripe: https://status.stripe.com/
 - Grafana Dashboards:
-  - Payment Monitoring: https://grafana.rentflow.ink/d/payment-monitoring
-  - Application Performance: https://grafana.rentflow.ink/d/app-performance
-- Sentry: https://sentry.io/organizations/rentflow/
-- Status Page: https://status.rentflow.ink
+  - Payment Monitoring: https://grafana.calqulusrms.com/d/payment-monitoring
+  - Application Performance: https://grafana.calqulusrms.com/d/app-performance
+- Sentry: https://sentry.io/organizations/calqulusrms/
+- Status Page: https://status.calqulusrms.com

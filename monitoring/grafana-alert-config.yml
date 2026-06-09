@@ -5,9 +5,9 @@
 email:
   enabled: true
   addresses:
-    - alerts@rentflow.ink
-    - platform@rentflow.ink
-  from: noreply@rentflow.ink
+    - alerts@calqulusrms.com
+    - platform@calqulusrms.com
+  from: noreply@calqulusrms.com
   subject: Grafana Alert: ${alertname}
   message: |
     Alert: ${alertname}
@@ -28,7 +28,7 @@ email:
 slack:
   enabled: true
   webhook_url: ${SLACK_WEBHOOK_URL}
-  channel: "#rentflow-alerts"
+  channel: "#calqulusrms-alerts"
   username: "Grafana"
   icon_emoji: ":warning:"
   title: "Grafana Alert: ${alertname}"
@@ -84,8 +84,8 @@ discord:
           value: "${startsAt}"
           inline: false
       footer:
-        text: "RentFlow Monitoring"
-        icon_url: "https://rentflow.ink/logo.png"
+        text: "CALQULUS RMS Monitoring"
+        icon_url: "https://calqulusrms.com/logo.png"
 
 # Microsoft Teams notification channel
 teams:
