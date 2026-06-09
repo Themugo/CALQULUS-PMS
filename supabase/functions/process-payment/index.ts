@@ -1,7 +1,7 @@
 /**
  * process-payment/index.ts
  *
- * Central payment processing engine for RentFlow.
+ * Central payment processing engine for CALQULUS RMS.
  * Handles ALL payment channels without holding money:
  *   - M-Pesa STK push (callback from mpesa-callback triggers this)
  *   - USSD / paybill (Safaricom C2B confirmation webhook)

@@ -10,7 +10,7 @@ import { UserPlus, Link2 } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
-import calqulusLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/calqulusrms-logo.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 const TenantLogin = () => {

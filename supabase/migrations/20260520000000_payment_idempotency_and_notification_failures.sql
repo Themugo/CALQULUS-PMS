@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Payment Idempotency + Notification Failure Tracking
+-- CALQULUS RMS: Payment Idempotency + Notification Failure Tracking
 --
 -- Two related additions for the hardened payment path:
 --

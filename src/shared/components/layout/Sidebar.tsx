@@ -11,7 +11,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/rentflow-logo.png";
+import calqulusLogo from "@/assets/calqulusrms-logo.png";
 
 interface NavItem {
   name: string;

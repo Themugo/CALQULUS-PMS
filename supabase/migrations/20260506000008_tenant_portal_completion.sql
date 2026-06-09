@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Final tenant-portal completion
+-- CALQULUS RMS: Final tenant-portal completion
 -- ============================================================
 
 -- ── 1. tenant_notification_preferences ───────────────────────

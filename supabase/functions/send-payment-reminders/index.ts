@@ -32,7 +32,7 @@ const sendEmail = async (to: string, subject: string, html: string) => {
     throw new Error("Resend API key is not configured");
   }
 
-  const fromEmail = getEnv("RESEND_FROM_EMAIL", "RentFlow <onboarding@resend.dev>");
+  const fromEmail = getEnv("RESEND_FROM_EMAIL", "CALQULUS RMS <onboarding@resend.dev>");
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -244,7 +244,7 @@ serve(async (req) => {
                 <p style="margin-top: 20px;">Thank you for your prompt attention to this matter.</p>
               </div>
               <div class="footer">
-                <p>This is an automated reminder from RentFlow.</p>
+                <p>This is an automated reminder from CALQULUS RMS.</p>
               </div>
             </div>
           </body>

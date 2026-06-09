@@ -1,7 +1,7 @@
 # Store Listing Optimization Guide
 
 ## Overview
-This guide provides comprehensive strategies for optimizing RentFlow's app store listings on both iOS App Store and Google Play Store to maximize visibility, downloads, and conversion rates.
+This guide provides comprehensive strategies for optimizing CALQULUS RMS's app store listings on both iOS App Store and Google Play Store to maximize visibility, downloads, and conversion rates.
 
 ## App Store Optimization (ASO) Fundamentals
 
@@ -16,10 +16,10 @@ This guide provides comprehensive strategies for optimizing RentFlow's app store
 ### App Name & Subtitle
 
 #### App Name (30 characters max)
-**Current**: RentFlow - Property Management
+**Current**: CALQULUS RMS - Property Management
 **Optimization**: 
 - Includes primary keyword "Property Management"
-- Brand name "RentFlow" is prominent
+- Brand name "CALQULUS RMS" is prominent
 - Clear value proposition
 - **Score**: 9/10
 
@@ -56,7 +56,7 @@ This guide provides comprehensive strategies for optimizing RentFlow's app store
 
 #### Optimized Opening Hook
 ```
-Transform your property management with RentFlow - the #1 app for African landlords, property managers, and tenants. Join 10,000+ users managing properties worth KES 50B+.
+Transform your property management with CALQULUS RMS - the #1 app for African landlords, property managers, and tenants. Join 10,000+ users managing properties worth KES 50B+.
 ```
 
 ### Keywords (100 characters max)
@@ -161,7 +161,7 @@ Transform your property management with RentFlow - the #1 app for African landlo
 
 ### App Title (30 characters max)
 
-#### Current: RentFlow - Property Management
+#### Current: CALQULUS RMS - Property Management
 **Optimization**: Same as iOS - already optimized
 **Score**: 9/10
 
@@ -206,7 +206,7 @@ Transform your property management with RentFlow - the #1 app for African landlo
 - Include app icon and tagline
 - Use brand colors
 - Clean, professional design
-- Suggested text: "RentFlow - Modern Property Management"
+- Suggested text: "CALQULUS RMS - Modern Property Management"
 
 #### Screenshots Strategy
 - **Phone Screenshots**: Show mobile experience
@@ -421,7 +421,7 @@ property management, rent collection, landlord, tenant, maintenance, real estate
 
 ## Conclusion
 
-Effective ASO is an ongoing process that requires continuous monitoring, testing, and optimization. By following this guide and regularly reviewing performance metrics, RentFlow can maximize its visibility and conversion rates on both iOS App Store and Google Play Store.
+Effective ASO is an ongoing process that requires continuous monitoring, testing, and optimization. By following this guide and regularly reviewing performance metrics, CALQULUS RMS can maximize its visibility and conversion rates on both iOS App Store and Google Play Store.
 
 Key success factors:
 - **Consistent branding** across platforms

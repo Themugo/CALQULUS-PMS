@@ -212,7 +212,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${companyName} <noreply@rentflow.com>`,
+        from: `${companyName} <noreply@calqulusrms.com>`,
         to: [tenantEmail],
         subject: `✅ Payment Confirmed – Unit ${unit} – ${formattedAmount}`,
         html,

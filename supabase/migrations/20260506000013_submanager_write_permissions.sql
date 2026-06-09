@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Submanager write permissions + audit log
+-- CALQULUS RMS: Submanager write permissions + audit log
 -- ============================================================
 
 -- ── 1. Extend submanager_permissions with write flags ────────

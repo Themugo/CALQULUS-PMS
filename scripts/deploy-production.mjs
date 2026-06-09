@@ -1,5 +1,5 @@
 /**
- * deploy-production.mjs — Full production deployment helper for RentFlow
+ * deploy-production.mjs — Full production deployment helper for CALQULUS RMS
  *
  * Usage:
  *   node scripts/deploy-production.mjs [--dry-run]
@@ -151,7 +151,7 @@ function showPaymentConfig() {
 
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
-  console.log('\n🚀 RentFlow Production Deploy');
+  console.log('\n🚀 CALQULUS RMS Production Deploy');
   console.log('   =========================');
   if (isDryRun) console.log('   🔸 DRY RUN — no changes will be made\n');
 

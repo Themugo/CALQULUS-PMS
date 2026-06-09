@@ -21,7 +21,7 @@ describe('Payment Reconciliation', () => {
   beforeEach(async () => {
     // Create test data
     const { data: userData } = await supabase.auth.signUp({
-      email: `test-reconcile-${Date.now()}@rentflow.test`,
+      email: `test-reconcile-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
     });
     testUserId = userData.user!.id;

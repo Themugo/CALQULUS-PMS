@@ -20,7 +20,7 @@ describe('Financial Double-Entry Validation', () => {
   beforeEach(async () => {
     // Create test data for each test
     const { data: userData } = await supabase.auth.signUp({
-      email: `test-${Date.now()}@rentflow.test`,
+      email: `test-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
     });
     testUserId = userData.user!.id;

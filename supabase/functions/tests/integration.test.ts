@@ -1,5 +1,5 @@
 /**
- * Integration tests for RentFlow edge function handlers.
+ * Integration tests for CALQULUS RMS edge function handlers.
  *
  * These tests mock the Supabase client and Deno.env to verify
  * request/response behavior without a real database.
@@ -170,7 +170,7 @@ Deno.test("rateLimitResponse: returns 429 with correct structure", async () => {
 
 // ── Test: CORS headers are present on error responses ───────────────
 Deno.test("CORS: error responses include CORS headers", () => {
-  const allowedOrigins = ["https://rentflow.ink", "http://localhost:5173"];
+  const allowedOrigins = ["https://calqulusrms.com", "http://localhost:5173"];
 
   for (const origin of allowedOrigins) {
     const req = new Request("https://example.com", {

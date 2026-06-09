@@ -95,7 +95,7 @@ spec:
   names:
     plural: calqulusrmss
     singular: calqulusrms
-    kind: RentFlow
+    kind: Calqulusrms
     shortNames:
       - rf
   subresources:

@@ -111,7 +111,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           phoneNumber: phone,
-          message: `Welcome to RentFlow, ${name}. Your tenant account is active. You can now track rent, receipts, and property records from your portal.`,
+          message: `Welcome to CALQULUS RMS, ${name}. Your tenant account is active. You can now track rent, receipts, and property records from your portal.`,
         }),
       }).catch((smsError) => {
         logStep("Welcome SMS failed", {

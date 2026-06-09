@@ -35,7 +35,7 @@ describe('Agency Data Isolation', () => {
 
     // Create agency A user using mocked client
     const { data: agencyAAuth } = await supabase.auth.admin.createUser({
-      email: `agency-a-${Date.now()}@rentflow.test`,
+      email: `agency-a-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });
@@ -44,7 +44,7 @@ describe('Agency Data Isolation', () => {
 
     // Create agency B user using mocked client
     const { data: agencyBAuth } = await supabase.auth.admin.createUser({
-      email: `agency-b-${Date.now()}@rentflow.test`,
+      email: `agency-b-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });

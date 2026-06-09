@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
       refundStatus,
       moveOutDate,
       refundReference,
-      companyName = "RentFlow",
+      companyName = "CALQULUS RMS",
       deductions = [],
     }: DepositRefundEmailRequest = await req.json();
 

@@ -21,7 +21,7 @@ describe('Transaction Rollback Integrity', () => {
   beforeEach(async () => {
     // Create test data
     const { data: userData } = await supabase.auth.signUp({
-      email: `test-rollback-${Date.now()}@rentflow.test`,
+      email: `test-rollback-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
     });
     if (!userData?.user) throw new Error('Failed to create test user');

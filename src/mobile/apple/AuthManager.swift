@@ -85,7 +85,7 @@ class AuthManager: ObservableObject {
         do {
             let success = try await context.evaluatePolicy(
                 .deviceOwnerAuthenticationWithBiometrics,
-                localizedReason: "Authenticate to access RentFlow"
+                localizedReason: "Authenticate to access CALQULUS RMS"
             )
             
             if success {

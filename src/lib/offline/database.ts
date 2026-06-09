@@ -49,14 +49,14 @@ export interface ConflictRecord {
   resolution?: 'local' | 'server' | 'merge';
 }
 
-export class RentFlowOfflineDB extends Dexie {
+export class CalqulusRMSOfflineDB extends Dexie {
   offlineData!: Table<OfflineData, number>;
   queuedOperations!: Table<QueuedOperation, number>;
   syncMetadata!: Table<SyncMetadata, number>;
   conflictRecords!: Table<ConflictRecord, number>;
 
   constructor() {
-    super('RentFlowOfflineDB');
+    super('CalqulusRMSOfflineDB');
     
     this.version(1).stores({
       offlineData: '++id, key, timestamp, expiresAt, version',
@@ -68,7 +68,7 @@ export class RentFlowOfflineDB extends Dexie {
 }
 
 // Initialize database
-const db = new RentFlowOfflineDB();
+const db = new CalqulusRMSOfflineDB();
 
 /**
  * Cache API response locally

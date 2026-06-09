@@ -1,6 +1,6 @@
 /**
- * RentFlow authority / operating models — maps commercial arrangements to DB fields.
- * @see docs/RENTFLOW_AUTHORITY_STRUCTURE.md
+ * CALQULUS RMS authority / operating models — maps commercial arrangements to DB fields.
+ * @see docs/CALQULUS_RMS_AUTHORITY_STRUCTURE.md
  */
 
 export type OperatingModel =

@@ -58,7 +58,7 @@ const ServicesPage: React.FC = () => {
   return (
     <Layout
       title="Services"
-      subtitle="Find verified repair professionals with RentFlow work history"
+      subtitle="Find verified repair professionals with CALQULUS RMS work history"
     >
       <Tabs defaultValue="marketplace">
         <TabsList className="flex-wrap h-auto gap-1 p-1 mb-6">

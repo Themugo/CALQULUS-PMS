@@ -112,7 +112,7 @@ const failures = [
 
 const envExample = read(envExamplePath);
 const envManifest = JSON.parse(read(envManifestPath));
-if (/rentflow-demo-2026/i.test(envExample)) {
+if (/calqulusrms-demo-2026/i.test(envExample)) {
   failures.push("Default demo seed secret is present in .env.example");
 }
 
@@ -145,7 +145,7 @@ if (!checklist) {
 const demoPanelPath = join(root, "src", "features", "demo", "DemoControlPanel.tsx");
 const demoPanel = readIfExists(demoPanelPath);
 if (demoPanel) {
-  if (/rentflow-demo-2026/i.test(demoPanel)) {
+  if (/calqulusrms-demo-2026/i.test(demoPanel)) {
     failures.push("Default demo seed secret is hardcoded in DemoControlPanel");
   }
   if (!/VITE_ENABLE_PUBLIC_DEMO/.test(demoPanel)) {
@@ -155,14 +155,14 @@ if (demoPanel) {
 
 const landlordAuthPath = join(root, "src", "features", "auth", "pages", "LandlordAuth.tsx");
 const landlordAuth = read(landlordAuthPath);
-if (/Demo@2026|demo\.[a-z0-9_-]+@rentflow\.ink/i.test(landlordAuth) && !/VITE_ENABLE_PUBLIC_DEMO/.test(landlordAuth)) {
+if (/Demo@2026|demo\.[a-z0-9_-]+@calqulusrms\.ink/i.test(landlordAuth) && !/VITE_ENABLE_PUBLIC_DEMO/.test(landlordAuth)) {
   failures.push("LandlordAuth exposes demo credentials without VITE_ENABLE_PUBLIC_DEMO gating");
 }
 
 const forbiddenProductionUrls = [
-  "rentflow.lovable.app",
-  "rentflowcom.lovable.app",
-  "rentflowfinal.netlify.app",
+  "calqulusrms.lovable.app",
+  "calqulusrmscom.lovable.app",
+  "calqulusrmsfinal.netlify.app",
 ];
 for (const url of forbiddenProductionUrls) {
   if (sql.includes(url)) failures.push(`Forbidden hardcoded production URL in migrations: ${url}`);

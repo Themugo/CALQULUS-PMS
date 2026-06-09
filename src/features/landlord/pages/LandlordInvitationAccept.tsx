@@ -220,7 +220,7 @@ const LandlordInvitationAccept: React.FC = () => {
                 {mode === 'register' ? 'Create account & accept' : 'Sign in & accept'}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                {mode === 'register' ? 'Already have an account? ' : 'New to RentFlow? '}
+                {mode === 'register' ? 'Already have an account? ' : 'New to CALQULUS RMS? '}
                 <button type="button" className="text-primary hover:underline" onClick={() => setMode(mode === 'register' ? 'login' : 'register')}>
                   {mode === 'register' ? 'Sign in instead' : 'Create an account'}
                 </button>

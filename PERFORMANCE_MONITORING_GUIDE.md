@@ -1,8 +1,8 @@
-# RentFlow Performance Monitoring Guide
+# CALQULUS RMS Performance Monitoring Guide
 
 ## Overview
 
-RentFlow uses Sentry for comprehensive error tracking, performance monitoring, and user session recording. This guide covers setup, configuration, and best practices.
+CALQULUS RMS uses Sentry for comprehensive error tracking, performance monitoring, and user session recording. This guide covers setup, configuration, and best practices.
 
 ## Sentry Integration
 
@@ -220,7 +220,7 @@ sentry-cli releases set-commits \
 ```bash
 sentry-cli releases deploy \
   --env production \
-  --url https://app.rentflow.ink \
+  --url https://app.calqulusrms.com \
   $(git rev-parse HEAD)
 ```
 
@@ -279,7 +279,7 @@ Set thresholds:
 Sentry.init({
   integrations: [
     new Sentry.BrowserTracing({
-      tracingOrigins: ['localhost', 'https://app.rentflow.ink'],
+      tracingOrigins: ['localhost', 'https://app.calqulusrms.com'],
       // Custom performance thresholds
       idleTimeout: 5000,
       maxDuration: 30000,

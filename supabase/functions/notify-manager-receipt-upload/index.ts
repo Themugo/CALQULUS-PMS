@@ -141,7 +141,7 @@ async function sendEmailNotification(
         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
         
         <p style="color: #888; font-size: 12px; text-align: center;">
-          This is an automated notification from RentFlow.
+          This is an automated notification from CALQULUS RMS.
         </p>
       </div>
     </body>
@@ -158,7 +158,7 @@ async function sendEmailNotification(
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RentFlow <onboarding@resend.dev>",
+        from: "CALQULUS RMS <onboarding@resend.dev>",
         to: [managerEmail],
         subject: `📧 New Receipt: ${safeTenantName} uploaded ${formattedAmount} payment proof`,
         html: emailHtml,
@@ -192,7 +192,7 @@ async function sendSmsNotification(
   }
 
   const formattedAmount = formatCurrency(amount);
-  const message = `RentFlow: ${tenantName} uploaded a receipt for ${formattedAmount} (${propertyName}). Please verify in your dashboard.`;
+  const message = `CALQULUS RMS: ${tenantName} uploaded a receipt for ${formattedAmount} (${propertyName}). Please verify in your dashboard.`;
 
   try {
     let formattedPhone = phoneNumber.replace(/\s+/g, '').replace(/^0/, '+254');

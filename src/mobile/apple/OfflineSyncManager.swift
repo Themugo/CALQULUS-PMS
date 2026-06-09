@@ -14,7 +14,7 @@ class OfflineSyncManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     private init() {
-        persistentContainer = NSPersistentContainer(name: "RentFlow")
+        persistentContainer = NSPersistentContainer(name: "CalqulusRMS")
         persistentContainer.loadPersistentStores { description, error in
             if let error = error {
                 print("Core Data error: \(error)")

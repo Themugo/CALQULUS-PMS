@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Complete RBAC enforcement migration
+-- CALQULUS RMS: Complete RBAC enforcement migration
 -- Enforces the 4-tier authority structure at the database level.
 -- Every query that touches tenant data is gated by manager_id.
 -- Webhosts cannot read any tenant, invoice, lease, or payment row.

@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Invoice number sequence
+-- CALQULUS RMS: Invoice number sequence
 -- Replaces INV-${Date.now()} with deterministic, collision-free
 -- sequential invoice numbers scoped per manager.
 --

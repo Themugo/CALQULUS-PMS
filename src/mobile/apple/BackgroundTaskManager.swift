@@ -5,9 +5,9 @@ import CoreData
 class BackgroundTaskManager: ObservableObject {
     static let shared = BackgroundTaskManager()
     
-    private let syncTaskIdentifier = "com.rentflow.sync"
-    private let locationTaskIdentifier = "com.rentflow.location"
-    private let notificationTaskIdentifier = "com.rentflow.notifications"
+    private let syncTaskIdentifier = "com.calqulusrms.sync"
+    private let locationTaskIdentifier = "com.calqulusrms.location"
+    private let notificationTaskIdentifier = "com.calqulusrms.notifications"
     
     @Published var lastSyncDate: Date?
     @Published var syncStatus: SyncStatus = .idle

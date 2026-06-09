@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Compiled vs separate billing, unit management completion
+-- CALQULUS RMS: Compiled vs separate billing, unit management completion
 -- ============================================================
 
 -- ── 1. property_billing_config — property-level billing settings ─

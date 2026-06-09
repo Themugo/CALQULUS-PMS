@@ -88,7 +88,7 @@ export const DesktopInstallBanner = () => {
           </div>
           
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-base text-foreground">Install RentFlow Desktop App</h4>
+            <h4 className="font-bold text-base text-foreground">Install CALQULUS RMS Desktop App</h4>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
               Get faster access and a native app experience on your computer
             </p>

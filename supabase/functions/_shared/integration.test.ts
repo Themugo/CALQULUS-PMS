@@ -1,5 +1,5 @@
 /**
- * Integration tests for RentFlow shared edge function utilities.
+ * Integration tests for CALQULUS RMS shared edge function utilities.
  *
  * Run: deno test --allow-env --allow-net supabase/functions/_shared/
  */

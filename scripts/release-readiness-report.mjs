@@ -99,7 +99,7 @@ const checks = [
 const missingFiles = requiredFiles.filter((file) => !existsSync(join(root, file)));
 const passed = checks.filter((check) => check.passed).length;
 
-console.log("RentFlow release readiness report");
+console.log("CALQULUS RMS release readiness report");
 console.log(`- Scorecard: ${passed}/${checks.length} repo readiness gates present`);
 console.log(`- Migrations: ${migrationFiles.length}`);
 console.log(`- Deployable Edge Functions: ${functionNames.length}`);

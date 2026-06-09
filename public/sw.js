@@ -1,4 +1,4 @@
-// RentFlow Service Worker for Push Notifications
+// CALQULUS RMS Service Worker for Push Notifications
 
 self.addEventListener("push", function (event) {
   if (!event.data) return;
@@ -15,12 +15,12 @@ self.addEventListener("push", function (event) {
       ...data.data,
     },
     actions: data.actions || [],
-    tag: data.tag || "rentflow-notification",
+    tag: data.tag || "calqulusrms-notification",
     renotify: true,
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || "RentFlow", options)
+    self.registration.showNotification(data.title || "CALQULUS RMS", options)
   );
 });
 

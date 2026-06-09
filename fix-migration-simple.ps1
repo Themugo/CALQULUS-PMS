@@ -1,4 +1,4 @@
-$file = "c:\Users\hp\Desktop\Rentflow-FINAL-main\supabase\migrations\20230101000000_base_schema.sql"
+$file = "c:\Users\hp\Desktop\CALQULUS-RMS\supabase\migrations\20230101000000_base_schema.sql"
 $content = Get-Content $file -Raw
 
 # Fix END ; to END $$

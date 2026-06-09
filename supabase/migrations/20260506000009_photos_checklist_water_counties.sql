@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Tenant portal completion — photos, checklists, water, pets
+-- CALQULUS RMS: Tenant portal completion — photos, checklists, water, pets
 -- ============================================================
 
 -- ── 1. maintenance_requests — photo support ───────────────────

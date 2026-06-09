@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Multi-unit tenant support + payment details sync
+-- CALQULUS RMS: Multi-unit tenant support + payment details sync
 -- ============================================================
 
 -- ── 1. tenant_unit_links — already exists, ensure columns complete ──

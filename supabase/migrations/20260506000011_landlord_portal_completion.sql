@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Landlord portal completion
+-- CALQULUS RMS: Landlord portal completion
 -- Full independent landlord control layer
 -- ============================================================
 

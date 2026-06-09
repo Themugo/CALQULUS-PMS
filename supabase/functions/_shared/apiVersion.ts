@@ -1,7 +1,7 @@
 /**
  * _shared/apiVersion.ts
  *
- * API versioning middleware for RentFlow edge functions.
+ * API versioning middleware for CALQULUS RMS edge functions.
  *
  * Why versioning?
  *   As the platform grows, breaking changes to edge function request/response
@@ -33,7 +33,7 @@
 import { getCorsHeaders } from "./cors.ts";
 
 /**
- * Current API version for all RentFlow edge functions.
+ * Current API version for all CALQULUS RMS edge functions.
  * Update this when making breaking changes to request/response formats.
  * Format: YYYY-MM-DD
  */
@@ -108,7 +108,7 @@ export function checkApiVersion(
         code: "API_VERSION_DEPRECATED",
         currentVersion: functionVersion,
         minSupportedVersion: MIN_SUPPORTED_VERSION,
-        upgradeUrl: "https://docs.rentflow.ink/api/versioning",
+        upgradeUrl: "https://docs.calqulusrms.com/api/versioning",
       }),
       {
         status: 426,

@@ -1,8 +1,8 @@
-# RentFlow API Documentation
+# CALQULUS RMS API Documentation
 
 ## Overview
 
-RentFlow uses Supabase as the backend, providing a RESTful API for database operations and Edge Functions for server-side logic.
+CALQULUS RMS uses Supabase as the backend, providing a RESTful API for database operations and Edge Functions for server-side logic.
 
 ## Base URL
 
@@ -522,9 +522,9 @@ See `.env.example` for complete list of required environment variables.
 ## Testing
 
 Use the test accounts in AGENTS.md for API testing:
-- Manager: jimmythemugo@gmail.com / RentFlow@2026!
-- Tenant: kamauwamakena@gmail.com / RentFlow@2026!
-- Webhost: mugo.james27@gmail.com / RentFlow@2026!
+- Manager: jimmythemugo@gmail.com / CALQULUS RMS@2026!
+- Tenant: kamauwamakena@gmail.com / CALQULUS RMS@2026!
+- Webhost: mugo.james27@gmail.com / CALQULUS RMS@2026!
 
 ## Support
 

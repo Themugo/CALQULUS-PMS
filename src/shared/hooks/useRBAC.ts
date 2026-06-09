@@ -1,5 +1,5 @@
 /**
- * useRBAC — Single source of truth for all permission checks in RentFlow.
+ * useRBAC — Single source of truth for all permission checks in CALQULUS RMS.
  *
  * Usage:
  *   const { can, is, whoAmI } = useRBAC();

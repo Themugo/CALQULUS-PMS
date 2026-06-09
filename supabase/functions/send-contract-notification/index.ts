@@ -44,9 +44,9 @@ function isValidPortalUrl(url: string, allowedDomains: string[]): boolean {
 }
 
 function getAllowedPortalDomains(): string[] {
-  const siteUrl = getEnv("SITE_URL", "https://rentflow.ink");
+  const siteUrl = getEnv("SITE_URL", "https://calqulusrms.com");
   const configuredHost = new URL(siteUrl).hostname;
-  return [...new Set([configuredHost, "rentflow.ink", "www.rentflow.ink", "localhost"])];
+  return [...new Set([configuredHost, "calqulusrms.com", "www.calqulusrms.com", "localhost"])];
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {

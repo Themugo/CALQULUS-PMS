@@ -303,7 +303,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
           refundStatus: status,
           moveOutDate,
           refundReference: refundReference || undefined,
-          companyName: companyData?.company_name || "RentFlow",
+          companyName: companyData?.company_name || "CALQULUS RMS",
           deductions: deductionHistory.map(d => ({
             description: d.description,
             amount: d.amount,

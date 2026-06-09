@@ -35,9 +35,9 @@ serve(async (req) => {
     if (d1) return new Response(JSON.stringify({ error: "delete failed: " + d1.message }), { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
 
     const rows = [
-      { manager_id: managerId, property_name: "Sunset Gardens", unit_number: "A3", tenant_name: "Grace Wanjiku", tenant_email: "demo.tenant1@rentflow.ink", title: "Leaking kitchen tap", description: "Kitchen tap dripping for 3 days.", priority: "medium", status: "open", category: "plumbing", requested_date: new Date(Date.now() - 2 * 864e5).toISOString().slice(0,10) },
+      { manager_id: managerId, property_name: "Sunset Gardens", unit_number: "A3", tenant_name: "Grace Wanjiku", tenant_email: "demo.tenant1@calqulusrms.com", title: "Leaking kitchen tap", description: "Kitchen tap dripping for 3 days.", priority: "medium", status: "open", category: "plumbing", requested_date: new Date(Date.now() - 2 * 864e5).toISOString().slice(0,10) },
       { manager_id: managerId, property_name: "Sunset Gardens", unit_number: "A1", tenant_name: "Samuel Njoroge", tenant_email: "samuel.njoroge@email.com", title: "Broken bedroom window lock", description: "Window lock broken - security risk.", priority: "high", status: "in_progress", category: "carpentry", requested_date: new Date(Date.now() - 5 * 864e5).toISOString().slice(0,10), assigned_to: "Kamau Electricals" },
-      { manager_id: managerId, property_name: "Valley View Bungalows", unit_number: "B1", tenant_name: "Brian Otieno", tenant_email: "demo.tenant2@rentflow.ink", title: "Electricity trip - living room", description: "MCB trips every evening.", priority: "urgent", status: "open", category: "electrical", requested_date: new Date(Date.now() - 1 * 864e5).toISOString().slice(0,10), assigned_to: "Kamau Electrical Services" },
+      { manager_id: managerId, property_name: "Valley View Bungalows", unit_number: "B1", tenant_name: "Brian Otieno", tenant_email: "demo.tenant2@calqulusrms.com", title: "Electricity trip - living room", description: "MCB trips every evening.", priority: "urgent", status: "open", category: "electrical", requested_date: new Date(Date.now() - 1 * 864e5).toISOString().slice(0,10), assigned_to: "Kamau Electrical Services" },
     ];
 
     const { error: i1 } = await supabase.from("maintenance_requests").insert(rows[0]);

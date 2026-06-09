@@ -98,14 +98,14 @@ const handler = async (req: Request): Promise<Response> => {
           
           <p style="font-size: 14px; color: #64748b; margin-top: 30px;">
             Best regards,<br>
-            The RentFlow System
+            The CALQULUS RMS System
           </p>
         </div>
       </div>
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "RentFlow <onboarding@resend.dev>",
+      from: "CALQULUS RMS <onboarding@resend.dev>",
       to: webhostEmails,
       subject: `New Manager Signup: ${managerName} - Pending Approval`,
       html,

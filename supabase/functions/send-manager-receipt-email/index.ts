@@ -39,9 +39,9 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "RentFlow <notifications@resend.dev>",
+        from: "CALQULUS RMS <notifications@resend.dev>",
         to: [email],
-        subject: `Payment Receipt ${receiptNumber} - RentFlow`,
+        subject: `Payment Receipt ${receiptNumber} - CALQULUS RMS`,
         html: `
           <!DOCTYPE html>
           <html>
@@ -96,7 +96,7 @@ serve(async (req) => {
                 <p>This receipt is automatically generated and serves as confirmation of your payment.</p>
               </div>
               <div class="footer">
-                <p>RentFlow - Property Management Platform</p>
+                <p>CALQULUS RMS - Property Management Platform</p>
                 <p>This is an automated message. Please do not reply directly to this email.</p>
               </div>
             </div>

@@ -876,7 +876,7 @@ const Contracts = () => {
         body: {
           tenantEmail: contract.tenants.email,
           tenantName: contract.tenants.name,
-          companyName: company?.company_name || "RentFlow Properties",
+          companyName: company?.company_name || "CALQULUS RMS Properties",
           contractTitle: contract.title,
           propertyInfo: contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A",
           validFrom: contract.valid_from ? format(new Date(contract.valid_from), "dd/MM/yy") : "Not set",

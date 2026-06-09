@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Payment idempotency + process safety
+-- CALQULUS RMS: Payment idempotency + process safety
 -- ============================================================
 
 -- ── 1. Unique constraint: one completed payment per reference per tenant ──

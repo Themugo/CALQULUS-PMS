@@ -24,7 +24,7 @@ const sendEmail = async (to: string, subject: string, html: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "RentFlow <onboarding@resend.dev>",
+      from: "CALQULUS RMS <onboarding@resend.dev>",
       to: [to],
       subject,
       html,
@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
             ${isVerified ? '<p>Thank you for your payment!</p>' : ''}
           </div>
           <div class="footer">
-            <p>This is an automated notification from RentFlow.</p>
+            <p>This is an automated notification from CALQULUS RMS.</p>
           </div>
         </div>
       </body>
@@ -137,8 +137,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send SMS notification if phone number provided
     if (tenantPhone) {
       const smsMessage = isVerified
-        ? `✅ RentFlow: Your payment receipt for KES ${amount.toLocaleString()} has been VERIFIED. Thank you!`
-        : `❌ RentFlow: Your payment receipt for KES ${amount.toLocaleString()} was REJECTED. ${rejectionReason ? `Reason: ${rejectionReason}` : 'Please check your email for details.'}`;
+        ? `✅ CALQULUS RMS: Your payment receipt for KES ${amount.toLocaleString()} has been VERIFIED. Thank you!`
+        : `❌ CALQULUS RMS: Your payment receipt for KES ${amount.toLocaleString()} was REJECTED. ${rejectionReason ? `Reason: ${rejectionReason}` : 'Please check your email for details.'}`;
 
       // Use Africa's Talking for SMS
       const atApiKey = getEnv("AT_API_KEY");

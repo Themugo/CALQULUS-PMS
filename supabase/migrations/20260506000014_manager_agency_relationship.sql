@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Manager / Agency relationship layer
+-- CALQULUS RMS: Manager / Agency relationship layer
 -- ============================================================
 
 -- ── 1. Extend agencies — make it a proper agency profile ────

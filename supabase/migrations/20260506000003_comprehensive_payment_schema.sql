@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Comprehensive payment schema
+-- CALQULUS RMS: Comprehensive payment schema
 -- Supports: STK push, USSD/paybill, bank direct, receipt upload
 -- Handles: full, partial/installment, advance/overpayment
 -- Tracks:  running balance, arrears, penalties, credit ledger

@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Authority Structure v2
+-- CALQULUS RMS: Authority Structure v2
 -- Establishes clear separation between:
 --   • Managed landlords (under a manager/agency)
 --   • System landlords (under webhost admin oversight)

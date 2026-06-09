@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Unit-First Data Integrity Migration
+-- CALQULUS RMS: Unit-First Data Integrity Migration
 -- Goal: Every invoice traces cleanly:
 --   invoice → lease → unit → property → manager's M-Pesa
 -- ============================================================

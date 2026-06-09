@@ -33,7 +33,7 @@ describe('Landlord Access Control', () => {
 
     // Create manager user using mocked client
     const { data: managerData } = await supabase.auth.admin.createUser({
-      email: `manager-${Date.now()}@rentflow.test`,
+      email: `manager-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });
@@ -42,7 +42,7 @@ describe('Landlord Access Control', () => {
 
     // Create landlord A user using mocked client
     const { data: landlordAAuth } = await supabase.auth.admin.createUser({
-      email: `landlord-a-${Date.now()}@rentflow.test`,
+      email: `landlord-a-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });
@@ -51,7 +51,7 @@ describe('Landlord Access Control', () => {
 
     // Create landlord B user using mocked client
     const { data: landlordBAuth } = await supabase.auth.admin.createUser({
-      email: `landlord-b-${Date.now()}@rentflow.test`,
+      email: `landlord-b-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });

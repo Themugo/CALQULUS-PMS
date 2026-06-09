@@ -102,7 +102,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         username: username,
-        productName: "RentFlow",
+        productName: "CALQULUS RMS",
         recipients: [{
           phoneNumber: formattedPhone,
           amount: amount,

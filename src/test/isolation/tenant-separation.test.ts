@@ -35,7 +35,7 @@ describe('Tenant Data Separation', () => {
 
     // Create manager user using mocked client
     const { data: managerData } = await supabase.auth.admin.createUser({
-      email: `manager-${Date.now()}@rentflow.test`,
+      email: `manager-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });
@@ -84,7 +84,7 @@ describe('Tenant Data Separation', () => {
 
     // Create tenant A using mocked client
     const { data: tenantAAuth } = await supabase.auth.admin.createUser({
-      email: `tenant-a-${Date.now()}@rentflow.test`,
+      email: `tenant-a-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });
@@ -109,7 +109,7 @@ describe('Tenant Data Separation', () => {
 
     // Create tenant B using mocked client
     const { data: tenantBAuth } = await supabase.auth.admin.createUser({
-      email: `tenant-b-${Date.now()}@rentflow.test`,
+      email: `tenant-b-${Date.now()}@calqulusrms.test`,
       password: 'TestPassword123!',
       email_confirm: true,
     });

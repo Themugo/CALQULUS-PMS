@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Platform monetisation enforcement
+-- CALQULUS RMS: Platform monetisation enforcement
 -- ============================================================
 
 -- ── 1. landlord_invoices — webhost bills landlords ────────────

@@ -100,7 +100,7 @@ serve(async (req: Request): Promise<Response> => {
           <h2 style="color: #333; margin-top: 0;">Hi ${managerName}!</h2>
           
           <p style="color: #555; font-size: 16px;">
-            Great news! A tenant you invited has completed their registration on RentFlow.
+            Great news! A tenant you invited has completed their registration on CALQULUS RMS.
           </p>
           
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -128,7 +128,7 @@ serve(async (req: Request): Promise<Response> => {
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
           
           <p style="color: #888; font-size: 12px; text-align: center;">
-            This is an automated notification from RentFlow.
+            This is an automated notification from CALQULUS RMS.
           </p>
         </div>
       </body>
@@ -144,9 +144,9 @@ serve(async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RentFlow <onboarding@resend.dev>",
+        from: "CALQULUS RMS <onboarding@resend.dev>",
         to: [managerProfile.email],
-        subject: `🎉 ${safeTenantName} has joined ${safePropertyName} on RentFlow`,
+        subject: `🎉 ${safeTenantName} has joined ${safePropertyName} on CALQULUS RMS`,
         html: emailHtml,
       }),
     });

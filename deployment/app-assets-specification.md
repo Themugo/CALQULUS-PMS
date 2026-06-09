@@ -13,7 +13,7 @@ This document outlines all required app assets for iOS App Store and Google Play
 - **Path**: `assets/app-icons/ios-app-icon.png`
 - **Design Guidelines**:
   - Clean, recognizable brand identity
-  - Use RentFlow brand colors (primary: #0f172a, accent: #3b82f6)
+  - Use CALQULUS RMS brand colors (primary: #0f172a, accent: #3b82f6)
   - Simple icon representing property/home
   - No text, gradients, or complex patterns
   - Rounded corners will be applied by Apple
@@ -85,7 +85,7 @@ This document outlines all required app assets for iOS App Store and Google Play
   - Include app icon and tagline
   - Use brand colors
   - Clean, professional design
-  - Suggested text: "RentFlow - Modern Property Management"
+  - Suggested text: "CALQULUS RMS - Modern Property Management"
 
 ### Screenshots
 - **Required Devices**: Phone and Tablet

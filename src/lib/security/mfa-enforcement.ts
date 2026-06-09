@@ -517,7 +517,7 @@ export function unlockMFA(_userId: string, enrollments: MFAEnrollment[]): MFAEnr
 export function generateTOTPQRCodeURI(
   secret: string,
   accountName: string,
-  issuer: string = 'RentFlow'
+  issuer: string = 'CALQULUS RMS'
 ): string {
   const encodedSecret = encodeURIComponent(secret);
   const encodedAccount = encodeURIComponent(accountName);

@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Communication & Physical Document Layer
+-- CALQULUS RMS: Communication & Physical Document Layer
 -- Covers:
 --   1. messages table (manager↔tenant, manager↔all, system)
 --   2. broadcast_campaigns (bulk message tracking)

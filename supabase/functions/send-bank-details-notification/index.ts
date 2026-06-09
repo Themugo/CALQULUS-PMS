@@ -86,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const action = isNew ? "added new" : "updated";
-    const subject = `Payment Details ${isNew ? "Added" : "Updated"} - RentFlow`;
+    const subject = `Payment Details ${isNew ? "Added" : "Updated"} - CALQULUS RMS`;
 
     const results = [];
 
@@ -154,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
             
             <p style="margin-bottom: 0; color: #64748b; font-size: 14px;">
               Best regards,<br>
-              <strong>RentFlow Team</strong>
+              <strong>CALQULUS RMS Team</strong>
             </p>
           </div>
         </body>
@@ -169,7 +169,7 @@ const handler = async (req: Request): Promise<Response> => {
             Authorization: `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "RentFlow <notifications@resend.dev>",
+            from: "CALQULUS RMS <notifications@resend.dev>",
             to: [tenant.email],
             subject,
             html: emailHtml,

@@ -14,7 +14,7 @@ const MANAGER_PASSWORD = process.env.E2E_MANAGER_PASSWORD || "";
 const TENANT_EMAIL = process.env.E2E_TENANT_EMAIL || "";
 const TENANT_PASSWORD = process.env.E2E_TENANT_PASSWORD || "";
 
-test.describe("RentFlow E2E Tests", () => {
+test.describe("CALQULUS RMS E2E Tests", () => {
 
   test.describe("Public pages", () => {
     test("landing page redirects to landlord auth", async ({ page }) => {

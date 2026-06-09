@@ -1,4 +1,4 @@
-file_path = r"c:\Users\hp\Desktop\Rentflow-FINAL-main\supabase\migrations\20230101000000_base_schema.sql"
+file_path = r"c:\Users\hp\Desktop\CALQULUS-RMS\supabase\migrations\20230101000000_base_schema.sql"
 
 with open(file_path, 'r', encoding='utf-8') as f:
     content = f.read()

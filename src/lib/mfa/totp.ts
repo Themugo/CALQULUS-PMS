@@ -22,9 +22,9 @@ export function generateTOTPSecret(): string {
  * Generate TOTP URI for QR code generation
  * @param secret - TOTP secret
  * @param email - User email
- * @param issuer - Application name (e.g., "RentFlow")
+ * @param issuer - Application name (e.g., "CALQULUS RMS")
  */
-export function generateTOTPUri(secret: string, email: string, issuer: string = 'RentFlow'): string {
+export function generateTOTPUri(secret: string, email: string, issuer: string = 'CALQULUS RMS'): string {
   const totp = new OTPAuth.TOTP({
     issuer,
     label: email,
@@ -44,7 +44,7 @@ export function generateTOTPUri(secret: string, email: string, issuer: string = 
 export function verifyTOTP(token: string, secret: string): boolean {
   try {
     const totp = new OTPAuth.TOTP({
-      issuer: 'RentFlow',
+      issuer: 'CALQULUS RMS',
       label: 'user',
       algorithm: 'SHA1',
       digits: 6,

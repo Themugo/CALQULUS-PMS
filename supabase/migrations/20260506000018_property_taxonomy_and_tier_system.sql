@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Property type taxonomy + category-based billing
+-- CALQULUS RMS: Property type taxonomy + category-based billing
 -- ============================================================
 
 -- ── 1. property_categories — the top-level grouping ───────────

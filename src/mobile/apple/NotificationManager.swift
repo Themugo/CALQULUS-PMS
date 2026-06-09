@@ -94,7 +94,7 @@ class NotificationManager: ObservableObject, Observable {
         // Handle remote notification payload
         if let aps = userInfo["aps"] as? [String: Any],
            let alert = aps["alert"] as? [String: String] {
-            let title = alert["title"] ?? "RentFlow"
+            let title = alert["title"] ?? "CALQULUS RMS"
             let body = alert["body"] ?? ""
             sendNotification(title: title, body: body)
         }

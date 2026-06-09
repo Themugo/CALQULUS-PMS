@@ -135,7 +135,7 @@ const WebhostAuth = () => {
           <div className="mt-3 p-3 rounded-lg bg-slate-900/50 border border-slate-700/50">
             <p className="text-xs text-slate-500 text-center">
               First time? Run the <code className="text-purple-400 bg-purple-900/30 px-1 rounded">bootstrap-webhost</code> edge function to create the admin account.
-              See <a href="https://github.com/Themugo/rentflowcom-42618f64#bootstrap" className="text-purple-400 hover:underline">setup docs</a>.
+              See <a href="https://github.com/Themugo/calqulusrmscom-42618f64#bootstrap" className="text-purple-400 hover:underline">setup docs</a>.
             </p>
           </div>
           {!isRecommendedWebhostHost() && (

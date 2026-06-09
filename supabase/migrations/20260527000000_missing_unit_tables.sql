@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Missing unit sub-tables referenced by frontend code
+-- CALQULUS RMS: Missing unit sub-tables referenced by frontend code
 --
 -- The following tables were referenced by the React components
 -- but never created in any migration. They support:

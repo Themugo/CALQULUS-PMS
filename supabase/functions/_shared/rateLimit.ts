@@ -1,5 +1,5 @@
 /**
- * RentFlow shared rate limiter
+ * CALQULUS RMS shared rate limiter
  *
  * Uses the api_rate_limits table + check_rate_limit() RPC (migration 020).
  *

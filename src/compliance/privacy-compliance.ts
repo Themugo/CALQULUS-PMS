@@ -143,9 +143,9 @@ export class PrivacyComplianceManager {
       version: '1.0',
       effectiveDate: new Date(),
       lastUpdated: new Date(),
-      content: 'RentFlow Privacy Policy - We collect and process personal data for property management services...',
+      content: 'CALQULUS RMS Privacy Policy - We collect and process personal data for property management services...',
       languages: [
-        { code: 'en', content: 'RentFlow Privacy Policy - We collect and process personal data for property management services...' }
+        { code: 'en', content: 'CALQULUS RMS Privacy Policy - We collect and process personal data for property management services...' }
       ],
       approvedBy: 'Legal Counsel',
       status: 'published',

@@ -15,7 +15,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
 import { UserPlus, Home, ChevronRight, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
-import calqulusLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/calqulusrms-logo.png';
 
 const STEPS = [
   { id: 'account',  label: 'Your account' },
@@ -175,7 +175,7 @@ const TenantSelfRegister: React.FC = () => {
             <>
               <CardHeader className="pb-4">
                 <CardTitle className="text-white">Create your account</CardTitle>
-                <CardDescription className="text-slate-400">Your personal RentFlow login</CardDescription>
+                <CardDescription className="text-slate-400">Your personal CALQULUS RMS login</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -294,7 +294,7 @@ const TenantSelfRegister: React.FC = () => {
                 </div>
                 <CardTitle className="text-white text-xl">You're in!</CardTitle>
                 <CardDescription className="text-slate-400">
-                  Your RentFlow account is ready. Here's what you can do:
+                  Your CALQULUS RMS account is ready. Here's what you can do:
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">

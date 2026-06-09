@@ -1,7 +1,7 @@
 import { NativeBiometric, BiometryType } from 'capacitor-native-biometric';
 import { Capacitor } from '@capacitor/core';
 
-const SERVER_IDENTIFIER = 'app.rentflow.credentials';
+const SERVER_IDENTIFIER = 'app.calqulusrms.credentials';
 
 export interface BiometricAvailability {
   isAvailable: boolean;
@@ -58,7 +58,7 @@ export const biometricService = {
 
     try {
       await NativeBiometric.verifyIdentity({
-        reason: reason || 'Authenticate to access RentFlow',
+        reason: reason || 'Authenticate to access CALQULUS RMS',
         title: 'Biometric Login',
         subtitle: 'Use your fingerprint or face to log in',
         description: 'Place your finger on the sensor or look at the camera',

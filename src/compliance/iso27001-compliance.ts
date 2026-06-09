@@ -565,7 +565,7 @@ export class ISO27001Compliance {
         owner: 'CISO',
         approver: 'CEO',
         distribution: ['all_employees', 'contractors'],
-        content: 'This policy establishes the information security management system for RentFlow...',
+        content: 'This policy establishes the information security management system for CALQULUS RMS...',
         relatedControls: [],
         relatedAssets: []
       },

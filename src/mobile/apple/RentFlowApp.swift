@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct RentFlowApp: App {
+struct CalqulusRMSApp: App {
     @StateObject private var authManager = AuthManager()
     @StateObject private var locationManager = LocationManager()
     @StateObject private var notificationManager = NotificationManager()

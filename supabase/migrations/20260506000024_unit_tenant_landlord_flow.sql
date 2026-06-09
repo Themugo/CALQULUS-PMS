@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow Migration 024: Unit-Tenant-Landlord flow fixes
+-- CALQULUS RMS Migration 024: Unit-Tenant-Landlord flow fixes
 --
 -- 1. Add payment detail columns to tenant_invitations
 --    so rent/deposit amounts flow from invite → portal

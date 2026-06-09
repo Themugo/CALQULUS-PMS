@@ -19,7 +19,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children, defaultTheme = "system" }: { children: ReactNode; defaultTheme?: Theme }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    try { const stored = localStorage.getItem("rentflow-theme") as Theme | null; return stored ?? defaultTheme; }
+    try { const stored = localStorage.getItem("calqulusrms-theme") as Theme | null; return stored ?? defaultTheme; }
     catch { return defaultTheme; }
   });
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
@@ -45,7 +45,7 @@ export function ThemeProvider({ children, defaultTheme = "system" }: { children:
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    try { localStorage.setItem("rentflow-theme", t); } catch {}
+    try { localStorage.setItem("calqulusrms-theme", t); } catch {}
   };
 
   return (

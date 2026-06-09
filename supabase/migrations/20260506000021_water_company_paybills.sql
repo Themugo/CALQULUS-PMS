@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Kenya Water Companies — real Safaricom paybill numbers
+-- CALQULUS RMS: Kenya Water Companies — real Safaricom paybill numbers
 -- These are the verified M-Pesa paybill numbers for county water
 -- companies as of 2025/2026 billing year.
 -- Sources: Safaricom M-Pesa portal, company websites, Supabase seed.

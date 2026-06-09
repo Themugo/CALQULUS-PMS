@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const CACHE_PREFIX = 'rentflow_offline_';
+const CACHE_PREFIX = 'calqulusrms_offline_';
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000;
 const MAX_CACHE_SIZE_BYTES = 4 * 1024 * 1024; // 4MB safe limit (localStorage is ~5MB)
 
@@ -81,7 +81,7 @@ export function useOfflineData<T>(
     } catch (e) {
       if (isQuotaError(e)) {
         console.warn(`[useOfflineData] localStorage quota exceeded for "${key}", clearing old caches`);
-        // Clear all RentFlow caches to free space
+        // Clear all CALQULUS RMS caches to free space
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const k = localStorage.key(i);
           if (k?.startsWith(CACHE_PREFIX)) localStorage.removeItem(k);

@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Fix properties.manager column name mismatch
+-- CALQULUS RMS: Fix properties.manager column name mismatch
 -- The properties table has column 'manager' but all code
 -- expects 'manager_id'. Add manager_id as a proper FK column
 -- and copy data from 'manager'.

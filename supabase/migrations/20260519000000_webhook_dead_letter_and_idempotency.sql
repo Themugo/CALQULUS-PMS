@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Webhook Dead-Letter + Stripe Event Idempotency
+-- CALQULUS RMS: Webhook Dead-Letter + Stripe Event Idempotency
 --
 -- Two related additions needed by the hardened webhook handlers:
 --

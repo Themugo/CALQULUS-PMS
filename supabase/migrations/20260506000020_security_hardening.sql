@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Security hardening — RLS gaps, rate limiting,
+-- CALQULUS RMS: Security hardening — RLS gaps, rate limiting,
 -- webhook secrets, session audit
 -- ============================================================
 

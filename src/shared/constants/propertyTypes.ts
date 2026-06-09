@@ -1,7 +1,7 @@
 /**
  * propertyTypes.ts
  *
- * Single source of truth for all property category types in RentFlow.
+ * Single source of truth for all property category types in CALQULUS RMS.
  * Used in: Add Property form, Property filters, Webhost billing,
  *           PropertyDetail, Reports, Tier enforcement.
  */

@@ -124,7 +124,7 @@ export function TenantContractsSection() {
           .limit(1)
           .single();
 
-        const companyName = companyData?.company_name || "RentFlow Properties";
+        const companyName = companyData?.company_name || "CALQULUS RMS Properties";
         const managerEmail = companyData?.email;
 
         if (managerEmail && tenantInfo) {

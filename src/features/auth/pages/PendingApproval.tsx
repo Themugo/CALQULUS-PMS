@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from "@/assets/rentflow-logo.png";
+import calqulusLogo from "@/assets/calqulusrms-logo.png";
 
 interface ManagerProfileData {
   approval_status?: string;
@@ -183,7 +183,7 @@ const PendingApproval = () => {
 
               <p className="text-slate-500 text-xs">
                 {isRejected 
-                  ? 'Contact support@rentflow.com for more information.'
+                  ? 'Contact support@calqulusrms.com for more information.'
                   : 'This usually takes 24-48 hours. If you have any questions, please contact support.'
                 }
               </p>

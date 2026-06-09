@@ -1,4 +1,4 @@
-# Rentflow Unified Enterprise Upgrade
+# CALQULUS RMS Unified Enterprise Upgrade
 
 This package consolidates the enterprise architecture, UX hardening, operational tooling, compliance readiness, and production maturity recommendations discussed during the audit.
 

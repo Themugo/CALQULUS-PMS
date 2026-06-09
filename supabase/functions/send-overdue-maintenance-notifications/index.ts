@@ -27,7 +27,7 @@ async function sendEmail(
   to: string,
   subject: string,
   htmlContent: string,
-  fromName: string = "RentFlow"
+  fromName: string = "CALQULUS RMS"
 ): Promise<boolean> {
   if (!RESEND_API_KEY) {
     console.warn("RESEND_API_KEY not configured, skipping email");
@@ -206,7 +206,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
               </p>
             </div>
             <div class="footer">
-              <p>This is an automated notification from RentFlow. You received this because you have overdue maintenance requests.</p>
+              <p>This is an automated notification from CALQULUS RMS. You received this because you have overdue maintenance requests.</p>
             </div>
           </div>
         </body>

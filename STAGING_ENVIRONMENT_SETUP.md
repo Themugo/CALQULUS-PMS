@@ -24,7 +24,7 @@ Development: localhost:5173 → Supabase Local/Development
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click "Add New Project"
 3. Import the CALQULUS RMS GitHub repository
-4. Name it: `rentflow-staging`
+4. Name it: `calqulusrms-staging`
 5. Framework: Vite (auto-detected)
 
 ### 2. Configure Staging Environment
@@ -74,7 +74,7 @@ VITE_AUTH_TIMEOUT_MS=15000
 
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
 2. Click "New Project"
-3. Name: `rentflow-staging`
+3. Name: `calqulusrms-staging`
 4. Database Password: Generate strong password
 5. Region: Same as production (for consistency)
 

@@ -3,8 +3,8 @@
 -- ──────────────────────────────────────────────────────────────
 -- Creates platform_admins table with 3 tiers:
 --   owner    — mugo.james27 (immutable, cannot be suspended)
---   business — themugo@rentflow.ink (can be suspended by OWNER only)
---   admin    — admin@rentflow.ink (can be suspended by OWNER or BUSINESS)
+--   business — themugo@calqulusrms.com (can be suspended by OWNER only)
+--   admin    — admin@calqulusrms.com (can be suspended by OWNER or BUSINESS)
 --
 -- Suspension rules enforced at application layer + DB triggers.
 -- ──────────────────────────────────────────────────────────────

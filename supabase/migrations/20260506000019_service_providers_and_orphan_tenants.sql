@@ -1,10 +1,10 @@
 -- ============================================================
--- RentFlow: Service providers, orphan tenants, payment records
+-- CALQULUS RMS: Service providers, orphan tenants, payment records
 -- ============================================================
 
 -- ── 1. service_providers — independent service marketplace ───
 -- A service provider can be:
---  (a) a registered RentFlow user who opts in
+--  (a) a registered CALQULUS RMS user who opts in
 --  (b) added by a manager for their preferred contractors
 -- They appear in the marketplace for managers/tenants to hire
 CREATE TABLE IF NOT EXISTS public.service_providers (

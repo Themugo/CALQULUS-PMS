@@ -2,7 +2,7 @@
 
 ## Overview
 
-This migration enforces the 4-tier management structure for RentFlow:
+This migration enforces the 4-tier management structure for CALQULUS RMS:
 
 - **Tier 1: Platform ownership (Webhost)** - NO tenant data access ever
 - **Tier 2: Property management (Managers/Agencies)** - Full tenant management

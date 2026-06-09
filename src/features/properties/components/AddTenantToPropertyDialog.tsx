@@ -170,7 +170,7 @@ export const AddTenantToPropertyDialog = ({
             sendWhatsapp: sendWhatsappNotification && !!formData.whatsapp,
             monthlyRent: formData.monthly_rent ? parseFloat(formData.monthly_rent) : null,
             depositAmount: formData.deposit_amount ? parseFloat(formData.deposit_amount) : null,
-            companyName: "RentFlow Properties",
+            companyName: "CALQULUS RMS Properties",
             portalUrl: `${window.location.origin}`,
           },
         }

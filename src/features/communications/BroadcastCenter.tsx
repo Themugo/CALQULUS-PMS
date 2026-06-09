@@ -237,7 +237,7 @@ const BroadcastCenter: React.FC = () => {
             await notify('send-invoice-email', {
               tenantEmail: tenant.email,
               tenantName: tenant.name,
-              companyName: 'RentFlow',
+              companyName: 'CALQULUS RMS',
               subject: subject || 'Message from your property manager',
               body: personalised,
             });

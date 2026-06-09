@@ -37,7 +37,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           ${propertyNames.map(name => `<li><strong>${name}</strong></li>`).join('')}
         </ul>
         <p>You can now view and manage data for ${propertyNames.length === 1 ? 'this property' : 'these properties'} in your dashboard.</p>
-        <p>Best regards,<br>RentFlow Team</p>
+        <p>Best regards,<br>CALQULUS RMS Team</p>
       `;
     } else if (action === 'updated') {
       subject = `Your property assignments have been updated`;
@@ -50,7 +50,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
             ${propertyNames.map(name => `<li><strong>${name}</strong></li>`).join('')}
           </ul>
         ` : '<p>You currently have no specific property restrictions and can view all properties.</p>'}
-        <p>Best regards,<br>RentFlow Team</p>
+        <p>Best regards,<br>CALQULUS RMS Team</p>
       `;
     } else if (action === 'removed') {
       subject = `Property restrictions removed`;
@@ -58,7 +58,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         <h1>Hello ${submanagerName || 'there'}!</h1>
         <p>${managerName || 'Your manager'} has removed your property restrictions.</p>
         <p>You now have access to view all properties in the system.</p>
-        <p>Best regards,<br>RentFlow Team</p>
+        <p>Best regards,<br>CALQULUS RMS Team</p>
       `;
     }
 
@@ -69,7 +69,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RentFlow <onboarding@resend.dev>",
+        from: "CALQULUS RMS <onboarding@resend.dev>",
         to: [submanagerEmail],
         subject,
         html: htmlContent,

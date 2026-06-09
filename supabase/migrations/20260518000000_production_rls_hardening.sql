@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Production RLS Hardening
+-- CALQULUS RMS: Production RLS Hardening
 -- Ensures critical finance/auth/document tables have explicit RLS.
 -- ============================================================
 

@@ -1,7 +1,7 @@
 -- ============================================================
--- RentFlow: Operating models & landlord team (authority structure)
+-- CALQULUS RMS: Operating models & landlord team (authority structure)
 -- Supports five commercial arrangements per property_landlords row.
--- See docs/RENTFLOW_AUTHORITY_STRUCTURE.md
+-- See docs/CALQULUS_AUTHORITY_STRUCTURE.md
 -- ============================================================
 
 -- ── 1. Operating model on property_landlords ─────────────────

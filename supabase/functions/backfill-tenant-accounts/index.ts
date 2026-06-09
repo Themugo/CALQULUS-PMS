@@ -44,7 +44,7 @@ async function sendActivationEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "RentFlow Properties <onboarding@resend.dev>",
+        from: "CALQULUS RMS Properties <onboarding@resend.dev>",
         to: [email],
         subject: "Activate Your Tenant Portal Account",
         html: `
@@ -118,10 +118,10 @@ async function sendActivationEmail(
                   <li>Access important documents</li>
                 </ul>
 
-                <p>Best regards,<br><strong>RentFlow Properties</strong></p>
+                <p>Best regards,<br><strong>CALQULUS RMS Properties</strong></p>
               </div>
               <div class="footer">
-                <p>This is an automated message from RentFlow Properties.</p>
+                <p>This is an automated message from CALQULUS RMS Properties.</p>
                 <p>If you did not expect this email, please ignore it.</p>
               </div>
             </div>
@@ -188,7 +188,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Parse request body for options
     let sendEmails = true;
-    let portalUrl = getEnv("SITE_URL", "https://rentflow.ink");
+    let portalUrl = getEnv("SITE_URL", "https://calqulusrms.com");
     let dryRun = false;
     
     try {

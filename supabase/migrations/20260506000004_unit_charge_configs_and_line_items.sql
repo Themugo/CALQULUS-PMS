@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Unit-level charge configuration + invoice line items
+-- CALQULUS RMS: Unit-level charge configuration + invoice line items
 -- Each unit gets configurable charges: rent, water, garbage,
 -- security, service charge, and any custom charges.
 -- Invoices become itemized — one line per charge type.

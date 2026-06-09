@@ -41,7 +41,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .select("company_name, email, phone")
       .maybeSingle();
 
-    const companyName = companySettings?.company_name || "RentFlow Properties";
+    const companyName = companySettings?.company_name || "CALQULUS RMS Properties";
     const companyEmail = companySettings?.email || "";
     const companyPhone = companySettings?.phone || "";
 

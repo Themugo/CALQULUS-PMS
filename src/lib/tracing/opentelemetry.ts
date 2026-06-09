@@ -29,7 +29,7 @@ export function initializeTracing(): void {
     // Create tracer provider
     tracerProvider = new WebTracerProvider({
       resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'rentflow-frontend',
+        [SemanticResourceAttributes.SERVICE_NAME]: 'calqulusrms-frontend',
         [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
         [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: import.meta.env.PROD ? 'production' : 'development',
       }),
@@ -82,7 +82,7 @@ export function createSpan(
     initializeTracing();
   }
 
-  const tracer = getTracer('rentflow');
+  const tracer = getTracer('calqulusrms');
   return tracer.startSpan(name, {
     kind: options?.kind || SpanKind.INTERNAL,
     attributes: options?.attributes,

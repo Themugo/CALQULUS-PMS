@@ -322,7 +322,7 @@ export function resetCache(): void {
 export class CacheKeyBuilder {
   private parts: string[];
 
-  constructor(prefix: string = 'rentflow') {
+  constructor(prefix: string = 'calqulusrms') {
     this.parts = [prefix];
   }
 

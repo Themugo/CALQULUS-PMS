@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
-import calqulusLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/calqulusrms-logo.png';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 interface Invitation {
@@ -266,7 +266,7 @@ const TenantAuth = () => {
 
         // Success! Show toast - navigation will be handled by useEffect watching userRole
         toast({
-          title: isSelfRegistration ? 'Account Created for Accounting' : 'Welcome to RentFlow!',
+          title: isSelfRegistration ? 'Account Created for Accounting' : 'Welcome to CALQULUS RMS!',
           description: isSelfRegistration 
             ? 'Your account has been created. You can manage your rental records for accounting purposes.'
             : 'Your account has been created successfully. Redirecting...',

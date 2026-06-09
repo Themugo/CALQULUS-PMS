@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow Migration 023: Missing platform tables
+-- CALQULUS RMS Migration 023: Missing platform tables
 -- Creates manager_invoices, manager_contracts, and
 -- webhost_payment_settings — referenced by the webhost
 -- dashboard and approval flow but never created.
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS public.manager_contracts (
   manager_user_id  uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   manager_email    text,
   manager_name     text,
-  title            text NOT NULL DEFAULT 'RentFlow Platform Service Agreement',
+  title            text NOT NULL DEFAULT 'CALQULUS RMS Platform Service Agreement',
   contract_type    text NOT NULL DEFAULT 'service_agreement',
   description      text,
   status           text NOT NULL DEFAULT 'pending_signature'

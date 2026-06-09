@@ -1,7 +1,7 @@
 const baseUrl = process.env.SMOKE_BASE_URL?.replace(/\/$/, "");
 
 if (!baseUrl) {
-  console.error("SMOKE_BASE_URL is required, for example https://rentflow.ink");
+  console.error("SMOKE_BASE_URL is required, for example https://app.calqulusrms.com");
   process.exit(1);
 }
 

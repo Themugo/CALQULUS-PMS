@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Unit-centric history, tenancy lifecycle, archiving
+-- CALQULUS RMS: Unit-centric history, tenancy lifecycle, archiving
 --
 -- PRINCIPLES:
 -- • The unit is permanent. Tenants are temporary occupants.

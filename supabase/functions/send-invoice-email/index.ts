@@ -87,7 +87,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       tenantEmail: tenantEmailInput,
       to,
       tenantName = "Tenant",
-      companyName = "RentFlow",
+      companyName = "CALQULUS RMS",
       pdfBase64,
       fileName,
       subject,

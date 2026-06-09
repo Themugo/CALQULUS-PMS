@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Scheduled jobs via pg_cron
+-- CALQULUS RMS: Scheduled jobs via pg_cron
 -- ============================================================
 -- Enable pg_cron extension (pre-enabled on Supabase Pro)
 -- If not available, these can be set up as Supabase Edge Function
@@ -15,12 +15,12 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     BEGIN
-      PERFORM cron.unschedule('rentflow-apply-penalties');
+      PERFORM cron.unschedule('calqulusrms-apply-penalties');
     EXCEPTION WHEN OTHERS THEN
-      RAISE NOTICE 'Could not unschedule rentflow-apply-penalties (job may not exist)';
+      RAISE NOTICE 'Could not unschedule calqulusrms-apply-penalties (job may not exist)';
     END;
     PERFORM cron.schedule(
-      'rentflow-apply-penalties',
+      'calqulusrms-apply-penalties',
       '0 6 * * *',
       $cron$
         SELECT net.http_post(
@@ -30,7 +30,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-apply-penalties';
+    RAISE NOTICE 'Scheduled calqulusrms-apply-penalties';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule apply-penalties via Supabase Dashboard';
   END IF;
@@ -42,12 +42,12 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     BEGIN
-      PERFORM cron.unschedule('rentflow-overdue-notifications');
+      PERFORM cron.unschedule('calqulusrms-overdue-notifications');
     EXCEPTION WHEN OTHERS THEN
-      RAISE NOTICE 'Could not unschedule rentflow-overdue-notifications (job may not exist)';
+      RAISE NOTICE 'Could not unschedule calqulusrms-overdue-notifications (job may not exist)';
     END;
     PERFORM cron.schedule(
-      'rentflow-overdue-notifications',
+      'calqulusrms-overdue-notifications',
       '30 6 * * *',
       $cron$
         SELECT net.http_post(
@@ -57,7 +57,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-overdue-notifications';
+    RAISE NOTICE 'Scheduled calqulusrms-overdue-notifications';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule overdue-notifications via Supabase Dashboard';
   END IF;
@@ -69,12 +69,12 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     BEGIN
-      PERFORM cron.unschedule('rentflow-auto-generate-invoices');
+      PERFORM cron.unschedule('calqulusrms-auto-generate-invoices');
     EXCEPTION WHEN OTHERS THEN
-      RAISE NOTICE 'Could not unschedule rentflow-auto-generate-invoices (job may not exist)';
+      RAISE NOTICE 'Could not unschedule calqulusrms-auto-generate-invoices (job may not exist)';
     END;
     PERFORM cron.schedule(
-      'rentflow-auto-generate-invoices',
+      'calqulusrms-auto-generate-invoices',
       '0 0 1 * *',
       $cron$
         SELECT net.http_post(
@@ -84,7 +84,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-auto-generate-invoices';
+    RAISE NOTICE 'Scheduled calqulusrms-auto-generate-invoices';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule auto-generate-invoices via Supabase Dashboard';
   END IF;
@@ -96,12 +96,12 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     BEGIN
-      PERFORM cron.unschedule('rentflow-payment-reminders');
+      PERFORM cron.unschedule('calqulusrms-payment-reminders');
     EXCEPTION WHEN OTHERS THEN
-      RAISE NOTICE 'Could not unschedule rentflow-payment-reminders (job may not exist)';
+      RAISE NOTICE 'Could not unschedule calqulusrms-payment-reminders (job may not exist)';
     END;
     PERFORM cron.schedule(
-      'rentflow-payment-reminders',
+      'calqulusrms-payment-reminders',
       '0 5 * * *',
       $cron$
         SELECT net.http_post(
@@ -111,7 +111,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-payment-reminders';
+    RAISE NOTICE 'Scheduled calqulusrms-payment-reminders';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule payment-reminders via Supabase Dashboard';
   END IF;
@@ -122,9 +122,9 @@ $$;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('rentflow-overdue-notifications');
+    PERFORM cron.unschedule('calqulusrms-overdue-notifications');
     PERFORM cron.schedule(
-      'rentflow-overdue-notifications',
+      'calqulusrms-overdue-notifications',
       '30 6 * * *',
       $cron$
         SELECT net.http_post(
@@ -134,7 +134,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-overdue-notifications';
+    RAISE NOTICE 'Scheduled calqulusrms-overdue-notifications';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule overdue-notifications via Supabase Dashboard';
   END IF;
@@ -146,9 +146,9 @@ $$;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('rentflow-auto-generate-invoices');
+    PERFORM cron.unschedule('calqulusrms-auto-generate-invoices');
     PERFORM cron.schedule(
-      'rentflow-auto-generate-invoices',
+      'calqulusrms-auto-generate-invoices',
       '0 4 25 * *',
       $cron$
         SELECT net.http_post(
@@ -158,7 +158,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-auto-generate-invoices';
+    RAISE NOTICE 'Scheduled calqulusrms-auto-generate-invoices';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule auto-generate-invoices via Supabase Dashboard';
   END IF;
@@ -169,9 +169,9 @@ $$;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('rentflow-payment-reminders');
+    PERFORM cron.unschedule('calqulusrms-payment-reminders');
     PERFORM cron.schedule(
-      'rentflow-payment-reminders',
+      'calqulusrms-payment-reminders',
       '0 7 * * *',
       $cron$
         SELECT net.http_post(
@@ -181,7 +181,7 @@ BEGIN
         );
       $cron$
     );
-    RAISE NOTICE 'Scheduled rentflow-payment-reminders';
+    RAISE NOTICE 'Scheduled calqulusrms-payment-reminders';
   ELSE
     RAISE NOTICE 'pg_cron not available — schedule payment-reminders via Supabase Dashboard';
   END IF;

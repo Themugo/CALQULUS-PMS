@@ -225,7 +225,7 @@ const handler = async (req: Request): Promise<Response> => {
         <!-- Footer -->
         <div style="background-color: #f4f4f5; padding: 24px; text-align: center;">
           <p style="color: #6b7280; font-size: 12px; margin: 0;">
-            This is an automated monthly report from RentFlow Property Management.
+            This is an automated monthly report from CALQULUS RMS Property Management.
           </p>
           <p style="color: #6b7280; font-size: 12px; margin: 8px 0 0 0;">
             Generated on ${new Date().toLocaleDateString("en-US", {
@@ -251,7 +251,7 @@ const handler = async (req: Request): Promise<Response> => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "RentFlow <onboarding@resend.dev>",
+            from: "CALQULUS RMS <onboarding@resend.dev>",
             to: [email],
             subject: `Monthly Payment Report - ${monthName}`,
             html: emailHtml,

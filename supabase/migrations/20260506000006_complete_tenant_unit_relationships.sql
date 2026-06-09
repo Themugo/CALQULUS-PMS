@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Complete tenant-unit relationship layer
+-- CALQULUS RMS: Complete tenant-unit relationship layer
 -- Covers every relationship most property management systems miss.
 -- ============================================================
 

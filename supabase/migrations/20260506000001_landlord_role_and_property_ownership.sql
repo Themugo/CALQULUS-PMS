@@ -1,5 +1,5 @@
 -- ============================================================
--- RentFlow: Landlord Role & Property Ownership
+-- CALQULUS RMS: Landlord Role & Property Ownership
 -- ============================================================
 
 -- 0. Ensure app_role enum exists (base values: manager, tenant, webhost, submanager)

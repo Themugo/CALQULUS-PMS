@@ -116,7 +116,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           phoneNumber: tenantPhone,
-          message: `Welcome to RentFlow, ${tenant.name}. Your tenant portal is active${property?.name ? ` for ${property.name}` : ""}.`,
+          message: `Welcome to CALQULUS RMS, ${tenant.name}. Your tenant portal is active${property?.name ? ` for ${property.name}` : ""}.`,
         }),
       }).catch(() => {});
     }

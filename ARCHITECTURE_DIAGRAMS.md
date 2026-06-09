@@ -1,4 +1,4 @@
-# RentFlow Architecture Diagrams
+# CALQULUS RMS Architecture Diagrams
 
 ## System Overview
 
@@ -534,7 +534,7 @@ graph TB
     end
     
     subgraph "Target State"
-        G[RentFlow Platform]
+        G[CALQULUS RMS Platform]
         H[Automated Workflows]
     end
     
@@ -643,7 +643,7 @@ graph TB
         G[Sentry]
     end
     
-    subgraph "RentFlow"
+    subgraph "CALQULUS RMS"
         H[Edge Functions]
     end
     
