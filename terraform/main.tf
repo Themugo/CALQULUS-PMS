@@ -16,11 +16,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "rentflow-terraform-state"
-    key            = "rentflow/terraform.tfstate"
+    bucket         = "calqulusrms-terraform-state"
+    key            = "calqulusrms/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "rentflow-terraform-locks"
+    dynamodb_table = "calqulusrms-terraform-locks"
   }
 }
 
@@ -29,7 +29,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "RentFlow"
+      Project     = "CALQULUS RMS"
       Environment = var.environment
       ManagedBy   = "Terraform"
     }
@@ -165,13 +165,13 @@ module "helm_release" {
   source  = "terraform-module/release/helm"
   version = "2.0.0"
 
-  namespace = "rentflow"
+  namespace = "calqulusrms"
 
-  repository = "oci://ghcr.io/rentflow/charts"
-  chart      = "rentflow"
+  repository = "oci://ghcr.io/calqulusrms/charts"
+  chart      = "calqulusrms"
   version    = "1.0.0"
 
-  name = "rentflow"
+  name = "calqulusrms"
 
   values = [
     templatefile("${path.module}/helm-values.yaml", {

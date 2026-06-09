@@ -1,7 +1,7 @@
 replicaCount: 3
 
 image:
-  repository: rentflow
+  repository: calqulusrms
   pullPolicy: Always
   tag: "latest"
 
@@ -43,7 +43,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: rentflow-tls
+    - secretName: calqulusrms-tls
       hosts:
         - app.${domain}
 
@@ -76,7 +76,7 @@ affinity:
               - key: app
                 operator: In
                 values:
-                  - rentflow
+                  - calqulusrms
           topologyKey: kubernetes.io/hostname
 
 config:

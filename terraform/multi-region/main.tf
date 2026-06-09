@@ -20,11 +20,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "rentflow-terraform-state"
-    key            = "rentflow/multi-region/terraform.tfstate"
+    bucket         = "calqulusrms-terraform-state"
+    key            = "calqulusrms/multi-region/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "rentflow-terraform-locks"
+    dynamodb_table = "calqulusrms-terraform-locks"
   }
 }
 
@@ -33,7 +33,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "RentFlow"
+      Project     = "CALQULUS RMS"
       Environment = var.environment
       ManagedBy   = "Terraform"
       Tier        = "Multi-Region"
@@ -47,7 +47,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "RentFlow"
+      Project     = "CALQULUS RMS"
       Environment = var.environment
       ManagedBy   = "Terraform"
       Tier        = "Multi-Region"
@@ -254,20 +254,20 @@ resource "aws_route53_health_check" "secondary" {
 }
 
 # Global Accelerator for multi-region traffic routing
-resource "aws_globalaccelerator_accelerator" "rentflow" {
+resource "aws_globalaccelerator_accelerator" "calqulusrms" {
   name            = "${var.project_name}-accelerator"
   ip_address_type = "IPV4"
   enabled         = true
 }
 
 resource "aws_globalaccelerator_listener" "http" {
-  accelerator_arn = aws_globalaccelerator_accelerator.rentflow.id
+  accelerator_arn = aws_globalaccelerator_accelerator.calqulusrms.id
   protocol        = "TCP"
   port_range      = ["80"]
 }
 
 resource "aws_globalaccelerator_listener" "https" {
-  accelerator_arn = aws_globalaccelerator_accelerator.rentflow.id
+  accelerator_arn = aws_globalaccelerator_accelerator.calqulusrms.id
   protocol        = "TCP"
   port_range      = ["443"]
 }
@@ -281,7 +281,7 @@ resource "aws_globalaccelerator_endpoint_group" "secondary" {
 }
 
 resource "aws_globalaccelerator_endpoint" "primary" {
-  accelerator_arn = aws_globalaccelerator_accelerator.rentflow.id
+  accelerator_arn = aws_globalaccelerator_accelerator.calqulusrms.id
   endpoint_group_arn = aws_globalaccelerator_endpoint_group.primary.id
   
   endpoint_configuration {
@@ -291,7 +291,7 @@ resource "aws_globalaccelerator_endpoint" "primary" {
 }
 
 resource "aws_globalaccelerator_endpoint" "secondary" {
-  accelerator_arn = aws_globalaccelerator_accelerator.rentflow.id
+  accelerator_arn = aws_globalaccelerator_accelerator.calqulusrms.id
   endpoint_group_arn = aws_globalaccelerator_endpoint_group.secondary.id
   
   endpoint_configuration {

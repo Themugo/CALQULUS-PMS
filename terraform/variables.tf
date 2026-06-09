@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "rentflow"
+  default     = "calqulusrms"
 }
 
 variable "environment" {
@@ -49,7 +49,7 @@ variable "kubernetes_version" {
 variable "domain" {
   description = "Domain name for the application"
   type        = string
-  default     = "rentflow.ink"
+  default     = "calqulusrms.com"
 }
 
 variable "app_version" {

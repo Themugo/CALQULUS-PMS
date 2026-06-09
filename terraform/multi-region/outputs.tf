@@ -50,12 +50,12 @@ output "secondary_region" {
 
 output "global_accelerator_id" {
   description = "ID of the Global Accelerator"
-  value       = aws_globalaccelerator_accelerator.rentflow.id
+  value       = aws_globalaccelerator_accelerator.calqulusrms.id
 }
 
 output "global_accelerator_dns" {
   description = "DNS name of the Global Accelerator"
-  value       = aws_globalaccelerator_accelerator.rentflow.dns_name
+  value       = aws_globalaccelerator_accelerator.calqulusrms.dns_name
 }
 
 output "route53_zone_id" {
