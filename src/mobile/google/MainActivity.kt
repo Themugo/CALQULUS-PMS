@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,26 +16,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rentflow.app.ui.theme.RentFlowTheme
-import com.rentflow.app.ui.auth.AuthViewModel
-import com.rentflow.app.ui.auth.AuthView
-import com.rentflow.app.ui.dashboard.DashboardView
-import com.rentflow.app.ui.properties.PropertiesView
-import com.rentflow.app.ui.tenants.TenantsView
-import com.rentflow.app.ui.maintenance.MaintenanceView
-import com.rentflow.app.ui.profile.ProfileView
+import com.calqulusrms.app.ui.theme.CALQULUS RMSTheme
+import com.calqulusrms.app.ui.auth.AuthViewModel
+import com.calqulusrms.app.ui.auth.AuthView
+import com.calqulusrms.app.ui.dashboard.DashboardView
+import com.calqulusrms.app.ui.properties.PropertiesView
+import com.calqulusrms.app.ui.tenants.TenantsView
+import com.calqulusrms.app.ui.maintenance.MaintenanceView
+import com.calqulusrms.app.ui.profile.ProfileView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         setContent {
-            RentFlowTheme {
+            CALQULUS RMSTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RentFlowApp()
+                    CALQULUS RMSApp()
                 }
             }
         }
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun RentFlowApp() {
+fun CALQULUS RMSApp() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     var isAuthenticated by remember { mutableStateOf(authViewModel.isAuthenticated) }

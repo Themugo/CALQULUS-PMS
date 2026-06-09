@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -19,7 +19,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 class AuthManager(private val context: Context) {
-    private val sharedPrefs: SharedPreferences = context.getSharedPreferences("RentFlowAuth", Context.MODE_PRIVATE)
+    private val sharedPrefs: SharedPreferences = context.getSharedPreferences("CALQULUS RMSAuth", Context.MODE_PRIVATE)
     private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
     
     var isAuthenticated: Boolean = false
@@ -107,8 +107,8 @@ class AuthManager(private val context: Context) {
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("RentFlow Authentication")
-                    .setSubtitle("Authenticate to access RentFlow")
+                    .setTitle("CALQULUS RMS Authentication")
+                    .setSubtitle("Authenticate to access CALQULUS RMS")
                     .setNegativeButtonText("Cancel")
                     .build()
                 

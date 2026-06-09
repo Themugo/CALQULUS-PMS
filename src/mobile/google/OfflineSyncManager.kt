@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.content.Context
 import androidx.room.Room
@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
 class OfflineSyncManager private constructor(private val context: Context) {
-    private val database: RentFlowDatabase = Room.databaseBuilder(
+    private val database: CALQULUS RMSDatabase = Room.databaseBuilder(
         context,
-        RentFlowDatabase::class.java,
-        "rentflow.db"
+        CALQULUS RMSDatabase::class.java,
+        "calqulusrms.db"
     ).build()
     
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
@@ -197,7 +197,7 @@ enum class SyncStatus {
     ],
     version = 1
 )
-abstract class RentFlowDatabase : RoomDatabase() {
+abstract class CALQULUS RMSDatabase : RoomDatabase() {
     abstract fun propertyDao(): PropertyDao
     abstract fun tenantDao(): TenantDao
     abstract fun maintenanceRequestDao(): MaintenanceRequestDao

@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.Manifest
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.content.Context
 import androidx.work.Constraints
@@ -18,9 +18,9 @@ class BackgroundTaskManager(private val context: Context) {
     private val workManager = WorkManager.getInstance(context)
     
     companion object {
-        private const val SYNC_WORK_NAME = "rentflow_sync"
-        private const val LOCATION_WORK_NAME = "rentflow_location"
-        private const val NOTIFICATION_WORK_NAME = "rentflow_notifications"
+        private const val SYNC_WORK_NAME = "calqulusrms_sync"
+        private const val LOCATION_WORK_NAME = "calqulusrms_location"
+        private const val NOTIFICATION_WORK_NAME = "calqulusrms_notifications"
     }
     
     fun scheduleSyncTask() {

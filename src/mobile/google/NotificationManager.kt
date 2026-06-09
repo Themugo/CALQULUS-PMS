@@ -1,4 +1,4 @@
-package com.rentflow.app
+package com.calqulusrms.app
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,9 +16,9 @@ class NotificationManager(private val context: Context) {
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     
     companion object {
-        private const val CHANNEL_ID = "rentflow_channel"
-        private const val CHANNEL_NAME = "RentFlow Notifications"
-        private const val CHANNEL_DESCRIPTION = "Notifications for RentFlow app"
+        private const val CHANNEL_ID = "calqulusrms_channel"
+        private const val CHANNEL_NAME = "CALQULUS RMS Notifications"
+        private const val CHANNEL_DESCRIPTION = "Notifications for CALQULUS RMS app"
     }
     
     init {
@@ -80,7 +80,7 @@ class NotificationManager(private val context: Context) {
     }
 }
 
-class RentFlowFirebaseMessagingService : FirebaseMessagingService() {
+class CALQULUS RMSFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         
@@ -91,7 +91,7 @@ class RentFlowFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         
-        val title = remoteMessage.notification?.title ?: "RentFlow"
+        val title = remoteMessage.notification?.title ?: "CALQULUS RMS"
         val body = remoteMessage.notification?.body ?: ""
         
         NotificationManager(this).sendNotification(title, body)
