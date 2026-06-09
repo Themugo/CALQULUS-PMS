@@ -51,7 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
         htmlContent = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0;">RentFlow</h1>
+              <h1 style="color: white; margin: 0;">CALQULUS RMS</h1>
             </div>
             <div style="padding: 30px; background: #f8fafc;">
               <h2 style="color: #1e293b;">Hello ${escapedName},</h2>
@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
               </a>
             </div>
             <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 14px;">
-              <p>© 2024 RentFlow. All rights reserved.</p>
+              <p>© 2024 CALQULUS RMS. All rights reserved.</p>
             </div>
           </div>
         `;
@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
         htmlContent = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0;">RentFlow</h1>
+              <h1 style="color: white; margin: 0;">CALQULUS RMS</h1>
             </div>
             <div style="padding: 30px; background: #f8fafc;">
               <h2 style="color: #1e293b;">Great News, ${escapedName}!</h2>
@@ -101,7 +101,7 @@ const handler = async (req: Request): Promise<Response> => {
               </a>
             </div>
             <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 14px;">
-              <p>© 2024 RentFlow. All rights reserved.</p>
+              <p>© 2024 CALQULUS RMS. All rights reserved.</p>
             </div>
           </div>
         `;
@@ -112,7 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
         htmlContent = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0;">RentFlow</h1>
+              <h1 style="color: white; margin: 0;">CALQULUS RMS</h1>
             </div>
             <div style="padding: 30px; background: #f8fafc;">
               <h2 style="color: #1e293b;">Hello ${escapedName},</h2>
@@ -132,7 +132,7 @@ const handler = async (req: Request): Promise<Response> => {
               </a>
             </div>
             <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 14px;">
-              <p>© 2024 RentFlow. All rights reserved.</p>
+              <p>© 2024 CALQULUS RMS. All rights reserved.</p>
             </div>
           </div>
         `;
@@ -152,7 +152,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RentFlow <onboarding@resend.dev>",
+        from: "CALQULUS RMS <onboarding@resend.dev>",
         to: [managerEmail],
         subject,
         html: htmlContent,

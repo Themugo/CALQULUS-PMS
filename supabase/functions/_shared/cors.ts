@@ -1,9 +1,9 @@
 /**
  * _shared/cors.ts
  *
- * Centralised CORS configuration for all RentFlow edge functions.
+ * Centralised CORS configuration for all CALQULUS RMS edge functions.
  *
- * In production, restrict to the canonical RentFlow domain.
+ * In production, restrict to the canonical CALQULUS RMS domain.
  * During local development, Supabase CLI uses localhost.
  *
  * Why not wildcard (*)?
@@ -15,9 +15,9 @@
  */
 
 const ALLOWED_ORIGINS = [
-  "https://rentflow.ink",
-  "https://www.rentflow.ink",
-  "https://app.rentflow.ink",
+  "https://calqulusrms.com",
+  "https://www.calqulusrms.com",
+  "https://app.calqulusrms.com",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",

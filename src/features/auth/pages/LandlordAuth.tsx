@@ -14,7 +14,7 @@ import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialo
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
-import rentflowLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/rentflow-logo.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 interface DemoAccount {
@@ -61,12 +61,12 @@ const LandlordAuth = () => {
   const demoSeedSecret = import.meta.env.VITE_DEMO_SEED_SECRET || '';
 
   const demoAccounts: DemoAccount[] = demoEnabled ? [
-    { role: 'manager', label: 'James Kariuki', email: 'demo.manager@rentflow.ink', password: 'Demo@2026', portal: '/', badge: 'MANAGER', icon: <Building className="h-4 w-4" />, description: '3 properties · 5 tenants · Pro tier' },
-    { role: 'tenant-linked', label: 'Grace Wanjiku', email: 'demo.tenant1@rentflow.ink', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Flat A3 · KES 8,500/mo · overdue' },
-    { role: 'tenant-linked', label: 'Brian Otieno', email: 'demo.tenant2@rentflow.ink', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Bungalow B1 · KES 35,000/mo · paid' },
-    { role: 'tenant-orphan', label: 'Amina Hassan', email: 'demo.tenant3@rentflow.ink', password: 'Demo@2026', portal: '/portal', badge: 'ORPHAN', icon: <Home className="h-4 w-4" />, description: 'Ngara Apts · KES 11,000/mo · unlinked' },
-    { role: 'landlord', label: 'Peter Mwangi', email: 'demo.landlord@rentflow.ink', password: 'Demo@2026', portal: '/landlord/dashboard', badge: 'LANDLORD', icon: <Briefcase className="h-4 w-4" />, description: '2 properties · KES 108K net rent' },
-    { role: 'agent', label: 'Fatuma Abubakar', email: 'demo.agent@rentflow.ink', password: 'Demo@2026', portal: '/', badge: 'AGENT', icon: <Shield className="h-4 w-4" />, description: 'Submanager · tenants + maintenance' },
+    { role: 'manager', label: 'James Kariuki', email: 'demo.manager@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'MANAGER', icon: <Building className="h-4 w-4" />, description: '3 properties · 5 tenants · Pro tier' },
+    { role: 'tenant-linked', label: 'Grace Wanjiku', email: 'demo.tenant1@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Flat A3 · KES 8,500/mo · overdue' },
+    { role: 'tenant-linked', label: 'Brian Otieno', email: 'demo.tenant2@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Bungalow B1 · KES 35,000/mo · paid' },
+    { role: 'tenant-orphan', label: 'Amina Hassan', email: 'demo.tenant3@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'ORPHAN', icon: <Home className="h-4 w-4" />, description: 'Ngara Apts · KES 11,000/mo · unlinked' },
+    { role: 'landlord', label: 'Peter Mwangi', email: 'demo.landlord@calqulusrms.com', password: 'Demo@2026', portal: '/landlord/dashboard', badge: 'LANDLORD', icon: <Briefcase className="h-4 w-4" />, description: '2 properties · KES 108K net rent' },
+    { role: 'agent', label: 'Fatuma Abubakar', email: 'demo.agent@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'AGENT', icon: <Shield className="h-4 w-4" />, description: 'Submanager · tenants + maintenance' },
   ] : [];
 
   const loginAs = async (account: DemoAccount) => {
@@ -374,8 +374,8 @@ const LandlordAuth = () => {
           <div className="flex justify-center mb-4">
             <div className="bg-white rounded-xl p-3 shadow-lg">
               <img 
-                src={rentflowLogo} 
-                alt="RentFlow.ink" 
+                src={calqulusLogo} 
+                alt="CALQULUS RMS" 
                 className="h-12 w-auto"
               />
             </div>

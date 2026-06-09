@@ -11,7 +11,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import rentflowLogo from "@/assets/rentflow-logo.png";
+import calqulusLogo from "@/assets/rentflow-logo.png";
 
 interface NavItem {
   name: string;
@@ -96,10 +96,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           collapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           {collapsed ? (
-            <img src={rentflowLogo} alt="RF" className="h-8 w-auto" />
+            <img src={calqulusLogo} alt="CALQULUS" className="h-8 w-auto" />
           ) : (
             <div className="flex items-center gap-3">
-              <img src={rentflowLogo} alt="RentFlow" className="h-9 w-auto" />
+              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-9 w-auto" />
             </div>
           )}
           <div className="flex items-center gap-1">

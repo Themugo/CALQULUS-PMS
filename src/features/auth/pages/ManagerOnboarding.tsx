@@ -85,7 +85,7 @@ const ManagerOnboarding: React.FC<Props> = ({ onComplete }) => {
           <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
             <Zap className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">Welcome to RentFlow</h1>
+          <h1 className="text-2xl font-bold text-white mb-1">Welcome to CALQULUS RMS</h1>
           <p className="text-slate-400">Let's get your account set up in 2 quick steps</p>
         </div>
 

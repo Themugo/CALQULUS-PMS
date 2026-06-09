@@ -5,8 +5,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Shield, FileText, ChevronLeft } from 'lucide-react';
 
 const LAST_UPDATED = 'May 2026';
-const COMPANY     = 'RentFlow Ltd';
-const EMAIL       = 'legal@rentflow.ink';
+const COMPANY     = 'CALQULUS RMS Ltd';
+const EMAIL       = 'legal@calqulusrms.com';
 const COUNTRY     = 'Kenya';
 
 type Tab = 'privacy' | 'terms';
@@ -62,11 +62,11 @@ const PrivacyPolicy: React.FC = () => (
   <article className="space-y-8 text-sm leading-7">
     <div>
       <h1 className="text-2xl font-bold text-white mb-2">Privacy Policy</h1>
-      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Applies to RentFlow platform and mobile app</p>
+      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Applies to CALQULUS RMS platform and mobile app</p>
     </div>
 
     <Section title="1. Who we are">
-      <p>{COMPANY} ("RentFlow", "we", "our") operates the RentFlow property management platform at rentflow.ink. We are registered and operate under the laws of {COUNTRY}.</p>
+      <p>{COMPANY} ("CALQULUS RMS", "we", "our") operates the CALQULUS RMS property management platform at calqulusrms.com. We are registered and operate under the laws of {COUNTRY}.</p>
       <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a></p>
     </Section>
 
@@ -134,11 +134,11 @@ const TermsOfService: React.FC = () => (
     </div>
 
     <Section title="1. Acceptance">
-      <p>By creating a RentFlow account, you agree to these Terms of Service and our Privacy Policy. If you are registering on behalf of a business, you confirm you have authority to bind that business.</p>
+      <p>By creating a CALQULUS RMS account, you agree to these Terms of Service and our Privacy Policy. If you are registering on behalf of a business, you confirm you have authority to bind that business.</p>
     </Section>
 
     <Section title="2. The service">
-      <p>RentFlow provides a software platform for property managers, landlords, and tenants to manage rental properties, including invoicing, payment tracking, maintenance requests, and communications. RentFlow is not a party to any lease or tenancy agreement created through the platform.</p>
+      <p>CALQULUS RMS provides a software platform for property managers, landlords, and tenants to manage rental properties, including invoicing, payment tracking, maintenance requests, and communications. CALQULUS RMS is not a party to any lease or tenancy agreement created through the platform.</p>
     </Section>
 
     <Section title="3. Manager responsibilities">
@@ -162,7 +162,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="5. Payments">
-      <p>RentFlow processes M-Pesa payments via Safaricom Daraja API. By initiating a payment, you authorise the debit from your M-Pesa account. RentFlow is not responsible for Safaricom service outages. All payment records are logged and immutable — we cannot alter or delete payment receipts once issued.</p>
+      <p>CALQULUS RMS processes M-Pesa payments via Safaricom Daraja API. By initiating a payment, you authorise the debit from your M-Pesa account. CALQULUS RMS is not responsible for Safaricom service outages. All payment records are logged and immutable — we cannot alter or delete payment receipts once issued.</p>
       <p className="mt-2">Platform subscription fees for managers are invoiced monthly. Accounts with invoices overdue by 30 days are suspended. Reinstatement is automatic upon payment.</p>
     </Section>
 
@@ -178,7 +178,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="7. Liability">
-      <p>RentFlow provides the platform "as is". We are not liable for: disputes between landlords and tenants; losses arising from M-Pesa service outages; data loss due to events beyond our reasonable control. Our total liability to any party in any 12-month period shall not exceed the subscription fees paid to us in that period.</p>
+      <p>CALQULUS RMS provides the platform "as is". We are not liable for: disputes between landlords and tenants; losses arising from M-Pesa service outages; data loss due to events beyond our reasonable control. Our total liability to any party in any 12-month period shall not exceed the subscription fees paid to us in that period.</p>
     </Section>
 
     <Section title="8. Governing law">

@@ -167,7 +167,7 @@ export function InvitationTracker() {
     setSendingSmsId(invitation.id);
     try {
       const invitationUrl = getInvitationUrl(invitation.token);
-      const smsMessage = `Hi ${invitation.tenant_name}! You've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on RentFlow. Create your account here: ${invitationUrl}`;
+      const smsMessage = `Hi ${invitation.tenant_name}! You've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on CALQULUS RMS. Create your account here: ${invitationUrl}`;
 
       const { data, error } = await supabase.functions.invoke("send-sms-notification", {
         body: {
@@ -200,7 +200,7 @@ export function InvitationTracker() {
   const handleWhatsAppShare = (invitation: Invitation) => {
     const invitationUrl = getInvitationUrl(invitation.token);
     const message = encodeURIComponent(
-      `Hi ${invitation.tenant_name}! 👋\n\nYou've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on RentFlow.\n\nClick the link below to create your tenant account:\n${invitationUrl}`
+      `Hi ${invitation.tenant_name}! 👋\n\nYou've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on CALQULUS RMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}`
     );
     // Open WhatsApp without a specific number - user can choose recipient
     window.open(`https://wa.me/?text=${message}`, "_blank");

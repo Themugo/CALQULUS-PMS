@@ -16,7 +16,7 @@
 
 ## Introduction
 
-This troubleshooting guide covers common issues you may encounter while using RentFlow and provides step-by-step solutions to resolve them.
+This troubleshooting guide covers common issues you may encounter while using CALQULUS RMS and provides step-by-step solutions to resolve them.
 
 ### Before Troubleshooting
 
@@ -25,7 +25,7 @@ Before attempting to resolve an issue:
 2. Verify your internet connection is stable
 3. Clear your browser cache and cookies
 4. Try using a different browser
-5. Check the RentFlow status page for known issues
+5. Check the CALQULUS RMS status page for known issues
 
 ### Reporting Issues
 
@@ -42,7 +42,7 @@ When reporting an issue, include:
 ### Cannot Login to Dashboard
 
 #### Problem
-Unable to login to RentFlow dashboard with correct credentials.
+Unable to login to CALQULUS RMS dashboard with correct credentials.
 
 #### Possible Causes
 - Incorrect email or password
@@ -101,8 +101,8 @@ Unable to complete two-factor authentication (2FA).
 
 **Solution 1: Resync Authenticator App**
 1. Open authenticator app
-2. Remove RentFlow account
-3. Add RentFlow account again
+2. Remove CALQULUS RMS account
+3. Add CALQULUS RMS account again
 4. Scan QR code or enter secret key
 5. Try authentication again
 
@@ -172,7 +172,7 @@ M-Pesa STK Push not received or payment not completing.
 ### Bank Transfer Not Recognized
 
 #### Problem
-Bank transfer made but not recognized by RentFlow.
+Bank transfer made but not recognized by CALQULUS RMS.
 
 #### Possible Causes
 - Incorrect reference number
@@ -297,7 +297,7 @@ Pages loading slowly or taking long to respond.
 4. Use wired connection
 
 **Solution 2: Check Server Status**
-1. Check RentFlow status page
+1. Check CALQULUS RMS status page
 2. Verify no server issues
 3. Check for scheduled maintenance
 
@@ -349,7 +349,7 @@ Application freezes or crashes frequently.
 ### Webhook Not Receiving Events
 
 #### Problem
-Webhook endpoint not receiving events from RentFlow.
+Webhook endpoint not receiving events from CALQULUS RMS.
 
 #### Possible Causes
 - Webhook URL incorrect
@@ -421,7 +421,7 @@ API requests returning 401 Unauthorized errors.
 ### App Not Installing
 
 #### Problem
-Unable to install RentFlow mobile app.
+Unable to install CALQULUS RMS mobile app.
 
 #### Possible Causes
 - Device compatibility
@@ -477,7 +477,7 @@ Mobile app not syncing with server.
 
 **Solution 3: Clear App Cache**
 1. Navigate to device settings
-2. Find RentFlow app
+2. Find CALQULUS RMS app
 3. Clear cache
 4. Clear data if needed
 5. Login again
@@ -498,24 +498,24 @@ Not receiving push notifications on mobile app.
 
 **Solution 1: Enable Notifications**
 1. Open device settings
-2. Find RentFlow app
+2. Find CALQULUS RMS app
 3. Enable notifications
 4. Allow all notification types
 
 **Solution 2: Check Permissions**
 1. Navigate to device settings
-2. Find RentFlow app
+2. Find CALQULUS RMS app
 3. Enable all permissions
 4. Restart app
 
 **Solution 3: Disable Do Not Disturb**
 1. Check if Do Not Disturb is enabled
 2. Disable if needed
-3. Allow notifications from RentFlow
+3. Allow notifications from CALQULUS RMS
 
 **Solution 4: Disable Battery Optimization**
 1. Navigate to device settings
-2. Find RentFlow app
+2. Find CALQULUS RMS app
 3. Disable battery optimization
 4. Allow background activity
 
@@ -524,7 +524,7 @@ Not receiving push notifications on mobile app.
 ### Not Receiving Email Notifications
 
 #### Problem
-Not receiving email notifications from RentFlow.
+Not receiving email notifications from CALQULUS RMS.
 
 #### Possible Causes
 - Email address incorrect
@@ -544,7 +544,7 @@ Not receiving email notifications from RentFlow.
 **Solution 2: Check Spam Folder**
 1. Check spam/junk folder
 2. Mark emails as not spam
-3. Add noreply@rentflow.ink to contacts
+3. Add noreply@calqulusrms.com to contacts
 4. Check email filters
 
 **Solution 3: Enable Notifications**
@@ -561,7 +561,7 @@ Not receiving email notifications from RentFlow.
 ### Not Receiving SMS Notifications
 
 #### Problem
-Not receiving SMS notifications from RentFlow.
+Not receiving SMS notifications from CALQULUS RMS.
 
 #### Possible Causes
 - Phone number incorrect
@@ -600,7 +600,7 @@ Not receiving SMS notifications from RentFlow.
 ### Reports Not Generating
 
 #### Problem
-Unable to generate reports from RentFlow.
+Unable to generate reports from CALQULUS RMS.
 
 #### Possible Causes
 - Invalid date range
@@ -752,7 +752,7 @@ Concerns about data privacy or unauthorized data access.
 
 ### Scheduled Maintenance
 
-RentFlow performs regular maintenance to ensure system reliability and security.
+CALQULUS RMS performs regular maintenance to ensure system reliability and security.
 
 #### Maintenance Windows
 - **Weekly**: Sunday 2:00 AM - 4:00 AM EAT
@@ -772,7 +772,7 @@ RentFlow performs regular maintenance to ensure system reliability and security.
 
 ### System Updates
 
-RentFlow is regularly updated with:
+CALQULUS RMS is regularly updated with:
 - Security patches
 - Feature enhancements
 - Performance improvements
@@ -793,7 +793,7 @@ RentFlow is regularly updated with:
 
 ### When to Contact Support
 
-Contact RentFlow support when:
+Contact CALQULUS RMS support when:
 - Issue not resolved by troubleshooting
 - Error message not covered in documentation
 - System-wide outage suspected
@@ -804,10 +804,10 @@ Contact RentFlow support when:
 ### Support Channels
 
 **Email Support**
-- General: support@rentflow.ink
-- API Support: api-support@rentflow.ink
-- Security: security@rentflow.ink
-- Billing: billing@rentflow.ink
+- General: support@calqulusrms.com
+- API Support: api-support@calqulusrms.com
+- Security: security@calqulusrms.com
+- Billing: billing@calqulusrms.com
 
 **Phone Support**
 - Business Hours: Monday - Friday, 8:00 AM - 6:00 PM EAT
@@ -820,7 +820,7 @@ Contact RentFlow support when:
 - Response time: < 5 minutes
 
 **Community Forum**
-- URL: https://community.rentflow.ink
+- URL: https://community.calqulusrms.com
 - Peer support and discussions
 - Feature requests and feedback
 - Best practices and tips
@@ -909,14 +909,14 @@ If issue not resolved within expected time:
 
 ### Additional Resources
 
-- **Documentation**: https://docs.rentflow.ink
-- **API Documentation**: https://api.rentflow.ink/docs
-- **Status Page**: https://status.rentflow.ink
-- **Community Forum**: https://community.rentflow.ink
-- **Video Tutorials**: https://youtube.com/rentflow
+- **Documentation**: https://docs.calqulusrms.com
+- **API Documentation**: https://api.calqulusrms.com/docs
+- **Status Page**: https://status.calqulusrms.com
+- **Community Forum**: https://community.calqulusrms.com
+- **Video Tutorials**: https://youtube.com/calqulusrms
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact support@rentflow.ink**
+**For questions or feedback, contact support@calqulusrms.com**

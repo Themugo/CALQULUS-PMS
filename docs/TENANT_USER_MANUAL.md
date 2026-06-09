@@ -13,7 +13,7 @@
 
 ## Introduction
 
-RentFlow Tenant Portal is your dedicated platform for managing your rental experience. This manual will guide you through all the features available to tenants.
+CALQULUS RMS Tenant Portal is your dedicated platform for managing your rental experience. This manual will guide you through all the features available to tenants.
 
 ### Key Features
 - View lease details and documents
@@ -25,7 +25,7 @@ RentFlow Tenant Portal is your dedicated platform for managing your rental exper
 - View property announcements
 
 ### Access Your Portal
-- **URL**: https://app.rentflow.ink/tenant/login
+- **URL**: https://app.calqulusrms.com/tenant/login
 - **Mobile App**: Available on iOS and Android
 
 ## Getting Started
@@ -33,7 +33,7 @@ RentFlow Tenant Portal is your dedicated platform for managing your rental exper
 ### Account Setup
 
 1. **Login to Tenant Portal**
-   - Navigate to https://app.rentflow.ink/tenant/login
+   - Navigate to https://app.calqulusrms.com/tenant/login
    - Enter your email and password
    - Click "Sign In"
 
@@ -45,7 +45,7 @@ RentFlow Tenant Portal is your dedicated platform for managing your rental exper
 
 ### Setting Up Payment Methods
 
-RentFlow supports multiple payment methods:
+CALQULUS RMS supports multiple payment methods:
 
 #### M-Pesa Setup
 1. Navigate to **Profile** → **Payment Methods**
@@ -464,7 +464,7 @@ Keep your contact information current:
 
 If you encounter issues not covered in this manual:
 - **Contact Property Manager**: Your primary point of contact
-- **Email**: support@rentflow.ink
+- **Email**: support@calqulusrms.com
 - **Phone**: [Support phone number]
 - **Live Chat**: Available in tenant portal
 
@@ -472,7 +472,7 @@ If you encounter issues not covered in this manual:
 
 - **Property Manager**: [Manager phone number]
 - **Emergency Maintenance**: [Emergency phone number]
-- **General Support**: support@rentflow.ink
+- **General Support**: support@calqulusrms.com
 
 ## Best Practices
 
@@ -532,7 +532,7 @@ Enable push notifications for:
 
 ## Privacy and Data Protection
 
-Your privacy is important to us. RentFlow:
+Your privacy is important to us. CALQULUS RMS:
 - Protects your personal information
 - Complies with data protection regulations
 - Never shares your data without consent
@@ -549,7 +549,7 @@ Your privacy is important to us. RentFlow:
 
 ## Updates and New Features
 
-RentFlow is regularly updated with new features and improvements. Check the portal for:
+CALQULUS RMS is regularly updated with new features and improvements. Check the portal for:
 - Feature announcements
 - System updates
 - New payment methods
@@ -575,13 +575,13 @@ RentFlow is regularly updated with new features and improvements. Check the port
 
 ### Support Resources
 
-- **Documentation**: https://docs.rentflow.ink
-- **FAQ**: https://docs.rentflow.ink/faq
-- **Video Tutorials**: https://youtube.com/rentflow
-- **Community Forum**: https://community.rentflow.ink
+- **Documentation**: https://docs.calqulusrms.com
+- **FAQ**: https://docs.calqulusrms.com/faq
+- **Video Tutorials**: https://youtube.com/calqulusrms
+- **Community Forum**: https://community.calqulusrms.com
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact support@rentflow.ink**
+**For questions or feedback, contact support@calqulusrms.com**

@@ -14,7 +14,7 @@ import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialo
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
-import rentflowLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/rentflow-logo.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 const Auth = () => {
@@ -180,10 +180,10 @@ const Auth = () => {
         <CardHeader className="text-center pb-4">
           <div className="flex justify-center mb-4">
             <div className="relative">
-              <img src={rentflowLogo} alt="RentFlow.ink" className="h-14 w-auto" />
+              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-14 w-auto" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-heading">Welcome to RentFlow</CardTitle>
+          <CardTitle className="text-2xl font-heading">Welcome to CALQULUS RMS</CardTitle>
           <CardDescription className="text-muted-foreground">
             Smart rental management made simple
           </CardDescription>

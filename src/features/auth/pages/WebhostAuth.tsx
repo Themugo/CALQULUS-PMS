@@ -11,7 +11,7 @@ import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authF
 
 const isRecommendedWebhostHost = () => {
   const host = window.location.hostname;
-  return host.startsWith('admin.') || host.endsWith('.rentflow.ink') || host === 'localhost' || host === '127.0.0.1';
+  return host.startsWith('admin.') || host.endsWith('.calqulusrms.com') || host === 'localhost' || host === '127.0.0.1';
 };
 
 const WebhostAuth = () => {

@@ -14,7 +14,7 @@
 
 ## Introduction
 
-RentFlow provides multiple integration options to connect with external systems, payment gateways, and third-party services. This guide covers the most common integrations and how to set them up.
+CALQULUS RMS provides multiple integration options to connect with external systems, payment gateways, and third-party services. This guide covers the most common integrations and how to set them up.
 
 ### Integration Types
 
@@ -34,9 +34,9 @@ RentFlow provides multiple integration options to connect with external systems,
 
 ### Prerequisites
 
-Before integrating with RentFlow:
-- Have active RentFlow account
-- Obtain API credentials from RentFlow
+Before integrating with CALQULUS RMS:
+- Have active CALQULUS RMS account
+- Obtain API credentials from CALQULUS RMS
 - Have accounts with third-party services
 - Understand integration requirements
 - Have technical resources for implementation
@@ -45,7 +45,7 @@ Before integrating with RentFlow:
 
 ### Overview
 
-RentFlow supports multiple payment gateways for rent collection:
+CALQULUS RMS supports multiple payment gateways for rent collection:
 - M-Pesa (mobile money)
 - Stripe (credit/debit cards)
 - Bank transfers (direct bank payments)
@@ -73,7 +73,7 @@ RentFlow supports multiple payment gateways for rent collection:
 
 ### Overview
 
-M-Pesa is Safaricom's mobile money service widely used in Kenya for payments. RentFlow provides full M-Pesa integration for rent collection.
+M-Pesa is Safaricom's mobile money service widely used in Kenya for payments. CALQULUS RMS provides full M-Pesa integration for rent collection.
 
 ### Prerequisites
 
@@ -95,7 +95,7 @@ M-Pesa is Safaricom's mobile money service widely used in Kenya for payments. Re
 4. Enable Lipa na M-Pesa Online
 5. Note your business shortcode and passkey
 
-#### 2. Configure in RentFlow
+#### 2. Configure in CALQULUS RMS
 
 1. Navigate to **Settings** → **Payment Methods**
 2. Select **M-Pesa**
@@ -123,12 +123,12 @@ M-Pesa is Safaricom's mobile money service widely used in Kenya for payments. Re
 
 ```
 1. Tenant initiates payment
-2. RentFlow sends STK Push to M-Pesa
+2. CALQULUS RMS sends STK Push to M-Pesa
 3. Tenant receives M-Pesa prompt
 4. Tenant enters M-Pesa PIN
 5. M-Pesa processes payment
-6. M-Pesa sends callback to RentFlow
-7. RentFlow updates payment status
+6. M-Pesa sends callback to CALQULUS RMS
+7. CALQULUS RMS updates payment status
 8. Tenant receives confirmation
 9. Manager receives notification
 ```
@@ -154,7 +154,7 @@ M-Pesa is Safaricom's mobile money service widely used in Kenya for payments. Re
 
 ### Overview
 
-Bank transfer integration allows tenants to pay rent via direct bank transfers. RentFlow automatically matches payments using reference numbers.
+Bank transfer integration allows tenants to pay rent via direct bank transfers. CALQULUS RMS automatically matches payments using reference numbers.
 
 ### Prerequisites
 
@@ -202,8 +202,8 @@ Bank transfer integration allows tenants to pay rent via direct bank transfers. 
 1. Tenant initiates bank transfer
 2. Tenant includes reference number
 3. Bank processes transfer
-4. RentFlow receives bank statement
-5. RentFlow matches payment by reference
+4. CALQULUS RMS receives bank statement
+5. CALQULUS RMS matches payment by reference
 6. Payment is automatically confirmed
 7. Tenant receives confirmation
 8. Manager receives notification
@@ -211,7 +211,7 @@ Bank transfer integration allows tenants to pay rent via direct bank transfers. 
 
 ### Automatic Payment Matching
 
-RentFlow can automatically match bank transfers:
+CALQULUS RMS can automatically match bank transfers:
 - **By Reference Number**: Match using tenant-specific reference
 - **By Amount**: Match using payment amount and date
 - **By Description**: Match using payment description
@@ -230,7 +230,7 @@ RentFlow can automatically match bank transfers:
 
 ### Overview
 
-Stripe integration enables credit and debit card payments for rent collection. RentFlow uses Stripe's secure payment processing.
+Stripe integration enables credit and debit card payments for rent collection. CALQULUS RMS uses Stripe's secure payment processing.
 
 ### Prerequisites
 
@@ -250,7 +250,7 @@ Stripe integration enables credit and debit card payments for rent collection. R
    - Secret Key (sk_live_...)
 4. For testing, use test keys (pk_test_..., sk_test_...)
 
-#### 2. Configure in RentFlow
+#### 2. Configure in CALQULUS RMS
 
 1. Navigate to **Settings** → **Payment Methods**
 2. Select **Stripe**
@@ -269,11 +269,11 @@ Stripe integration enables credit and debit card payments for rent collection. R
 1. In Stripe Dashboard, navigate to **Developers** → **Webhooks**
 2. Add webhook endpoint:
    ```
-   URL: https://app.rentflow.ink/api/webhooks/stripe
+   URL: https://app.calqulusrms.com/api/webhooks/stripe
    Events: payment_intent.succeeded, payment_intent.failed, charge.refunded
    ```
 3. Copy webhook signing secret
-4. Enter signing secret in RentFlow settings
+4. Enter signing secret in CALQULUS RMS settings
 
 #### 4. Configure Payment Settings
 
@@ -287,11 +287,11 @@ Stripe integration enables credit and debit card payments for rent collection. R
 
 ```
 1. Tenant enters card details
-2. RentFlow creates payment intent
+2. CALQULUS RMS creates payment intent
 3. Stripe processes payment
 4. 3D Secure authentication if required
-5. Stripe sends webhook to RentFlow
-6. RentFlow updates payment status
+5. Stripe sends webhook to CALQULUS RMS
+6. CALQULUS RMS updates payment status
 7. Tenant receives confirmation
 8. Manager receives notification
 ```
@@ -317,7 +317,7 @@ Stripe integration enables credit and debit card payments for rent collection. R
 
 ### Overview
 
-SMS gateway integration enables RentFlow to send SMS notifications for rent reminders, maintenance updates, and other communications.
+SMS gateway integration enables CALQULUS RMS to send SMS notifications for rent reminders, maintenance updates, and other communications.
 
 ### Prerequisites
 
@@ -344,7 +344,7 @@ SMS gateway integration enables RentFlow to send SMS notifications for rent remi
    - API Key
    - Sender ID (if configured)
 
-#### 2. Configure in RentFlow
+#### 2. Configure in CALQULUS RMS
 
 1. Navigate to **Settings** → **Notifications** → **SMS**
 2. Select SMS provider (Africa's Talking)
@@ -373,11 +373,11 @@ SMS gateway integration enables RentFlow to send SMS notifications for rent remi
 
 ```
 1. Event triggers notification (e.g., rent due)
-2. RentFlow generates SMS message
-3. RentFlow sends to SMS gateway
+2. CALQULUS RMS generates SMS message
+3. CALQULUS RMS sends to SMS gateway
 4. SMS gateway delivers to recipient
 5. Delivery status returned
-6. RentFlow logs delivery status
+6. CALQULUS RMS logs delivery status
 ```
 
 ### Testing SMS Integration
@@ -400,7 +400,7 @@ SMS gateway integration enables RentFlow to send SMS notifications for rent remi
 
 ### Overview
 
-Email service integration enables RentFlow to send transactional emails for notifications, reports, and communications.
+Email service integration enables CALQULUS RMS to send transactional emails for notifications, reports, and communications.
 
 ### Prerequisites
 
@@ -426,7 +426,7 @@ Email service integration enables RentFlow to send transactional emails for noti
 4. Note your API key
 5. Verify sender domain
 
-#### 2. Configure in RentFlow
+#### 2. Configure in CALQULUS RMS
 
 1. Navigate to **Settings** → **Notifications** → **Email**
 2. Select email provider (SendGrid)
@@ -456,11 +456,11 @@ Email service integration enables RentFlow to send transactional emails for noti
 
 ```
 1. Event triggers notification
-2. RentFlow generates email message
-3. RentFlow sends to email service
+2. CALQULUS RMS generates email message
+3. CALQULUS RMS sends to email service
 4. Email service delivers to recipient
 5. Delivery status returned
-6. RentFlow logs delivery status
+6. CALQULUS RMS logs delivery status
 7. Track opens and clicks
 ```
 
@@ -484,7 +484,7 @@ Email service integration enables RentFlow to send transactional emails for noti
 
 ### Overview
 
-Webhooks enable real-time notifications from RentFlow to external systems when events occur. This allows for automated workflows and data synchronization.
+Webhooks enable real-time notifications from CALQULUS RMS to external systems when events occur. This allows for automated workflows and data synchronization.
 
 ### Supported Webhook Events
 
@@ -503,7 +503,7 @@ Webhooks enable real-time notifications from RentFlow to external systems when e
 3. Verify endpoint is accessible via HTTPS
 4. Implement signature verification
 
-#### 2. Register Webhook in RentFlow
+#### 2. Register Webhook in CALQULUS RMS
 
 1. Navigate to **Settings** → **API** → **Webhooks**
 2. Click **Add Webhook**
@@ -526,7 +526,7 @@ const crypto = require('crypto');
 const app = express();
 
 app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
-  const signature = req.headers['x-rentflow-signature'];
+  const signature = req.headers['x-calqulusrms-signature'];
   const payload = req.body;
   
   // Verify signature
@@ -597,18 +597,18 @@ app.listen(3000);
 
 ### Overview
 
-RentFlow provides a RESTful API for custom integrations and automation. The API allows programmatic access to all RentFlow features.
+CALQULUS RMS provides a RESTful API for custom integrations and automation. The API allows programmatic access to all CALQULUS RMS features.
 
 ### Prerequisites
 
-- Active RentFlow account
-- API key from RentFlow
+- Active CALQULUS RMS account
+- API key from CALQULUS RMS
 - Understanding of REST APIs
 - Development environment
 
 ### Authentication
 
-RentFlow uses API keys for authentication:
+CALQULUS RMS uses API keys for authentication:
 
 ```http
 Authorization: Bearer YOUR_API_KEY
@@ -648,14 +648,14 @@ Authorization: Bearer YOUR_API_KEY
 #### Get Properties
 
 ```bash
-curl -X GET https://api.rentflow.ink/api/properties \
+curl -X GET https://api.calqulusrms.com/api/properties \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### Create Tenant
 
 ```bash
-curl -X POST https://api.rentflow.ink/api/tenants \
+curl -X POST https://api.calqulusrms.com/api/tenants \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -670,7 +670,7 @@ curl -X POST https://api.rentflow.ink/api/tenants \
 #### Create Payment
 
 ```bash
-curl -X POST https://api.rentflow.ink/api/payments \
+curl -X POST https://api.calqulusrms.com/api/payments \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -684,7 +684,7 @@ curl -X POST https://api.rentflow.ink/api/payments \
 
 ### Rate Limiting
 
-RentFlow API has rate limits:
+CALQULUS RMS API has rate limits:
 - **Standard**: 100 requests per minute
 - **Premium**: 1000 requests per minute
 - **Enterprise**: Custom limits
@@ -739,7 +739,7 @@ Error response format:
 1. Navigate to **Settings** → **Integrations** → **QuickBooks**
 2. Connect QuickBooks account
 3. Configure data sync settings
-4. Map RentFlow accounts to QuickBooks
+4. Map CALQULUS RMS accounts to QuickBooks
 5. Set up automatic sync
 
 #### Xero Integration
@@ -747,7 +747,7 @@ Error response format:
 1. Navigate to **Settings** → **Integrations** → **Xero**
 2. Connect Xero account
 3. Configure data sync settings
-4. Map RentFlow accounts to Xero
+4. Map CALQULUS RMS accounts to Xero
 5. Set up automatic sync
 
 ### CRM Integration
@@ -771,7 +771,7 @@ Error response format:
 ### Custom Integration
 
 For custom integrations:
-1. Use RentFlow API
+1. Use CALQULUS RMS API
 2. Implement webhooks
 3. Use data export features
 4. Configure scheduled sync
@@ -811,10 +811,10 @@ For custom integrations:
 ## Support
 
 For integration support:
-- **Documentation**: https://docs.rentflow.ink/api
-- **API Reference**: https://api.rentflow.ink/docs
-- **Support Email**: api-support@rentflow.ink
-- **Community Forum**: https://community.rentflow.ink
+- **Documentation**: https://docs.calqulusrms.com/api
+- **API Reference**: https://api.calqulusrms.com/docs
+- **Support Email**: api-support@calqulusrms.com
+- **Community Forum**: https://community.calqulusrms.com
 
 ## Appendix
 
@@ -828,13 +828,13 @@ For integration support:
 
 ### Additional Resources
 
-- **API Documentation**: https://api.rentflow.ink/docs
-- **Webhook Guide**: https://docs.rentflow.ink/webhooks
-- **SDK Downloads**: https://github.com/rentflow/sdk
-- **Integration Examples**: https://github.com/rentflow/examples
+- **API Documentation**: https://api.calqulusrms.com/docs
+- **Webhook Guide**: https://docs.calqulusrms.com/webhooks
+- **SDK Downloads**: https://github.com/calqulusrms/sdk
+- **Integration Examples**: https://github.com/calqulusrms/examples
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact api-support@rentflow.ink**
+**For questions or feedback, contact api-support@calqulusrms.com**

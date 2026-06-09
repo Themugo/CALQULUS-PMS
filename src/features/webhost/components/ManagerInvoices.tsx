@@ -785,7 +785,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   variant="outline"
                   className="border-green-600 text-green-300 hover:bg-green-600/20"
                   onClick={() => {
-                    setBulkSmsMessage('Dear {name}, you have {count} pending invoice(s) totaling {amount}. Invoice(s): {invoices}. Please pay to avoid service interruption. - RentFlow');
+                    setBulkSmsMessage('Dear {name}, you have {count} pending invoice(s) totaling {amount}. Invoice(s): {invoices}. Please pay to avoid service interruption. - CALQULUS RMS');
                     setBulkSmsDialogOpen(true);
                   }}
                   disabled={bulkActionLoading}

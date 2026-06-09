@@ -12,7 +12,7 @@ const sendEmail = async (apiKey: string, to: string[], subject: string, html: st
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "RentFlow <onboarding@resend.dev>",
+      from: "CALQULUS RMS <onboarding@resend.dev>",
       to,
       subject,
       html,
@@ -40,7 +40,7 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
 };
 
-const getSiteUrl = () => (getEnv("SITE_URL", "https://rentflow.ink")).replace(/\/+$/, "");
+const getSiteUrl = () => (getEnv("SITE_URL", "https://calqulusrms.com")).replace(/\/+$/, "");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
@@ -137,8 +137,8 @@ serve(async (req) => {
     switch (notificationType) {
       case 'new_invoice':
         subject = invoiceTypeLabel === 'registration' 
-          ? 'RentFlow: Registration Invoice Generated'
-          : 'RentFlow: Monthly Subscription Invoice Generated';
+          ? 'CALQULUS RMS: Registration Invoice Generated'
+          : 'CALQULUS RMS: Monthly Subscription Invoice Generated';
         
         htmlContent = `
           <!DOCTYPE html>
@@ -177,7 +177,7 @@ serve(async (req) => {
                 
                 <div class="footer">
                   <p>If you have any questions, please contact support.</p>
-                  <p>Thank you for using RentFlow!</p>
+                  <p>Thank you for using CALQULUS RMS!</p>
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@ serve(async (req) => {
         break;
 
       case 'payment_reminder':
-        subject = `RentFlow: Payment Reminder - Invoice Due ${formatDate(invoiceDueDate)}`;
+        subject = `CALQULUS RMS: Payment Reminder - Invoice Due ${formatDate(invoiceDueDate)}`;
         
         htmlContent = `
           <!DOCTYPE html>
@@ -225,7 +225,7 @@ serve(async (req) => {
                 
                 <div class="footer">
                   <p>If you've already made this payment, please disregard this email.</p>
-                  <p>Thank you for using RentFlow!</p>
+                  <p>Thank you for using CALQULUS RMS!</p>
                 </div>
               </div>
             </div>
@@ -235,7 +235,7 @@ serve(async (req) => {
         break;
 
       case 'payment_confirmed':
-        subject = 'RentFlow: Payment Confirmed - Thank You!';
+        subject = 'CALQULUS RMS: Payment Confirmed - Thank You!';
         
         htmlContent = `
           <!DOCTYPE html>
@@ -272,7 +272,7 @@ serve(async (req) => {
                 <a href="${portalUrl}" class="button">View Receipt</a>
                 
                 <div class="footer">
-                  <p>Thank you for your continued trust in RentFlow!</p>
+                  <p>Thank you for your continued trust in CALQULUS RMS!</p>
                 </div>
               </div>
             </div>

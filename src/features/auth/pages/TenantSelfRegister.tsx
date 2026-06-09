@@ -1,7 +1,7 @@
 /**
  * TenantSelfRegister
  *
- * Allows tenants to create a RentFlow account WITHOUT a manager invitation.
+ * Allows tenants to create a CALQULUS RMS account WITHOUT a manager invitation.
  * "Orphan tenant" — they self-manage their payment diary, receipts, and
  * property condition photos. They can later be linked to a manager's property
  * if the manager sends them an invitation.
@@ -15,7 +15,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
 import { UserPlus, Home, ChevronRight, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
-import rentflowLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/rentflow-logo.png';
 
 const STEPS = [
   { id: 'account',  label: 'Your account' },
@@ -143,7 +143,7 @@ const TenantSelfRegister: React.FC = () => {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <img src={rentflowLogo} alt="RentFlow" className="h-12 mx-auto mb-4" />
+          <img src={calqulusLogo} alt="CALQULUS RMS" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white">Create your tenant account</h1>
           <p className="text-slate-400 text-sm mt-1">
             Keep your payment records, receipts, and property condition photos — even without a manager invitation.

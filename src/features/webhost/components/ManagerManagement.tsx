@@ -147,9 +147,9 @@ const ManagerManagement: React.FC = () => {
             manager_user_id: manager.user_id,
             manager_email:   manager.email,
             manager_name:    manager.full_name || manager.email,
-            title:           'RentFlow Platform Service Agreement',
+            title:           'CALQULUS RMS Platform Service Agreement',
             contract_type:   'service_agreement',
-            description:     'Standard service agreement for RentFlow platform access',
+            description:     'Standard service agreement for CALQULUS RMS platform access',
             status:          'pending_signature',
             valid_from:      new Date().toISOString().slice(0, 10),
           });

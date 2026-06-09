@@ -13,7 +13,7 @@
 
 ## Introduction
 
-RentFlow Landlord Portal is a dedicated platform for property owners to monitor their properties, track revenue, and view financial performance. This manual will guide you through all the features available to landlords.
+CALQULUS RMS Landlord Portal is a dedicated platform for property owners to monitor their properties, track revenue, and view financial performance. This manual will guide you through all the features available to landlords.
 
 ### Key Features
 - Property performance monitoring
@@ -31,7 +31,7 @@ As a landlord, you have a revenue-only view of your properties. You will not see
 ### Account Setup
 
 1. **Login to Landlord Dashboard**
-   - Navigate to https://app.rentflow.ink/landlord/login
+   - Navigate to https://app.calqulusrms.com/landlord/login
    - Enter your email and password
    - Click "Sign In"
 
@@ -332,12 +332,12 @@ View report analytics:
 
 If you encounter issues not covered in this manual:
 - **Contact Property Manager**: Your primary point of contact
-- **Email**: support@rentflow.ink
+- **Email**: support@calqulusrms.com
 - **Phone**: [Support phone number]
 
 ### Contact Information
 
-- **Support Email**: support@rentflow.ink
+- **Support Email**: support@calqulusrms.com
 - **Business Hours**: Monday - Friday, 8:00 AM - 6:00 PM EAT
 
 ## Best Practices
@@ -375,7 +375,7 @@ As a landlord, you have access to aggregate financial and operational data about
 
 ## Updates and New Features
 
-RentFlow is regularly updated with new features and improvements. Check the dashboard for:
+CALQULUS RMS is regularly updated with new features and improvements. Check the dashboard for:
 - Feature announcements
 - System updates
 - New reports
@@ -400,12 +400,12 @@ RentFlow is regularly updated with new features and improvements. Check the dash
 
 ### Support Resources
 
-- **Documentation**: https://docs.rentflow.ink
-- **Manager Manual**: https://docs.rentflow.ink/manager
-- **Community Forum**: https://community.rentflow.ink
+- **Documentation**: https://docs.calqulusrms.com
+- **Manager Manual**: https://docs.calqulusrms.com/manager
+- **Community Forum**: https://community.calqulusrms.com
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact support@rentflow.ink**
+**For questions or feedback, contact support@calqulusrms.com**

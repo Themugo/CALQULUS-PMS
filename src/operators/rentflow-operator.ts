@@ -1,7 +1,7 @@
 /**
- * RentFlow Kubernetes Operator
+ * CALQULUS RMS Kubernetes Operator
  * 
- * Implements a custom Kubernetes operator for RentFlow application management:
+ * Implements a custom Kubernetes operator for CALQULUS RMS application management:
  * - Custom Resource Definition (CRD) management
  * - Deployment reconciliation
  * - Autoscaling management
@@ -9,8 +9,8 @@
  * - Event handling
  */
 
-// RentFlow custom resource spec
-export interface RentFlowSpec {
+// CALQULUS RMS custom resource spec
+export interface CalqulusRMSSpec {
   replicas: number;
   image: string;
   resources: {
@@ -32,8 +32,8 @@ export interface RentFlowSpec {
   environment: Record<string, string>;
 }
 
-// RentFlow custom resource status
-export interface RentFlowStatus {
+// CALQULUS RMS custom resource status
+export interface CalqulusRMSStatus {
   replicas: number;
   readyReplicas: number;
   updatedReplicas: number;
@@ -46,8 +46,8 @@ export interface RentFlowStatus {
   }>;
 }
 
-// RentFlow custom resource
-export interface RentFlowResource {
+// CALQULUS RMS custom resource
+export interface CalqulusRMSResource {
   apiVersion: string;
   kind: string;
   metadata: {
@@ -56,15 +56,15 @@ export interface RentFlowResource {
     uid: string;
     generation: number;
   };
-  spec: RentFlowSpec;
-  status?: RentFlowStatus;
+  spec: CalqulusRMSSpec;
+  status?: CalqulusRMSStatus;
 }
 
 /**
- * RentFlow Operator Controller
+ * CALQULUS RMS Operator Controller
  */
-export class RentFlowOperator {
-  private resources: Map<string, RentFlowResource>;
+export class CalqulusRMSOperator {
+  private resources: Map<string, CalqulusRMSResource>;
   private reconcilerInterval: number;
   private running: boolean;
 
@@ -79,7 +79,7 @@ export class RentFlowOperator {
    */
   async start(): Promise<void> {
     this.running = true;
-    console.warn('RentFlow operator started');
+    console.warn('CALQULUS RMS operator started');
 
     // Start reconciliation loop
     this.reconcileLoop();
@@ -90,39 +90,39 @@ export class RentFlowOperator {
    */
   async stop(): Promise<void> {
     this.running = false;
-    console.warn('RentFlow operator stopped');
+    console.warn('CALQULUS RMS operator stopped');
   }
 
   /**
-   * Add or update a RentFlow resource
+   * Add or update a CALQULUS RMS resource
    */
-  addResource(resource: RentFlowResource): void {
+  addResource(resource: CalqulusRMSResource): void {
     const key = `${resource.metadata.namespace}/${resource.metadata.name}`;
     this.resources.set(key, resource);
-    console.warn(`Added RentFlow resource: ${key}`);
+    console.warn(`Added CALQULUS RMS resource: ${key}`);
   }
 
   /**
-   * Remove a RentFlow resource
+   * Remove a CALQULUS RMS resource
    */
   removeResource(namespace: string, name: string): void {
     const key = `${namespace}/${name}`;
     this.resources.delete(key);
-    console.warn(`Removed RentFlow resource: ${key}`);
+    console.warn(`Removed CALQULUS RMS resource: ${key}`);
   }
 
   /**
-   * Get a RentFlow resource
+   * Get a CALQULUS RMS resource
    */
-  getResource(namespace: string, name: string): RentFlowResource | undefined {
+  getResource(namespace: string, name: string): CalqulusRMSResource | undefined {
     const key = `${namespace}/${name}`;
     return this.resources.get(key);
   }
 
   /**
-   * Get all RentFlow resources
+   * Get all CALQULUS RMS resources
    */
-  getAllResources(): RentFlowResource[] {
+  getAllResources(): CalqulusRMSResource[] {
     return Array.from(this.resources.values());
   }
 
@@ -140,10 +140,10 @@ export class RentFlowOperator {
   }
 
   /**
-   * Reconcile a RentFlow resource
+   * Reconcile a CALQULUS RMS resource
    */
-  private async reconcile(resource: RentFlowResource): Promise<void> {
-    console.warn(`Reconciling RentFlow resource: ${resource.metadata.namespace}/${resource.metadata.name}`);
+  private async reconcile(resource: CalqulusRMSResource): Promise<void> {
+    console.warn(`Reconciling CALQULUS RMS resource: ${resource.metadata.namespace}/${resource.metadata.name}`);
 
     // Initialize status if not present
     if (!resource.status) {
@@ -179,7 +179,7 @@ export class RentFlowOperator {
   /**
    * Check if deployment exists
    */
-  private async checkDeployment(_resource: RentFlowResource): Promise<boolean> {
+  private async checkDeployment(_resource: CalqulusRMSResource): Promise<boolean> {
     // In production, this would check the Kubernetes API
     // For now, we'll simulate it
     return Math.random() > 0.3;
@@ -188,7 +188,7 @@ export class RentFlowOperator {
   /**
    * Create deployment
    */
-  private async createDeployment(resource: RentFlowResource): Promise<void> {
+  private async createDeployment(resource: CalqulusRMSResource): Promise<void> {
     console.warn(`Creating deployment for ${resource.metadata.name}`);
     
     // In production, this would create the deployment via Kubernetes API
@@ -199,7 +199,7 @@ export class RentFlowOperator {
   /**
    * Update deployment
    */
-  private async updateDeployment(resource: RentFlowResource): Promise<void> {
+  private async updateDeployment(resource: CalqulusRMSResource): Promise<void> {
     console.warn(`Updating deployment for ${resource.metadata.name}`);
     
     // In production, this would update the deployment via Kubernetes API
@@ -210,7 +210,7 @@ export class RentFlowOperator {
   /**
    * Manage autoscaling
    */
-  private async manageAutoscaling(resource: RentFlowResource): Promise<void> {
+  private async manageAutoscaling(resource: CalqulusRMSResource): Promise<void> {
     const { autoscaling } = resource.spec;
     
     if (!autoscaling.enabled) {
@@ -227,7 +227,7 @@ export class RentFlowOperator {
   /**
    * Get ready replicas
    */
-  private async getReadyReplicas(resource: RentFlowResource): Promise<number> {
+  private async getReadyReplicas(resource: CalqulusRMSResource): Promise<number> {
     // In production, this would query the deployment status
     // For now, we'll simulate it
     return Math.floor(Math.random() * resource.spec.replicas);
@@ -237,7 +237,7 @@ export class RentFlowOperator {
    * Update status
    */
   private async updateStatus(
-    resource: RentFlowResource,
+    resource: CalqulusRMSResource,
     type: string,
     reason: string,
     message: string
@@ -312,16 +312,16 @@ export class RentFlowOperator {
 }
 
 /**
- * RentFlow Operator Manager
+ * CALQULUS RMS Operator Manager
  */
-export class RentFlowOperatorManager {
-  private operator: RentFlowOperator | null = null;
+export class CalqulusRMSOperatorManager {
+  private operator: CalqulusRMSOperator | null = null;
 
   /**
    * Initialize operator
    */
   async initialize(): Promise<void> {
-    this.operator = new RentFlowOperator(5000);
+    this.operator = new CalqulusRMSOperator(5000);
     await this.operator.start();
   }
 
@@ -338,20 +338,20 @@ export class RentFlowOperatorManager {
   /**
    * Get operator instance
    */
-  getOperator(): RentFlowOperator | null {
+  getOperator(): CalqulusRMSOperator | null {
     return this.operator;
   }
 }
 
 // Global operator manager instance
-let globalOperatorManager: RentFlowOperatorManager | null = null;
+let globalOperatorManager: CalqulusRMSOperatorManager | null = null;
 
 /**
  * Get global operator manager instance
  */
-export function getOperatorManager(): RentFlowOperatorManager {
+export function getOperatorManager(): CalqulusRMSOperatorManager {
   if (!globalOperatorManager) {
-    globalOperatorManager = new RentFlowOperatorManager();
+    globalOperatorManager = new CalqulusRMSOperatorManager();
   }
   return globalOperatorManager;
 }

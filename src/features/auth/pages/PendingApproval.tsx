@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import rentflowLogo from "@/assets/rentflow-logo.png";
+import calqulusLogo from "@/assets/rentflow-logo.png";
 
 interface ManagerProfileData {
   approval_status?: string;
@@ -87,7 +87,7 @@ const PendingApproval = () => {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <img src={rentflowLogo} alt="RentFlow" className="h-12" />
+            <img src={calqulusLogo} alt="CALQULUS RMS" className="h-12" />
           </div>
           <div className="flex items-center justify-center gap-2 text-amber-500 mb-2">
             <Building2 className="h-5 w-5" />

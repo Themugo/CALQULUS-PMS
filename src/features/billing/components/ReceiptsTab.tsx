@@ -66,7 +66,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
     try {
       const co = await getCompanySettings();
       const { error } = await supabase.functions.invoke("send-receipt-email", {
-        body: { tenantEmail: inv.tenants.email, tenantName: inv.tenants.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "RentFlow" },
+        body: { tenantEmail: inv.tenants.email, tenantName: inv.tenants.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS RMS" },
       });
       if (error) throw error;
       toast({ title: "Receipt Sent", description: `Receipt emailed to ${inv.tenants.name}.` });
@@ -85,7 +85,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
       const inv = receiptsForBulkEmail[i];
       try {
         const { error } = await supabase.functions.invoke("send-receipt-email", {
-          body: { tenantEmail: inv.tenants!.email, tenantName: inv.tenants!.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "RentFlow" },
+          body: { tenantEmail: inv.tenants!.email, tenantName: inv.tenants!.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS RMS" },
         });
         if (error) throw error;
         ok++;

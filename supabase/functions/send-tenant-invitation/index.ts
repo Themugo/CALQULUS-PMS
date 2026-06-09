@@ -61,7 +61,7 @@ async function sendWhatsApp(phone: string, tenantName: string, propertyName: str
         to: formattedPhone,
         type: "text",
         text: {
-          body: `Hi ${tenantName}! 👋\n\nYou've been invited to join ${propertyName}${unit ? ` (Unit ${unit})` : ""} on RentFlow.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith RentFlow, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
+          body: `Hi ${tenantName}! 👋\n\nYou've been invited to join ${propertyName}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith CALQULUS RMS, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
         }
       }),
     });
@@ -195,7 +195,7 @@ serve(async (req: Request): Promise<Response> => {
       const { data: newInvitation, error: insertError } = await supabaseAdmin
         .from("tenant_invitations")
         .insert({
-          email: email || `phone-${phone}@placeholder.rentflow`, // Use placeholder if no email
+          email: email || `phone-${phone}@placeholder.calqulusrms`, // Use placeholder if no email
           tenant_name: tenantName,
           phone: phone || null,
           property_id: propertyId,
@@ -233,7 +233,7 @@ serve(async (req: Request): Promise<Response> => {
     const managerName = profile?.full_name || user.email;
 
     // Build the invitation URL - Use the published app URL
-    const appUrl = getEnv("SITE_URL", "https://rentflow.ink");
+    const appUrl = getEnv("SITE_URL", "https://calqulusrms.com");
     const invitationUrl = `${appUrl}/tenant/invitation?token=${invitation.token}`;
 
     logStep("Invitation URL generated", { url: invitationUrl });
@@ -247,7 +247,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Send SMS if phone is provided
     if (phone) {
-      const smsMessage = `Hi ${tenantName}! You've been invited to join ${propertyName}${unit ? ` (Unit ${unit})` : ""} on RentFlow. Create your account: ${invitationUrl}`;
+      const smsMessage = `Hi ${tenantName}! You've been invited to join ${propertyName}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS. Create your account: ${invitationUrl}`;
       const smsResult = await sendSMS(phone, smsMessage);
       notificationResults.sms.sent = smsResult.success;
       notificationResults.sms.error = smsResult.error || null;
@@ -259,7 +259,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // If no email provided, return success with phone notification results
-    if (!email || email.includes('@placeholder.rentflow')) {
+    if (!email || email.includes('@placeholder.calqulusrms')) {
       logStep("No email provided - invitation sent via phone channels", { notificationResults });
       return new Response(JSON.stringify({ 
         success: true, 
@@ -300,18 +300,18 @@ serve(async (req: Request): Promise<Response> => {
       </head>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to RentFlow</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to CALQULUS RMS</h1>
         </div>
         
         <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 12px 12px;">
           <h2 style="color: #333; margin-top: 0;">Hi ${tenantName}!</h2>
           
           <p style="color: #555; font-size: 16px;">
-            <strong>${managerName}</strong> has invited you to join <strong>${propertyName}</strong>${unit ? ` (Unit ${unit})` : ""} as a tenant on RentFlow.
+            <strong>${managerName}</strong> has invited you to join <strong>${propertyName}</strong>${unit ? ` (Unit ${unit})` : ""} as a tenant on CALQULUS RMS.
           </p>
           
           <p style="color: #555; font-size: 16px;">
-            RentFlow makes it easy to:
+            CALQULUS RMS makes it easy to:
           </p>
           
           <ul style="color: #555; font-size: 16px;">
@@ -352,9 +352,9 @@ serve(async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: getEnv("RESEND_FROM_EMAIL", "RentFlow <onboarding@resend.dev>"),
+        from: getEnv("RESEND_FROM_EMAIL", "CALQULUS RMS <onboarding@resend.dev>"),
         to: [email],
-        subject: `You've been invited to join ${propertyName} on RentFlow`,
+        subject: `You've been invited to join ${propertyName} on CALQULUS RMS`,
         html: emailHtml,
       }),
     });

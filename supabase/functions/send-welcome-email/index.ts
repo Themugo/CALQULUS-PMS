@@ -110,7 +110,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, ${isManager ? '#6366f1' : '#10b981'} 0%, ${isManager ? '#4f46e5' : '#059669'} 100%); padding: 40px 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to RentFlow! 🎉</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to CALQULUS RMS! 🎉</h1>
             <p style="color: rgba(255,255,255,0.9); margin-top: 10px; font-size: 16px;">Your ${roleTitle} Account is Ready</p>
           </div>
           
@@ -121,14 +121,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
             </p>
             
             <p style="color: #475569; line-height: 1.6;">
-              Thank you for joining RentFlow! Your account has been successfully created and you're all set to start using our property management platform.
+              Thank you for joining CALQULUS RMS! Your account has been successfully created and you're all set to start using our property management platform.
             </p>
 
             ${isManager ? managerOnboarding : tenantOnboarding}
 
             <!-- CTA Button -->
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://rentflow.ink${portalUrl}" 
+              <a href="https://calqulusrms.com${portalUrl}" 
                  style="display: inline-block; background: ${isManager ? '#4f46e5' : '#10b981'}; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
                 Go to Your ${isManager ? 'Dashboard' : 'Portal'}
               </a>
@@ -144,7 +144,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           <!-- Footer -->
           <div style="background: #f8fafc; padding: 20px 30px; text-align: center;">
             <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-              © ${new Date().getFullYear()} RentFlow. All rights reserved.
+              © ${new Date().getFullYear()} CALQULUS RMS. All rights reserved.
             </p>
           </div>
         </div>
@@ -159,9 +159,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RentFlow <onboarding@resend.dev>",
+        from: "CALQULUS RMS <onboarding@resend.dev>",
         to: [email],
-        subject: `Welcome to RentFlow, ${fullName}! 🏠`,
+        subject: `Welcome to CALQULUS RMS, ${fullName}! 🏠`,
         html: emailHtml,
       }),
     });

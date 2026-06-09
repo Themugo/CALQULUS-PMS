@@ -93,7 +93,7 @@ export const MobileInstallBanner = () => {
         <div className="flex items-start gap-4">
           <div className="relative">
             <div className="h-14 w-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-primary/20">
-              <img src="/pwa-192x192.png" alt="RentFlow" className="h-full w-full object-cover" />
+              <img src="/pwa-192x192.png" alt="CALQULUS RMS" className="h-full w-full object-cover" />
             </div>
             <div className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
               <Zap className="h-3 w-3 text-primary-foreground" />
@@ -101,7 +101,7 @@ export const MobileInstallBanner = () => {
           </div>
           
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-foreground text-base">Get the RentFlow App</h4>
+            <h4 className="font-bold text-foreground text-base">Get the CALQULUS RMS App</h4>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               {isIOS 
                 ? "Add to your Home Screen for the best experience" 

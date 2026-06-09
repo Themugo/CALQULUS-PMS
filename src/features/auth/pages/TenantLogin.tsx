@@ -10,7 +10,7 @@ import { UserPlus, Link2 } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
-import rentflowLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/rentflow-logo.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 const TenantLogin = () => {
@@ -151,8 +151,8 @@ const TenantLogin = () => {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 
-              src={rentflowLogo} 
-              alt="RentFlow.ink" 
+              src={calqulusLogo} 
+              alt="CALQULUS RMS" 
               className="h-14 w-auto"
             />
           </div>

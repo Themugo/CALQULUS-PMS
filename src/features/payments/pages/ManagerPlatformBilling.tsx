@@ -594,8 +594,8 @@ const ManagerPlatformBilling = () => {
       }
 
       const message = type === 'invoice' 
-        ? `📄 RentFlow Invoice\n\nInvoice: ${invoice.invoice_number}\nAmount: ${formatCurrency(invoice.amount)}\nDue: ${format(new Date(invoice.due_date), "dd/MM/yy")}\nDescription: ${invoice.description || "Platform fee"}\n\nPlease log in to pay.`
-        : `✅ RentFlow Receipt\n\nReceipt: ${invoice.invoice_number.replace("INV-", "RCP-")}\nAmount: ${formatCurrency(invoice.amount)}\nPaid: ${invoice.paid_date ? format(new Date(invoice.paid_date), "dd/MM/yy") : "N/A"}\n\nThank you for your payment!`;
+        ? `📄 CALQULUS RMS Invoice\n\nInvoice: ${invoice.invoice_number}\nAmount: ${formatCurrency(invoice.amount)}\nDue: ${format(new Date(invoice.due_date), "dd/MM/yy")}\nDescription: ${invoice.description || "Platform fee"}\n\nPlease log in to pay.`
+        : `✅ CALQULUS RMS Receipt\n\nReceipt: ${invoice.invoice_number.replace("INV-", "RCP-")}\nAmount: ${formatCurrency(invoice.amount)}\nPaid: ${invoice.paid_date ? format(new Date(invoice.paid_date), "dd/MM/yy") : "N/A"}\n\nThank you for your payment!`;
 
       const { data, error } = await supabase.functions.invoke("send-whatsapp-notification", {
         body: {
@@ -646,7 +646,7 @@ const ManagerPlatformBilling = () => {
 
   if (loading) {
     return (
-      <Layout title="Platform Billing" subtitle="Invoices & Contracts with RentFlow">
+      <Layout title="Platform Billing" subtitle="Invoices & Contracts with CALQULUS RMS">
         <div className="flex items-center justify-center py-20">
           <RefreshCw className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -721,7 +721,7 @@ Status: PAID
   return (
     <Layout 
       title="Platform Billing" 
-      subtitle="Invoices & Contracts with RentFlow"
+      subtitle="Invoices & Contracts with CALQULUS RMS"
       headerActions={headerActions}
     >
       <div className="space-y-6">

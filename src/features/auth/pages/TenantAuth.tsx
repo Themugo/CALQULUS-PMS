@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
-import rentflowLogo from '@/assets/rentflow-logo.png';
+import calqulusLogo from '@/assets/rentflow-logo.png';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 interface Invitation {
@@ -418,7 +418,7 @@ const TenantAuth = () => {
         <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src={rentflowLogo} alt="RentFlow" className="h-16 w-auto" />
+              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-16 w-auto" />
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">Self-Registration</CardTitle>
             <CardDescription className="text-muted-foreground mt-2">
@@ -521,8 +521,8 @@ const TenantAuth = () => {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 
-              src={rentflowLogo} 
-              alt="RentFlow.ink" 
+              src={calqulusLogo} 
+              alt="CALQULUS RMS" 
               className="h-14 w-auto"
             />
           </div>

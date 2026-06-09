@@ -14,12 +14,12 @@ This runbook defines role access, demo logins, and end-to-end payment checks.
 
 Public demo accounts are shown in `LandlordAuth` when `VITE_ENABLE_PUBLIC_DEMO=true`.
 
-- Manager: `demo.manager@rentflow.ink` / `Demo@2026`
-- Tenant (linked): `demo.tenant1@rentflow.ink` / `Demo@2026`
-- Tenant (linked): `demo.tenant2@rentflow.ink` / `Demo@2026`
-- Tenant (orphan): `demo.tenant3@rentflow.ink` / `Demo@2026`
-- Landlord: `demo.landlord@rentflow.ink` / `Demo@2026`
-- Agency/Agent (submanager): `demo.agent@rentflow.ink` / `Demo@2026`
+- Manager: `demo.manager@calqulusrms.com` / `Demo@2026`
+- Tenant (linked): `demo.tenant1@calqulusrms.com` / `Demo@2026`
+- Tenant (linked): `demo.tenant2@calqulusrms.com` / `Demo@2026`
+- Tenant (orphan): `demo.tenant3@calqulusrms.com` / `Demo@2026`
+- Landlord: `demo.landlord@calqulusrms.com` / `Demo@2026`
+- Agency/Agent (submanager): `demo.agent@calqulusrms.com` / `Demo@2026`
 
 ## Webhost login procedure
 
@@ -33,9 +33,9 @@ Public demo accounts are shown in `LandlordAuth` when `VITE_ENABLE_PUBLIC_DEMO=t
 
 ## Internal test credentials (non-public)
 
-- Manager: `jimmythemugo@gmail.com` / `RentFlow@2026!`
-- Tenant: `kamauwamakena@gmail.com` / `RentFlow@2026!`
-- Webhost: `mugo.james27@gmail.com` / `RentFlow@2026!`
+- Manager: `jimmythemugo@gmail.com` / `CALQULUS RMS@2026!`
+- Tenant: `kamauwamakena@gmail.com` / `CALQULUS RMS@2026!`
+- Webhost: `mugo.james27@gmail.com` / `CALQULUS RMS@2026!`
 
 ## Payment flow test matrix (M-Pesa)
 

@@ -186,7 +186,7 @@ const Billing = () => {
           body: {
             tenantEmail:   inserted.tenants.email,
             tenantName:    inserted.tenants.name,
-            companyName:   co?.company_name ?? "RentFlow",
+            companyName:   co?.company_name ?? "CALQULUS RMS",
             invoiceNumber: inserted.invoice_number,
             amount:        inserted.amount,
             dueDate:       inserted.due_date,

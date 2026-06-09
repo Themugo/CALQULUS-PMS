@@ -15,20 +15,20 @@
 
 ## Introduction
 
-This guide provides practical examples for using the RentFlow API. Each example includes code samples in multiple languages and explains common use cases.
+This guide provides practical examples for using the CALQULUS RMS API. Each example includes code samples in multiple languages and explains common use cases.
 
 ### Prerequisites
 
-- Active RentFlow account
-- API key from RentFlow dashboard
+- Active CALQULUS RMS account
+- API key from CALQULUS RMS dashboard
 - Understanding of REST APIs
 - Development environment
 
 ### Base URL
 
 ```
-Production: https://api.rentflow.ink
-Sandbox: https://api-sandbox.rentflow.ink
+Production: https://api.calqulusrms.com
+Sandbox: https://api-sandbox.calqulusrms.com
 ```
 
 ### API Versioning
@@ -36,14 +36,14 @@ Sandbox: https://api-sandbox.rentflow.ink
 The current API version is `v1`. Include the version in your requests:
 
 ```
-https://api.rentflow.ink/v1/...
+https://api.calqulusrms.com/v1/...
 ```
 
 ## Authentication
 
 ### Getting Your API Key
 
-1. Log in to RentFlow dashboard
+1. Log in to CALQULUS RMS dashboard
 2. Navigate to Settings → API
 3. Generate new API key
 4. Copy the key securely
@@ -61,14 +61,14 @@ Authorization: Bearer YOUR_API_KEY
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/properties \
+curl -X GET https://api.calqulusrms.com/v1/properties \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript (Fetch)
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -85,7 +85,7 @@ headers = {
     'Authorization': 'Bearer YOUR_API_KEY'
 }
 
-response = requests.get('https://api.rentflow.ink/v1/properties', headers=headers)
+response = requests.get('https://api.calqulusrms.com/v1/properties', headers=headers)
 data = response.json()
 ```
 
@@ -94,7 +94,7 @@ data = response.json()
 ```javascript
 const axios = require('axios');
 
-const response = await axios.get('https://api.rentflow.ink/v1/properties', {
+const response = await axios.get('https://api.calqulusrms.com/v1/properties', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -111,14 +111,14 @@ Retrieve all properties for your account.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/properties \
+curl -X GET https://api.calqulusrms.com/v1/properties \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -155,7 +155,7 @@ Create a new property.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/properties \
+curl -X POST https://api.calqulusrms.com/v1/properties \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -169,7 +169,7 @@ curl -X POST https://api.rentflow.ink/v1/properties \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -207,14 +207,14 @@ Retrieve details for a specific property.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/properties/prop_123 \
+curl -X GET https://api.calqulusrms.com/v1/properties/prop_123 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties/prop_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties/prop_123', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -229,7 +229,7 @@ Update an existing property.
 #### cURL
 
 ```bash
-curl -X PUT https://api.rentflow.ink/v1/properties/prop_123 \
+curl -X PUT https://api.calqulusrms.com/v1/properties/prop_123 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -241,7 +241,7 @@ curl -X PUT https://api.rentflow.ink/v1/properties/prop_123 \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties/prop_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties/prop_123', {
   method: 'PUT',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -262,14 +262,14 @@ Delete a property.
 #### cURL
 
 ```bash
-curl -X DELETE https://api.rentflow.ink/v1/properties/prop_123 \
+curl -X DELETE https://api.calqulusrms.com/v1/properties/prop_123 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/properties/prop_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/properties/prop_123', {
   method: 'DELETE',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
@@ -286,14 +286,14 @@ Retrieve all tenants for your account.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/tenants \
+curl -X GET https://api.calqulusrms.com/v1/tenants \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/tenants', {
+const response = await fetch('https://api.calqulusrms.com/v1/tenants', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -331,7 +331,7 @@ Create a new tenant.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/tenants \
+curl -X POST https://api.calqulusrms.com/v1/tenants \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -346,7 +346,7 @@ curl -X POST https://api.rentflow.ink/v1/tenants \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/tenants', {
+const response = await fetch('https://api.calqulusrms.com/v1/tenants', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -386,14 +386,14 @@ Retrieve details for a specific tenant.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/tenants/tenant_123 \
+curl -X GET https://api.calqulusrms.com/v1/tenants/tenant_123 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/tenants/tenant_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/tenants/tenant_123', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -408,7 +408,7 @@ Update an existing tenant.
 #### cURL
 
 ```bash
-curl -X PUT https://api.rentflow.ink/v1/tenants/tenant_123 \
+curl -X PUT https://api.calqulusrms.com/v1/tenants/tenant_123 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -420,7 +420,7 @@ curl -X PUT https://api.rentflow.ink/v1/tenants/tenant_123 \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/tenants/tenant_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/tenants/tenant_123', {
   method: 'PUT',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -443,14 +443,14 @@ Retrieve all leases for your account.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/leases \
+curl -X GET https://api.calqulusrms.com/v1/leases \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/leases', {
+const response = await fetch('https://api.calqulusrms.com/v1/leases', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -489,7 +489,7 @@ Create a new lease.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/leases \
+curl -X POST https://api.calqulusrms.com/v1/leases \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -505,7 +505,7 @@ curl -X POST https://api.rentflow.ink/v1/leases \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/leases', {
+const response = await fetch('https://api.calqulusrms.com/v1/leases', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -548,14 +548,14 @@ Retrieve details for a specific lease.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/leases/lease_123 \
+curl -X GET https://api.calqulusrms.com/v1/leases/lease_123 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/leases/lease_123', {
+const response = await fetch('https://api.calqulusrms.com/v1/leases/lease_123', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -572,14 +572,14 @@ Retrieve all payments for your account.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/payments \
+curl -X GET https://api.calqulusrms.com/v1/payments \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/payments', {
+const response = await fetch('https://api.calqulusrms.com/v1/payments', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -618,7 +618,7 @@ Create a new payment.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/payments \
+curl -X POST https://api.calqulusrms.com/v1/payments \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -633,7 +633,7 @@ curl -X POST https://api.rentflow.ink/v1/payments \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/payments', {
+const response = await fetch('https://api.calqulusrms.com/v1/payments', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -673,7 +673,7 @@ Refund a payment.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/payments/pay_123/refund \
+curl -X POST https://api.calqulusrms.com/v1/payments/pay_123/refund \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -685,7 +685,7 @@ curl -X POST https://api.rentflow.ink/v1/payments/pay_123/refund \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/payments/pay_123/refund', {
+const response = await fetch('https://api.calqulusrms.com/v1/payments/pay_123/refund', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -708,14 +708,14 @@ Retrieve all maintenance requests.
 #### cURL
 
 ```bash
-curl -X GET https://api.rentflow.ink/v1/maintenance \
+curl -X GET https://api.calqulusrms.com/v1/maintenance \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/maintenance', {
+const response = await fetch('https://api.calqulusrms.com/v1/maintenance', {
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY'
   }
@@ -754,7 +754,7 @@ Create a new maintenance request.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/maintenance \
+curl -X POST https://api.calqulusrms.com/v1/maintenance \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -769,7 +769,7 @@ curl -X POST https://api.rentflow.ink/v1/maintenance \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/maintenance', {
+const response = await fetch('https://api.calqulusrms.com/v1/maintenance', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -807,7 +807,7 @@ const request = await response.json();
 
 ### Setting Up Webhooks
 
-Webhooks allow you to receive real-time notifications when events occur in RentFlow.
+Webhooks allow you to receive real-time notifications when events occur in CALQULUS RMS.
 
 ### Register Webhook
 
@@ -816,7 +816,7 @@ Register a new webhook endpoint.
 #### cURL
 
 ```bash
-curl -X POST https://api.rentflow.ink/v1/webhooks \
+curl -X POST https://api.calqulusrms.com/v1/webhooks \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -829,7 +829,7 @@ curl -X POST https://api.rentflow.ink/v1/webhooks \
 #### JavaScript
 
 ```javascript
-const response = await fetch('https://api.rentflow.ink/v1/webhooks', {
+const response = await fetch('https://api.calqulusrms.com/v1/webhooks', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -868,7 +868,7 @@ const crypto = require('crypto');
 const app = express();
 
 app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
-  const signature = req.headers['x-rentflow-signature'];
+  const signature = req.headers['x-calqulusrms-signature'];
   const payload = req.body;
   
   // Verify signature
@@ -963,7 +963,7 @@ All errors follow this format:
 
 ```javascript
 try {
-  const response = await fetch('https://api.rentflow.ink/v1/properties', {
+  const response = await fetch('https://api.calqulusrms.com/v1/properties', {
     headers: {
       'Authorization': 'Bearer YOUR_API_KEY'
     }
@@ -988,7 +988,7 @@ try {
 import requests
 
 try:
-    response = requests.get('https://api.rentflow.ink/v1/properties', headers={
+    response = requests.get('https://api.calqulusrms.com/v1/properties', headers={
         'Authorization': 'Bearer YOUR_API_KEY'
     })
     
@@ -1010,7 +1010,7 @@ except requests.exceptions.RequestException as error:
 
 ### Rate Limit Headers
 
-RentFlow includes rate limit information in response headers:
+CALQULUS RMS includes rate limit information in response headers:
 
 ```
 X-RateLimit-Limit: 100
@@ -1105,8 +1105,8 @@ def make_request(url, headers=None):
 ### Example API Client Class
 
 ```javascript
-class RentFlowAPI {
-  constructor(apiKey, baseUrl = 'https://api.rentflow.ink/v1') {
+class CALQULUSRMSAPI {
+  constructor(apiKey, baseUrl = 'https://api.calqulusrms.com/v1') {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
   }
@@ -1154,20 +1154,20 @@ class RentFlowAPI {
 }
 
 // Usage
-const api = new RentFlowAPI('YOUR_API_KEY');
+const api = new CALQULUSRMSAPI('YOUR_API_KEY');
 const properties = await api.getProperties();
 ```
 
 ## Additional Resources
 
-- **API Documentation**: https://api.rentflow.ink/docs
-- **Integration Guides**: https://docs.rentflow.ink/integration
-- **SDK Downloads**: https://github.com/rentflow/sdk
-- **Community Forum**: https://community.rentflow.ink
-- **Support Email**: api-support@rentflow.ink
+- **API Documentation**: https://api.calqulusrms.com/docs
+- **Integration Guides**: https://docs.calqulusrms.com/integration
+- **SDK Downloads**: https://github.com/calqulusrms/sdk
+- **Community Forum**: https://community.calqulusrms.com
+- **Support Email**: api-support@calqulusrms.com
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact api-support@rentflow.ink**
+**For questions or feedback, contact api-support@calqulusrms.com**

@@ -32,13 +32,13 @@ const IDS = {
 };
 
 const DEMO_USERS = [
-  { id: IDS.manager,  email: "demo.manager@rentflow.ink",  name: "James Kariuki",    role: "manager" },
-  { id: IDS.tenant1,  email: "demo.tenant1@rentflow.ink",  name: "Grace Wanjiku",    role: "tenant", tenantId: IDS.ten1 },
-  { id: IDS.tenant2,  email: "demo.tenant2@rentflow.ink",  name: "Brian Otieno",     role: "tenant", tenantId: IDS.ten2 },
-  { id: IDS.tenant3,  email: "demo.tenant3@rentflow.ink",  name: "Amina Hassan",     role: "tenant" },
-  { id: IDS.landlord, email: "demo.landlord@rentflow.ink", name: "Peter Mwangi",     role: "landlord" },
-  { id: IDS.agent,    email: "demo.agent@rentflow.ink",    name: "Fatuma Abubakar",  role: "submanager" },
-  { id: IDS.provider, email: "demo.provider@rentflow.ink", name: "Joseph Kamau",     role: "tenant" },
+  { id: IDS.manager,  email: "demo.manager@calqulusrms.com",  name: "James Kariuki",    role: "manager" },
+  { id: IDS.tenant1,  email: "demo.tenant1@calqulusrms.com",  name: "Grace Wanjiku",    role: "tenant", tenantId: IDS.ten1 },
+  { id: IDS.tenant2,  email: "demo.tenant2@calqulusrms.com",  name: "Brian Otieno",     role: "tenant", tenantId: IDS.ten2 },
+  { id: IDS.tenant3,  email: "demo.tenant3@calqulusrms.com",  name: "Amina Hassan",     role: "tenant" },
+  { id: IDS.landlord, email: "demo.landlord@calqulusrms.com", name: "Peter Mwangi",     role: "landlord" },
+  { id: IDS.agent,    email: "demo.agent@calqulusrms.com",    name: "Fatuma Abubakar",  role: "submanager" },
+  { id: IDS.provider, email: "demo.provider@calqulusrms.com", name: "Joseph Kamau",     role: "tenant" },
 ];
 
 const DEMO_PASSWORD = "Demo@2026";
@@ -153,13 +153,13 @@ async function seedDemoData(supabase: any) {
 
   // ── Profiles ─────────────────────────────────────────────────────
   await supabase.from("profiles").upsert([
-    { id: IDS.manager,  full_name: "James Kariuki",    email: "demo.manager@rentflow.ink",  phone: "0712000001" },
-    { id: IDS.tenant1,  full_name: "Grace Wanjiku",    email: "demo.tenant1@rentflow.ink",  phone: "0712000002" },
-    { id: IDS.tenant2,  full_name: "Brian Otieno",     email: "demo.tenant2@rentflow.ink",  phone: "0712000003" },
-    { id: IDS.tenant3,  full_name: "Amina Hassan",     email: "demo.tenant3@rentflow.ink",  phone: "0712000004" },
-    { id: IDS.landlord, full_name: "Peter Mwangi",     email: "demo.landlord@rentflow.ink", phone: "0712000005" },
-    { id: IDS.agent,    full_name: "Fatuma Abubakar",  email: "demo.agent@rentflow.ink",    phone: "0712000006" },
-    { id: IDS.provider, full_name: "Joseph Kamau",     email: "demo.provider@rentflow.ink", phone: "0722123456" },
+    { id: IDS.manager,  full_name: "James Kariuki",    email: "demo.manager@calqulusrms.com",  phone: "0712000001" },
+    { id: IDS.tenant1,  full_name: "Grace Wanjiku",    email: "demo.tenant1@calqulusrms.com",  phone: "0712000002" },
+    { id: IDS.tenant2,  full_name: "Brian Otieno",     email: "demo.tenant2@calqulusrms.com",  phone: "0712000003" },
+    { id: IDS.tenant3,  full_name: "Amina Hassan",     email: "demo.tenant3@calqulusrms.com",  phone: "0712000004" },
+    { id: IDS.landlord, full_name: "Peter Mwangi",     email: "demo.landlord@calqulusrms.com", phone: "0712000005" },
+    { id: IDS.agent,    full_name: "Fatuma Abubakar",  email: "demo.agent@calqulusrms.com",    phone: "0712000006" },
+    { id: IDS.provider, full_name: "Joseph Kamau",     email: "demo.provider@calqulusrms.com", phone: "0722123456" },
   ], { onConflict: "id" });
   log.push("✓ Profiles");
 
@@ -181,7 +181,7 @@ async function seedDemoData(supabase: any) {
     { onConflict: "manager_user_id" }
   );
   await supabase.from("agencies").upsert(
-    { id: "aaaaaaaa-aaaa-aaaa-aaaa-000000000001", manager_id: IDS.manager, name: "Nairobi Realty Group", email: "demo.manager@rentflow.ink", phone: "0712000001", county: "Nairobi", status: "active", tier: "standard" },
+    { id: "aaaaaaaa-aaaa-aaaa-aaaa-000000000001", manager_id: IDS.manager, name: "Nairobi Realty Group", email: "demo.manager@calqulusrms.com", phone: "0712000001", county: "Nairobi", status: "active", tier: "standard" },
     { onConflict: "manager_id" }
   );
   log.push("✓ Manager profile + agency");
@@ -233,8 +233,8 @@ async function seedDemoData(supabase: any) {
 
   // ── Tenants ───────────────────────────────────────────────────────
   await supabase.from("tenants").upsert([
-    { id: IDS.ten1, manager_id: IDS.manager, name: "Grace Wanjiku",  email: "demo.tenant1@rentflow.ink", phone: "0712000002", property: "Sunset Gardens",        unit: "A3", property_id: IDS.prop1, unit_id: "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb", monthly_rent: 8500,  deposit_amount: 17000, deposit_balance: 17000, move_in_date: "2025-03-01", status: "active" },
-    { id: IDS.ten2, manager_id: IDS.manager, name: "Brian Otieno",   email: "demo.tenant2@rentflow.ink", phone: "0712000003", property: "Valley View Bungalows", unit: "B1", property_id: IDS.prop2, unit_id: "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb", monthly_rent: 35000, deposit_amount: 70000, deposit_balance: 70000, move_in_date: "2024-09-15", status: "active" },
+    { id: IDS.ten1, manager_id: IDS.manager, name: "Grace Wanjiku",  email: "demo.tenant1@calqulusrms.com", phone: "0712000002", property: "Sunset Gardens",        unit: "A3", property_id: IDS.prop1, unit_id: "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb", monthly_rent: 8500,  deposit_amount: 17000, deposit_balance: 17000, move_in_date: "2025-03-01", status: "active" },
+    { id: IDS.ten2, manager_id: IDS.manager, name: "Brian Otieno",   email: "demo.tenant2@calqulusrms.com", phone: "0712000003", property: "Valley View Bungalows", unit: "B1", property_id: IDS.prop2, unit_id: "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb", monthly_rent: 35000, deposit_amount: 70000, deposit_balance: 70000, move_in_date: "2024-09-15", status: "active" },
     { id: IDS.ten3, manager_id: IDS.manager, name: "Samuel Njoroge", email: "samuel.njoroge@email.com",  phone: "0712000099", property: "Sunset Gardens",        unit: "A1", property_id: IDS.prop1, unit_id: "bbbbbbbb-0001-0001-0001-bbbbbbbbbbbb", monthly_rent: 12000, deposit_amount: 24000, deposit_balance: 24000, move_in_date: "2024-06-01", status: "active" },
   ], { onConflict: "id" });
   log.push("✓ Tenants (3)");
@@ -264,9 +264,9 @@ async function seedDemoData(supabase: any) {
 
   // ── Maintenance requests ──────────────────────────────────────────
   await supabase.from("maintenance_requests").upsert([
-    { id: "ffffffff-0001-0001-0001-ffffffffffff", manager_id: IDS.manager, property_id: IDS.prop1, property_name: "Sunset Gardens", unit_id: "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb", unit_number: "A3", tenant_name: "Grace Wanjiku", tenant_email: "demo.tenant1@rentflow.ink", title: "Leaking kitchen tap", description: "The kitchen tap has been dripping for 3 days, wasting water and making noise at night.", priority: "medium", status: "open", category: "plumbing", requested_date: new Date(Date.now() - 2 * 864e5).toISOString() },
+    { id: "ffffffff-0001-0001-0001-ffffffffffff", manager_id: IDS.manager, property_id: IDS.prop1, property_name: "Sunset Gardens", unit_id: "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb", unit_number: "A3", tenant_name: "Grace Wanjiku", tenant_email: "demo.tenant1@calqulusrms.com", title: "Leaking kitchen tap", description: "The kitchen tap has been dripping for 3 days, wasting water and making noise at night.", priority: "medium", status: "open", category: "plumbing", requested_date: new Date(Date.now() - 2 * 864e5).toISOString() },
     { id: "ffffffff-0002-0002-0002-ffffffffffff", manager_id: IDS.manager, property_id: IDS.prop1, property_name: "Sunset Gardens", unit_id: "bbbbbbbb-0001-0001-0001-bbbbbbbbbbbb", unit_number: "A1", tenant_name: "Samuel Njoroge", tenant_email: "samuel.njoroge@email.com", title: "Broken bedroom window lock", description: "Window lock in the master bedroom is completely broken. Security risk.", priority: "high", status: "in_progress", category: "carpentry", requested_date: new Date(Date.now() - 5 * 864e5).toISOString(), assigned_to: "Kamau Electricals" },
-    { id: "ffffffff-0003-0003-0003-ffffffffffff", manager_id: IDS.manager, property_id: IDS.prop2, property_name: "Valley View Bungalows", unit_id: "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb", unit_number: "B1", tenant_name: "Brian Otieno", tenant_email: "demo.tenant2@rentflow.ink", title: "Electricity trip — living room", description: "The MCB for the living room circuit trips every evening when multiple appliances are on. Happens around 7-9pm.", priority: "urgent", status: "open", category: "electrical", requested_date: new Date(Date.now() - 1 * 864e5).toISOString(), assigned_to: "Kamau Electrical Services", assigned_provider_id: IDS.provider_row },
+    { id: "ffffffff-0003-0003-0003-ffffffffffff", manager_id: IDS.manager, property_id: IDS.prop2, property_name: "Valley View Bungalows", unit_id: "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb", unit_number: "B1", tenant_name: "Brian Otieno", tenant_email: "demo.tenant2@calqulusrms.com", title: "Electricity trip — living room", description: "The MCB for the living room circuit trips every evening when multiple appliances are on. Happens around 7-9pm.", priority: "urgent", status: "open", category: "electrical", requested_date: new Date(Date.now() - 1 * 864e5).toISOString(), assigned_to: "Kamau Electrical Services", assigned_provider_id: IDS.provider_row },
   ], { onConflict: "id" });
   log.push("✓ Maintenance requests (3)");
 

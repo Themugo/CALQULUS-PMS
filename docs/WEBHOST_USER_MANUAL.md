@@ -15,7 +15,7 @@
 
 ## Introduction
 
-RentFlow Webhost Dashboard is the platform administration interface for managing the RentFlow SaaS platform. As a Webhost, you oversee the entire platform, manage managers, handle subscriptions, and ensure platform compliance and security.
+CALQULUS RMS Webhost Dashboard is the platform administration interface for managing the CALQULUS RMS SaaS platform. As a Webhost, you oversee the entire platform, manage managers, handle subscriptions, and ensure platform compliance and security.
 
 ### Key Features
 - Manager account management
@@ -28,7 +28,7 @@ RentFlow Webhost Dashboard is the platform administration interface for managing
 - Unlinked landlord management
 
 ### Access Your Dashboard
-- **URL**: https://app.rentflow.ink/webhost/login
+- **URL**: https://app.calqulusrms.com/webhost/login
 - **Role**: Platform Administrator
 
 ### Important Security Notice
@@ -39,7 +39,7 @@ As a Webhost, you have elevated platform access. You can view system-level data 
 ### Account Setup
 
 1. **Login to Webhost Dashboard**
-   - Navigate to https://app.rentflow.ink/webhost/login
+   - Navigate to https://app.calqulusrms.com/webhost/login
    - Enter your email and password
    - Complete two-factor authentication
    - Click "Sign In"
@@ -219,7 +219,7 @@ View system landlords (not linked to any manager):
 
 ### Subscription Tiers
 
-RentFlow offers three subscription tiers:
+CALQULUS RMS offers three subscription tiers:
 
 #### Lite Tier
 - **Properties**: Up to 10
@@ -402,7 +402,7 @@ Monitor platform health:
 
 ### Platform Admins
 
-RentFlow has three tiers of platform administrators:
+CALQULUS RMS has three tiers of platform administrators:
 
 #### Owner (Super Webhost)
 - **Is Immutable**: Cannot be suspended or deleted
@@ -548,14 +548,14 @@ RentFlow has three tiers of platform administrators:
 ### Getting Help
 
 If you encounter issues not covered in this manual:
-- **Technical Support**: tech-support@rentflow.ink
-- **Security Team**: security@rentflow.ink
-- **Compliance Team**: compliance@rentflow.ink
+- **Technical Support**: tech-support@calqulusrms.com
+- **Security Team**: security@calqulusrms.com
+- **Compliance Team**: compliance@calqulusrms.com
 
 ### Emergency Contacts
 
 - **Platform Emergency**: [Emergency phone number]
-- **Security Emergency**: security@rentflow.ink
+- **Security Emergency**: security@calqulusrms.com
 - **Critical Issues**: Available 24/7
 
 ## Best Practices
@@ -613,7 +613,7 @@ As a Webhost, you must ensure:
 
 ## System Updates
 
-RentFlow is regularly updated with:
+CALQULUS RMS is regularly updated with:
 - Security patches
 - Feature enhancements
 - Performance improvements
@@ -630,7 +630,7 @@ Check dashboard for:
 
 ### Glossary
 
-- **Manager**: Property management company using RentFlow
+- **Manager**: Property management company using CALQULUS RMS
 - **Subscription Tier**: Pricing plan for managers
 - **Platform Oversight**: Monitoring of platform-wide metrics
 - **Compliance**: Adherence to security and privacy standards
@@ -647,13 +647,13 @@ Check dashboard for:
 
 ### Support Resources
 
-- **Documentation**: https://docs.rentflow.ink
-- **API Documentation**: https://api.rentflow.ink/docs
-- **Security Center**: https://security.rentflow.ink
-- **Compliance Portal**: https://compliance.rentflow.ink
+- **Documentation**: https://docs.calqulusrms.com
+- **API Documentation**: https://api.calqulusrms.com/docs
+- **Security Center**: https://security.calqulusrms.com
+- **Compliance Portal**: https://compliance.calqulusrms.com
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact support@rentflow.ink**
+**For questions or feedback, contact support@calqulusrms.com**

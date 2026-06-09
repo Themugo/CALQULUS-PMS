@@ -427,7 +427,7 @@ export const TenantStatement = ({
         body: {
           tenantEmail: tenant.email,
           tenantName: tenant.name,
-          companyName: companySettings?.company_name || "RentFlow Properties",
+          companyName: companySettings?.company_name || "CALQULUS RMS Properties",
           pdfBase64,
           fileName,
         },

@@ -62,15 +62,15 @@ const handler = async (req: Request): Promise<Response> => {
       if (profile.full_name) name = profile.full_name;
     }
 
-    const loginUrl = `${(getEnv("SITE_URL", "https://rentflow.ink")).replace(/\/+$/, "")}/landlord`;
+    const loginUrl = `${(getEnv("SITE_URL", "https://calqulusrms.com")).replace(/\/+$/, "")}/landlord`;
 
     const subjects: Record<string, string> = {
-      approved:   "Your RentFlow manager account has been approved 🎉",
-      rejected:   "Update on your RentFlow account application",
-      suspended:  "Your RentFlow account has been suspended",
+      approved:   "Your CALQULUS RMS manager account has been approved 🎉",
+      rejected:   "Update on your CALQULUS RMS account application",
+      suspended:  "Your CALQULUS RMS account has been suspended",
     };
 
-    const subject = subjects[status] ?? "Update on your RentFlow account";
+    const subject = subjects[status] ?? "Update on your CALQULUS RMS account";
 
     const bodyHtml = status === "approved" ? `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
@@ -80,13 +80,13 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="background:#f8fafc;padding:30px;border-radius:0 0 8px 8px;">
           <p style="font-size:16px;color:#334155;">Hi ${name},</p>
           <p style="font-size:15px;color:#475569;">
-            Great news — your RentFlow property manager account has been approved.
+            Great news — your CALQULUS RMS property manager account has been approved.
             You now have full access to the platform.
           </p>
           ${noteOrReason ? `<p style="font-size:14px;color:#64748b;background:#f1f5f9;padding:12px;border-radius:6px;border-left:3px solid #10b981;">Note from admin: ${noteOrReason}</p>` : ""}
           <div style="text-align:center;margin:28px 0;">
             <a href="${loginUrl}" style="background:#10b981;color:white;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:15px;">
-              Log in to RentFlow
+              Log in to CALQULUS RMS
             </a>
           </div>
           <p style="font-size:13px;color:#94a3b8;">Get started by adding your first property, then invite your tenants.</p>
@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="background:#f8fafc;padding:30px;border-radius:0 0 8px 8px;">
           <p style="font-size:16px;color:#334155;">Hi ${name},</p>
           <p style="font-size:15px;color:#475569;">
-            After reviewing your application, we're unable to approve your RentFlow manager account at this time.
+            After reviewing your application, we're unable to approve your CALQULUS RMS manager account at this time.
           </p>
           ${noteOrReason ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#991b1b;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#7f1d1d;">${noteOrReason}</p></div>` : ""}
           <p style="font-size:14px;color:#64748b;">
@@ -116,7 +116,7 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="background:#f8fafc;padding:30px;border-radius:0 0 8px 8px;">
           <p style="font-size:16px;color:#334155;">Hi ${name},</p>
           <p style="font-size:15px;color:#475569;">
-            Your RentFlow account has been temporarily suspended. You will not be able to log in until this is resolved.
+            Your CALQULUS RMS account has been temporarily suspended. You will not be able to log in until this is resolved.
           </p>
           ${noteOrReason ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#92400e;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#78350f;">${noteOrReason}</p></div>` : ""}
           <p style="font-size:14px;color:#64748b;">
@@ -127,7 +127,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const { data, error } = await resend.emails.send({
-      from:    "RentFlow <notifications@rentflow.ink>",
+      from:    "CALQULUS RMS <notifications@calqulusrms.com>",
       to:      [email],
       subject,
       html:    bodyHtml,

@@ -170,7 +170,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
       }
       
       const message = encodeURIComponent(
-        `Hi ${tenantName}! 👋\n\nYou've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on RentFlow.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith RentFlow, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
+        `Hi ${tenantName}! 👋\n\nYou've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith CALQULUS RMS, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
       );
       
       // Remove the + for WhatsApp URL format
@@ -185,7 +185,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
     setIsSendingSms(true);
     
     try {
-      const smsMessage = `Hi ${tenantName}! You've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on RentFlow. Create your account here: ${invitationUrl}`;
+      const smsMessage = `Hi ${tenantName}! You've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS. Create your account here: ${invitationUrl}`;
       
       const { data, error } = await supabase.functions.invoke("send-sms-notification", {
         body: {

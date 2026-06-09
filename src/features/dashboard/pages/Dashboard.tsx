@@ -221,7 +221,7 @@ const Dashboard = () => {
       </div>
 
       {/* Demo mode banner */}
-      {user?.email?.includes('@rentflow.ink') && (
+      {user?.email?.includes('@calqulusrms.com') && (
         <div className="mb-4 rounded-xl border border-amber-300/60 bg-amber-50/80 px-4 py-3">
           <span className="text-sm text-amber-800"><strong>Demo mode</strong> — sample data</span>
         </div>

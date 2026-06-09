@@ -17,7 +17,7 @@
 
 ## Introduction
 
-RentFlow Agency Dashboard is a dedicated platform for property management agencies that operate on behalf of landlords. As an agency, you manage properties for multiple landlords, collect rent, handle maintenance, and earn commission on your services.
+CALQULUS RMS Agency Dashboard is a dedicated platform for property management agencies that operate on behalf of landlords. As an agency, you manage properties for multiple landlords, collect rent, handle maintenance, and earn commission on your services.
 
 ### Key Features
 - Multi-landlord property management
@@ -37,7 +37,7 @@ While agencies and managers both manage properties, key differences include:
 - **Agencies** can collect rent to agency accounts or pass through to landlords
 
 ### Access Your Dashboard
-- **URL**: https://app.rentflow.ink/agency/login
+- **URL**: https://app.calqulusrms.com/agency/login
 - **Role**: Agency Team Manager
 
 ## Getting Started
@@ -45,7 +45,7 @@ While agencies and managers both manage properties, key differences include:
 ### Account Setup
 
 1. **Login to Agency Dashboard**
-   - Navigate to https://app.rentflow.ink/agency/login
+   - Navigate to https://app.calqulusrms.com/agency/login
    - Enter your email and password
    - Click "Sign In"
 
@@ -241,7 +241,7 @@ View landlord-specific performance:
 ### Tenant Portal Access
 
 Tenants can access their portal at:
-- URL: https://app.rentflow.ink/tenant/login
+- URL: https://app.calqulusrms.com/tenant/login
 - Features available:
   - View lease details
   - Pay rent online
@@ -308,7 +308,7 @@ Tenants can access their portal at:
 
 ### Payment Methods
 
-RentFlow supports multiple payment methods:
+CALQULUS RMS supports multiple payment methods:
 - **M-Pesa** - Mobile money payments
 - **Bank Transfer** - Direct bank transfers
 - **Credit/Debit Card** - Card payments
@@ -648,14 +648,14 @@ View team member activities:
 ### Getting Help
 
 If you encounter issues not covered in this manual:
-- **Email**: support@rentflow.ink
+- **Email**: support@calqulusrms.com
 - **Phone**: [Support phone number]
 - **Live Chat**: Available in dashboard
-- **Knowledge Base**: https://docs.rentflow.ink
+- **Knowledge Base**: https://docs.calqulusrms.com
 
 ### Contact Information
 
-- **Support Email**: support@rentflow.ink
+- **Support Email**: support@calqulusrms.com
 - **Business Hours**: Monday - Friday, 8:00 AM - 6:00 PM EAT
 - **Emergency Support**: Available 24/7 for critical issues
 
@@ -701,7 +701,7 @@ If you encounter issues not covered in this manual:
 
 ## Updates and New Features
 
-RentFlow is regularly updated with new features and improvements. Check the dashboard for:
+CALQULUS RMS is regularly updated with new features and improvements. Check the dashboard for:
 - Feature announcements
 - System updates
 - Maintenance notifications
@@ -728,13 +728,13 @@ RentFlow is regularly updated with new features and improvements. Check the dash
 
 ### Support Resources
 
-- **Documentation**: https://docs.rentflow.ink
-- **API Documentation**: https://api.rentflow.ink/docs
-- **Community Forum**: https://community.rentflow.ink
-- **Video Tutorials**: https://youtube.com/rentflow
+- **Documentation**: https://docs.calqulusrms.com
+- **API Documentation**: https://api.calqulusrms.com/docs
+- **Community Forum**: https://community.calqulusrms.com
+- **Video Tutorials**: https://youtube.com/calqulusrms
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: June 2026  
-**For questions or feedback, contact support@rentflow.ink**
+**For questions or feedback, contact support@calqulusrms.com**

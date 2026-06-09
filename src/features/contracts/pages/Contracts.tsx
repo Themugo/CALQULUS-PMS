@@ -387,7 +387,7 @@ const Contracts = () => {
           body: {
             tenantEmail: contract.tenants.email,
             tenantName: contract.tenants.name,
-            companyName: company?.company_name || "RentFlow Properties",
+            companyName: company?.company_name || "CALQULUS RMS Properties",
             contractTitle: contract.title,
             propertyInfo: contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A",
             validFrom: contract.valid_from ? format(new Date(contract.valid_from), "dd/MM/yy") : "Not set",
@@ -924,7 +924,7 @@ const Contracts = () => {
         .maybeSingle();
 
       const portalUrl = `${window.location.origin}/tenant-portal`;
-      const message = `📋 Contract Alert from ${company?.company_name || "RentFlow"}!\n\nDear ${contract.tenants?.name || "Tenant"},\n\nYou have a contract "${contract.title}" pending your review and signature.\n\nProperty: ${contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A"}\n\nPlease login to your tenant portal to review and sign:\n${portalUrl}`;
+      const message = `📋 Contract Alert from ${company?.company_name || "CALQULUS RMS"}!\n\nDear ${contract.tenants?.name || "Tenant"},\n\nYou have a contract "${contract.title}" pending your review and signature.\n\nProperty: ${contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A"}\n\nPlease login to your tenant portal to review and sign:\n${portalUrl}`;
 
       const { error } = await supabase.functions.invoke("send-whatsapp-notification", {
         body: {

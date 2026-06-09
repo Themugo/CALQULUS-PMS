@@ -43,7 +43,7 @@ export const generateManagerReceipt = (invoice: ManagerInvoice, manager: Manager
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text('RentFlow', 20, 25);
+  doc.text('CALQULUS RMS', 20, 25);
   
   // Receipt label
   doc.setFontSize(12);
@@ -164,7 +164,7 @@ export const generateManagerReceipt = (invoice: ManagerInvoice, manager: Manager
   
   doc.setTextColor(...grayText);
   doc.setFontSize(8);
-  doc.text('RentFlow Property Management Platform', pageWidth / 2, footerY, { align: 'center' });
+  doc.text('CALQULUS RMS Property Management Platform', pageWidth / 2, footerY, { align: 'center' });
   doc.text(`Generated on ${format(new Date(), 'MMM dd, yyyy \'at\' HH:mm')}`, pageWidth / 2, footerY + 8, { align: 'center' });
   
   // Save the PDF

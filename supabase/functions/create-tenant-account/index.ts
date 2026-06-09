@@ -505,10 +505,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         email,
         name,
         activationToken,
-        companyName || "RentFlow Properties",
+        companyName || "CALQULUS RMS Properties",
         property,
         unit,
-        portalUrl || getEnv("SITE_URL", "https://rentflow.ink")
+        portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
       );
       emailSent = true;
 
@@ -518,10 +518,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
           phone,
           name,
           activationToken,
-          companyName || "RentFlow Properties",
+          companyName || "CALQULUS RMS Properties",
           property,
           unit,
-          portalUrl || getEnv("SITE_URL", "https://rentflow.ink")
+          portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
         );
         smsSent = true;
       }
@@ -532,10 +532,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
           whatsapp,
           name,
           activationToken,
-          companyName || "RentFlow Properties",
+          companyName || "CALQULUS RMS Properties",
           property,
           unit,
-          portalUrl || getEnv("SITE_URL", "https://rentflow.ink")
+          portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
         );
         whatsappSent = true;
       }

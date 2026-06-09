@@ -451,7 +451,7 @@ const TenantPortal = () => {
               <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-base md:text-lg text-foreground">RentFlow</h1>
+              <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS RMS</h1>
               <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Tenant Portal</p>
             </div>
           </div>
@@ -501,7 +501,7 @@ const TenantPortal = () => {
         )}
 
         {/* Demo mode banner */}
-        {user?.email?.includes('@rentflow.ink') && (
+        {user?.email?.includes('@calqulusrms.com') && (
           <div className="mb-4 rounded-2xl border border-amber-300/60 bg-gradient-to-br from-amber-50/80 to-amber-100/50 px-4 py-3 shadow-sm">
             <span className="text-sm text-amber-800 font-medium"><strong>Demo mode</strong> — sample data</span>
           </div>

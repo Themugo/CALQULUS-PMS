@@ -256,7 +256,7 @@ const WebhostPaymentSettings: React.FC = () => {
                 value={formData.bank_account_name || ''}
                 onChange={(e) => handleChange('bank_account_name', e.target.value)}
                 className="bg-slate-700/50 border-slate-600 text-white"
-                placeholder="e.g., RentFlow Ltd"
+                placeholder="e.g., CALQULUS RMS Ltd"
               />
             </div>
             

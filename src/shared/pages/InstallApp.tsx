@@ -72,7 +72,7 @@ const InstallApp = () => {
             </div>
             <CardTitle className="font-heading">App Installed!</CardTitle>
             <CardDescription>
-              RentFlow has been installed on your device. You can now access it from your home screen.
+              CALQULUS RMS has been installed on your device. You can now access it from your home screen.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -90,9 +90,9 @@ const InstallApp = () => {
       {/* Header */}
       <div className="bg-gradient-to-b from-primary/20 to-background pt-safe-top pt-8 sm:pt-12 pb-6 sm:pb-8 px-4 text-center">
         <div className="mx-auto mb-3 sm:mb-4 h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shadow-lg">
-          <img src="/pwa-192x192.png" alt="RentFlow" className="h-full w-full object-cover" />
+          <img src="/pwa-192x192.png" alt="CALQULUS RMS" className="h-full w-full object-cover" />
         </div>
-        <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">RentFlow</h1>
+        <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">CALQULUS RMS</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">Property Management</p>
       </div>
 
@@ -112,7 +112,7 @@ const InstallApp = () => {
             {deferredPrompt ? (
               <Button onClick={handleInstallClick} className="w-full" size="lg">
                 <Download className="mr-2 h-5 w-5" />
-                Install RentFlow
+                Install CALQULUS RMS
               </Button>
             ) : isIOS ? (
               <div className="space-y-4">

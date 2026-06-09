@@ -80,7 +80,7 @@ const PaymentHistory = () => {
               <Building2 className="h-4 w-4 md:h-5 md:w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-semibold text-base md:text-lg">RentFlow</h1>
+              <h1 className="font-semibold text-base md:text-lg">CALQULUS RMS</h1>
               <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Payment History</p>
             </div>
           </div>
