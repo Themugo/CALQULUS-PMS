@@ -7,7 +7,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import {
   Globe, Users, Building, Home, LogOut, Shield,
   Receipt, Crown, FileSignature, ShieldAlert, Bug,
-  Layers, Eye, UserCog, SlidersHorizontal
+  Layers
 } from 'lucide-react';
 import ManagerManagement from '@/features/webhost/components/ManagerManagement';
 import PropertyAssignment from '@/features/webhost/components/PropertyAssignment';
@@ -19,10 +19,6 @@ import ErrorLogsTab from '@/features/webhost/components/ErrorLogsTab';
 import TierManagement from '@/features/webhost/components/TierManagement';
 import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccountSecurity';
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
-import PlatformOversight from '@/features/webhost/components/PlatformOversight';
-import PlatformAdminManagement from '@/features/webhost/components/PlatformAdminManagement';
-import CustomerBillingBlocks from '@/features/webhost/components/CustomerBillingBlocks';
-import ComplianceDashboard from '@/features/webhost/components/ComplianceDashboard';
 import { supabase } from '@/integrations/supabase/client';
 
 // NOTE: TenantManagement is intentionally NOT imported.
@@ -31,7 +27,6 @@ import { supabase } from '@/integrations/supabase/client';
 const WebhostDashboard = () => {
   const {
     user, userRole, signOut, loading, isSuperAdmin,
-    isPlatformOwner, isPlatformBusiness,
     hasWebhostPermission, webhostPermissions,
   } = useAuth();
 
@@ -72,7 +67,6 @@ const WebhostDashboard = () => {
   const canViewProperties = hasWebhostPermission('can_manage_properties');
   const canViewLandlords  = hasWebhostPermission('can_manage_system_landlords');
   const canViewSecurity   = isSuperAdmin || hasWebhostPermission('can_view_activity_logs');
-  const canViewOwnerTools = isPlatformOwner || isPlatformBusiness;
   const myPermissions     = webhostPermissions;
 
   const getLevelBadge = () => {
@@ -139,9 +133,6 @@ const WebhostDashboard = () => {
               <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
                 <Home className="h-4 w-4 mr-1.5" />Overview
               </TabsTrigger>
-              <TabsTrigger value="oversight" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
-                <Eye className="h-4 w-4 mr-1.5" />Oversight
-              </TabsTrigger>
               {canViewManagers && (
                 <TabsTrigger value="managers" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
                   <Users className="h-4 w-4 mr-1.5" />Managers
@@ -175,21 +166,6 @@ const WebhostDashboard = () => {
                   <ShieldAlert className="h-4 w-4 mr-1.5" />Security
                 </TabsTrigger>
               )}
-              {canViewSecurity && (
-                <TabsTrigger value="compliance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
-                  <Shield className="h-4 w-4 mr-1.5" />Compliance
-                </TabsTrigger>
-              )}
-              {canViewOwnerTools && (
-                <TabsTrigger value="platform-admins" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
-                  <UserCog className="h-4 w-4 mr-1.5" />Platform Admins
-                </TabsTrigger>
-              )}
-              {canViewOwnerTools && (
-                <TabsTrigger value="billing-blocks" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
-                  <SlidersHorizontal className="h-4 w-4 mr-1.5" />Billing Blocks
-                </TabsTrigger>
-              )}
               <TabsTrigger value="error-logs" className="data-[state=active]:bg-red-600 data-[state=active]:text-white text-purple-300">
                 <Bug className="h-4 w-4 mr-1.5" />Error Logs
               </TabsTrigger>
@@ -199,10 +175,6 @@ const WebhostDashboard = () => {
 
             <TabsContent value="overview">
               <WebhostOverview />
-            </TabsContent>
-
-            <TabsContent value="oversight">
-              <PlatformOversight />
             </TabsContent>
 
             {canViewManagers && (
@@ -245,24 +217,6 @@ const WebhostDashboard = () => {
                   <WebhostAccountSecurity />
                   <SecurityAuditLogs />
                 </div>
-              </TabsContent>
-            )}
-
-            {canViewSecurity && (
-              <TabsContent value="compliance">
-                <ComplianceDashboard />
-              </TabsContent>
-            )}
-
-            {canViewOwnerTools && (
-              <TabsContent value="platform-admins">
-                <PlatformAdminManagement />
-              </TabsContent>
-            )}
-
-            {canViewOwnerTools && (
-              <TabsContent value="billing-blocks">
-                <CustomerBillingBlocks />
               </TabsContent>
             )}
 
