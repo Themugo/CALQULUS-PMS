@@ -53,7 +53,6 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 
 ### Blocked
 - New DB migrations (`20260530000000` through `20260601000001`) not yet applied — need Supabase DB password from Project Dashboard → Settings → Database.
-- All 8 outdated major deps already upgraded: `tailwindcss 4.3.0`, `date-fns 4.4.0`, `react-day-picker 10.0.1`, `recharts 3.8.1`, `react-resizable-panels 4.11.2`, `eslint 10.4.1`. Build successful.
 
 ## Key Accounts (test)
 - Manager: `jimmythemugo@gmail.com` / `CALQULUS RMS@2026!`
