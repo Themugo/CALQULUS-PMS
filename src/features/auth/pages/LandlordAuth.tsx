@@ -329,7 +329,7 @@ const LandlordAuth = () => {
                 <Mail className="h-8 w-8 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Check Your Email</CardTitle>
+            <CardTitle className="text-2xl font-bold text-foreground">Verify Your Email</CardTitle>
             <CardDescription className="text-muted-foreground mt-2">
               We've sent a verification link to
             </CardDescription>
@@ -339,14 +339,14 @@ const LandlordAuth = () => {
               {registeredEmail}
             </p>
             <div className="space-y-3 text-muted-foreground text-sm">
-              <p>Click the link in the email to verify your account and complete registration.</p>
+              <p>Please click the verification link in the email to activate your account.</p>
               <p className="text-muted-foreground">
                 Didn't receive the email? Check your spam folder or{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
                   className="text-blue-600 hover:text-blue-700"
                 >
-                  try again
+                  request a new link
                 </button>
               </p>
             </div>
@@ -357,7 +357,7 @@ const LandlordAuth = () => {
                   onClick={() => setShowVerificationMessage(false)}
                   className="text-blue-600 hover:text-blue-700"
                 >
-                  Sign in here
+                  Sign in to your portal
                 </button>
               </p>
             </div>
@@ -391,7 +391,7 @@ const LandlordAuth = () => {
           </div>
           <CardTitle className="text-2xl font-bold text-foreground">Landlord Portal</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Manage your properties and tenants
+            Premium property management at your fingertips
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -424,11 +424,11 @@ const LandlordAuth = () => {
             <TabsContent value="login" className="space-y-4 mt-4">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-foreground">Email</Label>
+                  <Label htmlFor="login-email" className="text-foreground">Email Address</Label>
                   <Input
                     id="login-email"
                     type="email"
-                    placeholder="landlord@example.com"
+                    placeholder="Enter your email address"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
@@ -490,7 +490,7 @@ const LandlordAuth = () => {
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Signing in...' : 'Sign In'}
+                  {isSubmitting ? 'Signing in...' : 'Access Your Portal'}
                 </Button>
               </form>
             </TabsContent>
@@ -502,7 +502,7 @@ const LandlordAuth = () => {
                   <Input
                     id="signup-name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Enter your full name"
                     value={signupFullName}
                     onChange={(e) => setSignupFullName(e.target.value)}
                     required
@@ -510,11 +510,11 @@ const LandlordAuth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-foreground">Email</Label>
+                  <Label htmlFor="signup-email" className="text-foreground">Email Address</Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="landlord@example.com"
+                    placeholder="Enter your email address"
                     value={signupEmail}
                     onChange={(e) => handleSignupEmailChange(e.target.value)}
                     required
@@ -533,7 +533,7 @@ const LandlordAuth = () => {
                     <Input
                       id="signup-password"
                       type={showSignupPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      placeholder="Create a secure password"
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       required
@@ -581,7 +581,7 @@ const LandlordAuth = () => {
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Creating account...' : 'Create Account'}
+                  {isSubmitting ? 'Creating account...' : 'Create Your Account'}
                 </Button>
               </form>
             </TabsContent>
@@ -591,13 +591,13 @@ const LandlordAuth = () => {
             <p className="text-muted-foreground text-sm">
               Are you a tenant?{' '}
               <a href="/tenant/login" className="text-blue-600 hover:text-blue-700">
-                Login here
+                Access tenant portal
               </a>
             </p>
             <p className="text-muted-foreground text-sm">
-              Platform admin?{' '}
+              Platform administrator?{' '}
               <a href="/webhost/login" className="text-blue-600 hover:text-blue-700">
-                Webhost login
+                Access admin portal
               </a>
             </p>
           </div>
@@ -620,8 +620,8 @@ const LandlordAuth = () => {
             <details className="group" open>
               <summary className="text-[11px] tracking-widest uppercase text-muted-foreground hover:text-foreground cursor-pointer list-none flex items-center justify-between select-none py-1">
                 <span className="flex items-center gap-2">
-                  <span>Quick Demo Access</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">{demoAccounts.length} accounts</span>
+                  <span>Demo Accounts</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">{demoAccounts.length} available</span>
                 </span>
                 <svg className={`w-3 h-3 text-muted-foreground group-open:rotate-180 transition-transform`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </summary>
@@ -648,7 +648,7 @@ const LandlordAuth = () => {
                     <div className="flex flex-col items-end gap-0.5 shrink-0">
                       <code className="text-[9px] text-muted-foreground font-mono tracking-wide bg-blue-100 px-1.5 py-0.5 rounded">Demo@2026</code>
                       <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
-                        {demoLoggingIn === acc.email ? 'signing in...' : '1-click login'}
+                        {demoLoggingIn === acc.email ? 'signing in...' : 'Quick access'}
                       </span>
                     </div>
                   </button>
