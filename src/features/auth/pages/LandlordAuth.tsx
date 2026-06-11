@@ -321,8 +321,8 @@ const LandlordAuth = () => {
   // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 px-4">
-        <Card className="w-full max-w-md border-blue-200/50 bg-white/95 backdrop-blur-lg shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4">
+        <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
@@ -368,17 +368,17 @@ const LandlordAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4 relative overflow-hidden">
       {/* Banner background */}
       <div className="absolute inset-0 z-0">
         <img 
           src="/calqulus-banner.jpg" 
           alt="CALQULUS RMS Banner" 
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/95 via-slate-50/90 to-blue-100/85" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-slate-900/90 to-blue-950/85" />
       </div>
-      <Card className="w-full max-w-md border-blue-200/50 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10">
+      <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="bg-gradient-to-br from-blue-100 to-slate-100 rounded-xl p-4 shadow-lg border border-blue-200">
