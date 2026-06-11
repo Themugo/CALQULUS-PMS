@@ -321,11 +321,11 @@ const LandlordAuth = () => {
   // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 px-4">
-        <Card className="w-full max-w-md border-amber-200/50 bg-white/95 backdrop-blur-lg shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 px-4">
+        <Card className="w-full max-w-md border-blue-200/50 bg-white/95 backdrop-blur-lg shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center shadow-lg shadow-amber-400/25">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
                 <Mail className="h-8 w-8 text-white" />
               </div>
             </div>
@@ -335,7 +335,7 @@ const LandlordAuth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-6">
-            <p className="text-foreground font-medium text-lg bg-amber-50 py-3 px-4 rounded-lg border border-amber-200">
+            <p className="text-foreground font-medium text-lg bg-blue-50 py-3 px-4 rounded-lg border border-blue-200">
               {registeredEmail}
             </p>
             <div className="space-y-3 text-muted-foreground text-sm">
@@ -344,18 +344,18 @@ const LandlordAuth = () => {
                 Didn't receive the email? Check your spam folder or{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
-                  className="text-amber-600 hover:text-amber-700"
+                  className="text-blue-600 hover:text-blue-700"
                 >
                   try again
                 </button>
               </p>
             </div>
-            <div className="pt-4 border-t border-amber-200">
+            <div className="pt-4 border-t border-blue-200">
               <p className="text-muted-foreground text-sm">
                 Already verified?{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
-                  className="text-amber-600 hover:text-amber-700"
+                  className="text-blue-600 hover:text-blue-700"
                 >
                   Sign in here
                 </button>
@@ -368,7 +368,7 @@ const LandlordAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 px-4 relative overflow-hidden">
       {/* Banner background */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -376,12 +376,12 @@ const LandlordAuth = () => {
           alt="CALQULUS RMS Banner" 
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-orange-50/85" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/95 via-slate-50/90 to-blue-100/85" />
       </div>
-      <Card className="w-full max-w-md border-amber-200/50 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10">
+      <Card className="w-full max-w-md border-blue-200/50 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-br from-amber-100 to-yellow-100 rounded-xl p-4 shadow-lg border border-amber-200">
+            <div className="bg-gradient-to-br from-blue-100 to-slate-100 rounded-xl p-4 shadow-lg border border-blue-200">
               <img 
                 src={calqulusLogo} 
                 alt="CALQULUS RMS" 
@@ -402,11 +402,11 @@ const LandlordAuth = () => {
                 biometryType={biometryType}
                 onPress={handleBiometricLogin}
                 isLoading={isBiometricLoggingIn}
-                className="border-amber-300 text-amber-600 hover:bg-amber-50"
+                className="border-blue-300 text-blue-600 hover:bg-blue-50"
               />
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-amber-200" />
+                  <span className="w-full border-t border-blue-200" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-transparent px-2 text-muted-foreground">Or continue with</span>
@@ -416,9 +416,9 @@ const LandlordAuth = () => {
           )}
 
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-amber-100/50 border border-amber-200">
-              <TabsTrigger value="login" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-foreground/70">Login</TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-foreground/70">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-blue-100/50 border border-blue-200">
+              <TabsTrigger value="login" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70">Login</TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70">Sign Up</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login" className="space-y-4 mt-4">
@@ -432,7 +432,7 @@ const LandlordAuth = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
-                    className="bg-white border-amber-200 text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500"
+                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div className="space-y-2">
@@ -441,7 +441,7 @@ const LandlordAuth = () => {
                     <ForgotPasswordDialog 
                       variant="landlord"
                       trigger={
-                        <button type="button" className="text-amber-600 hover:text-amber-700 text-sm">
+                        <button type="button" className="text-blue-600 hover:text-blue-700 text-sm">
                           Forgot password?
                         </button>
                       }
@@ -455,7 +455,7 @@ const LandlordAuth = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
-                      className="bg-white border-amber-200 text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500 pr-10"
+                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 pr-10"
                     />
                     <button
                       type="button"
@@ -474,7 +474,7 @@ const LandlordAuth = () => {
                       id="enable-biometric"
                       checked={enableBiometric}
                       onCheckedChange={(checked) => setEnableBiometric(checked as boolean)}
-                      className="border-amber-300 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
+                      className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                     />
                     <label
                       htmlFor="enable-biometric"
@@ -487,7 +487,7 @@ const LandlordAuth = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Signing in...' : 'Sign In'}
@@ -506,7 +506,7 @@ const LandlordAuth = () => {
                     value={signupFullName}
                     onChange={(e) => setSignupFullName(e.target.value)}
                     required
-                    className="bg-white border-amber-200 text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500"
+                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div className="space-y-2">
@@ -518,7 +518,7 @@ const LandlordAuth = () => {
                     value={signupEmail}
                     onChange={(e) => handleSignupEmailChange(e.target.value)}
                     required
-                    className={`bg-white border-amber-200 text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500 ${signupEmailError ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                    className={`bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 ${signupEmailError ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
                   />
                   {signupEmailError && (
                     <p className="text-xs text-red-600 flex items-center gap-1">
@@ -538,7 +538,7 @@ const LandlordAuth = () => {
                       onChange={(e) => setSignupPassword(e.target.value)}
                       required
                       minLength={8}
-                      className="bg-white border-amber-200 text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500 pr-10"
+                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 pr-10"
                     />
                     <button
                       type="button"
@@ -549,7 +549,7 @@ const LandlordAuth = () => {
                     </button>
                   </div>
                   {signupPassword && (
-                    <div className="text-xs space-y-1 mt-2 p-2 bg-amber-50 rounded border border-amber-200">
+                    <div className="text-xs space-y-1 mt-2 p-2 bg-blue-50 rounded border border-blue-200">
                       <p className="font-medium text-foreground">Password requirements:</p>
                       <div className="grid grid-cols-2 gap-1">
                         <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-green-600' : 'text-muted-foreground'}`}>
@@ -578,7 +578,7 @@ const LandlordAuth = () => {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Creating account...' : 'Create Account'}
@@ -590,13 +590,13 @@ const LandlordAuth = () => {
           <div className="mt-6 text-center space-y-2">
             <p className="text-muted-foreground text-sm">
               Are you a tenant?{' '}
-              <a href="/tenant/login" className="text-amber-600 hover:text-amber-700">
+              <a href="/tenant/login" className="text-blue-600 hover:text-blue-700">
                 Login here
               </a>
             </p>
             <p className="text-muted-foreground text-sm">
               Platform admin?{' '}
-              <a href="/webhost/login" className="text-amber-600 hover:text-amber-700">
+              <a href="/webhost/login" className="text-blue-600 hover:text-blue-700">
                 Webhost login
               </a>
             </p>
@@ -604,13 +604,13 @@ const LandlordAuth = () => {
 
           {/* Demo accounts */}
           {demoEnabled && (
-          <div className="mt-6 pt-4 border-t border-amber-200">
+          <div className="mt-6 pt-4 border-t border-blue-200">
             <div className="mb-2 flex items-center justify-end">
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
-                className="h-7 border-amber-300 text-foreground hover:bg-amber-50"
+                className="h-7 border-blue-300 text-foreground hover:bg-blue-50"
                 onClick={reseedDemoAccounts}
                 disabled={demoSeeding}
               >
@@ -621,7 +621,7 @@ const LandlordAuth = () => {
               <summary className="text-[11px] tracking-widest uppercase text-muted-foreground hover:text-foreground cursor-pointer list-none flex items-center justify-between select-none py-1">
                 <span className="flex items-center gap-2">
                   <span>Quick Demo Access</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">{demoAccounts.length} accounts</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">{demoAccounts.length} accounts</span>
                 </span>
                 <svg className={`w-3 h-3 text-muted-foreground group-open:rotate-180 transition-transform`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </summary>
@@ -631,23 +631,23 @@ const LandlordAuth = () => {
                     key={acc.email}
                     onClick={() => loginAs(acc)}
                     disabled={demoLoggingIn === acc.email}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-amber-200 bg-amber-50/50 hover:bg-amber-100 hover:border-amber-300 transition-all text-left disabled:opacity-50"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-blue-200 bg-blue-50/50 hover:bg-blue-100 hover:border-blue-300 transition-all text-left disabled:opacity-50"
                   >
-                    <div className="h-8 w-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                       {acc.icon}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-foreground text-sm font-medium truncate">{acc.label}</span>
-                        <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 shrink-0">{acc.badge}</span>
+                        <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 shrink-0">{acc.badge}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs">
                         <span className="text-muted-foreground truncate">{acc.description}</span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-0.5 shrink-0">
-                      <code className="text-[9px] text-muted-foreground font-mono tracking-wide bg-amber-100 px-1.5 py-0.5 rounded">Demo@2026</code>
-                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                      <code className="text-[9px] text-muted-foreground font-mono tracking-wide bg-blue-100 px-1.5 py-0.5 rounded">Demo@2026</code>
+                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
                         {demoLoggingIn === acc.email ? 'signing in...' : '1-click login'}
                       </span>
                     </div>
