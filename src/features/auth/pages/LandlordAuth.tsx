@@ -377,24 +377,27 @@ const LandlordAuth = () => {
           className="w-full h-full object-cover opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-slate-900/90 to-blue-950/85" />
+        {/* Premium decorative elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
-      <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-br from-blue-100 to-slate-100 rounded-xl p-4 shadow-lg border border-blue-200">
+      <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10 animate-fade-in-up">
+        <CardHeader className="text-center pb-6">
+          <div className="flex justify-center mb-6">
+            <div className="bg-gradient-to-br from-blue-100 to-slate-100 rounded-2xl p-5 shadow-xl border border-blue-200 hover:shadow-2xl transition-shadow duration-300">
               <img 
                 src={calqulusLogo} 
                 alt="CALQULUS RMS" 
-                className="h-12 w-auto"
+                className="h-14 w-auto"
               />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">Landlord Portal</CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardTitle className="text-3xl font-bold text-foreground tracking-tight">Landlord Portal</CardTitle>
+          <CardDescription className="text-muted-foreground mt-2 text-base">
             Premium property management at your fingertips
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-6 pb-6">
           {/* Biometric Login Button */}
           {biometricAvailable && hasStoredCredentials && !biometricLoading && (
             <div className="mb-6">
@@ -416,15 +419,15 @@ const LandlordAuth = () => {
           )}
 
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-blue-100/50 border border-blue-200">
-              <TabsTrigger value="login" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70">Login</TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-blue-100/50 border border-blue-200 rounded-lg p-1">
+              <TabsTrigger value="login" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70 rounded-md transition-all duration-200">Login</TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70 rounded-md transition-all duration-200">Sign Up</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="login" className="space-y-4 mt-4">
-              <form onSubmit={handleLogin} className="space-y-4">
+            <TabsContent value="login" className="space-y-5 mt-6">
+              <form onSubmit={handleLogin} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-foreground">Email Address</Label>
+                  <Label htmlFor="login-email" className="text-foreground font-medium">Email Address</Label>
                   <Input
                     id="login-email"
                     type="email"
@@ -432,16 +435,16 @@ const LandlordAuth = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
-                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500"
+                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 h-11 rounded-lg transition-all duration-200"
                   />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password" className="text-foreground">Password</Label>
+                    <Label htmlFor="login-password" className="text-foreground font-medium">Password</Label>
                     <ForgotPasswordDialog 
                       variant="landlord"
                       trigger={
-                        <button type="button" className="text-blue-600 hover:text-blue-700 text-sm">
+                        <button type="button" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                           Forgot password?
                         </button>
                       }
@@ -455,12 +458,12 @@ const LandlordAuth = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
-                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 pr-10"
+                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 h-11 rounded-lg pr-10 transition-all duration-200"
                     />
                     <button
                       type="button"
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -487,7 +490,7 @@ const LandlordAuth = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25 h-11 rounded-lg font-medium transition-all duration-200 hover:shadow-xl" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Signing in...' : 'Access Your Portal'}
