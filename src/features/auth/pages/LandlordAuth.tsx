@@ -368,8 +368,17 @@ const LandlordAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/90 to-accent/80 px-4">
-      <Card className="w-full max-w-md border-white/10 bg-white/10 backdrop-blur-lg shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary/90 to-accent/80 px-4 relative overflow-hidden">
+      {/* Banner background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/calqulus-banner.jpg" 
+          alt="CALQULUS RMS Banner" 
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/85 to-accent/80" />
+      </div>
+      <Card className="w-full max-w-md border-white/10 bg-white/10 backdrop-blur-lg shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="bg-white rounded-xl p-3 shadow-lg">

@@ -312,8 +312,17 @@ const TenantAuth = () => {
   // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
+        {/* Banner background */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/calqulus-banner.jpg" 
+            alt="CALQULUS RMS Banner" 
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
+        </div>
+        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-16 w-16 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/25">
@@ -358,8 +367,17 @@ const TenantAuth = () => {
   // If no invitation token, show registration options
   if (!invitationToken && !isLoadingInvitation && !isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
+        {/* Banner background */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/calqulus-banner.jpg" 
+            alt="CALQULUS RMS Banner" 
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
+        </div>
+        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-16 w-16 rounded-full bg-warning flex items-center justify-center shadow-lg shadow-warning/25">
@@ -414,8 +432,17 @@ const TenantAuth = () => {
   // If self-registration mode, show self-registration form
   if (isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
+        {/* Banner background */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/calqulus-banner.jpg" 
+            alt="CALQULUS RMS Banner" 
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
+        </div>
+        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <img src={calqulusLogo} alt="CALQULUS RMS" className="h-16 w-auto" />
@@ -516,8 +543,17 @@ const TenantAuth = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''}`}>
-      <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''} relative overflow-hidden`}>
+      {/* Banner background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/calqulus-banner.jpg" 
+          alt="CALQULUS RMS Banner" 
+          className="w-full h-full object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
+      </div>
+      <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 

@@ -77,8 +77,17 @@ const WebhostAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-purple-950 px-4">
-      <Card className="w-full max-w-md border-purple-800/50 bg-slate-900/80 backdrop-blur-sm shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-purple-950 px-4 relative overflow-hidden">
+      {/* Banner background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/calqulus-banner.jpg" 
+          alt="CALQULUS RMS Banner" 
+          className="w-full h-full object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/95 via-slate-900/90 to-purple-950/85" />
+      </div>
+      <Card className="w-full max-w-md border-purple-800/50 bg-slate-900/80 backdrop-blur-sm shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/25">

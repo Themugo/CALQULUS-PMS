@@ -56,8 +56,17 @@ const AgencyAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-950 px-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-950 px-4 relative overflow-hidden">
+      {/* Banner background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/calqulus-banner.jpg" 
+          alt="CALQULUS RMS Banner" 
+          className="w-full h-full object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-slate-900/90 to-emerald-950/85" />
+      </div>
+      <div className="w-full max-w-md space-y-6 relative z-10">
         <div className="text-center">
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25 mb-4">
             <Handshake className="h-8 w-8 text-white" />
