@@ -291,7 +291,7 @@ const PredictiveMaintenanceDashboard = () => {
       case 'electrical':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><Lightbulb className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'elevator':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Settings className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Settings className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'security':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Zap className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
@@ -323,7 +323,7 @@ const PredictiveMaintenanceDashboard = () => {
       case 'electrical':
         return <Lightbulb className="h-4 w-4 text-yellow-400" />;
       case 'elevator':
-        return <Settings className="h-4 w-4 text-purple-400" />;
+        return <Settings className="h-4 w-4 text-amber-500" />;
       case 'security':
         return <Zap className="h-4 w-4 text-green-400" />;
       default:
@@ -342,13 +342,13 @@ const PredictiveMaintenanceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Predictive Maintenance Dashboard</h2>
-          <p className="text-purple-300 text-sm mt-1">AI-powered equipment health and maintenance forecasting</p>
+          <p className="text-amber-400/70 text-sm mt-1">AI-powered equipment health and maintenance forecasting</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -356,7 +356,7 @@ const PredictiveMaintenanceDashboard = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -366,78 +366,78 @@ const PredictiveMaintenanceDashboard = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Wrench className="h-4 w-4 text-purple-400" />
+              <Wrench className="h-4 w-4 text-amber-500" />
               Total Equipment
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalEquipment}</div>
-            <div className="text-sm text-purple-300">Tracked assets</div>
+            <div className="text-sm text-amber-400/70">Tracked assets</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-purple-400" />
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{criticalEquipment}</div>
-            <div className="text-sm text-purple-300">Need attention</div>
+            <div className="text-sm text-amber-400/70">Need attention</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-purple-400" />
+              <Calendar className="h-4 w-4 text-amber-500" />
               Upcoming Maintenance
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{upcomingMaintenance}</div>
-            <div className="text-sm text-purple-300">Scheduled</div>
+            <div className="text-sm text-amber-400/70">Scheduled</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-purple-400" />
+              <DollarSign className="h-4 w-4 text-amber-500" />
               Predicted Savings
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">KES {predictedSavings.toLocaleString()}</div>
-            <div className="text-sm text-purple-300">This quarter</div>
+            <div className="text-sm text-amber-400/70">This quarter</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Wrench className="h-4 w-4 mr-2" />
             Equipment
           </TabsTrigger>
-          <TabsTrigger value="predictions" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="predictions" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Predictions
           </TabsTrigger>
-          <TabsTrigger value="schedule" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="schedule" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Calendar className="h-4 w-4 mr-2" />
             Schedule
           </TabsTrigger>
-          <TabsTrigger value="costs" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="costs" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <BarChart3 className="h-4 w-4 mr-2" />
             Costs
           </TabsTrigger>
@@ -445,17 +445,17 @@ const PredictiveMaintenanceDashboard = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-purple-400" />
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Critical Equipment
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {equipment.filter(e => e.condition === 'critical' || e.healthScore < 50).slice(0, 3).map((eq) => (
-                    <div key={eq.id} className="p-3 bg-slate-900/50 rounded">
+                    <div key={eq.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(eq.type)}
@@ -463,12 +463,12 @@ const PredictiveMaintenanceDashboard = () => {
                         </div>
                         {getStatusBadge(eq.condition)}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-purple-300 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-amber-400/70 mb-2">
                         <span>Health: {eq.healthScore}%</span>
                         <span>Failure Risk: {eq.failureProbability}%</span>
                       </div>
                       {eq.predictedFailureDate && (
-                        <div className="text-xs text-purple-300">
+                        <div className="text-xs text-amber-400/70">
                           Predicted Failure: {eq.predictedFailureDate.toLocaleDateString()}
                         </div>
                       )}
@@ -478,24 +478,24 @@ const PredictiveMaintenanceDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-purple-400" />
+                  <TrendingUp className="h-5 w-5 text-amber-500" />
                   Cost Savings Forecast
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {costForecasts.slice(0, 4).map((forecast) => (
-                    <div key={forecast.period} className="p-3 bg-slate-900/50 rounded">
+                    <div key={forecast.period} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-white text-sm font-medium">{forecast.period}</span>
-                        <Badge variant="outline" className="text-purple-300 border-purple-700 capitalize">
+                        <Badge variant="outline" className="text-amber-400/70 border-amber-400/30 capitalize">
                           {forecast.category}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-purple-300">
+                      <div className="flex items-center gap-2 text-xs text-amber-400/70">
                         <span>Predicted: KES {forecast.predictedCost.toLocaleString()}</span>
                         {forecast.actualCost && (
                           <span>Actual: KES {forecast.actualCost.toLocaleString()}</span>
@@ -513,10 +513,10 @@ const PredictiveMaintenanceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="equipment">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Equipment Inventory</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Monitor equipment health and condition
               </CardDescription>
             </CardHeader>
@@ -524,18 +524,18 @@ const PredictiveMaintenanceDashboard = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search equipment..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="hvac">HVAC</option>
@@ -547,7 +547,7 @@ const PredictiveMaintenanceDashboard = () => {
                 <select
                   value={selectedCondition}
                   onChange={(e) => setSelectedCondition(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Conditions</option>
                   <option value="excellent">Excellent</option>
@@ -561,20 +561,20 @@ const PredictiveMaintenanceDashboard = () => {
               {/* Equipment List */}
               <div className="space-y-4">
                 {filteredEquipment.map((eq) => (
-                  <div key={eq.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={eq.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(eq.type)}
                           <span className="text-white font-medium">{eq.name}</span>
-                          <span className="text-purple-300 text-sm">{eq.id}</span>
+                          <span className="text-amber-400/70 text-sm">{eq.id}</span>
                           {getTypeBadge(eq.type)}
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(eq.condition)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Building className="h-3 w-3" />
                           {eq.propertyName}
@@ -584,7 +584,7 @@ const PredictiveMaintenanceDashboard = () => {
                           {eq.location}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Activity className="h-3 w-3" />
                           Health Score: {eq.healthScore}%
@@ -594,7 +594,7 @@ const PredictiveMaintenanceDashboard = () => {
                           Failure Risk: {eq.failureProbability}%
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Last Maintenance: {eq.lastMaintenance.toLocaleDateString()}
@@ -608,7 +608,7 @@ const PredictiveMaintenanceDashboard = () => {
                       </div>
                       <Progress value={eq.healthScore} className="h-2 mt-2" />
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -619,30 +619,30 @@ const PredictiveMaintenanceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="predictions">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Maintenance Predictions</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 AI-powered failure predictions and recommendations
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {maintenancePredictions.map((prediction) => (
-                  <div key={prediction.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={prediction.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{prediction.equipmentName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{prediction.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{prediction.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(prediction.severity)}
                           {getUrgencyBadge(prediction.urgency)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{prediction.recommendedAction}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{prediction.recommendedAction}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />
                           Failure Probability: {prediction.failureProbability}%
@@ -652,7 +652,7 @@ const PredictiveMaintenanceDashboard = () => {
                           Predicted: {prediction.predictedFailureDate.toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
                           Estimated Cost: KES {prediction.estimatedCost.toLocaleString()}
@@ -660,7 +660,7 @@ const PredictiveMaintenanceDashboard = () => {
                       </div>
                       <Progress value={prediction.failureProbability} className="h-2 mt-2" />
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       Schedule Maintenance
                     </Button>
                   </div>
@@ -671,23 +671,23 @@ const PredictiveMaintenanceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="schedule">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Maintenance Schedule</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Upcoming preventive and predictive maintenance
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {maintenanceSchedule.map((schedule) => (
-                  <div key={schedule.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={schedule.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{schedule.equipmentName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{schedule.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{schedule.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {schedule.type}
                           </Badge>
                         </div>
@@ -696,7 +696,7 @@ const PredictiveMaintenanceDashboard = () => {
                           {getStatusBadge(schedule.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Scheduled: {schedule.scheduledDate.toLocaleString()}
@@ -706,7 +706,7 @@ const PredictiveMaintenanceDashboard = () => {
                           Duration: {schedule.estimatedDuration}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Assigned: {schedule.assignedTo}
@@ -714,7 +714,7 @@ const PredictiveMaintenanceDashboard = () => {
                       </div>
                     </div>
                     {schedule.status === 'scheduled' && (
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         View Details
                       </Button>
                     )}
@@ -726,37 +726,37 @@ const PredictiveMaintenanceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="costs">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Cost Forecast</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Predictive maintenance cost analysis and savings
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {costForecasts.map((forecast) => (
-                  <div key={forecast.period} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={forecast.period} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-white font-medium">{forecast.period}</span>
-                      <Badge variant="outline" className="text-purple-300 border-purple-700 capitalize">
+                      <Badge variant="outline" className="text-amber-400/70 border-amber-400/30 capitalize">
                         {forecast.category}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 mb-3">
                       <div>
                         <div className="text-2xl font-bold text-white">KES {forecast.predictedCost.toLocaleString()}</div>
-                        <div className="text-xs text-purple-300">Predicted Cost</div>
+                        <div className="text-xs text-amber-400/70">Predicted Cost</div>
                       </div>
                       {forecast.actualCost && (
                         <div>
                           <div className="text-2xl font-bold text-white">KES {forecast.actualCost.toLocaleString()}</div>
-                          <div className="text-xs text-purple-300">Actual Cost</div>
+                          <div className="text-xs text-amber-400/70">Actual Cost</div>
                         </div>
                       )}
                       <div>
                         <div className="text-2xl font-bold text-green-400">KES {forecast.savings.toLocaleString()}</div>
-                        <div className="text-xs text-purple-300">Savings</div>
+                        <div className="text-xs text-amber-400/70">Savings</div>
                       </div>
                     </div>
                     {forecast.actualCost && (

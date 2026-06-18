@@ -76,6 +76,7 @@ export function PropertyAgreementsTab({ propertyId, propertyName }: PropertyAgre
     setIsLoading(false);
   }, [propertyId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData, propertyId]);
 
   const getTenantName = (id: string | null) => tenants.find(t => t.id === id)?.name || "—";
@@ -86,7 +87,7 @@ export function PropertyAgreementsTab({ propertyId, propertyName }: PropertyAgre
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileSignature className="h-5 w-5 text-primary" />
+            <FileSignature className="h-5 w-5 text-amber-500" />
             Tenant Agreements
           </CardTitle>
           {!isViewOnly && (

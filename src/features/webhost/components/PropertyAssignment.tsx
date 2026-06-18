@@ -73,10 +73,10 @@ const PropertyAssignment: React.FC = () => {
   };
 
   return (
-    <Card className="bg-slate-800/50 border-purple-800/30">
+    <Card className="bg-card border-amber-400/15">
       <CardHeader>
         <CardTitle className="text-white">Property Distribution</CardTitle>
-        <CardDescription className="text-purple-300">
+        <CardDescription className="text-amber-400/70">
           All {properties.length} properties grouped by manager — read-only overview
         </CardDescription>
       </CardHeader>
@@ -86,7 +86,7 @@ const PropertyAssignment: React.FC = () => {
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full bg-slate-700/50" />)}
           </div>
         ) : Object.keys(byManager).length === 0 ? (
-          <p className="text-center py-8 text-purple-300">No properties registered yet.</p>
+          <p className="text-center py-8 text-amber-400/70">No properties registered yet.</p>
         ) : (
           <div className="space-y-6">
             {Object.entries(byManager).map(([key, { manager, props }]) => {
@@ -99,15 +99,15 @@ const PropertyAssignment: React.FC = () => {
                   {/* Manager header */}
                   <div className="flex items-center gap-3 mb-2 px-1">
                     <div className="h-8 w-8 rounded-lg bg-purple-600/30 flex items-center justify-center shrink-0">
-                      <Users className="h-4 w-4 text-purple-400" />
+                      <Users className="h-4 w-4 text-amber-500" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white">
                         {manager.agency_name ?? manager.manager_name ?? 'Unknown manager'}
                       </p>
-                      <p className="text-xs text-purple-300">{manager.manager_email ?? 'No email'}</p>
+                      <p className="text-xs text-amber-400/70">{manager.manager_email ?? 'No email'}</p>
                     </div>
-                    <div className="text-right text-xs text-purple-300 shrink-0">
+                    <div className="text-right text-xs text-amber-400/70 shrink-0">
                       <p>{props.length} properties</p>
                       <p>{totalUnits} units · {occupancyPct}% occupied</p>
                     </div>
@@ -116,16 +116,16 @@ const PropertyAssignment: React.FC = () => {
                   {/* Property cards */}
                   <div className="space-y-1.5 pl-11">
                     {props.map(p => (
-                      <div key={p.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-purple-800/20 bg-slate-900/30 hover:bg-purple-900/10 transition-colors">
-                        <Building className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                      <div key={p.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-purple-800/20 bg-muted/20 hover:bg-purple-900/10 transition-colors">
+                        <Building className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-white truncate">{p.name}</p>
-                          <p className="text-xs text-purple-400 flex items-center gap-1">
+                          <p className="text-xs text-amber-500 flex items-center gap-1">
                             <MapPin className="h-3 w-3 shrink-0" />{p.address}
                           </p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs text-purple-300 flex items-center gap-1">
+                          <span className="text-xs text-amber-400/70 flex items-center gap-1">
                             <Home className="h-3 w-3" />{p.units ?? 0}
                           </span>
                           <Badge variant="outline" className={`text-xs ${occupancyColor(p.occupied ?? 0, p.units ?? 0)}`}>

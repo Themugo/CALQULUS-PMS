@@ -387,7 +387,7 @@ const Contracts = () => {
           body: {
             tenantEmail: contract.tenants.email,
             tenantName: contract.tenants.name,
-            companyName: company?.company_name || "CALQULUS RMS Properties",
+            companyName: company?.company_name || "CALQULUS PMS Properties",
             contractTitle: contract.title,
             propertyInfo: contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A",
             validFrom: contract.valid_from ? format(new Date(contract.valid_from), "dd/MM/yy") : "Not set",
@@ -876,7 +876,7 @@ const Contracts = () => {
         body: {
           tenantEmail: contract.tenants.email,
           tenantName: contract.tenants.name,
-          companyName: company?.company_name || "CALQULUS RMS Properties",
+          companyName: company?.company_name || "CALQULUS PMS Properties",
           contractTitle: contract.title,
           propertyInfo: contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A",
           validFrom: contract.valid_from ? format(new Date(contract.valid_from), "dd/MM/yy") : "Not set",
@@ -924,7 +924,7 @@ const Contracts = () => {
         .maybeSingle();
 
       const portalUrl = `${window.location.origin}/tenant-portal`;
-      const message = `📋 Contract Alert from ${company?.company_name || "CALQULUS RMS"}!\n\nDear ${contract.tenants?.name || "Tenant"},\n\nYou have a contract "${contract.title}" pending your review and signature.\n\nProperty: ${contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A"}\n\nPlease login to your tenant portal to review and sign:\n${portalUrl}`;
+      const message = `📋 Contract Alert from ${company?.company_name || "CALQULUS PMS"}!\n\nDear ${contract.tenants?.name || "Tenant"},\n\nYou have a contract "${contract.title}" pending your review and signature.\n\nProperty: ${contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A"}\n\nPlease login to your tenant portal to review and sign:\n${portalUrl}`;
 
       const { error } = await supabase.functions.invoke("send-whatsapp-notification", {
         body: {
@@ -1145,8 +1145,8 @@ const Contracts = () => {
                         <TableRow key={doc.id}>
                           <TableCell>
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <FileText className="h-5 w-5 text-primary" />
+                              <div className="h-10 w-10 rounded-lg bg-amber-400/10 flex items-center justify-center">
+                                <FileText className="h-5 w-5 text-amber-500" />
                               </div>
                               <p className="font-medium">{doc.file_name}</p>
                             </div>
@@ -1230,7 +1230,7 @@ const Contracts = () => {
               {/* Summary Stats */}
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-2xl font-bold text-amber-500">
                     {contracts.filter(c => c.manager_signature && c.tenant_signature).length}
                   </div>
                   <div className="text-xs text-muted-foreground">Fully Signed</div>
@@ -1282,8 +1282,8 @@ const Contracts = () => {
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between flex-wrap gap-4">
                               <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                  <FileSignature className="h-5 w-5 text-primary" />
+                                <div className="h-10 w-10 rounded-full bg-amber-400/10 flex items-center justify-center">
+                                  <FileSignature className="h-5 w-5 text-amber-500" />
                                 </div>
                                 <div>
                                   <p className="font-medium">{contract.title}</p>

@@ -170,7 +170,7 @@ const TenantNotificationBell: React.FC = () => {
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </span>
                       {n.action_label && (
-                        <span className="text-xs text-primary font-medium">{n.action_label} →</span>
+                        <span className="text-xs text-amber-600 font-medium">{n.action_label} →</span>
                       )}
                     </div>
                   </div>

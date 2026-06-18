@@ -166,10 +166,10 @@ export function MaintenanceBudgetDashboard({
           <CardContent className="pt-0">
             {/* Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Total Allocated</span>
+                  <DollarSign className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-medium text-amber-500">Total Allocated</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalAllocated)}</p>
               </div>

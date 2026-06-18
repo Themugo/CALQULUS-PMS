@@ -224,7 +224,7 @@ const ExecutiveIntelligenceDashboard = () => {
       case 'active':
         return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'acknowledged':
-        return <Badge className="bg-purple-100 text-purple-800 border-purple-300"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-amber-400/15 text-amber-700 border-blue-200"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'info':
         return <Badge className="bg-gray-100 text-gray-800 border-gray-300">{status}</Badge>;
       default:
@@ -269,13 +269,13 @@ const ExecutiveIntelligenceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Executive Intelligence Dashboard</h2>
-          <p className="text-purple-300 text-sm mt-1">AI-powered insights and strategic analytics</p>
+          <p className="text-amber-400/70 text-sm mt-1">AI-powered insights and strategic analytics</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -283,7 +283,7 @@ const ExecutiveIntelligenceDashboard = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -293,74 +293,74 @@ const ExecutiveIntelligenceDashboard = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-purple-400" />
+              <Activity className="h-4 w-4 text-amber-500" />
               Active Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeAlerts}</div>
-            <div className="text-sm text-purple-300">Requiring attention</div>
+            <div className="text-sm text-amber-400/70">Requiring attention</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-purple-400" />
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
               Critical Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{criticalAlerts}</div>
-            <div className="text-sm text-purple-300">High priority</div>
+            <div className="text-sm text-amber-400/70">High priority</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Target className="h-4 w-4 text-purple-400" />
+              <Target className="h-4 w-4 text-amber-500" />
               Actionable Insights
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{actionableInsights}</div>
-            <div className="text-sm text-purple-300">Ready to act</div>
+            <div className="text-sm text-amber-400/70">Ready to act</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-purple-400" />
+              <TrendingUp className="h-4 w-4 text-amber-500" />
               KPIs On Track
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{kpis.filter(k => k.status === 'on_track').length}</div>
-            <div className="text-sm text-purple-300">of {kpis.length} total</div>
+            <div className="text-sm text-amber-400/70">of {kpis.length} total</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="kpis" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="kpis" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Target className="h-4 w-4 mr-2" />
             KPIs
           </TabsTrigger>
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="alerts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Alerts
           </TabsTrigger>
-          <TabsTrigger value="insights" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="insights" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Insights
           </TabsTrigger>
@@ -368,23 +368,23 @@ const ExecutiveIntelligenceDashboard = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-purple-400" />
+                  <TrendingUp className="h-5 w-5 text-amber-500" />
                   Top Opportunities
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {insights.filter(i => i.type === 'opportunity').slice(0, 3).map((insight) => (
-                    <div key={insight.id} className="p-3 bg-slate-900/50 rounded">
+                    <div key={insight.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-white text-sm font-medium">{insight.title}</span>
                         {getSeverityBadge(insight.impact)}
                       </div>
-                      <p className="text-purple-300 text-xs mb-2">{insight.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-purple-300">
+                      <p className="text-amber-400/70 text-xs mb-2">{insight.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-amber-400/70">
                         <span>Confidence: {insight.confidence}%</span>
                       </div>
                     </div>
@@ -393,23 +393,23 @@ const ExecutiveIntelligenceDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-purple-400" />
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Top Risks
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {insights.filter(i => i.type === 'risk').slice(0, 3).map((insight) => (
-                    <div key={insight.id} className="p-3 bg-slate-900/50 rounded">
+                    <div key={insight.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-white text-sm font-medium">{insight.title}</span>
                         {getSeverityBadge(insight.impact)}
                       </div>
-                      <p className="text-purple-300 text-xs mb-2">{insight.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-purple-300">
+                      <p className="text-amber-400/70 text-xs mb-2">{insight.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-amber-400/70">
                         <span>Confidence: {insight.confidence}%</span>
                       </div>
                     </div>
@@ -421,21 +421,21 @@ const ExecutiveIntelligenceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="kpis">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Key Performance Indicators</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track strategic and operational metrics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {kpis.map((kpi) => (
-                  <div key={kpi.id} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={kpi.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <span className="text-white font-medium">{kpi.name}</span>
-                        <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                        <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                           {kpi.category}
                         </Badge>
                       </div>
@@ -451,7 +451,7 @@ const ExecutiveIntelligenceDashboard = () => {
                       <span className="text-2xl font-bold text-white">
                         {kpi.category === 'financial' ? `KES ${kpi.value.toLocaleString()}` : kpi.value}
                       </span>
-                      <span className="text-purple-300 text-sm">Target: {kpi.category === 'financial' ? `KES ${kpi.target.toLocaleString()}` : kpi.target}</span>
+                      <span className="text-amber-400/70 text-sm">Target: {kpi.category === 'financial' ? `KES ${kpi.target.toLocaleString()}` : kpi.target}</span>
                     </div>
                     <Progress value={(kpi.value / kpi.target) * 100} className="h-2" />
                   </div>
@@ -462,10 +462,10 @@ const ExecutiveIntelligenceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="alerts">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Alerts & Notifications</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Monitor critical issues and warnings
               </CardDescription>
             </CardHeader>
@@ -475,7 +475,7 @@ const ExecutiveIntelligenceDashboard = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="financial">Financial</option>
@@ -487,12 +487,12 @@ const ExecutiveIntelligenceDashboard = () => {
 
               <div className="space-y-4">
                 {filteredAlerts.map((alert) => (
-                  <div key={alert.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={alert.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{alert.title}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {alert.category}
                           </Badge>
                         </div>
@@ -501,8 +501,8 @@ const ExecutiveIntelligenceDashboard = () => {
                           {getSeverityBadge(alert.severity)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{alert.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{alert.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {alert.timestamp.toLocaleString()}
@@ -516,7 +516,7 @@ const ExecutiveIntelligenceDashboard = () => {
                       </div>
                     </div>
                     {alert.status === 'active' && (
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Acknowledge
                       </Button>
                     )}
@@ -528,22 +528,22 @@ const ExecutiveIntelligenceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="insights">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">AI-Powered Insights</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Data-driven recommendations and opportunities
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {insights.map((insight) => (
-                  <div key={insight.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={insight.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{insight.title}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {insight.category}
                           </Badge>
                         </div>
@@ -552,8 +552,8 @@ const ExecutiveIntelligenceDashboard = () => {
                           {getSeverityBadge(insight.impact)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{insight.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{insight.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Target className="h-3 w-3" />
                           Confidence: {insight.confidence}%
@@ -568,7 +568,7 @@ const ExecutiveIntelligenceDashboard = () => {
                       </div>
                     </div>
                     {insight.actionable && (
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Take Action
                       </Button>
                     )}

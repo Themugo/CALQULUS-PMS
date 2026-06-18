@@ -134,6 +134,7 @@ export function UpcomingPayments() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPayments();
 
     // Subscribe to real-time invoice changes
@@ -193,7 +194,7 @@ export function UpcomingPayments() {
             >
               <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                 <AvatarImage src={payment.tenant_photo || undefined} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-[10px] sm:text-xs">
+                <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 text-[10px] sm:text-xs">
                   {payment.tenant_name.split(" ").map((n) => n[0]).join("")}
                 </AvatarFallback>
               </Avatar>

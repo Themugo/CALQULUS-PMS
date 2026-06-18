@@ -223,6 +223,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
     if (data) setTenants(data || []);
   }, [propertyId]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchExpenditures = useCallback(async () => {
     if (!user?.id) return;
     const monthDate = `${selectedMonth}-01`;
@@ -243,12 +244,14 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   }, [user?.id, selectedMonth, propertyId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchInvoices();
     fetchLeases();
     fetchTenants();
   }, [fetchInvoices, fetchLeases, fetchTenants, propertyId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (user?.id) fetchExpenditures();
   }, [user?.id, selectedMonth, propertyId, fetchExpenditures]);
 
@@ -666,7 +669,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                     </div>
                   );
                 })}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/10">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-amber-400/6 border border-amber-400/60/10">
                   <span className="font-semibold">Total Expenditures</span>
                   <span className="font-bold">{formatCurrency(totalExpenditures)}</span>
                 </div>

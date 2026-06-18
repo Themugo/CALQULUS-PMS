@@ -290,7 +290,7 @@ const DataRetentionManagement = () => {
   const getDisposalMethodBadge = (method: string) => {
     switch (method) {
       case 'delete':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Trash2 className="h-3 w-3 mr-1" />Delete</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Trash2 className="h-3 w-3 mr-1" />Delete</Badge>;
       case 'secure_delete':
         return <Badge variant="outline" className="text-red-300 border-red-700"><Shield className="h-3 w-3 mr-1" />Secure Delete</Badge>;
       case 'archive':
@@ -328,20 +328,20 @@ const DataRetentionManagement = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Data Retention Management</h2>
-          <p className="text-purple-300 text-sm mt-1">Manage data retention policies and disposal</p>
+          <p className="text-amber-400/70 text-sm mt-1">Manage data retention policies and disposal</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Policy
@@ -351,85 +351,85 @@ const DataRetentionManagement = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Database className="h-4 w-4 text-purple-400" />
+              <Database className="h-4 w-4 text-amber-500" />
               Total Records
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalRecords}</div>
-            <div className="text-sm text-purple-300">All data records</div>
+            <div className="text-sm text-amber-400/70">All data records</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <CheckCircle className="h-4 w-4 text-amber-500" />
               Active Records
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeRecords}</div>
-            <div className="text-sm text-purple-300">Within retention period</div>
+            <div className="text-sm text-amber-400/70">Within retention period</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-400" />
+              <Clock className="h-4 w-4 text-amber-500" />
               Pending Disposal
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingDisposal}</div>
-            <div className="text-sm text-purple-300">Awaiting disposal</div>
+            <div className="text-sm text-amber-400/70">Awaiting disposal</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Trash2 className="h-4 w-4 text-purple-400" />
+              <Trash2 className="h-4 w-4 text-amber-500" />
               Disposed Records
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{disposedRecords}</div>
-            <div className="text-sm text-purple-300">Successfully disposed</div>
+            <div className="text-sm text-amber-400/70">Successfully disposed</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="policies" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="policies" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Policies
           </TabsTrigger>
-          <TabsTrigger value="records" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="records" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Database className="h-4 w-4 mr-2" />
             Records
           </TabsTrigger>
-          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Legal Holds
           </TabsTrigger>
-          <TabsTrigger value="disposal" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="disposal" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Trash2 className="h-4 w-4 mr-2" />
             Disposal Log
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="policies">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Retention Policies</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage data retention policies and schedules
               </CardDescription>
             </CardHeader>
@@ -437,18 +437,18 @@ const DataRetentionManagement = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search policies..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedDataType}
                   onChange={(e) => setSelectedDataType(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Data Types</option>
                   <option value="personal">Personal</option>
@@ -463,13 +463,13 @@ const DataRetentionManagement = () => {
               {/* Policies List */}
               <div className="space-y-4">
                 {filteredPolicies.map((policy) => (
-                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{policy.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{policy.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{policy.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {policy.dataType}
                           </Badge>
                         </div>
@@ -478,8 +478,8 @@ const DataRetentionManagement = () => {
                           {getStatusBadge(policy.status)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{policy.dataCategory}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{policy.dataCategory}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           Retention: {policy.retentionPeriod} years
@@ -489,7 +489,7 @@ const DataRetentionManagement = () => {
                           {getDisposalMethodBadge(policy.disposalMethod)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Review: {policy.reviewDate.toLocaleDateString()}
@@ -500,7 +500,7 @@ const DataRetentionManagement = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -511,23 +511,23 @@ const DataRetentionManagement = () => {
         </TabsContent>
 
         <TabsContent value="records">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Data Records</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Monitor data records and retention status
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {records.map((record) => (
-                  <div key={record.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={record.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{record.type}</span>
-                          <span className="text-purple-300 text-sm ml-2">{record.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <span className="text-amber-400/70 text-sm ml-2">{record.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {record.category}
                           </Badge>
                         </div>
@@ -536,7 +536,7 @@ const DataRetentionManagement = () => {
                           {getStatusBadge(record.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Database className="h-3 w-3" />
                           Size: {record.size}
@@ -546,7 +546,7 @@ const DataRetentionManagement = () => {
                           Created: {record.createdDate.toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           Expiry: {record.retentionExpiry.toLocaleDateString()}
@@ -576,27 +576,27 @@ const DataRetentionManagement = () => {
         </TabsContent>
 
         <TabsContent value="legal-holds">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Legal Holds</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage legal holds that override retention policies
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {legalHolds.map((hold) => (
-                  <div key={hold.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={hold.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{hold.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{hold.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{hold.id}</span>
                         </div>
                         {getStatusBadge(hold.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{hold.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{hold.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Lock className="h-3 w-3" />
                           Reason: {hold.reason}
@@ -606,7 +606,7 @@ const DataRetentionManagement = () => {
                           {hold.affectedRecords} records affected
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Created: {hold.createdDate.toLocaleDateString()}
@@ -623,7 +623,7 @@ const DataRetentionManagement = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+                        className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
                       >
                         Release Hold
                       </Button>
@@ -636,29 +636,29 @@ const DataRetentionManagement = () => {
         </TabsContent>
 
         <TabsContent value="disposal">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Disposal Log</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track data disposal activities and verification
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {disposalRecords.map((record) => (
-                  <div key={record.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={record.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">Disposal Record</span>
-                          <span className="text-purple-300 text-sm ml-2">{record.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <span className="text-amber-400/70 text-sm ml-2">{record.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {record.recordId}
                           </Badge>
                         </div>
                         {getStatusBadge(record.verificationStatus)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Trash2 className="h-3 w-3" />
                           Method: {record.disposalMethod}
@@ -668,7 +668,7 @@ const DataRetentionManagement = () => {
                           By: {record.disposedBy}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Date: {record.disposalDate.toLocaleDateString()}
@@ -682,7 +682,7 @@ const DataRetentionManagement = () => {
                     {record.verificationStatus === 'pending' && (
                       <Button
                         size="sm"
-                        className="bg-purple-600 hover:bg-purple-700"
+                        className="bg-amber-400 hover:bg-amber-500 text-slate-900"
                       >
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Verify

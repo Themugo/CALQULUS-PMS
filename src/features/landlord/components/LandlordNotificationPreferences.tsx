@@ -56,6 +56,7 @@ const LandlordNotificationPreferences: React.FC = () => {
 
   useEffect(() => {
     if (existing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPrefs(p => ({ ...p, ...Object.fromEntries(Object.keys(defaultPrefs).map(k => [k, existing[k] ?? (defaultPrefs as Record<string, unknown>)[k]])) }));
     }
   }, [existing]);

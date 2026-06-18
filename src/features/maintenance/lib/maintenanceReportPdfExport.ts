@@ -331,7 +331,7 @@ export const generateMaintenanceReportPDF = async (
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
   doc.text(
-    `Maintenance Active Report - Page 1 | ${companySettings?.company_name || "CALQULUS RMS"}`,
+    `Maintenance Active Report - Page 1 | ${companySettings?.company_name || "CALQULUS PMS"}`,
     pageWidth / 2,
     pageHeight - 10,
     { align: "center" }

@@ -362,7 +362,7 @@ const LegalAuditDocumentation = () => {
   const getDocumentTypeBadge = (type: string) => {
     switch (type) {
       case 'policy':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'contract':
         return <Badge variant="outline" className="text-blue-300 border-blue-700"><FileSignature className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'agreement':
@@ -385,20 +385,20 @@ const LegalAuditDocumentation = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Legal Audit Documentation</h2>
-          <p className="text-purple-300 text-sm mt-1">Manage legal requirements, documents, and audit trails</p>
+          <p className="text-amber-400/70 text-sm mt-1">Manage legal requirements, documents, and audit trails</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Document
@@ -408,82 +408,82 @@ const LegalAuditDocumentation = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Scale className="h-4 w-4 text-purple-400" />
+              <Scale className="h-4 w-4 text-amber-500" />
               Legal Requirements
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalRequirements}</div>
-            <div className="text-sm text-purple-300">Total requirements</div>
+            <div className="text-sm text-amber-400/70">Total requirements</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <CheckCircle className="h-4 w-4 text-amber-500" />
               Compliant
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{compliantRequirements}</div>
-            <div className="text-sm text-purple-300">Meeting requirements</div>
+            <div className="text-sm text-amber-400/70">Meeting requirements</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-400" />
+              <Clock className="h-4 w-4 text-amber-500" />
               Pending Review
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingReview}</div>
-            <div className="text-sm text-purple-300">Need attention</div>
+            <div className="text-sm text-amber-400/70">Need attention</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-purple-400" />
+              <Briefcase className="h-4 w-4 text-amber-500" />
               Active Agreements
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeAgreements}</div>
-            <div className="text-sm text-purple-300">Third-party contracts</div>
+            <div className="text-sm text-amber-400/70">Third-party contracts</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="requirements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="requirements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Scale className="h-4 w-4 mr-2" />
             Requirements
           </TabsTrigger>
-          <TabsTrigger value="documents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="documents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Documents
           </TabsTrigger>
-          <TabsTrigger value="audit-trail" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="audit-trail" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Shield className="h-4 w-4 mr-2" />
             Audit Trail
           </TabsTrigger>
-          <TabsTrigger value="agreements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="agreements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Briefcase className="h-4 w-4 mr-2" />
             Agreements
           </TabsTrigger>
-          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Legal Holds
           </TabsTrigger>
@@ -491,20 +491,20 @@ const LegalAuditDocumentation = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-purple-400" />
+                  <AlertCircle className="h-5 w-5 text-amber-500" />
                   Upcoming Reminders
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {documentReminders.slice(0, 3).map((reminder) => (
-                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                       <div>
                         <span className="text-white text-sm">{reminder.documentName}</span>
-                        <div className="text-purple-300 text-xs">{reminder.reminderType} - {reminder.dueDate.toLocaleDateString()}</div>
+                        <div className="text-amber-400/70 text-xs">{reminder.reminderType} - {reminder.dueDate.toLocaleDateString()}</div>
                       </div>
                       {getStatusBadge(reminder.status)}
                     </div>
@@ -513,24 +513,24 @@ const LegalAuditDocumentation = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Building className="h-5 w-5 text-purple-400" />
+                  <Building className="h-5 w-5 text-amber-500" />
                   Jurisdiction Coverage
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">Kenya</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">European Union</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">United States</span>
                     <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Partial</Badge>
                   </div>
@@ -541,10 +541,10 @@ const LegalAuditDocumentation = () => {
         </TabsContent>
 
         <TabsContent value="requirements">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Legal Requirements</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage and monitor legal compliance requirements
               </CardDescription>
             </CardHeader>
@@ -552,18 +552,18 @@ const LegalAuditDocumentation = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search requirements..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="data_protection">Data Protection</option>
@@ -578,20 +578,20 @@ const LegalAuditDocumentation = () => {
               {/* Requirements List */}
               <div className="space-y-4">
                 {filteredRequirements.map((requirement) => (
-                  <div key={requirement.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={requirement.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{requirement.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{requirement.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{requirement.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {requirement.category.replace('_', ' ')}
                           </Badge>
                         </div>
                         {getStatusBadge(requirement.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{requirement.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{requirement.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Building className="h-3 w-3" />
                           {requirement.jurisdiction}
@@ -606,7 +606,7 @@ const LegalAuditDocumentation = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -617,27 +617,27 @@ const LegalAuditDocumentation = () => {
         </TabsContent>
 
         <TabsContent value="documents">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Legal Documents</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage legal documents and certificates
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {legalDocuments.map((document) => (
-                  <div key={document.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={document.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{document.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{document.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{document.id}</span>
                           {getDocumentTypeBadge(document.type)}
                         </div>
                         {getStatusBadge(document.status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <FileText className="h-3 w-3" />
                           {document.category}
@@ -647,7 +647,7 @@ const LegalAuditDocumentation = () => {
                           v{document.version}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Effective: {document.effectiveDate.toLocaleDateString()}
@@ -664,7 +664,7 @@ const LegalAuditDocumentation = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
@@ -676,32 +676,32 @@ const LegalAuditDocumentation = () => {
         </TabsContent>
 
         <TabsContent value="audit-trail">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Audit Trail</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track all legal compliance activities
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {auditTrails.map((trail) => (
-                  <div key={trail.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={trail.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{trail.action}</span>
-                          <span className="text-purple-300 text-sm ml-2">{trail.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <span className="text-amber-400/70 text-sm ml-2">{trail.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {trail.entityType}
                           </Badge>
                         </div>
-                        <Badge variant="outline" className="text-purple-300 border-purple-700">
+                        <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                           {trail.entityId}
                         </Badge>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{trail.details}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{trail.details}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {trail.performedBy}
@@ -724,23 +724,23 @@ const LegalAuditDocumentation = () => {
         </TabsContent>
 
         <TabsContent value="agreements">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Third-Party Agreements</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage vendor and partner agreements
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {thirdPartyAgreements.map((agreement) => (
-                  <div key={agreement.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={agreement.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{agreement.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{agreement.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{agreement.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {agreement.type.replace('_', ' ')}
                           </Badge>
                         </div>
@@ -749,7 +749,7 @@ const LegalAuditDocumentation = () => {
                           {getStatusBadge(agreement.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Building className="h-3 w-3" />
                           {agreement.vendor}
@@ -759,7 +759,7 @@ const LegalAuditDocumentation = () => {
                           {agreement.category}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Effective: {agreement.effectiveDate.toLocaleDateString()}
@@ -770,7 +770,7 @@ const LegalAuditDocumentation = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -781,27 +781,27 @@ const LegalAuditDocumentation = () => {
         </TabsContent>
 
         <TabsContent value="legal-holds">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Legal Holds</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage legal holds on documents and data
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {legalHolds.map((hold) => (
-                  <div key={hold.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={hold.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{hold.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{hold.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{hold.id}</span>
                         </div>
                         {getStatusBadge(hold.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{hold.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{hold.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" />
                           Reason: {hold.reason}
@@ -811,7 +811,7 @@ const LegalAuditDocumentation = () => {
                           {hold.affectedDocuments} documents
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Created: {hold.createdDate.toLocaleDateString()}
@@ -828,7 +828,7 @@ const LegalAuditDocumentation = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+                        className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
                       >
                         Release Hold
                       </Button>

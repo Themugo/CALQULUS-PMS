@@ -201,7 +201,7 @@ const ComplianceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Compliance Dashboard</h2>
-          <p className="text-purple-300 text-sm mt-1">Monitor and manage compliance across all frameworks</p>
+          <p className="text-amber-400/70 text-sm mt-1">Monitor and manage compliance across all frameworks</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -209,14 +209,14 @@ const ComplianceDashboard = () => {
             size="sm"
             onClick={handleRefresh}
             disabled={refreshing}
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -225,10 +225,10 @@ const ComplianceDashboard = () => {
       </div>
 
       {/* Overall Score Card */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-purple-400" />
+            <ShieldCheck className="h-5 w-5 text-amber-500" />
             Overall Compliance Score
           </CardTitle>
         </CardHeader>
@@ -245,32 +245,32 @@ const ComplianceDashboard = () => {
                 </div>
               </div>
               <Progress value={overallScore} className="h-3" />
-              <p className="text-purple-300 text-sm mt-2">
+              <p className="text-amber-400/70 text-sm mt-2">
                 Last updated: June 3, 2026
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">{complianceScores.length}</div>
-                <div className="text-purple-300 text-sm">Frameworks</div>
+                <div className="text-amber-400/70 text-sm">Frameworks</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">
                   {complianceScores.filter(s => s.status === 'compliant').length}
                 </div>
-                <div className="text-purple-300 text-sm">Compliant</div>
+                <div className="text-amber-400/70 text-sm">Compliant</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">
                   {complianceScores.filter(s => s.status === 'partial').length}
                 </div>
-                <div className="text-purple-300 text-sm">Partial</div>
+                <div className="text-amber-400/70 text-sm">Partial</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">
                   {complianceScores.filter(s => s.status === 'non-compliant').length}
                 </div>
-                <div className="text-purple-300 text-sm">Non-Compliant</div>
+                <div className="text-amber-400/70 text-sm">Non-Compliant</div>
               </div>
             </div>
           </div>
@@ -278,22 +278,22 @@ const ComplianceDashboard = () => {
       </Card>
 
       {/* Framework Scores */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <CardTitle className="text-white">Framework Compliance Scores</CardTitle>
-          <CardDescription className="text-purple-300">
+          <CardDescription className="text-amber-400/70">
             Compliance status across all frameworks
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             {complianceScores.map((score) => (
-              <div key={score.framework} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg">
+              <div key={score.framework} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-medium">{score.framework}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-purple-300 text-sm">
+                      <span className="text-amber-400/70 text-sm">
                         {score.controlsImplemented}/{score.totalControls} controls
                       </span>
                       {getStatusBadge(score.status)}
@@ -301,7 +301,7 @@ const ComplianceDashboard = () => {
                   </div>
                   <Progress value={score.score} className="h-2" />
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-purple-300 text-sm">
+                    <span className="text-amber-400/70 text-sm">
                       Last assessed: {score.lastAssessed.toLocaleDateString()}
                     </span>
                     <span className="text-white font-semibold">{score.score}%</span>
@@ -315,56 +315,56 @@ const ComplianceDashboard = () => {
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Incidents
           </TabsTrigger>
-          <TabsTrigger value="data-retention" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="data-retention" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Database className="h-4 w-4 mr-2" />
             Data Retention
           </TabsTrigger>
-          <TabsTrigger value="privacy" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="privacy" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Privacy
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="controls">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Controls Overview</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage and monitor compliance controls
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {controlsNeedingAttention.map((control) => (
-                  <div key={control.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={control.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{control.name}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {control.category}
                           </Badge>
                         </div>
                         {getStatusBadge(control.status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span>Next assessment: {control.nextAssessment.toLocaleDateString()}</span>
                         <span>Evidence: {control.evidenceCount} items</span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -375,36 +375,36 @@ const ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="incidents">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Security Incidents</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track and manage security incidents
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentIncidents.map((incident) => (
-                  <div key={incident.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={incident.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{incident.type}</span>
-                          <span className="text-purple-300 text-sm ml-2">{incident.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{incident.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(incident.severity)}
                           {getStatusBadge(incident.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span>Reported: {incident.reportedDate.toLocaleDateString()}</span>
                         {incident.resolvedDate && (
                           <span>Resolved: {incident.resolvedDate.toLocaleDateString()}</span>
                         )}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -415,51 +415,51 @@ const ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="data-retention">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Database className="h-5 w-5 text-purple-400" />
+                <Database className="h-5 w-5 text-amber-500" />
                 Data Retention Policies
               </CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage data retention and disposal policies
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-medium">Personal Data</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Retention: 7 years after tenant departure
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Disposal: Secure deletion
                   </div>
                 </div>
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-medium">Financial Data</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Retention: 10 years after transaction
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Disposal: Secure archival
                   </div>
                 </div>
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-medium">Operational Logs</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Retention: 2 years
                   </div>
-                  <div className="text-sm text-purple-300">
+                  <div className="text-sm text-amber-400/70">
                     Disposal: Secure deletion
                   </div>
                 </div>
@@ -469,49 +469,49 @@ const ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="privacy">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Lock className="h-5 w-5 text-purple-400" />
+                <Lock className="h-5 w-5 text-amber-500" />
                 Privacy Compliance
               </CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Monitor privacy compliance and data subject requests
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
-                    <Scale className="h-4 w-4 text-purple-400" />
+                    <Scale className="h-4 w-4 text-amber-500" />
                     <span className="text-white font-medium">Data Subject Requests</span>
                   </div>
                   <div className="text-2xl font-bold text-white mb-1">12</div>
-                  <div className="text-sm text-purple-300">Pending: 3 | Completed: 9</div>
+                  <div className="text-sm text-amber-400/70">Pending: 3 | Completed: 9</div>
                 </div>
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
-                    <FileText className="h-4 w-4 text-purple-400" />
+                    <FileText className="h-4 w-4 text-amber-500" />
                     <span className="text-white font-medium">Consent Records</span>
                   </div>
                   <div className="text-2xl font-bold text-white mb-1">1,245</div>
-                  <div className="text-sm text-purple-300">Active consents</div>
+                  <div className="text-sm text-amber-400/70">Active consents</div>
                 </div>
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="h-4 w-4 text-purple-400" />
+                    <AlertCircle className="h-4 w-4 text-amber-500" />
                     <span className="text-white font-medium">Data Breaches</span>
                   </div>
                   <div className="text-2xl font-bold text-white mb-1">0</div>
-                  <div className="text-sm text-purple-300">No breaches in last 12 months</div>
+                  <div className="text-sm text-amber-400/70">No breaches in last 12 months</div>
                 </div>
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
-                    <Info className="h-4 w-4 text-purple-400" />
+                    <Info className="h-4 w-4 text-amber-500" />
                     <span className="text-white font-medium">Privacy Impact Assessments</span>
                   </div>
                   <div className="text-2xl font-bold text-white mb-1">8</div>
-                  <div className="text-sm text-purple-300">Completed assessments</div>
+                  <div className="text-sm text-amber-400/70">Completed assessments</div>
                 </div>
               </div>
             </CardContent>

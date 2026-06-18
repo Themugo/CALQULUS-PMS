@@ -67,6 +67,7 @@ const TenantContracts = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [tenantInfo, setTenantInfo] = useState<{ name: string; property: string | null; unit: string | null } | null>(null);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchContracts = useCallback(async () => {
     if (!userRole?.tenant_id) return;
 
@@ -88,6 +89,7 @@ const TenantContracts = () => {
     setLoading(false);
   }, [userRole?.tenant_id, toast]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchTenantInfo = useCallback(async () => {
     if (!userRole?.tenant_id) return;
     const { data } = await supabase
@@ -99,6 +101,7 @@ const TenantContracts = () => {
   }, [userRole?.tenant_id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchContracts();
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchContracts, fetchTenantInfo]);
@@ -140,7 +143,7 @@ const TenantContracts = () => {
           .limit(1)
           .single();
 
-        const companyName = companyData?.company_name || "CALQULUS RMS Properties";
+        const companyName = companyData?.company_name || "CALQULUS PMS Properties";
         const managerEmail = companyData?.email;
 
         if (managerEmail && tenantInfo) {
@@ -307,7 +310,7 @@ const TenantContracts = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }

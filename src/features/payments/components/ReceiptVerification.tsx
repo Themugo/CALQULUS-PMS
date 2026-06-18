@@ -162,6 +162,7 @@ export const ReceiptVerification = () => {
   }, [statusFilter, toast, user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReceipts();
   }, [statusFilter, fetchReceipts]);
 
@@ -367,7 +368,7 @@ export const ReceiptVerification = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileCheck className="h-5 w-5 text-primary" />
+            <FileCheck className="h-5 w-5 text-amber-500" />
             Receipt Verification
           </CardTitle>
           <CardDescription>

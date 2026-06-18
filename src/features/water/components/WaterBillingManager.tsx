@@ -184,6 +184,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
   }, [propertyId, KENYAN_WATER_PROVIDERS]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [propertyId, fetchData]);
 
@@ -378,6 +379,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
     if (selectedUnitId && billingMethod === "meter") {
       const lastReading = readings.find(r => r.unit_id === selectedUnitId);
       if (lastReading) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPrevReading(lastReading.current_reading.toString());
       }
     }
@@ -479,11 +481,11 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                     className={cn(
                       "p-4 rounded-lg border-2 text-left transition-all",
                       billingMethod === "meter"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                        ? "border-amber-400/50 bg-amber-400/8"
+                        : "border-border hover:border-amber-400/60/50"
                     )}
                   >
-                    <GaugeCircle className={cn("h-6 w-6 mb-2", billingMethod === "meter" ? "text-primary" : "text-muted-foreground")} />
+                    <GaugeCircle className={cn("h-6 w-6 mb-2", billingMethod === "meter" ? "text-amber-500" : "text-muted-foreground")} />
                     <p className="font-medium text-sm">Meter Readings</p>
                     <p className="text-xs text-muted-foreground mt-1">Enter previous & current readings per unit. System calculates consumption × rate.</p>
                   </button>
@@ -493,11 +495,11 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                     className={cn(
                       "p-4 rounded-lg border-2 text-left transition-all",
                       billingMethod === "flat_rate"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                        ? "border-amber-400/50 bg-amber-400/8"
+                        : "border-border hover:border-amber-400/60/50"
                     )}
                   >
-                    <Receipt className={cn("h-6 w-6 mb-2", billingMethod === "flat_rate" ? "text-primary" : "text-muted-foreground")} />
+                    <Receipt className={cn("h-6 w-6 mb-2", billingMethod === "flat_rate" ? "text-amber-500" : "text-muted-foreground")} />
                     <p className="font-medium text-sm">Flat Rate</p>
                     <p className="text-xs text-muted-foreground mt-1">Fixed monthly water charge per unit. Can override per individual unit.</p>
                   </button>

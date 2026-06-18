@@ -21,6 +21,37 @@ interface PropertyOccupancy {
   rate: number;
 }
 
+interface OccupancyTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: { name: string; occupied: number; vacant: number; rate: number } }>;
+}
+
+function OccupancyCustomTooltip({ active, payload }: OccupancyTooltipProps) {
+  if (active && payload && payload.length) {
+    const item = payload[0].payload;
+    return (
+      <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+        <p className="font-medium text-foreground mb-2">{item.name}</p>
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-muted-foreground">Occupied:</span>
+            <span className="font-medium text-success">{item.occupied} units</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-muted-foreground">Vacant:</span>
+            <span className="font-medium text-destructive">{item.vacant} units</span>
+          </div>
+          <div className="flex items-center justify-between gap-4 pt-1 border-t border-border">
+            <span className="text-muted-foreground">Occupancy:</span>
+            <span className="font-semibold text-foreground">{item.rate}%</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 export function OccupancyChart() {
   const [data, setData] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +68,7 @@ export function OccupancyChart() {
         return;
       }
 
+       
       let query = supabase
         .from("properties")
         .select("name, units, occupied")
@@ -68,6 +100,7 @@ export function OccupancyChart() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOccupancyData();
 
     // Subscribe to real-time property changes
@@ -84,35 +117,9 @@ export function OccupancyChart() {
   }, [fetchOccupancyData]);
 
   const getBarColor = (rate: number) => {
-    if (rate >= 90) return "hsl(var(--success))";
-    if (rate >= 70) return "hsl(var(--warning))";
+    if (rate >= 90) return "hsl(42 51% 55%)"; // gold
+    if (rate >= 70) return "hsl(214 73% 52%)"; // blue
     return "hsl(var(--destructive))";
-  };
-
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; occupied: number; vacant: number; rate: number } }> }) => {
-    if (active && payload && payload.length) {
-      const item = payload[0].payload;
-      return (
-        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-foreground mb-2">{item.name}</p>
-          <div className="space-y-1 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-muted-foreground">Occupied:</span>
-              <span className="font-medium text-success">{item.occupied} units</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-muted-foreground">Vacant:</span>
-              <span className="font-medium text-destructive">{item.vacant} units</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 pt-1 border-t border-border">
-              <span className="text-muted-foreground">Occupancy:</span>
-              <span className="font-semibold text-foreground">{item.rate}%</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return null;
   };
 
   if (loading) {
@@ -183,7 +190,7 @@ export function OccupancyChart() {
               tickFormatter={(value) => `${value}%`}
               domain={[0, 100]}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
+            <Tooltip content={<OccupancyCustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
             <Bar dataKey="rate" radius={[4, 4, 0, 0]} maxBarSize={50}>
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getBarColor(entry.rate)} />

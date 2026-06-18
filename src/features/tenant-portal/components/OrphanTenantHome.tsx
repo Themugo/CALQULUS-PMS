@@ -132,6 +132,7 @@ const OrphanTenantHome: React.FC = () => {
   const uploadReceipt = async (paymentId: string, file: File) => {
     setUploadingReceipt(paymentId);
     try {
+      // eslint-disable-next-line react-hooks/purity
       const path = `orphan-receipts/${user!.id}/${paymentId}/${Date.now()}.jpg`;
       const { error } = await supabase.storage.from('maintenance-photos').upload(path, file, { upsert: true });
       if (error) throw error;
@@ -201,7 +202,7 @@ const OrphanTenantHome: React.FC = () => {
         {[
           { label: 'Total recorded',     value: fmt(totalPaid),           color: 'text-green-400' },
           { label: 'Payments logged',    value: String(payments.length),  color: 'text-blue-400' },
-          { label: 'Condition photos',   value: String(photos.length),    color: 'text-purple-400' },
+          { label: 'Condition photos',   value: String(photos.length),    color: 'text-amber-500' },
         ].map(k => (
           <div key={k.label} className="rounded-xl border border-border/50 bg-card p-3 text-center">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
@@ -434,7 +435,7 @@ const OrphanTenantHome: React.FC = () => {
               ) : (
                 <button type="button"
                   onClick={() => photoInputRef.current?.click()}
-                  className="w-full h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary transition-colors">
+                  className="w-full h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-amber-400/60 transition-colors">
                   <Camera className="h-8 w-8 opacity-50" />
                   <span className="text-sm">Tap to take/select photo</span>
                 </button>

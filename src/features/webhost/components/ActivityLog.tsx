@@ -39,7 +39,7 @@ const ENTITY_ICONS: Record<string, React.ElementType> = {
 const ROLE_BADGE: Record<string, string> = {
   manager:    'bg-blue-100 text-blue-800 border-blue-200',
   submanager: 'bg-slate-100 text-slate-700 border-slate-200',
-  webhost:    'bg-purple-100 text-purple-800 border-purple-200',
+  webhost:    'bg-blue-100 text-blue-800 border-blue-200',
   landlord:   'bg-amber-100 text-amber-800 border-amber-200',
   system:     'bg-green-100 text-green-700 border-green-200',
 };
@@ -51,7 +51,7 @@ const ACTION_COLOR = (action: string): string => {
   if (a.includes('delete') || a.includes('remove') || a.includes('archive')) return 'bg-red-100 text-red-800';
   if (a.includes('approve') || a.includes('complete')) return 'bg-emerald-100 text-emerald-800';
   if (a.includes('reject') || a.includes('deny') || a.includes('fail')) return 'bg-orange-100 text-orange-800';
-  if (a.includes('sign') || a.includes('contract')) return 'bg-purple-100 text-purple-800';
+  if (a.includes('sign') || a.includes('contract')) return 'bg-amber-400/15 text-amber-700';
   if (a.includes('pay') || a.includes('invoice')) return 'bg-cyan-100 text-cyan-800';
   return 'bg-slate-100 text-slate-700';
 };
@@ -89,13 +89,13 @@ const ActivityLog: React.FC = () => {
   });
 
   return (
-    <Card className="bg-slate-900/50 border-slate-700/50">
+    <Card className="bg-card border-border/60">
       <CardHeader className="pb-4">
         <CardTitle className="text-white flex items-center gap-2">
-          <Activity className="h-5 w-5 text-purple-400" />
+          <Activity className="h-5 w-5 text-amber-500" />
           Platform Activity Log
         </CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           All significant actions across the platform — managers, submanagers, webhosts
         </CardDescription>
       </CardHeader>
@@ -103,16 +103,16 @@ const ActivityLog: React.FC = () => {
         {/* Filters */}
         <div className="flex gap-3 mb-4 flex-wrap">
           <div className="relative flex-1 min-w-48">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search actions, emails, labels…"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-9 bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500"
+              className="pl-9 bg-card border-border/60 text-white placeholder:text-muted-foreground/70"
             />
           </div>
           <Select value={entityFilter} onValueChange={setEntityFilter}>
-            <SelectTrigger className="w-40 bg-slate-800/50 border-slate-600 text-white">
+            <SelectTrigger className="w-40 bg-card border-border/60 text-white">
               <SelectValue placeholder="Entity type" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ const ActivityLog: React.FC = () => {
             </SelectContent>
           </Select>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-36 bg-slate-800/50 border-slate-600 text-white">
+            <SelectTrigger className="w-36 bg-card border-border/60 text-white">
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
@@ -137,31 +137,31 @@ const ActivityLog: React.FC = () => {
 
         {isLoading ? (
           <div className="space-y-2">
-            {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-12 w-full bg-slate-800/50" />)}
+            {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-12 w-full bg-card/80" />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="py-12 text-center text-slate-500">
+          <div className="py-12 text-center text-muted-foreground/70">
             <Activity className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p>No activity logs found</p>
           </div>
         ) : (
-          <div className="rounded-lg border border-slate-700/50 overflow-hidden">
+          <div className="rounded-lg border border-border/60 overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-700/50 hover:bg-transparent">
-                  <TableHead className="text-slate-400 font-medium">When</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Actor</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Action</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Entity</TableHead>
-                  <TableHead className="text-slate-400 font-medium">Details</TableHead>
+                <TableRow className="border-border/60 hover:bg-transparent">
+                  <TableHead className="text-muted-foreground font-medium">When</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">Actor</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">Action</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">Entity</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">Details</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map(entry => {
                   const Icon = ENTITY_ICONS[entry.entity_type || ''] ?? Activity;
                   return (
-                    <TableRow key={entry.id} className="border-slate-700/30 hover:bg-slate-800/30">
-                      <TableCell className="text-slate-400 text-xs whitespace-nowrap">
+                    <TableRow key={entry.id} className="border-border/30 hover:bg-muted/20">
+                      <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
                         {format(new Date(entry.created_at), 'dd MMM HH:mm')}
                       </TableCell>
                       <TableCell>
@@ -169,7 +169,7 @@ const ActivityLog: React.FC = () => {
                           <Badge variant="outline" className={`text-xs capitalize ${ROLE_BADGE[entry.actor_role] ?? 'bg-slate-100'}`}>
                             {entry.actor_role}
                           </Badge>
-                          <span className="text-slate-300 text-xs truncate max-w-32">{entry.actor_email ?? '—'}</span>
+                          <span className="text-foreground/90 text-xs truncate max-w-32">{entry.actor_email ?? '—'}</span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -178,13 +178,13 @@ const ActivityLog: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1.5 text-slate-300 text-xs">
-                          <Icon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-foreground/90 text-xs">
+                          <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                           <span className="capitalize">{entry.entity_type ?? '—'}</span>
-                          {entry.entity_label && <span className="text-slate-400">· {entry.entity_label}</span>}
+                          {entry.entity_label && <span className="text-muted-foreground">· {entry.entity_label}</span>}
                         </div>
                       </TableCell>
-                      <TableCell className="text-slate-400 text-xs max-w-48 truncate">
+                      <TableCell className="text-muted-foreground text-xs max-w-48 truncate">
                         {entry.metadata ? JSON.stringify(entry.metadata).slice(0, 80) : '—'}
                       </TableCell>
                     </TableRow>

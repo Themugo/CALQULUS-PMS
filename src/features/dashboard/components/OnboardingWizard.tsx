@@ -59,6 +59,7 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
   }, [managerId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkProgress();
   }, [checkProgress]);
 
@@ -68,11 +69,11 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
   if (completedCount === steps.length) return null;
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+    <Card className="border-amber-400/20 bg-gradient-to-r from-amber-400/5 to-accent/5">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Rocket className="h-5 w-5 text-primary" />
+            <Rocket className="h-5 w-5 text-amber-500" />
             <CardTitle className="text-base">Getting Started</CardTitle>
             <Badge variant="secondary" className="text-xs">{completedCount}/{steps.length}</Badge>
           </div>

@@ -78,7 +78,7 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-primary" />
+            <CreditCard className="h-5 w-5 text-amber-500" />
             Property Invoices
           </CardTitle>
           <div className="flex gap-4 mt-2 text-sm">

@@ -118,13 +118,13 @@ const AdminPermissionsEditor: React.FC<AdminPermissionsEditorProps> = ({
             )}
             <SelectItem value="admin">
               <div className="flex items-center gap-2">
-                <Shield className="h-3.5 w-3.5 text-purple-600" />
+                <Shield className="h-3.5 w-3.5 text-blue-600" />
                 Admin — broad management access
               </div>
             </SelectItem>
             <SelectItem value="limited_admin">
               <div className="flex items-center gap-2">
-                <User className="h-3.5 w-3.5 text-slate-600" />
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
                 Limited admin — granular permission control
               </div>
             </SelectItem>
@@ -151,7 +151,7 @@ const AdminPermissionsEditor: React.FC<AdminPermissionsEditorProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{label}</span>
                   {isForced && (
-                    <Badge variant="outline" className="text-xs h-4 px-1 border-purple-300 text-purple-600">
+                    <Badge variant="outline" className="text-xs h-4 px-1 border-blue-300 text-blue-600">
                       auto
                     </Badge>
                   )}

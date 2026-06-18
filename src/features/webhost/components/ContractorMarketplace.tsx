@@ -336,13 +336,13 @@ const ContractorMarketplace = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Contractor Marketplace</h2>
-          <p className="text-purple-300 text-sm mt-1">Connect with verified contractors for maintenance and repairs</p>
+          <p className="text-amber-400/70 text-sm mt-1">Connect with verified contractors for maintenance and repairs</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -350,7 +350,7 @@ const ContractorMarketplace = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -360,85 +360,85 @@ const ContractorMarketplace = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Wrench className="h-4 w-4 text-purple-400" />
+              <Wrench className="h-4 w-4 text-amber-500" />
               Total Contractors
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalContractors}</div>
-            <div className="text-sm text-purple-300">Registered contractors</div>
+            <div className="text-sm text-amber-400/70">Registered contractors</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <CheckCircle className="h-4 w-4 text-amber-500" />
               Available
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{availableContractors}</div>
-            <div className="text-sm text-purple-300">Ready for work</div>
+            <div className="text-sm text-amber-400/70">Ready for work</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-purple-400" />
+              <Activity className="h-4 w-4 text-amber-500" />
               Active Work Orders
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeWorkOrders}</div>
-            <div className="text-sm text-purple-300">In progress</div>
+            <div className="text-sm text-amber-400/70">In progress</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <FileText className="h-4 w-4 text-purple-400" />
+              <FileText className="h-4 w-4 text-amber-500" />
               Pending Bids
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingBids}</div>
-            <div className="text-sm text-purple-300">Awaiting review</div>
+            <div className="text-sm text-amber-400/70">Awaiting review</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="contractors" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="contractors" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Wrench className="h-4 w-4 mr-2" />
             Contractors
           </TabsTrigger>
-          <TabsTrigger value="workorders" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="workorders" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Briefcase className="h-4 w-4 mr-2" />
             Work Orders
           </TabsTrigger>
-          <TabsTrigger value="bids" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="bids" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Bids
           </TabsTrigger>
-          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Award className="h-4 w-4 mr-2" />
             Performance
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="contractors">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Contractor Directory</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Browse and connect with verified contractors
               </CardDescription>
             </CardHeader>
@@ -446,18 +446,18 @@ const ContractorMarketplace = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search contractors..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Specialties</option>
                   <option value="plumbing">Plumbing</option>
@@ -469,7 +469,7 @@ const ContractorMarketplace = () => {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Availability</option>
                   <option value="available">Available</option>
@@ -481,7 +481,7 @@ const ContractorMarketplace = () => {
               {/* Contractors List */}
               <div className="grid gap-4 md:grid-cols-2">
                 {filteredContractors.map((contractor) => (
-                  <div key={contractor.id} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={contractor.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -493,42 +493,42 @@ const ContractorMarketplace = () => {
                             <Badge className="bg-green-100 text-green-800 border-green-300"><Award className="h-3 w-3 mr-1" />Certified</Badge>
                           )}
                         </div>
-                        <div className="text-purple-300 text-sm">{contractor.company}</div>
+                        <div className="text-amber-400/70 text-sm">{contractor.company}</div>
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-white font-medium">{contractor.rating}</span>
-                        <span className="text-purple-300 text-sm">({contractor.reviewCount})</span>
+                        <span className="text-amber-400/70 text-sm">({contractor.reviewCount})</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
                       {contractor.specialties.map((spec, idx) => (
-                        <Badge key={idx} variant="outline" className="text-purple-300 border-purple-700 text-xs">
+                        <Badge key={idx} variant="outline" className="text-amber-400/70 border-amber-400/30 text-xs">
                           {spec}
                         </Badge>
                       ))}
                     </div>
                     <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <MapPin className="h-3 w-3" />
                         {contractor.location}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Clock className="h-3 w-3" />
                         {contractor.responseTime}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <DollarSign className="h-3 w-3" />
                         KES {contractor.hourlyRate}/hr
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Briefcase className="h-3 w-3" />
                         {contractor.completedJobs} jobs
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       {getStatusBadge(contractor.availability)}
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         View Profile
                       </Button>
                     </div>
@@ -540,29 +540,29 @@ const ContractorMarketplace = () => {
         </TabsContent>
 
         <TabsContent value="workorders">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Work Orders</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage maintenance and repair work orders
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {workOrders.map((workOrder) => (
-                  <div key={workOrder.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={workOrder.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{workOrder.description}</span>
-                          <span className="text-purple-300 text-sm ml-2">{workOrder.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{workOrder.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getPriorityBadge(workOrder.priority)}
                           {getStatusBadge(workOrder.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Building className="h-3 w-3" />
                           {workOrder.propertyName} - {workOrder.unit}
@@ -572,7 +572,7 @@ const ContractorMarketplace = () => {
                           {workOrder.category}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         {workOrder.contractorName && (
                           <span className="flex items-center gap-1">
                             <User className="h-3 w-3" />
@@ -586,7 +586,7 @@ const ContractorMarketplace = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
                           Budget: KES {workOrder.budget.toLocaleString()}
@@ -600,7 +600,7 @@ const ContractorMarketplace = () => {
                       </div>
                     </div>
                     {workOrder.status === 'pending' && (
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Invite Bids
                       </Button>
                     )}
@@ -612,33 +612,33 @@ const ContractorMarketplace = () => {
         </TabsContent>
 
         <TabsContent value="bids">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Contractor Bids</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Review and manage contractor bids for work orders
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {bids.map((bid) => (
-                  <div key={bid.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={bid.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{bid.contractorName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{bid.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{bid.id}</span>
                           <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                            <span className="text-purple-300 text-sm">{bid.contractorRating}</span>
+                            <span className="text-amber-400/70 text-sm">{bid.contractorRating}</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(bid.status)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{bid.proposal}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{bid.proposal}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
                           Bid: KES {bid.bidAmount.toLocaleString()}
@@ -648,7 +648,7 @@ const ContractorMarketplace = () => {
                           Duration: {bid.estimatedDuration}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Submitted: {bid.submittedDate.toLocaleDateString()}
@@ -673,46 +673,46 @@ const ContractorMarketplace = () => {
         </TabsContent>
 
         <TabsContent value="performance">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Contractor Performance</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track contractor performance metrics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {contractorPerformance.map((perf) => (
-                  <div key={perf.contractorId} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={perf.contractorId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-white font-medium">{perf.contractorName}</span>
-                      <Badge variant="outline" className="text-purple-300 border-purple-700">
+                      <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         {perf.totalJobs} jobs completed
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.onTimeCompletion}%</div>
-                        <div className="text-xs text-purple-300">On-Time Completion</div>
+                        <div className="text-xs text-amber-400/70">On-Time Completion</div>
                         <Progress value={perf.onTimeCompletion} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.qualityScore}/5</div>
-                        <div className="text-xs text-purple-300">Quality Score</div>
+                        <div className="text-xs text-amber-400/70">Quality Score</div>
                         <Progress value={(perf.qualityScore / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.communicationScore}/5</div>
-                        <div className="text-xs text-purple-300">Communication</div>
+                        <div className="text-xs text-amber-400/70">Communication</div>
                         <Progress value={(perf.communicationScore / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.repeatClientRate}%</div>
-                        <div className="text-xs text-purple-300">Repeat Clients</div>
+                        <div className="text-xs text-amber-400/70">Repeat Clients</div>
                         <Progress value={perf.repeatClientRate} className="h-2 mt-1" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-purple-300">
+                    <div className="flex items-center gap-4 text-sm text-amber-400/70">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         Avg Response: {perf.averageResponseTime}

@@ -16,6 +16,7 @@ export const DesktopInstallBanner = () => {
     // Check if already dismissed in this session
     const dismissed = sessionStorage.getItem("pwa-install-dismissed");
     if (dismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }
@@ -76,11 +77,11 @@ export const DesktopInstallBanner = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-md animate-in slide-in-from-bottom-5 fade-in duration-500">
-      <div className="bg-gradient-to-br from-primary/5 via-card to-card border border-primary/20 rounded-2xl shadow-2xl p-5 backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-amber-400/5 via-card to-card border border-amber-400/20 rounded-2xl shadow-2xl p-5 backdrop-blur-sm">
         <div className="flex items-start gap-4">
           <div className="relative">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-primary/10">
-              <Monitor className="h-6 w-6 text-primary" />
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400/15 to-amber-400/5 flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-amber-400/10">
+              <Monitor className="h-6 w-6 text-amber-500" />
             </div>
             <div className="absolute -top-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
               <Zap className="h-3 w-3 text-white" />
@@ -88,7 +89,7 @@ export const DesktopInstallBanner = () => {
           </div>
           
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-base text-foreground">Install CALQULUS RMS Desktop App</h4>
+            <h4 className="font-bold text-base text-foreground">Install CALQULUS PMS Desktop App</h4>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
               Get faster access and a native app experience on your computer
             </p>
@@ -103,9 +104,9 @@ export const DesktopInstallBanner = () => {
                 <Bell className="h-3 w-3 text-amber-500" />
                 <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Notifications</span>
               </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 rounded-full">
-                <Shield className="h-3 w-3 text-primary" />
-                <span className="text-xs font-medium text-primary">Secure</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/10 rounded-full">
+                <Shield className="h-3 w-3 text-amber-500" />
+                <span className="text-xs font-medium text-amber-500">Secure</span>
               </div>
             </div>
             

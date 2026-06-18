@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Shield, FileText, ChevronLeft } from 'lucide-react';
 
 const LAST_UPDATED = 'May 2026';
-const COMPANY     = 'CALQULUS RMS Ltd';
+const COMPANY     = 'CALQULUS PMS Ltd';
 const EMAIL       = 'legal@calqulusrms.com';
 const COUNTRY     = 'Kenya';
 
@@ -32,7 +32,7 @@ const LegalPage: React.FC = () => {
             <button
               onClick={() => setTab('privacy')}
               className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'privacy' ? 'bg-primary text-white' : 'text-slate-400 hover:text-white'
+                tab === 'privacy' ? 'bg-amber-400 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               <Shield className="h-3.5 w-3.5" />Privacy Policy
@@ -40,7 +40,7 @@ const LegalPage: React.FC = () => {
             <button
               onClick={() => setTab('terms')}
               className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'terms' ? 'bg-primary text-white' : 'text-slate-400 hover:text-white'
+                tab === 'terms' ? 'bg-amber-400 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               <FileText className="h-3.5 w-3.5" />Terms of Service
@@ -62,12 +62,12 @@ const PrivacyPolicy: React.FC = () => (
   <article className="space-y-8 text-sm leading-7">
     <div>
       <h1 className="text-2xl font-bold text-white mb-2">Privacy Policy</h1>
-      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Applies to CALQULUS RMS platform and mobile app</p>
+      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Applies to CALQULUS PMS platform and mobile app</p>
     </div>
 
     <Section title="1. Who we are">
-      <p>{COMPANY} ("CALQULUS RMS", "we", "our") operates the CALQULUS RMS property management platform at calqulusrms.com. We are registered and operate under the laws of {COUNTRY}.</p>
-      <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a></p>
+      <p>{COMPANY} ("CALQULUS PMS", "we", "our") operates the CALQULUS PMS property management platform at calqulusrms.com. We are registered and operate under the laws of {COUNTRY}.</p>
+      <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a></p>
     </Section>
 
     <Section title="2. What data we collect">
@@ -108,7 +108,7 @@ const PrivacyPolicy: React.FC = () => (
         <li><strong className="text-white">Objection:</strong> object to processing of your data for certain purposes</li>
         <li><strong className="text-white">Portability:</strong> receive your data in a machine-readable format</li>
       </ul>
-      <p className="mt-2">To exercise these rights, email <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a>. We will respond within 21 days.</p>
+      <p className="mt-2">To exercise these rights, email <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a>. We will respond within 21 days.</p>
     </Section>
 
     <Section title="6. Data retention">
@@ -134,11 +134,11 @@ const TermsOfService: React.FC = () => (
     </div>
 
     <Section title="1. Acceptance">
-      <p>By creating a CALQULUS RMS account, you agree to these Terms of Service and our Privacy Policy. If you are registering on behalf of a business, you confirm you have authority to bind that business.</p>
+      <p>By creating a CALQULUS PMS account, you agree to these Terms of Service and our Privacy Policy. If you are registering on behalf of a business, you confirm you have authority to bind that business.</p>
     </Section>
 
     <Section title="2. The service">
-      <p>CALQULUS RMS provides a software platform for property managers, landlords, and tenants to manage rental properties, including invoicing, payment tracking, maintenance requests, and communications. CALQULUS RMS is not a party to any lease or tenancy agreement created through the platform.</p>
+      <p>CALQULUS PMS provides a software platform for property managers, landlords, and tenants to manage rental properties, including invoicing, payment tracking, maintenance requests, and communications. CALQULUS PMS is not a party to any lease or tenancy agreement created through the platform.</p>
     </Section>
 
     <Section title="3. Manager responsibilities">
@@ -162,7 +162,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="5. Payments">
-      <p>CALQULUS RMS processes M-Pesa payments via Safaricom Daraja API. By initiating a payment, you authorise the debit from your M-Pesa account. CALQULUS RMS is not responsible for Safaricom service outages. All payment records are logged and immutable — we cannot alter or delete payment receipts once issued.</p>
+      <p>CALQULUS PMS processes M-Pesa payments via Safaricom Daraja API. By initiating a payment, you authorise the debit from your M-Pesa account. CALQULUS PMS is not responsible for Safaricom service outages. All payment records are logged and immutable — we cannot alter or delete payment receipts once issued.</p>
       <p className="mt-2">Platform subscription fees for managers are invoiced monthly. Accounts with invoices overdue by 30 days are suspended. Reinstatement is automatic upon payment.</p>
     </Section>
 
@@ -178,7 +178,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="7. Liability">
-      <p>CALQULUS RMS provides the platform "as is". We are not liable for: disputes between landlords and tenants; losses arising from M-Pesa service outages; data loss due to events beyond our reasonable control. Our total liability to any party in any 12-month period shall not exceed the subscription fees paid to us in that period.</p>
+      <p>CALQULUS PMS provides the platform "as is". We are not liable for: disputes between landlords and tenants; losses arising from M-Pesa service outages; data loss due to events beyond our reasonable control. Our total liability to any party in any 12-month period shall not exceed the subscription fees paid to us in that period.</p>
     </Section>
 
     <Section title="8. Governing law">
@@ -186,7 +186,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="9. Contact">
-      <p>Questions about these terms: <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a></p>
+      <p>Questions about these terms: <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a></p>
     </Section>
   </article>
 );

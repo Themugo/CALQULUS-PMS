@@ -1,7 +1,7 @@
 /**
  * propertyTypes.ts
  *
- * Single source of truth for all property category types in CALQULUS RMS.
+ * Single source of truth for all property category types in CALQULUS PMS.
  * Used in: Add Property form, Property filters, Webhost billing,
  *           PropertyDetail, Reports, Tier enforcement.
  */
@@ -284,7 +284,7 @@ export const TIER_BADGE_COLORS: Record<string, string> = {
   enterprise: 'bg-amber-100 text-amber-800 border-amber-300',
   starter:    'bg-slate-100 text-slate-700 border-slate-200',
   growth:     'bg-blue-100 text-blue-700 border-blue-200',
-  professional:'bg-purple-100 text-purple-800 border-purple-300',
+  professional:'bg-amber-400/15 text-amber-700 border-purple-300',
 };
 
 /** Unit types per category — displayed in Add Unit form */

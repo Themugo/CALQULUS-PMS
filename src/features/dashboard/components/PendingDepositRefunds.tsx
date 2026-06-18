@@ -114,7 +114,7 @@ export function PendingDepositRefunds() {
       bank_transfer: { label: "Bank", className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
       mpesa: { label: "M-Pesa", className: "bg-green-500/10 text-green-600 border-green-500/20" },
       cash: { label: "Cash", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-      cheque: { label: "Cheque", className: "bg-purple-500/10 text-purple-600 border-purple-500/20" },
+      cheque: { label: "Cheque", className: "bg-purple-500/10 text-purple-600 border-amber-400/50/20" },
     };
     const m = methods[method] || { label: method, className: "bg-muted text-muted-foreground" };
     return <Badge variant="outline" className={m.className}>{m.label}</Badge>;

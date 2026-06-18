@@ -103,7 +103,7 @@ const statusConfig: Record<ContractStatus, { label: string; styles: string; icon
   rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
   signed: { label: "Signed", styles: "bg-blue-600 text-white border-blue-700", icon: ShieldCheck },
   expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
-  cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-slate-700", icon: XCircle },
+  cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-border", icon: XCircle },
 };
 
 const WebhostContracts = () => {
@@ -176,6 +176,7 @@ const WebhostContracts = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -522,11 +523,11 @@ const WebhostContracts = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Manager Contracts</h2>
-          <p className="text-purple-300">Manage service agreements with landlords/property managers</p>
+          <p className="text-amber-400/70">Manage service agreements with landlords/property managers</p>
         </div>
         <Button
           onClick={() => setUploadDialogOpen(true)}
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-amber-400 hover:bg-amber-500 text-slate-900"
         >
           <Upload className="h-4 w-4 mr-2" />
           Upload Contract
@@ -535,45 +536,45 @@ const WebhostContracts = () => {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-5">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-300">Total</CardTitle>
-            <FileText className="h-4 w-4 text-purple-400" />
+            <CardTitle className="text-sm font-medium text-amber-400/70">Total</CardTitle>
+            <FileText className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">{stats.total}</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-300">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium text-amber-400/70">Pending</CardTitle>
             <Clock className="h-4 w-4 text-amber-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-400">{stats.pending}</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-300">Approved</CardTitle>
+            <CardTitle className="text-sm font-medium text-amber-400/70">Approved</CardTitle>
             <CheckCircle className="h-4 w-4 text-emerald-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-400">{stats.approved}</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-300">Signed</CardTitle>
+            <CardTitle className="text-sm font-medium text-amber-400/70">Signed</CardTitle>
             <ShieldCheck className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-400">{stats.signed}</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-300">Rejected</CardTitle>
+            <CardTitle className="text-sm font-medium text-amber-400/70">Rejected</CardTitle>
             <XCircle className="h-4 w-4 text-red-400" />
           </CardHeader>
           <CardContent>
@@ -584,7 +585,7 @@ const WebhostContracts = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="all" className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
+        <TabsList className="bg-card/80 border border-amber-400/12">
           <TabsTrigger value="all" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
             All Contracts
           </TabsTrigger>
@@ -596,20 +597,20 @@ const WebhostContracts = () => {
 
         <TabsContent value="all" className="space-y-4">
           {/* Filters */}
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardContent className="pt-4">
               <div className="grid gap-4 md:grid-cols-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search contracts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-slate-700/50 border-purple-700/50"
+                    className="pl-10 bg-slate-700/50 border-amber-400/20"
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-purple-700/50">
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -622,7 +623,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={managerFilter} onValueChange={setManagerFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-purple-700/50">
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
                     <SelectValue placeholder="Manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -634,7 +635,7 @@ const WebhostContracts = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={fetchData} className="border-purple-700/50">
+                <Button variant="outline" onClick={fetchData} className="border-amber-400/20">
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -643,48 +644,48 @@ const WebhostContracts = () => {
           </Card>
 
           {/* Contracts Table */}
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-purple-800/30 hover:bg-transparent">
-                    <TableHead className="text-purple-300">Title</TableHead>
-                    <TableHead className="text-purple-300">Manager</TableHead>
-                    <TableHead className="text-purple-300">Type</TableHead>
-                    <TableHead className="text-purple-300">Status</TableHead>
-                    <TableHead className="text-purple-300">Valid Period</TableHead>
-                    <TableHead className="text-purple-300">Created</TableHead>
-                    <TableHead className="text-purple-300 text-right">Actions</TableHead>
+                  <TableRow className="border-amber-400/12 hover:bg-transparent">
+                    <TableHead className="text-amber-400/70">Title</TableHead>
+                    <TableHead className="text-amber-400/70">Manager</TableHead>
+                    <TableHead className="text-amber-400/70">Type</TableHead>
+                    <TableHead className="text-amber-400/70">Status</TableHead>
+                    <TableHead className="text-amber-400/70">Valid Period</TableHead>
+                    <TableHead className="text-amber-400/70">Created</TableHead>
+                    <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8">
-                        <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400" />
+                        <RefreshCw className="h-6 w-6 animate-spin mx-auto text-amber-500" />
                       </TableCell>
                     </TableRow>
                   ) : filteredContracts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-purple-300">
+                      <TableCell colSpan={7} className="text-center py-8 text-amber-400/70">
                         No contracts found
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredContracts.map((contract) => (
-                      <TableRow key={contract.id} className="border-purple-800/30">
+                      <TableRow key={contract.id} className="border-amber-400/12">
                         <TableCell className="font-medium text-white">{contract.title}</TableCell>
-                        <TableCell className="text-purple-300">
+                        <TableCell className="text-amber-400/70">
                           <div className="flex flex-col">
                             <span className="text-white">{contract.manager_name || "Unknown"}</span>
-                            <span className="text-xs text-purple-400">{contract.manager_email}</span>
+                            <span className="text-xs text-amber-500">{contract.manager_email}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-purple-300 capitalize">
+                        <TableCell className="text-amber-400/70 capitalize">
                           {contract.contract_type?.replace(/_/g, " ") || "Service Agreement"}
                         </TableCell>
                         <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                        <TableCell className="text-purple-300">
+                        <TableCell className="text-amber-400/70">
                           {contract.valid_from && contract.valid_until ? (
                             <span className="text-xs">
                               {format(new Date(contract.valid_from), "dd/MM/yy")} -{" "}
@@ -694,7 +695,7 @@ const WebhostContracts = () => {
                             <span className="text-purple-500">Not set</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-purple-300">
+                        <TableCell className="text-amber-400/70">
                           {format(new Date(contract.created_at), "dd/MM/yy")}
                         </TableCell>
                         <TableCell className="text-right">
@@ -706,7 +707,7 @@ const WebhostContracts = () => {
                                 setSelectedContract(contract);
                                 setPreviewDialogOpen(true);
                               }}
-                              className="h-8 w-8 text-purple-400 hover:text-white hover:bg-purple-600/20"
+                              className="h-8 w-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -715,7 +716,7 @@ const WebhostContracts = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleDownloadContract(contract)}
-                                className="h-8 w-8 text-purple-400 hover:text-white hover:bg-purple-600/20"
+                                className="h-8 w-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -769,19 +770,19 @@ const WebhostContracts = () => {
 
         {/* By Manager Tab - Independent contracts per manager */}
         <TabsContent value="by-manager" className="space-y-4">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-400" />
+                <Users className="h-5 w-5 text-amber-500" />
                 Manager Contract Sections
               </CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 View and upload contracts organized by each manager. Each manager has their own independent contract section.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {managers.length === 0 ? (
-                <div className="text-center py-8 text-purple-400">
+                <div className="text-center py-8 text-amber-500">
                   <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>No managers found</p>
                 </div>
@@ -789,25 +790,25 @@ const WebhostContracts = () => {
                 managers.map((manager) => {
                   const managerContracts = contracts.filter(c => c.manager_user_id === manager.id);
                   return (
-                    <div key={manager.id} className="border border-purple-700/30 rounded-lg overflow-hidden">
+                    <div key={manager.id} className="border border-amber-400/30/30 rounded-lg overflow-hidden">
                       <div className="bg-slate-700/50 px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-purple-600/20 flex items-center justify-center">
-                            <Building className="h-5 w-5 text-purple-400" />
+                            <Building className="h-5 w-5 text-amber-500" />
                           </div>
                           <div>
                             <p className="text-white font-medium">{manager.full_name || "Unnamed Manager"}</p>
-                            <p className="text-sm text-purple-400">{manager.email}</p>
+                            <p className="text-sm text-amber-500">{manager.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className="bg-purple-600/20 text-purple-300 border-purple-600/30">
+                          <Badge className="bg-purple-600/20 text-amber-400/70 border-amber-400/20">
                             {managerContracts.length} contract(s)
                           </Badge>
                           <div className="relative">
                             <Button
                               size="sm"
-                              className="bg-purple-600 hover:bg-purple-700"
+                              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
                               onClick={() => {
                                 setUploadForm(prev => ({ ...prev, manager_user_id: manager.id }));
                                 setUploadDialogOpen(true);
@@ -821,17 +822,17 @@ const WebhostContracts = () => {
                       </div>
                       <div className="p-4">
                         {managerContracts.length === 0 ? (
-                          <p className="text-center text-purple-400 py-4">No contracts for this manager yet</p>
+                          <p className="text-center text-amber-500 py-4">No contracts for this manager yet</p>
                         ) : (
                           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                             {managerContracts.map((contract) => (
-                              <Card key={contract.id} className="bg-slate-700/30 border-purple-700/20">
+                              <Card key={contract.id} className="bg-slate-700/30 border-amber-400/30/20">
                                 <CardContent className="p-4">
                                   <div className="flex items-start justify-between mb-2">
                                     <h4 className="text-white font-medium text-sm truncate flex-1">{contract.title}</h4>
                                     {getStatusBadge(contract.status)}
                                   </div>
-                                  <p className="text-xs text-purple-400 mb-3 capitalize">
+                                  <p className="text-xs text-amber-500 mb-3 capitalize">
                                     {contract.contract_type?.replace(/_/g, " ") || "Service Agreement"}
                                   </p>
                                   <div className="flex gap-2">
@@ -842,7 +843,7 @@ const WebhostContracts = () => {
                                         setSelectedContract(contract);
                                         setPreviewDialogOpen(true);
                                       }}
-                                      className="h-8 text-purple-400 hover:text-white hover:bg-purple-600/20"
+                                      className="h-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
                                     >
                                       <Eye className="h-3 w-3 mr-1" />
                                       View
@@ -852,7 +853,7 @@ const WebhostContracts = () => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleDownloadContract(contract)}
-                                        className="h-8 text-purple-400 hover:text-white hover:bg-purple-600/20"
+                                        className="h-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
                                       >
                                         <Download className="h-3 w-3 mr-1" />
                                         Download
@@ -882,10 +883,10 @@ const WebhostContracts = () => {
           setParsedContent(null);
         }
       }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-slate-900 border-purple-800/50">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-slate-900 border-amber-400/15">
           <DialogHeader>
             <DialogTitle className="text-white">{selectedContract?.title}</DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Contract for {selectedContract?.manager_name || selectedContract?.manager_email}
             </DialogDescription>
           </DialogHeader>
@@ -928,7 +929,7 @@ const WebhostContracts = () => {
               )}
 
               {selectedContract?.review_notes && (
-                <div className="space-y-1 p-3 rounded-lg bg-slate-800/50 border border-purple-700/30">
+                <div className="space-y-1 p-3 rounded-lg bg-card/80 border border-amber-400/30/30">
                   <p className="text-sm font-medium text-white">Review Notes</p>
                   <p className="text-white font-normal">{selectedContract.review_notes}</p>
                   {selectedContract.reviewed_at && (
@@ -941,7 +942,7 @@ const WebhostContracts = () => {
 
               {/* AI Parsed Content Section */}
               {(parsedContent || selectedContract?.parsed_content) && (
-                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-purple-900/30 to-slate-800/50 border border-purple-600/30">
+                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-purple-900/30 to-slate-800/50 border border-amber-400/20">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-white" />
                     <p className="text-sm font-medium text-white">AI Extracted Terms</p>
@@ -962,14 +963,14 @@ const WebhostContracts = () => {
               )}
 
               {selectedContract?.uploaded_contract_url && (
-                <div className="border border-purple-700/30 rounded-lg overflow-hidden">
+                <div className="border border-amber-400/30/30 rounded-lg overflow-hidden">
                   {selectedContract.uploaded_contract_url.endsWith(".pdf") ? (
-                    <div className="p-6 text-center bg-slate-800/50">
-                      <FileText className="h-12 w-12 mx-auto mb-3 text-purple-400" />
+                    <div className="p-6 text-center bg-card/80">
+                      <FileText className="h-12 w-12 mx-auto mb-3 text-amber-500" />
                       <p className="text-white mb-3">PDF Document</p>
                       <Button
                         onClick={() => handleDownloadContract(selectedContract)}
-                        className="bg-purple-600 hover:bg-purple-700"
+                        className="bg-amber-400 hover:bg-amber-500 text-slate-900"
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Open PDF
@@ -1017,7 +1018,7 @@ const WebhostContracts = () => {
                   variant="outline"
                   onClick={handleParseContract}
                   disabled={isParsing}
-                  className="border-purple-600/50 text-purple-400 hover:text-white hover:bg-purple-600/20"
+                  className="border-amber-400/25 text-amber-500 hover:text-white hover:bg-purple-600/20"
                 >
                   {isParsing ? (
                     <>
@@ -1034,7 +1035,7 @@ const WebhostContracts = () => {
                 <Button
                   variant="outline"
                   onClick={() => handleDownloadContract(selectedContract)}
-                  className="border-purple-700/50"
+                  className="border-amber-400/20"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download
@@ -1047,24 +1048,24 @@ const WebhostContracts = () => {
 
       {/* Approve Dialog */}
       <AlertDialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
-        <AlertDialogContent className="bg-slate-900 border-purple-800/50">
+        <AlertDialogContent className="bg-slate-900 border-amber-400/15">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Approve Contract</AlertDialogTitle>
-            <AlertDialogDescription className="text-purple-300">
+            <AlertDialogDescription className="text-amber-400/70">
               Are you sure you want to approve this contract? You can optionally add review notes.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
-            <Label className="text-purple-300">Review Notes (Optional)</Label>
+            <Label className="text-amber-400/70">Review Notes (Optional)</Label>
             <Textarea
               value={reviewNotes}
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add any notes about this approval..."
-              className="mt-2 bg-slate-700/50 border-purple-700/50"
+              className="mt-2 bg-slate-700/50 border-amber-400/20"
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-purple-700/50">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-amber-400/20">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApproveContract}
               className="bg-emerald-600 hover:bg-emerald-700"
@@ -1077,24 +1078,24 @@ const WebhostContracts = () => {
 
       {/* Reject Dialog */}
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="bg-slate-900 border-purple-800/50">
+        <DialogContent className="bg-slate-900 border-amber-400/15">
           <DialogHeader>
             <DialogTitle className="text-white">Reject Contract</DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Please provide a reason for rejecting this contract.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label className="text-purple-300">Rejection Reason *</Label>
+            <Label className="text-amber-400/70">Rejection Reason *</Label>
             <Textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Explain why this contract is being rejected..."
-              className="mt-2 bg-slate-700/50 border-purple-700/50 min-h-[100px]"
+              className="mt-2 bg-slate-700/50 border-amber-400/20 min-h-[100px]"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-purple-700/50">
+            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-amber-400/20">
               Cancel
             </Button>
             <Button
@@ -1123,13 +1124,13 @@ const WebhostContracts = () => {
           setSelectedFile(null);
         }
       }}>
-        <DialogContent className="max-w-2xl bg-slate-900 border-purple-800/50">
+        <DialogContent className="max-w-2xl bg-slate-900 border-amber-400/15">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
-              <FileUp className="h-5 w-5 text-purple-400" />
+              <FileUp className="h-5 w-5 text-amber-500" />
               Upload Contract for Manager
             </DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Upload a contract document for the selected manager. Supported formats: PDF, JPEG, PNG, WebP (max 10MB)
             </DialogDescription>
           </DialogHeader>
@@ -1137,12 +1138,12 @@ const WebhostContracts = () => {
           <div className="space-y-4 py-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-purple-300">Select Manager *</Label>
+                <Label className="text-amber-400/70">Select Manager *</Label>
                 <Select 
                   value={uploadForm.manager_user_id} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, manager_user_id: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700/50 border-purple-700/50">
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
                     <SelectValue placeholder="Choose a manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1158,12 +1159,12 @@ const WebhostContracts = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-purple-300">Contract Type</Label>
+                <Label className="text-amber-400/70">Contract Type</Label>
                 <Select 
                   value={uploadForm.contract_type} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, contract_type: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700/50 border-purple-700/50">
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1178,53 +1179,53 @@ const WebhostContracts = () => {
             </div>
             
             <div className="space-y-2">
-              <Label className="text-purple-300">Contract Title *</Label>
+              <Label className="text-amber-400/70">Contract Title *</Label>
               <Input
                 value={uploadForm.title}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Property Management Service Agreement 2024"
-                className="bg-slate-700/50 border-purple-700/50"
+                className="bg-slate-700/50 border-amber-400/20"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-purple-300">Description</Label>
+              <Label className="text-amber-400/70">Description</Label>
               <Textarea
                 value={uploadForm.description}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Brief description of the contract terms..."
-                className="bg-slate-700/50 border-purple-700/50 min-h-[60px]"
+                className="bg-slate-700/50 border-amber-400/20 min-h-[60px]"
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-purple-300">Valid From</Label>
+                <Label className="text-amber-400/70">Valid From</Label>
                 <Input
                   type="date"
                   value={uploadForm.valid_from}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_from: e.target.value }))}
-                  className="bg-slate-700/50 border-purple-700/50"
+                  className="bg-slate-700/50 border-amber-400/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-purple-300">Valid Until</Label>
+                <Label className="text-amber-400/70">Valid Until</Label>
                 <Input
                   type="date"
                   value={uploadForm.valid_until}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_until: e.target.value }))}
-                  className="bg-slate-700/50 border-purple-700/50"
+                  className="bg-slate-700/50 border-amber-400/20"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-purple-300">Contract Document *</Label>
+              <Label className="text-amber-400/70">Contract Document *</Label>
               <div 
                 className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer
                   ${selectedFile 
-                    ? "border-purple-500 bg-purple-500/10" 
-                    : "border-purple-700/50 hover:border-purple-500/50 hover:bg-slate-700/30"
+                    ? "border-amber-400/50 bg-purple-500/10" 
+                    : "border-amber-400/20 hover:border-amber-400/50/50 hover:bg-muted/30"
                   }`}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -1237,10 +1238,10 @@ const WebhostContracts = () => {
                 />
                 {selectedFile ? (
                   <div className="flex items-center justify-center gap-3">
-                    <FileText className="h-6 w-6 text-purple-400" />
+                    <FileText className="h-6 w-6 text-amber-500" />
                     <div className="text-left">
                       <p className="text-white font-medium text-sm">{selectedFile.name}</p>
-                      <p className="text-purple-400 text-xs">
+                      <p className="text-amber-500 text-xs">
                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
@@ -1258,7 +1259,7 @@ const WebhostContracts = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="text-purple-400">
+                  <div className="text-amber-500">
                     <Upload className="h-8 w-8 mx-auto mb-2" />
                     <p className="font-medium text-sm">Click to upload</p>
                     <p className="text-xs text-purple-500">PDF, JPEG, PNG, WebP (max 10MB)</p>
@@ -1272,14 +1273,14 @@ const WebhostContracts = () => {
             <Button
               variant="outline"
               onClick={() => setUploadDialogOpen(false)}
-              className="border-purple-700/50"
+              className="border-amber-400/20"
             >
               Cancel
             </Button>
             <Button
               onClick={handleUploadContract}
               disabled={uploadingFile || !uploadForm.manager_user_id || !uploadForm.title || !selectedFile}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
             >
               {uploadingFile ? (
                 <>

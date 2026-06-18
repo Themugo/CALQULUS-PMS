@@ -98,6 +98,7 @@ export function MpesaPaymentDialog({
   useEffect(() => {
     if (!open || !invoice?.lease_id) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettingsError(null);
     setMpesaSettings(null);
 
@@ -152,7 +153,7 @@ export function MpesaPaymentDialog({
       }
 
       // Load the correct M-Pesa settings based on payment destination
-      let settings: MpesaSettings | null = null;
+      let settings: MpesaSettings | null;
 
       if (paymentReceiverType === "landlord" && landlordId) {
         const { data: s } = await supabase

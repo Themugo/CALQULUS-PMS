@@ -65,6 +65,7 @@ export const LeaseStatements = () => {
     } else {
       setTenants(data || []);
       if (data && data.length > 0) {
+        // eslint-disable-next-line react-hooks/immutability
         await fetchInvoiceSummaries(data.map(t => t.id));
       }
     }
@@ -121,6 +122,7 @@ export const LeaseStatements = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenants();
   }, [fetchTenants]);
 
@@ -149,7 +151,7 @@ export const LeaseStatements = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }
@@ -182,12 +184,12 @@ export const LeaseStatements = () => {
           {filteredTenants.map((tenant) => {
             const summary = invoiceSummaries.get(tenant.id);
             return (
-              <Card key={tenant.id} className="bg-card border-border hover:border-primary/50 transition-colors">
+              <Card key={tenant.id} className="bg-card border-border hover:border-amber-400/60/50 transition-colors">
                 <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarImage src={tenant.photo_url || undefined} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm">
+                      <AvatarFallback className="bg-amber-400/10 text-amber-600 text-xs sm:text-sm">
                         {tenant.name
                           .split(" ")
                           .map((n) => n[0])

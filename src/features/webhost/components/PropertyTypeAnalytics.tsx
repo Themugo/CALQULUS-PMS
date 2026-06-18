@@ -81,13 +81,13 @@ const PropertyTypeAnalytics: React.FC = () => {
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total properties',    value: String(totalProperties),    color: 'text-purple-400' },
+          { label: 'Total properties',    value: String(totalProperties),    color: 'text-amber-500' },
           { label: 'Total units',         value: String(totalUnits),         color: 'text-blue-400' },
           { label: 'Occupied units',      value: String(totalOccupied),      color: 'text-green-400' },
           { label: 'Platform occupancy',  value: `${occupancyRate}%`,         color: occupancyRate >= 75 ? 'text-green-400' : 'text-amber-400' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-purple-800/30 bg-slate-900/40 p-3">
-            <p className="text-xs text-slate-400 mb-1">{k.label}</p>
+          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-slate-900/40 p-3">
+            <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
             <p className={`text-xl font-bold ${k.color}`}>{k.value}</p>
           </div>
         ))}
@@ -95,16 +95,16 @@ const PropertyTypeAnalytics: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Pie: by group */}
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-white flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-purple-400"/>
+              <Building2 className="h-4 w-4 text-amber-500"/>
               Properties by category group
             </CardTitle>
           </CardHeader>
           <CardContent>
             {pieData.length === 0 ? (
-              <p className="text-center text-slate-500 text-sm py-8">No properties yet</p>
+              <p className="text-center text-muted-foreground/70 text-sm py-8">No properties yet</p>
             ) : (
               <>
                 <ResponsiveContainer width="100%" height={180}>
@@ -124,9 +124,9 @@ const PropertyTypeAnalytics: React.FC = () => {
                     <div key={d.group} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: GROUP_CHART_COLORS[d.group] }}/>
-                        <span className="text-slate-300">{d.name}</span>
+                        <span className="text-foreground/90">{d.name}</span>
                       </div>
-                      <div className="flex gap-3 text-slate-400">
+                      <div className="flex gap-3 text-muted-foreground">
                         <span>{d.value} props</span>
                         <span>{d.units} units</span>
                         <span className="text-green-400">
@@ -142,16 +142,16 @@ const PropertyTypeAnalytics: React.FC = () => {
         </Card>
 
         {/* Bar: top categories */}
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-white flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-purple-400"/>
+              <TrendingUp className="h-4 w-4 text-amber-500"/>
               Top property types
             </CardTitle>
           </CardHeader>
           <CardContent>
             {barData.length === 0 ? (
-              <p className="text-center text-slate-500 text-sm py-8">No data</p>
+              <p className="text-center text-muted-foreground/70 text-sm py-8">No data</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
@@ -173,10 +173,10 @@ const PropertyTypeAnalytics: React.FC = () => {
       </div>
 
       {/* Table: group breakdown */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-white">Category group breakdown</CardTitle>
-          <CardDescription className="text-slate-400">Platform-wide property distribution and occupancy</CardDescription>
+          <CardDescription className="text-muted-foreground">Platform-wide property distribution and occupancy</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -193,7 +193,7 @@ const PropertyTypeAnalytics: React.FC = () => {
                       backgroundColor: GROUP_CHART_COLORS[group],
                     }}/>
                   </div>
-                  <div className="flex gap-4 text-xs text-slate-400 shrink-0">
+                  <div className="flex gap-4 text-xs text-muted-foreground shrink-0">
                     <span className="text-white font-medium">{stats.count}</span>
                     <span>{stats.units} units</span>
                     <span className={occ >= 75 ? 'text-green-400' : 'text-amber-400'}>{occ}%</span>

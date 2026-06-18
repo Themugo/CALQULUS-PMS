@@ -234,7 +234,7 @@ const LandlordDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
       </div>
     );
   }
@@ -246,15 +246,13 @@ const LandlordDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-40 border-b border-amber-400/10 bg-background/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-              <Home className="h-5 w-5 text-white" />
-            </div>
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain" />
             <div>
-              <div className="font-semibold text-sm leading-tight">Landlord Portal</div>
-              <div className="text-xs text-muted-foreground">{user.email}</div>
+              <div className="font-heading font-bold text-sm text-gradient leading-none">CALQULUS PMS</div>
+              <div className="text-[10px] text-muted-foreground tracking-wider">LANDLORD PORTAL</div>
             </div>
             <Badge variant="outline" className="ml-1 text-xs border-amber-300 text-amber-700 bg-amber-50">
               Property Owner

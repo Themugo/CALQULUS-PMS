@@ -10,7 +10,7 @@ import { UserPlus, Link2 } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 const TenantLogin = () => {
@@ -140,19 +140,19 @@ const TenantLogin = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
-      <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center hero-gradient px-4">
+      <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 
               src={calqulusLogo} 
-              alt="CALQULUS RMS" 
+              alt="CALQULUS PMS" 
               className="h-14 w-auto"
             />
           </div>
@@ -168,17 +168,17 @@ const TenantLogin = () => {
               biometryType={biometryType}
               onPress={handleBiometricLogin}
               isLoading={isBiometricLoggingIn}
-              className="border-accent/50 text-accent hover:bg-accent/10"
+              className="border-amber-400/40 text-amber-600 hover:bg-amber-400/8"
             />
           )}
 
           {biometricAvailable && hasStoredCredentials && !biometricLoading && (
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-accent/30" />
+                <span className="w-full border-t border-amber-400/25" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-accent">Or continue with email</span>
+                <span className="bg-card px-2 text-amber-600">Or continue with email</span>
               </div>
             </div>
           )}
@@ -201,7 +201,7 @@ const TenantLogin = () => {
                 <ForgotPasswordDialog 
                   variant="tenant"
                   trigger={
-                    <button type="button" className="text-accent hover:text-accent/80 text-sm">
+                    <button type="button" className="text-amber-600 hover:text-amber-500 text-sm">
                       Forgot password?
                     </button>
                   }
@@ -230,13 +230,13 @@ const TenantLogin = () => {
             <p className="text-muted-foreground text-sm">Don't have an account?</p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Link to="/tenant/signup" className="flex-1">
-                <Button variant="outline" className="w-full border-accent/50 text-accent hover:bg-accent/10">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-600 hover:bg-amber-400/8">
                   <UserPlus className="h-4 w-4 mr-2" />
                   Register independently
                 </Button>
               </Link>
               <Link to="/tenant/invitation" className="flex-1">
-                <Button variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-600 hover:bg-amber-400/8">
                   <Link2 className="h-4 w-4 mr-2" />
                   Accept manager invite
                 </Button>
@@ -247,7 +247,7 @@ const TenantLogin = () => {
             </p>
           </div>
           <div className="text-center space-y-1">
-            <Link to="/landlord" className="text-accent hover:text-accent/80 text-sm block">
+            <Link to="/landlord" className="text-amber-600 hover:text-amber-500 text-sm block">
               Property Manager? Sign in here →
             </Link>
           </div>

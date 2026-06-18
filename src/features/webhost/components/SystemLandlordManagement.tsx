@@ -187,7 +187,7 @@ const SystemLandlordManagement: React.FC = () => {
             onClick={() => setActiveTab(tab.key as 'landlords' | 'payouts')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
-                ? 'border-primary text-primary'
+                ? 'border-amber-400 text-amber-600'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >

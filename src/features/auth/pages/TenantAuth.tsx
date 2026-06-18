@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 interface Invitation {
@@ -266,7 +266,7 @@ const TenantAuth = () => {
 
         // Success! Show toast - navigation will be handled by useEffect watching userRole
         toast({
-          title: isSelfRegistration ? 'Account Created for Accounting' : 'Welcome to CALQULUS RMS!',
+          title: isSelfRegistration ? 'Account Created for Accounting' : 'Welcome to CALQULUS PMS!',
           description: isSelfRegistration 
             ? 'Your account has been created. You can manage your rental records for accounting purposes.'
             : 'Your account has been created successfully. Redirecting...',
@@ -304,7 +304,7 @@ const TenantAuth = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
       </div>
     );
   }
@@ -312,20 +312,11 @@ const TenantAuth = () => {
   // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
-        {/* Banner background */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/calqulus-banner.jpg" 
-            alt="CALQULUS RMS Banner" 
-            className="w-full h-full object-cover opacity-15"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
-        </div>
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
+        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="h-16 w-16 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/25">
+              <div className="h-16 w-16 rounded-full bg-amber-400 flex items-center justify-center shadow-lg shadow-accent/25">
                 <Mail className="h-8 w-8 text-white" />
               </div>
             </div>
@@ -344,7 +335,7 @@ const TenantAuth = () => {
                 Didn't receive the email? Check your spam folder or{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
-                  className="text-accent hover:underline"
+                  className="text-amber-600 hover:underline"
                 >
                   try again
                 </button>
@@ -353,7 +344,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm">
                 Already verified?{' '}
-                <Link to="/tenant/login" className="text-accent hover:underline">
+                <Link to="/tenant/login" className="text-amber-600 hover:underline">
                   Sign in here
                 </Link>
               </p>
@@ -367,17 +358,8 @@ const TenantAuth = () => {
   // If no invitation token, show registration options
   if (!invitationToken && !isLoadingInvitation && !isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
-        {/* Banner background */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/calqulus-banner.jpg" 
-            alt="CALQULUS RMS Banner" 
-            className="w-full h-full object-cover opacity-15"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
-        </div>
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
+        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-16 w-16 rounded-full bg-warning flex items-center justify-center shadow-lg shadow-warning/25">
@@ -417,7 +399,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm mb-3">Already have an account?</p>
               <Link to="/tenant/login">
-                <Button variant="outline" className="w-full border-accent/50 text-accent hover:bg-accent/10">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-600 hover:bg-amber-400/8">
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
@@ -432,20 +414,11 @@ const TenantAuth = () => {
   // If self-registration mode, show self-registration form
   if (isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 relative overflow-hidden">
-        {/* Banner background */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/calqulus-banner.jpg" 
-            alt="CALQULUS RMS Banner" 
-            className="w-full h-full object-cover opacity-15"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
-        </div>
-        <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
+        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-16 w-auto" />
+              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-16 w-auto" />
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">Self-Registration</CardTitle>
             <CardDescription className="text-muted-foreground mt-2">
@@ -519,7 +492,7 @@ const TenantAuth = () => {
               
               <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
                 ) : (
                   'Create Account'
                 )}
@@ -543,22 +516,13 @@ const TenantAuth = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''} relative overflow-hidden`}>
-      {/* Banner background */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/calqulus-banner.jpg" 
-          alt="CALQULUS RMS Banner" 
-          className="w-full h-full object-cover opacity-15"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/20/95 via-background/90 to-primary/10/85" />
-      </div>
-      <Card className="w-full max-w-md border-accent/20 bg-card/95 backdrop-blur-sm shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto relative z-10">
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''}`}>
+      <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 
               src={calqulusLogo} 
-              alt="CALQULUS RMS" 
+              alt="CALQULUS PMS" 
               className="h-14 w-auto"
             />
           </div>
@@ -567,19 +531,19 @@ const TenantAuth = () => {
             {invitation ? `Welcome, ${invitation.tenant_name}! Complete your registration.` : 'Sign up to access your rental portal'}
           </CardDescription>
           {invitation && (
-            <div className="mt-3 p-3 bg-accent/10 rounded-lg border border-accent/20 space-y-2">
-              <p className="text-xs text-accent font-medium">
+            <div className="mt-3 p-3 bg-amber-400/10 rounded-lg border border-amber-400/15 space-y-2">
+              <p className="text-xs text-amber-600 font-medium">
                 Property: {invitation.property_name}{invitation.unit ? ` - Unit ${invitation.unit}` : ''}
               </p>
               {landlordContact && (
-                <div className="pt-2 border-t border-accent/20">
+                <div className="pt-2 border-t border-amber-400/15">
                   <p className="text-xs text-muted-foreground mb-1">Your Landlord/Manager:</p>
                   <p className="text-sm font-medium text-foreground">{landlordContact.full_name || 'Property Manager'}</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {landlordContact.email && (
                       <a 
                         href={`mailto:${landlordContact.email}`}
-                        className="text-xs text-accent hover:underline flex items-center gap-1"
+                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
                       >
                         <Mail className="h-3 w-3" />
                         {landlordContact.email}
@@ -588,7 +552,7 @@ const TenantAuth = () => {
                     {landlordContact.phone && (
                       <a 
                         href={`tel:${landlordContact.phone}`}
-                        className="text-xs text-accent hover:underline flex items-center gap-1"
+                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
                       >
                         📞 {landlordContact.phone}
                       </a>
@@ -693,7 +657,7 @@ const TenantAuth = () => {
           <div className="text-center w-full">
             <p className="text-muted-foreground text-sm">
               Already have an account?{' '}
-              <Link to="/tenant/login" className="text-accent hover:underline font-medium">
+              <Link to="/tenant/login" className="text-amber-600 hover:underline font-medium">
                 Sign In
               </Link>
             </p>

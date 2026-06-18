@@ -194,6 +194,7 @@ const PropertyDetail = () => {
   }, [id, toast, navigate]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPropertyData();
   }, [fetchPropertyData, id]);
 
@@ -388,7 +389,7 @@ const PropertyDetail = () => {
         <Card className="lg:col-span-2">
           <CardHeader className="pb-4">
             <div className="flex items-start gap-4">
-              <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-amber-400/15 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {property.image_url ? (
                   <img
                     src={property.image_url}
@@ -396,7 +397,7 @@ const PropertyDetail = () => {
                     className="h-20 w-20 object-cover"
                   />
                 ) : (
-                  <Building2 className="h-10 w-10 text-primary" />
+                  <Building2 className="h-10 w-10 text-amber-500" />
                 )}
               </div>
               <div className="flex-1">
@@ -486,7 +487,7 @@ const PropertyDetail = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
+              <Users className="h-5 w-5 text-amber-500" />
               Quick Stats
             </CardTitle>
           </CardHeader>
@@ -585,7 +586,7 @@ const PropertyDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Home className="h-5 w-5 text-primary" />
+                <Home className="h-5 w-5 text-amber-500" />
                 Tenants & Leases
               </CardTitle>
             </CardHeader>
@@ -636,7 +637,7 @@ const PropertyDetail = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={signedUrls[tenant.id]} alt={tenant.name} />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                <AvatarFallback className="bg-amber-400/10 text-amber-600 text-xs">
                                   {getInitials(tenant.name)}
                                 </AvatarFallback>
                               </Avatar>

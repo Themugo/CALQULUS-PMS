@@ -81,7 +81,7 @@ export function useOfflineData<T>(
     } catch (e) {
       if (isQuotaError(e)) {
         console.warn(`[useOfflineData] localStorage quota exceeded for "${key}", clearing old caches`);
-        // Clear all CALQULUS RMS caches to free space
+        // Clear all CALQULUS PMS caches to free space
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const k = localStorage.key(i);
           if (k?.startsWith(CACHE_PREFIX)) localStorage.removeItem(k);
@@ -131,11 +131,13 @@ export function useOfflineData<T>(
   }, [fetcher, getCachedData, setCachedData, options?.enabled]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     if (!isOffline && isFromCache) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [isOffline, isFromCache, fetchData]);

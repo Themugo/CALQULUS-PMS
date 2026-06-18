@@ -1,5 +1,5 @@
 {
-  "name": "calqulus-rms",
+  "name": "calqulus-pms",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -102,6 +102,7 @@
     "react-dom": "^19.2.7",
     "react-easy-crop": "^5.5.6",
     "react-hook-form": "^7.77.0",
+    "react-is": "^19.2.7",
     "react-resizable-panels": "^4.11.2",
     "react-router-dom": "^7.12.0",
     "recharts": "^3.8.1",
@@ -138,6 +139,6 @@
     "vitest": "^4.1.8"
   },
   "description": "Modern property management platform for Kenya and East Africa",
-  "author": "CALQULUS RMS",
+  "author": "CALQULUS PMS",
   "license": "UNLICENSED"
 }

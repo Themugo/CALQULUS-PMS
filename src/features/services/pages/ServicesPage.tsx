@@ -58,7 +58,7 @@ const ServicesPage: React.FC = () => {
   return (
     <Layout
       title="Services"
-      subtitle="Find verified repair professionals with CALQULUS RMS work history"
+      subtitle="Find verified repair professionals with CALQULUS PMS work history"
     >
       <Tabs defaultValue="marketplace">
         <TabsList className="flex-wrap h-auto gap-1 p-1 mb-6">
@@ -125,7 +125,7 @@ const ServicesPage: React.FC = () => {
               ) : (
                 <div className="space-y-3">
                   {assignedJobs.map(job => (
-                    <Card key={job.id} className="border border-border hover:border-primary/40 transition-colors">
+                    <Card key={job.id} className="border border-border hover:border-amber-400/40 transition-colors">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">

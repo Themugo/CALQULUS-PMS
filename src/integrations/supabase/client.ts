@@ -11,7 +11,7 @@ const PLACEHOLDER_ENV =
 const MISSING_ENV = !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || PLACEHOLDER_ENV;
 if (MISSING_ENV) {
   console.warn(
-    '%c[CALQULUS RMS] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY).\n' +
+    '%c[CALQULUS PMS] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY).\n' +
     '  The app will load but auth and data features will be unavailable.\n' +
     '  Copy .env.example to .env.local and fill in your Supabase project values.',
     'color: #eab308; font-weight: bold'

@@ -280,7 +280,7 @@ const PrivacyComplianceCenter = () => {
   const getRequestTypeBadge = (type: string) => {
     switch (type) {
       case 'access':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Eye className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Eye className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'deletion':
         return <Badge variant="outline" className="text-red-300 border-red-700"><Ban className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'correction':
@@ -305,20 +305,20 @@ const PrivacyComplianceCenter = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Privacy Compliance Center</h2>
-          <p className="text-purple-300 text-sm mt-1">Manage privacy compliance and data subject rights</p>
+          <p className="text-amber-400/70 text-sm mt-1">Manage privacy compliance and data subject rights</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
           >
             <Upload className="h-4 w-4 mr-2" />
             Update Policy
@@ -328,82 +328,82 @@ const PrivacyComplianceCenter = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckSquare className="h-4 w-4 text-purple-400" />
+              <CheckSquare className="h-4 w-4 text-amber-500" />
               Total Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalConsents}</div>
-            <div className="text-sm text-purple-300">All consent records</div>
+            <div className="text-sm text-amber-400/70">All consent records</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <CheckCircle className="h-4 w-4 text-amber-500" />
               Active Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeConsents}</div>
-            <div className="text-sm text-purple-300">Currently granted</div>
+            <div className="text-sm text-amber-400/70">Currently granted</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <User className="h-4 w-4 text-purple-400" />
+              <User className="h-4 w-4 text-amber-500" />
               Pending Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingRequests}</div>
-            <div className="text-sm text-purple-300">Awaiting action</div>
+            <div className="text-sm text-amber-400/70">Awaiting action</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-purple-400" />
+              <AlertCircle className="h-4 w-4 text-amber-500" />
               Active Breaches
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeBreaches}</div>
-            <div className="text-sm text-purple-300">Under investigation</div>
+            <div className="text-sm text-amber-400/70">Under investigation</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="consents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="consents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <CheckSquare className="h-4 w-4 mr-2" />
             Consents
           </TabsTrigger>
-          <TabsTrigger value="requests" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="requests" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <User className="h-4 w-4 mr-2" />
             Data Subject Requests
           </TabsTrigger>
-          <TabsTrigger value="policy" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="policy" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Privacy Policy
           </TabsTrigger>
-          <TabsTrigger value="breaches" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="breaches" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Data Breaches
           </TabsTrigger>
-          <TabsTrigger value="cookies" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="cookies" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Cookie className="h-4 w-4 mr-2" />
             Cookie Consents
           </TabsTrigger>
@@ -411,39 +411,39 @@ const PrivacyComplianceCenter = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Scale className="h-5 w-5 text-purple-400" />
+                  <Scale className="h-5 w-5 text-amber-500" />
                   Data Subject Rights
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
-                      <Eye className="h-4 w-4 text-purple-400" />
+                      <Eye className="h-4 w-4 text-amber-500" />
                       <span className="text-white text-sm">Right to Access</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
-                      <Ban className="h-4 w-4 text-purple-400" />
+                      <Ban className="h-4 w-4 text-amber-500" />
                       <span className="text-white text-sm">Right to Deletion</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-purple-400" />
+                      <FileText className="h-4 w-4 text-amber-500" />
                       <span className="text-white text-sm">Right to Correction</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
-                      <Download className="h-4 w-4 text-purple-400" />
+                      <Download className="h-4 w-4 text-amber-500" />
                       <span className="text-white text-sm">Right to Portability</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
@@ -452,28 +452,28 @@ const PrivacyComplianceCenter = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-purple-400" />
+                  <Shield className="h-5 w-5 text-amber-500" />
                   Compliance Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">GDPR Compliance</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">Data Protection Act</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">Cookie Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <span className="text-white text-sm">Privacy Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Current</Badge>
                   </div>
@@ -484,30 +484,30 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="consents">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Consent Records</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage user consent records and status
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {consentRecords.map((consent) => (
-                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium capitalize">{consent.consentType.replace('_', ' ')}</span>
-                          <span className="text-purple-300 text-sm ml-2">{consent.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <span className="text-amber-400/70 text-sm ml-2">{consent.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {consent.userId}
                           </Badge>
                         </div>
                         {getStatusBadge(consent.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{consent.purpose}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{consent.purpose}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Granted: {consent.grantedDate.toLocaleDateString()}
@@ -524,7 +524,7 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -535,10 +535,10 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="requests">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Data Subject Requests</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage GDPR data subject rights requests
               </CardDescription>
             </CardHeader>
@@ -546,18 +546,18 @@ const PrivacyComplianceCenter = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search requests..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedRequestType}
                   onChange={(e) => setSelectedRequestType(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="access">Access</option>
@@ -570,18 +570,18 @@ const PrivacyComplianceCenter = () => {
 
               <div className="space-y-4">
                 {filteredRequests.map((request) => (
-                  <div key={request.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={request.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{request.userEmail}</span>
-                          <span className="text-purple-300 text-sm ml-2">{request.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{request.id}</span>
                           {getRequestTypeBadge(request.type)}
                         </div>
                         {getStatusBadge(request.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{request.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{request.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Assigned: {request.assignedTo}
@@ -598,7 +598,7 @@ const PrivacyComplianceCenter = () => {
                         )}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -609,26 +609,26 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="policy">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Privacy Policy</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage privacy policy versions and reviews
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {privacyPolicies.map((policy) => (
-                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">Privacy Policy v{policy.version}</span>
-                          <span className="text-purple-300 text-sm ml-2">{policy.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{policy.id}</span>
                         </div>
                         {getStatusBadge(policy.status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Effective: {policy.effectiveDate.toLocaleDateString()}
@@ -639,13 +639,13 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                       {policy.changes.length > 0 && (
-                        <div className="text-sm text-purple-300">
+                        <div className="text-sm text-amber-400/70">
                           <span className="font-medium">Changes: </span>
                           {policy.changes.join(', ')}
                         </div>
                       )}
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       <Eye className="h-4 w-4 mr-2" />
                       View
                     </Button>
@@ -657,30 +657,30 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="breaches">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Data Breaches</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track and manage data breach incidents
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {dataBreaches.map((breach) => (
-                  <div key={breach.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={breach.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{breach.type}</span>
-                          <span className="text-purple-300 text-sm ml-2">{breach.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{breach.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(breach.severity)}
                           {getStatusBadge(breach.status)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{breach.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{breach.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Affected: {breach.affectedUsers} users
@@ -691,7 +691,7 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                       {breach.notifiedDate && (
-                        <div className="flex items-center gap-4 text-sm text-purple-300">
+                        <div className="flex items-center gap-4 text-sm text-amber-400/70">
                           <span className="flex items-center gap-1">
                             <Mail className="h-3 w-3" />
                             Notified: {breach.notifiedDate.toLocaleDateString()}
@@ -699,7 +699,7 @@ const PrivacyComplianceCenter = () => {
                         </div>
                       )}
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -710,36 +710,36 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="cookies">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Cookie Consents</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage cookie consent categories and settings
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {cookieConsents.map((consent) => (
-                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{consent.name}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {consent.category}
                           </Badge>
                         </div>
                         {getStatusBadge(consent.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{consent.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{consent.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Consent Date: {consent.consentDate.toLocaleDateString()}
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       Configure
                     </Button>
                   </div>

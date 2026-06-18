@@ -111,6 +111,51 @@ interface TenantProfilePanelProps {
   onUpdate?: () => void;
 }
 
+
+interface FieldRenderProps extends FieldProps {
+  editing: boolean;
+  form: Partial<TenantProfileRecord>;
+  profile: TenantProfileRecord | undefined;
+  onChange: (field: keyof TenantProfileRecord) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}
+
+function Field({ label, field, type = 'text', disabled = false, editing, form, profile, onChange }: FieldRenderProps) {
+  return (
+    <div>
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      {editing && !disabled ? (
+        <Input type={type} value={String(form[field] ?? '')} onChange={onChange(field)} className="mt-1 h-8 text-sm" />
+      ) : (
+        <p className="text-sm mt-0.5 font-medium">{String(profile?.[field] || ''  ) || <span className="text-muted-foreground">—</span>}</p>
+      )}
+    </div>
+  );
+}
+
+interface SelectFieldRenderProps extends SelectFieldProps {
+  editing: boolean;
+  form: Partial<TenantProfileRecord>;
+   
+  profile: TenantProfileRecord | undefined;
+  onSelect: (field: keyof TenantProfileRecord, value: string) => void;
+}
+
+function SelectField({ label, field, options, editing, form, profile, onSelect }: SelectFieldRenderProps) {
+  return (
+    <div>
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      {editing ? (
+        <Select value={String(form[field] ?? '')} onValueChange={v => onSelect(field, v)}>
+          <SelectTrigger className="mt-1 h-8 text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>{options.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+        </Select>
+      ) : (
+        <p className="text-sm mt-0.5 font-medium">{options.find(o => o.value === profile?.[field])?.label || String(profile?.[field] || '') || <span className="text-muted-foreground">—</span>}</p>
+      )}
+    </div>
+  );
+}
+
 const RISK_COLORS: Record<string, string> = {
   clear:       'bg-green-100 text-green-800 border-green-200',
   caution:     'bg-amber-100 text-amber-800 border-amber-200',
@@ -135,6 +180,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
   const [form, setForm] = useState<Partial<TenantProfileRecord>>({});
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (profile) setForm(profile);
   }, [profile]);
 
@@ -206,31 +252,6 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
 
   if (isLoading) return <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>;
 
-  const Field = ({ label, field, type = 'text', disabled = false }: FieldProps) => (
-    <div>
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      {editing && !disabled ? (
-        <Input type={type} value={form[field] ?? ''} onChange={f(field)} className="mt-1 h-8 text-sm" />
-      ) : (
-        <p className="text-sm mt-0.5 font-medium">{profile?.[field] || <span className="text-muted-foreground">—</span>}</p>
-      )}
-    </div>
-  );
-
-  const SelectField = ({ label, field, options }: SelectFieldProps) => (
-    <div>
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      {editing ? (
-        <Select value={form[field] ?? ''} onValueChange={v => setForm((p: Partial<TenantProfileRecord>) => ({ ...p, [field]: v }))}>
-          <SelectTrigger className="mt-1 h-8 text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>{options.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-        </Select>
-      ) : (
-        <p className="text-sm mt-0.5 font-medium">{options.find(o => o.value === profile?.[field])?.label || profile?.[field] || <span className="text-muted-foreground">—</span>}</p>
-      )}
-    </div>
-  );
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -271,62 +292,62 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
         {/* ── Identity ── */}
         <TabsContent value="identity" className="mt-4">
           <Card><CardContent className="p-4 grid grid-cols-2 gap-4">
-            <Field label="Full name" field="name" disabled />
-            <Field label="Email" field="email" disabled />
-            <Field label="Phone" field="phone" />
-            <Field label="WhatsApp" field="whatsapp" />
-            <SelectField label="ID type" field="id_type" options={[
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Full name" field="name" disabled />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Email" field="email" disabled />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Phone" field="phone" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="WhatsApp" field="whatsapp" />
+            <SelectField editing={editing} form={form} profile={profile} onSelect={(field, v) => setForm(p => ({ ...p, [field]: v }))} label="ID type" field="id_type" options={[
               { value: 'national_id', label: 'National ID' },
               { value: 'passport', label: 'Passport' },
               { value: 'alien_id', label: 'Alien ID' },
               { value: 'driving_license', label: "Driver's Licence" },
             ]} />
-            <Field label="ID number" field="national_id" />
-            <Field label="Date of birth" field="date_of_birth" type="date" />
-            <SelectField label="Gender" field="gender" options={[
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="ID number" field="national_id" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Date of birth" field="date_of_birth" type="date" />
+            <SelectField editing={editing} form={form} profile={profile} onSelect={(field, v) => setForm(p => ({ ...p, [field]: v }))} label="Gender" field="gender" options={[
               { value: 'male', label: 'Male' },
               { value: 'female', label: 'Female' },
               { value: 'other', label: 'Other' },
             ]} />
-            <Field label="Nationality" field="nationality" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Nationality" field="nationality" />
           </CardContent></Card>
         </TabsContent>
 
         {/* ── Employment ── */}
         <TabsContent value="employment" className="mt-4">
           <Card><CardContent className="p-4 grid grid-cols-2 gap-4">
-            <SelectField label="Employment status" field="employment_status" options={[
+            <SelectField editing={editing} form={form} profile={profile} onSelect={(field, v) => setForm(p => ({ ...p, [field]: v }))} label="Employment status" field="employment_status" options={[
               { value: 'employed', label: 'Employed' },
               { value: 'self_employed', label: 'Self-employed' },
               { value: 'student', label: 'Student' },
               { value: 'retired', label: 'Retired' },
               { value: 'unemployed', label: 'Unemployed' },
             ]} />
-            <Field label="Occupation / Job title" field="occupation" />
-            <Field label="Employer / Company name" field="employer_name" />
-            <Field label="Employer phone" field="employer_phone" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Occupation / Job title" field="occupation" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Employer / Company name" field="employer_name" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Employer phone" field="employer_phone" />
             <div className="col-span-2">
-              <Field label="Employer address" field="employer_address" />
+              <Field editing={editing} form={form} profile={profile} onChange={f} label="Employer address" field="employer_address" />
             </div>
-            <Field label="Monthly income (KES)" field="monthly_income" type="number" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Monthly income (KES)" field="monthly_income" type="number" />
           </CardContent></Card>
         </TabsContent>
 
         {/* ── Emergency contact ── */}
         <TabsContent value="emergency" className="mt-4">
           <Card><CardContent className="p-4 grid grid-cols-2 gap-4">
-            <Field label="Emergency contact name" field="emergency_contact_name" />
-            <Field label="Phone" field="emergency_contact_phone" />
-            <Field label="Relationship" field="emergency_contact_relationship" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Emergency contact name" field="emergency_contact_name" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Phone" field="emergency_contact_phone" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Relationship" field="emergency_contact_relationship" />
           </CardContent></Card>
         </TabsContent>
 
         {/* ── Occupancy details ── */}
         <TabsContent value="occupancy" className="mt-4">
           <Card><CardContent className="p-4 grid grid-cols-2 gap-4">
-            <Field label="Number of adults" field="adults_count" type="number" />
-            <Field label="Number of children" field="children_count" type="number" />
-            <Field label="Move-in date" field="move_in_date" type="date" disabled />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Number of adults" field="adults_count" type="number" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Number of children" field="children_count" type="number" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Move-in date" field="move_in_date" type="date" disabled />
             <div className="col-span-2">
               <Label className="text-xs text-muted-foreground">Previous address</Label>
               {editing ? (
@@ -335,15 +356,15 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
                 <p className="text-sm mt-0.5 font-medium">{profile?.previous_address || <span className="text-muted-foreground">—</span>}</p>
               )}
             </div>
-            <Field label="Previous landlord name" field="previous_landlord_name" />
-            <Field label="Previous landlord phone" field="previous_landlord_phone" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Previous landlord name" field="previous_landlord_name" />
+            <Field editing={editing} form={form} profile={profile} onChange={f} label="Previous landlord phone" field="previous_landlord_phone" />
           </CardContent></Card>
         </TabsContent>
 
         {/* ── Risk & Reference ── */}
         <TabsContent value="risk" className="mt-4">
           <Card><CardContent className="p-4 space-y-4">
-            <SelectField label="Risk status" field="risk_flag" options={[
+            <SelectField editing={editing} form={form} profile={profile} onSelect={(field, v) => setForm(p => ({ ...p, [field]: v }))} label="Risk status" field="risk_flag" options={[
               { value: 'clear', label: '✓ Clear — no issues' },
               { value: 'caution', label: '⚠ Caution — monitor' },
               { value: 'blacklisted', label: '✗ Blacklisted — do not rent' },

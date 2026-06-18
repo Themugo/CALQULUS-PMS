@@ -146,7 +146,7 @@ const AgencyDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
       </div>
     );
   }
@@ -156,12 +156,12 @@ const AgencyDashboard = () => {
   }
 
   const statCards = [
-    { label: 'Properties', value: stats?.totalProperties, sub: `${stats?.totalUnits ?? 0} units`, icon: Building2, color: 'text-emerald-400' },
-    { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : undefined, sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units`, icon: Home, color: 'text-blue-400' },
-    { label: 'Active tenants', value: stats?.activeTenants, sub: `${stats?.totalTenants ?? 0} total`, icon: Users, color: 'text-emerald-400' },
-    { label: 'Active leases', value: stats?.activeLeases, sub: (stats?.expiringLeases ?? 0) > 0 ? `${stats?.expiringLeases} expiring` : 'None expiring', icon: FileText, color: 'text-blue-400' },
-    { label: 'Invoices due', value: stats?.invoicesDue, sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'All on time', icon: CreditCard, color: (stats?.overdueInvoices ?? 0) > 0 ? 'text-amber-400' : 'text-emerald-400' },
-    { label: 'Revenue (MTD)', value: stats ? fmt(stats.revenueMTD) : undefined, sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last mo.` : 'vs last month', icon: TrendingUp, color: 'text-emerald-400' },
+    { label: 'Properties', value: stats?.totalProperties, sub: `${stats?.totalUnits ?? 0} units`, icon: Building2, color: 'text-amber-500' },
+    { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : undefined, sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units`, icon: Home, color: 'text-blue-500' },
+    { label: 'Active tenants', value: stats?.activeTenants, sub: `${stats?.totalTenants ?? 0} total`, icon: Users, color: 'text-amber-500' },
+    { label: 'Active leases', value: stats?.activeLeases, sub: (stats?.expiringLeases ?? 0) > 0 ? `${stats?.expiringLeases} expiring` : 'None expiring', icon: FileText, color: 'text-blue-500' },
+    { label: 'Invoices due', value: stats?.invoicesDue, sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'All on time', icon: CreditCard, color: (stats?.overdueInvoices ?? 0) > 0 ? 'text-amber-400' : 'text-amber-500' },
+    { label: 'Revenue (MTD)', value: stats ? fmt(stats.revenueMTD) : undefined, sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last mo.` : 'vs last month', icon: TrendingUp, color: 'text-amber-500' },
   ];
 
   return (
@@ -169,10 +169,10 @@ const AgencyDashboard = () => {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         {statCards.map(stat => (
-          <Card key={stat.label} className="bg-slate-800/50 border-emerald-800/30">
+          <Card key={stat.label} className="bg-card border-border/60">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-emerald-300/70">{stat.label}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
               {isLoading ? (
@@ -180,7 +180,7 @@ const AgencyDashboard = () => {
               ) : (
                 <>
                   <p className={`text-xl font-bold ${stat.color}`}>{stat.value ?? 0}</p>
-                  <p className="text-[11px] text-emerald-300/50 mt-0.5">{stat.sub}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{stat.sub}</p>
                 </>
               )}
             </CardContent>
@@ -208,12 +208,12 @@ const AgencyDashboard = () => {
 
       {/* Revenue trend + occupancy snapshot */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <Card className="bg-slate-800/50 border-emerald-800/30">
+        <Card className="bg-card border-border/60">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-white font-semibold text-sm">Revenue overview</h3>
-                <p className="text-xs text-emerald-300/60">Last 6 months</p>
+                <h3 className="text-card-foreground font-semibold text-sm">Revenue overview</h3>
+                <p className="text-xs text-muted-foreground">Last 6 months</p>
               </div>
               <TrendingUp className="h-4 w-4 text-emerald-400" />
             </div>
@@ -225,8 +225,8 @@ const AgencyDashboard = () => {
                   <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
                     <defs>
                       <linearGradient id="agencyPaid" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#34d399" stopOpacity={0.35} />
-                        <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+                        <stop offset="5%" stopColor="hsl(42 51% 55%)" stopOpacity={0.35} />
+                        <stop offset="95%" stopColor="hsl(42 51% 55%)" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="agencyPending" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
@@ -234,13 +234,13 @@ const AgencyDashboard = () => {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#6ee7b7', fontSize: 12 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6ee7b7', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
                     <Tooltip
-                      contentStyle={{ background: '#0f172a', border: '1px solid #065f46', borderRadius: 8, color: '#fff' }}
+                      contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
                       formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
                     />
-                    <Area type="monotone" dataKey="paid" stroke="#34d399" strokeWidth={2} fill="url(#agencyPaid)" />
+                    <Area type="monotone" dataKey="paid" stroke="hsl(42 51% 55%)" strokeWidth={2} fill="url(#agencyPaid)" />
                     <Area type="monotone" dataKey="pending" stroke="#fbbf24" strokeWidth={2} fill="url(#agencyPending)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -249,12 +249,12 @@ const AgencyDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-emerald-800/30">
+        <Card className="bg-card border-border/60">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-white font-semibold text-sm">Occupancy by property</h3>
-                <p className="text-xs text-emerald-300/60">Top {Math.min(stats?.occupancyByProperty?.length ?? 0, 5) || 5} by size</p>
+                <h3 className="text-card-foreground font-semibold text-sm">Occupancy by property</h3>
+                <p className="text-xs text-muted-foreground">Top {Math.min(stats?.occupancyByProperty?.length ?? 0, 5) || 5} by size</p>
               </div>
               <Home className="h-4 w-4 text-blue-400" />
             </div>
@@ -264,9 +264,9 @@ const AgencyDashboard = () => {
               </div>
             ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
               <div className="py-10 text-center">
-                <Building2 className="h-9 w-9 mx-auto mb-2 text-emerald-500/40" />
-                <p className="text-sm text-emerald-300/60">No properties yet</p>
-                <Button size="sm" className="mt-3 bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate('/agency/properties')}>
+                <Building2 className="h-9 w-9 mx-auto mb-2 text-amber-400/40" />
+                <p className="text-sm text-muted-foreground">No properties yet</p>
+                <Button size="sm" className="mt-3 btn-brand" onClick={() => navigate('/agency/properties')}>
                   Add a property
                 </Button>
               </div>
@@ -275,10 +275,10 @@ const AgencyDashboard = () => {
                 {stats!.occupancyByProperty.map(p => (
                   <div key={p.name}>
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-emerald-100/90 truncate pr-2">{p.name}</span>
-                      <span className="text-emerald-300/70 shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
+                      <span className="text-card-foreground truncate pr-2">{p.name}</span>
+                      <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-700/60 overflow-hidden">
+                    <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
                       <div
                         className={`h-full rounded-full ${p.rate >= 90 ? 'bg-emerald-500' : p.rate >= 70 ? 'bg-amber-500' : 'bg-red-500'}`}
                         style={{ width: `${Math.min(p.rate, 100)}%` }}
@@ -292,48 +292,44 @@ const AgencyDashboard = () => {
         </Card>
       </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border-emerald-700/30">
-          <CardContent className="p-5">
-            <Building2 className="h-8 w-8 text-emerald-400 mb-3" />
-            <h3 className="text-white font-semibold mb-1">Property Portfolio</h3>
-            <p className="text-sm text-emerald-300/70 mb-3">Manage properties on behalf of landlords. Track occupancy, units, and performance.</p>
-            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate('/agency/properties')}>
-              View Properties
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border-blue-700/30">
-          <CardContent className="p-5">
-            <Handshake className="h-8 w-8 text-blue-400 mb-3" />
-            <h3 className="text-white font-semibold mb-1">Landlord Partnerships</h3>
-            <p className="text-sm text-blue-300/70 mb-3">Link property owners, manage revenue sharing, and send payouts.</p>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/agency/landlords')}>
-              Manage Landlords
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-amber-600/20 to-amber-800/20 border-amber-700/30">
-          <CardContent className="p-5">
-            <Users className="h-8 w-8 text-amber-400 mb-3" />
-            <h3 className="text-white font-semibold mb-1">Tenant Operations</h3>
-            <p className="text-sm text-amber-300/70 mb-3">Manage tenants, collect rent, submit maintenance requests.</p>
-            <Button size="sm" className="bg-amber-600 hover:bg-amber-700" onClick={() => navigate('/agency/tenants')}>
-              View Tenants
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Quick Actions */}
+      <Card className="mb-6">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-6 w-6 rounded-md bg-amber-400/15 border border-amber-400/25 flex items-center justify-center">
+              <Zap className="h-3.5 w-3.5 text-amber-500" />
+            </div>
+            <span className="text-sm font-semibold text-foreground">Quick Actions</span>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+            {[
+              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-blue-500',    bg: 'bg-blue-500/10 border-blue-500/20' },
+              { label: 'Tenants',     icon: Users,      href: '/agency/tenants',       accent: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+              { label: 'Billing',     icon: CreditCard, href: '/agency/billing',       accent: 'text-amber-500',   bg: 'bg-amber-400/12 border-amber-400/25' },
+              { label: 'Landlords',   icon: Handshake,  href: '/agency/landlords',     accent: 'text-violet-500',  bg: 'bg-violet-500/10 border-violet-500/20' },
+              { label: 'Maintenance', icon: Wrench,     href: '/agency/maintenance',   accent: 'text-cyan-500',    bg: 'bg-cyan-500/10 border-cyan-500/20' },
+              { label: 'Reports',     icon: BarChart3,  href: '/agency/reports',       accent: 'text-rose-500',    bg: 'bg-rose-500/10 border-rose-500/20' },
+            ].map(a => (
+              <button key={a.label} onClick={() => navigate(a.href)}
+                className={`group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 touch-manipulation ${a.bg}`}>
+                <div className="h-9 w-9 rounded-xl bg-background/80 border border-border/60 flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-110">
+                  <a.icon className={`h-4 w-4 ${a.accent}`} />
+                </div>
+                <p className="text-xs font-semibold text-foreground text-center leading-tight">{a.label}</p>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Info card */}
-      <Card className="border-emerald-800/30 bg-slate-800/30">
+      <Card className="bg-card border-border/60">
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+            <Shield className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-white">Agency Operating Model</p>
-              <p className="text-xs text-emerald-300/70 mt-1">
+              <p className="text-sm font-medium text-card-foreground">Agency Operating Model</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 As an agency, you operate as a property agent — managing properties on behalf of landlords,
                 collecting rent (to your agency accounts or to landlords), and earning commission.
                 You have full tenant management capabilities and can link landlords to properties

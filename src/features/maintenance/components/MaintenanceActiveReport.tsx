@@ -203,8 +203,8 @@ export function MaintenanceActiveReport({
           <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Target className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-amber-400/10">
+                  <Target className="h-5 w-5 text-amber-500" />
                 </div>
                 <div>
                   <CardTitle className="text-lg text-foreground">Active Report</CardTitle>
@@ -281,10 +281,10 @@ export function MaintenanceActiveReport({
                 </div>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(totalBudget)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Completion Rate</span>
+                  <TrendingUp className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-medium text-amber-500">Completion Rate</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold text-foreground">{completionRate}%</p>

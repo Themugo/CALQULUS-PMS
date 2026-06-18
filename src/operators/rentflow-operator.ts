@@ -1,7 +1,7 @@
 /**
- * CALQULUS RMS Kubernetes Operator
+ * CALQULUS PMS Kubernetes Operator
  * 
- * Implements a custom Kubernetes operator for CALQULUS RMS application management:
+ * Implements a custom Kubernetes operator for CALQULUS PMS application management:
  * - Custom Resource Definition (CRD) management
  * - Deployment reconciliation
  * - Autoscaling management
@@ -9,7 +9,7 @@
  * - Event handling
  */
 
-// CALQULUS RMS custom resource spec
+// CALQULUS PMS custom resource spec
 export interface CalqulusRMSSpec {
   replicas: number;
   image: string;
@@ -32,7 +32,7 @@ export interface CalqulusRMSSpec {
   environment: Record<string, string>;
 }
 
-// CALQULUS RMS custom resource status
+// CALQULUS PMS custom resource status
 export interface CalqulusRMSStatus {
   replicas: number;
   readyReplicas: number;
@@ -46,7 +46,7 @@ export interface CalqulusRMSStatus {
   }>;
 }
 
-// CALQULUS RMS custom resource
+// CALQULUS PMS custom resource
 export interface CalqulusRMSResource {
   apiVersion: string;
   kind: string;
@@ -61,7 +61,7 @@ export interface CalqulusRMSResource {
 }
 
 /**
- * CALQULUS RMS Operator Controller
+ * CALQULUS PMS Operator Controller
  */
 export class CalqulusRMSOperator {
   private resources: Map<string, CalqulusRMSResource>;
@@ -79,7 +79,7 @@ export class CalqulusRMSOperator {
    */
   async start(): Promise<void> {
     this.running = true;
-    console.warn('CALQULUS RMS operator started');
+    console.warn('CALQULUS PMS operator started');
 
     // Start reconciliation loop
     this.reconcileLoop();
@@ -90,29 +90,29 @@ export class CalqulusRMSOperator {
    */
   async stop(): Promise<void> {
     this.running = false;
-    console.warn('CALQULUS RMS operator stopped');
+    console.warn('CALQULUS PMS operator stopped');
   }
 
   /**
-   * Add or update a CALQULUS RMS resource
+   * Add or update a CALQULUS PMS resource
    */
   addResource(resource: CalqulusRMSResource): void {
     const key = `${resource.metadata.namespace}/${resource.metadata.name}`;
     this.resources.set(key, resource);
-    console.warn(`Added CALQULUS RMS resource: ${key}`);
+    console.warn(`Added CALQULUS PMS resource: ${key}`);
   }
 
   /**
-   * Remove a CALQULUS RMS resource
+   * Remove a CALQULUS PMS resource
    */
   removeResource(namespace: string, name: string): void {
     const key = `${namespace}/${name}`;
     this.resources.delete(key);
-    console.warn(`Removed CALQULUS RMS resource: ${key}`);
+    console.warn(`Removed CALQULUS PMS resource: ${key}`);
   }
 
   /**
-   * Get a CALQULUS RMS resource
+   * Get a CALQULUS PMS resource
    */
   getResource(namespace: string, name: string): CalqulusRMSResource | undefined {
     const key = `${namespace}/${name}`;
@@ -120,7 +120,7 @@ export class CalqulusRMSOperator {
   }
 
   /**
-   * Get all CALQULUS RMS resources
+   * Get all CALQULUS PMS resources
    */
   getAllResources(): CalqulusRMSResource[] {
     return Array.from(this.resources.values());
@@ -140,10 +140,10 @@ export class CalqulusRMSOperator {
   }
 
   /**
-   * Reconcile a CALQULUS RMS resource
+   * Reconcile a CALQULUS PMS resource
    */
   private async reconcile(resource: CalqulusRMSResource): Promise<void> {
-    console.warn(`Reconciling CALQULUS RMS resource: ${resource.metadata.namespace}/${resource.metadata.name}`);
+    console.warn(`Reconciling CALQULUS PMS resource: ${resource.metadata.namespace}/${resource.metadata.name}`);
 
     // Initialize status if not present
     if (!resource.status) {
@@ -312,7 +312,7 @@ export class CalqulusRMSOperator {
 }
 
 /**
- * CALQULUS RMS Operator Manager
+ * CALQULUS PMS Operator Manager
  */
 export class CalqulusRMSOperatorManager {
   private operator: CalqulusRMSOperator | null = null;

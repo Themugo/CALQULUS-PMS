@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FileText, Wrench, MessageSquare, FolderOpen, User, Store } from 'lucide-react';
+import { FileText, Wrench, MessageSquare, FolderOpen, User, Store, Receipt } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
 interface NavItem {
@@ -18,16 +18,16 @@ const navItems: NavItem[] = [
     activeMatch: ['/portal'],
   },
   {
+    label: 'Payments',
+    icon: Receipt,
+    href: '/portal/payments',
+    activeMatch: ['/portal/payments'],
+  },
+  {
     label: 'Maintenance',
     icon: Wrench,
     href: '/portal/maintenance',
     activeMatch: ['/portal/maintenance'],
-  },
-  {
-    label: 'Services',
-    icon: Store,
-    href: '/portal/services',
-    activeMatch: ['/portal/services'],
   },
   {
     label: 'Inbox',
@@ -73,11 +73,11 @@ const MobileBottomNav: React.FC = () => {
               className={cn(
                 'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
                 active
-                  ? 'text-primary'
+                  ? 'text-amber-500'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <Icon className={cn('h-5 w-5', active && 'text-primary')} />
+              <Icon className={cn('h-5 w-5', active && 'text-amber-500')} />
               <span className={cn('text-xs', active && 'font-medium')}>
                 {item.label}
               </span>

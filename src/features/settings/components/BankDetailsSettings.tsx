@@ -63,6 +63,32 @@ const BANK_ACCOUNT_PATTERNS: Record<string, { pattern: RegExp; description: stri
 
 const DEFAULT_ACCOUNT_PATTERN = { pattern: /^\d{8,20}$/, description: '8-20 digits', example: '012345678' };
 
+function validateAccountNumber(bankName: string, accountNumber: string): { valid: boolean; message: string } {
+  if (!bankName || !accountNumber) return { valid: false, message: '' };
+  const bankPattern = BANK_ACCOUNT_PATTERNS[bankName] || DEFAULT_ACCOUNT_PATTERN;
+  const cleanedNumber = accountNumber.replace(/\s/g, '');
+  if (!bankPattern.pattern.test(cleanedNumber)) {
+    return { valid: false, message: `Expected: ${bankPattern.description} (e.g., ${bankPattern.example})` };
+  }
+  return { valid: true, message: 'Valid account number' };
+}
+
+function getValidationStatus(bankName: string, accountNumber: string) {
+  if (!accountNumber || accountNumber.length === 0) return null;
+  return validateAccountNumber(bankName, accountNumber);
+}
+
+function ValidationIndicator({ bankName, accountNumber }: { bankName: string; accountNumber: string }) {
+  const status = getValidationStatus(bankName, accountNumber);
+  if (!status) return null;
+  return (
+    <div className={`flex items-center gap-1 text-xs mt-1 ${status.valid ? 'text-green-600' : 'text-destructive'}`}>
+      {status.valid ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+      <span>{status.message}</span>
+    </div>
+  );
+}
+
 const MOBILE_MONEY_PROVIDERS = [
   { id: 'mpesa', name: 'Safaricom M-Pesa', type: 'paybill' },
   { id: 'mpesa_till', name: 'Safaricom M-Pesa Till', type: 'till' },
@@ -176,6 +202,7 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
       if (propertiesResult.error) throw propertiesResult.error;
 
       setBankAccounts(
+         
         (bankResult.data || []).map((d: BankDetailsRow) => ({
           id: d.id,
           bank_name: d.bank_name || '',
@@ -202,6 +229,7 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
 
   useEffect(() => {
     if (user && isManager) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [user, isManager, fetchData]);
@@ -262,32 +290,6 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
       }
     } catch (error) {
     }
-  };
-
-  const validateAccountNumber = (bankName: string, accountNumber: string): { valid: boolean; message: string } => {
-    if (!bankName || !accountNumber) return { valid: false, message: '' };
-    const bankPattern = BANK_ACCOUNT_PATTERNS[bankName] || DEFAULT_ACCOUNT_PATTERN;
-    const cleanedNumber = accountNumber.replace(/\s/g, '');
-    if (!bankPattern.pattern.test(cleanedNumber)) {
-      return { valid: false, message: `Expected: ${bankPattern.description} (e.g., ${bankPattern.example})` };
-    }
-    return { valid: true, message: 'Valid account number' };
-  };
-
-  const getValidationStatus = (bankName: string, accountNumber: string) => {
-    if (!accountNumber || accountNumber.length === 0) return null;
-    return validateAccountNumber(bankName, accountNumber);
-  };
-
-  const ValidationIndicator = ({ bankName, accountNumber }: { bankName: string; accountNumber: string }) => {
-    const status = getValidationStatus(bankName, accountNumber);
-    if (!status) return null;
-    return (
-      <div className={`flex items-center gap-1 text-xs mt-1 ${status.valid ? 'text-green-600' : 'text-destructive'}`}>
-        {status.valid ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
-        <span>{status.message}</span>
-      </div>
-    );
   };
 
   const handleSave = async (account: BankDetails, isNew: boolean = false) => {

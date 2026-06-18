@@ -58,7 +58,7 @@ export const biometricService = {
 
     try {
       await NativeBiometric.verifyIdentity({
-        reason: reason || 'Authenticate to access CALQULUS RMS',
+        reason: reason || 'Authenticate to access CALQULUS PMS',
         title: 'Biometric Login',
         subtitle: 'Use your fingerprint or face to log in',
         description: 'Place your finger on the sensor or look at the camera',

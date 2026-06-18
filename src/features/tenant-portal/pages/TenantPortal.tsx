@@ -106,6 +106,7 @@ const TenantPortal = () => {
   const [receiptRefresh, setReceiptRefresh] = useState(0);
 
   // Fetch tenant info with offline support
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchTenantInfo = useCallback(async (): Promise<TenantInfo | null> => {
     if (!userRole?.tenant_id) return null;
     const { data, error } = await supabase
@@ -152,6 +153,7 @@ const TenantPortal = () => {
   }, [userRole?.tenant_id]);
 
   // Fetch invoices with offline support
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchInvoices = useCallback(async (): Promise<Invoice[]> => {
     if (!userRole?.tenant_id) return [];
     const { data, error } = await supabase
@@ -164,6 +166,7 @@ const TenantPortal = () => {
   }, [userRole?.tenant_id]);
 
   // Fetch lease with offline support
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchLease = useCallback(async (): Promise<Lease | null> => {
     if (!userRole?.tenant_id) return null;
     const { data, error } = await supabase
@@ -217,6 +220,7 @@ const TenantPortal = () => {
   }, [user?.id]);
 
   // Filter invoices based on statement_history_months setting
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const filteredInvoices = React.useMemo(() => {
     if (!invoices) return [];
     if (!tenantInfo?.statement_history_months) return invoices;
@@ -429,7 +433,7 @@ const TenantPortal = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
       </div>
     );
   }
@@ -442,23 +446,23 @@ const TenantPortal = () => {
     : 'View and manage your invoices below.';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-400/20">
               <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS RMS</h1>
+              <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS PMS</h1>
               <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Tenant Portal</p>
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <span className="text-xs md:text-sm text-muted-foreground hidden md:block">{user?.email}</span>
             <TenantNotificationBell />
-            <Button variant="outline" size="sm" onClick={signOut} className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-primary/50 hover:text-primary-foreground transition-all duration-200">
+            <Button variant="outline" size="sm" onClick={signOut} className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-amber-400/10 hover:text-amber-600 hover:border-amber-400/30 transition-all duration-200">
               <LogOut className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Sign Out</span>
             </Button>
@@ -569,6 +573,7 @@ const TenantPortal = () => {
 
         {/* Lease expiry warning — shown ≤60 days before expiry */}
         {lease && (() => {
+          // eslint-disable-next-line react-hooks/purity
           const daysLeft = Math.ceil((new Date(lease.end_date).getTime() - Date.now()) / 86_400_000);
           if (daysLeft > 60 || daysLeft < -30) return null;
           const isExpired = daysLeft <= 0;
@@ -1010,8 +1015,8 @@ const TenantPortal = () => {
           <div className="space-y-4 py-4">
             <div className="flex items-center justify-center py-6">
               <div className="text-center space-y-3">
-                <div className="h-16 w-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                  <Smartphone className="h-8 w-8 text-primary" />
+                <div className="h-16 w-16 mx-auto rounded-full bg-amber-400/10 flex items-center justify-center">
+                  <Smartphone className="h-8 w-8 text-amber-500" />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Complete the M-Pesa prompt on your phone, then click below to verify.

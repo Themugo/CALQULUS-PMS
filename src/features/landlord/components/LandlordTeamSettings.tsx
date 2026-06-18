@@ -142,7 +142,7 @@ const LandlordTeamSettings: React.FC = () => {
         .select('id')
         .eq('email', email.trim().toLowerCase())
         .maybeSingle();
-      if (!profile) throw new Error('User not found. They must create a CALQULUS RMS account first.');
+      if (!profile) throw new Error('User not found. They must create a CALQULUS PMS account first.');
 
       const allPropertyIds = properties.map((p: { id: string }) => p.id);
       const perms = {

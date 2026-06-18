@@ -86,7 +86,7 @@ export const PaymentReminderSettings = () => {
     <Card className="card-shadow animate-fade-in">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading">
-          <Bell className="h-5 w-5 text-primary" />
+          <Bell className="h-5 w-5 text-amber-500" />
           Payment Reminders
         </CardTitle>
         <CardDescription>

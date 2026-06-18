@@ -191,11 +191,11 @@ const BillingAnalytics = () => {
     <div className="space-y-6">
       {/* Summary Stats */}
       <div className="grid gap-4 md:grid-cols-5">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-300">Total Revenue</p>
+                <p className="text-sm text-amber-400/70">Total Revenue</p>
                 <p className="text-2xl font-bold text-white">KES {totals.paid.toLocaleString()}</p>
               </div>
               <div className={`flex items-center gap-1 text-sm ${trend.isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -206,56 +206,56 @@ const BillingAnalytics = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
                 <Users className="h-5 w-5 text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Registrations</p>
+                <p className="text-sm text-amber-400/70">Registrations</p>
                 <p className="text-2xl font-bold text-white">{totals.registrations}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <Percent className="h-5 w-5 text-purple-400" />
+                <Percent className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Subscriptions</p>
+                <p className="text-sm text-amber-400/70">Subscriptions</p>
                 <p className="text-2xl font-bold text-white">{totals.subscriptions}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
                 <DollarSign className="h-5 w-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Pending</p>
+                <p className="text-sm text-amber-400/70">Pending</p>
                 <p className="text-2xl font-bold text-white">KES {totals.pending.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Avg Commission</p>
+                <p className="text-sm text-amber-400/70">Avg Commission</p>
                 <p className="text-2xl font-bold text-white">{totals.avgCommission.toFixed(2)}%</p>
               </div>
             </div>
@@ -266,13 +266,13 @@ const BillingAnalytics = () => {
       {/* Charts Row */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Revenue Trend Chart */}
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-400" />
+              <TrendingUp className="h-5 w-5 text-amber-500" />
               Revenue Trend
             </CardTitle>
-            <CardDescription className="text-purple-300">Last 6 months revenue breakdown</CardDescription>
+            <CardDescription className="text-amber-400/70">Last 6 months revenue breakdown</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -310,24 +310,24 @@ const BillingAnalytics = () => {
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="text-sm text-purple-300">Registration</span>
+                <span className="text-sm text-amber-400/70">Registration</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-purple-500" />
-                <span className="text-sm text-purple-300">Subscription</span>
+                <span className="text-sm text-amber-400/70">Subscription</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Revenue Distribution */}
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-purple-400" />
+              <DollarSign className="h-5 w-5 text-amber-500" />
               Revenue Distribution
             </CardTitle>
-            <CardDescription className="text-purple-300">By invoice type</CardDescription>
+            <CardDescription className="text-amber-400/70">By invoice type</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-center justify-center">
@@ -354,14 +354,14 @@ const BillingAnalytics = () => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-purple-400">No paid invoices yet</p>
+                <p className="text-amber-500">No paid invoices yet</p>
               )}
             </div>
             <div className="flex justify-center gap-6 mt-4">
               {invoiceTypeData.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm text-purple-300">{item.name}: KES {item.value.toLocaleString()}</span>
+                  <span className="text-sm text-amber-400/70">{item.name}: KES {item.value.toLocaleString()}</span>
                 </div>
               ))}
             </div>
@@ -370,13 +370,13 @@ const BillingAnalytics = () => {
       </div>
 
       {/* Manager Breakdown */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <Users className="h-5 w-5 text-purple-400" />
+            <Users className="h-5 w-5 text-amber-500" />
             Manager Revenue Breakdown
           </CardTitle>
-          <CardDescription className="text-purple-300">Revenue contribution by manager</CardDescription>
+          <CardDescription className="text-amber-400/70">Revenue contribution by manager</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64">
@@ -405,24 +405,24 @@ const BillingAnalytics = () => {
           <div className="flex justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span className="text-sm text-purple-300">Paid</span>
+              <span className="text-sm text-amber-400/70">Paid</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span className="text-sm text-purple-300">Pending</span>
+              <span className="text-sm text-amber-400/70">Pending</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Monthly Net Collection Trend */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-purple-400" />
+            <Calendar className="h-5 w-5 text-amber-500" />
             Net Collection vs Commission
           </CardTitle>
-          <CardDescription className="text-purple-300">Manager collections and platform commission over time</CardDescription>
+          <CardDescription className="text-amber-400/70">Manager collections and platform commission over time</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64">
@@ -444,11 +444,11 @@ const BillingAnalytics = () => {
           <div className="flex justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-sm text-purple-300">Net Collection</span>
+              <span className="text-sm text-amber-400/70">Net Collection</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span className="text-sm text-purple-300">Commission (1%)</span>
+              <span className="text-sm text-amber-400/70">Commission (1%)</span>
             </div>
           </div>
         </CardContent>

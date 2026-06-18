@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from "@/assets/calqulusrms-logo.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.png";
 
 interface ManagerProfileData {
   approval_status?: string;
@@ -43,6 +43,7 @@ const PendingApproval = () => {
       }
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCountdown(30);
     cdRef.current = setInterval(() => {
       setCountdown(p => {
@@ -83,11 +84,11 @@ const PendingApproval = () => {
   // Show the countdown + auto-refresh info only when pending (not rejected/suspended)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
+    <div className="min-h-screen flex items-center justify-center hero-gradient px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <img src={calqulusLogo} alt="CALQULUS RMS" className="h-12" />
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12" />
           </div>
           <div className="flex items-center justify-center gap-2 text-amber-500 mb-2">
             <Building2 className="h-5 w-5" />
@@ -95,7 +96,7 @@ const PendingApproval = () => {
           </div>
         </div>
 
-        <Card className="w-full border-slate-700 bg-slate-800/50 backdrop-blur-sm shadow-2xl">
+        <Card className="w-full border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
@@ -105,7 +106,7 @@ const PendingApproval = () => {
             <CardTitle className="text-2xl font-bold text-white">
               {isSuspended ? (isNonPaymentSuspension ? 'Account Suspended — Payment Required' : 'Account Suspended') : isRejected ? 'Account Not Approved' : 'Account Pending Approval'}
             </CardTitle>
-            <CardDescription className="text-slate-400 mt-2">
+            <CardDescription className="text-white/50 mt-2">
               {isSuspended
                 ? 'Your account has been temporarily suspended by the platform administrator'
                 : isRejected
@@ -120,7 +121,7 @@ const PendingApproval = () => {
                 <div>
                   {isNonPaymentSuspension ? (
                     <>
-                      <p className="text-slate-300 text-sm mb-3">
+                      <p className="text-white/80 text-sm mb-3">
                         Your account has been suspended due to an outstanding platform invoice.
                         Pay the outstanding balance to restore access immediately.
                       </p>
@@ -141,7 +142,7 @@ const PendingApproval = () => {
                     </>
                   ) : (
                     <>
-                      <p className="text-slate-300 text-sm mb-3">
+                      <p className="text-white/80 text-sm mb-3">
                         Access to your account has been suspended. Please contact the platform administrator to resolve this.
                       </p>
                       {suspensionReason && (
@@ -155,7 +156,7 @@ const PendingApproval = () => {
                 </div>
               ) : isRejected ? (
                 <div>
-                  <p className="text-slate-300 text-sm mb-3">
+                  <p className="text-white/80 text-sm mb-3">
                     Unfortunately, your account application was not approved.
                     If you believe this was a mistake, please contact our support team for assistance.
                   </p>
@@ -167,7 +168,7 @@ const PendingApproval = () => {
                   )}
                 </div>
               ) : (
-                <p className="text-slate-300 text-sm mb-4">
+                <p className="text-white/80 text-sm mb-4">
                   Thank you for registering as a property manager!
                   Your account is currently under review by our team.
                   You will receive access once your account has been approved.
@@ -175,13 +176,13 @@ const PendingApproval = () => {
               )}
               
               {user?.email && (
-                <div className="flex items-center justify-center gap-2 text-slate-400 text-sm bg-slate-700/50 py-3 px-4 rounded-lg border border-slate-600 mb-4">
+                <div className="flex items-center justify-center gap-2 text-amber-400/70 text-sm bg-amber-400/8 py-3 px-4 rounded-lg border border-amber-400/20 mb-4">
                   <Mail className="h-4 w-4" />
                   {user.email}
                 </div>
               )}
 
-              <p className="text-slate-500 text-xs">
+              <p className="text-white/40 text-xs">
                 {isRejected 
                   ? 'Contact support@calqulusrms.com for more information.'
                   : 'This usually takes 24-48 hours. If you have any questions, please contact support.'
@@ -192,13 +193,13 @@ const PendingApproval = () => {
             <div className="flex flex-col gap-3">
               {!isRejected && (
                 <>
-                  <div className="text-center text-xs text-slate-500">
+                  <div className="text-center text-xs text-white/40">
                     Auto-checking in {countdown}s…
                   </div>
                   <Button
                     onClick={handleRefresh}
                     variant="outline"
-                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                    className="w-full border-white/15 text-white/70 hover:bg-white/8"
                     disabled={isRefreshing}
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -210,7 +211,7 @@ const PendingApproval = () => {
               <Button
                 onClick={signOut}
                 variant="ghost"
-                className="w-full text-slate-400 hover:text-white hover:bg-slate-700"
+                className="w-full text-white/40 hover:text-white hover:bg-white/8"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out

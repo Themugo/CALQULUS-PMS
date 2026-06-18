@@ -298,7 +298,7 @@ export class EcosystemParticipantManagement {
       ],
       status: 'active',
       signedAt: new Date(),
-      signedBy: 'CALQULUS RMS'
+      signedBy: 'CALQULUS PMS'
     };
 
     participant.agreements.push(agreement);

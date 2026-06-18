@@ -54,7 +54,7 @@ export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-amber-500" />
             Leases
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">

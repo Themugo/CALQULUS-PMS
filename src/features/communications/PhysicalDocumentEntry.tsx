@@ -49,6 +49,115 @@ const PAYMENT_METHODS = [
   { value: 'other',         label: 'Other' },
 ];
 
+interface LineItemEditorProps {
+  lines: LineItem[];
+  type: 'inv' | 'rec';
+  total: number;
+  onUpdateLine: (type: 'inv' | 'rec', i: number, field: keyof LineItem, val: string | number) => void;
+  onRemoveLine: (type: 'inv' | 'rec', i: number) => void;
+  onAddLine: (type: 'inv' | 'rec') => void;
+}
+
+function LineItemEditor({ lines, type, total, onUpdateLine, onRemoveLine, onAddLine }: LineItemEditorProps) {
+  return (
+    <div className="space-y-2">
+      {lines.map((l, i) => (
+        <div key={i} className="flex gap-2 items-center">
+          <Input value={l.label} onChange={e => onUpdateLine(type, i, 'label', e.target.value)} placeholder="Description" className="flex-1 h-8 text-sm" />
+          <Input type="number" value={l.amount || ''} onChange={e => onUpdateLine(type, i, 'amount', Number(e.target.value))} placeholder="Amount" className="w-28 h-8 text-sm" />
+          {lines.length > 1 && (
+            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => onRemoveLine(type, i)}>
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+      ))}
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => onAddLine(type)}>
+          <Plus className="h-3 w-3" />Add line
+        </Button>
+        <span className="text-sm font-semibold">Total: {fmt(total)}</span>
+      </div>
+    </div>
+  );
+}
+
+interface DocTableProps {
+  docs: PhysicalDoc[];
+  type: 'invoice' | 'receipt';
+  loading: boolean;
+  tenants: Tenant[];
+  onSendDigital: (id: string) => void;
+}
+
+function DocTable({ docs, type, loading, tenants, onSendDigital }: DocTableProps) {
+  if (loading) {
+    return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>;
+  }
+  if (docs.length === 0) {
+    return (
+      <div className="py-10 text-center text-muted-foreground">
+        {type === 'invoice' ? <FileText className="h-10 w-10 mx-auto mb-2 opacity-30" /> : <Receipt className="h-10 w-10 mx-auto mb-2 opacity-30" />}
+        <p className="text-sm">No physical {type}s recorded yet</p>
+      </div>
+    );
+  }
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Number</TableHead>
+          <TableHead>Tenant / Unit</TableHead>
+          <TableHead>Date</TableHead>
+          {type === 'receipt' && <TableHead>Method</TableHead>}
+          <TableHead className="text-right">Amount</TableHead>
+          <TableHead>Digital</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {docs.map(doc => {
+          const tenant = tenants.find(t => t.id === doc.tenant_id);
+          return (
+            <TableRow key={doc.id}>
+              <TableCell className="font-mono text-xs">{doc.invoice_number || doc.receipt_number}</TableCell>
+              <TableCell>
+                <div>
+                  <p className="text-sm font-medium">{tenant?.name || '—'}</p>
+                  <p className="text-xs text-muted-foreground">{tenant?.unit}</p>
+                </div>
+              </TableCell>
+              <TableCell className="text-xs text-muted-foreground">
+                {(doc.invoice_date || doc.receipt_date) ? format(new Date(doc.invoice_date || doc.receipt_date), 'dd/MM/yy') : '—'}
+              </TableCell>
+              {type === 'receipt' && (
+                <TableCell className="text-xs capitalize">{doc.payment_method}</TableCell>
+              )}
+              <TableCell className="text-right font-semibold text-sm">
+                {fmt(Number(doc.total_amount || doc.amount))}
+              </TableCell>
+              <TableCell>
+                {doc.digital_receipt_sent ? (
+                  <Badge variant="outline" className="text-xs border-green-300 text-green-700 bg-green-50">
+                    <CheckCircle className="h-3 w-3 mr-1" />Sent
+                  </Badge>
+                ) : (
+                  <Button
+                    variant="outline" size="sm"
+                    className="h-7 text-xs gap-1"
+                    onClick={() => onSendDigital(doc.id)}
+                  >
+                    <Send className="h-3 w-3" />Send
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+}
+
 const PhysicalDocumentEntry: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -236,92 +345,6 @@ const PhysicalDocumentEntry: React.FC = () => {
     onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
   });
 
-  const LineItemEditor = ({ lines, type }: { lines: LineItem[]; type: 'inv' | 'rec' }) => (
-    <div className="space-y-2">
-      {lines.map((l, i) => (
-        <div key={i} className="flex gap-2 items-center">
-          <Input value={l.label} onChange={e => updateLine(type, i, 'label', e.target.value)} placeholder="Description" className="flex-1 h-8 text-sm" />
-          <Input type="number" value={l.amount || ''} onChange={e => updateLine(type, i, 'amount', Number(e.target.value))} placeholder="Amount" className="w-28 h-8 text-sm" />
-          {lines.length > 1 && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeLine(type, i)}>
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      ))}
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => addLine(type)}>
-          <Plus className="h-3 w-3" />Add line
-        </Button>
-        <span className="text-sm font-semibold">Total: {fmt(type === 'inv' ? invTotal : recLines.reduce((s, l) => s + Number(l.amount || 0), 0))}</span>
-      </div>
-    </div>
-  );
-
-  const DocTable = ({ docs, type, loading }: { docs: PhysicalDoc[]; type: 'invoice' | 'receipt'; loading: boolean }) => (
-    loading ? (
-      <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
-    ) : docs.length === 0 ? (
-      <div className="py-10 text-center text-muted-foreground">
-        {type === 'invoice' ? <FileText className="h-10 w-10 mx-auto mb-2 opacity-30" /> : <Receipt className="h-10 w-10 mx-auto mb-2 opacity-30" />}
-        <p className="text-sm">No physical {type}s recorded yet</p>
-      </div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Number</TableHead>
-            <TableHead>Tenant / Unit</TableHead>
-            <TableHead>Date</TableHead>
-            {type === 'receipt' && <TableHead>Method</TableHead>}
-            <TableHead className="text-right">Amount</TableHead>
-            <TableHead>Digital</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {docs.map(doc => {
-            const tenant = tenants.find(t => t.id === doc.tenant_id);
-            return (
-              <TableRow key={doc.id}>
-                <TableCell className="font-mono text-xs">{doc.invoice_number || doc.receipt_number}</TableCell>
-                <TableCell>
-                  <div>
-                    <p className="text-sm font-medium">{tenant?.name || '—'}</p>
-                    <p className="text-xs text-muted-foreground">{tenant?.unit}</p>
-                  </div>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {(doc.invoice_date || doc.receipt_date) ? format(new Date(doc.invoice_date || doc.receipt_date), 'dd/MM/yy') : '—'}
-                </TableCell>
-                {type === 'receipt' && (
-                  <TableCell className="text-xs capitalize">{doc.payment_method}</TableCell>
-                )}
-                <TableCell className="text-right font-semibold text-sm">
-                  {fmt(Number(doc.total_amount || doc.amount))}
-                </TableCell>
-                <TableCell>
-                  {doc.digital_receipt_sent ? (
-                    <Badge variant="outline" className="text-xs border-green-300 text-green-700 bg-green-50">
-                      <CheckCircle className="h-3 w-3 mr-1" />Sent
-                    </Badge>
-                  ) : (
-                    <Button
-                      variant="outline" size="sm"
-                      className="h-7 text-xs gap-1"
-                      onClick={() => setSendDigitalId(doc.id)}
-                    >
-                      <Send className="h-3 w-3" />Send
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    )
-  );
-
   const allDocs = [...physicalInvoices, ...physicalReceipts].find(d => d.id === sendDigitalId);
 
   return (
@@ -344,12 +367,12 @@ const PhysicalDocumentEntry: React.FC = () => {
         </TabsList>
         <TabsContent value="receipts" className="mt-4">
           <Card><CardContent className="pt-4">
-            <DocTable docs={physicalReceipts} type="receipt" loading={recLoading} />
+            <DocTable docs={physicalReceipts} type="receipt" loading={recLoading} tenants={tenants} onSendDigital={setSendDigitalId} />
           </CardContent></Card>
         </TabsContent>
         <TabsContent value="invoices" className="mt-4">
           <Card><CardContent className="pt-4">
-            <DocTable docs={physicalInvoices} type="invoice" loading={invLoading} />
+            <DocTable docs={physicalInvoices} type="invoice" loading={invLoading} tenants={tenants} onSendDigital={setSendDigitalId} />
           </CardContent></Card>
         </TabsContent>
       </Tabs>
@@ -368,7 +391,7 @@ const PhysicalDocumentEntry: React.FC = () => {
                 <button key={t} type="button"
                   onClick={() => setDocType(t)}
                   className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors capitalize ${
-                    docType === t ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground'
+                    docType === t ? 'border-amber-400/50 bg-amber-400/8 text-amber-600' : 'border-border text-muted-foreground'
                   }`}
                 >
                   {t === 'receipt' ? <><Receipt className="h-4 w-4 inline mr-2" />Receipt</> : <><FileText className="h-4 w-4 inline mr-2" />Invoice</>}
@@ -415,7 +438,7 @@ const PhysicalDocumentEntry: React.FC = () => {
                   <div><Label>Received by</Label><Input value={recForm.received_by} onChange={e => setRecForm(p => ({ ...p, received_by: e.target.value }))} className="mt-1" /></div>
                 </div>
                 <div><Label>Description</Label><Input value={recForm.description} onChange={e => setRecForm(p => ({ ...p, description: e.target.value }))} className="mt-1" /></div>
-                <div><Label>Line items (optional breakdown)</Label><div className="mt-1"><LineItemEditor lines={recLines} type="rec" /></div></div>
+                <div><Label>Line items (optional breakdown)</Label><div className="mt-1"><LineItemEditor lines={recLines} type="rec" total={recLines.reduce((s, l) => s + Number(l.amount || 0), 0)} onUpdateLine={updateLine} onRemoveLine={removeLine} onAddLine={addLine} /></div></div>
               </>
             ) : (
               <>
@@ -425,7 +448,7 @@ const PhysicalDocumentEntry: React.FC = () => {
                 </div>
                 <div><Label>Due date</Label><Input type="date" value={invForm.due_date} onChange={e => setInvForm(p => ({ ...p, due_date: e.target.value }))} className="mt-1" /></div>
                 <div><Label>Description</Label><Input value={invForm.description} onChange={e => setInvForm(p => ({ ...p, description: e.target.value }))} className="mt-1" /></div>
-                <div><Label>Line items</Label><div className="mt-1"><LineItemEditor lines={invLines} type="inv" /></div></div>
+                <div><Label>Line items</Label><div className="mt-1"><LineItemEditor lines={invLines} type="inv" total={invTotal} onUpdateLine={updateLine} onRemoveLine={removeLine} onAddLine={addLine} /></div></div>
               </>
             )}
           </div>

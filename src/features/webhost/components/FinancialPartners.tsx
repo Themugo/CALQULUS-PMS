@@ -325,7 +325,7 @@ const FinancialPartners = () => {
       case 'microfinance':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Building2 className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'fintech':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Zap className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Zap className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'investment':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><TrendingUp className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
@@ -344,13 +344,13 @@ const FinancialPartners = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Financial Partners</h2>
-          <p className="text-purple-300 text-sm mt-1">Connect with banks and financial institutions for loans and payment processing</p>
+          <p className="text-amber-400/70 text-sm mt-1">Connect with banks and financial institutions for loans and payment processing</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -358,7 +358,7 @@ const FinancialPartners = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -368,85 +368,85 @@ const FinancialPartners = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-purple-400" />
+              <Building2 className="h-4 w-4 text-amber-500" />
               Total Partners
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalPartners}</div>
-            <div className="text-sm text-purple-300">Financial institutions</div>
+            <div className="text-sm text-amber-400/70">Financial institutions</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-purple-400" />
+              <Activity className="h-4 w-4 text-amber-500" />
               Active Loans
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeLoans}</div>
-            <div className="text-sm text-purple-300">Currently active</div>
+            <div className="text-sm text-amber-400/70">Currently active</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-400" />
+              <Clock className="h-4 w-4 text-amber-500" />
               Pending Applications
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingApplications}</div>
-            <div className="text-sm text-purple-300">Awaiting review</div>
+            <div className="text-sm text-amber-400/70">Awaiting review</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-purple-400" />
+              <DollarSign className="h-4 w-4 text-amber-500" />
               Total Volume
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">KES {(totalLoanVolume / 1000000).toFixed(1)}M</div>
-            <div className="text-sm text-purple-300">Loan portfolio</div>
+            <div className="text-sm text-amber-400/70">Loan portfolio</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="partners" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="partners" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Building2 className="h-4 w-4 mr-2" />
             Partners
           </TabsTrigger>
-          <TabsTrigger value="loans" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="loans" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Loan Applications
           </TabsTrigger>
-          <TabsTrigger value="payments" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="payments" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <CreditCard className="h-4 w-4 mr-2" />
             Payment Processing
           </TabsTrigger>
-          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Award className="h-4 w-4 mr-2" />
             Performance
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="partners">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Financial Partners Directory</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Browse and connect with financial institutions
               </CardDescription>
             </CardHeader>
@@ -454,18 +454,18 @@ const FinancialPartners = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search partners..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="bank">Bank</option>
@@ -478,7 +478,7 @@ const FinancialPartners = () => {
               {/* Partners List */}
               <div className="grid gap-4 md:grid-cols-2">
                 {filteredPartners.map((partner) => (
-                  <div key={partner.id} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={partner.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -492,40 +492,40 @@ const FinancialPartners = () => {
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-white font-medium">{partner.rating}</span>
-                        <span className="text-purple-300 text-sm">({partner.reviewCount})</span>
+                        <span className="text-amber-400/70 text-sm">({partner.reviewCount})</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
                       {partner.services.slice(0, 3).map((service, idx) => (
-                        <Badge key={idx} variant="outline" className="text-purple-300 border-purple-700 text-xs">
+                        <Badge key={idx} variant="outline" className="text-amber-400/70 border-amber-400/30 text-xs">
                           {service}
                         </Badge>
                       ))}
                     </div>
                     <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <MapPin className="h-3 w-3" />
                         {partner.location}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Percent className="h-3 w-3" />
                         {partner.interestRateRange}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <DollarSign className="h-3 w-3" />
                         {partner.loanAmountRange}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Clock className="h-3 w-3" />
                         {partner.averageProcessingTime}
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-purple-300">
+                      <div className="flex items-center gap-2 text-sm text-amber-400/70">
                         <Target className="h-3 w-3" />
                         Approval: {partner.approvalRate}%
                       </div>
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Apply for Loan
                       </Button>
                     </div>
@@ -537,28 +537,28 @@ const FinancialPartners = () => {
         </TabsContent>
 
         <TabsContent value="loans">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Loan Applications</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage loan applications and track status
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {loanApplications.map((application) => (
-                  <div key={application.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={application.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{application.partnerName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{application.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{application.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(application.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {application.applicantName}
@@ -568,7 +568,7 @@ const FinancialPartners = () => {
                           {application.propertyName}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
                           Amount: KES {application.amount.toLocaleString()}
@@ -582,7 +582,7 @@ const FinancialPartners = () => {
                           Term: {application.term} months
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Activity className="h-3 w-3" />
                           Monthly: KES {application.monthlyPayment.toLocaleString()}
@@ -606,23 +606,23 @@ const FinancialPartners = () => {
         </TabsContent>
 
         <TabsContent value="payments">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Payment Processing</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage payment processing partners
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {paymentProcessing.map((processing) => (
-                  <div key={processing.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={processing.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{processing.partnerName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{processing.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{processing.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {processing.type.replace('_', ' ')}
                           </Badge>
                         </div>
@@ -630,7 +630,7 @@ const FinancialPartners = () => {
                           {getStatusBadge(processing.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Percent className="h-3 w-3" />
                           Fee: {processing.transactionFee}%
@@ -640,7 +640,7 @@ const FinancialPartners = () => {
                           Processing: {processing.processingTime}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Target className="h-3 w-3" />
                           Daily Limit: KES {processing.dailyLimit.toLocaleString()}
@@ -650,7 +650,7 @@ const FinancialPartners = () => {
                           Monthly Limit: KES {processing.monthlyLimit.toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Setup: {processing.setupDate.toLocaleDateString()}
@@ -664,7 +664,7 @@ const FinancialPartners = () => {
                       </div>
                     </div>
                     {processing.status === 'inactive' && (
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Activate
                       </Button>
                     )}
@@ -676,46 +676,46 @@ const FinancialPartners = () => {
         </TabsContent>
 
         <TabsContent value="performance">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Partner Performance</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track financial partner performance metrics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {partnerPerformance.map((perf) => (
-                  <div key={perf.partnerId} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={perf.partnerId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-white font-medium">{perf.partnerName}</span>
-                      <Badge variant="outline" className="text-purple-300 border-purple-700">
+                      <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         KES {(perf.totalVolume / 1000000).toFixed(1)}M volume
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.approvalRate}%</div>
-                        <div className="text-xs text-purple-300">Approval Rate</div>
+                        <div className="text-xs text-amber-400/70">Approval Rate</div>
                         <Progress value={perf.approvalRate} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.averageInterestRate}%</div>
-                        <div className="text-xs text-purple-300">Avg Interest</div>
+                        <div className="text-xs text-amber-400/70">Avg Interest</div>
                         <Progress value={perf.averageInterestRate * 5} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.customerSatisfaction}/5</div>
-                        <div className="text-xs text-purple-300">Satisfaction</div>
+                        <div className="text-xs text-amber-400/70">Satisfaction</div>
                         <Progress value={(perf.customerSatisfaction / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.defaultRate}%</div>
-                        <div className="text-xs text-purple-300">Default Rate</div>
+                        <div className="text-xs text-amber-400/70">Default Rate</div>
                         <Progress value={perf.defaultRate * 10} className="h-2 mt-1" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-purple-300">
+                    <div className="flex items-center gap-4 text-sm text-amber-400/70">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         Disbursement: {perf.disbursementSpeed}

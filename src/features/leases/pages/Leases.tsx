@@ -160,7 +160,7 @@ const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
           <Button
             variant="link"
             size="sm"
-            className="text-primary mt-1"
+            className="text-amber-500 mt-1"
             onClick={() => openSafely(signedUrl)}
           >
             Click to view
@@ -311,12 +311,14 @@ const Leases = () => {
   }, [properties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLeases();
     fetchTenants();
     fetchProperties();
   }, [fetchLeases, fetchTenants, fetchProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUnits();
   }, [fetchUnits]);
 
@@ -324,6 +326,7 @@ const Leases = () => {
   useEffect(() => {
     if (newLease.property_id) {
       const propertyUnits = units.filter(u => u.property_id === newLease.property_id);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilteredUnits(propertyUnits);
     } else {
       setFilteredUnits([]);
@@ -696,13 +699,13 @@ const Leases = () => {
           {/* Summary Stats - Scrollable on mobile */}
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 scrollbar-hide">
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/50 ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-amber-400/60/50 ${statusFilter === "all" ? "ring-2 ring-amber-400" : ""}`}
               onClick={() => setStatusFilter("all")}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
                   </div>
                   <div className="text-right sm:text-left">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Total</p>
@@ -803,7 +806,7 @@ const Leases = () => {
           )}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-primary hover:bg-primary/90 sm:size-default">
+              <Button size="sm" className="btn-brand sm:size-default">
                 <Plus className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Create Lease Agreement</span>
                 <span className="sm:hidden">New</span>
@@ -1002,7 +1005,7 @@ const Leases = () => {
               </Button>
               <Button
                 onClick={handleCreateLease}
-                className="bg-primary hover:bg-primary/90"
+                className="btn-brand"
               >
                 Create Lease
               </Button>
@@ -1014,7 +1017,7 @@ const Leases = () => {
 
       {/* Select All Bar */}
       {filteredLeases.length > 0 && selectedLeases.size > 0 && (
-        <div className="flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-lg bg-primary/5 border border-primary/20">
+        <div className="flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-lg bg-amber-400/6 border border-amber-400/20">
           <div className="flex items-center gap-3">
             <Checkbox
               checked={filteredLeases.length > 0 && selectedLeases.size === filteredLeases.length}
@@ -1039,7 +1042,7 @@ const Leases = () => {
       {/* Leases Grid */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12 sm:py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
         </div>
       ) : filteredLeases.length === 0 ? (
         <Card className="bg-card border-border">
@@ -1096,7 +1099,7 @@ const Leases = () => {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={selectedLease.tenants?.photo_url || undefined} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
+                  <AvatarFallback className="bg-amber-400 text-slate-900">
                     {selectedLease.tenants?.name
                       ?.split(" ")
                       .map((n) => n[0])

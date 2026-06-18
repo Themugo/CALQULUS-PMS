@@ -124,6 +124,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [isOpen, fetchData]);
@@ -240,7 +241,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
             <div className="bg-muted/50 rounded-lg p-3">
               <p className="text-sm text-muted-foreground mb-1">Current Location</p>
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-primary" />
+                <User className="h-4 w-4 text-amber-500" />
                 <span className="font-medium">{tenant.name}</span>
               </div>
               <div className="flex items-center gap-2 mt-1">

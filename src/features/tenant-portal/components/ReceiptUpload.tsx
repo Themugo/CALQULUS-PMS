@@ -290,7 +290,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Receipt className="h-5 w-5 text-primary" />
+          <Receipt className="h-5 w-5 text-amber-500" />
           Upload Payment Receipt
           <Badge variant="secondary" className="ml-2 gap-1">
             <Sparkles className="h-3 w-3" />
@@ -306,7 +306,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
         <div className="space-y-2">
           <Label>Receipt/Screenshot *</Label>
           <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-            parsing ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
+            parsing ? 'border-amber-400/50 bg-amber-400/8' : 'hover:border-amber-400/60/50'
           }`}>
             <input
               ref={fileInputRef}
@@ -320,8 +320,8 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
             <label htmlFor="receipt-upload" className={`cursor-pointer ${parsing ? 'pointer-events-none' : ''}`}>
               {parsing ? (
                 <div className="space-y-2">
-                  <Loader2 className="h-8 w-8 mx-auto text-primary animate-spin" />
-                  <p className="text-sm text-primary font-medium">
+                  <Loader2 className="h-8 w-8 mx-auto text-amber-500 animate-spin" />
+                  <p className="text-sm text-amber-600 font-medium">
                     Scanning receipt with AI...
                   </p>
                   <p className="text-xs text-muted-foreground">

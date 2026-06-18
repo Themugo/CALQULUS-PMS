@@ -56,6 +56,7 @@ const LandlordBankDetails: React.FC = () => {
 
   useEffect(() => {
     if (details) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         mpesa_number:        details.mpesa_number ?? '',
         mpesa_name:          details.mpesa_name ?? '',
@@ -136,12 +137,12 @@ const LandlordBankDetails: React.FC = () => {
                 onClick={() => setForm(p => ({ ...p, preferred_method: m.value }))}
                 className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
                   form.preferred_method === m.value
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                    : 'border-border hover:border-primary/40'
+                    ? 'border-amber-400/50 bg-amber-400/8 ring-1 ring-amber-400'
+                    : 'border-border hover:border-amber-400/40'
                 }`}
               >
-                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-primary' : 'text-muted-foreground'}`}>{m.label}</span>
+                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`}>{m.label}</span>
               </button>
             ))}
           </div>

@@ -15,7 +15,7 @@ export const PaymentSettings = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-primary/15 bg-muted/30">
+      <Card className="border-amber-400/60/15 bg-muted/30">
         <CardContent className="pt-6">
           <PropertyPaymentScopeSelector
             value={propertyScope}

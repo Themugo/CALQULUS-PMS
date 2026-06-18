@@ -117,6 +117,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
 
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
       fetchSettings();
     }
@@ -269,7 +270,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
               href="https://developer.safaricom.co.ke" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-primary underline"
+              className="text-amber-600 underline"
             >
               Safaricom Daraja Portal
             </a>

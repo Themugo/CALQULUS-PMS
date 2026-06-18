@@ -219,7 +219,7 @@ const SOC2ComplianceDashboard = () => {
       case 'availability':
         return 'text-green-400';
       case 'processing_integrity':
-        return 'text-purple-400';
+        return 'text-amber-500';
       case 'confidentiality':
         return 'text-orange-400';
       case 'privacy':
@@ -247,20 +247,20 @@ const SOC2ComplianceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">SOC2 Type II Compliance</h2>
-          <p className="text-purple-300 text-sm mt-1">Manage SOC2 compliance controls and evidence</p>
+          <p className="text-amber-400/70 text-sm mt-1">Manage SOC2 compliance controls and evidence</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Evidence
@@ -269,10 +269,10 @@ const SOC2ComplianceDashboard = () => {
       </div>
 
       {/* Overall Score Card */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-purple-400" />
+            <ShieldCheck className="h-5 w-5 text-amber-500" />
             SOC2 Compliance Score
           </CardTitle>
         </CardHeader>
@@ -289,7 +289,7 @@ const SOC2ComplianceDashboard = () => {
                 </div>
               </div>
               <Progress value={overallScore} className="h-3" />
-              <p className="text-purple-300 text-sm mt-2">
+              <p className="text-amber-400/70 text-sm mt-2">
                 {controls.filter(c => c.status === 'implemented').length} of {controls.length} controls implemented
               </p>
             </div>
@@ -309,19 +309,19 @@ const SOC2ComplianceDashboard = () => {
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="evidence" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="evidence" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Evidence
           </TabsTrigger>
-          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Incidents
           </TabsTrigger>
@@ -329,17 +329,17 @@ const SOC2ComplianceDashboard = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-purple-400" />
+                  <Activity className="h-5 w-5 text-amber-500" />
                   Control Status Summary
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-purple-300">Implemented</span>
+                    <span className="text-amber-400/70">Implemented</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-slate-700 rounded-full h-2">
                         <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'implemented').length / controls.length) * 100}%` }} />
@@ -348,7 +348,7 @@ const SOC2ComplianceDashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-purple-300">Partial</span>
+                    <span className="text-amber-400/70">Partial</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-slate-700 rounded-full h-2">
                         <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
@@ -357,7 +357,7 @@ const SOC2ComplianceDashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-purple-300">Not Implemented</span>
+                    <span className="text-amber-400/70">Not Implemented</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-slate-700 rounded-full h-2">
                         <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'not-implemented').length / controls.length) * 100}%` }} />
@@ -369,23 +369,24 @@ const SOC2ComplianceDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-800/30">
+            <Card className="bg-card border-amber-400/15">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-purple-400" />
+                  <TrendingUp className="h-5 w-5 text-amber-500" />
                   Upcoming Assessments
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {controls
+                    // eslint-disable-next-line react-hooks/purity
                     .filter(c => c.nextAssessed <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
                     .slice(0, 3)
                     .map(control => (
-                      <div key={control.id} className="flex items-center justify-between p-2 bg-slate-900/50 rounded">
+                      <div key={control.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
                         <div>
                           <span className="text-white text-sm">{control.name}</span>
-                          <div className="text-purple-300 text-xs">{control.nextAssessed.toLocaleDateString()}</div>
+                          <div className="text-amber-400/70 text-xs">{control.nextAssessed.toLocaleDateString()}</div>
                         </div>
                         {getStatusBadge(control.status)}
                       </div>
@@ -397,10 +398,10 @@ const SOC2ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="controls">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">SOC2 Controls</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage and monitor SOC2 compliance controls
               </CardDescription>
             </CardHeader>
@@ -408,18 +409,18 @@ const SOC2ComplianceDashboard = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search controls..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="security">Security</option>
@@ -433,20 +434,20 @@ const SOC2ComplianceDashboard = () => {
               {/* Controls List */}
               <div className="space-y-4">
                 {filteredControls.map((control) => (
-                  <div key={control.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={control.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{control.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{control.id}</span>
-                          <Badge variant="outline" className={`ml-2 border-purple-700 ${getCategoryColor(control.category)}`}>
+                          <span className="text-amber-400/70 text-sm ml-2">{control.id}</span>
+                          <Badge variant="outline" className={`ml-2 border-amber-400/30 ${getCategoryColor(control.category)}`}>
                             {control.category.replace('_', ' ')}
                           </Badge>
                         </div>
                         {getStatusBadge(control.status)}
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{control.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{control.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {control.responsible}
@@ -461,7 +462,7 @@ const SOC2ComplianceDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>
@@ -472,30 +473,30 @@ const SOC2ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="evidence">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Evidence Repository</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage evidence for SOC2 compliance controls
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {evidence.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={item.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{item.description}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700">
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {item.controlId}
                           </Badge>
                         </div>
-                        <Badge variant="outline" className="text-purple-300 border-purple-700">
+                        <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                           {item.type}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {item.uploadedBy}
@@ -506,7 +507,7 @@ const SOC2ComplianceDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
@@ -518,30 +519,30 @@ const SOC2ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="incidents">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Security Incidents</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track and manage security incidents affecting SOC2 compliance
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {incidents.map((incident) => (
-                  <div key={incident.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={incident.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{incident.type}</span>
-                          <span className="text-purple-300 text-sm ml-2">{incident.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{incident.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(incident.severity)}
                           {getStatusBadge(incident.status)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{incident.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <p className="text-amber-400/70 text-sm mb-2">{incident.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {incident.reportedBy}
@@ -558,7 +559,7 @@ const SOC2ComplianceDashboard = () => {
                         )}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                       View Details
                     </Button>
                   </div>

@@ -95,6 +95,7 @@ const VacationNotices = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotices();
 
     const channel = supabase

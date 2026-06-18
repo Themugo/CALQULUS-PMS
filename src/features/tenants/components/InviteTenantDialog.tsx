@@ -170,7 +170,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
       }
       
       const message = encodeURIComponent(
-        `Hi ${tenantName}! 👋\n\nYou've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith CALQULUS RMS, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
+        `Hi ${tenantName}! 👋\n\nYou've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS PMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}\n\nWith CALQULUS PMS, you can:\n✅ View your lease details\n✅ Pay rent online via M-Pesa\n✅ Submit maintenance requests\n✅ Download statements and receipts`
       );
       
       // Remove the + for WhatsApp URL format
@@ -185,7 +185,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
     setIsSendingSms(true);
     
     try {
-      const smsMessage = `Hi ${tenantName}! You've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS. Create your account here: ${invitationUrl}`;
+      const smsMessage = `Hi ${tenantName}! You've been invited to join ${selectedProperty?.name || "your property"}${unit ? ` (Unit ${unit})` : ""} on CALQULUS PMS. Create your account here: ${invitationUrl}`;
       
       const { data, error } = await supabase.functions.invoke("send-sms-notification", {
         body: {
@@ -254,8 +254,8 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
 
         {invitationUrl ? (
           <div className="space-y-4 py-4">
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-              <div className="flex items-center gap-2 text-primary mb-2">
+            <div className="rounded-lg border border-amber-400/20 bg-amber-400/6 p-4">
+              <div className="flex items-center gap-2 text-amber-500 mb-2">
                 <Check className="h-5 w-5" />
                 <span className="font-medium">Invitation Created!</span>
               </div>

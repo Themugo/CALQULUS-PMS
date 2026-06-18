@@ -121,7 +121,7 @@ export const PaymentSetupStatus = () => {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="text-base flex items-center gap-2">
-            <Plug className="h-4 w-4 text-primary" />
+            <Plug className="h-4 w-4 text-amber-500" />
             Payment setup by property
           </CardTitle>
           <Badge variant={allReady ? 'default' : 'secondary'} className={allReady ? 'bg-green-600' : ''}>

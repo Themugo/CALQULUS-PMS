@@ -56,6 +56,7 @@ export function PropertiesOverview() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProperties();
 
     const channel = supabase
@@ -103,13 +104,13 @@ export function PropertiesOverview() {
     <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-white via-white to-slate-50/50 p-4 sm:p-6 shadow-sm animate-fade-in backdrop-blur-sm">
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground flex items-center gap-2">
-          <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 p-2">
-            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <div className="rounded-lg bg-gradient-to-br from-amber-400/18 to-amber-400/8 p-2">
+            <Building2 className="h- w-4 sm:h-5 sm:w-5 text-amber-500" />
           </div>
           Properties
         </h3>
         <Link to="/properties">
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 hover:bg-primary/5 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
+          <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-500 hover:bg-amber-400/8 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
             View All
             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
           </Button>
@@ -119,11 +120,11 @@ export function PropertiesOverview() {
       {properties.length === 0 ? (
         <div className="text-center py-8 sm:py-10">
           <div className="rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 p-4 sm:p-6 inline-block mb-3 sm:mb-4">
-            <Building2 className="h-12 w-12 sm:h-14 sm:w-14 text-muted-foreground/50" />
+            <Building2 className="h-2 w-12 sm:h-14 sm:w-14 text-muted-foreground/50" />
           </div>
           <p className="text-muted-foreground text-sm sm:text-base font-medium mb-3 sm:mb-4">No properties yet</p>
           <Link to="/properties">
-            <Button variant="outline" size="sm" className="h-9 sm:h-10 text-xs sm:text-sm rounded-xl border-2 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200">
+            <Button variant="outline" size="sm" className="h-9 sm:h-10 text-xs sm:text-sm rounded-xl border-2 hover:bg-amber-400 hover:text-slate-900 hover:border-amber-400 transition-all duration-200">
               Add Property
             </Button>
           </Link>
@@ -142,7 +143,7 @@ export function PropertiesOverview() {
                 className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/20 hover:from-muted/50 hover:to-muted/40 border border-border/30 hover:border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 animate-slide-in touch-manipulation"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden border border-primary/10 group-hover:shadow-md transition-all duration-300">
+                <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-amber-400/18 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-400/15 group-hover:shadow-md transition-all duration-300">
                   {property.image_url ? (
                     <img 
                       src={property.image_url} 
@@ -150,7 +151,7 @@ export function PropertiesOverview() {
                       className="h-full w-full rounded-xl object-cover"
                     />
                   ) : (
-                    <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                    <Building2 className="h- w-6 sm:h-7 sm:w-7 text-amber-500" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">

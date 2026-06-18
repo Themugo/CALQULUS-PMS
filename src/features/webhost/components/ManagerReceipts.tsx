@@ -105,7 +105,7 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
       );
     }
     return (
-      <Badge className="bg-purple-600/20 text-purple-400 border-purple-600/30">
+      <Badge className="bg-amber-400/12 text-amber-600 border-amber-400/20">
         <Percent className="h-3 w-3 mr-1" />
         Subscription
       </Badge>
@@ -137,56 +137,56 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                 <CheckCircle className="h-6 w-6 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Total Collected</p>
+                <p className="text-sm text-amber-400/70">Total Collected</p>
                 <p className="text-2xl font-bold text-white">KES {stats.totalCollected.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
                 <Users className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Registration Fees</p>
+                <p className="text-sm text-amber-400/70">Registration Fees</p>
                 <p className="text-2xl font-bold text-white">KES {stats.registrationTotal.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <Percent className="h-6 w-6 text-purple-400" />
+                <Percent className="h-6 w-6 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Subscriptions</p>
+                <p className="text-sm text-amber-400/70">Subscriptions</p>
                 <p className="text-2xl font-bold text-white">KES {stats.subscriptionTotal.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
                 <Receipt className="h-6 w-6 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-purple-300">Total Receipts</p>
+                <p className="text-sm text-amber-400/70">Total Receipts</p>
                 <p className="text-2xl font-bold text-white">{stats.count}</p>
               </div>
             </div>
@@ -195,45 +195,45 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
       </div>
 
       {/* Receipts Table */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <CardTitle className="text-white flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-purple-400" />
+                <Receipt className="h-5 w-5 text-amber-500" />
                 Payment Receipts
               </CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Completed payments and downloadable receipts
               </CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500" />
                 <Input
                   placeholder="Search receipts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-slate-700 border-purple-700/50 text-white w-48"
+                  className="pl-9 bg-slate-700 border-amber-400/20 text-white w-48"
                 />
               </div>
               <Select value={filterType} onValueChange={(v) => setFilterType(v as any)}>
-                <SelectTrigger className="bg-slate-700 border-purple-700/50 text-white w-40">
-                  <Filter className="h-4 w-4 mr-2 text-purple-400" />
+                <SelectTrigger className="bg-slate-700 border-amber-400/20 text-white w-40">
+                  <Filter className="h-4 w-4 mr-2 text-amber-500" />
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-purple-700/50">
+                <SelectContent className="bg-slate-700 border-amber-400/20">
                   <SelectItem value="all" className="text-white">All Types</SelectItem>
                   <SelectItem value="registration" className="text-white">Registration</SelectItem>
                   <SelectItem value="subscription" className="text-white">Subscription</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterMonth} onValueChange={setFilterMonth}>
-                <SelectTrigger className="bg-slate-700 border-purple-700/50 text-white w-44">
-                  <Calendar className="h-4 w-4 mr-2 text-purple-400" />
+                <SelectTrigger className="bg-slate-700 border-amber-400/20 text-white w-44">
+                  <Calendar className="h-4 w-4 mr-2 text-amber-500" />
                   <SelectValue placeholder="Month" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-purple-700/50">
+                <SelectContent className="bg-slate-700 border-amber-400/20">
                   <SelectItem value="all" className="text-white">All Time</SelectItem>
                   {monthOptions.map(option => (
                     <SelectItem key={option.value} value={option.value} className="text-white">
@@ -255,32 +255,32 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
           ) : filteredReceipts.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow className="border-purple-800/30 hover:bg-transparent">
-                  <TableHead className="text-purple-300">Receipt #</TableHead>
-                  <TableHead className="text-purple-300">Type</TableHead>
-                  <TableHead className="text-purple-300">Manager</TableHead>
-                  <TableHead className="text-purple-300">Amount</TableHead>
-                  <TableHead className="text-purple-300">Paid Date</TableHead>
-                  <TableHead className="text-purple-300">Net Collection</TableHead>
-                  <TableHead className="text-purple-300 text-right">Actions</TableHead>
+                <TableRow className="border-amber-400/12 hover:bg-transparent">
+                  <TableHead className="text-amber-400/70">Receipt #</TableHead>
+                  <TableHead className="text-amber-400/70">Type</TableHead>
+                  <TableHead className="text-amber-400/70">Manager</TableHead>
+                  <TableHead className="text-amber-400/70">Amount</TableHead>
+                  <TableHead className="text-amber-400/70">Paid Date</TableHead>
+                  <TableHead className="text-amber-400/70">Net Collection</TableHead>
+                  <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredReceipts.map((invoice) => (
-                  <TableRow key={invoice.id} className="border-purple-800/30 hover:bg-purple-900/20">
+                  <TableRow key={invoice.id} className="border-amber-400/12 hover:bg-purple-900/20">
                     <TableCell className="text-white font-mono">{invoice.invoice_number}</TableCell>
                     <TableCell>{getInvoiceTypeBadge(invoice.invoice_type || 'subscription')}</TableCell>
                     <TableCell>
                       <div>
-                        <p className="text-purple-200">{getManagerName(invoice.manager_user_id)}</p>
-                        <p className="text-xs text-purple-400">{getManagerEmail(invoice.manager_user_id)}</p>
+                        <p className="text-amber-100/80">{getManagerName(invoice.manager_user_id)}</p>
+                        <p className="text-xs text-amber-500">{getManagerEmail(invoice.manager_user_id)}</p>
                       </div>
                     </TableCell>
                     <TableCell className="text-white font-semibold">KES {Number(invoice.amount).toLocaleString()}</TableCell>
-                    <TableCell className="text-purple-300">
+                    <TableCell className="text-amber-400/70">
                       {invoice.paid_date ? format(new Date(invoice.paid_date), 'dd/MM/yy') : '-'}
                     </TableCell>
-                    <TableCell className="text-purple-300">
+                    <TableCell className="text-amber-400/70">
                       {invoice.invoice_type === 'subscription' && invoice.net_collection > 0
                         ? `KES ${Number(invoice.net_collection).toLocaleString()}`
                         : '-'}
@@ -302,7 +302,7 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-purple-400">
+            <div className="text-center py-8 text-amber-500">
               <Receipt className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>No receipts found</p>
               {(searchTerm || filterType !== 'all' || filterMonth !== 'all') && (

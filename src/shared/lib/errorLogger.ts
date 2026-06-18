@@ -1,5 +1,5 @@
 /**
- * CALQULUS RMS Error Logger — Production Observability
+ * CALQULUS PMS Error Logger — Production Observability
  *
  * Two sinks:
  *   1. Supabase `activity_logs` table (always on) — auditable, queryable,

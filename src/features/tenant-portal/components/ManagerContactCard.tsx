@@ -104,6 +104,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
 
   useEffect(() => {
     if (managerId || propertyId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchManagerInfo();
     } else {
       setLoading(false);
@@ -206,7 +207,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <User className="h-5 w-5 text-primary" />
+          <User className="h-5 w-5 text-amber-500" />
           {company ? 'Your Property Manager' : 'Property Manager'}
         </CardTitle>
         <CardDescription>
@@ -216,7 +217,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
       <CardContent className="space-y-4">
         {/* Company Branding */}
         {company && (
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10">
+          <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-amber-400/5 to-accent/5 border border-amber-400/60/10">
             {company.logo_url ? (
               <img 
                 src={company.logo_url} 
@@ -224,8 +225,8 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 className="h-14 w-14 rounded-lg object-contain bg-white p-1 border"
               />
             ) : (
-              <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Building2 className="h-7 w-7 text-primary" />
+              <div className="h-14 w-14 rounded-lg bg-amber-400/10 flex items-center justify-center">
+                <Building2 className="h-7 w-7 text-amber-500" />
               </div>
             )}
             <div>
@@ -240,7 +241,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                   variant="link"
                   size="sm"
                   onClick={handleWebsiteClick}
-                  className="h-auto p-0 text-primary text-xs"
+                  className="h-auto p-0 text-amber-600 text-xs"
                 >
                   <Globe className="h-3 w-3 mr-1" />
                   {company.website}
@@ -252,9 +253,9 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
 
         {/* Manager Profile */}
         <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 border-2 border-primary/20">
+          <Avatar className="h-14 w-14 border-2 border-amber-400/20">
             <AvatarImage src={manager.photo_url || undefined} alt={manager.full_name || 'Manager'} />
-            <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+            <AvatarFallback className="bg-amber-400/10 text-amber-600 text-lg font-semibold">
               {getInitials(manager.full_name)}
             </AvatarFallback>
           </Avatar>
@@ -274,8 +275,8 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
           {/* Email */}
           <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Mail className="h-4 w-4 text-primary" />
+              <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center shrink-0">
+                <Mail className="h-4 w-4 text-amber-500" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Email</p>
@@ -310,8 +311,8 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
           {manager.phone && (
             <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-primary" />
+                <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center shrink-0">
+                  <Phone className="h-4 w-4 text-amber-500" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Phone</p>

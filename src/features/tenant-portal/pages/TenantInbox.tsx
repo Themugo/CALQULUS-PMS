@@ -169,7 +169,7 @@ const TenantInbox: React.FC = () => {
 
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!notice.tenant_acknowledged ? 'border-primary/40 bg-primary/5' : ''}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow ${!notice.tenant_acknowledged ? 'border-amber-400/60/40 bg-amber-400/6' : ''}`}
         onClick={() => setSelectedNotice(notice)}
       >
         <CardContent className="p-4">
@@ -210,7 +210,7 @@ const TenantInbox: React.FC = () => {
     const Icon = config.icon;
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!msg.is_read ? 'border-primary/40 bg-primary/5' : ''}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow ${!msg.is_read ? 'border-amber-400/60/40 bg-amber-400/6' : ''}`}
         onClick={() => markRead.mutate(msg.id)}
       >
         <CardContent className="p-4">

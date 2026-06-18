@@ -196,8 +196,6 @@ export const generatePropertyStatementPDF = async (
   const { data: cs } = await supabase.from("company_settings").select("*").maybeSingle();
   const company = cs as CompanySettings | null;
 
-  let yPos = 10;
-
   // ── Header ─────────────────────────────────────────────────────────────────
   doc.setFillColor(26, 86, 219);
   doc.rect(0, 0, pageWidth, 18, "F");
@@ -222,7 +220,7 @@ export const generatePropertyStatementPDF = async (
   }
 
   doc.setTextColor(0, 0, 0);
-  yPos = 22;
+  const yPos = 22;
 
   // ── Per-unit table ──────────────────────────────────────────────────────────
   // Columns match the uploaded sheet exactly:

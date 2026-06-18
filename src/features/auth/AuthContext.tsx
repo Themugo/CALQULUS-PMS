@@ -278,6 +278,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (retryCount < 3) {
         const delay = 400 * Math.pow(2, retryCount); // 400ms, 800ms, 1600ms
         await new Promise(r => setTimeout(r, delay));
+        // eslint-disable-next-line react-hooks/immutability
         return fetchUserRole(userId, retryCount + 1, pathnameOverride);
       }
       return null;

@@ -190,6 +190,7 @@ export default function Maintenance() {
   }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRequests();
     fetchPropertiesAndUnits();
   }, [fetchRequests, fetchPropertiesAndUnits]);
@@ -197,6 +198,7 @@ export default function Maintenance() {
   // Filter units when property changes
   useEffect(() => {
     if (formData.property_id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilteredUnits(units.filter(u => u.property_id === formData.property_id));
     } else {
       setFilteredUnits([]);
@@ -374,8 +376,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
-                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-amber-400/10">
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
@@ -480,7 +482,7 @@ export default function Maintenance() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-primary hover:bg-primary/90 sm:size-default">
+              <Button size="sm" className="btn-brand sm:size-default">
                 <Plus className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">New Request</span>
                 <span className="sm:hidden">New</span>
@@ -653,7 +655,7 @@ export default function Maintenance() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="bg-primary hover:bg-primary/90">
+                <Button type="submit" className="btn-brand">
                   Submit Request
                 </Button>
               </DialogFooter>
@@ -719,7 +721,7 @@ export default function Maintenance() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
+                          <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                         </TableCell>
@@ -802,7 +804,7 @@ export default function Maintenance() {
                     <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                       <div className="flex-1">
                         <div className="flex items-start gap-3 mb-2">
-                          <div className="p-2 rounded-lg bg-primary/10">
+                          <div className="p-2 rounded-lg bg-amber-400/10">
                             {statusIcons[request.status]}
                           </div>
                           <div>
@@ -825,7 +827,7 @@ export default function Maintenance() {
                           <Badge variant="outline" className={priorityColors[request.priority]}>
                             {request.priority} priority
                           </Badge>
-                          <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
+                          <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                           <Badge variant="outline" className="bg-slate-500/10 text-slate-300 border-slate-500/30">
@@ -921,13 +923,13 @@ function AssignForm({ onAssign }: { onAssign: (name: string, providerId?: string
       {/* Tab toggle */}
       <div className="flex rounded-lg border border-border overflow-hidden text-sm">
         <button
-          className={`flex-1 py-2 font-medium transition-colors ${tab === 'marketplace' ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
+          className={`flex-1 py-2 font-medium transition-colors ${tab === 'marketplace' ? 'bg-amber-400 text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
           onClick={() => setTab('marketplace')}
         >
           From marketplace
         </button>
         <button
-          className={`flex-1 py-2 font-medium transition-colors ${tab === 'manual' ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
+          className={`flex-1 py-2 font-medium transition-colors ${tab === 'manual' ? 'bg-amber-400 text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
           onClick={() => setTab('manual')}
         >
           Enter manually

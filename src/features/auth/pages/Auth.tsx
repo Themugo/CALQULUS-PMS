@@ -14,7 +14,7 @@ import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialo
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 const Auth = () => {
@@ -171,28 +171,19 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center auth-gradient relative overflow-hidden px-4">
-      {/* Banner background */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/calqulus-banner.jpg" 
-          alt="CALQULUS RMS Banner" 
-          className="w-full h-full object-cover opacity-15"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-accent/85" />
-      </div>
       {/* Decorative elements */}
-      <div className="absolute inset-0 noise-overlay z-0" />
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl z-0" />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl z-0" />
+      <div className="absolute inset-0 noise-overlay" />
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
 
-      <Card className="w-full max-w-md card-shadow border-white/10 relative animate-scale-in bg-white/95 backdrop-blur-xl z-10">
+      <Card className="w-full max-w-md card-shadow border-white/10 relative animate-scale-in bg-white/95 backdrop-blur-xl">
         <CardHeader className="text-center pb-4">
           <div className="flex justify-center mb-4">
             <div className="relative">
-              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-14 w-auto" />
+              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-heading">Welcome to CALQULUS RMS</CardTitle>
+          <CardTitle className="text-2xl font-heading">Welcome to CALQULUS PMS</CardTitle>
           <CardDescription className="text-muted-foreground">
             Smart rental management made simple
           </CardDescription>
@@ -298,15 +289,15 @@ const Auth = () => {
           <div className="mt-6 space-y-2 text-center">
             <p className="text-sm text-muted-foreground">
               Are you a tenant?{' '}
-              <Link to="/tenant/signup" className="text-accent hover:underline font-medium">Register here</Link>
+              <Link to="/tenant/signup" className="text-amber-600 hover:underline font-medium">Register here</Link>
             </p>
             <p className="text-sm text-muted-foreground">
               Are you a landlord?{' '}
-              <Link to="/landlord" className="text-accent hover:underline font-medium">Sign in here</Link>
+              <Link to="/landlord" className="text-amber-600 hover:underline font-medium">Sign in here</Link>
             </p>
             <p className="text-sm text-muted-foreground">
               Platform admin?{' '}
-              <Link to="/webhost/login" className="text-accent hover:underline font-medium">Webhost login</Link>
+              <Link to="/webhost/login" className="text-amber-600 hover:underline font-medium">Webhost login</Link>
             </p>
           </div>
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t">
@@ -314,7 +305,7 @@ const Auth = () => {
             <span className="text-muted-foreground/30">·</span>
             <Link to="/legal?tab=terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
             <span className="text-muted-foreground/30">·</span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="h-3 w-3" /> CALQULUS RMS</span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="h-3 w-3" /> CALQULUS PMS</span>
           </div>
         </CardContent>
       </Card>

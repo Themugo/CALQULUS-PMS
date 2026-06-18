@@ -1,23 +1,123 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
-  Users, Building, Receipt, TrendingUp,
-  Shield, CheckCircle, Clock,
-  DollarSign, Home
+  Users, Building, Receipt, TrendingUp, Shield,
+  CheckCircle, Clock, DollarSign, Home,
+  AlertCircle, BarChart3, Crown,
 } from 'lucide-react';
 
 type ManagerInvoiceRow = { amount: number | null };
 type PropertyRow = { id: string; name: string; address: string | null; manager_id: string | null; created_at: string };
 type ProfileRow = { id: string; email: string | null; full_name: string | null };
 
-// Formats KES amounts
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
+// ── Module-level StatCard (fixes react-hooks/static-components) ──────────────
+interface WebhostStatCardProps {
+  label: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  sub?: string;
+  color?: string;
+  loading?: boolean;
+  badge?: { label: string; variant: 'default' | 'destructive' | 'secondary' | 'outline' | 'gold' };
+  accent?: string;
+}
+
+function WebhostStatCard({ label, value, icon: Icon, sub, color = 'text-foreground', loading, badge, accent }: WebhostStatCardProps) {
+  return (
+    <Card className={`border-border/60 hover:border-amber-400/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md${accent ? ` ${accent}` : ''}`}>
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider leading-tight">{label}</p>
+          <div className="h-7 w-7 rounded-lg bg-amber-400/10 border border-amber-400/15 flex items-center justify-center flex-shrink-0">
+            <Icon className="h-3.5 w-3.5 text-amber-500/80" />
+          </div>
+        </div>
+        {loading ? (
+          <Skeleton className="h-7 w-20" />
+        ) : (
+          <div className="flex items-end gap-2">
+            <p className={`font-heading text-2xl font-bold leading-none ${color}`}>{value}</p>
+            {badge && (
+              <Badge variant={badge.variant} className="text-[10px] h-4 px-1.5 mb-0.5 shrink-0">{badge.label}</Badge>
+            )}
+          </div>
+        )}
+        {sub && !loading && <p className="text-xs text-muted-foreground mt-1.5 leading-tight">{sub}</p>}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Platform Revenue Trend ───────────────────────────────────────────────────
+const PlatformRevenueTrend: React.FC = () => {
+  const { data: trend = [], isLoading } = useQuery({
+    queryKey: ['platform-revenue-6mo'],
+    queryFn: async () => {
+      const months = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(); d.setMonth(d.getMonth() - (5 - i));
+        return d.toISOString().slice(0, 7);
+      });
+      return Promise.all(months.map(async (m) => {
+        const start = `${m}-01`;
+        const end = new Date(start); end.setMonth(end.getMonth() + 1);
+        const { data } = await supabase.from('manager_invoices').select('amount')
+          .eq('status', 'paid').gte('paid_date', start).lt('paid_date', end.toISOString().slice(0, 10));
+        const rows = (data as ManagerInvoiceRow[] | null) || [];
+        const revenue = rows.reduce((s, i) => s + Number(i.amount), 0);
+        return { month: m.slice(5), revenue };
+      }));
+    },
+  });
+
+  const max = Math.max(...trend.map(t => t.revenue), 1);
+
+  return (
+    <Card>
+      <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
+        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+          <BarChart3 className="h-4 w-4 text-amber-500" />
+          Platform revenue — last 6 months
+        </CardTitle>
+        <CardDescription>Subscription billing collected from managers</CardDescription>
+      </CardHeader>
+      <CardContent className="px-4 sm:px-5 pb-4">
+        {isLoading ? (
+          <Skeleton className="h-32 w-full" />
+        ) : (
+          <div className="flex items-end gap-1.5 h-32">
+            {trend.map((t, i) => {
+              const pct = (t.revenue / max) * 100;
+              const isLatest = i === trend.length - 1;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                  <span className="text-[10px] text-muted-foreground font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    {t.revenue > 0 ? fmt(t.revenue) : '—'}
+                  </span>
+                  <div className="w-full rounded-t-md bg-muted/60 relative overflow-hidden" style={{ height: '88px' }}>
+                    <div
+                      className={`absolute bottom-0 w-full rounded-t-md transition-all duration-500 ${isLatest ? 'bg-amber-400' : 'bg-amber-400/40'}`}
+                      style={{ height: `${Math.max(3, pct)}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">{t.month}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ── Main Component ───────────────────────────────────────────────────────────
 const WebhostOverview = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['webhost-overview-stats-v2'],
@@ -26,48 +126,30 @@ const WebhostOverview = () => {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
       const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
-
-      // All queries are about managers, properties, platform billing — NEVER tenant personal data
       const [
-        totalManagers,
-        pendingManagers,
-        approvedManagers,
-        rejectedManagers,
-        totalProperties,
-        totalWebhosts,
-        platformRevenueMTD,
-        platformRevenueLM,
-        pendingManagerInvoices,
-        overdueManagerInvoices,
-        systemLandlords,
-        pendingPayouts,
+        totalManagers, pendingManagers, approvedManagers, rejectedManagers,
+        totalProperties, totalWebhosts,
+        platformRevenueMTD, platformRevenueLM,
+        pendingManagerInvoices, overdueManagerInvoices,
+        systemLandlords, pendingPayouts,
       ] = await Promise.all([
-        // Manager counts
-        supabase.from('user_roles').select('id', { count: 'exact', head: true }).eq('role', 'manager'),
-        supabase.from('user_roles').select('id', { count: 'exact', head: true }).eq('role', 'manager').eq('approval_status', 'pending'),
-        supabase.from('user_roles').select('id', { count: 'exact', head: true }).eq('role', 'manager').eq('approval_status', 'approved'),
-        supabase.from('user_roles').select('id', { count: 'exact', head: true }).eq('role', 'manager').eq('approval_status', 'rejected'),
-        // Property count
+        supabase.from('manager_profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('manager_profiles').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('manager_profiles').select('id', { count: 'exact', head: true }).eq('status', 'approved'),
+        supabase.from('manager_profiles').select('id', { count: 'exact', head: true }).eq('status', 'rejected'),
         supabase.from('properties').select('id', { count: 'exact', head: true }),
-        // Webhost admin count
         supabase.from('user_roles').select('id', { count: 'exact', head: true }).eq('role', 'webhost'),
-        // Platform billing — manager subscription invoices only (NOT tenant rent)
         supabase.from('manager_invoices').select('amount').eq('status', 'paid').gte('paid_date', startOfMonth),
-        supabase.from('manager_invoices').select('amount').eq('status', 'paid').gte('paid_date', startOfLastMonth).lte('paid_date', endOfLastMonth),
+        supabase.from('manager_invoices').select('amount').eq('status', 'paid')
+          .gte('paid_date', startOfLastMonth).lte('paid_date', endOfLastMonth),
         supabase.from('manager_invoices').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('manager_invoices').select('id', { count: 'exact', head: true }).eq('status', 'overdue'),
-        // System landlords only: manager_id IS NULL. Managed landlords are invisible to webhost.
         supabase.from('property_landlords').select('id', { count: 'exact', head: true }).is('manager_id', null),
-        // Pending payout requests routed to webhost
         supabase.from('payout_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('recipient_type', 'webhost'),
       ]);
-
-      const revenueRowsMTD = platformRevenueMTD.data as ManagerInvoiceRow[] | null;
-      const revenueMTD = revenueRowsMTD?.reduce((s: number, i: ManagerInvoiceRow) => s + Number(i.amount), 0) ?? 0;
-      const revenueRowsLM = platformRevenueLM.data as ManagerInvoiceRow[] | null;
-      const revenueLM = revenueRowsLM?.reduce((s: number, i: ManagerInvoiceRow) => s + Number(i.amount), 0) ?? 0;
+      const revenueMTD = ((platformRevenueMTD.data as ManagerInvoiceRow[] | null) ?? []).reduce((s,i) => s + Number(i.amount), 0);
+      const revenueLM = ((platformRevenueLM.data as ManagerInvoiceRow[] | null) ?? []).reduce((s,i) => s + Number(i.amount), 0);
       const revenueChange = revenueLM > 0 ? Math.round(((revenueMTD - revenueLM) / revenueLM) * 100) : 0;
-
       return {
         totalManagers: totalManagers.count ?? 0,
         pendingManagers: pendingManagers.count ?? 0,
@@ -75,9 +157,7 @@ const WebhostOverview = () => {
         rejectedManagers: rejectedManagers.count ?? 0,
         totalProperties: totalProperties.count ?? 0,
         totalWebhosts: totalWebhosts.count ?? 0,
-        revenueMTD,
-        revenueLM,
-        revenueChange,
+        revenueMTD, revenueLM, revenueChange,
         pendingManagerInvoices: pendingManagerInvoices.count ?? 0,
         overdueManagerInvoices: overdueManagerInvoices.count ?? 0,
         systemLandlords: systemLandlords.count ?? 0,
@@ -89,236 +169,163 @@ const WebhostOverview = () => {
   const { data: latestProperties = [], isLoading: isLoadingProperties } = useQuery({
     queryKey: ['webhost-latest-properties-audit'],
     queryFn: async () => {
-      const { data: props, error } = await supabase
-        .from('properties')
-        .select('id, name, address, manager_id, created_at')
-        .order('created_at', { ascending: false })
-        .limit(8);
+      const { data: props, error } = await supabase.from('properties')
+        .select('id, name, address, manager_id, created_at').order('created_at', { ascending: false }).limit(8);
       if (error) throw error;
       const typedProps = (props || []) as PropertyRow[];
-      const managerIds = [...new Set(typedProps.map((p: PropertyRow) => p.manager_id).filter(Boolean))];
+      const managerIds = [...new Set(typedProps.map(p => p.manager_id).filter(Boolean))];
       const { data: profiles } = managerIds.length > 0
         ? await supabase.from('profiles').select('id, email, full_name').in('id', managerIds)
         : { data: [] as ProfileRow[] };
-      const typedProfiles = (profiles || []) as ProfileRow[];
-      const profileById = new Map(typedProfiles.map((p: ProfileRow) => [p.id, p]));
-      return typedProps.map((p: PropertyRow) => ({
-        ...p,
-        manager_profile: p.manager_id ? profileById.get(p.manager_id) ?? null : null,
-      }));
+      const profileById = new Map((profiles as ProfileRow[] || []).map(p => [p.id, p]));
+      return typedProps.map(p => ({ ...p, manager_profile: p.manager_id ? profileById.get(p.manager_id) ?? null : null }));
     },
   });
 
-  const StatCard = ({
-    label, value, icon: Icon, sub, color = 'text-foreground', badge
-  }: {
-    label: string; value: string | number; icon: React.ComponentType<{ className?: string }>; sub?: string;
-    color?: string; badge?: { label: string; variant: 'default' | 'destructive' | 'secondary' | 'outline' };
-  }) => (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs text-muted-foreground font-medium">{label}</p>
-          <Icon className="h-4 w-4 text-muted-foreground/60" />
-        </div>
-        {isLoading ? (
-          <Skeleton className="h-7 w-20 mt-1" />
-        ) : (
-          <div className="flex items-end gap-2 mt-1">
-            <p className={`text-xl font-semibold ${color}`}>{value}</p>
-            {badge && <Badge variant={badge.variant} className="text-xs h-5">{badge.label}</Badge>}
-          </div>
-        )}
-        {sub && !isLoading && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
-      </CardContent>
-    </Card>
-  );
+  const hasUrgent = (stats?.pendingManagers ?? 0) > 0 || (stats?.overdueManagerInvoices ?? 0) > 0 || (stats?.pendingPayouts ?? 0) > 0;
 
   return (
     <div className="space-y-6">
-      {/* Platform revenue */}
+      {/* Urgent actions banner */}
+      {!isLoading && hasUrgent && (
+        <div className="flex flex-wrap gap-2">
+          {(stats?.pendingManagers ?? 0) > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-amber-400/30 bg-amber-400/8 text-amber-700 dark:text-amber-300 text-xs font-medium">
+              <Clock className="h-3.5 w-3.5" />
+              {stats!.pendingManagers} manager{stats!.pendingManagers !== 1 ? 's' : ''} awaiting approval
+            </div>
+          )}
+          {(stats?.overdueManagerInvoices ?? 0) > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/20 text-red-700 dark:text-red-400 text-xs font-medium">
+              <AlertCircle className="h-3.5 w-3.5" />
+              {stats!.overdueManagerInvoices} overdue subscription invoice{stats!.overdueManagerInvoices !== 1 ? 's' : ''}
+            </div>
+          )}
+          {(stats?.pendingPayouts ?? 0) > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 text-xs font-medium">
+              <Receipt className="h-3.5 w-3.5" />
+              {stats!.pendingPayouts} payout request{stats!.pendingPayouts !== 1 ? 's' : ''} pending
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Platform billing */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Platform billing this month</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <DollarSign className="h-4 w-4 text-amber-500" />
+          <h3 className="text-sm font-semibold text-foreground">Platform billing this month</h3>
+          {stats && stats.revenueChange !== 0 && (
+            <Badge variant={stats.revenueChange > 0 ? "success" : "destructive"} className="text-[10px] h-4 px-1.5">
+              {stats.revenueChange > 0 ? '+' : ''}{stats.revenueChange}% vs last month
+            </Badge>
+          )}
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard
-            label="Subscription revenue MTD"
-            value={isLoading ? '—' : fmt(stats?.revenueMTD ?? 0)}
-            icon={DollarSign}
-            color="text-green-700"
-            sub={stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last month` : 'Same as last month'}
-          />
-          <StatCard
-            label="Pending manager invoices"
-            value={stats?.pendingManagerInvoices ?? 0}
-            icon={Clock}
-            color={stats?.pendingManagerInvoices ? 'text-amber-700' : undefined}
-          />
-          <StatCard
-            label="Overdue manager invoices"
-            value={stats?.overdueManagerInvoices ?? 0}
-            icon={Receipt}
-            color={stats?.overdueManagerInvoices ? 'text-red-700' : undefined}
-          />
-          <StatCard
-            label="Platform revenue last month"
-            value={isLoading ? '—' : fmt(stats?.revenueLM ?? 0)}
-            icon={TrendingUp}
-          />
+          <WebhostStatCard label="Revenue MTD" value={isLoading ? '—' : fmt(stats?.revenueMTD ?? 0)}
+            icon={TrendingUp} color="text-emerald-600" loading={isLoading}
+            sub={stats ? `Last month: ${fmt(stats.revenueLM)}` : undefined} />
+          <WebhostStatCard label="Pending invoices" value={stats?.pendingManagerInvoices ?? 0}
+            icon={Clock} loading={isLoading}
+            color={stats?.pendingManagerInvoices ? 'text-amber-600' : undefined}
+            badge={stats?.pendingManagerInvoices ? { label: 'Action needed', variant: 'secondary' } : undefined} />
+          <WebhostStatCard label="Overdue invoices" value={stats?.overdueManagerInvoices ?? 0}
+            icon={AlertCircle} loading={isLoading}
+            color={stats?.overdueManagerInvoices ? 'text-red-600' : undefined}
+            badge={stats?.overdueManagerInvoices ? { label: 'Overdue', variant: 'destructive' } : undefined} />
+          <WebhostStatCard label="Pending payouts" value={stats?.pendingPayouts ?? 0}
+            icon={Receipt} loading={isLoading}
+            color={stats?.pendingPayouts ? 'text-blue-600' : undefined}
+            badge={stats?.pendingPayouts ? { label: 'Review', variant: 'secondary' } : undefined} />
         </div>
       </div>
 
       {/* Manager stats */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Managers</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Users className="h-4 w-4 text-amber-500" />
+          <h3 className="text-sm font-semibold text-foreground">Manager accounts</h3>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Total managers" value={stats?.totalManagers ?? 0} icon={Users} />
-          <StatCard
-            label="Pending approval"
-            value={stats?.pendingManagers ?? 0}
-            icon={Clock}
-            color={stats?.pendingManagers ? 'text-amber-700' : undefined}
-            badge={stats?.pendingManagers ? { label: 'Action needed', variant: 'secondary' } : undefined}
-          />
-          <StatCard label="Approved" value={stats?.approvedManagers ?? 0} icon={CheckCircle} color="text-green-700" />
-          <StatCard label="Total properties" value={stats?.totalProperties ?? 0} icon={Building} />
+          <WebhostStatCard label="Total managers" value={stats?.totalManagers ?? 0} icon={Users} loading={isLoading} />
+          <WebhostStatCard label="Pending approval" value={stats?.pendingManagers ?? 0} icon={Clock} loading={isLoading}
+            color={stats?.pendingManagers ? 'text-amber-600' : undefined}
+            badge={stats?.pendingManagers ? { label: 'Needs review', variant: 'secondary' } : undefined} />
+          <WebhostStatCard label="Approved" value={stats?.approvedManagers ?? 0} icon={CheckCircle} loading={isLoading} color="text-emerald-600" />
+          <WebhostStatCard label="Total properties" value={stats?.totalProperties ?? 0} icon={Building} loading={isLoading} />
         </div>
       </div>
 
-      {/* Landlord stats */}
+      {/* Platform & landlords */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Landlords</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Crown className="h-4 w-4 text-amber-500" />
+          <h3 className="text-sm font-semibold text-foreground">Platform overview</h3>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard
-            label="System landlords"
-            value={stats?.systemLandlords ?? 0}
-            icon={Home}
-            sub="Not under any manager — you oversee these"
-            color="text-coral-700"
-          />
-          <StatCard
-            label="Rejected managers"
-            value={stats?.rejectedManagers ?? 0}
-            icon={Users}
-            sub="Kept as platform account status only"
-          />
-          <StatCard
-            label="Pending payout requests"
-            value={stats?.pendingPayouts ?? 0}
-            icon={Receipt}
-            color={stats?.pendingPayouts ? 'text-amber-700' : undefined}
-            badge={stats?.pendingPayouts ? { label: 'Review needed', variant: 'secondary' } : undefined}
-          />
-          <StatCard label="Webhost admins" value={stats?.totalWebhosts ?? 0} icon={Shield} />
+          <WebhostStatCard label="System landlords" value={stats?.systemLandlords ?? 0} icon={Home} loading={isLoading}
+            sub="Not under any manager" />
+          <WebhostStatCard label="Rejected managers" value={stats?.rejectedManagers ?? 0} icon={Users} loading={isLoading} />
+          <WebhostStatCard label="Webhost admins" value={stats?.totalWebhosts ?? 0} icon={Shield} loading={isLoading} />
         </div>
       </div>
 
-      {/* Access policy reminder */}
-      <Card className="border-red-200 bg-red-50/50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-red-800">Platform access policy</p>
-              <p className="text-xs text-red-700 mt-1">
-                Webhost admins have zero access to tenant data, rent payment records, or tenant personal information.
-                Tenant management is exclusively within the property manager's domain.
-                The stats above show only platform-level subscription billing — not rent collected from tenants.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 6-month platform revenue trend */}
+      {/* Revenue trend */}
       <PlatformRevenueTrend />
 
+      {/* Properties audit trail */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recent properties audit trail</CardTitle>
-          <CardDescription>
-            Last added properties with manager attribution (who added and account email).
-          </CardDescription>
+        <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
+          <CardTitle className="text-sm font-semibold">Recent properties audit trail</CardTitle>
+          <CardDescription>Last added properties with manager attribution</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-5 pb-4">
           {isLoadingProperties ? (
-            <Skeleton className="h-28 w-full" />
+            <div className="space-y-2">
+              {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}
+            </div>
           ) : latestProperties.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No properties found.</p>
+            <div className="py-8 text-center">
+              <Building className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+              <p className="text-sm text-muted-foreground">No properties on record yet</p>
+            </div>
           ) : (
             <div className="space-y-2">
-              {(latestProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map((prop) => (
-                <div key={prop.id} className="rounded-md border p-3">
-                  <p className="text-sm font-medium">{prop.name}</p>
-                  <p className="text-xs text-muted-foreground">{prop.address}</p>
-                  <p className="text-xs mt-1 text-muted-foreground">
-                    Added by: {prop.manager_profile?.full_name || 'Unknown manager'} ({prop.manager_profile?.email || 'no email'})
-                  </p>
+              {(latestProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map(prop => (
+                <div key={prop.id} className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5 hover:bg-muted/40 transition-colors">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{prop.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{prop.address}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs font-medium text-foreground truncate max-w-[160px]">
+                      {prop.manager_profile?.full_name || 'Unknown'}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground truncate max-w-[160px]">
+                      {prop.manager_profile?.email || '—'}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Access policy notice */}
+      <Card className="border-blue-200/60 bg-blue-50/30 dark:border-blue-900/30 dark:bg-blue-950/10">
+        <CardContent className="p-4 flex items-start gap-3">
+          <Shield className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-xs font-semibold text-blue-800 dark:text-blue-300">Platform access policy</p>
+            <p className="text-xs text-blue-700/70 dark:text-blue-400/70 mt-1 leading-relaxed">
+              Webhost admins have zero access to tenant data, rent payments, or tenant personal information.
+              Stats above show only platform-level subscription billing — not rent collected from tenants.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
-  );
-};
-
-const PlatformRevenueTrend: React.FC = () => {
-  const { data: trend = [], isLoading } = useQuery({
-    queryKey: ['platform-revenue-6mo'],
-    queryFn: async () => {
-      const months = Array.from({ length: 6 }, (_, i) => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - (5 - i));
-        return d.toISOString().slice(0, 7);
-      });
-      return Promise.all(months.map(async (m) => {
-        const start = `${m}-01`;
-        const end = new Date(start); end.setMonth(end.getMonth() + 1);
-        const { data } = await supabase
-          .from('manager_invoices')
-          .select('amount')
-          .eq('status', 'paid')
-          .gte('paid_date', start)
-          .lt('paid_date', end.toISOString().slice(0, 10));
-        const rows = (data as ManagerInvoiceRow[] | null) || [];
-        const revenue = rows.reduce((s: number, i: ManagerInvoiceRow) => s + Number(i.amount), 0);
-        return { month: m.slice(5), revenue };
-      }));
-    },
-  });
-
-  if (isLoading) return <Skeleton className="h-48 w-full" />;
-
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <p className="text-sm font-medium mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-purple-600" />
-          Platform revenue — last 6 months
-        </p>
-        <div className="flex items-end gap-1 h-28">
-          {trend.map((t, i) => {
-            const max = Math.max(...trend.map(x => x.revenue), 1);
-            const pct = (t.revenue / max) * 100;
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-xs text-purple-300 font-medium">
-                  {t.revenue > 0 ? `${Math.round(t.revenue / 1000)}K` : '—'}
-                </span>
-                <div className="w-full rounded-t-sm bg-purple-600/30 relative overflow-hidden" style={{ height: '72px' }}>
-                  <div
-                    className="absolute bottom-0 w-full bg-purple-500 rounded-t-sm transition-all"
-                    style={{ height: `${Math.max(2, pct)}%` }}
-                  />
-                </div>
-                <span className="text-xs text-slate-500">{t.month}</span>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
   );
 };
 

@@ -20,10 +20,10 @@ export function Layout({ children, title, subtitle, headerActions }: LayoutProps
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="lg:pl-64 transition-all duration-300 min-h-screen flex flex-col">
         {isViewOnly && (
-          <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2.5">
-            <div className="flex items-center justify-center gap-2 text-amber-600 text-sm">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <span>View-only mode — viewing as webhost</span>
+          <div className="bg-amber-400/8 border-b border-amber-400/20 px-4 py-2">
+            <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 text-xs font-medium">
+              <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+              <span>View-only mode — browsing as Webhost admin. Changes are disabled.</span>
             </div>
           </div>
         )}

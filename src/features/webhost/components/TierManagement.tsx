@@ -185,9 +185,9 @@ const TierManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-white">Subscription tiers</h2>
-          <p className="text-slate-400 text-sm">Configure what each tier unlocks and how much each property type costs</p>
+          <p className="text-muted-foreground text-sm">Configure what each tier unlocks and how much each property type costs</p>
         </div>
-        <Button size="sm" variant="outline" className="border-purple-700 text-purple-300 gap-1.5"
+        <Button size="sm" variant="outline" className="border-amber-400/30 text-amber-400/70 gap-1.5"
           onClick={() => queryClient.invalidateQueries()}>
           <RefreshCw className="h-3.5 w-3.5"/>Refresh
         </Button>
@@ -202,26 +202,26 @@ const TierManagement: React.FC = () => {
           const isActive = activeTier === tier;
           return (
             <button key={tier} type="button" onClick={() => setActiveTier(tier)}
-              className={`rounded-2xl border-2 p-4 text-left transition-all ${isActive ? 'border-purple-500 bg-purple-900/30' : 'border-slate-700 bg-slate-900/40 hover:border-slate-500'}`}>
+              className={`rounded-2xl border-2 p-4 text-left transition-all ${isActive ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-slate-900/40 hover:border-slate-500'}`}>
               <div className="flex items-center gap-2 mb-2">
-                <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-purple-500/20' : 'bg-slate-700/40'}`}>
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-purple-400' : 'text-slate-400'}`}/>
+                <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-amber-400/15' : 'bg-slate-700/40'}`}>
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-amber-500' : 'text-muted-foreground'}`}/>
                 </div>
                 <div>
                   <p className="font-semibold text-white text-sm">{TIER_NAMES[tier]}</p>
-                  <p className="text-xs text-slate-400">KES {data?.price_per_property ?? '—'}/prop/mo</p>
+                  <p className="text-xs text-muted-foreground">KES {data?.price_per_property ?? '—'}/prop/mo</p>
                 </div>
-                {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-purple-400"/>}
+                {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-amber-400"/>}
               </div>
-              <p className="text-xs text-slate-400 mb-2">{TIER_DESCRIPTIONS[tier]}</p>
+              <p className="text-xs text-muted-foreground mb-2">{TIER_DESCRIPTIONS[tier]}</p>
               <div className="space-y-0.5">
                 {features.slice(0, 3).map((f, i) => (
-                  <div key={i} className="flex items-center gap-1 text-xs text-slate-300">
+                  <div key={i} className="flex items-center gap-1 text-xs text-foreground/90">
                     <Check className="h-3 w-3 text-green-400 shrink-0"/>
                     <span className="truncate">{f}</span>
                   </div>
                 ))}
-                {features.length > 3 && <p className="text-xs text-slate-500">+{features.length-3} more</p>}
+                {features.length > 3 && <p className="text-xs text-muted-foreground/70">+{features.length-3} more</p>}
               </div>
             </button>
           );
@@ -229,21 +229,21 @@ const TierManagement: React.FC = () => {
       </div>
 
       {/* Active tier detail */}
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {React.createElement(TIER_ICONS[activeTier], { className: 'h-5 w-5 text-purple-400' })}
+              {React.createElement(TIER_ICONS[activeTier], { className: 'h-5 w-5 text-amber-500' })}
               <CardTitle className="text-white">{TIER_NAMES[activeTier]} — property type limits</CardTitle>
             </div>
             {hasUnsavedChanges && (
-              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-1.5"
+              <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900 gap-1.5"
                 onClick={() => saveTier.mutate()} disabled={saveTier.isPending}>
                 <Save className="h-3.5 w-3.5"/>{saveTier.isPending ? 'Saving…' : 'Save changes'}
               </Button>
             )}
           </div>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-muted-foreground">
             Set how many properties of each type this tier allows, and the pricing multiplier applied
           </CardDescription>
         </CardHeader>
@@ -255,10 +255,10 @@ const TierManagement: React.FC = () => {
             const isAllowed = parseInt(maxProps) > 0;
 
             return (
-              <div key={group} className={`rounded-xl border overflow-hidden ${isAllowed ? 'border-purple-800/30' : 'border-slate-700/30'}`}>
+              <div key={group} className={`rounded-xl border overflow-hidden ${isAllowed ? 'border-amber-400/12' : 'border-border/30'}`}>
                 {/* Group header */}
                 <div
-                  className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isAllowed ? 'bg-slate-900/50 hover:bg-purple-900/10' : 'bg-slate-900/20 hover:bg-slate-800/30'}`}
+                  className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isAllowed ? 'bg-muted/30 hover:bg-amber-400/6' : 'bg-slate-900/20 hover:bg-muted/20'}`}
                   onClick={() => setExpandedGroups(p => ({ ...p, [group]: !isExpanded }))}
                 >
                   <div className="flex items-center gap-3">
@@ -276,59 +276,59 @@ const TierManagement: React.FC = () => {
                       <Switch
                         checked={isAllowed}
                         onCheckedChange={v => setEditedLimit(group, 'max', v ? '10' : '0')}
-                        className="data-[state=checked]:bg-purple-600"
+                        className="data-[state=checked]:bg-amber-400"
                       />
                     </div>
-                    {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-400"/> : <ChevronDown className="h-4 w-4 text-slate-400"/>}
+                    {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground"/> : <ChevronDown className="h-4 w-4 text-muted-foreground"/>}
                   </div>
                 </div>
 
                 {/* Expanded: per-category details + limit editing */}
                 {isExpanded && (
-                  <div className="p-3 border-t border-slate-700/30 bg-slate-950/20">
+                  <div className="p-3 border-t border-border/30 bg-slate-950/20">
                     {/* Limit controls */}
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div>
-                        <Label className="text-xs text-slate-300">Max properties (0 = blocked, 999 = ∞)</Label>
+                        <Label className="text-xs text-foreground/90">Max properties (0 = blocked, 999 = ∞)</Label>
                         <Input
                           type="number" min="0" max="999"
                           value={getEditedLimit(group, 'max')}
                           onChange={e => setEditedLimit(group, 'max', e.target.value)}
-                          className="mt-1 bg-slate-800/50 border-slate-600 text-white h-8 text-sm"
+                          className="mt-1 bg-card border-border/60 text-white h-8 text-sm"
                         />
                       </div>
                       <div>
-                        <Label className="text-xs text-slate-300">Price multiplier (1.0 = base tier rate)</Label>
+                        <Label className="text-xs text-foreground/90">Price multiplier (1.0 = base tier rate)</Label>
                         <Input
                           type="number" min="0" max="5" step="0.1"
                           value={getEditedLimit(group, 'mult')}
                           onChange={e => setEditedLimit(group, 'mult', e.target.value)}
-                          className="mt-1 bg-slate-800/50 border-slate-600 text-white h-8 text-sm"
+                          className="mt-1 bg-card border-border/60 text-white h-8 text-sm"
                         />
                       </div>
                     </div>
 
                     {/* Category rows */}
-                    <p className="text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">Property types in this group</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Property types in this group</p>
                     <div className="space-y-1.5">
                       {cats.map(cat => {
                         const dbCat = categoryData.find((c: CategoryRow) => c.key === cat.key);
                         const mult = dbCat?.billing_multiplier ?? cat.billingMultiplier;
                         const reqTier = dbCat?.requires_tier ?? cat.requiresTier;
                         return (
-                          <div key={cat.key} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/40 border border-slate-700/20">
+                          <div key={cat.key} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/40 border border-border/20">
                             <div className="flex items-center gap-2 min-w-0">
                               <div className="h-6 w-6 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: `${cat.color}33` }}>
                                 <span className="text-xs">📋</span>
                               </div>
                               <div className="min-w-0">
                                 <p className="text-xs font-medium text-white truncate">{cat.name}</p>
-                                <p className="text-xs text-slate-500 truncate">{cat.description}</p>
+                                <p className="text-xs text-muted-foreground/70 truncate">{cat.description}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0 ml-2">
                               {/* Category multiplier */}
-                              <div className="flex items-center gap-1 text-xs text-slate-400">
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <span>×</span>
                                 <Input
                                   type="number" min="0.5" max="5" step="0.1"
@@ -339,14 +339,14 @@ const TierManagement: React.FC = () => {
                                       saveCategoryMultiplier.mutate({ key: cat.key, multiplier: val });
                                     }
                                   }}
-                                  className="w-14 h-6 bg-slate-800 border-slate-600 text-white text-xs text-center p-1"
+                                  className="w-14 h-6 bg-slate-800 border-border text-white text-xs text-center p-1"
                                 />
                               </div>
                               {/* Requires tier */}
                               <select
                                 value={reqTier}
                                 onChange={e => setRequiresTier.mutate({ key: cat.key, tier: e.target.value })}
-                                className="text-xs bg-slate-800 border border-slate-600 text-slate-300 rounded px-1 py-0.5 h-6"
+                                className="text-xs bg-slate-800 border border-border text-foreground/90 rounded px-1 py-0.5 h-6"
                               >
                                 <option value="lite">Lite+</option>
                                 <option value="pro">Pro+</option>
@@ -366,14 +366,14 @@ const TierManagement: React.FC = () => {
       </Card>
 
       {/* Info: how billing is calculated */}
-      <Card className="bg-slate-900/30 border-slate-700/30">
+      <Card className="bg-muted/20 border-border/30">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <Info className="h-4 w-4 text-slate-400 shrink-0 mt-0.5"/>
-            <div className="text-xs text-slate-400 space-y-1">
-              <p className="font-medium text-slate-300">How billing is calculated</p>
+            <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"/>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p className="font-medium text-foreground/90">How billing is calculated</p>
               <p>Monthly charge = Tier base rate × Group multiplier × Category multiplier</p>
-              <p className="font-mono text-slate-300">e.g. Pro office: KES 600 × 1.8 (commercial group) × 2.0 (office category) = KES 2,160/property/month</p>
+              <p className="font-mono text-foreground/90">e.g. Pro office: KES 600 × 1.8 (commercial group) × 2.0 (office category) = KES 2,160/property/month</p>
               <p>The effective rate per property varies by both the tier the manager is on and the type of property they manage. Commercial and industrial properties always cost more than residential.</p>
             </div>
           </div>

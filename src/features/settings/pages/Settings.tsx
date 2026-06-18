@@ -53,6 +53,7 @@ const Settings = () => {
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && settingsTabs.some((settingsTab) => settingsTab.id === tab)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -282,7 +283,7 @@ const Settings = () => {
                       <div className="relative flex-shrink-0">
                         <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
                           <AvatarImage src={photoUrl || undefined} />
-                          <AvatarFallback className="bg-primary text-primary-foreground text-lg sm:text-xl">
+                          <AvatarFallback className="bg-amber-400 text-slate-900 text-lg sm:text-xl">
                             {getInitials(fullName)}
                           </AvatarFallback>
                         </Avatar>
@@ -462,7 +463,7 @@ const Settings = () => {
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors touch-manipulation",
                   activeTab === tab.id
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-amber-400 text-slate-900"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >

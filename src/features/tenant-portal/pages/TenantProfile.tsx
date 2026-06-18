@@ -74,6 +74,7 @@ const TenantProfile = () => {
     maintenanceUpdates: true,
   });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchProfile = useCallback(async () => {
     if (!userRole?.tenant_id) {
       setLoading(false);
@@ -133,6 +134,7 @@ const TenantProfile = () => {
   }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProfile();
     loadNotificationPreferences();
   }, [userRole?.tenant_id, fetchProfile, loadNotificationPreferences]);
@@ -403,7 +405,7 @@ const TenantProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }
@@ -433,13 +435,13 @@ const TenantProfile = () => {
               <div className="relative">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={profile?.photo_url || undefined} alt={profile?.name} />
-                  <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                  <AvatarFallback className="text-2xl bg-amber-400/10 text-amber-500">
                     {profile?.name ? getInitials(profile.name) : <User className="h-10 w-10" />}
                   </AvatarFallback>
                 </Avatar>
                 <label
                   htmlFor="photo-upload"
-                  className="absolute bottom-0 right-0 p-1.5 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+                  className="absolute bottom-0 right-0 p-1.5 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 rounded-full cursor-pointer hover:bg-amber-400/90 transition-colors"
                 >
                   {uploadingPhoto ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -641,7 +643,7 @@ const TenantProfile = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-amber-400/10 flex items-center justify-center">
                     {getBiometricIcon()}
                   </div>
                   <div>

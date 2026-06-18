@@ -64,6 +64,7 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
     setLoading(false);
   }, [propertyId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchNotices(); }, [fetchNotices, propertyId]);
 
   const updateStatus = async (noticeId: string, status: string) => {
@@ -96,7 +97,7 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              <CalendarX className="h-5 w-5 text-primary" />
+              <CalendarX className="h-5 w-5 text-amber-500" />
               Vacation Notices
             </CardTitle>
             {pendingCount > 0 && (

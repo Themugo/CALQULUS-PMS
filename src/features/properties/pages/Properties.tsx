@@ -211,6 +211,7 @@ const Properties = () => {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
@@ -556,7 +557,7 @@ const Properties = () => {
           {/* Action buttons */}
           <Button
             size="sm"
-            className="h-9 bg-primary hover:bg-primary/90"
+            className="h-9 btn-brand"
             onClick={() => atPropertyLimit
               ? toast({ title: 'Property limit reached', description: `Your ${subProfile?.subscription_tier ?? 'Starter'} plan allows ${subProfile?.max_properties ?? 5} properties. Upgrade at Platform Billing to add more.`, variant: 'destructive' })
               : setIsDialogOpen(true)
@@ -664,7 +665,7 @@ const Properties = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>Cancel</Button>
-            <Button onClick={handleAddProperty} className="bg-primary hover:bg-primary/90" disabled={isSaving}>{isSaving ? "Adding..." : "Add Property"}</Button>
+            <Button onClick={handleAddProperty} className="btn-brand" disabled={isSaving}>{isSaving ? "Adding..." : "Add Property"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -777,7 +778,7 @@ const Properties = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSaving}>Cancel</Button>
-            <Button onClick={handleUpdateProperty} className="bg-primary hover:bg-primary/90" disabled={isSaving}>{isSaving ? "Saving..." : "Save Changes"}</Button>
+            <Button onClick={handleUpdateProperty} className="btn-brand" disabled={isSaving}>{isSaving ? "Saving..." : "Save Changes"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

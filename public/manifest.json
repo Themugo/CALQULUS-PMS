@@ -1,14 +1,18 @@
 {
-  "name": "CALQULUS RMS — Property Management",
-  "short_name": "CALQULUS RMS",
+  "name": "CALQULUS PMS",
+  "short_name": "CALQULUS",
   "description": "Modern property management platform for Kenya and East Africa",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#6d28d9",
+  "background_color": "#0A1628",
+  "theme_color": "#C9A84C",
   "lang": "en-KE",
-  "categories": ["finance", "productivity", "business"],
+  "categories": [
+    "finance",
+    "productivity",
+    "business"
+  ],
   "icons": [
     {
       "src": "/pwa-192x192.png",
@@ -35,14 +39,24 @@
       "short_name": "Manager",
       "description": "Go to manager dashboard",
       "url": "/",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/pwa-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Tenant Portal",
       "short_name": "My Rent",
       "description": "View my invoices and pay rent",
       "url": "/portal",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/pwa-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "screenshots": [],

@@ -231,16 +231,16 @@ const ProviderCard: React.FC<{
   const topServices = services.slice(0, compact ? 2 : 3);
 
   return (
-    <Card className={`border hover:border-primary/40 transition-colors cursor-pointer ${
+    <Card className={`border hover:border-amber-400/40 transition-colors cursor-pointer ${
       !provider.is_available ? 'opacity-60' : ''
     }`} onClick={onViewProfile}>
       <CardContent className="p-3">
         <div className="flex items-start gap-3">
           {/* Avatar */}
-          <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-12 w-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0 overflow-hidden">
             {provider.profile_photo
               ? <img src={provider.profile_photo} alt="" className="w-full h-full object-cover" />
-              : <Wrench className="h-6 w-6 text-primary" />
+              : <Wrench className="h-6 w-6 text-amber-500" />
             }
           </div>
 
@@ -284,7 +284,7 @@ const ProviderCard: React.FC<{
                 <div key={s.id} className="flex items-center gap-1 text-xs bg-muted/60 rounded-full px-2 py-0.5">
                   <span>{s.service_categories?.name}</span>
                   {s.rate_type !== 'quote_only' && s.rate_min && (
-                    <span className="text-primary font-medium">
+                    <span className="text-amber-600 font-medium">
                       · KES {fmt(s.rate_min)}{RATE_LABELS[s.rate_type]}
                     </span>
                   )}
@@ -374,7 +374,7 @@ const ProviderProfile: React.FC<{ provider: ServiceProviderItem; onSelect?: () =
                     <span className="text-xs text-muted-foreground">Quote on request</span>
                   ) : (
                     <div>
-                      <span className="font-semibold text-primary">
+                      <span className="font-semibold text-amber-500">
                         KES {fmt(s.rate_min)}{s.rate_max && s.rate_max !== s.rate_min ? `–${fmt(s.rate_max)}` : ''}
                         {RATE_LABELS[s.rate_type]}
                       </span>

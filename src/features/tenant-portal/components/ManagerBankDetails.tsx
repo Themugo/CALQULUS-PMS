@@ -23,6 +23,114 @@ interface BankDetails {
   property_id: string | null;
 }
 
+
+interface DetailRowProps {
+  label: string;
+  value: string;
+  fieldName: string;
+  copiedField: string | null;
+  onCopy: (value: string, fieldName: string) => void;
+}
+
+function DetailRow({ label, value, fieldName, copiedField, onCopy }: DetailRowProps) {
+  return (
+    <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="font-medium">{value}</p>
+      </div>
+      <Button variant="ghost" size="sm" onClick={() => onCopy(value, fieldName)} className="h-8 w-8 p-0">
+        {copiedField === fieldName ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+      </Button>
+    </div>
+  );
+}
+
+interface BankAccountCardProps {
+  account: BankDetails;
+  copiedField: string | null;
+  copiedAll: boolean;
+  onCopy: (value: string, fieldName: string) => void;
+  onCopyAll: (account: BankDetails) => void;
+}
+
+function BankAccountCard({ account, copiedField, copiedAll, onCopy, onCopyAll }: BankAccountCardProps) {
+  return (
+    <div className="space-y-4">
+      {/* Copy All Button */}
+      <div className="flex justify-end">
+        <Button
+           
+          variant="outline"
+          size="sm"
+          onClick={() => onCopyAll(account)}
+          className="gap-2"
+        >
+          {copiedAll ? (
+            <>
+              <Check className="h-4 w-4 text-green-500" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <ClipboardList className="h-4 w-4" />
+              Copy All Details
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Bank Details Section */}
+      <div className="space-y-3">
+        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Bank Transfer</h4>
+        <DetailRow label="Bank Name" value={account.bank_name} fieldName={`Bank Name - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        <DetailRow label="Account Name" value={account.account_name} fieldName={`Account Name - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        <DetailRow label="Account Number" value={account.account_number} fieldName={`Account Number - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        {account.branch_name && (
+          <DetailRow label="Branch" value={account.branch_name} fieldName={`Branch - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        )}
+        {account.swift_code && (
+          <DetailRow label="SWIFT Code" value={account.swift_code} fieldName={`SWIFT Code - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        )}
+      </div>
+
+      {/* Mobile Money Section */}
+      {(account.paybill_number || account.till_number) && (
+        <div className="space-y-3 border-t pt-4">
+          <h4 className="flex items-center gap-2 font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            <CreditCard className="h-4 w-4" />
+            M-Pesa
+          </h4>
+          {account.paybill_number && (
+            <DetailRow label="Paybill Number" value={account.paybill_number} fieldName={`Paybill - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+          )}
+          {account.till_number && (
+            <DetailRow label="Till Number" value={account.till_number} fieldName={`Till Number - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+          )}
+        </div>
+      )}
+
+      {/* M-Pesa QR Codes */}
+      {(account.paybill_number || account.till_number) && (
+        <MpesaQRCode
+          paybillNumber={account.paybill_number}
+          tillNumber={account.till_number}
+          accountNumber={account.account_number}
+        />
+      )}
+
+      {/* Payment Instructions Guide */}
+      <PaymentInstructionsGuide
+        paybillNumber={account.paybill_number}
+        tillNumber={account.till_number}
+        accountReference={account.account_number}
+        bankName={account.bank_name}
+        accountNumber={account.account_number}
+      />
+    </div>
+  );
+}
+
 interface ManagerBankDetailsProps {
   managerId?: string;
   propertyId?: string;
@@ -60,6 +168,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
 
   useEffect(() => {
     if (managerId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchBankDetails();
     }
   }, [managerId, propertyId, fetchBankDetails]);
@@ -140,92 +249,6 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
     return null;
   }
 
-  const DetailRow = ({ label, value, fieldName }: { label: string; value: string; fieldName: string }) => (
-    <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="font-medium">{value}</p>
-      </div>
-      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(value, fieldName)} className="h-8 w-8 p-0">
-        {copiedField === fieldName ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-      </Button>
-    </div>
-  );
-
-  const BankAccountCard = ({ account }: { account: BankDetails }) => (
-    <div className="space-y-4">
-      {/* Copy All Button */}
-      <div className="flex justify-end">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => copyAllDetails(account)}
-          className="gap-2"
-        >
-          {copiedAll ? (
-            <>
-              <Check className="h-4 w-4 text-green-500" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <ClipboardList className="h-4 w-4" />
-              Copy All Details
-            </>
-          )}
-        </Button>
-      </div>
-
-      {/* Bank Details Section */}
-      <div className="space-y-3">
-        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Bank Transfer</h4>
-        <DetailRow label="Bank Name" value={account.bank_name} fieldName={`Bank Name - ${account.id}`} />
-        <DetailRow label="Account Name" value={account.account_name} fieldName={`Account Name - ${account.id}`} />
-        <DetailRow label="Account Number" value={account.account_number} fieldName={`Account Number - ${account.id}`} />
-        {account.branch_name && (
-          <DetailRow label="Branch" value={account.branch_name} fieldName={`Branch - ${account.id}`} />
-        )}
-        {account.swift_code && (
-          <DetailRow label="SWIFT Code" value={account.swift_code} fieldName={`SWIFT Code - ${account.id}`} />
-        )}
-      </div>
-
-      {/* Mobile Money Section */}
-      {(account.paybill_number || account.till_number) && (
-        <div className="space-y-3 border-t pt-4">
-          <h4 className="flex items-center gap-2 font-medium text-sm text-muted-foreground uppercase tracking-wide">
-            <CreditCard className="h-4 w-4" />
-            M-Pesa
-          </h4>
-          {account.paybill_number && (
-            <DetailRow label="Paybill Number" value={account.paybill_number} fieldName={`Paybill - ${account.id}`} />
-          )}
-          {account.till_number && (
-            <DetailRow label="Till Number" value={account.till_number} fieldName={`Till Number - ${account.id}`} />
-          )}
-        </div>
-      )}
-
-      {/* M-Pesa QR Codes */}
-      {(account.paybill_number || account.till_number) && (
-        <MpesaQRCode
-          paybillNumber={account.paybill_number}
-          tillNumber={account.till_number}
-          accountNumber={account.account_number}
-        />
-      )}
-
-      {/* Payment Instructions Guide */}
-      <PaymentInstructionsGuide
-        paybillNumber={account.paybill_number}
-        tillNumber={account.till_number}
-        accountReference={account.account_number}
-        bankName={account.bank_name}
-        accountNumber={account.account_number}
-      />
-    </div>
-  );
-
   // If only one account, show it directly
   if (bankAccounts.length === 1) {
     const account = bankAccounts[0];
@@ -233,7 +256,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Building2 className="h-5 w-5 text-primary" />
+            <Building2 className="h-5 w-5 text-amber-500" />
             Payment Details
             {account.is_default && (
               <Badge variant="secondary" className="text-xs ml-2">
@@ -245,7 +268,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
           <CardDescription>Use these details to make payments directly to your landlord</CardDescription>
         </CardHeader>
         <CardContent>
-          <BankAccountCard account={account} />
+          <BankAccountCard account={account} copiedField={copiedField} copiedAll={copiedAll} onCopy={copyToClipboard} onCopyAll={copyAllDetails} />
         </CardContent>
       </Card>
     );
@@ -256,7 +279,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Building2 className="h-5 w-5 text-primary" />
+          <Building2 className="h-5 w-5 text-amber-500" />
           Payment Details
         </CardTitle>
         <CardDescription>Use these details to make payments directly to your landlord</CardDescription>
@@ -273,7 +296,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
           </TabsList>
           {bankAccounts.map((account) => (
             <TabsContent key={account.id} value={account.id}>
-              <BankAccountCard account={account} />
+              <BankAccountCard account={account} copiedField={copiedField} copiedAll={copiedAll} onCopy={copyToClipboard} onCopyAll={copyAllDetails} />
             </TabsContent>
           ))}
         </Tabs>

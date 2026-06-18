@@ -19,6 +19,7 @@ const InstallApp = () => {
   useEffect(() => {
     // Check if already installed
     if (window.matchMedia("(display-mode: standalone)").matches) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsInstalled(true);
     }
 
@@ -72,7 +73,7 @@ const InstallApp = () => {
             </div>
             <CardTitle className="font-heading">App Installed!</CardTitle>
             <CardDescription>
-              CALQULUS RMS has been installed on your device. You can now access it from your home screen.
+              CALQULUS PMS has been installed on your device. You can now access it from your home screen.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -88,11 +89,11 @@ const InstallApp = () => {
   return (
     <div className="min-h-screen bg-background safe-area-inset-top safe-area-inset-bottom">
       {/* Header */}
-      <div className="bg-gradient-to-b from-primary/20 to-background pt-safe-top pt-8 sm:pt-12 pb-6 sm:pb-8 px-4 text-center">
+      <div className="bg-gradient-to-b from-amber-400/15 to-background pt-safe-top pt-8 sm:pt-12 pb-6 sm:pb-8 px-4 text-center">
         <div className="mx-auto mb-3 sm:mb-4 h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shadow-lg">
-          <img src="/pwa-192x192.png" alt="CALQULUS RMS" className="h-full w-full object-cover" />
+          <img src="/pwa-192x192.png" alt="CALQULUS PMS" className="h-full w-full object-cover" />
         </div>
-        <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">CALQULUS RMS</h1>
+        <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">CALQULUS PMS</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">Property Management</p>
       </div>
 
@@ -112,7 +113,7 @@ const InstallApp = () => {
             {deferredPrompt ? (
               <Button onClick={handleInstallClick} className="w-full" size="lg">
                 <Download className="mr-2 h-5 w-5" />
-                Install CALQULUS RMS
+                Install CALQULUS PMS
               </Button>
             ) : isIOS ? (
               <div className="space-y-4">
@@ -121,8 +122,8 @@ const InstallApp = () => {
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Share className="h-4 w-4 text-primary" />
+                    <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+                      <Share className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">1. Tap the Share button</p>
@@ -130,8 +131,8 @@ const InstallApp = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Plus className="h-4 w-4 text-primary" />
+                    <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+                      <Plus className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">2. Select "Add to Home Screen"</p>
@@ -156,8 +157,8 @@ const InstallApp = () => {
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <MoreVertical className="h-4 w-4 text-primary" />
+                    <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+                      <MoreVertical className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">1. Tap the menu button</p>
@@ -165,8 +166,8 @@ const InstallApp = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Download className="h-4 w-4 text-primary" />
+                    <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+                      <Download className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">2. Select "Install app" or "Add to Home screen"</p>

@@ -125,7 +125,7 @@ const ResetPassword = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
       </div>
     );
   }
@@ -160,7 +160,7 @@ const ResetPassword = () => {
       <Card className="w-full max-w-md card-shadow">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-amber-400 flex items-center justify-center">
               <KeyRound className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>

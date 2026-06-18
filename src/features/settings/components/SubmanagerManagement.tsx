@@ -808,7 +808,7 @@ const SubmanagerManagement = () => {
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-primary" />
+                    <Zap className="h-4 w-4 text-amber-500" />
                     Quick Setup Preset
                   </Label>
                   <Select value={newPreset} onValueChange={(v) => handleNewPresetChange(v as PermissionPreset)}>
@@ -900,7 +900,7 @@ const SubmanagerManagement = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
+                  <Zap className="h-4 w-4 text-amber-500" />
                   Quick Setup Preset
                 </Label>
                 <Select value={editingPreset} onValueChange={(v) => handleEditPresetChange(v as PermissionPreset)}>

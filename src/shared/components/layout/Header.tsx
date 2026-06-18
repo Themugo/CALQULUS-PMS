@@ -73,10 +73,12 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
       className={cn(
         "sticky top-0 z-30 flex h-16 items-center justify-between border-b transition-all duration-200 px-4 md:px-6 lg:px-8 gap-3",
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border-border shadow-sm"
+          ? "bg-background/90 backdrop-blur-xl border-border/80 shadow-sm shadow-primary/5"
           : "bg-background border-transparent"
       )}
     >
+      {/* Gold accent line at top */}
+      {scrolled && <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-400/30 to-transparent pointer-events-none" />}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <Button
           variant="ghost" size="icon"
@@ -116,7 +118,7 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
             >
               <Avatar className="h-7 w-7">
                 <AvatarImage src={photoUrl || undefined} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
+                <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 text-xs font-bold">
                   {getInitials(fullName)}
                 </AvatarFallback>
               </Avatar>

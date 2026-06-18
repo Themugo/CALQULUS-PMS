@@ -97,7 +97,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
       .maybeSingle();
 
     const replacements: Record<string, string> = {
-      "{{company_name}}": company?.company_name || "CALQULUS RMS Properties",
+      "{{company_name}}": company?.company_name || "CALQULUS PMS Properties",
       "{{company_address}}": [company?.address, company?.city, company?.state, company?.zip_code].filter(Boolean).join(", ") || "N/A",
       "{{company_email}}": company?.email || "N/A",
       "{{company_phone}}": company?.phone || "N/A",
@@ -181,7 +181,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
               property_id: lease.property_id,
               unit: lease.unit,
               move_in_date: lease.start_date,
-              companyName: companyData?.company_name || "CALQULUS RMS Properties",
+              companyName: companyData?.company_name || "CALQULUS PMS Properties",
               portalUrl: `${window.location.origin}/portal`,
             },
           }
@@ -248,7 +248,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
           body: {
             tenantEmail: tenantEmail,
             tenantName: tenantName || "Tenant",
-            companyName: company?.company_name || "CALQULUS RMS Properties",
+            companyName: company?.company_name || "CALQULUS PMS Properties",
             contractTitle: `Lease Agreement - ${lease.property} Unit ${lease.unit}`,
             propertyInfo: `${lease.property} - ${lease.unit}`,
             validFrom: format(new Date(lease.start_date), "dd/MM/yy"),
@@ -321,7 +321,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
+            <Zap className="h-5 w-5 text-amber-500" />
             Quick Create Contract
           </DialogTitle>
           <DialogDescription>

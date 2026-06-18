@@ -77,6 +77,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
 
   const selectedBills = useMemo(
     () => payable.filter((b) => selected.has(b.id)),
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     [payable, selected],
   );
   const selectedTotal = selectedBills.reduce((s, b) => s + balanceOf(b), 0);
@@ -118,12 +119,12 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
   }
 
   return (
-    <Card className="border-primary/20 shadow-sm">
+    <Card className="border-amber-400/20 shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Receipt className="h-5 w-5 text-primary" />
+              <Receipt className="h-5 w-5 text-amber-500" />
               My bills
             </CardTitle>
             <CardDescription>
@@ -167,7 +168,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
               <div
                 key={bill.id}
                 className={`rounded-xl border p-4 transition-colors ${
-                  isChecked ? 'border-primary bg-primary/5' : 'border-border bg-card'
+                  isChecked ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-start gap-3">

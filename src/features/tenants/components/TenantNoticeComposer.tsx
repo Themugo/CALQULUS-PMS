@@ -242,8 +242,8 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
                     onClick={() => loadTemplate(t.value)}
                     className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.notice_type === t.value
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-border hover:border-primary/30 text-muted-foreground'
+                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                        : 'border-border hover:border-amber-400/30 text-muted-foreground'
                     }`}
                   >
                     <t.icon className={`h-3.5 w-3.5 shrink-0 ${t.color}`} />

@@ -180,7 +180,7 @@ export default function WebhookDeadLetterPanel() {
           return (
             <Card key={src} className={count > 0 ? "border-red-200" : ""}>
               <CardContent className="p-4 flex items-center gap-3">
-                <Icon className={`h-8 w-8 ${count > 0 ? "text-red-500" : "text-slate-400"}`} />
+                <Icon className={`h-8 w-8 ${count > 0 ? "text-red-500" : "text-muted-foreground"}`} />
                 <div>
                   <div className={`text-2xl font-bold ${count > 0 ? "text-red-700" : "text-slate-700"}`}>
                     {count}
@@ -342,7 +342,7 @@ export default function WebhookDeadLetterPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Payload</div>
-                <pre className="rounded-md bg-slate-900 text-slate-100 p-3 text-xs overflow-auto max-h-64">
+                <pre className="rounded-md bg-slate-900 text-foreground p-3 text-xs overflow-auto max-h-64">
                   {renderPayload(viewingRow.payload)}
                 </pre>
               </div>

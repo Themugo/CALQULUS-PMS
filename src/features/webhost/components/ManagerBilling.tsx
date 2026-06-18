@@ -143,52 +143,52 @@ const ManagerBilling = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
+        <TabsList className="bg-card/80 border border-amber-400/12">
           <TabsTrigger 
             value="overview" 
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <LayoutDashboard className="h-4 w-4 mr-2" />
             Overview
           </TabsTrigger>
           <TabsTrigger 
             value="invoices" 
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <FileText className="h-4 w-4 mr-2" />
             Invoices
           </TabsTrigger>
           <TabsTrigger 
             value="receipts" 
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <Receipt className="h-4 w-4 mr-2" />
             Receipts
           </TabsTrigger>
           <TabsTrigger 
             value="analytics" 
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <TrendingUp className="h-4 w-4 mr-2" />
             Analytics
           </TabsTrigger>
           <TabsTrigger 
             value="settings" 
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </TabsTrigger>
           <TabsTrigger 
             value="landlords"
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <Building2 className="h-4 w-4 mr-2" />
             Landlords
           </TabsTrigger>
           <TabsTrigger 
             value="per-manager"
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70"
           >
             <Users className="h-4 w-4 mr-2" />
             Per Manager

@@ -11,7 +11,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/calqulusrms-logo.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.png";
 
 interface NavItem {
   name: string;
@@ -54,31 +54,21 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { isViewOnly } = useViewOnly();
   const [collapsed, setCollapsed] = useState(false);
 
-  const navigation = isWebhost
-    ? webhostNav
-    : isAgency
-    ? agencyNav
-    : managerNav;
+  const navigation = isWebhost ? webhostNav : isAgency ? agencyNav : managerNav;
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
     return location.pathname === href || location.pathname.startsWith(href + "/");
   };
 
-  const handleNavClick = () => {
-    if (onClose) onClose();
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
+  const handleNavClick = () => { if (onClose) onClose(); };
+  const handleSignOut = async () => { await signOut(); };
 
   return (
     <>
-      {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
           onClick={() => onClose?.()}
         />
       )}
@@ -90,19 +80,26 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
+        {/* Top gold accent line */}
+        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/60 to-transparent flex-shrink-0" />
+
+        {/* Logo area */}
         <div className={cn(
           "flex h-16 items-center border-b border-sidebar-border flex-shrink-0",
           collapsed ? "justify-center px-2" : "justify-between px-4"
         )}>
           {collapsed ? (
-            <img src={calqulusLogo} alt="CALQULUS" className="h-8 w-auto" />
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain" />
           ) : (
-            <div className="flex items-center gap-3">
-              <img src={calqulusLogo} alt="CALQULUS RMS" className="h-9 w-auto" />
+            <div className="flex items-center gap-3 min-w-0">
+              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-10 w-auto object-contain flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="font-heading font-bold text-sm text-gradient leading-none truncate">CALQULUS</p>
+                <p className="text-[10px] text-sidebar-muted font-medium tracking-widest uppercase mt-0.5">PMS</p>
+              </div>
             </div>
           )}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <Button
               variant="ghost" size="icon"
               className="hidden lg:flex text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/50 h-8 w-8"
@@ -121,7 +118,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-3 space-y-1 scrollbar-hide">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 space-y-0.5 scrollbar-hide">
           {navigation.map((item) => {
             const active = isActive(item.href);
             return (
@@ -133,22 +130,25 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                   "group flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 touch-manipulation",
                   collapsed ? "justify-center p-2.5" : "px-3 py-2.5",
                   active
-                    ? "bg-sidebar-accent text-sidebar-foreground shadow-sm"
-                    : "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    ? "bg-gradient-to-r from-amber-400/15 to-transparent border border-amber-400/25 text-amber-300 shadow-sm"
+                    : "text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground border border-transparent"
                 )}
                 title={collapsed ? item.name : undefined}
               >
                 <item.icon className={cn(
-                  "h-4 w-4 flex-shrink-0",
-                  active ? "text-sidebar-primary" : "text-sidebar-muted group-hover:text-sidebar-primary"
+                  "h-4 w-4 flex-shrink-0 transition-colors",
+                  active ? "text-amber-400" : "text-sidebar-muted group-hover:text-amber-400/70"
                 )} />
                 {!collapsed && (
                   <>
                     <span className="flex-1 truncate">{item.name}</span>
                     {item.badge && (
-                      <Badge className="h-5 min-w-5 px-1.5 text-[10px] bg-sidebar-primary text-sidebar-primary-foreground">
+                      <Badge className="h-5 min-w-5 px-1.5 text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30">
                         {item.badge}
                       </Badge>
+                    )}
+                    {active && (
+                      <div className="w-1 h-4 rounded-full bg-amber-400 flex-shrink-0" />
                     )}
                   </>
                 )}
@@ -157,13 +157,19 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           })}
         </nav>
 
+        {/* Bottom gold accent */}
+        <div className="mx-4 h-px bg-gradient-to-r from-transparent via-amber-400/30 to-transparent flex-shrink-0" />
+
         {/* Footer */}
         <div className={cn(
-          "border-t border-sidebar-border flex-shrink-0",
+          "flex-shrink-0",
           collapsed ? "p-2" : "p-3"
         )}>
           {!collapsed && user && (
-            <p className="text-xs text-sidebar-muted truncate px-3 mb-2">{user.email}</p>
+            <div className="px-3 py-2 mb-2 rounded-lg bg-sidebar-accent/40 border border-sidebar-border">
+              <p className="text-[10px] text-sidebar-muted uppercase tracking-wider font-semibold mb-0.5">Signed in as</p>
+              <p className="text-xs text-amber-300/80 truncate font-medium">{user.email}</p>
+            </div>
           )}
           {isViewOnly ? (
             <button
@@ -171,7 +177,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               className={cn(
                 "flex w-full items-center gap-3 rounded-lg text-sm font-medium transition-colors touch-manipulation",
                 collapsed ? "justify-center p-2.5" : "px-3 py-2.5",
-                "text-purple-400 hover:bg-sidebar-accent/50 hover:text-purple-300"
+                "text-amber-500 hover:bg-sidebar-accent/50 hover:text-amber-400/70"
               )}
               title={collapsed ? "Back to Webhost Portal" : undefined}
             >
@@ -184,7 +190,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               className={cn(
                 "flex w-full items-center gap-3 rounded-lg text-sm font-medium transition-colors touch-manipulation",
                 collapsed ? "justify-center p-2.5" : "px-3 py-2.5",
-                "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                "text-sidebar-muted hover:bg-red-500/10 hover:text-red-400 border border-transparent hover:border-red-500/20"
               )}
               title={collapsed ? "Sign Out" : undefined}
             >
@@ -193,6 +199,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             </button>
           )}
         </div>
+
+        {/* Bottom gold line */}
+        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/40 to-transparent flex-shrink-0" />
       </aside>
     </>
   );

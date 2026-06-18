@@ -118,7 +118,7 @@ async function showLocalNotification(notification: PushNotificationSchema): Prom
       notifications: [
         {
           id: Date.now(),
-          title: notification.title || 'CALQULUS RMS',
+          title: notification.title || 'CALQULUS PMS',
           body: notification.body || '',
           data: notification.data,
           schedule: { at: new Date() },

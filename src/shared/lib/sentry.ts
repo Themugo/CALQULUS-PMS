@@ -56,7 +56,7 @@ export function initSentry(): Promise<void> {
         replaysSessionSampleRate: 0.1, // 10% of sessions for replay
         replaysOnErrorSampleRate: 1.0, // 100% of sessions with errors for replay
         
-        // Strip query strings and most PII before sending. CALQULUS RMS handles
+        // Strip query strings and most PII before sending. CALQULUS PMS handles
         // tenant phone numbers and email addresses — keep them out of error
         // reports unless absolutely necessary for debugging.
         beforeSend(event) {

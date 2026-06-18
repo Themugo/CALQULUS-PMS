@@ -97,6 +97,169 @@ const statusStyles: Record<string, string> = {
   inactive: "bg-slate-500/10 text-slate-400 border-slate-500/20",
 };
 
+
+interface TenantTableProps {
+  tenantList: TenantData[];
+  isLoading: boolean;
+  searchQuery: string;
+  signedUrls: Record<string, string>;
+  canApproveMoveouts: boolean;
+  onOpenStatement: (tenant: TenantData) => void;
+  onOpenHistory: (tenant: TenantData) => void;
+  onMoveOut: (tenant: TenantData) => void;
+}
+
+function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
+  return (    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      {isLoading ? (
+        <div className="p-8 text-center text-muted-foreground">Loading tenants...</div>
+      ) : tenantList.length === 0 ? (
+        <div className="p-8 text-center text-muted-foreground">
+          {searchQuery ? "No tenants match your search." : "No tenants in this category."}
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-border">
+              <TableHead className="font-heading font-semibold">Tenant</TableHead>
+              <TableHead className="font-heading font-semibold">Contact</TableHead>
+              <TableHead className="font-heading font-semibold">Property</TableHead>
+              <TableHead className="font-heading font-semibold">Move-in Date</TableHead>
+              <TableHead className="font-heading font-semibold">Payment Details</TableHead>
+              <TableHead className="font-heading font-semibold">Status</TableHead>
+              <TableHead className="w-24"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tenantList.map((tenant, index) => (
+              <TableRow
+                key={tenant.id}
+                className="hover:bg-muted/30 border-border animate-slide-in"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 ring-2 ring-transparent">
+                      <AvatarImage src={signedUrls[tenant.id] || undefined} />
+                      <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
+                        {tenant.name.split(" ").map((n) => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium text-foreground">{tenant.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-3.5 w-3.5" />
+                      {tenant.email}
+                    </div>
+                    {tenant.phone && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5" />
+                        {tenant.phone}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    {tenant.property ? (
+                      <div className="flex items-center gap-2 text-sm text-foreground">
+                        <Home className="h-3.5 w-3.5 text-muted-foreground" />
+                        {tenant.property}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">Unassigned</span>
+                    )}
+                    {tenant.unit && (
+                      <div className="text-sm text-muted-foreground pl-5">{tenant.unit}</div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {tenant.move_in_date ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {format(new Date(tenant.move_in_date), 'dd/MM/yy')}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-0.5 text-sm">
+                    {tenant.monthly_rent ? (
+                      <div className="font-medium text-foreground">
+                        KES {tenant.monthly_rent.toLocaleString()}/mo
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">No rent set</span>
+                    )}
+                    {tenant.deposit_amount && (
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Wallet className="h-3 w-3" />
+                        Balance: KES {(tenant.deposit_balance ?? tenant.deposit_amount).toLocaleString()}
+                        <span className="text-muted-foreground/60">
+                          / {tenant.deposit_amount.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                    {tenant.other_charges && tenant.other_charges > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        +KES {tenant.other_charges.toLocaleString()} {tenant.other_charges_description ? `(${tenant.other_charges_description})` : 'other'}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={statusStyles[tenant.status] || statusStyles.active}>
+                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+                  </Badge>
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onOpenStatement(tenant)}
+                      title="View Statement"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onOpenHistory(tenant)}
+                      title="View History"
+                    >
+                      <History className="h-4 w-4" />
+                    </Button>
+                    {tenant.status === 'active' && tenant.unit_id && canApproveMoveouts && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                        onClick={() => onMoveOut(tenant)}
+                        title="Process Move-Out"
+                      >
+                        <Archive className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
+  );
+}
+
 const Tenants = () => {
   const { toast } = useToast();
   const { can } = useRBAC();
@@ -216,6 +379,7 @@ const Tenants = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenants();
     fetchProperties();
   }, [fetchTenants, fetchProperties]);
@@ -248,158 +412,6 @@ const Tenants = () => {
   const activeTenants = tenants.filter(t => t.status === "active");
   const pendingTenants = tenants.filter(t => t.status === "pending");
   const inactiveTenants = tenants.filter(t => t.status === "inactive");
-
-  const TenantTable = ({ tenantList }: { tenantList: TenantData[] }) => (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
-      {isLoading ? (
-        <div className="p-8 text-center text-muted-foreground">Loading tenants...</div>
-      ) : tenantList.length === 0 ? (
-        <div className="p-8 text-center text-muted-foreground">
-          {searchQuery ? "No tenants match your search." : "No tenants in this category."}
-        </div>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              <TableHead className="font-heading font-semibold">Tenant</TableHead>
-              <TableHead className="font-heading font-semibold">Contact</TableHead>
-              <TableHead className="font-heading font-semibold">Property</TableHead>
-              <TableHead className="font-heading font-semibold">Move-in Date</TableHead>
-              <TableHead className="font-heading font-semibold">Payment Details</TableHead>
-              <TableHead className="font-heading font-semibold">Status</TableHead>
-              <TableHead className="w-24"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tenantList.map((tenant, index) => (
-              <TableRow
-                key={tenant.id}
-                className="hover:bg-muted/30 border-border animate-slide-in"
-                style={{ animationDelay: `${index * 30}ms` }}
-              >
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 ring-2 ring-transparent">
-                      <AvatarImage src={signedUrls[tenant.id] || undefined} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                        {tenant.name.split(" ").map((n) => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-foreground">{tenant.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-3.5 w-3.5" />
-                      {tenant.email}
-                    </div>
-                    {tenant.phone && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="h-3.5 w-3.5" />
-                        {tenant.phone}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {tenant.property ? (
-                      <div className="flex items-center gap-2 text-sm text-foreground">
-                        <Home className="h-3.5 w-3.5 text-muted-foreground" />
-                        {tenant.property}
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">Unassigned</span>
-                    )}
-                    {tenant.unit && (
-                      <div className="text-sm text-muted-foreground pl-5">{tenant.unit}</div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {tenant.move_in_date ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {format(new Date(tenant.move_in_date), 'dd/MM/yy')}
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-0.5 text-sm">
-                    {tenant.monthly_rent ? (
-                      <div className="font-medium text-foreground">
-                        KES {tenant.monthly_rent.toLocaleString()}/mo
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">No rent set</span>
-                    )}
-                    {tenant.deposit_amount && (
-                      <div className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Wallet className="h-3 w-3" />
-                        Balance: KES {(tenant.deposit_balance ?? tenant.deposit_amount).toLocaleString()}
-                        <span className="text-muted-foreground/60">
-                          / {tenant.deposit_amount.toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                    {tenant.other_charges && tenant.other_charges > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        +KES {tenant.other_charges.toLocaleString()} {tenant.other_charges_description ? `(${tenant.other_charges_description})` : 'other'}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={statusStyles[tenant.status] || statusStyles.active}>
-                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => openStatement(tenant)}
-                      title="View Statement"
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => openHistory(tenant)}
-                      title="View History"
-                    >
-                      <History className="h-4 w-4" />
-                    </Button>
-                    {tenant.status === 'active' && tenant.unit_id && can('approve_moveouts') && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                        onClick={() => {
-                          setMoveOutTenant(tenant);
-                          setMoveOutDialogOpen(true);
-                        }}
-                        title="Process Move-Out"
-                      >
-                        <Archive className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </div>
-  );
 
   return (
     <Layout title="Tenants" subtitle="View tenant records across all properties">
@@ -483,13 +495,49 @@ const Tenants = () => {
         </div>
 
         <TabsContent value="active" className="mt-0">
-          <TenantTable tenantList={filteredTenants} />
+          <TenantTable
+            tenantList={filteredTenants}
+            isLoading={isLoading}
+            searchQuery={searchQuery}
+            signedUrls={signedUrls}
+            canApproveMoveouts={can('approve_moveouts')}
+            onOpenStatement={openStatement}
+            onOpenHistory={openHistory}
+            onMoveOut={(tenant) => {
+              setMoveOutTenant(tenant);
+              setMoveOutDialogOpen(true);
+            }}
+          />
         </TabsContent>
         <TabsContent value="pending" className="mt-0">
-          <TenantTable tenantList={filteredTenants} />
+          <TenantTable
+            tenantList={filteredTenants}
+            isLoading={isLoading}
+            searchQuery={searchQuery}
+            signedUrls={signedUrls}
+            canApproveMoveouts={can('approve_moveouts')}
+            onOpenStatement={openStatement}
+            onOpenHistory={openHistory}
+            onMoveOut={(tenant) => {
+              setMoveOutTenant(tenant);
+              setMoveOutDialogOpen(true);
+            }}
+          />
         </TabsContent>
         <TabsContent value="inactive" className="mt-0">
-          <TenantTable tenantList={filteredTenants} />
+          <TenantTable
+            tenantList={filteredTenants}
+            isLoading={isLoading}
+            searchQuery={searchQuery}
+            signedUrls={signedUrls}
+            canApproveMoveouts={can('approve_moveouts')}
+            onOpenStatement={openStatement}
+            onOpenHistory={openHistory}
+            onMoveOut={(tenant) => {
+              setMoveOutTenant(tenant);
+              setMoveOutDialogOpen(true);
+            }}
+          />
         </TabsContent>
       </Tabs>
 
@@ -502,7 +550,7 @@ const Tenants = () => {
                 <>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={signedUrls[selectedTenant.id] || undefined} />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
                       {selectedTenant.name.split(" ").map((n) => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>
@@ -562,10 +610,10 @@ const Tenants = () => {
                       <div className="space-y-4">
                         {tenantHistory.map((item) => (
                           <div key={item.id} className="relative pl-6 pb-4 border-l-2 border-border last:border-l-0">
-                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary" />
+                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-amber-400" />
                             <div className="bg-muted/30 rounded-lg p-3">
                               <div className="flex items-center justify-between mb-1">
-                                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
                                   {item.action}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">

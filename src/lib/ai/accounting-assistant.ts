@@ -319,7 +319,7 @@ export function generateBudgetRecommendations(
     const currentBudget = currentBudgets[category] || 0;
     const variance = currentSpend - currentBudget;
     
-    let recommendation = '';
+    let recommendation: string;
     let priority: 'low' | 'medium' | 'high' = 'low';
     let recommendedBudget = currentBudget;
     

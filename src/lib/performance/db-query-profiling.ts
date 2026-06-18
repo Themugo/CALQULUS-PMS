@@ -86,15 +86,11 @@ export class QueryProfiler {
     const startTime = Date.now();
     let result: T;
     let rowsAffected = 0;
-    let error: Error | null = null;
 
     try {
       result = await executor();
       rowsAffected = this.extractRowsAffected(result);
       return result;
-    } catch (e) {
-      error = e as Error;
-      throw error;
     } finally {
       const executionTime = Date.now() - startTime;
       const operation = this.extractOperation(query);

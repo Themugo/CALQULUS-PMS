@@ -112,8 +112,8 @@ export const TenantContractsView = ({
               <div key={tenant.id} className="border rounded-lg overflow-hidden">
                 <div className="bg-muted/50 px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Building className="h-5 w-5 text-primary" />
+                    <div className="h-10 w-10 rounded-full bg-amber-400/10 flex items-center justify-center">
+                      <Building className="h-5 w-5 text-amber-500" />
                     </div>
                     <div>
                       <p className="font-medium">{tenant.name}</p>

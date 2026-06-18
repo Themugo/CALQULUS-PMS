@@ -27,7 +27,7 @@ const TIER_BADGE: Record<string, string> = {
   enterprise:   'bg-amber-100 text-amber-800 border-amber-300',
   starter:      'bg-slate-100 text-slate-700 border-slate-300',
   growth:       'bg-blue-100 text-blue-700 border-blue-200',
-  professional: 'bg-purple-100 text-purple-800 border-purple-300',
+  professional: 'bg-amber-400/15 text-amber-700 border-purple-300',
 };
 
 const NEXT_TIER: Record<string, string> = {

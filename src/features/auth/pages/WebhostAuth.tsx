@@ -4,65 +4,56 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Globe, Shield } from 'lucide-react';
+import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from 'lucide-react';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 
 const isRecommendedWebhostHost = () => {
   const host = window.location.hostname;
-  return host.startsWith('admin.') || host.endsWith('.calqulusrms.com') || host === 'localhost' || host === '127.0.0.1';
+  return host.startsWith('admin.') || host.endsWith('.calquluspms.com') || host === 'localhost' || host === '127.0.0.1';
 };
+
+const features = [
+  { icon: Globe,    text: 'Full platform oversight — all managers, properties & tenants' },
+  { icon: Crown,    text: 'Tier management, billing enforcement & subscription control' },
+  { icon: BarChart3, text: 'Platform-wide revenue analytics and audit trails' },
+  { icon: Shield,   text: 'Security logs, access control & compliance reporting' },
+];
 
 const WebhostAuth = () => {
   const navigate = useNavigate();
   const { user, signIn, loading, userRole } = useAuth();
   const { toast } = useToast();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
-      if (userRole?.role === 'webhost') {
-        navigate('/webhost');
-      } else if (userRole?.role === 'manager') {
-        navigate('/');
-      } else if (userRole?.role === 'tenant') {
-        navigate('/portal');
-      }
+      if (userRole?.role === 'webhost') navigate('/webhost');
+      else if (userRole?.role === 'manager') navigate('/');
+      else if (userRole?.role === 'tenant') navigate('/portal');
     }
   }, [user, loading, userRole, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     const { error } = await signIn(email, password);
-
     if (error) {
-      toast({
-        title: 'Login failed',
-        description: sanitizeAuthError(error.message),
-        variant: 'destructive',
-      });
+      toast({ title: 'Login failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
       setIsSubmitting(false);
       return;
     }
-
     const roleCheck = await ensureSignedInRole(['webhost']);
     if (!roleCheck.ok) {
       const roles = roleCheck.roles;
       if (roles.includes('tenant')) { navigate('/portal'); return; }
       if (roles.includes('manager')) { navigate('/'); return; }
       if (roles.includes('landlord')) { navigate('/landlord/dashboard'); return; }
-      toast({
-        title: 'No active role',
-        description: roleCheck.message,
-        variant: 'destructive',
-      });
+      toast({ title: 'Access denied', description: roleCheck.message, variant: 'destructive' });
       setIsSubmitting(false);
       return;
     }
@@ -71,96 +62,160 @@ const WebhostAuth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center hero-gradient">
+        <div className="flex flex-col items-center gap-4">
+          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
+          <div className="flex gap-1.5">
+            {[0,1,2].map(i => (
+              <div key={i} className="w-2 h-2 rounded-full bg-amber-400/60 animate-pulse-soft"
+                style={{ animationDelay: `${i * 0.2}s` }} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-950 via-slate-900 to-purple-950 px-4 relative overflow-hidden">
-      {/* Banner background */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/calqulus-banner.jpg" 
-          alt="CALQULUS RMS Banner" 
-          className="w-full h-full object-cover opacity-15"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/95 via-slate-900/90 to-purple-950/85" />
-      </div>
-      <Card className="w-full max-w-md border-purple-800/50 bg-slate-900/80 backdrop-blur-sm shadow-2xl relative z-10">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-br from-purple-100 to-violet-100 rounded-2xl p-4 shadow-lg border border-purple-200">
-              <img 
-                src={calqulusLogo} 
-                alt="CALQULUS RMS" 
-                className="h-12 w-auto"
-              />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-white">Webhost Portal</CardTitle>
-          <CardDescription className="text-purple-300">
-            Super-admin access for platform management
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-purple-200">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@webhost.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-slate-800/50 border-purple-700/50 text-white placeholder:text-purple-400/50 focus:border-purple-500 focus:ring-purple-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-purple-200">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-slate-800/50 border-purple-700/50 text-white placeholder:text-purple-400/50 focus:border-purple-500 focus:ring-purple-500"
-              />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/25" 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Signing in...' : 'Sign In to Webhost Portal'}
-            </Button>
-          </form>
-          
-          <div className="mt-6 p-3 rounded-lg bg-purple-900/30 border border-purple-800/50">
-            <div className="flex items-center gap-2 text-purple-300 text-sm">
-              <Shield className="h-4 w-4" />
-              <span>This portal is for authorized administrators only</span>
+    <div className="min-h-screen flex hero-gradient">
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.035]" style={{
+          backgroundImage: `linear-gradient(hsl(42 51% 55% / 0.5) 1px, transparent 1px),
+                            linear-gradient(90deg, hsl(42 51% 55% / 0.5) 1px, transparent 1px)`,
+          backgroundSize: '48px 48px',
+        }} />
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(circle at 20% 80%, hsl(218 62% 18% / 0.8) 0%, transparent 60%),
+                       radial-gradient(circle at 80% 20%, hsl(42 51% 55% / 0.07) 0%, transparent 50%)`
+        }} />
+
+        <div className="relative z-10 flex flex-col h-full p-12">
+          <div className="flex items-center gap-4 mb-16">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <div>
+              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
+              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
             </div>
           </div>
 
-          <div className="mt-3 p-3 rounded-lg bg-slate-900/50 border border-slate-700/50">
-            <p className="text-xs text-slate-500 text-center">
-              First time? Run the <code className="text-purple-400 bg-purple-900/30 px-1 rounded">bootstrap-webhost</code> edge function to create the admin account.
-              See <a href="https://github.com/Themugo/calqulusrmscom-42618f64#bootstrap" className="text-purple-400 hover:underline">setup docs</a>.
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/30 bg-red-500/10 mb-6 self-start">
+              <Shield className="h-3.5 w-3.5 text-red-400" />
+              <span className="text-xs text-red-300 font-medium">Restricted Access — Authorized Personnel Only</span>
+            </div>
+
+            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
+              <span className="text-white">Control the</span>
+              <br />
+              <span className="text-gradient">entire platform.</span>
+            </h1>
+            <p className="text-white/50 text-lg leading-relaxed max-w-md mb-12">
+              Super-admin access for platform-wide management, billing enforcement, security, and compliance.
             </p>
+
+            <div className="space-y-4">
+              {features.map((f, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <p className="text-white/70 text-sm font-medium">{f.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          {!isRecommendedWebhostHost() && (
-            <div className="mt-3 p-3 rounded-lg bg-amber-900/30 border border-amber-700/40">
-              <p className="text-xs text-amber-300 text-center">
-                Tip: for production, use an <code className="px-1 rounded bg-amber-900/40">admin.</code> subdomain for webhost access.
+
+          <div className="pt-8 border-t border-white/10">
+            <p className="text-white/20 text-xs">calquluspms.com · Internal use only</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex justify-center mb-8">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+            <div className="mb-6">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/25 bg-amber-400/8 mb-4">
+                <Globe className="h-3 w-3 text-amber-400" />
+                <span className="text-[11px] text-amber-300 font-semibold tracking-wider uppercase">Webhost Portal</span>
+              </div>
+              <h2 className="font-heading text-2xl font-bold text-white mb-1">Administrator login</h2>
+              <p className="text-white/50 text-sm">Authorized access only</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-white/80 text-sm font-medium">Email address</Label>
+                <Input
+                  id="email" type="email" placeholder="admin@calquluspms.com"
+                  value={email} onChange={e => setEmail(e.target.value)} required
+                  className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-white/80 text-sm font-medium">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
+                    value={password} onChange={e => setPassword(e.target.value)} required
+                    className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11 pr-11"
+                  />
+                  <button type="button" onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
+                    Signing in…
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Lock className="h-4 w-4" /> Sign in to Admin Portal <ChevronRight className="h-4 w-4" />
+                  </span>
+                )}
+              </Button>
+            </form>
+
+            {/* Security notice */}
+            <div className="mt-5 p-3.5 rounded-xl border border-amber-400/15 bg-amber-400/5">
+              <div className="flex items-start gap-2.5">
+                <Shield className="h-4 w-4 text-amber-400/70 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-white/50 leading-relaxed">
+                  This portal is for authorized administrators only. All access is logged and audited.
+                </p>
+              </div>
+            </div>
+
+            {/* Bootstrap notice */}
+            <div className="mt-3 p-3 rounded-xl border border-white/8 bg-white/4">
+              <p className="text-xs text-white/35 text-center leading-relaxed">
+                First time? Run the{' '}
+                <code className="text-amber-400/60 bg-amber-400/10 px-1 rounded">bootstrap-webhost</code>
+                {' '}edge function to create the admin account.
               </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            {!isRecommendedWebhostHost() && (
+              <div className="mt-3 p-3 rounded-xl border border-amber-400/15 bg-amber-400/6">
+                <p className="text-xs text-amber-400/60 text-center">
+                  Tip: use an <code className="bg-amber-400/10 px-1 rounded">admin.</code> subdomain for production access.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

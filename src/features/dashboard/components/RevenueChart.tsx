@@ -21,6 +21,40 @@ interface MonthlyRevenue {
   pending: number;
 }
 
+interface RevenueTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+  formatCurrency: (value: number) => string;
+}
+
+function RevenueCustomTooltip({ active, payload, label, formatCurrency }: RevenueTooltipProps) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+        <p className="font-medium text-foreground mb-2">{label}</p>
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-amber-400" />
+            <span className="text-muted-foreground">Paid:</span>
+            <span className="font-medium text-foreground">
+              {formatCurrency(payload[0]?.value || 0)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-warning" />
+            <span className="text-muted-foreground">Pending:</span>
+            <span className="font-medium text-foreground">
+              {formatCurrency(payload[1]?.value || 0)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 export function RevenueChart() {
   const [data, setData] = useState<MonthlyRevenue[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +102,7 @@ export function RevenueChart() {
           .eq("status", "paid")
           .gte("paid_date", monthStart.split("T")[0])
           .lte("paid_date", monthEnd.split("T")[0]);
+         
         let pendingQuery = supabase
           .from("invoices")
           .select("amount")
@@ -102,6 +137,7 @@ export function RevenueChart() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRevenueData();
 
     // Subscribe to real-time invoice changes
@@ -116,33 +152,6 @@ export function RevenueChart() {
       supabase.removeChannel(channel);
     };
   }, [fetchRevenueData]);
-
-  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-foreground mb-2">{label}</p>
-          <div className="space-y-1 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-success" />
-              <span className="text-muted-foreground">Paid:</span>
-              <span className="font-medium text-foreground">
-                {formatCurrency(payload[0]?.value || 0)}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-warning" />
-              <span className="text-muted-foreground">Pending:</span>
-              <span className="font-medium text-foreground">
-                {formatCurrency(payload[1]?.value || 0)}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   if (loading) {
     return (
@@ -167,7 +176,7 @@ export function RevenueChart() {
         </div>
         <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-success flex-shrink-0" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-400 flex-shrink-0" />
             <span className="text-muted-foreground hidden xs:inline">Collected</span>
             <span className="font-semibold text-foreground">
               {formatCurrency(totalRevenue)}
@@ -187,9 +196,9 @@ export function RevenueChart() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 5, left: -10, bottom: 0 }}>
             <defs>
-              <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
+              <linearGradient id="colorPaidGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(42 51% 55%)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="hsl(42 51% 55%)" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorPending" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
@@ -213,14 +222,14 @@ export function RevenueChart() {
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               tickFormatter={formatCurrencyCompact}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<RevenueCustomTooltip formatCurrency={formatCurrency} />} />
             <Area
               type="monotone"
               dataKey="paid"
-              stroke="hsl(var(--success))"
+              stroke="hsl(42 51% 55%)"
               strokeWidth={2}
               fillOpacity={1}
-              fill="url(#colorPaid)"
+              fill="url(#colorPaidGold)"
             />
             <Area
               type="monotone"

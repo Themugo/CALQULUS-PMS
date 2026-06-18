@@ -32,7 +32,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 const TIER_BADGE: Record<string, string> = {
   starter:      'bg-slate-100 text-slate-700 border-slate-200',
   growth:       'bg-blue-100 text-blue-800 border-blue-200',
-  professional: 'bg-purple-100 text-purple-800 border-purple-200',
+  professional: 'bg-blue-100 text-blue-800 border-blue-200',
   enterprise:   'bg-amber-100 text-amber-800 border-amber-200',
 };
 
@@ -147,9 +147,9 @@ const ManagerManagement: React.FC = () => {
             manager_user_id: manager.user_id,
             manager_email:   manager.email,
             manager_name:    manager.full_name || manager.email,
-            title:           'CALQULUS RMS Platform Service Agreement',
+            title:           'CALQULUS PMS Platform Service Agreement',
             contract_type:   'service_agreement',
-            description:     'Standard service agreement for CALQULUS RMS platform access',
+            description:     'Standard service agreement for CALQULUS PMS platform access',
             status:          'pending_signature',
             valid_from:      new Date().toISOString().slice(0, 10),
           });
@@ -236,7 +236,7 @@ const ManagerManagement: React.FC = () => {
     const Icon = cfg.icon;
     const expanded = expandedId === m.user_id;
     return (
-      <Card className={`border ${m.approval_status === 'pending' ? 'border-amber-400/50 bg-amber-900/10' : m.approval_status.startsWith('suspend') ? 'border-orange-400/50 bg-orange-900/10' : 'border-purple-800/30 bg-slate-900/30'}`}>
+      <Card className={`border ${m.approval_status === 'pending' ? 'border-amber-400/50 bg-amber-900/10' : m.approval_status.startsWith('suspend') ? 'border-orange-400/50 bg-orange-900/10' : 'border-amber-400/12 bg-muted/20'}`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1 min-w-0">
@@ -245,9 +245,9 @@ const ManagerManagement: React.FC = () => {
                 <Badge variant="outline" className={`text-xs ${cfg.color}`}><Icon className="h-3 w-3 mr-1" />{cfg.label}</Badge>
                 {m.subscription_tier && <Badge variant="outline" className={`text-xs capitalize ${TIER_BADGE[m.subscription_tier] ?? ''}`}>{m.subscription_tier}</Badge>}
               </div>
-              <p className="text-xs text-purple-300 flex items-center gap-1"><Mail className="h-3 w-3" />{m.email}</p>
-              {m.agency_name && <p className="text-xs text-purple-300 mt-0.5 flex items-center gap-1"><Building2 className="h-3 w-3" />{m.agency_name}</p>}
-              <div className="flex gap-3 mt-1.5 text-xs text-slate-400">
+              <p className="text-xs text-amber-400/70 flex items-center gap-1"><Mail className="h-3 w-3" />{m.email}</p>
+              {m.agency_name && <p className="text-xs text-amber-400/70 mt-0.5 flex items-center gap-1"><Building2 className="h-3 w-3" />{m.agency_name}</p>}
+              <div className="flex gap-3 mt-1.5 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{m.property_count}</span>
                 <span className="flex items-center gap-1"><Home className="h-3 w-3" />{m.unit_count}</span>
                 {m.last_active_at && <span className="flex items-center gap-1"><Activity className="h-3 w-3" />{format(new Date(m.last_active_at), 'dd MMM')}</span>}
@@ -262,19 +262,19 @@ const ManagerManagement: React.FC = () => {
                 <Button size="sm" variant="outline" className="border-red-500 text-red-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'reject', manager: m }); setActionReason(''); }}><UserX className="h-3.5 w-3.5 mr-1" />Reject</Button>
               </>)}
               {m.approval_status === 'approved' && (<>
-                <Button size="sm" variant="outline" className="border-purple-600 text-purple-300 h-7 text-xs" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
+                <Button size="sm" variant="outline" className="border-purple-600 text-amber-400/70 h-7 text-xs" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
                 <Button size="sm" variant="outline" className="border-orange-500 text-orange-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'suspend', manager: m }); setActionReason(''); }}><Ban className="h-3.5 w-3.5 mr-1" />Suspend</Button>
               </>)}
               {(m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment' || m.approval_status === 'rejected') && (
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
               )}
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400" onClick={() => setExpandedId(expanded ? null : m.user_id)}>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setExpandedId(expanded ? null : m.user_id)}>
                 {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
               </Button>
             </div>
           </div>
           {expanded && (
-            <div className="mt-3 pt-3 border-t border-purple-800/30">
+            <div className="mt-3 pt-3 border-t border-amber-400/12">
               <StatusHistory managerId={m.user_id} />
             </div>
           )}
@@ -291,12 +291,12 @@ const ManagerManagement: React.FC = () => {
         return (data || []) as StatusLogEntry[];
       },
     });
-    if (!logs.length) return <p className="text-xs text-slate-500">No status history.</p>;
+    if (!logs.length) return <p className="text-xs text-muted-foreground/70">No status history.</p>;
     return (
       <div className="space-y-1.5">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Status history</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status history</p>
         {logs.map((l: StatusLogEntry) => (
-          <div key={l.id} className="text-xs flex items-start gap-2 text-slate-400">
+          <div key={l.id} className="text-xs flex items-start gap-2 text-muted-foreground">
             <span className="shrink-0">{format(new Date(l.created_at), 'dd MMM HH:mm')}</span>
             <span className="font-medium text-white capitalize">{l.old_status ?? '—'} → {l.new_status}</span>
             {l.reason && <span>· {l.reason}</span>}
@@ -308,8 +308,8 @@ const ManagerManagement: React.FC = () => {
 
   const TabList = ({ managers: list }: { managers: Manager[] }) => (
     <div className="space-y-3 mt-4">
-      {isLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 w-full bg-slate-800/50" />) :
-       list.length === 0 ? <div className="py-10 text-center text-slate-500"><Users className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">None</p></div> :
+      {isLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 w-full bg-card/80" />) :
+       list.length === 0 ? <div className="py-10 text-center text-muted-foreground/70"><Users className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">None</p></div> :
        list.map(m => <ManagerCard key={m.user_id} m={m} />)}
     </div>
   );
@@ -319,11 +319,11 @@ const ManagerManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-white">Managers</h2>
-          <p className="text-slate-400 text-sm">{managers.length} total · {pending.length} pending · {active.length} active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}</p>
+          <p className="text-muted-foreground text-sm">{managers.length} total · {pending.length} pending · {active.length} active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/30" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
-          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => setAddOpen(true)}><UserPlus className="h-4 w-4 mr-2" />Add Manager</Button>
+          <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/70 hover:bg-purple-900/30" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
+          <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900" onClick={() => setAddOpen(true)}><UserPlus className="h-4 w-4 mr-2" />Add Manager</Button>
         </div>
       </div>
 
@@ -335,9 +335,9 @@ const ManagerManagement: React.FC = () => {
       )}
 
       <Tabs defaultValue="pending">
-        <TabsList className="bg-slate-800/50 border border-slate-700/50 flex-wrap h-auto gap-1 p-1">
+        <TabsList className="bg-card/80 border border-border/60 flex-wrap h-auto gap-1 p-1">
           {[['pending', `Pending (${pending.length})`], ['active', `Active (${active.length})`], ['suspended', `Suspended (${suspended.length})`], ['rejected', `Rejected (${rejected.length})`]].map(([v, l]) => (
-            <TabsTrigger key={v} value={v} className="text-slate-400 data-[state=active]:bg-purple-600 data-[state=active]:text-white text-xs">{l}</TabsTrigger>
+            <TabsTrigger key={v} value={v} className="text-muted-foreground data-[state=active]:bg-purple-600 data-[state=active]:text-white text-xs">{l}</TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="pending"><TabList managers={pending} /></TabsContent>

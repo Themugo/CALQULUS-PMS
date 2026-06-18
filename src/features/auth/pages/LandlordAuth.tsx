@@ -4,17 +4,20 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CheckCircle, XCircle, Mail, Eye, EyeOff, User, Building, Home, Shield, Briefcase } from 'lucide-react';
+import {
+  CheckCircle, XCircle, Mail, Eye, EyeOff, User, Building, Home,
+  Shield, Briefcase, Building2, Users, CreditCard, BarChart3, Lock,
+  ChevronRight,
+} from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
 interface DemoAccount {
@@ -27,6 +30,14 @@ interface DemoAccount {
   icon: React.ReactNode;
   description: string;
 }
+
+const features = [
+  { icon: Building2, title: 'Manage Properties', desc: 'Track every unit, lease, and tenant in one place' },
+  { icon: Users, title: 'Happy Tenants', desc: 'Self-service portal with instant payment receipts' },
+  { icon: CreditCard, title: 'Collect Payments', desc: 'M-Pesa, Stripe, and automated invoicing' },
+  { icon: BarChart3, title: 'Insights That Matter', desc: 'Occupancy, revenue, and arrears at a glance' },
+  { icon: Lock, title: 'Built for Trust', desc: 'Bank-grade security with full audit trails' },
+];
 
 const LandlordAuth = () => {
   const navigate = useNavigate();
@@ -62,9 +73,7 @@ const LandlordAuth = () => {
 
   const demoAccounts: DemoAccount[] = demoEnabled ? [
     { role: 'manager', label: 'James Kariuki', email: 'demo.manager@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'MANAGER', icon: <Building className="h-4 w-4" />, description: '3 properties · 5 tenants · Pro tier' },
-    { role: 'tenant-linked', label: 'Grace Wanjiku', email: 'demo.tenant1@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Flat A3 · KES 8,500/mo · overdue' },
-    { role: 'tenant-linked', label: 'Brian Otieno', email: 'demo.tenant2@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Bungalow B1 · KES 35,000/mo · paid' },
-    { role: 'tenant-orphan', label: 'Amina Hassan', email: 'demo.tenant3@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'ORPHAN', icon: <Home className="h-4 w-4" />, description: 'Ngara Apts · KES 11,000/mo · unlinked' },
+    { role: 'tenant-linked', label: 'Grace Wanjiku', email: 'demo.tenant1@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Flat A3 · KES 8,500/mo' },
     { role: 'landlord', label: 'Peter Mwangi', email: 'demo.landlord@calqulusrms.com', password: 'Demo@2026', portal: '/landlord/dashboard', badge: 'LANDLORD', icon: <Briefcase className="h-4 w-4" />, description: '2 properties · KES 108K net rent' },
     { role: 'agent', label: 'Fatuma Abubakar', email: 'demo.agent@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'AGENT', icon: <Shield className="h-4 w-4" />, description: 'Submanager · tenants + maintenance' },
   ] : [];
@@ -85,23 +94,10 @@ const LandlordAuth = () => {
   };
 
   const reseedDemoAccounts = async () => {
-    if (!demoSeedEnabled) {
-      toast({
-        title: 'Demo seed disabled',
-        description: 'Enable VITE_ENABLE_DEMO_SEED to reseed demo accounts.',
-        variant: 'destructive',
-      });
+    if (!demoSeedEnabled || !demoSeedSecret) {
+      toast({ title: 'Demo seed disabled', description: 'Enable VITE_ENABLE_DEMO_SEED to reseed.', variant: 'destructive' });
       return;
     }
-    if (!demoSeedSecret) {
-      toast({
-        title: 'Missing demo seed secret',
-        description: 'Set VITE_DEMO_SEED_SECRET to allow demo account reset.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setDemoSeeding(true);
     try {
       const { data, error } = await supabase.functions.invoke('seed-demo-data', {
@@ -109,19 +105,10 @@ const LandlordAuth = () => {
         headers: { 'X-Demo-Secret': demoSeedSecret },
       });
       if (error) throw error;
-      toast({
-        title: 'Demo accounts reset',
-        description: Array.isArray(data?.results)
-          ? `Seeded ${data.results.length} demo setup steps.`
-          : 'Demo users and demo portfolio refreshed.',
-      });
+      toast({ title: 'Demo accounts reset', description: 'Demo users and portfolio refreshed.' });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
-      toast({
-        title: 'Failed to reset demo accounts',
-        description: sanitizeAuthError(message),
-        variant: 'destructive',
-      });
+      toast({ title: 'Failed to reset demo', description: sanitizeAuthError(message), variant: 'destructive' });
     } finally {
       setDemoSeeding(false);
     }
@@ -129,32 +116,21 @@ const LandlordAuth = () => {
 
   const validateEmail = (email: string): boolean => {
     if (!email) return true;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
   const handleSignupEmailChange = (email: string) => {
     setSignupEmail(email);
-    if (email && !validateEmail(email)) {
-      setSignupEmailError('Please enter a valid email address');
-    } else {
-      setSignupEmailError('');
-    }
+    setSignupEmailError(email && !validateEmail(email) ? 'Please enter a valid email address' : '');
   };
 
   useEffect(() => {
     if (user && !loading && userRole) {
-      if (userRole.role === 'landlord') {
-        navigate('/landlord/dashboard');
-      } else if (userRole.role === 'tenant') {
-        navigate('/portal');
-      } else if (userRole.role === 'webhost') {
-        navigate('/webhost');
-      } else if (userRole.role === 'submanager') {
-        navigate('/');
-      } else {
-        navigate('/properties');
-      }
+      if (userRole.role === 'landlord') navigate('/landlord/dashboard');
+      else if (userRole.role === 'tenant') navigate('/portal');
+      else if (userRole.role === 'webhost') navigate('/webhost');
+      else if (userRole.role === 'submanager') navigate('/');
+      else navigate('/properties');
     }
   }, [user, loading, userRole, navigate]);
 
@@ -165,32 +141,11 @@ const LandlordAuth = () => {
       if (credentials) {
         const { error } = await signIn(credentials.email, credentials.password);
         if (error) {
-          toast({
-            title: 'Login failed',
-            description: 'Biometric authentication succeeded but login failed.',
-            variant: 'destructive',
-          });
+          toast({ title: 'Login failed', description: 'Biometric auth succeeded but login failed.', variant: 'destructive' });
         } else {
           const roleCheck = await ensureSignedInRole(['manager', 'submanager', 'landlord']);
-          if (!roleCheck.ok) {
-            toast({
-              title: 'Wrong portal',
-              description: roleCheck.message,
-              variant: 'destructive',
-            });
-            return;
-          }
-          toast({
-            title: 'Welcome back!',
-            description: 'You have been logged in with biometrics.',
-          });
+          if (!roleCheck.ok) toast({ title: 'Wrong portal', description: roleCheck.message, variant: 'destructive' });
         }
-      } else {
-        toast({
-          title: 'Biometric login failed',
-          description: 'Please try again or use email and password.',
-          variant: 'destructive',
-        });
       }
     } finally {
       setIsBiometricLoggingIn(false);
@@ -200,468 +155,444 @@ const LandlordAuth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     const { error } = await signIn(loginEmail, loginPassword);
-
     if (error) {
       toast({
         title: 'Login failed',
-        description: error.message === 'Invalid login credentials' 
-          ? 'Invalid email or password. Please try again.'
-          : error.message,
+        description: error.message === 'Invalid login credentials' ? 'Invalid email or password.' : error.message,
         variant: 'destructive',
       });
       setIsSubmitting(false);
       return;
     }
-
     const roleCheck = await ensureSignedInRole(['manager', 'submanager', 'landlord']);
     if (!roleCheck.ok) {
       const roles = roleCheck.roles;
-      if (roles.includes('tenant')) { navigate('/portal'); }
-      else if (roles.includes('webhost')) { navigate('/webhost'); }
-      else {
-        toast({
-          title: 'No active role',
-          description: roleCheck.message,
-          variant: 'destructive',
-        });
-      }
+      if (roles.includes('tenant')) navigate('/portal');
+      else if (roles.includes('webhost')) navigate('/webhost');
+      else toast({ title: 'No active role', description: roleCheck.message, variant: 'destructive' });
       setIsSubmitting(false);
       return;
     }
-
     if (enableBiometric && biometricAvailable) {
       await saveCredentials(loginEmail, loginPassword);
-      toast({
-        title: 'Biometric login enabled!',
-        description: 'You can now use biometrics to log in.',
-      });
+      toast({ title: 'Biometric login enabled!', description: 'You can now use biometrics to log in.' });
     } else {
-      toast({
-        title: 'Welcome back!',
-        description: 'You have been logged in successfully.',
-      });
+      toast({ title: 'Welcome back!', description: 'Signed in successfully.' });
     }
-
     setIsSubmitting(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    const validationResult = signupSchema.safeParse({
-      email: signupEmail,
-      password: signupPassword,
-      fullName: signupFullName,
-    });
-
+    const validationResult = signupSchema.safeParse({ email: signupEmail, password: signupPassword, fullName: signupFullName });
     if (!validationResult.success) {
-      toast({
-        title: 'Validation Error',
-        description: formatValidationErrors(validationResult.error),
-        variant: 'destructive',
-      });
+      toast({ title: 'Validation Error', description: formatValidationErrors(validationResult.error), variant: 'destructive' });
       setIsSubmitting(false);
       return;
     }
-
-    // Landlords sign up with the landlord role — they go to /landlord/dashboard
-    // pending webhost approval before they can see properties
-    const { error } = await signUp(
-      signupEmail, 
-      signupPassword, 
-      signupFullName, 
-      'landlord'
-    );
-
+    const { error } = await signUp(signupEmail, signupPassword, signupFullName, 'landlord');
     if (error) {
       toast({
         title: 'Signup failed',
-        description: error.message.includes('already registered')
-          ? 'This email is already registered. Please login instead.'
-          : sanitizeAuthError(error.message),
+        description: error.message.includes('already registered') ? 'This email is already registered.' : sanitizeAuthError(error.message),
         variant: 'destructive',
       });
     } else {
-      // Show verification message
       setRegisteredEmail(signupEmail);
       setShowVerificationMessage(true);
-      toast({
-        title: 'Check your email!',
-        description: 'We sent you a verification link to complete your registration.',
-      });
+      toast({ title: 'Check your email!', description: 'We sent a verification link to complete your registration.' });
     }
-
     setIsSubmitting(false);
   };
 
-  const getPasswordStrength = (password: string) => {
-    const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
-    };
-    return checks;
-  };
-
+  const getPasswordStrength = (password: string) => ({
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+  });
   const passwordStrength = getPasswordStrength(signupPassword);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center hero-gradient">
+        <div className="flex flex-col items-center gap-4">
+          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-16 w-auto animate-pulse-soft" />
+          <div className="flex gap-1.5">
+            {[0,1,2].map(i => (
+              <div key={i} className="w-2 h-2 rounded-full bg-amber-400/60 animate-pulse-soft" style={{ animationDelay: `${i * 0.2}s` }} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4">
-        <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <Mail className="h-8 w-8 text-white" />
-              </div>
+      <div className="min-h-screen flex items-center justify-center hero-gradient px-4">
+        <div className="w-full max-w-md rounded-2xl border border-amber-400/20 bg-white/5 backdrop-blur-xl p-8 shadow-2xl text-center">
+          <div className="flex justify-center mb-6">
+            <div className="h-16 w-16 rounded-full bg-amber-400/15 border border-amber-400/30 flex items-center justify-center">
+              <Mail className="h-8 w-8 text-amber-400" />
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Verify Your Email</CardTitle>
-            <CardDescription className="text-muted-foreground mt-2">
-              We've sent a verification link to
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <p className="text-foreground font-medium text-lg bg-blue-50 py-3 px-4 rounded-lg border border-blue-200">
-              {registeredEmail}
-            </p>
-            <div className="space-y-3 text-muted-foreground text-sm">
-              <p>Please click the verification link in the email to activate your account.</p>
-              <p className="text-muted-foreground">
-                Didn't receive the email? Check your spam folder or{' '}
-                <button 
-                  onClick={() => setShowVerificationMessage(false)}
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  request a new link
-                </button>
-              </p>
-            </div>
-            <div className="pt-4 border-t border-blue-200">
-              <p className="text-muted-foreground text-sm">
-                Already verified?{' '}
-                <button 
-                  onClick={() => setShowVerificationMessage(false)}
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  Sign in to your portal
-                </button>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <h2 className="text-2xl font-bold text-white font-heading mb-2">Check Your Email</h2>
+          <p className="text-white/60 mb-6">We sent a verification link to</p>
+          <p className="text-amber-300 font-semibold text-lg bg-white/5 rounded-xl py-3 px-4 border border-amber-400/20 mb-6">{registeredEmail}</p>
+          <p className="text-white/50 text-sm mb-4">Click the link in the email to verify your account and complete registration.</p>
+          <button onClick={() => setShowVerificationMessage(false)} className="text-amber-400 hover:text-amber-300 text-sm font-medium">
+            ← Back to sign in
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 px-4 relative overflow-hidden">
-      {/* Banner background */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/calqulus-banner.jpg" 
-          alt="CALQULUS RMS Banner" 
-          className="w-full h-full object-cover opacity-20"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-slate-900/90 to-blue-950/85" />
-        {/* Premium decorative elements */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+    <div className="min-h-screen flex hero-gradient">
+      {/* Left panel — hero/brand */}
+      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 20% 80%, hsl(218 62% 18% / 0.8) 0%, transparent 60%),
+                            radial-gradient(circle at 80% 20%, hsl(42 51% 55% / 0.08) 0%, transparent 50%),
+                            radial-gradient(circle at 60% 60%, hsl(214 73% 48% / 0.06) 0%, transparent 40%)`
+        }} />
+
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `linear-gradient(hsl(42 51% 55% / 0.4) 1px, transparent 1px),
+                            linear-gradient(90deg, hsl(42 51% 55% / 0.4) 1px, transparent 1px)`,
+          backgroundSize: '48px 48px',
+        }} />
+
+        <div className="relative z-10 flex flex-col h-full p-12">
+          {/* Logo */}
+          <div className="flex items-center gap-4 mb-16">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <div>
+              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
+              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1">Property Management System</p>
+            </div>
+          </div>
+
+          {/* Main headline */}
+          <div className="flex-1 flex flex-col justify-center">
+            <p className="text-amber-400/70 text-sm font-semibold tracking-widest uppercase mb-4">Elevating Property Management</p>
+            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
+              <span className="text-white">Manage smarter.</span>
+              <br />
+              <span className="text-gradient">Collect faster.</span>
+              <br />
+              <span className="text-white/70">Grow bigger.</span>
+            </h1>
+            <p className="text-white/50 text-lg leading-relaxed max-w-md mb-12">
+              The complete property management platform for East Africa — from single units to full portfolios.
+            </p>
+
+            {/* Feature list */}
+            <div className="space-y-4">
+              {features.map((f, i) => (
+                <div key={i} className="flex items-center gap-4 group">
+                  <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400/15 transition-colors">
+                    <f.icon className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-white/90 text-sm font-semibold">{f.title}</p>
+                    <p className="text-white/40 text-xs">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="flex items-center gap-6 pt-8 border-t border-white/10">
+            <p className="text-white/30 text-xs">calquluspms.com</p>
+            <div className="flex gap-3">
+              <a href="/tenant/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Tenant portal</a>
+              <a href="/webhost/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Admin login</a>
+            </div>
+          </div>
+        </div>
       </div>
-      <Card className="w-full max-w-md border-blue-800/30 bg-white/95 backdrop-blur-lg shadow-2xl relative z-10 animate-fade-in-up">
-        <CardHeader className="text-center pb-6">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-br from-blue-100 to-slate-100 rounded-2xl p-5 shadow-xl border border-blue-200 hover:shadow-2xl transition-shadow duration-300">
-              <img 
-                src={calqulusLogo} 
-                alt="CALQULUS RMS" 
-                className="h-14 w-auto"
-              />
-            </div>
+
+      {/* Right panel — auth form */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12 relative">
+        <div className="absolute inset-0 bg-white/[0.03] lg:bg-white/[0.04] backdrop-blur-none" />
+
+        <div className="relative w-full max-w-md">
+          {/* Mobile logo */}
+          <div className="lg:hidden flex justify-center mb-8">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
           </div>
-          <CardTitle className="text-3xl font-bold text-foreground tracking-tight">Landlord Portal</CardTitle>
-          <CardDescription className="text-muted-foreground mt-2 text-base">
-            Premium property management at your fingertips
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-6 pb-6">
-          {/* Biometric Login Button */}
-          {biometricAvailable && hasStoredCredentials && !biometricLoading && (
+
+          {/* Form card */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
             <div className="mb-6">
-              <BiometricLoginButton
-                biometryType={biometryType}
-                onPress={handleBiometricLogin}
-                isLoading={isBiometricLoggingIn}
-                className="border-blue-300 text-blue-600 hover:bg-blue-50"
-              />
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-blue-200" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-transparent px-2 text-muted-foreground">Or continue with</span>
+              <h2 className="font-heading text-2xl font-bold text-white mb-1">Welcome back</h2>
+              <p className="text-white/50 text-sm">Sign in to your CALQULUS PMS account</p>
+            </div>
+
+            {/* Biometric */}
+            {biometricAvailable && hasStoredCredentials && !biometricLoading && (
+              <div className="mb-5">
+                <BiometricLoginButton
+                  biometryType={biometryType}
+                  onPress={handleBiometricLogin}
+                  isLoading={isBiometricLoggingIn}
+                  className="border-amber-400/30 text-amber-400 hover:bg-amber-400/10"
+                />
+                <div className="relative my-5">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-white/10" />
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-transparent px-2 text-white/40">or continue with email</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-blue-100/50 border border-blue-200 rounded-lg p-1">
-              <TabsTrigger value="login" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70 rounded-md transition-all duration-200">Login</TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-foreground/70 rounded-md transition-all duration-200">Sign Up</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login" className="space-y-5 mt-6">
-              <form onSubmit={handleLogin} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-foreground font-medium">Email Address</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    required
-                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 h-11 rounded-lg transition-all duration-200"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password" className="text-foreground font-medium">Password</Label>
-                    <ForgotPasswordDialog 
-                      variant="landlord"
-                      trigger={
-                        <button type="button" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                          Forgot password?
-                        </button>
-                      }
-                    />
-                  </div>
-                  <div className="relative">
-                    <Input
-                      id="login-password"
-                      type={showLoginPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      required
-                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 h-11 rounded-lg pr-10 transition-all duration-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Biometric enable option */}
-                {biometricAvailable && !hasStoredCredentials && (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="enable-biometric"
-                      checked={enableBiometric}
-                      onCheckedChange={(checked) => setEnableBiometric(checked as boolean)}
-                      className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                    />
-                    <label
-                      htmlFor="enable-biometric"
-                      className="text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Enable {biometryType === 'faceId' ? 'Face ID' : 'fingerprint'} login
-                    </label>
-                  </div>
-                )}
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25 h-11 rounded-lg font-medium transition-all duration-200 hover:shadow-xl" 
-                  disabled={isSubmitting}
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10 mb-5">
+                <TabsTrigger
+                  value="login"
+                  className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 data-[state=active]:font-bold text-white/60"
                 >
-                  {isSubmitting ? 'Signing in...' : 'Access Your Portal'}
-                </Button>
-              </form>
-            </TabsContent>
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger
+                  value="signup"
+                  className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 data-[state=active]:font-bold text-white/60"
+                >
+                  Create Account
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="signup" className="space-y-4 mt-4">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-foreground">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={signupFullName}
-                    onChange={(e) => setSignupFullName(e.target.value)}
-                    required
-                    className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-foreground">Email Address</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={signupEmail}
-                    onChange={(e) => handleSignupEmailChange(e.target.value)}
-                    required
-                    className={`bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 ${signupEmailError ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-                  />
-                  {signupEmailError && (
-                    <p className="text-xs text-red-600 flex items-center gap-1">
-                      <XCircle className="h-3 w-3" />
-                      {signupEmailError}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-foreground">Password</Label>
-                  <div className="relative">
+              {/* Login tab */}
+              <TabsContent value="login" className="space-y-4 mt-0">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="login-email" className="text-white/80 text-sm font-medium">Email address</Label>
                     <Input
-                      id="signup-password"
-                      type={showSignupPassword ? "text" : "password"}
-                      placeholder="Create a secure password"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
+                      id="login-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
                       required
-                      minLength={8}
-                      className="bg-white border-blue-200 text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:ring-blue-500 pr-10"
+                      className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowSignupPassword(!showSignupPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
                   </div>
-                  {signupPassword && (
-                    <div className="text-xs space-y-1 mt-2 p-2 bg-blue-50 rounded border border-blue-200">
-                      <p className="font-medium text-foreground">Password requirements:</p>
-                      <div className="grid grid-cols-2 gap-1">
-                        <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {passwordStrength.length ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                          8+ characters
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.uppercase ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {passwordStrength.uppercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                          Uppercase
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.lowercase ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {passwordStrength.lowercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                          Lowercase
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.number ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {passwordStrength.number ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                          Number
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.special ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {passwordStrength.special ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                          Special char
-                        </div>
-                      </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="login-password" className="text-white/80 text-sm font-medium">Password</Label>
+                      <ForgotPasswordDialog
+                        variant="landlord"
+                        trigger={
+                          <button type="button" className="text-amber-400/80 hover:text-amber-400 text-xs font-medium">
+                            Forgot password?
+                          </button>
+                        }
+                      />
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                        className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11 pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                      >
+                        {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {biometricAvailable && !hasStoredCredentials && (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="enable-biometric"
+                        checked={enableBiometric}
+                        onCheckedChange={(c) => setEnableBiometric(c as boolean)}
+                        className="border-white/30 data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400"
+                      />
+                      <label htmlFor="enable-biometric" className="text-sm text-white/60 cursor-pointer">
+                        Enable {biometryType === 'faceId' ? 'Face ID' : 'fingerprint'} login
+                      </label>
                     </div>
                   )}
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Creating account...' : 'Create Your Account'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-          
-          <div className="mt-6 text-center space-y-2">
-            <p className="text-muted-foreground text-sm">
-              Are you a tenant?{' '}
-              <a href="/tenant/login" className="text-blue-600 hover:text-blue-700">
-                Access tenant portal
-              </a>
-            </p>
-            <p className="text-muted-foreground text-sm">
-              Platform administrator?{' '}
-              <a href="/webhost/login" className="text-blue-600 hover:text-blue-700">
-                Access admin portal
-              </a>
-            </p>
-          </div>
 
-          {/* Demo accounts */}
-          {demoEnabled && (
-          <div className="mt-6 pt-4 border-t border-blue-200">
-            <div className="mb-2 flex items-center justify-end">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="h-7 border-blue-300 text-foreground hover:bg-blue-50"
-                onClick={reseedDemoAccounts}
-                disabled={demoSeeding}
-              >
-                {demoSeeding ? 'Resetting demo…' : 'Reset demo accounts'}
-              </Button>
-            </div>
-            <details className="group" open>
-              <summary className="text-[11px] tracking-widest uppercase text-muted-foreground hover:text-foreground cursor-pointer list-none flex items-center justify-between select-none py-1">
-                <span className="flex items-center gap-2">
-                  <span>Demo Accounts</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">{demoAccounts.length} available</span>
-                </span>
-                <svg className={`w-3 h-3 text-muted-foreground group-open:rotate-180 transition-transform`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </summary>
-              <div className="mt-3 space-y-1.5">
-                {demoAccounts.map(acc => (
-                  <button
-                    key={acc.email}
-                    onClick={() => loginAs(acc)}
-                    disabled={demoLoggingIn === acc.email}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-blue-200 bg-blue-50/50 hover:bg-blue-100 hover:border-blue-300 transition-all text-left disabled:opacity-50"
+                  <Button
+                    type="submit"
+                    className="w-full h-11 btn-brand text-sm font-bold"
+                    disabled={isSubmitting}
                   >
-                    <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                      {acc.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-foreground text-sm font-medium truncate">{acc.label}</span>
-                        <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 shrink-0">{acc.badge}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-muted-foreground truncate">{acc.description}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-0.5 shrink-0">
-                      <code className="text-[9px] text-muted-foreground font-mono tracking-wide bg-blue-100 px-1.5 py-0.5 rounded">Demo@2026</code>
-                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
-                        {demoLoggingIn === acc.email ? 'signing in...' : 'Quick access'}
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
+                        Signing in…
                       </span>
+                    ) : (
+                      <span className="flex items-center gap-2">Sign In <ChevronRight className="h-4 w-4" /></span>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              {/* Signup tab */}
+              <TabsContent value="signup" className="space-y-4 mt-0">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-name" className="text-white/80 text-sm font-medium">Full name</Label>
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={signupFullName}
+                      onChange={(e) => setSignupFullName(e.target.value)}
+                      required
+                      className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-email" className="text-white/80 text-sm font-medium">Email address</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={signupEmail}
+                      onChange={(e) => handleSignupEmailChange(e.target.value)}
+                      required
+                      className={`bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-11 ${signupEmailError ? 'border-red-400/60' : ''}`}
+                    />
+                    {signupEmailError && (
+                      <p className="text-xs text-red-400 flex items-center gap-1">
+                        <XCircle className="h-3 w-3" />{signupEmailError}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-password" className="text-white/80 text-sm font-medium">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showSignupPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={signupPassword}
+                        onChange={(e) => setSignupPassword(e.target.value)}
+                        required
+                        minLength={8}
+                        className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-11 pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                      >
+                        {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
-                  </button>
-                ))}
+                    {signupPassword && (
+                      <div className="grid grid-cols-2 gap-1.5 mt-2 p-3 bg-white/5 rounded-xl border border-white/10">
+                        {[
+                          { pass: passwordStrength.length, label: '8+ chars' },
+                          { pass: passwordStrength.uppercase, label: 'Uppercase' },
+                          { pass: passwordStrength.lowercase, label: 'Lowercase' },
+                          { pass: passwordStrength.number, label: 'Number' },
+                          { pass: passwordStrength.special, label: 'Symbol' },
+                        ].map((check, i) => (
+                          <div key={i} className={`flex items-center gap-1.5 text-xs ${check.pass ? 'text-emerald-400' : 'text-white/30'}`}>
+                            {check.pass ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                            {check.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full h-11 btn-brand text-sm font-bold"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
+                        Creating account…
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">Create Account <ChevronRight className="h-4 w-4" /></span>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+
+            {/* Other portals */}
+            <div className="mt-6 pt-5 border-t border-white/10 space-y-2">
+              <p className="text-white/40 text-xs text-center mb-3">Other portals</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a href="/tenant/login" className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/8 hover:border-amber-400/20 transition-all text-white/50 hover:text-white/80 text-xs font-medium">
+                  <User className="h-3 w-3" /> Tenant Login
+                </a>
+                <a href="/webhost/login" className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/8 hover:border-amber-400/20 transition-all text-white/50 hover:text-white/80 text-xs font-medium">
+                  <Shield className="h-3 w-3" /> Admin Login
+                </a>
               </div>
-            </details>
+            </div>
+
+            {/* Demo accounts */}
+            {demoEnabled && (
+              <div className="mt-5 pt-5 border-t border-white/10">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[11px] tracking-widest uppercase text-white/30 font-semibold">Quick Demo Access</p>
+                  <button
+                    onClick={reseedDemoAccounts}
+                    disabled={demoSeeding}
+                    className="text-[10px] text-white/30 hover:text-amber-400/60 transition-colors"
+                  >
+                    {demoSeeding ? 'Resetting…' : 'Reset demo'}
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  {demoAccounts.map(acc => (
+                    <button
+                      key={acc.email}
+                      onClick={() => loginAs(acc)}
+                      disabled={demoLoggingIn === acc.email}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/8 bg-white/4 hover:bg-amber-400/8 hover:border-amber-400/25 transition-all text-left disabled:opacity-50"
+                    >
+                      <div className="h-7 w-7 rounded-lg bg-amber-400/12 border border-amber-400/20 flex items-center justify-center text-amber-400 shrink-0 text-xs">
+                        {acc.icon}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white/80 text-xs font-semibold truncate">{acc.label}</span>
+                          <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-400/80 shrink-0">{acc.badge}</span>
+                        </div>
+                        <span className="text-white/35 text-[11px] truncate block">{acc.description}</span>
+                      </div>
+                      <ChevronRight className="h-3 w-3 text-white/25 shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

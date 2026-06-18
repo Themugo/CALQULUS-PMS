@@ -28,7 +28,7 @@ const ACTION_COLOR = (action: string) => {
   if (a.includes('approve') || a.includes('verify')) return 'bg-emerald-100 text-emerald-800 border-emerald-200';
   if (a.includes('reject') || a.includes('deny')) return 'bg-orange-100 text-orange-800 border-orange-200';
   if (a.includes('pay') || a.includes('record_payment') || a.includes('invoice')) return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-  if (a.includes('notice') || a.includes('send')) return 'bg-purple-100 text-purple-800 border-purple-200';
+  if (a.includes('notice') || a.includes('send')) return 'bg-blue-100 text-blue-800 border-blue-200';
   return 'bg-slate-100 text-slate-700 border-slate-200';
 };
 

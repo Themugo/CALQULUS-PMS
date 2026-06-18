@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
-const COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const COLORS = ['#C9A84C', '#1E6FD9', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4']; // CALQULUS brand palette
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -207,18 +207,18 @@ const Reports: React.FC = () => {
                       <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${Math.round(v / 1000)}K`} />
                       <Tooltip formatter={(v: number) => fmt(v)} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
-                      <Bar dataKey="billed"    name="Billed"    fill="#94a3b8" radius={[3,3,0,0]} />
-                      <Bar dataKey="collected" name="Collected" fill="#22c55e" radius={[3,3,0,0]} />
-                      <Bar dataKey="arrears"   name="Arrears"   fill="#ef4444" radius={[3,3,0,0]} />
+                      <Bar dataKey="billed"    name="Billed"    fill="hsl(218 30% 65%)" radius={[3,3,0,0]} />
+                      <Bar dataKey="collected" name="Collected" fill="#C9A84C" radius={[3,3,0,0]} />
+                      <Bar dataKey="arrears"   name="Arrears"   fill="hsl(0 84% 60%)" radius={[3,3,0,0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
                 {!revLoading && revenueTrend.length > 0 && (
                   <div className="mt-3 grid grid-cols-3 gap-3 text-center">
                     {[
-                      { label: 'Total billed', val: revenueTrend.reduce((s, r) => s + r.billed, 0), color: 'text-slate-600' },
-                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-green-700' },
-                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-red-700' },
+                      { label: 'Total billed', val: revenueTrend.reduce((s, r) => s + r.billed, 0), color: 'text-muted-foreground' },
+                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-amber-600' },
+                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-red-600' },
                     ].map(s => (
                       <div key={s.label} className="rounded-lg bg-muted/40 p-2">
                         <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -250,8 +250,8 @@ const Reports: React.FC = () => {
                         <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                         <Tooltip />
                         <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Bar dataKey="occupied" name="Occupied" stackId="a" fill="#22c55e" radius={[0,0,0,0]} />
-                        <Bar dataKey="vacant"   name="Vacant"   stackId="a" fill="#f1f5f9" radius={[3,3,0,0]} />
+                        <Bar dataKey="occupied" name="Occupied" stackId="a" fill="#C9A84C" radius={[0,0,0,0]} />
+                        <Bar dataKey="vacant"   name="Vacant"   stackId="a" fill="hsl(218 30% 88%)" radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-3 space-y-1.5">
@@ -352,7 +352,7 @@ const Reports: React.FC = () => {
                         <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" interval={0} />
                         <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${Math.round(v / 1000)}K`} />
                         <Tooltip formatter={(v: number) => fmt(v)} />
-                        <Bar dataKey="revenue" name="Revenue collected" fill="#6366f1" radius={[3,3,0,0]} />
+                        <Bar dataKey="revenue" name="Revenue collected" fill="#1E6FD9" radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-3 space-y-1.5 max-h-48 overflow-y-auto">
@@ -360,7 +360,7 @@ const Reports: React.FC = () => {
                         <div key={p.name} className="flex items-center gap-3 text-sm">
                           <span className="text-muted-foreground w-5 text-right text-xs">{i + 1}.</span>
                           <span className="flex-1 truncate">{p.name}</span>
-                          <span className="font-semibold text-indigo-700">{fmt(p.revenue)}</span>
+                          <span className="font-semibold text-blue-600 dark:text-blue-400">{fmt(p.revenue)}</span>
                         </div>
                       ))}
                     </div>

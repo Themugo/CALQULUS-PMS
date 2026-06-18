@@ -130,7 +130,7 @@ export function NotificationsDropdown() {
                   onClick={() => handleClick(notif)}
                   className={cn(
                     "flex items-start gap-3 px-3 py-3 cursor-pointer border-b border-border/50 last:border-0 transition-colors",
-                    notif.is_read ? "hover:bg-muted/40" : "bg-primary/5 hover:bg-primary/10",
+                    notif.is_read ? "hover:bg-muted/40" : "bg-amber-400/6 hover:bg-amber-400/10",
                     notif.action_url ? "cursor-pointer" : "cursor-default"
                   )}
                 >
@@ -142,7 +142,7 @@ export function NotificationsDropdown() {
                       <p className={cn("text-xs font-medium truncate", !notif.is_read && "font-semibold")}>
                         {notif.title}
                       </p>
-                      {!notif.is_read && <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+                      {!notif.is_read && <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.body}</p>
                     <p className="text-xs text-muted-foreground/60 mt-1">

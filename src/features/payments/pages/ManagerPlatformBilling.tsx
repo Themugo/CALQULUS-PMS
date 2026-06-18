@@ -133,8 +133,8 @@ const ContractCard = ({
       <CardContent className="p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <FileText className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-lg bg-amber-400/10 flex items-center justify-center flex-shrink-0">
+              <FileText className="h-5 w-5 text-amber-500" />
             </div>
             <div className="min-w-0">
               <h3 className="font-semibold text-foreground truncate">{contract.title}</h3>
@@ -594,8 +594,8 @@ const ManagerPlatformBilling = () => {
       }
 
       const message = type === 'invoice' 
-        ? `📄 CALQULUS RMS Invoice\n\nInvoice: ${invoice.invoice_number}\nAmount: ${formatCurrency(invoice.amount)}\nDue: ${format(new Date(invoice.due_date), "dd/MM/yy")}\nDescription: ${invoice.description || "Platform fee"}\n\nPlease log in to pay.`
-        : `✅ CALQULUS RMS Receipt\n\nReceipt: ${invoice.invoice_number.replace("INV-", "RCP-")}\nAmount: ${formatCurrency(invoice.amount)}\nPaid: ${invoice.paid_date ? format(new Date(invoice.paid_date), "dd/MM/yy") : "N/A"}\n\nThank you for your payment!`;
+        ? `📄 CALQULUS PMS Invoice\n\nInvoice: ${invoice.invoice_number}\nAmount: ${formatCurrency(invoice.amount)}\nDue: ${format(new Date(invoice.due_date), "dd/MM/yy")}\nDescription: ${invoice.description || "Platform fee"}\n\nPlease log in to pay.`
+        : `✅ CALQULUS PMS Receipt\n\nReceipt: ${invoice.invoice_number.replace("INV-", "RCP-")}\nAmount: ${formatCurrency(invoice.amount)}\nPaid: ${invoice.paid_date ? format(new Date(invoice.paid_date), "dd/MM/yy") : "N/A"}\n\nThank you for your payment!`;
 
       const { data, error } = await supabase.functions.invoke("send-whatsapp-notification", {
         body: {
@@ -635,6 +635,7 @@ const ManagerPlatformBilling = () => {
 
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchInvoices();
       fetchContracts();
     }
@@ -646,9 +647,9 @@ const ManagerPlatformBilling = () => {
 
   if (loading) {
     return (
-      <Layout title="Platform Billing" subtitle="Invoices & Contracts with CALQULUS RMS">
+      <Layout title="Platform Billing" subtitle="Invoices & Contracts with CALQULUS PMS">
         <div className="flex items-center justify-center py-20">
-          <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+          <RefreshCw className="h-8 w-8 animate-spin text-amber-500" />
         </div>
       </Layout>
     );
@@ -721,7 +722,7 @@ Status: PAID
   return (
     <Layout 
       title="Platform Billing" 
-      subtitle="Invoices & Contracts with CALQULUS RMS"
+      subtitle="Invoices & Contracts with CALQULUS PMS"
       headerActions={headerActions}
     >
       <div className="space-y-6">
@@ -787,8 +788,8 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Receipt className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 rounded-full bg-amber-400/10 flex items-center justify-center">
+                      <Receipt className="h-6 w-6 text-amber-500" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Pending Invoices</p>
@@ -881,8 +882,8 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Calendar className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 rounded-full bg-amber-400/10 flex items-center justify-center">
+                      <Calendar className="h-6 w-6 text-amber-500" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Latest Payment</p>

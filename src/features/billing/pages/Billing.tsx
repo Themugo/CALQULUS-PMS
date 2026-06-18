@@ -186,7 +186,7 @@ const Billing = () => {
           body: {
             tenantEmail:   inserted.tenants.email,
             tenantName:    inserted.tenants.name,
-            companyName:   co?.company_name ?? "CALQULUS RMS",
+            companyName:   co?.company_name ?? "CALQULUS PMS",
             invoiceNumber: inserted.invoice_number,
             amount:        inserted.amount,
             dueDate:       inserted.due_date,
@@ -289,7 +289,7 @@ const Billing = () => {
 
         {/* ── Invoices tab ─────────────────────────────────────────────── */}
         <TabsContent value="invoices" className="space-y-4 sm:space-y-6">
-          <BillingStatsBar invoices={invoices} />
+          <BillingStatsBar invoices={invoices} isLoading={isLoading} />
 
           {/* Actions bar */}
           <div className="flex flex-col gap-3 sm:gap-4">
@@ -319,7 +319,7 @@ const Billing = () => {
               </Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-primary hover:bg-primary/90" disabled={!can("create_invoices")}>
+                  <Button className="btn-brand" disabled={!can("create_invoices")}>
                     <Plus className="h-4 w-4 mr-2" />Create Invoice
                   </Button>
                 </DialogTrigger>
@@ -407,7 +407,7 @@ const Billing = () => {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={editingInvoice.tenants.photo_url ?? undefined} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
+                  <AvatarFallback className="bg-amber-400 text-slate-900">
                     {editingInvoice.tenants.name?.split(" ").map(n => n[0]).join("") ?? "?"}
                   </AvatarFallback>
                 </Avatar>
@@ -452,7 +452,7 @@ const Billing = () => {
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleSaveEditInvoice}
-              className="bg-primary hover:bg-primary/90"
+              className="btn-brand"
               disabled={updateMutation.isPending}
             >
               {updateMutation.isPending

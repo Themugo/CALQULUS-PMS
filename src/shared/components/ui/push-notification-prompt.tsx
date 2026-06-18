@@ -22,6 +22,7 @@ export const PushNotificationPrompt = () => {
     // Check if already dismissed in this session
     const dismissed = localStorage.getItem("push-notification-dismissed");
     if (dismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }
@@ -57,10 +58,10 @@ export const PushNotificationPrompt = () => {
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm animate-in slide-in-from-top-5 fade-in duration-300">
-      <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-xl shadow-xl p-4 backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-amber-400/10 via-card to-card border border-amber-400/20 rounded-xl shadow-xl p-4 backdrop-blur-sm">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 animate-pulse">
-            <Bell className="h-5 w-5 text-primary" />
+          <div className="h-10 w-10 rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0 animate-pulse">
+            <Bell className="h-5 w-5 text-amber-500" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -75,7 +76,7 @@ export const PushNotificationPrompt = () => {
                 size="sm" 
                 onClick={handleEnable} 
                 disabled={isLoading}
-                className="h-8 bg-primary hover:bg-primary/90"
+                className="h-8 btn-brand"
               >
                 <Bell className="h-3.5 w-3.5 mr-1.5" />
                 {isLoading ? "Enabling..." : "Enable"}
@@ -150,10 +151,10 @@ export const NotificationSettingsCard = () => {
     <div className="flex items-center justify-between p-4 bg-card border rounded-lg">
       <div className="flex items-center gap-3">
         <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-          isSubscribed ? "bg-primary/10" : "bg-muted"
+          isSubscribed ? "bg-amber-400/10" : "bg-muted"
         }`}>
           {isSubscribed ? (
-            <Bell className="h-5 w-5 text-primary" />
+            <Bell className="h-5 w-5 text-amber-500" />
           ) : (
             <BellOff className="h-5 w-5 text-muted-foreground" />
           )}

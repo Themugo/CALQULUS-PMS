@@ -106,7 +106,7 @@ export function InvoiceTable({
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={invoice.tenants?.photo_url ?? undefined} />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
                       {invoice.tenants?.name?.split(" ").map(n => n[0]).join("") ?? "?"}
                     </AvatarFallback>
                   </Avatar>

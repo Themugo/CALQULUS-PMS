@@ -67,7 +67,7 @@ export function PropertyMaintenanceTab({ propertyName }: PropertyMaintenanceTabP
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Wrench className="h-5 w-5 text-primary" />
+            <Wrench className="h-5 w-5 text-amber-500" />
             Maintenance Requests
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">

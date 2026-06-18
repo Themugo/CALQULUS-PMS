@@ -237,7 +237,7 @@ const BroadcastCenter: React.FC = () => {
             await notify('send-invoice-email', {
               tenantEmail: tenant.email,
               tenantName: tenant.name,
-              companyName: 'CALQULUS RMS',
+              companyName: 'CALQULUS PMS',
               subject: subject || 'Message from your property manager',
               body: personalised,
             });
@@ -368,8 +368,8 @@ const BroadcastCenter: React.FC = () => {
                           }}
                           className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border text-xs transition-colors text-left ${
                             messageType === mt.value
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-border hover:border-primary/30 text-muted-foreground'
+                              ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                              : 'border-border hover:border-amber-400/30 text-muted-foreground'
                           }`}
                         >
                           <mt.icon className="h-3.5 w-3.5 shrink-0" />
@@ -430,13 +430,13 @@ const BroadcastCenter: React.FC = () => {
                       <div
                         key={ch.key}
                         onClick={() => ch.set(!ch.state)}
-                        className={`rounded-lg border p-3 cursor-pointer transition-colors ${ch.state ? 'border-primary bg-primary/5' : 'border-border'}`}
+                        className={`rounded-lg border p-3 cursor-pointer transition-colors ${ch.state ? 'border-amber-400/50 bg-amber-400/8' : 'border-border'}`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <ch.icon className={`h-4 w-4 ${ch.state ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <ch.icon className={`h-4 w-4 ${ch.state ? 'text-amber-500' : 'text-muted-foreground'}`} />
                           <Switch checked={ch.state} onCheckedChange={ch.set} className="scale-75" />
                         </div>
-                        <p className={`text-xs font-medium ${ch.state ? 'text-primary' : 'text-muted-foreground'}`}>{ch.label}</p>
+                        <p className={`text-xs font-medium ${ch.state ? 'text-amber-500' : 'text-muted-foreground'}`}>{ch.label}</p>
                         <p className="text-xs text-muted-foreground/70">{ch.desc}</p>
                       </div>
                     ))}
@@ -468,7 +468,7 @@ const BroadcastCenter: React.FC = () => {
                     {audienceTenants.slice(0, 30).map(t => (
                       <div key={t.id} className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted/50">
                         <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs bg-primary/10">
+                          <AvatarFallback className="text-xs bg-amber-400/10">
                             {t.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>

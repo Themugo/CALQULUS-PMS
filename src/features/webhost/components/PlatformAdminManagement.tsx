@@ -26,7 +26,7 @@ const ADMIN_TYPE_LABELS: Record<PlatformAdminType, string> = {
 const ADMIN_TYPE_BADGES: Record<PlatformAdminType, React.ReactNode> = {
   owner: <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Crown className="h-3 w-3 mr-1" />Owner</Badge>,
   business: <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Shield className="h-3 w-3 mr-1" />Business</Badge>,
-  admin: <Badge variant="outline" className="border-purple-300 text-purple-700"><User className="h-3 w-3 mr-1" />Admin</Badge>,
+  admin: <Badge variant="outline" className="border-blue-200 text-purple-700"><User className="h-3 w-3 mr-1" />Admin</Badge>,
 };
 
 const SUSPENSION_RULES = {
@@ -285,7 +285,7 @@ const PlatformAdminManagement = () => {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
           </div>
         ) : !canManage ? (
           <div className="text-center py-8 text-muted-foreground">

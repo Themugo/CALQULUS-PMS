@@ -93,6 +93,7 @@ export function TenantsOverview() {
   }, [assignedPropertyIds, generateSignedUrls, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenants();
 
     const channel = supabase
@@ -143,13 +144,13 @@ export function TenantsOverview() {
     <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-white via-white to-slate-50/50 p-4 sm:p-6 shadow-sm animate-fade-in backdrop-blur-sm">
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground flex items-center gap-2">
-          <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 p-2">
-            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <div className="rounded-lg bg-gradient-to-br from-amber-400/18 to-amber-400/8 p-2">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
           </div>
           Recent Tenants
         </h3>
         <Link to="/tenants">
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 hover:bg-primary/5 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
+          <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-500 hover:bg-amber-400/8 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
             View All
             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
           </Button>
@@ -163,7 +164,7 @@ export function TenantsOverview() {
           </div>
           <p className="text-muted-foreground text-sm sm:text-base font-medium mb-3 sm:mb-4">No tenants yet</p>
           <Link to="/tenants">
-            <Button variant="outline" size="sm" className="h-9 sm:h-10 text-xs sm:text-sm rounded-xl border-2 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200">
+            <Button variant="outline" size="sm" className="h-9 sm:h-10 text-xs sm:text-sm rounded-xl border-2 hover:bg-amber-400 hover:text-slate-900 hover:border-amber-400 transition-all duration-200">
               Add Tenant
             </Button>
           </Link>
@@ -177,9 +178,9 @@ export function TenantsOverview() {
               className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/20 hover:from-muted/50 hover:to-muted/40 border border-border/30 hover:border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 animate-slide-in touch-manipulation"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-border/50 group-hover:border-primary/30 transition-all duration-300">
+              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-border/50 group-hover:border-amber-400/30 transition-all duration-300">
                 <AvatarImage src={signedUrls[tenant.id]} alt={tenant.name} />
-                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary text-sm sm:text-base font-semibold">
+                <AvatarFallback className="bg-gradient-to-br from-amber-400/18 to-amber-400/8 text-amber-600 text-sm sm:text-base font-semibold">
                   {getInitials(tenant.name)}
                 </AvatarFallback>
               </Avatar>

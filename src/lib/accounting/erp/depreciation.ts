@@ -262,7 +262,7 @@ export class FixedAssetManager {
       return null;
     }
 
-    let depreciation = 0;
+    let depreciation: number;
 
     switch (asset.depreciationMethod) {
       case DepreciationMethod.STRAIGHT_LINE:

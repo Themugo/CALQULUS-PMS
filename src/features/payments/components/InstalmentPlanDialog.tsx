@@ -36,7 +36,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
 
   const [instalments, setInstalments] = useState('2');
   const [firstPaymentDate, setFirstPaymentDate] = useState(
-    new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
+    () => new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
   );
   const [frequency, setFrequency] = useState('weekly');
   const [depositPct, setDepositPct] = useState('0');
@@ -116,7 +116,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-primary" />
+            <CreditCard className="h-5 w-5 text-amber-500" />
             Create instalment plan
           </DialogTitle>
           <DialogDescription>
@@ -170,9 +170,9 @@ const InstalmentPlanDialog: React.FC<Props> = ({
           </div>
 
           {/* Per-instalment amount */}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-amber-400/6 border border-amber-400/20">
             <span className="text-sm font-medium">Each instalment</span>
-            <span className="text-lg font-bold text-primary">{fmt(perInstalment)}</span>
+            <span className="text-lg font-bold text-amber-500">{fmt(perInstalment)}</span>
           </div>
 
           {/* Notes */}

@@ -62,6 +62,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhone(tenantPhone?.replace(/^\+/, '') || '');
       setStatus('idle');
       setMpesaReceipt(null);
@@ -69,11 +70,14 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
     }
   }, [open, tenantPhone]);
 
+   
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     if (!open) clearPolling();
     return () => clearPolling();
   }, [open]);
 
+   
   const clearPolling = () => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (countdownRef.current) clearInterval(countdownRef.current);

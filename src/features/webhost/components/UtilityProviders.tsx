@@ -336,7 +336,7 @@ const UtilityProviders = () => {
       case 'gas':
         return <Badge variant="outline" className="text-orange-300 border-orange-700"><Flame className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'internet':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Wifi className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Wifi className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'waste':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Trash2 className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
@@ -355,13 +355,13 @@ const UtilityProviders = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Utility Providers</h2>
-          <p className="text-purple-300 text-sm mt-1">Connect with utility providers for essential services</p>
+          <p className="text-amber-400/70 text-sm mt-1">Connect with utility providers for essential services</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -369,7 +369,7 @@ const UtilityProviders = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -379,85 +379,85 @@ const UtilityProviders = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Zap className="h-4 w-4 text-purple-400" />
+              <Zap className="h-4 w-4 text-amber-500" />
               Total Providers
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalProviders}</div>
-            <div className="text-sm text-purple-300">Utility companies</div>
+            <div className="text-sm text-amber-400/70">Utility companies</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-purple-400" />
+              <Activity className="h-4 w-4 text-amber-500" />
               Active Connections
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeConnections}</div>
-            <div className="text-sm text-purple-300">Currently connected</div>
+            <div className="text-sm text-amber-400/70">Currently connected</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-400" />
+              <Clock className="h-4 w-4 text-amber-500" />
               Pending Bills
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{pendingBills}</div>
-            <div className="text-sm text-purple-300">Awaiting payment</div>
+            <div className="text-sm text-amber-400/70">Awaiting payment</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-purple-400" />
+              <DollarSign className="h-4 w-4 text-amber-500" />
               Monthly Cost
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">KES {totalMonthlyCost.toLocaleString()}</div>
-            <div className="text-sm text-purple-300">Total utilities</div>
+            <div className="text-sm text-amber-400/70">Total utilities</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="providers" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="providers" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Providers
           </TabsTrigger>
-          <TabsTrigger value="connections" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="connections" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Connections
           </TabsTrigger>
-          <TabsTrigger value="billing" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="billing" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Billing
           </TabsTrigger>
-          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Award className="h-4 w-4 mr-2" />
             Performance
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="providers">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Utility Providers Directory</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Browse and connect with utility service providers
               </CardDescription>
             </CardHeader>
@@ -465,18 +465,18 @@ const UtilityProviders = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search providers..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="electricity">Electricity</option>
@@ -490,7 +490,7 @@ const UtilityProviders = () => {
               {/* Providers List */}
               <div className="grid gap-4 md:grid-cols-2">
                 {filteredProviders.map((provider) => (
-                  <div key={provider.id} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={provider.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -504,40 +504,40 @@ const UtilityProviders = () => {
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-white font-medium">{provider.rating}</span>
-                        <span className="text-purple-300 text-sm">({provider.reviewCount})</span>
+                        <span className="text-amber-400/70 text-sm">({provider.reviewCount})</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
                       {provider.services.slice(0, 3).map((service, idx) => (
-                        <Badge key={idx} variant="outline" className="text-purple-300 border-purple-700 text-xs">
+                        <Badge key={idx} variant="outline" className="text-amber-400/70 border-amber-400/30 text-xs">
                           {service}
                         </Badge>
                       ))}
                     </div>
                     <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <MapPin className="h-3 w-3" />
                         {provider.location}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Clock className="h-3 w-3" />
                         {provider.averageResponseTime}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <DollarSign className="h-3 w-3" />
                         {provider.rateRange}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Target className="h-3 w-3" />
                         {provider.coverageArea}
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-purple-300">
+                      <div className="flex items-center gap-2 text-sm text-amber-400/70">
                         <Activity className="h-3 w-3" />
                         {provider.activeConnections} connections
                       </div>
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         Request Connection
                       </Button>
                     </div>
@@ -549,29 +549,29 @@ const UtilityProviders = () => {
         </TabsContent>
 
         <TabsContent value="connections">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Utility Connections</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Manage utility service connections
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {utilityConnections.map((connection) => (
-                  <div key={connection.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={connection.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{connection.providerName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{connection.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{connection.id}</span>
                           {getTypeBadge(connection.utilityType)}
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(connection.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Building2 className="h-3 w-3" />
                           {connection.propertyName} - {connection.unit}
@@ -581,7 +581,7 @@ const UtilityProviders = () => {
                           {connection.connectionType}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Connected: {connection.connectionDate.toLocaleDateString()}
@@ -591,7 +591,7 @@ const UtilityProviders = () => {
                           Monthly: KES {connection.monthlyRate.toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Gauge className="h-3 w-3" />
                           Reading: {connection.currentReading} (prev: {connection.previousReading})
@@ -617,29 +617,29 @@ const UtilityProviders = () => {
         </TabsContent>
 
         <TabsContent value="billing">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Utility Billing</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track and manage utility bills
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {utilityBills.map((bill) => (
-                  <div key={bill.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={bill.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{bill.providerName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{bill.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{bill.id}</span>
                           {getTypeBadge(bill.utilityType)}
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(bill.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Building2 className="h-3 w-3" />
                           {bill.propertyName} - {bill.unit}
@@ -649,7 +649,7 @@ const UtilityProviders = () => {
                           {bill.billingPeriod}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Gauge className="h-3 w-3" />
                           Consumption: {bill.consumption} units
@@ -659,7 +659,7 @@ const UtilityProviders = () => {
                           Rate: KES {bill.rate}/unit
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
                           Amount: KES {bill.amount.toLocaleString()}
@@ -683,45 +683,45 @@ const UtilityProviders = () => {
         </TabsContent>
 
         <TabsContent value="performance">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Provider Performance</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Track utility provider performance metrics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {providerPerformance.map((perf) => (
-                  <div key={perf.providerId} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={perf.providerId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-white font-medium">{perf.providerName}</span>
-                      <Badge variant="outline" className="text-purple-300 border-purple-700">
+                      <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         {perf.totalConnections} connections
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.reliability}%</div>
-                        <div className="text-xs text-purple-300">Reliability</div>
+                        <div className="text-xs text-amber-400/70">Reliability</div>
                         <Progress value={perf.reliability} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.customerSatisfaction}/5</div>
-                        <div className="text-xs text-purple-300">Satisfaction</div>
+                        <div className="text-xs text-amber-400/70">Satisfaction</div>
                         <Progress value={(perf.customerSatisfaction / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.outageRate}%</div>
-                        <div className="text-xs text-purple-300">Outage Rate</div>
+                        <div className="text-xs text-amber-400/70">Outage Rate</div>
                         <Progress value={perf.outageRate * 10} className="h-2 mt-1" />
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-white">{perf.resolutionTime}</div>
-                        <div className="text-xs text-purple-300">Resolution Time</div>
+                        <div className="text-xs text-amber-400/70">Resolution Time</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-purple-300">
+                    <div className="flex items-center gap-4 text-sm text-amber-400/70">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         Avg Response: {perf.averageResponseTime}

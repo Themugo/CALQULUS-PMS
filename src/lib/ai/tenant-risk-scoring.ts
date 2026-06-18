@@ -130,8 +130,8 @@ function analyzeRiskFactors(
  * Calculate credit score factor
  */
 function calculateCreditScoreFactor(creditHistory: CreditHistory): RiskFactor {
-  let score = 0;
-  let impact = '';
+  let score: number;
+  let impact: string;
   
   if (creditHistory.creditScore >= 750) {
     score = 100;
@@ -168,7 +168,7 @@ function calculateCreditScoreFactor(creditHistory: CreditHistory): RiskFactor {
  */
 function calculatePaymentHistoryFactor(creditHistory: CreditHistory): RiskFactor {
   let score = 100;
-  let impact = '';
+  let impact: string;
   
   // Deduct for late payments
   score -= creditHistory.latePayments * 10;
@@ -197,7 +197,7 @@ function calculatePaymentHistoryFactor(creditHistory: CreditHistory): RiskFactor
  */
 function calculateRentalHistoryFactor(rentalHistory: RentalHistory): RiskFactor {
   let score = 50;
-  let impact = '';
+  let impact: string;
   
   // Positive for previous rental experience
   if (rentalHistory.previousLandlords > 0) {
@@ -241,8 +241,8 @@ function calculateRentalHistoryFactor(rentalHistory: RentalHistory): RiskFactor 
  * Calculate employment factor
  */
 function calculateEmploymentFactor(employmentVerification: EmploymentVerification): RiskFactor {
-  let score = 0;
-  let impact = '';
+  let score: number;
+  let impact: string;
   
   if (!employmentVerification.isEmployed) {
     score = 20;
@@ -274,8 +274,8 @@ function calculateEmploymentFactor(employmentVerification: EmploymentVerificatio
  * Calculate income factor
  */
 function calculateIncomeFactor(employmentVerification: EmploymentVerification): RiskFactor {
-  let score = 50;
-  let impact = '';
+  let score: number;
+  let impact: string;
   
   if (!employmentVerification.incomeVerified) {
     score = 30;

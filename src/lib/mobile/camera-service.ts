@@ -54,7 +54,7 @@ export async function capturePhoto(options?: CameraOptions): Promise<CapturedIma
     return processedImage;
   } catch (error) {
     console.error('Failed to capture photo:', error);
-    throw new Error('Photo capture failed');
+    throw new Error('Photo capture failed', { cause: error });
   }
 }
 
@@ -79,7 +79,7 @@ export async function selectPhoto(options?: CameraOptions): Promise<CapturedImag
     return processedImage;
   } catch (error) {
     console.error('Failed to select photo:', error);
-    throw new Error('Photo selection failed');
+    throw new Error('Photo selection failed', { cause: error });
   }
 }
 
@@ -107,7 +107,7 @@ export async function captureDocument(options?: CameraOptions): Promise<Captured
     return processedImage;
   } catch (error) {
     console.error('Failed to capture document:', error);
-    throw new Error('Document capture failed');
+    throw new Error('Document capture failed', { cause: error });
   }
 }
 
@@ -237,7 +237,7 @@ export async function savePhotoToDevice(dataUrl: string, fileName: string): Prom
     return filePath;
   } catch (error) {
     console.error('Failed to save photo:', error);
-    throw new Error('Failed to save photo to device');
+    throw new Error('Failed to save photo to device', { cause: error });
   }
 }
 
@@ -255,7 +255,7 @@ export async function loadPhotoFromDevice(filePath: string): Promise<string> {
     return dataUrl;
   } catch (error) {
     console.error('Failed to load photo:', error);
-    throw new Error('Failed to load photo from device');
+    throw new Error('Failed to load photo from device', { cause: error });
   }
 }
 
@@ -270,7 +270,7 @@ export async function deletePhotoFromDevice(filePath: string): Promise<void> {
     });
   } catch (error) {
     console.error('Failed to delete photo:', error);
-    throw new Error('Failed to delete photo from device');
+    throw new Error('Failed to delete photo from device', { cause: error });
   }
 }
 

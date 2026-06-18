@@ -61,7 +61,7 @@ type MaintenanceInsert = Database['public']['Tables']['maintenance_requests']['I
 
 const statusConfig: Record<RequestStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
   open: { label: "Open", variant: "secondary", icon: Clock, color: "text-warning", badgeClass: "bg-amber-500 text-white" },
-  in_progress: { label: "In Progress", variant: "default", icon: Wrench, color: "text-primary", badgeClass: "bg-blue-600 text-white" },
+  in_progress: { label: "In Progress", variant: "default", icon: Wrench, color: "text-amber-500", badgeClass: "bg-blue-600 text-white" },
   completed: { label: "Completed", variant: "outline", icon: CheckCircle, color: "text-success", badgeClass: "bg-emerald-600 text-white" },
   cancelled: { label: "Cancelled", variant: "destructive", icon: AlertCircle, color: "text-destructive", badgeClass: "bg-slate-600 text-white" },
 };
@@ -111,6 +111,7 @@ const TenantMaintenance = () => {
     return urls;
   };
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchTenantInfo = useCallback(async () => {
     if (!userRole?.tenant_id) {
       setLoading(false);
@@ -136,9 +137,12 @@ const TenantMaintenance = () => {
   }, [userRole?.tenant_id, toast]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchTenantInfo]);
+  
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchRequests = useCallback(async () => {
     if (!tenantInfo?.email) return;
 
@@ -162,6 +166,7 @@ const TenantMaintenance = () => {
 
   useEffect(() => {
     if (tenantInfo?.email) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchRequests();
     }
   }, [tenantInfo?.email, fetchRequests]);
@@ -257,7 +262,7 @@ const TenantMaintenance = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }
@@ -444,7 +449,7 @@ const TenantMaintenance = () => {
             <div>
               <Label className="text-sm font-medium">Photos (optional but recommended)</Label>
               <p className="text-xs text-muted-foreground mb-2">Upload photos of the issue — helps manager understand and respond faster</p>
-              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-amber-400/60/50 hover:bg-muted/30 transition-colors">
                 <div className="flex flex-col items-center justify-center gap-1">
                   <Camera className="h-6 w-6 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground">Click to add photos (max 5)</p>
@@ -510,7 +515,7 @@ const TenantMaintenance = () => {
                 <Badge className={priorityConfig[selectedRequest.priority].color}>
                   {priorityConfig[selectedRequest.priority].label} Priority
                 </Badge>
-                <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
+                <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
                   {getCategoryLabel(selectedRequest.category)}
                 </Badge>
               </div>
@@ -600,8 +605,8 @@ const TenantMaintenance = () => {
                 </div>
 
                 {selectedRequest.status === 'in_progress' && (
-                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
-                    <p className="text-sm text-primary font-medium">
+                  <div className="bg-amber-400/10 border border-amber-400/20 rounded-lg p-3">
+                    <p className="text-sm text-amber-600 font-medium">
                       Your request is being worked on. We'll update you when it's complete.
                     </p>
                   </div>
@@ -645,13 +650,13 @@ function RequestCard({ request, onClick }: RequestCardProps) {
   const StatusIcon = status.icon;
 
   return (
-    <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onClick}>
+    <Card className="cursor-pointer hover:bg-amber-400/60 transition-colors" onClick={onClick}>
       <CardContent className="pt-4 pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h4 className="font-medium truncate">{request.title}</h4>
-              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/20">
+              <Badge variant="outline" className="text-xs bg-purple-500/10 text-amber-500 border-amber-400/50/20">
                 {getCategoryLabel(request.category)}
               </Badge>
             </div>

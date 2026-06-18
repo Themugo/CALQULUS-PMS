@@ -28,7 +28,7 @@ const STATUS_STYLE: Record<string, string> = {
   pending:   'bg-amber-100 text-amber-800 border-amber-200',
   paid:      'bg-green-100 text-green-800 border-green-200',
   overdue:   'bg-red-100 text-red-800 border-red-200',
-  cancelled: 'bg-slate-100 text-slate-500 border-slate-200',
+  cancelled: 'bg-slate-100 text-muted-foreground/70 border-slate-200',
 };
 
 interface ManagerRow {
@@ -131,12 +131,12 @@ const ManagerBillingDrilldown: React.FC = () => {
       {/* Summary row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total billed (all time)', value: fmt(managers.reduce((s, m) => s + m.total_billed, 0)), color: 'text-purple-400' },
+          { label: 'Total billed (all time)', value: fmt(managers.reduce((s, m) => s + m.total_billed, 0)), color: 'text-amber-500' },
           { label: 'Total collected',         value: fmt(managers.reduce((s, m) => s + m.total_paid,   0)), color: 'text-green-400' },
           { label: 'Outstanding',             value: fmt(managers.reduce((s, m) => s + m.outstanding,  0)), color: 'text-amber-400' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-purple-800/30 bg-slate-900/40 p-3">
-            <p className="text-xs text-slate-400 mb-1">{k.label}</p>
+          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-slate-900/40 p-3">
+            <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
             <p className={`text-lg font-bold ${k.color}`}>{k.value}</p>
           </div>
         ))}
@@ -144,10 +144,10 @@ const ManagerBillingDrilldown: React.FC = () => {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search by name, email, agency…"
-          className="pl-9 bg-slate-800/50 border-slate-600 text-white" />
+          className="pl-9 bg-card border-border/60 text-white" />
       </div>
 
       {/* Manager rows */}
@@ -156,7 +156,7 @@ const ManagerBillingDrilldown: React.FC = () => {
       ) : (
         <div className="space-y-1.5">
           {filtered.map(m => (
-            <div key={m.user_id} className="rounded-xl border border-purple-800/20 bg-slate-900/30 overflow-hidden">
+            <div key={m.user_id} className="rounded-xl border border-purple-800/20 bg-muted/20 overflow-hidden">
               {/* Manager row */}
               <div
                 className="flex items-center gap-3 p-3 cursor-pointer hover:bg-purple-900/10 transition-colors"
@@ -166,34 +166,34 @@ const ManagerBillingDrilldown: React.FC = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-white">{m.full_name ?? m.email}</p>
                     {m.subscription_tier && (
-                      <Badge variant="outline" className="text-xs capitalize border-purple-700/50 text-purple-300">{m.subscription_tier}</Badge>
+                      <Badge variant="outline" className="text-xs capitalize border-amber-400/20 text-amber-400/70">{m.subscription_tier}</Badge>
                     )}
                     {m.status === 'suspended_nonpayment' && (
                       <Badge variant="outline" className="text-xs bg-red-100 text-red-800 border-red-200">Suspended — non-payment</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400">{m.agency_name ?? m.email}</p>
+                  <p className="text-xs text-muted-foreground">{m.agency_name ?? m.email}</p>
                 </div>
                 <div className="flex items-center gap-4 shrink-0 text-xs">
                   <div className="text-center hidden sm:block">
-                    <p className="text-slate-400">Properties</p>
+                    <p className="text-muted-foreground">Properties</p>
                     <p className="font-medium text-white">{m.property_count}</p>
                   </div>
                   <div className="text-center hidden sm:block">
-                    <p className="text-slate-400">Outstanding</p>
+                    <p className="text-muted-foreground">Outstanding</p>
                     <p className={`font-semibold ${m.outstanding > 0 ? 'text-amber-400' : 'text-green-400'}`}>{fmt(m.outstanding)}</p>
                   </div>
                   <div className="text-center hidden md:block">
-                    <p className="text-slate-400">Collected</p>
+                    <p className="text-muted-foreground">Collected</p>
                     <p className="font-medium text-green-400">{fmt(m.total_paid)}</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 text-xs text-purple-300 gap-1"
+                  <Button size="sm" variant="ghost" className="h-7 text-xs text-amber-400/70 gap-1"
                     onClick={e => { e.stopPropagation(); setNewInvoiceFor(m); setNewAmount(''); setNewDesc(''); }}>
                     <Plus className="h-3.5 w-3.5" />Invoice
                   </Button>
                   {expanded === m.user_id
-                    ? <ChevronDown className="h-4 w-4 text-slate-400" />
-                    : <ChevronRight className="h-4 w-4 text-slate-400" />}
+                    ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </div>
               </div>
 
@@ -267,7 +267,7 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
   });
 
   if (isLoading) return <div className="p-3"><Skeleton className="h-20 w-full bg-slate-700/30" /></div>;
-  if (!invoices.length) return <p className="p-3 text-xs text-slate-500">No invoices yet.</p>;
+  if (!invoices.length) return <p className="p-3 text-xs text-muted-foreground/70">No invoices yet.</p>;
 
   return (
     <div className="border-t border-purple-800/20 bg-slate-950/30 px-3 pb-3 pt-2">
@@ -275,18 +275,18 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
         <TableHeader>
           <TableRow className="border-purple-800/20 hover:bg-transparent">
             {['Invoice #', 'Type', 'Amount', 'Due', 'Paid', 'Status', ''].map(h => (
-              <TableHead key={h} className="text-purple-400 text-xs py-1">{h}</TableHead>
+              <TableHead key={h} className="text-amber-500 text-xs py-1">{h}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
           {invoices.map((inv: { id: string; invoice_number: string; invoice_type: string; amount: number; due_date: string; paid_date: string | null; status: string }) => (
             <TableRow key={inv.id} className="border-purple-800/10 hover:bg-purple-900/5">
-              <TableCell className="font-mono text-xs text-slate-300 py-1.5">{inv.invoice_number}</TableCell>
-              <TableCell className="text-xs text-slate-400 py-1.5 capitalize">{inv.invoice_type?.replace(/_/g, ' ')}</TableCell>
+              <TableCell className="font-mono text-xs text-foreground/90 py-1.5">{inv.invoice_number}</TableCell>
+              <TableCell className="text-xs text-muted-foreground py-1.5 capitalize">{inv.invoice_type?.replace(/_/g, ' ')}</TableCell>
               <TableCell className="text-sm font-medium text-white py-1.5">{fmt(Number(inv.amount))}</TableCell>
-              <TableCell className="text-xs text-slate-400 py-1.5">{format(new Date(inv.due_date), 'dd/MM/yy')}</TableCell>
-              <TableCell className="text-xs text-slate-400 py-1.5">{inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : '—'}</TableCell>
+              <TableCell className="text-xs text-muted-foreground py-1.5">{format(new Date(inv.due_date), 'dd/MM/yy')}</TableCell>
+              <TableCell className="text-xs text-muted-foreground py-1.5">{inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : '—'}</TableCell>
               <TableCell className="py-1.5">
                 <Badge variant="outline" className={`text-xs ${STATUS_STYLE[inv.status] ?? ''}`}>{inv.status}</Badge>
               </TableCell>

@@ -4,24 +4,19 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/shared/components/ui/dialog';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Mail, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle, Lock } from 'lucide-react';
 
 interface ForgotPasswordDialogProps {
   trigger?: React.ReactNode;
   variant?: 'default' | 'landlord' | 'tenant';
 }
 
-const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({ 
-  trigger, 
-  variant = 'default' 
+const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
+  trigger,
+  variant = 'default',
 }) => {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
@@ -32,152 +27,98 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    const portal = variant === 'tenant' ? 'tenant' : variant === 'landlord' ? 'manager' : 'manager';
+    const portal = variant === 'tenant' ? 'tenant' : 'manager';
     const redirectUrl = `${window.location.origin}/reset-password?portal=${portal}`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    });
-
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
     if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } else {
       setEmailSent(true);
-      toast({
-        title: 'Email sent!',
-        description: 'Check your inbox for the password reset link.',
-      });
     }
-
     setIsSubmitting(false);
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    // Reset state after dialog closes
-    setTimeout(() => {
-      setEmail('');
-      setEmailSent(false);
-    }, 300);
+    setTimeout(() => { setEmail(''); setEmailSent(false); }, 300);
   };
 
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'landlord':
-        return {
-          iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
-          inputClass: 'bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-amber-500 focus:ring-amber-500',
-          buttonClass: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white',
-          textClass: 'text-slate-300',
-          mutedClass: 'text-slate-400',
-        };
-      case 'tenant':
-        return {
-          iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-          inputClass: 'bg-slate-800/50 border-emerald-700/50 text-white placeholder:text-emerald-400/50 focus:border-emerald-500 focus:ring-emerald-500',
-          buttonClass: 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white',
-          textClass: 'text-emerald-200',
-          mutedClass: 'text-slate-400',
-        };
-      default:
-        return {
-          iconBg: 'bg-primary',
-          inputClass: '',
-          buttonClass: '',
-          textClass: '',
-          mutedClass: 'text-muted-foreground',
-        };
-    }
-  };
-
-  const styles = getVariantStyles();
+  // All variants now use the same clean CALQULUS design system
+  const isDark = variant !== 'default';
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <button type="button" className="text-primary hover:underline text-sm">
+          <button type="button" className="text-amber-600 hover:text-amber-500 text-sm font-medium">
             Forgot password?
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className={variant !== 'default' ? 'bg-slate-800 border-slate-700' : ''}>
+      <DialogContent className={isDark
+        ? 'border-white/10 bg-[#0F1E36] backdrop-blur-xl text-white'
+        : ''}>
         <DialogHeader>
           <div className="flex justify-center mb-4">
-            <div className={`h-12 w-12 rounded-xl ${styles.iconBg} flex items-center justify-center`}>
-              {emailSent ? (
-                <CheckCircle className="h-6 w-6 text-white" />
-              ) : (
-                <Mail className="h-6 w-6 text-white" />
-              )}
+            <div className="h-12 w-12 rounded-xl bg-amber-400/15 border border-amber-400/25 flex items-center justify-center shadow-sm">
+              {emailSent
+                ? <CheckCircle className="h-6 w-6 text-emerald-400" />
+                : <Mail className="h-6 w-6 text-amber-400" />
+              }
             </div>
           </div>
-          <DialogTitle className={variant !== 'default' ? 'text-white text-center' : 'text-center'}>
-            {emailSent ? 'Check Your Email' : 'Reset Password'}
+          <DialogTitle className={`text-center ${isDark ? 'text-white' : ''}`}>
+            {emailSent ? 'Check your email' : 'Reset your password'}
           </DialogTitle>
-          <DialogDescription className={`text-center ${styles.mutedClass}`}>
-            {emailSent 
-              ? `We've sent a password reset link to ${email}`
-              : "Enter your email address and we'll send you a link to reset your password."
+          <DialogDescription className={`text-center ${isDark ? 'text-white/50' : ''}`}>
+            {emailSent
+              ? `We sent a reset link to ${email}`
+              : "Enter your email and we'll send a link to reset your password."
             }
           </DialogDescription>
         </DialogHeader>
-        
+
         {emailSent ? (
-          <div className="space-y-4 py-4">
-            <p className={`text-sm text-center ${styles.mutedClass}`}>
-              Didn't receive the email? Check your spam folder or try again.
+          <div className="space-y-4 py-2">
+            <p className={`text-sm text-center ${isDark ? 'text-white/40' : 'text-muted-foreground'}`}>
+              Didn't receive it? Check your spam folder or try again.
             </p>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setEmailSent(false)}
-              >
-                Try Again
+              <Button variant="outline" className={`flex-1 ${isDark ? 'border-white/15 text-white/70 hover:bg-white/8' : ''}`}
+                onClick={() => setEmailSent(false)}>
+                Try again
               </Button>
-              <Button 
-                className={`flex-1 ${styles.buttonClass}`}
-                onClick={handleClose}
-              >
+              <Button className="flex-1 btn-brand font-semibold" onClick={handleClose}>
                 Close
               </Button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleResetRequest} className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="reset-email" className={styles.textClass}>Email</Label>
-              <Input
-                id="reset-email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={styles.inputClass}
-              />
+          <form onSubmit={handleResetRequest} className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="reset-email" className={isDark ? 'text-white/70' : ''}>
+                Email address
+              </Label>
+              <div className="relative">
+                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-white/30' : 'text-muted-foreground/50'}`} />
+                <Input
+                  id="reset-email" type="email" placeholder="you@example.com"
+                  value={email} onChange={e => setEmail(e.target.value)} required
+                  className={`pl-9 ${isDark
+                    ? 'bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20'
+                    : ''
+                  }`}
+                />
+              </div>
             </div>
             <div className="flex gap-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="flex-1"
-                onClick={handleClose}
-              >
+              <Button type="button" variant="outline"
+                className={`flex-1 ${isDark ? 'border-white/15 text-white/70 hover:bg-white/8' : ''}`}
+                onClick={handleClose}>
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                className={`flex-1 ${styles.buttonClass}`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+              <Button type="submit" className="flex-1 btn-brand font-semibold" disabled={isSubmitting}>
+                {isSubmitting ? 'Sending…' : 'Send reset link'}
               </Button>
             </div>
           </form>

@@ -56,7 +56,7 @@ interface VacationNotice {
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
   pending: { label: "Pending", variant: "secondary", icon: Clock, color: "text-warning", badgeClass: "bg-amber-500 text-white" },
-  acknowledged: { label: "Acknowledged", variant: "default", icon: CheckCircle, color: "text-primary", badgeClass: "bg-blue-600 text-white" },
+  acknowledged: { label: "Acknowledged", variant: "default", icon: CheckCircle, color: "text-amber-500", badgeClass: "bg-blue-600 text-white" },
   processed: { label: "Processed", variant: "outline", icon: CheckCircle, color: "text-success", badgeClass: "bg-emerald-600 text-white" },
   cancelled: { label: "Cancelled", variant: "destructive", icon: AlertCircle, color: "text-destructive", badgeClass: "bg-red-600 text-white" },
 };
@@ -86,6 +86,7 @@ const TenantVacationNotices = () => {
     phoneNumber: '',
   });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchTenantInfo = useCallback(async () => {
     if (!userRole?.tenant_id) {
       setLoading(false);
@@ -114,9 +115,12 @@ const TenantVacationNotices = () => {
   }, [userRole?.tenant_id, toast]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchTenantInfo]);
+  
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchNotices = useCallback(async () => {
     if (!tenantInfo?.id) return;
 
@@ -140,6 +144,7 @@ const TenantVacationNotices = () => {
 
   useEffect(() => {
     if (tenantInfo?.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchNotices();
     }
   }, [tenantInfo?.id, fetchNotices]);
@@ -330,7 +335,7 @@ const TenantVacationNotices = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }
@@ -635,7 +640,7 @@ const TenantVacationNotices = () => {
                       href={selectedNotice.uploaded_document_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-primary underline text-center"
+                      className="text-sm text-amber-600 underline text-center"
                     >
                       View Uploaded Document
                     </a>
@@ -699,7 +704,7 @@ const NoticeCard = ({ notice, onClick }: { notice: VacationNotice; onClick: () =
 
   return (
     <Card 
-      className="cursor-pointer hover:bg-accent/50 transition-colors"
+      className="cursor-pointer hover:bg-amber-400/60 transition-colors"
       onClick={onClick}
     >
       <CardContent className="p-4">

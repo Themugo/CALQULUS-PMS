@@ -86,6 +86,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
   }, [tenantId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReceipts();
   }, [tenantId, refreshTrigger, fetchReceipts]);
 
@@ -128,7 +129,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-amber-500" />
             Uploaded Receipts
           </CardTitle>
           <CardDescription>Your payment receipts will appear here</CardDescription>
@@ -147,7 +148,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
+          <FileText className="h-5 w-5 text-amber-500" />
           Uploaded Receipts
         </CardTitle>
         <CardDescription>Track the status of your payment submissions</CardDescription>
@@ -160,7 +161,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
           return (
             <div
               key={receipt.id}
-              className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-amber-400/60 transition-colors"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">

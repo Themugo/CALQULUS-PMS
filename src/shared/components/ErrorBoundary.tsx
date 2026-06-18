@@ -6,6 +6,8 @@ import { logError } from '@/shared/lib/errorLogger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  compact?: boolean;      // small inline fallback for chart/widget slots
+  label?: string;         // e.g. "Revenue chart" for the error message
 }
 
 interface State {
@@ -24,29 +26,44 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[ErrorBoundary] Caught error:', error.message, errorInfo.componentStack);
     logError('ErrorBoundary', { error: error.message, componentStack: errorInfo.componentStack });
   }
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: null });
-  };
+  handleReset = () => this.setState({ hasError: false, error: null });
 
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
 
+      if (this.props.compact) {
+        return (
+          <div className="flex items-center justify-center gap-2 rounded-xl border border-border/60 bg-muted/20 p-4 h-full min-h-[80px]">
+            <AlertTriangle className="h-4 w-4 text-muted-foreground/50 flex-shrink-0" />
+            <span className="text-sm text-muted-foreground">
+              {this.props.label ? `${this.props.label} failed to load` : 'Failed to load'}
+            </span>
+            <button onClick={this.handleReset}
+              className="ml-1 text-xs text-muted-foreground underline hover:text-foreground transition-colors">
+              retry
+            </button>
+          </div>
+        );
+      }
+
       return (
-        <div className="min-h-[300px] flex items-center justify-center p-6">
-          <div className="text-center space-y-4 max-w-md">
-            <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
-            <h2 className="text-lg font-semibold text-foreground">Something went wrong</h2>
-            <p className="text-sm text-muted-foreground">
-              An unexpected error occurred. Please try again.
-            </p>
-            <Button onClick={this.handleReset} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Try Again
+        <div className="min-h-[200px] flex items-center justify-center p-6">
+          <div className="text-center space-y-3 max-w-sm">
+            <div className="h-10 w-10 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center mx-auto">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <p className="font-medium text-sm text-foreground">
+                {this.props.label ? `${this.props.label} failed to load` : 'Something went wrong'}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">An unexpected error occurred in this section.</p>
+            </div>
+            <Button onClick={this.handleReset} variant="outline" size="sm" className="gap-1.5">
+              <RefreshCw className="h-3.5 w-3.5" /> Try again
             </Button>
           </div>
         </div>

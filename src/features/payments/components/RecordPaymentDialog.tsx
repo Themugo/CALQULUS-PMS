@@ -256,7 +256,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
               />
               {enteredAmount > 0 && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  {isOverpayment && <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-xs">Advance</Badge>}
+                  {isOverpayment && <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">Advance</Badge>}
                   {isPartial && <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">Partial</Badge>}
                   {isExact && <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">Exact</Badge>}
                 </div>
@@ -281,8 +281,8 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
                   onClick={() => setMethod(m.value)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-colors text-xs ${
                     method === m.value
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-border hover:border-primary/40 text-muted-foreground'
+                      ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                      : 'border-border hover:border-amber-400/40 text-muted-foreground'
                   }`}
                 >
                   <m.icon className="h-3.5 w-3.5 flex-shrink-0" />

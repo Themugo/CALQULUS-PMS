@@ -66,7 +66,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
     try {
       const co = await getCompanySettings();
       const { error } = await supabase.functions.invoke("send-receipt-email", {
-        body: { tenantEmail: inv.tenants.email, tenantName: inv.tenants.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS RMS" },
+        body: { tenantEmail: inv.tenants.email, tenantName: inv.tenants.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS PMS" },
       });
       if (error) throw error;
       toast({ title: "Receipt Sent", description: `Receipt emailed to ${inv.tenants.name}.` });
@@ -85,7 +85,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
       const inv = receiptsForBulkEmail[i];
       try {
         const { error } = await supabase.functions.invoke("send-receipt-email", {
-          body: { tenantEmail: inv.tenants!.email, tenantName: inv.tenants!.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS RMS" },
+          body: { tenantEmail: inv.tenants!.email, tenantName: inv.tenants!.name, invoiceNumber: inv.invoice_number, amount: inv.amount, paidDate: inv.paid_date, property: inv.leases?.property ?? "N/A", unit: inv.leases?.unit ?? "N/A", companyName: co?.company_name ?? "CALQULUS PMS" },
         });
         if (error) throw error;
         ok++;
@@ -130,7 +130,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
         {[
           { label: "Total Receipts", value: paidInvoices.length.toString(), color: "text-foreground" },
           { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-emerald-400" },
-          { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-primary" },
+          { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-amber-500" },
         ].map(({ label, value, color }, i) => (
           <div key={label} className="rounded-xl border border-border bg-card p-4 card-shadow animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
             <p className="text-sm text-muted-foreground">{label}</p>
@@ -161,13 +161,13 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
                 {isSendingBulk && (
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm"><span>Sending…</span><span>{bulkProgress.sent}/{bulkProgress.total}</span></div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden"><div className="h-full bg-primary transition-all" style={{ width: `${(bulkProgress.sent / bulkProgress.total) * 100}%` }} /></div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden"><div className="h-full bg-amber-400 transition-all" style={{ width: `${(bulkProgress.sent / bulkProgress.total) * 100}%` }} /></div>
                   </div>
                 )}
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setBulkEmailOpen(false)} disabled={isSendingBulk}>Cancel</Button>
-                <Button onClick={handleBulkSendReceipts} disabled={isSendingBulk || receiptsForBulkEmail.length === 0} className="bg-primary hover:bg-primary/90">
+                <Button onClick={handleBulkSendReceipts} disabled={isSendingBulk || receiptsForBulkEmail.length === 0} className="btn-brand">
                   {isSendingBulk ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending…</> : <><Mail className="h-4 w-4 mr-2" />Send {receiptsForBulkEmail.length}</>}
                 </Button>
               </DialogFooter>
@@ -185,13 +185,13 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
                 </div>
                 <div className="grid gap-2">
                   <Label>Message *</Label>
-                  <textarea value={smsMessage} onChange={e => setSmsMessage(e.target.value)} placeholder="Enter your message…" className="min-h-[100px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" maxLength={160} />
+                  <textarea value={smsMessage} onChange={e => setSmsMessage(e.target.value)} placeholder="Enter your message…" className="min-h-[100px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" maxLength={160} />
                   <p className="text-xs text-muted-foreground text-right">{smsMessage.length}/160</p>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setBulkSmsOpen(false)} disabled={isSendingSms}>Cancel</Button>
-                <Button onClick={handleBulkSms} disabled={isSendingSms || !smsMessage.trim()} className="bg-primary hover:bg-primary/90">
+                <Button onClick={handleBulkSms} disabled={isSendingSms || !smsMessage.trim()} className="btn-brand">
                   {isSendingSms ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending…</> : <><MessageSquare className="h-4 w-4 mr-2" />Send SMS</>}
                 </Button>
               </DialogFooter>
@@ -229,7 +229,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={inv.tenants?.photo_url ?? undefined} />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">{inv.tenants?.name?.split(" ").map(n => n[0]).join("") ?? "?"}</AvatarFallback>
+                        <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">{inv.tenants?.name?.split(" ").map(n => n[0]).join("") ?? "?"}</AvatarFallback>
                       </Avatar>
                       <div><p className="text-foreground">{inv.tenants?.name ?? "No Tenant"}</p><p className="text-xs text-muted-foreground">{inv.tenants?.email}</p></div>
                     </div>

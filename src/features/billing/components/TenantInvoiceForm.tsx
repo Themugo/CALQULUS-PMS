@@ -414,7 +414,7 @@ const TenantInvoiceForm: React.FC<TenantInvoiceFormProps> = ({
             )}
 
             {/* Total Row */}
-            <TableRow className="bg-primary/10 hover:bg-primary/10 font-semibold">
+            <TableRow className="bg-amber-400/10 hover:bg-amber-400/10 font-semibold">
               <TableCell colSpan={invoiceType === 'custom' ? 3 : 3} className="text-right">
                 Total:
               </TableCell>

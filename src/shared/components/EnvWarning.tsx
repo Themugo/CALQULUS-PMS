@@ -19,7 +19,7 @@ export default function EnvWarning() {
       <div className="max-w-lg w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="bg-amber-500 p-4 flex items-center gap-3">
           <AlertTriangle className="h-6 w-6 text-white flex-shrink-0" />
-          <h1 className="text-white font-bold text-lg">CALQULUS RMS — Configuration Required</h1>
+          <h1 className="text-white font-bold text-lg">CALQULUS PMS — Configuration Required</h1>
         </div>
         <div className="p-6 space-y-4">
           <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">

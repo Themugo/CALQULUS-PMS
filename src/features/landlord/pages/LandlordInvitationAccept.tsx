@@ -52,6 +52,7 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [token]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!token) { setStatus('error'); return; }
     loadInvitation();
   }, [token, loadInvitation]);
@@ -89,6 +90,7 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [user, invitation, toast, navigate, property]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (user && invitation) acceptInvitation();
   }, [user, invitation, acceptInvitation]);
 
@@ -220,8 +222,8 @@ const LandlordInvitationAccept: React.FC = () => {
                 {mode === 'register' ? 'Create account & accept' : 'Sign in & accept'}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                {mode === 'register' ? 'Already have an account? ' : 'New to CALQULUS RMS? '}
-                <button type="button" className="text-primary hover:underline" onClick={() => setMode(mode === 'register' ? 'login' : 'register')}>
+                {mode === 'register' ? 'Already have an account? ' : 'New to CALQULUS PMS? '}
+                <button type="button" className="text-amber-600 hover:underline" onClick={() => setMode(mode === 'register' ? 'login' : 'register')}>
                   {mode === 'register' ? 'Sign in instead' : 'Create an account'}
                 </button>
               </p>

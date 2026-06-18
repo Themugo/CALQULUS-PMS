@@ -334,7 +334,7 @@ export class SOC2Compliance {
         effectiveDate: new Date(),
         owner: 'CISO',
         approvedBy: 'CEO',
-        content: 'This policy establishes the information security requirements for CALQULUS RMS...',
+        content: 'This policy establishes the information security requirements for CALQULUS PMS...',
         relatedControls: []
       },
       {

@@ -18,6 +18,7 @@ export const MobileInstallBanner = () => {
     // Check if already dismissed in this session
     const dismissed = sessionStorage.getItem("pwa-mobile-install-dismissed");
     if (dismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }
@@ -89,19 +90,19 @@ export const MobileInstallBanner = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom-5 fade-in duration-500 safe-area-inset-bottom">
-      <div className="bg-gradient-to-br from-primary/5 via-card to-card border-t border-primary/20 shadow-2xl p-4 mx-3 mb-3 rounded-2xl backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-amber-400/5 via-card to-card border-t border-amber-400/20 shadow-2xl p-4 mx-3 mb-3 rounded-2xl backdrop-blur-sm">
         <div className="flex items-start gap-4">
           <div className="relative">
-            <div className="h-14 w-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-primary/20">
-              <img src="/pwa-192x192.png" alt="CALQULUS RMS" className="h-full w-full object-cover" />
+            <div className="h-14 w-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-amber-400/20">
+              <img src="/pwa-192x192.png" alt="CALQULUS PMS" className="h-full w-full object-cover" />
             </div>
-            <div className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
+            <div className="absolute -top-1 -right-1 h-5 w-5 bg-amber-400 rounded-full flex items-center justify-center shadow-lg">
               <Zap className="h-3 w-3 text-primary-foreground" />
             </div>
           </div>
           
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-foreground text-base">Get the CALQULUS RMS App</h4>
+            <h4 className="font-bold text-foreground text-base">Get the CALQULUS PMS App</h4>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               {isIOS 
                 ? "Add to your Home Screen for the best experience" 
@@ -120,14 +121,14 @@ export const MobileInstallBanner = () => {
                 <span>Alerts</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Zap className="h-3 w-3 text-primary" />
+                <Zap className="h-3 w-3 text-amber-500" />
                 <span>Fast</span>
               </div>
             </div>
             
             {isIOS ? (
               <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-lg">
-                <Share className="h-4 w-4 text-primary flex-shrink-0" />
+                <Share className="h-4 w-4 text-amber-500 flex-shrink-0" />
                 <span className="text-xs text-foreground">Tap Share → "Add to Home Screen"</span>
               </div>
             ) : deferredPrompt ? (
@@ -137,7 +138,7 @@ export const MobileInstallBanner = () => {
               </Button>
             ) : (
               <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-lg">
-                <MoreVertical className="h-4 w-4 text-primary flex-shrink-0" />
+                <MoreVertical className="h-4 w-4 text-amber-500 flex-shrink-0" />
                 <span className="text-xs text-foreground">Tap Menu → "Install app"</span>
               </div>
             )}

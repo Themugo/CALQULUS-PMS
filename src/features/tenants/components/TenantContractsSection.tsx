@@ -49,6 +49,7 @@ export function TenantContractsSection() {
   const [isUploading, setIsUploading] = useState(false);
   const [tenantInfo, setTenantInfo] = useState<{ name: string; property: string | null; unit: string | null } | null>(null);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchContracts = useCallback(async () => {
     if (!userRole?.tenant_id) return;
 
@@ -70,6 +71,7 @@ export function TenantContractsSection() {
     setLoading(false);
   }, [userRole?.tenant_id, toast]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchTenantInfo = useCallback(async () => {
     if (!userRole?.tenant_id) return;
     const { data } = await supabase
@@ -81,6 +83,7 @@ export function TenantContractsSection() {
   }, [userRole?.tenant_id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchContracts();
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchContracts, fetchTenantInfo]);
@@ -124,7 +127,7 @@ export function TenantContractsSection() {
           .limit(1)
           .single();
 
-        const companyName = companyData?.company_name || "CALQULUS RMS Properties";
+        const companyName = companyData?.company_name || "CALQULUS PMS Properties";
         const managerEmail = companyData?.email;
 
         if (managerEmail && tenantInfo) {
@@ -265,7 +268,7 @@ export function TenantContractsSection() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
           </div>
         </CardContent>
       </Card>

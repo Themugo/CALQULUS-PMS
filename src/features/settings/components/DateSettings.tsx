@@ -12,11 +12,13 @@ export const DateSettings = () => {
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeFormatState(getTimeFormat());
     setTimezoneDisplayState(getTimezoneDisplay());
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreview(formatDateTime(new Date()));
   }, [timeFormat, timezoneDisplay]);
 

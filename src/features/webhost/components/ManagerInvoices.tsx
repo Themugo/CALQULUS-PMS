@@ -533,13 +533,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     
     return (
       <Dialog open={paymentInfoDialogOpen} onOpenChange={setPaymentInfoDialogOpen}>
-        <DialogContent className="bg-slate-800 border-purple-800/50 max-w-lg">
+        <DialogContent className="bg-slate-800 border-amber-400/15 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-purple-400" />
+              <CreditCard className="h-5 w-5 text-amber-500" />
               Payment Details
             </DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Use these details to make payment for your invoice
             </DialogDescription>
           </DialogHeader>
@@ -555,27 +555,27 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {hasBank && (
-              <div className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+              <div className="p-4 bg-slate-700/50 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <Building className="h-5 w-5 text-blue-400" />
                   <h4 className="text-white font-semibold">Bank Transfer</h4>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-purple-300">Bank:</span>
+                    <span className="text-amber-400/70">Bank:</span>
                     <span className="text-white font-medium">{paymentSettings.bank_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-purple-300">Account Name:</span>
+                    <span className="text-amber-400/70">Account Name:</span>
                     <span className="text-white font-medium">{paymentSettings.bank_account_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-purple-300">Account Number:</span>
+                    <span className="text-amber-400/70">Account Number:</span>
                     <span className="text-white font-medium font-mono">{paymentSettings.bank_account_number}</span>
                   </div>
                   {paymentSettings.bank_branch && (
                     <div className="flex justify-between">
-                      <span className="text-purple-300">Branch:</span>
+                      <span className="text-amber-400/70">Branch:</span>
                       <span className="text-white font-medium">{paymentSettings.bank_branch}</span>
                     </div>
                   )}
@@ -584,7 +584,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {hasMpesa && (
-              <div className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+              <div className="p-4 bg-slate-700/50 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <Smartphone className="h-5 w-5 text-green-400" />
                   <h4 className="text-white font-semibold">M-Pesa Payment</h4>
@@ -593,12 +593,12 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   {paymentSettings.mpesa_paybill_number && (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-purple-300">Paybill Number:</span>
+                        <span className="text-amber-400/70">Paybill Number:</span>
                         <span className="text-white font-medium font-mono">{paymentSettings.mpesa_paybill_number}</span>
                       </div>
                       {paymentSettings.mpesa_paybill_account && (
                         <div className="flex justify-between">
-                          <span className="text-purple-300">Account Number:</span>
+                          <span className="text-amber-400/70">Account Number:</span>
                           <span className="text-white font-medium">{paymentSettings.mpesa_paybill_account}</span>
                         </div>
                       )}
@@ -606,13 +606,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   )}
                   {paymentSettings.mpesa_till_number && (
                     <div className="flex justify-between">
-                      <span className="text-purple-300">Till Number (Buy Goods):</span>
+                      <span className="text-amber-400/70">Till Number (Buy Goods):</span>
                       <span className="text-white font-medium font-mono">{paymentSettings.mpesa_till_number}</span>
                     </div>
                   )}
                   {paymentSettings.mpesa_phone_number && (
                     <div className="flex justify-between">
-                      <span className="text-purple-300">Phone (Send Money):</span>
+                      <span className="text-amber-400/70">Phone (Send Money):</span>
                       <span className="text-white font-medium font-mono">{paymentSettings.mpesa_phone_number}</span>
                     </div>
                   )}
@@ -621,13 +621,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {selectedInvoice && (
-              <div className="p-3 bg-purple-900/30 rounded-lg border border-purple-700/50">
+              <div className="p-3 bg-amber-400/6 rounded-lg border border-amber-400/15">
                 <div className="flex justify-between items-center">
-                  <span className="text-purple-300">Invoice Reference:</span>
+                  <span className="text-amber-400/70">Invoice Reference:</span>
                   <span className="text-white font-mono font-bold">{selectedInvoice.invoice_number}</span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-purple-300">Amount Due:</span>
+                  <span className="text-amber-400/70">Amount Due:</span>
                   <span className="text-white font-bold text-lg">KES {Number(selectedInvoice.amount).toLocaleString()}</span>
                 </div>
               </div>
@@ -744,7 +744,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       );
     }
     return (
-      <Badge className="bg-purple-600/20 text-purple-400 border-purple-600/30">
+      <Badge className="bg-amber-400/12 text-amber-600 border-amber-400/20">
         <Percent className="h-3 w-3 mr-1" />
         Subscription
       </Badge>
@@ -758,14 +758,14 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     <div className="space-y-6">
       {/* Bulk Actions Bar */}
       {selectedCount > 0 && (
-        <Card className="bg-purple-900/50 border-purple-600/50">
+        <Card className="bg-card border-border/60">
           <CardContent className="py-3">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <Badge className="bg-purple-600 text-white">
                   {selectedCount} selected
                 </Badge>
-                <span className="text-purple-200 text-sm">
+                <span className="text-amber-100/80 text-sm">
                   Total: KES {totalSelectedAmount.toLocaleString()}
                 </span>
               </div>
@@ -773,7 +773,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-purple-600 text-purple-300 hover:bg-purple-600/20"
+                  className="border-purple-600 text-amber-400/70 hover:bg-purple-600/20"
                   onClick={bulkSendReminders}
                   disabled={bulkActionLoading}
                 >
@@ -785,7 +785,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   variant="outline"
                   className="border-green-600 text-green-300 hover:bg-green-600/20"
                   onClick={() => {
-                    setBulkSmsMessage('Dear {name}, you have {count} pending invoice(s) totaling {amount}. Invoice(s): {invoices}. Please pay to avoid service interruption. - CALQULUS RMS');
+                    setBulkSmsMessage('Dear {name}, you have {count} pending invoice(s) totaling {amount}. Invoice(s): {invoices}. Please pay to avoid service interruption. - CALQULUS PMS');
                     setBulkSmsDialogOpen(true);
                   }}
                   disabled={bulkActionLoading}
@@ -816,7 +816,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-purple-400"
+                  className="text-amber-500"
                   onClick={() => setSelectedIds(new Set())}
                 >
                   Clear Selection
@@ -827,21 +827,21 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
         </Card>
       )}
 
-      <Card className="bg-slate-800/50 border-purple-800/30">
+      <Card className="bg-card border-amber-400/15">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-white flex items-center gap-2">
-              <FileText className="h-5 w-5 text-purple-400" />
+              <FileText className="h-5 w-5 text-amber-500" />
               Pending Invoices
             </CardTitle>
-            <CardDescription className="text-purple-300">
+            <CardDescription className="text-amber-400/70">
               Outstanding invoices awaiting payment
             </CardDescription>
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button 
               variant="outline" 
-              className="border-purple-600 text-purple-400 hover:bg-purple-600/20"
+              className="border-purple-600 text-amber-500 hover:bg-purple-600/20"
               onClick={handleGenerateInvoices}
               disabled={isGeneratingInvoices}
             >
@@ -860,15 +860,15 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button className="bg-amber-400 hover:bg-amber-500 text-slate-900">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Invoice
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-800 border-purple-800/50 max-w-2xl">
+              <DialogContent className="bg-slate-800 border-amber-400/15 max-w-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-white">Create Manager Invoice</DialogTitle>
-                  <DialogDescription className="text-purple-300">
+                  <DialogDescription className="text-amber-400/70">
                     Create a registration, subscription, or custom invoice with line items
                   </DialogDescription>
                 </DialogHeader>
@@ -892,28 +892,28 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
           ) : pendingInvoices.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow className="border-purple-800/30 hover:bg-transparent">
-                  <TableHead className="text-purple-300 w-12">
+                <TableRow className="border-amber-400/12 hover:bg-transparent">
+                  <TableHead className="text-amber-400/70 w-12">
                     <Checkbox
                       checked={selectedIds.size === pendingInvoices.length && pendingInvoices.length > 0}
                       onCheckedChange={toggleAllSelection}
                       className="border-purple-600 data-[state=checked]:bg-purple-600"
                     />
                   </TableHead>
-                  <TableHead className="text-purple-300">Invoice #</TableHead>
-                  <TableHead className="text-purple-300">Type</TableHead>
-                  <TableHead className="text-purple-300">Manager</TableHead>
-                  <TableHead className="text-purple-300">Amount</TableHead>
-                  <TableHead className="text-purple-300">Due Date</TableHead>
-                  <TableHead className="text-purple-300">Status</TableHead>
-                  <TableHead className="text-purple-300 text-right">Actions</TableHead>
+                  <TableHead className="text-amber-400/70">Invoice #</TableHead>
+                  <TableHead className="text-amber-400/70">Type</TableHead>
+                  <TableHead className="text-amber-400/70">Manager</TableHead>
+                  <TableHead className="text-amber-400/70">Amount</TableHead>
+                  <TableHead className="text-amber-400/70">Due Date</TableHead>
+                  <TableHead className="text-amber-400/70">Status</TableHead>
+                  <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pendingInvoices.map((invoice) => (
                   <TableRow 
                     key={invoice.id} 
-                    className={`border-purple-800/30 hover:bg-purple-900/20 ${selectedIds.has(invoice.id) ? 'bg-purple-900/30' : ''}`}
+                    className={`border-amber-400/12 hover:bg-purple-900/20 ${selectedIds.has(invoice.id) ? 'bg-purple-900/30' : ''}`}
                   >
                     <TableCell>
                       <Checkbox
@@ -924,21 +924,21 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                     </TableCell>
                     <TableCell className="text-white font-mono">{invoice.invoice_number}</TableCell>
                     <TableCell>{getInvoiceTypeBadge(invoice.invoice_type || 'subscription')}</TableCell>
-                    <TableCell className="text-purple-200">{getManagerName(invoice.manager_user_id)}</TableCell>
+                    <TableCell className="text-amber-100/80">{getManagerName(invoice.manager_user_id)}</TableCell>
                     <TableCell className="text-white font-semibold">KES {Number(invoice.amount).toLocaleString()}</TableCell>
-                    <TableCell className="text-purple-300">{format(new Date(invoice.due_date), 'dd/MM/yy')}</TableCell>
+                    <TableCell className="text-amber-400/70">{format(new Date(invoice.due_date), 'dd/MM/yy')}</TableCell>
                     <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300">
+                          <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400/70">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-slate-800 border-purple-700/50">
+                        <DropdownMenuContent align="end" className="bg-slate-800 border-amber-400/20">
                           <DropdownMenuItem
                             onClick={() => sendReminder.mutate(invoice.id)}
-                            className="text-purple-300 hover:bg-purple-900/50 cursor-pointer"
+                            className="text-amber-400/70 hover:bg-purple-900/50 cursor-pointer"
                           >
                             <Send className="h-4 w-4 mr-2" />
                             Send Reminder
@@ -993,7 +993,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-purple-400">
+            <div className="text-center py-8 text-amber-500">
               <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>No pending invoices</p>
             </div>
@@ -1003,35 +1003,35 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
 
       {/* M-Pesa Payment Dialog */}
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
-        <DialogContent className="bg-slate-800 border-purple-800/50">
+        <DialogContent className="bg-slate-800 border-amber-400/15">
           <DialogHeader>
             <DialogTitle className="text-white">M-Pesa Payment</DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Enter your M-Pesa phone number to receive the STK push
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {selectedInvoice && (
-              <div className="p-4 bg-purple-900/30 rounded-lg border border-purple-700/50">
+              <div className="p-4 bg-amber-400/6 rounded-lg border border-amber-400/15">
                 <div className="flex justify-between text-sm">
-                  <span className="text-purple-300">Invoice:</span>
+                  <span className="text-amber-400/70">Invoice:</span>
                   <span className="text-white">{selectedInvoice.invoice_number}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-2">
-                  <span className="text-purple-300">Amount:</span>
+                  <span className="text-amber-400/70">Amount:</span>
                   <span className="text-white font-bold">KES {Number(selectedInvoice.amount).toLocaleString()}</span>
                 </div>
               </div>
             )}
             <div className="space-y-2">
-              <Label className="text-purple-200">Phone Number</Label>
+              <Label className="text-amber-100/80">Phone Number</Label>
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="254712345678"
-                className="bg-slate-700 border-purple-700/50 text-white"
+                className="bg-slate-700 border-amber-400/20 text-white"
               />
-              <p className="text-xs text-purple-400">Format: 254XXXXXXXXX</p>
+              <p className="text-xs text-amber-500">Format: 254XXXXXXXXX</p>
             </div>
             <Button
               onClick={handlePayWithMpesa}
@@ -1046,43 +1046,43 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
 
       {/* Bulk SMS Dialog */}
       <Dialog open={bulkSmsDialogOpen} onOpenChange={setBulkSmsDialogOpen}>
-        <DialogContent className="bg-slate-800 border-purple-800/50">
+        <DialogContent className="bg-slate-800 border-amber-400/15">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-green-400" />
               Send Bulk SMS
             </DialogTitle>
-            <DialogDescription className="text-purple-300">
+            <DialogDescription className="text-amber-400/70">
               Send SMS reminders to {selectedCount} selected invoice(s)
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="p-4 bg-purple-900/30 rounded-lg border border-purple-700/50">
-              <p className="text-sm text-purple-300 mb-2">Available placeholders:</p>
+            <div className="p-4 bg-amber-400/6 rounded-lg border border-amber-400/15">
+              <p className="text-sm text-amber-400/70 mb-2">Available placeholders:</p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-purple-300 border-purple-600">{'{name}'}</Badge>
-                <Badge variant="outline" className="text-purple-300 border-purple-600">{'{amount}'}</Badge>
-                <Badge variant="outline" className="text-purple-300 border-purple-600">{'{invoices}'}</Badge>
-                <Badge variant="outline" className="text-purple-300 border-purple-600">{'{count}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{name}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{amount}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{invoices}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{count}'}</Badge>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-purple-200">Message</Label>
+              <Label className="text-amber-100/80">Message</Label>
               <Textarea
                 value={bulkSmsMessage}
                 onChange={(e) => setBulkSmsMessage(e.target.value)}
                 placeholder="Enter your SMS message..."
-                className="bg-slate-700 border-purple-700/50 text-white min-h-[120px]"
+                className="bg-slate-700 border-amber-400/20 text-white min-h-[120px]"
                 maxLength={160}
               />
-              <p className="text-xs text-purple-400">{bulkSmsMessage.length}/160 characters</p>
+              <p className="text-xs text-amber-500">{bulkSmsMessage.length}/160 characters</p>
             </div>
           </div>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setBulkSmsDialogOpen(false)}
-              className="border-purple-600 text-purple-300"
+              className="border-purple-600 text-amber-400/70"
             >
               Cancel
             </Button>

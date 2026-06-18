@@ -3,6 +3,7 @@ import { PropertyStatementTab } from "@/features/properties/components/PropertyS
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { useState } from "react";
 import { FileSpreadsheet, Building2 } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -31,19 +32,16 @@ const Statements = () => {
       title="Statements"
       subtitle="Generate monthly collection statements per property"
       headerActions={
-        <div className="flex items-center gap-2">
-          <FileSpreadsheet className="h-5 w-5 text-emerald-500" />
-          <select
-            className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
-            value={selectedProperty ?? ""}
-            onChange={(e) => setSelectedProperty(e.target.value || null)}
-          >
-            <option value="">Select a property...</option>
+        <Select value={selectedProperty ?? ""} onValueChange={v => setSelectedProperty(v || null)}>
+          <SelectTrigger className="w-[220px] h-9 text-sm">
+            <SelectValue placeholder="Select a property…" />
+          </SelectTrigger>
+          <SelectContent>
             {properties.map((p: { id: string; name: string }) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
             ))}
-          </select>
-        </div>
+          </SelectContent>
+        </Select>
       }
     >
       {!selectedProperty && !isLoading && (

@@ -1,338 +1,276 @@
-/**
- * TenantSelfRegister
- *
- * Allows tenants to create a CALQULUS RMS account WITHOUT a manager invitation.
- * "Orphan tenant" — they self-manage their payment diary, receipts, and
- * property condition photos. They can later be linked to a manager's property
- * if the manager sends them an invitation.
- */
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
-import { UserPlus, Home, ChevronRight, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
-import calqulusLogo from '@/assets/calqulusrms-logo.png';
+import {
+  CheckCircle, XCircle, Eye, EyeOff, ChevronRight,
+  User, Home, KeyRound, Loader2,
+} from 'lucide-react';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 
 const STEPS = [
-  { id: 'account',  label: 'Your account' },
-  { id: 'property', label: 'Your rental' },
-  { id: 'done',     label: 'All set' },
+  { id: 'verify', title: 'Verify invite',  icon: KeyRound },
+  { id: 'profile', title: 'Your details', icon: User     },
+  { id: 'done',    title: 'All set!',      icon: CheckCircle },
 ];
 
-const TenantSelfRegister: React.FC = () => {
+const TenantSelfRegister = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { signIn } = useAuth();
   const { toast } = useToast();
+
   const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [inviteCode, setInviteCode] = useState(searchParams.get('code') ?? '');
+  const [inviteData, setInviteData] = useState<{ id: string; email: string; unit?: string; property?: string } | null>(null);
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Step 1 — account
-  const [name, setName]       = useState('');
-  const [email, setEmail]     = useState('');
-  const [phone, setPhone]     = useState('');
-  const [password, setPassword]     = useState('');
-  const [password2, setPassword2]   = useState('');
+  const getPasswordStrength = (pw: string) => ({
+    length: pw.length >= 8,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    number: /[0-9]/.test(pw),
+    special: /[^A-Za-z0-9]/.test(pw),
+  });
+  const strength = getPasswordStrength(password);
 
-  // Step 2 — rental info (optional)
-  const [propertyName, setPropertyName] = useState('');
-  const [unitLabel, setUnitLabel]       = useState('');
-  const [landlordName, setLandlordName] = useState('');
-  const [landlordPhone, setLandlordPhone] = useState('');
-  const [county, setCounty]             = useState('');
-  const [moveInDate, setMoveInDate]     = useState('');
-  const [monthlyRent, setMonthlyRent]   = useState('');
-
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const handleCreateAccount = async () => {
-    if (!name.trim() || !email.trim() || !password) {
-      toast({ title: 'Required fields missing', variant: 'destructive' }); return;
-    }
-    if (password !== password2) {
-      toast({ title: 'Passwords do not match', variant: 'destructive' }); return;
-    }
-    if (password.length < 8) {
-      toast({ title: 'Password must be at least 8 characters', variant: 'destructive' }); return;
-    }
-
-    setLoading(true);
+  const verifyInvite = async () => {
+    if (!inviteCode.trim()) return;
+    setIsLoading(true);
     try {
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: { data: { full_name: name.trim(), phone: phone || null, role: 'tenant' } },
-      });
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create account');
-
-      if (!authData.session) {
-        toast({
-          title: 'Check your email',
-          description: 'Confirm your email, then sign in to finish setting up your tenant portal.',
-        });
-        navigate('/tenant/login');
-        return;
-      }
-
-      const uid = authData.user.id;
-      setUserId(uid);
-
-      // Create user_role as tenant (no tenant_id — orphan)
-      const { error: roleError } = await supabase.from('user_roles').upsert({
-        user_id:         uid,
-        role:            'tenant',
-        approval_status: 'approved',
-        tenant_id:       null,  // orphan — no manager's tenant record
-      }, {
-        onConflict: 'user_id,role',
-      });
-      if (roleError) throw roleError;
-
-      // Create profile
-      await supabase.from('profiles').upsert({
-        id:        uid,
-        full_name: name.trim(),
-        email:     email.trim().toLowerCase(),
-        phone:     phone || null,
-      }).catch(() => {});
-
+      const { data, error } = await supabase
+        .from('tenant_invitations')
+        .select('id, email, unit, property, status')
+        .eq('invite_code', inviteCode.trim())
+        .eq('status', 'pending')
+        .maybeSingle();
+      if (error || !data) throw new Error('Invalid or expired invitation code');
+      setInviteData({ id: data.id, email: data.email, unit: data.unit, property: data.property });
+      setEmail(data.email ?? '');
       setStep(1);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      toast({ title: 'Registration failed', description: message, variant: 'destructive' });
+      toast({ title: 'Invalid code', description: (err as Error).message, variant: 'destructive' });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleSaveRental = async () => {
-    setLoading(true);
+  const createAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteData) return;
+    setIsLoading(true);
     try {
-      if (userId && propertyName.trim()) {
-        // Create orphan tenant record
-        await (supabase.from('orphan_tenant_records').insert({
-          user_id:       userId,
-          property_name: propertyName.trim(),
-          unit_label:    unitLabel || null,
-          landlord_name: landlordName || null,
-          landlord_phone:landlordPhone || null,
-          county:        county || null,
-          move_in_date:  moveInDate || null,
-          monthly_rent:  monthlyRent ? parseFloat(monthlyRent) : null,
-        }));
+      const { error: signUpError, data } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { full_name: fullName, phone } },
+      });
+      if (signUpError) throw signUpError;
+      if (data.user) {
+        await supabase.from('tenant_invitations')
+          .update({ status: 'accepted', accepted_by: data.user.id, accepted_at: new Date().toISOString() })
+          .eq('id', inviteData.id);
       }
       setStep(2);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      toast({ title: 'Could not save rental info', description: message, variant: 'destructive' });
+      toast({ title: 'Registration failed', description: (err as Error).message, variant: 'destructive' });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleFinish = () => {
-    window.location.assign('/portal');
-  };
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (inviteCode && searchParams.get('code')) verifyInvite();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
+    <div className="min-h-screen flex items-center justify-center hero-gradient px-4 py-12">
+      {/* Grid overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage: `linear-gradient(hsl(42 51% 55% / 0.5) 1px, transparent 1px),
+                          linear-gradient(90deg, hsl(42 51% 55% / 0.5) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+
+      <div className="relative z-10 w-full max-w-lg">
+        <div className="flex justify-center mb-8">
+          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12 w-auto object-contain" />
+        </div>
         <div className="text-center mb-8">
-          <img src={calqulusLogo} alt="CALQULUS RMS" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white">Create your tenant account</h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Keep your payment records, receipts, and property condition photos — even without a manager invitation.
-          </p>
+          <h1 className="font-heading text-2xl font-bold text-white mb-2">Create your tenant account</h1>
+          <p className="text-white/50 text-sm">You've been invited to join CALQULUS PMS</p>
         </div>
 
         {/* Step indicators */}
-        <div className="flex items-center justify-between mb-6 px-4">
-          {STEPS.map((s, i) => (
-            <React.Fragment key={s.id}>
-              <div className="flex flex-col items-center gap-1">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 text-xs font-bold transition-colors ${
-                  i < step  ? 'bg-green-600 border-green-600 text-white' :
-                  i === step ? 'bg-primary border-primary text-white' :
-                               'bg-slate-800 border-slate-600 text-slate-400'
-                }`}>
-                  {i < step ? <CheckCircle className="h-4 w-4" /> : i + 1}
+        <div className="flex items-center justify-between mb-6 px-2">
+          {STEPS.map((s, i) => {
+            const Icon = s.icon;
+            const done = i < step;
+            const active = i === step;
+            return (
+              <React.Fragment key={s.id}>
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    done   ? 'bg-emerald-500 border-emerald-500 text-white' :
+                    active ? 'bg-amber-400 border-amber-400 text-slate-900' :
+                             'bg-white/5 border-white/15 text-white/30'
+                  }`}>
+                    {done ? <CheckCircle className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
+                  </div>
+                  <span className={`text-xs font-medium ${active ? 'text-white' : done ? 'text-emerald-400' : 'text-white/30'}`}>
+                    {s.title}
+                  </span>
                 </div>
-                <span className={`text-xs ${i === step ? 'text-white font-medium' : 'text-slate-500'}`}>{s.label}</span>
-              </div>
-              {i < STEPS.length - 1 && <div className={`flex-1 h-0.5 mx-2 mb-4 ${i < step ? 'bg-green-600' : 'bg-slate-700'}`}/>}
-            </React.Fragment>
-          ))}
+                {i < STEPS.length - 1 && (
+                  <div className={`flex-1 h-px mx-3 mb-5 transition-colors ${i < step ? 'bg-emerald-500/50' : 'bg-white/10'}`} />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
-        <Card className="bg-slate-900/80 border-slate-700/50">
-          {/* Step 0: Account */}
+        <div className="w-full h-1 bg-white/10 rounded-full mb-6 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-500"
+            style={{ width: `${Math.round((step / (STEPS.length - 1)) * 100)}%` }} />
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+
+          {/* Step 0 — Verify invite */}
           {step === 0 && (
-            <>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-white">Create your account</CardTitle>
-                <CardDescription className="text-slate-400">Your personal CALQULUS RMS login</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label className="text-slate-300">Full name *</Label>
-                  <Input value={name} onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Jane Wanjiru" className="mt-1 bg-slate-800 border-slate-600 text-white" />
+            <div className="space-y-5">
+              <div>
+                <h2 className="font-heading text-lg font-bold text-white mb-1">Enter your invitation code</h2>
+                <p className="text-sm text-white/50">Your property manager sent this to you via email or SMS.</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm">Invitation code</Label>
+                <Input
+                  value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. INV-2A4F8C"
+                  className="bg-white/8 border-white/15 text-white font-mono tracking-widest placeholder:text-white/30 placeholder:tracking-normal focus:border-amber-400/60 h-11 text-center text-lg"
+                />
+              </div>
+              <Button className="w-full h-11 btn-brand font-bold" onClick={verifyInvite}
+                disabled={isLoading || !inviteCode.trim()}>
+                {isLoading
+                  ? <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Verifying…</span>
+                  : <span className="flex items-center gap-2">Verify Code <ChevronRight className="h-4 w-4" /></span>
+                }
+              </Button>
+              <p className="text-xs text-white/30 text-center">
+                Already have an account?{' '}
+                <button onClick={() => navigate('/tenant/login')} className="text-amber-400/70 hover:text-amber-400 transition-colors">
+                  Sign in here
+                </button>
+              </p>
+            </div>
+          )}
+
+          {/* Step 1 — Profile */}
+          {step === 1 && inviteData && (
+            <form onSubmit={createAccount} className="space-y-4">
+              <div>
+                <h2 className="font-heading text-lg font-bold text-white mb-0.5">Complete your profile</h2>
+                <p className="text-sm text-white/50">
+                  {inviteData.unit && inviteData.property
+                    ? `Joining ${inviteData.property} · ${inviteData.unit}`
+                    : 'Set up your account to access the tenant portal'}
+                </p>
+              </div>
+
+              {/* Invite summary */}
+              <div className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/8">
+                <CheckCircle className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-emerald-300">Invitation verified</p>
+                  <p className="text-xs text-white/50 truncate">{inviteData.email}</p>
                 </div>
-                <div>
-                  <Label className="text-slate-300">Email address *</Label>
-                  <Input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    placeholder="jane@email.com" className="mt-1 bg-slate-800 border-slate-600 text-white" />
+              </div>
+
+              <div>
+                <Label className="text-white/70 text-sm mb-1.5 block">Full name <span className="text-red-400">*</span></Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} required placeholder="Jane Wanjiru"
+                  className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-10" />
+              </div>
+              <div>
+                <Label className="text-white/70 text-sm mb-1.5 block">Phone number</Label>
+                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="0712 345 678"
+                  className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-10" />
+              </div>
+              <div>
+                <Label className="text-white/70 text-sm mb-1.5 block">Email address <span className="text-red-400">*</span></Label>
+                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                  className="bg-white/8 border-white/15 text-white focus:border-amber-400/60 h-10" />
+              </div>
+              <div>
+                <Label className="text-white/70 text-sm mb-1.5 block">Password <span className="text-red-400">*</span></Label>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                    required minLength={8} placeholder="Min. 8 characters"
+                    className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-10 pr-10" />
+                  <button type="button" onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-                <div>
-                  <Label className="text-slate-300">Phone / WhatsApp (optional)</Label>
-                  <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                    placeholder="0712 345 678" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                </div>
-                <div>
-                  <Label className="text-slate-300">Password *</Label>
-                  <Input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                    placeholder="At least 6 characters" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                </div>
-                <div>
-                  <Label className="text-slate-300">Confirm password *</Label>
-                  <Input type="password" value={password2} onChange={e => setPassword2(e.target.value)}
-                    placeholder="Re-enter password" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                </div>
-                <Button onClick={handleCreateAccount} disabled={loading || !name || !email || !password}
-                  className="w-full bg-primary hover:bg-primary/90 gap-2">
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                  Create account
+                {password && (
+                  <div className="grid grid-cols-2 gap-1 mt-2">
+                    {[
+                      { pass: strength.length,  label: '8+ chars' },
+                      { pass: strength.upper,   label: 'Uppercase' },
+                      { pass: strength.lower,   label: 'Lowercase' },
+                      { pass: strength.number,  label: 'Number' },
+                    ].map((c, i) => (
+                      <div key={i} className={`flex items-center gap-1.5 text-xs ${c.pass ? 'text-emerald-400' : 'text-white/30'}`}>
+                        {c.pass ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                        {c.label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="flex gap-3 pt-1">
+                <Button type="button" variant="outline" className="flex-1 border-white/15 text-white/60 hover:bg-white/8 h-11"
+                  onClick={() => setStep(0)}>Back</Button>
+                <Button type="submit" className="flex-1 h-11 btn-brand font-bold" disabled={isLoading}>
+                  {isLoading
+                    ? <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Creating…</span>
+                    : <span className="flex items-center gap-2">Create Account <ChevronRight className="h-4 w-4" /></span>
+                  }
                 </Button>
-              </CardContent>
-            </>
+              </div>
+            </form>
           )}
 
-          {/* Step 1: Rental info */}
-          {step === 1 && (
-            <>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-white">Your rental (optional)</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Add your current rental details so you can track payments and condition photos.
-                  You can skip this and add it later.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label className="text-slate-300">Property name</Label>
-                  <Input value={propertyName} onChange={e => setPropertyName(e.target.value)}
-                    placeholder="e.g. Kamau Estate Block A" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-slate-300">Unit / Room</Label>
-                    <Input value={unitLabel} onChange={e => setUnitLabel(e.target.value)}
-                      placeholder="e.g. Flat 4B" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                  <div>
-                    <Label className="text-slate-300">County</Label>
-                    <Input value={county} onChange={e => setCounty(e.target.value)}
-                      placeholder="e.g. Nairobi" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-slate-300">Landlord / Agent name</Label>
-                    <Input value={landlordName} onChange={e => setLandlordName(e.target.value)}
-                      placeholder="Optional" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                  <div>
-                    <Label className="text-slate-300">Landlord phone</Label>
-                    <Input value={landlordPhone} onChange={e => setLandlordPhone(e.target.value)}
-                      placeholder="Optional" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-slate-300">Move-in date</Label>
-                    <Input type="date" value={moveInDate} onChange={e => setMoveInDate(e.target.value)}
-                      className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                  <div>
-                    <Label className="text-slate-300">Monthly rent (KES)</Label>
-                    <Input type="number" value={monthlyRent} onChange={e => setMonthlyRent(e.target.value)}
-                      placeholder="e.g. 15000" className="mt-1 bg-slate-800 border-slate-600 text-white" />
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-blue-900/20 border border-blue-700/30 p-3 text-xs text-blue-300">
-                  <p className="font-medium mb-1">💡 Why add rental details?</p>
-                  <p>You'll be able to track your rent payments, upload receipts for each month, and log property condition photos that are timestamped and signed. These protect you if there's a deposit dispute when you move out.</p>
-                </div>
-
-                <div className="flex gap-3">
-                  <Button variant="outline" onClick={() => setStep(2)} className="flex-1 border-slate-600 text-slate-300">
-                    Skip for now
-                  </Button>
-                  <Button onClick={handleSaveRental} disabled={loading} className="flex-1 gap-2">
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ChevronRight className="h-4 w-4" />}
-                    Save & continue
-                  </Button>
-                </div>
-              </CardContent>
-            </>
-          )}
-
-          {/* Step 2: Done */}
+          {/* Step 2 — Done */}
           {step === 2 && (
-            <>
-              <CardHeader className="pb-4 text-center">
-                <div className="flex justify-center mb-3">
-                  <div className="h-16 w-16 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center">
-                    <CheckCircle className="h-9 w-9 text-green-500" />
-                  </div>
+            <div className="text-center space-y-5">
+              <div className="flex justify-center">
+                <div className="h-20 w-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/30 flex items-center justify-center">
+                  <CheckCircle className="h-10 w-10 text-emerald-400" />
                 </div>
-                <CardTitle className="text-white text-xl">You're in!</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Your CALQULUS RMS account is ready. Here's what you can do:
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { icon: '💰', title: 'Log your payments', desc: 'Record every rent payment with date, amount, and M-Pesa code' },
-                  { icon: '📸', title: 'Photograph your rental', desc: 'Take move-in photos that are timestamped — evidence if landlord claims damage at move-out' },
-                  { icon: '🧾', title: 'Upload receipts', desc: 'Photograph physical receipts so they\'re never lost. All in one place.' },
-                  { icon: '🔧', title: 'Request repairs', desc: 'Log maintenance issues and find verified service providers' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-slate-800/50">
-                    <span className="text-lg shrink-0">{item.icon}</span>
-                    <div>
-                      <p className="text-sm font-medium text-white">{item.title}</p>
-                      <p className="text-xs text-slate-400">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="rounded-lg bg-amber-900/20 border border-amber-700/30 p-3 text-xs text-amber-300">
-                  <p className="flex items-center gap-1.5 font-medium mb-1"><ShieldCheck className="h-3.5 w-3.5" />Already invited by your manager?</p>
-                  <p>If your manager sends you an invitation link later, accept it to link your account to their system and see your official invoices, lease, and payments.</p>
-                </div>
-
-                <Button onClick={handleFinish} className="w-full gap-2 bg-primary hover:bg-primary/90" size="lg">
-                  <Home className="h-4 w-4" />
-                  Go to my portal
-                </Button>
-              </CardContent>
-            </>
+              </div>
+              <div>
+                <h2 className="font-heading text-2xl font-bold text-white mb-2">Account created!</h2>
+                <p className="text-white/50 text-sm">Sign in to access your tenant portal and view your invoices, documents, and maintenance requests.</p>
+              </div>
+              <Button className="w-full h-12 btn-brand font-bold gap-2" onClick={() => navigate('/tenant/login')}>
+                <Home className="h-4 w-4" /> Go to tenant login
+              </Button>
+            </div>
           )}
-
-          <CardFooter className="border-t border-slate-700/50 pt-4">
-            <p className="text-xs text-slate-500 text-center w-full">
-              Already have an account?{' '}
-              <Link to="/tenant/login" className="text-primary hover:text-primary/80">Sign in</Link>
-            </p>
-          </CardFooter>
-        </Card>
+        </div>
       </div>
     </div>
   );

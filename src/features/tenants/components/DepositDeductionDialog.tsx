@@ -303,7 +303,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
           refundStatus: status,
           moveOutDate,
           refundReference: refundReference || undefined,
-          companyName: companyData?.company_name || "CALQULUS RMS",
+          companyName: companyData?.company_name || "CALQULUS PMS",
           deductions: deductionHistory.map(d => ({
             description: d.description,
             amount: d.amount,
@@ -501,11 +501,11 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
                     KES {originalDeposit.toLocaleString()}
                   </p>
                 </div>
-                <div className={`p-4 rounded-lg border ${existingRefund ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-primary/10 border-primary/20'}`}>
+                <div className={`p-4 rounded-lg border ${existingRefund ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-amber-400/10 border-amber-400/20'}`}>
                   <p className="text-sm text-muted-foreground">
                     {existingRefund ? "Refunded Amount" : "Current Balance"}
                   </p>
-                  <p className={`text-xl font-semibold ${existingRefund ? 'text-emerald-600' : 'text-primary'}`}>
+                  <p className={`text-xl font-semibold ${existingRefund ? 'text-emerald-600' : 'text-amber-500'}`}>
                     KES {existingRefund ? existingRefund.refund_amount.toLocaleString() : currentBalance.toLocaleString()}
                   </p>
                 </div>

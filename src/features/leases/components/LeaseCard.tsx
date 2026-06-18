@@ -57,7 +57,7 @@ const statusIcons: Record<LeaseStatus, React.ReactNode> = {
 export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView }: LeaseCardProps) => {
   return (
     <Card
-      className={`group cursor-pointer transition-all duration-200 active:scale-[0.98] hover:border-primary/50 bg-card border-border ${isSelected ? "ring-2 ring-primary border-primary" : ""}`}
+      className={`group cursor-pointer transition-all duration-200 active:scale-[0.98] hover:border-amber-400/60/50 bg-card border-border ${isSelected ? "ring-2 ring-amber-400 border-amber-400/60" : ""}`}
       onClick={onView}
     >
       <CardContent className="p-3 sm:p-4">
@@ -72,12 +72,12 @@ export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView 
             />
             <Avatar className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
               <AvatarImage src={lease.tenants?.photo_url || undefined} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs sm:text-sm font-medium">
+              <AvatarFallback className="bg-amber-400 text-slate-900 text-xs sm:text-sm font-medium">
                 {lease.tenants?.name?.split(" ").map((n) => n[0]).join("") || "?"}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm sm:text-base text-foreground truncate group-hover:text-primary transition-colors">
+              <h3 className="font-semibold text-sm sm:text-base text-foreground truncate group-hover:text-amber-500 transition-colors">
                 {lease.tenants?.name || "No Tenant"}
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground truncate">
@@ -98,7 +98,7 @@ export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView 
               <span>{formatDate(lease.end_date)}</span>
             </div>
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+              <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
               <span className="font-semibold text-foreground">{formatCurrency(lease.monthly_rent)}</span>
             </div>
           </div>

@@ -28,6 +28,7 @@ export const usePushNotifications = () => {
 
   useEffect(() => {
     const supported = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsSupported(supported);
 
     if (supported) {

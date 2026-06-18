@@ -148,7 +148,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
             return (
               <div
                 key={thread.id}
-                className={`p-3 border-b border-border cursor-pointer hover:bg-muted/40 transition-colors ${selectedThread === thread.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''}`}
+                className={`p-3 border-b border-border cursor-pointer hover:bg-muted/40 transition-colors ${selectedThread === thread.id ? 'bg-amber-400/6 border-l-2 border-l-primary' : ''}`}
                 onClick={() => setSelectedThread(thread.id)}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -184,10 +184,10 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} gap-2`}>
                       {!isMe && (
                         <Avatar className="h-7 w-7 shrink-0 mt-1">
-                          <AvatarFallback className="text-xs bg-primary/10">M</AvatarFallback>
+                          <AvatarFallback className="text-xs bg-amber-400/10">M</AvatarFallback>
                         </Avatar>
                       )}
-                      <div className={`max-w-xs rounded-2xl px-3 py-2 text-sm ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                      <div className={`max-w-xs rounded-2xl px-3 py-2 text-sm ${isMe ? 'bg-amber-400 text-slate-900' : 'bg-muted'}`}>
                         {msg.subject && <p className="font-semibold text-xs mb-1 opacity-70">{msg.subject}</p>}
                         <p className="whitespace-pre-wrap">{msg.body}</p>
                         <p className="text-xs opacity-60 mt-1 text-right">{format(new Date(msg.created_at), 'dd MMM HH:mm')}</p>

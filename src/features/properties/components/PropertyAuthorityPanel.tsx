@@ -48,6 +48,7 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
   const [delegateEmail, setDelegateEmail] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOperatingModel((link.operating_model as OperatingModel) || 'agency_collects_full_management');
     setRevenueShare(String(link.revenue_share_pct ?? 100));
     setMgmtFee(link.management_fee_pct != null ? String(link.management_fee_pct) : '');
@@ -123,10 +124,10 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
   });
 
   return (
-    <Card className="border-primary/20">
+    <Card className="border-amber-400/20">
       <CardHeader className="pb-3">
         <div className="flex items-start gap-2">
-          <Shield className="h-5 w-5 text-primary mt-0.5" />
+          <Shield className="h-5 w-5 text-amber-500 mt-0.5" />
           <div>
             <CardTitle className="text-base">Authority & operating model</CardTitle>
             <CardDescription>

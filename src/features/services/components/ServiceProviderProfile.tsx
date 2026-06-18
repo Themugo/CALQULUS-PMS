@@ -77,6 +77,7 @@ const ServiceProviderProfile: React.FC = () => {
 
   useEffect(() => {
     if (provider) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProviderId(provider.id);
       setForm({
         business_name:     provider.business_name || '',

@@ -121,7 +121,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
   return (
     <div className="space-y-6 pb-20">
       {/* Balance Hero Card */}
-      <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground border-0 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-[#0F2040] to-[#0A1628] text-amber-100 border border-amber-400/20 border-0 overflow-hidden relative">
         <CardContent className="pt-6 pb-8">
           <div className="relative z-10">
             <p className="text-sm opacity-90 mb-1">{greeting}, {firstName}! 👋</p>
@@ -135,17 +135,17 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-primary-foreground/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <div className="bg-amber-400/10 rounded-xl p-3 text-center backdrop-blur-sm">
                 <Wallet className="h-5 w-5 mx-auto mb-1 opacity-90" />
                 <p className="text-xs opacity-75">Paid</p>
                 <p className="font-semibold text-sm">{formatCurrency(stats.paidThisYear)}</p>
               </div>
-              <div className="bg-primary-foreground/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <div className="bg-amber-400/10 rounded-xl p-3 text-center backdrop-blur-sm">
                 <Clock className="h-5 w-5 mx-auto mb-1 opacity-90" />
                 <p className="text-xs opacity-75">Pending</p>
                 <p className="font-semibold text-sm">{stats.pendingCount}</p>
               </div>
-              <div className="bg-primary-foreground/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <div className="bg-amber-400/10 rounded-xl p-3 text-center backdrop-blur-sm">
                 <AlertCircle className="h-5 w-5 mx-auto mb-1 opacity-90" />
                 <p className="text-xs opacity-75">Overdue</p>
                 <p className="font-semibold text-sm text-destructive-foreground">{stats.overdueCount}</p>
@@ -153,8 +153,8 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
             </div>
           </div>
           {/* Decorative element */}
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-foreground/5 rounded-full" />
-          <div className="absolute -right-5 -bottom-10 w-32 h-32 bg-primary-foreground/5 rounded-full" />
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-amber-400/5 rounded-full" />
+          <div className="absolute -right-5 -bottom-10 w-32 h-32 bg-amber-400/5 rounded-full" />
         </CardContent>
       </Card>
 
@@ -163,8 +163,8 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
         <Link to="/portal/payments">
           <Card className="h-full hover:shadow-md transition-shadow cursor-pointer active:scale-[0.98]">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
-                <History className="h-6 w-6 text-primary" />
+              <div className="h-12 w-12 rounded-xl bg-amber-400/12 flex items-center justify-center mb-2">
+                <History className="h-6 w-6 text-amber-500" />
               </div>
               <p className="font-medium text-sm">Payment History</p>
               <p className="text-xs text-muted-foreground">View all payments</p>
@@ -174,8 +174,8 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
         <Link to="/portal#contracts">
           <Card className="h-full hover:shadow-md transition-shadow cursor-pointer active:scale-[0.98]">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-2">
-                <FileText className="h-6 w-6 text-accent" />
+              <div className="h-12 w-12 rounded-xl bg-amber-400/10 flex items-center justify-center mb-2">
+                <FileText className="h-6 w-6 text-amber-600" />
               </div>
               <p className="font-medium text-sm">Contracts</p>
               <p className="text-xs text-muted-foreground">View & sign</p>
@@ -190,7 +190,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Home className="h-4 w-4 text-primary" />
+                <Home className="h-4 w-4 text-amber-500" />
                 <span className="font-medium text-sm">Your Lease</span>
               </div>
               <Badge variant={leaseInfo.variant} className="text-xs">
@@ -271,7 +271,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
 
       {/* Payment Prompt - Show when there are pending invoices */}
       {urgentInvoices.length > 0 && managerId && (
-        <Card className="bg-gradient-to-r from-success/10 to-primary/10 border-success/30 overflow-hidden">
+        <Card className="bg-gradient-to-r from-success/10 to-amber-400/8 border-success/30 overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">

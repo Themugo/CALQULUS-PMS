@@ -46,7 +46,7 @@ const METHODS = [
 const PAYER_COLORS: Record<string, string> = {
   self:          'bg-green-100 text-green-800 border-green-200',
   employer:      'bg-blue-100 text-blue-800 border-blue-200',
-  parent:        'bg-purple-100 text-purple-800 border-purple-200',
+  parent:        'bg-blue-100 text-blue-800 border-blue-200',
   housing_assoc: 'bg-teal-100 text-teal-800 border-teal-200',
   guarantor:     'bg-amber-100 text-amber-800 border-amber-200',
   split:         'bg-orange-100 text-orange-800 border-orange-200',
@@ -258,8 +258,8 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
                     onClick={() => setForm(p => ({ ...p, payer_type: t.value }))}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.payer_type === t.value
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-border hover:border-primary/40 text-muted-foreground'
+                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                        : 'border-border hover:border-amber-400/40 text-muted-foreground'
                     }`}
                   >
                     <t.icon className="h-3.5 w-3.5 shrink-0" />

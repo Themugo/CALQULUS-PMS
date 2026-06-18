@@ -82,7 +82,7 @@ export const PropertyCard = ({
 
   return (
     <Card
-      className={`overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-primary" : ""}`}
+      className={`overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-amber-400" : ""}`}
       style={{ animationDelay: `${index * 30}ms` }}
     >
       <CardContent className="p-0">
@@ -97,7 +97,7 @@ export const PropertyCard = ({
           <div className="flex-1 p-3 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <Link to={`/properties/${property.id}`} className="font-heading font-semibold text-foreground text-sm hover:text-primary transition-colors truncate block">
+                <Link to={`/properties/${property.id}`} className="font-heading font-semibold text-foreground text-sm hover:text-amber-500 transition-colors truncate block">
                   {property.name}
                 </Link>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 truncate">

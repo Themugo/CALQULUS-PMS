@@ -170,7 +170,7 @@ export const AddTenantToPropertyDialog = ({
             sendWhatsapp: sendWhatsappNotification && !!formData.whatsapp,
             monthlyRent: formData.monthly_rent ? parseFloat(formData.monthly_rent) : null,
             depositAmount: formData.deposit_amount ? parseFloat(formData.deposit_amount) : null,
-            companyName: "CALQULUS RMS Properties",
+            companyName: "CALQULUS PMS Properties",
             portalUrl: `${window.location.origin}`,
           },
         }
@@ -270,7 +270,7 @@ export const AddTenantToPropertyDialog = ({
           {/* Photo Upload */}
           <div className="flex flex-col items-center gap-3">
             <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-              <Avatar className="h-20 w-20 border-2 border-dashed border-border group-hover:border-primary transition-colors">
+              <Avatar className="h-20 w-20 border-2 border-dashed border-border group-hover:border-amber-400/60 transition-colors">
                 {photoPreview ? <AvatarImage src={photoPreview} /> : (
                   <AvatarFallback className="bg-muted"><Upload className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
                 )}
@@ -388,13 +388,13 @@ export const AddTenantToPropertyDialog = ({
           <div className="border-t border-border pt-4 mt-2">
             <h4 className="text-sm font-medium text-foreground mb-3">Notifications</h4>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 p-3 rounded-lg bg-accent/10 border border-accent/20">
-                <Mail className="h-5 w-5 text-accent" />
+              <div className="flex items-center space-x-3 p-3 rounded-lg bg-amber-400/10 border border-amber-400/15">
+                <Mail className="h-5 w-5 text-amber-600" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">Email Activation</p>
                   <p className="text-xs text-muted-foreground">Secure link to set password</p>
                 </div>
-                <Badge variant="outline" className="text-accent border-accent">Always sent</Badge>
+                <Badge variant="outline" className="text-amber-600 border-accent">Always sent</Badge>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 border border-border">
                 <Phone className="h-5 w-5 text-muted-foreground" />

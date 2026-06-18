@@ -177,6 +177,7 @@ export function useBillingData(selectedMonth: string) {
   }, [queryClient]);
 
   /** Call after saving an expenditure. */
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateExpenditures = useCallback(() => {
     if (!user?.id) return;
     queryClient.invalidateQueries({

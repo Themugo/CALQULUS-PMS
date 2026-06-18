@@ -150,6 +150,7 @@ export const TenantStatement = ({
   useEffect(() => {
     if (tenant && isOpen) {
       if (!isManagerView && tenant.statement_history_months) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHistoryLimit(tenant.statement_history_months);
       } else {
         setHistoryLimit(null);
@@ -427,7 +428,7 @@ export const TenantStatement = ({
         body: {
           tenantEmail: tenant.email,
           tenantName: tenant.name,
-          companyName: companySettings?.company_name || "CALQULUS RMS Properties",
+          companyName: companySettings?.company_name || "CALQULUS PMS Properties",
           pdfBase64,
           fileName,
         },
@@ -463,7 +464,7 @@ export const TenantStatement = ({
               <>
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={tenant.photo_url || undefined} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
                     {tenant.name
                       .split(" ")
                       .map((n) => n[0])
@@ -526,7 +527,7 @@ export const TenantStatement = ({
           {/* Balance Summary */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-muted/30 rounded-lg p-3 text-center">
-              <Wallet className="h-5 w-5 mx-auto mb-1 text-primary" />
+              <Wallet className="h-5 w-5 mx-auto mb-1 text-amber-500" />
               <p className="text-xs text-muted-foreground">Total Billed</p>
               <p className="text-sm font-semibold text-foreground">
                 {formatCurrency(totalBilled)}

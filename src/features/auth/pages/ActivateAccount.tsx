@@ -8,6 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, Check, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
+function RequirementItem({ met, text }: { met: boolean; text: string }) {
+  return (
+    <div className={`flex items-center gap-2 text-sm ${met ? "text-green-600" : "text-muted-foreground"}`}>
+      {met ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+      <span>{text}</span>
+    </div>
+  );
+}
+
 const ActivateAccount = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -93,19 +102,12 @@ const ActivateAccount = () => {
     }
   };
 
-  const RequirementItem = ({ met, text }: { met: boolean; text: string }) => (
-    <div className={`flex items-center gap-2 text-sm ${met ? "text-green-600" : "text-muted-foreground"}`}>
-      {met ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-      <span>{text}</span>
-    </div>
-  );
-
   if (isValidating) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
         <Card className="w-full max-w-md mx-4">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-amber-500 mb-4" />
             <p className="text-muted-foreground">Validating activation link...</p>
           </CardContent>
         </Card>
@@ -115,7 +117,7 @@ const ActivateAccount = () => {
 
   if (!token || !isValid) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 p-3 rounded-full bg-destructive/10">
@@ -141,7 +143,7 @@ const ActivateAccount = () => {
 
   if (isActivated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 p-3 rounded-full bg-green-100 dark:bg-green-900/30">
@@ -167,11 +169,11 @@ const ActivateAccount = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
-            <ShieldCheck className="h-8 w-8 text-primary" />
+          <div className="mx-auto mb-4 p-3 rounded-full bg-amber-400/10">
+            <ShieldCheck className="h-8 w-8 text-amber-500" />
           </div>
           <CardTitle>Activate Your Account</CardTitle>
           <CardDescription>

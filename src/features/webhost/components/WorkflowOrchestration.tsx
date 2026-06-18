@@ -309,7 +309,7 @@ const WorkflowOrchestration = () => {
       case 'skipped':
         return <Badge className="bg-gray-100 text-gray-800 border-gray-300"><MoreHorizontal className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'draft':
-        return <Badge className="bg-purple-100 text-purple-800 border-purple-300"><FileText className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-amber-400/15 text-amber-700 border-blue-200"><FileText className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -324,7 +324,7 @@ const WorkflowOrchestration = () => {
       case 'billing':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Target className="h-3 w-3 mr-1" />{category}</Badge>;
       case 'compliance':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><Award className="h-3 w-3 mr-1" />{category}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Award className="h-3 w-3 mr-1" />{category}</Badge>;
       case 'custom':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><GitBranch className="h-3 w-3 mr-1" />{category}</Badge>;
       default:
@@ -341,7 +341,7 @@ const WorkflowOrchestration = () => {
       case 'conditional':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><GitBranch className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'approval':
-        return <Badge variant="outline" className="text-purple-300 border-purple-700"><CheckCircle className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><CheckCircle className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -358,13 +358,13 @@ const WorkflowOrchestration = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Workflow Orchestration</h2>
-          <p className="text-purple-300 text-sm mt-1">Automate and manage business processes</p>
+          <p className="text-amber-400/70 text-sm mt-1">Automate and manage business processes</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -372,7 +372,7 @@ const WorkflowOrchestration = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-purple-700 text-purple-300 hover:bg-purple-900/50"
+            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -382,85 +382,85 @@ const WorkflowOrchestration = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Workflow className="h-4 w-4 text-purple-400" />
+              <Workflow className="h-4 w-4 text-amber-500" />
               Total Templates
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{totalTemplates}</div>
-            <div className="text-sm text-purple-300">Workflow templates</div>
+            <div className="text-sm text-amber-400/70">Workflow templates</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-purple-400" />
+              <Activity className="h-4 w-4 text-amber-500" />
               Running Workflows
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{runningWorkflows}</div>
-            <div className="text-sm text-purple-300">In progress</div>
+            <div className="text-sm text-amber-400/70">In progress</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <Zap className="h-4 w-4 text-purple-400" />
+              <Zap className="h-4 w-4 text-amber-500" />
               Active Automations
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{activeAutomations}</div>
-            <div className="text-sm text-purple-300">Automated processes</div>
+            <div className="text-sm text-amber-400/70">Automated processes</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-purple-800/30">
+        <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <CheckCircle className="h-4 w-4 text-amber-500" />
               Completed Today
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-white">{completedToday}</div>
-            <div className="text-sm text-purple-300">Workflows finished</div>
+            <div className="text-sm text-amber-400/70">Workflows finished</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-purple-800/30">
-          <TabsTrigger value="templates" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+        <TabsList className="bg-card/80 border border-amber-400/12">
+          <TabsTrigger value="templates" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Layers className="h-4 w-4 mr-2" />
             Templates
           </TabsTrigger>
-          <TabsTrigger value="instances" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="instances" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Instances
           </TabsTrigger>
-          <TabsTrigger value="steps" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="steps" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <GitBranch className="h-4 w-4 mr-2" />
             Steps
           </TabsTrigger>
-          <TabsTrigger value="automations" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300">
+          <TabsTrigger value="automations" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Automations
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="templates">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Workflow Templates</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Reusable workflow templates for common processes
               </CardDescription>
             </CardHeader>
@@ -468,18 +468,18 @@ const WorkflowOrchestration = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
                     placeholder="Search templates..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-900/50 border-purple-800/30 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-900/50 border border-purple-800/30 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="onboarding">Onboarding</option>
@@ -493,7 +493,7 @@ const WorkflowOrchestration = () => {
               {/* Templates List */}
               <div className="grid gap-4 md:grid-cols-2">
                 {filteredTemplates.map((template) => (
-                  <div key={template.id} className="p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={template.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -503,27 +503,27 @@ const WorkflowOrchestration = () => {
                         {getStatusBadge(template.status)}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-purple-300 border-purple-700">
+                        <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                           {template.steps} steps
                         </Badge>
                       </div>
                     </div>
-                    <p className="text-purple-300 text-sm mb-3">{template.description}</p>
+                    <p className="text-amber-400/70 text-sm mb-3">{template.description}</p>
                     <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Clock className="h-3 w-3" />
                         {template.averageDuration}
                       </div>
-                      <div className="flex items-center gap-2 text-purple-300">
+                      <div className="flex items-center gap-2 text-amber-400/70">
                         <Activity className="h-3 w-3" />
                         {template.usageCount} uses
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-xs text-purple-300">
+                      <div className="text-xs text-amber-400/70">
                         Last used: {template.lastUsed.toLocaleDateString()}
                       </div>
-                      <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                         <Play className="h-4 w-4 mr-2" />
                         Run Workflow
                       </Button>
@@ -536,23 +536,23 @@ const WorkflowOrchestration = () => {
         </TabsContent>
 
         <TabsContent value="instances">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Workflow Instances</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Active and completed workflow instances
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {workflowInstances.map((instance) => (
-                  <div key={instance.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={instance.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{instance.templateName}</span>
-                          <span className="text-purple-300 text-sm ml-2">{instance.id}</span>
-                          <Badge variant="outline" className="ml-2 text-purple-300 border-purple-700 capitalize">
+                          <span className="text-amber-400/70 text-sm ml-2">{instance.id}</span>
+                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {instance.entityType}
                           </Badge>
                         </div>
@@ -560,7 +560,7 @@ const WorkflowOrchestration = () => {
                           {getStatusBadge(instance.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Target className="h-3 w-3" />
                           {instance.entityName}
@@ -570,7 +570,7 @@ const WorkflowOrchestration = () => {
                           {instance.assignee}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <GitBranch className="h-3 w-3" />
                           Step {instance.currentStep} of {instance.totalSteps}
@@ -580,9 +580,9 @@ const WorkflowOrchestration = () => {
                           Started: {instance.startedDate.toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <Progress value={instance.progress} className="h-2 flex-1" />
-                        <span className="text-purple-300">{instance.progress}%</span>
+                        <span className="text-amber-400/70">{instance.progress}%</span>
                       </div>
                     </div>
                     {instance.status === 'running' && (
@@ -591,7 +591,7 @@ const WorkflowOrchestration = () => {
                           <Pause className="h-4 w-4 mr-2" />
                           Pause
                         </Button>
-                        <Button variant="outline" size="sm" className="border-purple-700 text-purple-300 hover:bg-purple-900/50">
+                        <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
                           View Details
                         </Button>
                       </div>
@@ -604,17 +604,17 @@ const WorkflowOrchestration = () => {
         </TabsContent>
 
         <TabsContent value="steps">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Workflow Steps</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Detailed view of workflow execution steps
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {workflowSteps.map((step, idx) => (
-                  <div key={step.id} className="flex items-start gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={step.id} className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex flex-col items-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         step.status === 'completed' ? 'bg-green-600' :
@@ -640,15 +640,15 @@ const WorkflowOrchestration = () => {
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{step.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">Step {step.stepNumber}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">Step {step.stepNumber}</span>
                           {getTypeBadge(step.type)}
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(step.status)}
                         </div>
                       </div>
-                      <p className="text-purple-300 text-sm mb-2">{step.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <p className="text-amber-400/70 text-sm mb-2">{step.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         {step.assignee && (
                           <span className="flex items-center gap-1">
                             <User className="h-3 w-3" />
@@ -662,7 +662,7 @@ const WorkflowOrchestration = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         {step.startedDate && (
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
@@ -685,31 +685,31 @@ const WorkflowOrchestration = () => {
         </TabsContent>
 
         <TabsContent value="automations">
-          <Card className="bg-slate-800/50 border-purple-800/30">
+          <Card className="bg-card border-amber-400/15">
             <CardHeader>
               <CardTitle className="text-white">Workflow Automations</CardTitle>
-              <CardDescription className="text-purple-300">
+              <CardDescription className="text-amber-400/70">
                 Automated triggers and actions
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {workflowAutomations.map((automation) => (
-                  <div key={automation.id} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-purple-800/30">
+                  <div key={automation.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-white font-medium">{automation.name}</span>
-                          <span className="text-purple-300 text-sm ml-2">{automation.id}</span>
+                          <span className="text-amber-400/70 text-sm ml-2">{automation.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(automation.status)}
-                          <Badge variant="outline" className="text-purple-300 border-purple-700">
+                          <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                             {automation.successRate}% success
                           </Badge>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Zap className="h-3 w-3" />
                           Trigger: {automation.trigger}
@@ -719,7 +719,7 @@ const WorkflowOrchestration = () => {
                           Target: {automation.target}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
                         <span className="flex items-center gap-1">
                           <ArrowRight className="h-3 w-3" />
                           Action: {automation.action}
@@ -729,7 +729,7 @@ const WorkflowOrchestration = () => {
                           Frequency: {automation.frequency}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-purple-300">
+                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Last run: {automation.lastRun.toLocaleDateString()}

@@ -342,7 +342,7 @@ const CustomerBillingBlocks = () => {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>
+          <div className="flex items-center justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" /></div>
         ) : !canManage ? (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-8 w-8 mx-auto mb-2 opacity-50" />
