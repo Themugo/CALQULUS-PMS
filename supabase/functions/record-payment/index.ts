@@ -13,9 +13,15 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { createLogger } from "../_shared/logger.ts";
+import { validateRequired, validatePositiveNumber } from "../_shared/validation.ts";
+import { errorResponse, successResponse } from "../_shared/errors.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
+import { logPaymentEvent } from "../_shared/audit.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+const logger = createLogger("record-payment");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
@@ -23,23 +29,28 @@ serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
   try {
+    logger.info("Payment recording started");
+
     // Authenticate the manager/submanager
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return new Response(JSON.stringify({ error: "Unauthorized" }),
-      { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    if (!authHeader) {
+      return errorResponse("Unauthorized", 401);
+    }
 
     const { data: { user }, error: authErr } = await supabase.auth.getUser(
       authHeader.replace("Bearer ", "")
     );
-    if (authErr || !user) return new Response(JSON.stringify({ error: "Authentication failed" }),
-      { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    if (authErr || !user) {
+      return errorResponse("Authentication failed", 401);
+    }
+
+    logger.info("User authenticated", { userId: user.id });
 
     // Check role — must be manager or submanager
-    const { data: role } = await supabase.from("user_roles")
-      .select("role").eq("user_id", user.id).maybeSingle();
-    if (!["manager", "submanager"].includes((role as any)?.role)) {
-      return new Response(JSON.stringify({ error: "Forbidden" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    const roleCheck = await checkRoleAccess(user.id, ["manager", "submanager"]);
+    if (!roleCheck.allowed) {
+      logger.warn("Unauthorized role access attempt", { userId: user.id });
+      return errorResponse("Forbidden - manager or submanager role required", 403);
     }
 
     // Rate-limit manual payment recording. Generous limit for legitimate
@@ -49,7 +60,10 @@ serve(async (req) => {
       supabase, user.id, "record-payment", 100,
       { failClosed: true },
     );
-    if (!allowed) return rateLimitResponse(req);
+    if (!allowed) {
+      logger.warn("Rate limit exceeded", { userId: user.id });
+      return rateLimitResponse(req);
+    }
 
     const body = await req.json();
     const {
@@ -65,21 +79,40 @@ serve(async (req) => {
       instalmentCount,
     } = body;
 
-    if (!tenantId || !amount || !reference) {
-      return new Response(JSON.stringify({ error: "tenantId, amount, reference required" }),
-        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    // Validate required fields
+    const tenantIdValidation = validateRequired(tenantId, "Tenant ID");
+    if (!tenantIdValidation.valid) {
+      return errorResponse(tenantIdValidation.error, 400);
     }
+
+    const amountValidation = validatePositiveNumber(amount, "Amount");
+    if (!amountValidation.valid) {
+      return errorResponse(amountValidation.error, 400);
+    }
+
+    const referenceValidation = validateRequired(reference, "Reference");
+    if (!referenceValidation.valid) {
+      return errorResponse(referenceValidation.error, 400);
+    }
+
+    logger.info("Payment data validated", { tenantId, amount: amountValidation.value, reference });
 
     // Get the manager_id — for submanager, get their manager
     let effectiveManagerId = user.id;
+    const { data: role } = await supabase.from("user_roles")
+      .select("role").eq("user_id", user.id).maybeSingle();
+    
     if ((role as any)?.role === "submanager") {
       const { data: rel } = await supabase.from("manager_submanagers")
         .select("manager_id").eq("submanager_user_id", user.id).maybeSingle();
       effectiveManagerId = (rel as any)?.manager_id ?? user.id;
+      logger.info("Submanager resolved to manager", { submanagerId: user.id, managerId: effectiveManagerId });
     }
 
     // If creating an installment plan, set that up first
     if (isInstallment && instalmentCount && instalmentCount > 1) {
+      logger.info("Creating installment plan", { instalmentCount });
+
       const { data: unpaidInvoices } = await supabase.from("invoices")
         .select("id, amount, balance_due, original_amount")
         .eq("tenant_id", tenantId)
@@ -108,6 +141,8 @@ serve(async (req) => {
       if (invoiceId) {
         await supabase.from("invoices").update({ installment_plan: true }).eq("id", invoiceId);
       }
+
+      logger.info("Installment plan created", { totalOwed, instalmentAmount });
     }
 
     // Delegate to process-payment for the actual payment recording.
@@ -122,7 +157,7 @@ serve(async (req) => {
         body: JSON.stringify({
           tenantId,
           managerId:     effectiveManagerId,
-          amount:        Number(amount),
+          amount:        Number(amountValidation.value),
           paymentMethod,
           paymentDate:   paymentDate ?? new Date().toISOString().slice(0, 10),
           reference,
@@ -134,18 +169,36 @@ serve(async (req) => {
     } catch (fetchErr: any) {
       // Network failure calling process-payment — surface as 502 Bad Gateway
       // so the manager UI can show a clear retry prompt.
-      console.error("[RECORD-PAYMENT] process-payment fetch error:", fetchErr?.message ?? fetchErr);
-      return new Response(JSON.stringify({ error: "Payment service unreachable. Please retry." }),
-        { status: 502, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      logger.error("process-payment fetch error", { error: fetchErr?.message ?? fetchErr });
+      return errorResponse("Payment service unreachable. Please retry.", 502);
     }
 
     const result = await processRes.json().catch(() => ({ error: "Invalid response from payment service" }));
+    
+    // Log the payment event
+    if (processRes.ok) {
+      await logPaymentEvent(user.id, "payment_completed", { 
+        tenantId, 
+        amount: amountValidation.value, 
+        reference,
+        recordedBy: user.id 
+      });
+    } else {
+      await logPaymentEvent(user.id, "payment_failed", { 
+        tenantId, 
+        amount: amountValidation.value, 
+        reference,
+        error: result.error 
+      });
+    }
+
+    logger.info("Payment recording completed", { status: processRes.status });
     return new Response(JSON.stringify(result),
       { status: processRes.status, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
 
   } catch (error: any) {
-    console.error("[RECORD-PAYMENT] Error:", error.message);
-    return new Response(JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error("Payment recording error", { error: errorMessage });
+    return errorResponse(errorMessage, 500);
   }
 });

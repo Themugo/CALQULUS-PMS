@@ -2,11 +2,13 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rateLimit.ts";
 import { createClient } from "supabase/supabase-js@2";
-
 import { requireEnv, getEnv } from "../_shared/env.ts";
-const logStep = (step: string, details?: any) => {
-  console.log(`[initiate-mpesa-payment] ${step}`, details ?? "");
-};
+import { createLogger } from "../_shared/logger.ts";
+import { validatePhone, validatePositiveNumber, validateRequired } from "../_shared/validation.ts";
+import { errorResponse, successResponse } from "../_shared/errors.ts";
+import { extractIpAddress, logPaymentEvent } from "../_shared/audit.ts";
+
+const logger = createLogger("initiate-mpesa-payment");
 
 interface PaymentRequest {
   invoiceId: string;
@@ -20,15 +22,14 @@ interface PaymentRequest {
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-
   try {
-    logStep("Function started");
+    logger.info("Function started");
 
     const paystackKey = getEnv("PAYSTACK_SECRET_KEY");
     if (!paystackKey) {
       throw new Error("PAYSTACK_SECRET_KEY is not set");
     }
-    logStep("Paystack key verified");
+    logger.info("Paystack key verified");
 
     // Authenticate user
     const supabaseClient = createClient(
@@ -50,7 +51,8 @@ serve(async (req) => {
     if (!user?.email) {
       throw new Error("User not authenticated or email not available");
     }
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    logger.info("User authenticated", { userId: user.id, email: user.email });
+
     // Rate limit: 5 payment initiations per user per hour
     if (!await checkRateLimit(supabaseClient, user.id, "initiate-mpesa-payment", RATE_LIMITS["initiate-mpesa-payment"])) {
       return rateLimitResponse(req);
@@ -59,17 +61,29 @@ serve(async (req) => {
     const body: PaymentRequest = await req.json();
     const { invoiceId, invoiceNumber, amount, phoneNumber, email, description } = body;
 
-    logStep("Payment request received", { invoiceId, amount, phoneNumber });
+    logger.info("Payment request received", { invoiceId, amount, phoneNumber });
 
-    // Validate phone number format (should start with 254)
-    let formattedPhone = phoneNumber.replace(/\s+/g, '').replace(/^0/, '254').replace(/^\+/, '');
-    if (!formattedPhone.startsWith('254')) {
-      formattedPhone = '254' + formattedPhone;
+    // Validate inputs using shared validation
+    const invoiceIdValidation = validateRequired(invoiceId, "Invoice ID");
+    if (!invoiceIdValidation.valid) {
+      return errorResponse(invoiceIdValidation.error, 400);
     }
-    logStep("Phone number formatted", { original: phoneNumber, formatted: formattedPhone });
+
+    const amountValidation = validatePositiveNumber(amount, "Amount");
+    if (!amountValidation.valid) {
+      return errorResponse(amountValidation.error, 400);
+    }
+
+    const phoneValidation = validatePhone(phoneNumber);
+    if (!phoneValidation.valid) {
+      return errorResponse(phoneValidation.error, 400);
+    }
+
+    const formattedPhone = phoneValidation.value;
+    logger.info("Phone number formatted", { original: phoneNumber, formatted: formattedPhone });
 
     // Convert amount to smallest currency unit (cents/kobo for Paystack)
-    const amountInCents = Math.round(amount * 100);
+    const amountInCents = Math.round(amountValidation.value * 100);
 
     // Create Paystack charge for mobile money
     const paystackResponse = await fetch("https://api.paystack.co/charge", {
@@ -106,74 +120,49 @@ serve(async (req) => {
     });
 
     const paystackData = await paystackResponse.json();
-    logStep("Paystack response", paystackData);
+    logger.info("Paystack response", paystackData);
 
     if (!paystackResponse.ok || !paystackData.status) {
-      throw new Error(paystackData.message || "Failed to initiate M-Pesa payment");
+      const errorMsg = paystackData.message || "Failed to initiate M-Pesa payment";
+      logger.error("Paystack error", { error: errorMsg, paystackData });
+      await logPaymentEvent(user.id, "payment_failed", { invoiceId, error: errorMsg });
+      throw new Error(errorMsg);
     }
 
     // Check if STK push was sent successfully
     if (paystackData.data?.status === "send_otp" || paystackData.data?.status === "pending") {
-      logStep("STK push initiated successfully", { reference: paystackData.data?.reference });
+      logger.info("STK push initiated successfully", { reference: paystackData.data?.reference });
+      await logPaymentEvent(user.id, "payment_initiated", { invoiceId, reference: paystackData.data?.reference, amount: amountValidation.value });
       
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "M-Pesa payment request sent. Please check your phone and enter your PIN.",
-          reference: paystackData.data?.reference,
-          status: paystackData.data?.status,
-        }),
-        {
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return successResponse({
+        message: "M-Pesa payment request sent. Please check your phone and enter your PIN.",
+        reference: paystackData.data?.reference,
+        status: paystackData.data?.status,
+      });
     }
 
     // If payment is already successful
     if (paystackData.data?.status === "success") {
-      logStep("Payment completed immediately");
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Payment completed successfully!",
-          reference: paystackData.data?.reference,
-          status: "success",
-        }),
-        {
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      logger.info("Payment completed immediately");
+      await logPaymentEvent(user.id, "payment_completed", { invoiceId, reference: paystackData.data?.reference, amount: amountValidation.value });
+      return successResponse({
+        message: "Payment completed successfully!",
+        reference: paystackData.data?.reference,
+        status: "success",
+      });
     }
 
     // Return the response for other statuses
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: paystackData.data?.display_text || "Payment initiated",
-        reference: paystackData.data?.reference,
-        status: paystackData.data?.status,
-      }),
-      {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
+    return successResponse({
+      message: paystackData.data?.display_text || "Payment initiated",
+      reference: paystackData.data?.reference,
+      status: paystackData.data?.status,
+    });
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
+    logger.error("Payment initiation failed", { error: errorMessage });
     
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: errorMessage 
-      }),
-      {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    return errorResponse(errorMessage, 500);
   }
 });
