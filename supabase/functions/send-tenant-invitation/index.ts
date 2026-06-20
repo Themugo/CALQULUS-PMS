@@ -3,6 +3,11 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { formatPhoneNumber, sendSms } from "../_shared/sms.ts";
+import { createLogger } from "../_shared/logger.ts";
+import { validateRequired, validateEmail, validatePhone } from "../_shared/validation.ts";
+import { errorResponse, successResponse } from "../_shared/errors.ts";
+import { checkManagerAccess } from "../_shared/authorization.ts";
+import { logTenantEvent } from "../_shared/audit.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -13,8 +18,7 @@ const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 const WHATSAPP_ACCESS_TOKEN = getEnv("WHATSAPP_ACCESS_TOKEN");
 const PHONE_NUMBER_ID = getEnv("PHONE_NUMBER_ID");
 
-const logStep = (step: string, details?: Record<string, unknown>) => {
-};
+const logger = createLogger("send-tenant-invitation");
 
 interface InvitationRequest {
   email?: string;
@@ -31,10 +35,10 @@ interface InvitationRequest {
 async function sendSMS(phone: string, message: string): Promise<{ success: boolean; error?: string }> {
   try {
     const result = await sendSms(phone, message);
-    logStep("SMS sent", { result });
+    logger.info("SMS sent", { result });
     return { success: result.success, error: result.error };
   } catch (error) {
-    logStep("SMS error", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("SMS error", { error: error instanceof Error ? error.message : String(error) });
     return { success: false, error: error instanceof Error ? error.message : "SMS failed" };
   }
 }
@@ -42,7 +46,7 @@ async function sendSMS(phone: string, message: string): Promise<{ success: boole
 // Send WhatsApp via Meta Business API
 async function sendWhatsApp(phone: string, tenantName: string, propertyName: string, unit: string | undefined, invitationUrl: string): Promise<{ success: boolean; error?: string }> {
   if (!WHATSAPP_ACCESS_TOKEN || !PHONE_NUMBER_ID) {
-    logStep("WhatsApp skipped - Meta Business API not configured");
+    logger.info("WhatsApp skipped - Meta Business API not configured");
     return { success: false, error: "WhatsApp provider not configured" };
   }
 
@@ -67,10 +71,10 @@ async function sendWhatsApp(phone: string, tenantName: string, propertyName: str
     });
 
     const result = await response.json();
-    logStep("WhatsApp sent", { result });
+    logger.info("WhatsApp sent", { result });
     return { success: response.ok };
   } catch (error) {
-    logStep("WhatsApp error", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("WhatsApp error", { error: error instanceof Error ? error.message : String(error) });
     return { success: false, error: error instanceof Error ? error.message : "WhatsApp failed" };
   }
 }
@@ -80,7 +84,7 @@ serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
   try {
-    logStep("Starting invitation process");
+    logger.info("Starting invitation process");
 
     const supabaseUrl = SUPABASE_URL;
     const supabaseServiceKey = SERVICE_KEY;
@@ -88,11 +92,7 @@ serve(async (req: Request): Promise<Response> => {
     // Get auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      logStep("Error: No authorization header");
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
+      return errorResponse("Unauthorized", 401);
     }
 
     // Create client with user's token to verify identity
@@ -102,14 +102,18 @@ serve(async (req: Request): Promise<Response> => {
 
     const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
     if (userError || !user) {
-      logStep("User auth error", { error: userError?.message });
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
+      logger.error("User auth error", { error: userError?.message });
+      return errorResponse("Unauthorized", 401);
     }
 
-    logStep("Authenticated user", { userId: user.id, email: user.email });
+    logger.info("Authenticated user", { userId: user.id, email: user.email });
+
+    // Check manager authorization
+    const accessCheck = await checkManagerAccess(user.id);
+    if (!accessCheck.allowed) {
+      logger.warn("Unauthorized manager access attempt", { userId: user.id });
+      return errorResponse("Forbidden - manager access required", 403);
+    }
 
     // Rate limit: max 10 invitations per manager per hour
     const { data: rateLimitOk } = await supabaseUser.rpc("check_rate_limit", {
@@ -118,33 +122,53 @@ serve(async (req: Request): Promise<Response> => {
       p_max_per_hour: 10,
     });
     if (rateLimitOk === false) {
-      return new Response(
-        JSON.stringify({ error: "Too many invitations sent. Please wait before sending more." }),
-        { status: 429, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+      logger.warn("Rate limit exceeded", { userId: user.id });
+      return errorResponse("Too many invitations sent. Please wait before sending more.", 429);
     }
 
     // Parse request body
     const { email, phone, tenantName, propertyId, propertyName, unit, monthlyRent, houseDeposit, waterDeposit }: InvitationRequest = await req.json();
     
-    // Require tenant name, property, and at least one contact method
-    if (!tenantName || !propertyId || !propertyName) {
-      logStep("Missing required fields", { tenantName, propertyId, propertyName });
-      return new Response(JSON.stringify({ error: "Missing required fields: tenantName, propertyId, propertyName" }), {
-        status: 400,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
+    // Validate required fields
+    const tenantNameValidation = validateRequired(tenantName, "Tenant name");
+    if (!tenantNameValidation.valid) {
+      return errorResponse(tenantNameValidation.error, 400);
     }
 
+    const propertyIdValidation = validateRequired(propertyId, "Property ID");
+    if (!propertyIdValidation.valid) {
+      return errorResponse(propertyIdValidation.error, 400);
+    }
+
+    const propertyNameValidation = validateRequired(propertyName, "Property name");
+    if (!propertyNameValidation.valid) {
+      return errorResponse(propertyNameValidation.error, 400);
+    }
+
+    // Validate at least one contact method
     if (!email && !phone) {
-      logStep("No contact method provided", { email, phone });
-      return new Response(JSON.stringify({ error: "At least one contact method (email or phone) is required" }), {
-        status: 400,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
+      return errorResponse("At least one contact method (email or phone) is required", 400);
     }
 
-    logStep("Creating invitation", { email, phone, tenantName, propertyName, unit });
+    // Validate email if provided
+    if (email) {
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.valid) {
+        return errorResponse(emailValidation.error, 400);
+      }
+    }
+
+    // Validate phone if provided
+    let formattedPhone = null;
+    if (phone) {
+      const phoneValidation = validatePhone(phone);
+      if (!phoneValidation.valid) {
+        return errorResponse(phoneValidation.error, 400);
+      }
+      formattedPhone = phoneValidation.value;
+    }
+
+    logger.info("Creating invitation", { email, phone: formattedPhone, tenantName, propertyName, unit });
 
     // Use service role client for database operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
@@ -166,7 +190,7 @@ serve(async (req: Request): Promise<Response> => {
 
     if (existingInvitation) {
       // Update existing invitation with new token and resend
-      logStep("Resending existing invitation", { invitationId: existingInvitation.id });
+      logger.info("Resending existing invitation", { invitationId: existingInvitation.id });
       
       const newToken = crypto.randomUUID();
       const { data: updatedInvitation, error: updateError } = await supabaseAdmin
@@ -182,11 +206,8 @@ serve(async (req: Request): Promise<Response> => {
         .single();
 
       if (updateError) {
-        logStep("Error updating invitation", { error: updateError.message });
-        return new Response(JSON.stringify({ error: "Failed to resend invitation" }), {
-          status: 500,
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        });
+        logger.error("Error updating invitation", { error: updateError.message });
+        return errorResponse("Failed to resend invitation", 500);
       }
       
       invitation = updatedInvitation;
@@ -195,9 +216,9 @@ serve(async (req: Request): Promise<Response> => {
       const { data: newInvitation, error: insertError } = await supabaseAdmin
         .from("tenant_invitations")
         .insert({
-          email: email || `phone-${phone}@placeholder.calqulusrms`, // Use placeholder if no email
+          email: email || `phone-${formattedPhone}@placeholder.calqulusrms`, // Use placeholder if no email
           tenant_name: tenantName,
-          phone: phone || null,
+          phone: formattedPhone || null,
           property_id: propertyId,
           property_name: propertyName,
           unit: unit || null,
@@ -211,17 +232,22 @@ serve(async (req: Request): Promise<Response> => {
         .single();
 
       if (insertError) {
-        logStep("Error creating invitation", { error: insertError.message });
-        return new Response(JSON.stringify({ error: "Failed to create invitation" }), {
-          status: 500,
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        });
+        logger.error("Error creating invitation", { error: insertError.message });
+        return errorResponse("Failed to create invitation", 500);
       }
       
       invitation = newInvitation;
     }
 
-    logStep("Invitation created", { invitationId: invitation.id, token: invitation.token });
+    logger.info("Invitation created", { invitationId: invitation.id, token: invitation.token });
+
+    // Log tenant event
+    await logTenantEvent(user.id, "tenant_invited", { 
+      tenantName, 
+      propertyId, 
+      propertyName,
+      invitationId: invitation.id 
+    });
 
     // Get manager info for the email
     const { data: profile } = await supabaseAdmin
@@ -236,7 +262,7 @@ serve(async (req: Request): Promise<Response> => {
     const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
     const invitationUrl = `${appUrl}/tenant/invitation?token=${invitation.token}`;
 
-    logStep("Invitation URL generated", { url: invitationUrl });
+    logger.info("Invitation URL generated", { url: invitationUrl });
 
     // Track notification results
     const notificationResults = {
@@ -246,47 +272,39 @@ serve(async (req: Request): Promise<Response> => {
     };
 
     // Send SMS if phone is provided
-    if (phone) {
+    if (formattedPhone) {
       const smsMessage = `Hi ${tenantName}! You've been invited to join ${propertyName}${unit ? ` (Unit ${unit})` : ""} on CALQULUS RMS. Create your account: ${invitationUrl}`;
-      const smsResult = await sendSMS(phone, smsMessage);
+      const smsResult = await sendSMS(formattedPhone, smsMessage);
       notificationResults.sms.sent = smsResult.success;
       notificationResults.sms.error = smsResult.error || null;
       
       // Also attempt WhatsApp
-      const whatsappResult = await sendWhatsApp(phone, tenantName, propertyName, unit, invitationUrl);
+      const whatsappResult = await sendWhatsApp(formattedPhone, tenantName, propertyName, unit, invitationUrl);
       notificationResults.whatsapp.sent = whatsappResult.success;
       notificationResults.whatsapp.error = whatsappResult.error || null;
     }
 
     // If no email provided, return success with phone notification results
     if (!email || email.includes('@placeholder.calqulusrms')) {
-      logStep("No email provided - invitation sent via phone channels", { notificationResults });
-      return new Response(JSON.stringify({ 
-        success: true, 
+      logger.info("No email provided - invitation sent via phone channels", { notificationResults });
+      return successResponse({ 
         invitation: { id: invitation.id },
         invitationUrl,
         notifications: notificationResults,
         message: notificationResults.sms.sent || notificationResults.whatsapp.sent 
           ? "Invitation sent via SMS/WhatsApp" 
           : "Invitation created. Share the link manually." 
-      }), {
-        status: 200,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
 
     // Check if RESEND_API_KEY is configured
     if (!RESEND_API_KEY) {
-      logStep("Warning: RESEND_API_KEY not configured, skipping email");
-      return new Response(JSON.stringify({ 
-        success: true, 
+      logger.warn("RESEND_API_KEY not configured, skipping email");
+      return successResponse({ 
         invitation: { id: invitation.id },
         invitationUrl,
         notifications: notificationResults,
         warning: "Email not sent - RESEND_API_KEY not configured" 
-      }), {
-        status: 200,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
 
@@ -342,7 +360,7 @@ serve(async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    logStep("Sending email via Resend", { to: email });
+    logger.info("Sending email via Resend", { to: email });
 
     // Send the invitation email using Resend API
     const emailResponse = await fetch("https://api.resend.com/emails", {
@@ -362,30 +380,23 @@ serve(async (req: Request): Promise<Response> => {
     const emailResult = await emailResponse.json();
     
     if (!emailResponse.ok) {
-      logStep("Email sending failed", { status: emailResponse.status, result: emailResult });
+      logger.error("Email sending failed", { status: emailResponse.status, result: emailResult });
       notificationResults.email.error = emailResult.message || "Failed to send email";
     } else {
-      logStep("Email sent successfully", { emailId: emailResult.id });
+      logger.info("Email sent successfully", { emailId: emailResult.id });
       notificationResults.email.sent = true;
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return successResponse({ 
       invitation: { id: invitation.id }, 
       invitationUrl,
       notifications: notificationResults
-    }), {
-      status: 200,
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
-    logStep("Error in send-tenant-invitation", { error: errorMessage, stack: errorStack });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
+    logger.error("Error in send-tenant-invitation", { error: errorMessage, stack: errorStack });
+    return errorResponse(errorMessage, 500);
   }
 });
