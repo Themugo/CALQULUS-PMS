@@ -312,7 +312,7 @@ const LandlordAuth = () => {
 
           {/* Bottom */}
           <div className="flex items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-white/30 text-xs">calquluspms.com</p>
+            <p className="text-white/30 text-xs">calqulus.site</p>
             <div className="flex gap-3">
               <a href="/tenant/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Tenant portal</a>
               <a href="/webhost/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Admin login</a>

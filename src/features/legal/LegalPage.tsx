@@ -6,7 +6,7 @@ import { Shield, FileText, ChevronLeft } from 'lucide-react';
 
 const LAST_UPDATED = 'May 2026';
 const COMPANY     = 'CALQULUS PMS Ltd';
-const EMAIL       = 'legal@calqulusrms.com';
+const EMAIL       = 'legal@calqulus.site';
 const COUNTRY     = 'Kenya';
 
 type Tab = 'privacy' | 'terms';
@@ -66,7 +66,7 @@ const PrivacyPolicy: React.FC = () => (
     </div>
 
     <Section title="1. Who we are">
-      <p>{COMPANY} ("CALQULUS PMS", "we", "our") operates the CALQULUS PMS property management platform at calqulusrms.com. We are registered and operate under the laws of {COUNTRY}.</p>
+      <p>{COMPANY} ("CALQULUS PMS", "we", "our") operates the CALQULUS PMS property management platform at calqulus.site. We are registered and operate under the laws of {COUNTRY}.</p>
       <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a></p>
     </Section>
 

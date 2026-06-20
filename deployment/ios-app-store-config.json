@@ -1,23 +1,23 @@
 {
   "appStoreConnect": {
-    "appName": "CALQULUS RMS - Property Management",
-    "bundleId": "com.calqulusrms.app",
+    "appName": "CALQULUS PMS - Property Management",
+    "bundleId": "site.calqulus.pms",
     "sku": "CALQULUSRMS001",
     "teamId": "YOUR_TEAM_ID",
     "appleId": "YOUR_APPLE_ID"
   },
   "appInformation": {
     "name": {
-      "default": "CALQULUS RMS - Property Management",
-      "en-US": "CALQULUS RMS - Property Management"
+      "default": "CALQULUS PMS - Property Management",
+      "en-US": "CALQULUS PMS - Property Management"
     },
     "subtitle": {
       "default": "Modern Property Management",
       "en-US": "Modern Property Management"
     },
     "description": {
-      "default": "CALQULUS RMS is a comprehensive property management solution designed for landlords, property managers, and tenants. Streamline rent collection, maintenance requests, lease management, and financial reporting all in one powerful mobile app.\n\nKey Features:\n\nFor Landlords & Property Managers:\n• Manage multiple properties from a single dashboard\n• Track rent payments and send automated reminders\n• Handle maintenance requests efficiently\n• Generate financial reports and statements\n• Manage leases and tenant information\n• Water billing and utility management\n• Contractor marketplace for maintenance services\n\nFor Tenants:\n• Pay rent securely via M-Pesa, cards, or bank transfer\n• Submit maintenance requests with photos\n• View payment history and receipts\n• Access lease documents and agreements\n• Receive notifications for important updates\n\nFor Agencies:\n• Commission-based property management\n• Revenue sharing with property owners\n• Full tenant management capabilities\n• Financial partner integrations for loans\n\nAdditional Features:\n• Offline mode for property access without internet\n• Biometric authentication for secure login\n• Multi-role support (Manager, Landlord, Tenant, Agency)\n• Real-time notifications and alerts\n• Comprehensive reporting and analytics\n• Insurance marketplace integration\n• Utility provider connections\n• Workflow automation for business processes",
-      "en-US": "CALQULUS RMS is a comprehensive property management solution designed for landlords, property managers, and tenants. Streamline rent collection, maintenance requests, lease management, and financial reporting all in one powerful mobile app.\n\nKey Features:\n\nFor Landlords & Property Managers:\n• Manage multiple properties from a single dashboard\n• Track rent payments and send automated reminders\n• Handle maintenance requests efficiently\n• Generate financial reports and statements\n• Manage leases and tenant information\n• Water billing and utility management\n• Contractor marketplace for maintenance services\n\nFor Tenants:\n• Pay rent securely via M-Pesa, cards, or bank transfer\n• Submit maintenance requests with photos\n• View payment history and receipts\n• Access lease documents and agreements\n• Receive notifications for important updates\n\nFor Agencies:\n• Commission-based property management\n• Revenue sharing with property owners\n• Full tenant management capabilities\n• Financial partner integrations for loans\n\nAdditional Features:\n• Offline mode for property access without internet\n• Biometric authentication for secure login\n• Multi-role support (Manager, Landlord, Tenant, Agency)\n• Real-time notifications and alerts\n• Comprehensive reporting and analytics\n• Insurance marketplace integration\n• Utility provider connections\n• Workflow automation for business processes"
+      "default": "CALQULUS PMS is a comprehensive property management solution designed for landlords, property managers, and tenants. Streamline rent collection, maintenance requests, lease management, and financial reporting all in one powerful mobile app.\n\nKey Features:\n\nFor Landlords & Property Managers:\n• Manage multiple properties from a single dashboard\n• Track rent payments and send automated reminders\n• Handle maintenance requests efficiently\n• Generate financial reports and statements\n• Manage leases and tenant information\n• Water billing and utility management\n• Contractor marketplace for maintenance services\n\nFor Tenants:\n• Pay rent securely via M-Pesa, cards, or bank transfer\n• Submit maintenance requests with photos\n• View payment history and receipts\n• Access lease documents and agreements\n• Receive notifications for important updates\n\nFor Agencies:\n• Commission-based property management\n• Revenue sharing with property owners\n• Full tenant management capabilities\n• Financial partner integrations for loans\n\nAdditional Features:\n• Offline mode for property access without internet\n• Biometric authentication for secure login\n• Multi-role support (Manager, Landlord, Tenant, Agency)\n• Real-time notifications and alerts\n• Comprehensive reporting and analytics\n• Insurance marketplace integration\n• Utility provider connections\n• Workflow automation for business processes",
+      "en-US": "CALQULUS PMS is a comprehensive property management solution designed for landlords, property managers, and tenants. Streamline rent collection, maintenance requests, lease management, and financial reporting all in one powerful mobile app.\n\nKey Features:\n\nFor Landlords & Property Managers:\n• Manage multiple properties from a single dashboard\n• Track rent payments and send automated reminders\n• Handle maintenance requests efficiently\n• Generate financial reports and statements\n• Manage leases and tenant information\n• Water billing and utility management\n• Contractor marketplace for maintenance services\n\nFor Tenants:\n• Pay rent securely via M-Pesa, cards, or bank transfer\n• Submit maintenance requests with photos\n• View payment history and receipts\n• Access lease documents and agreements\n• Receive notifications for important updates\n\nFor Agencies:\n• Commission-based property management\n• Revenue sharing with property owners\n• Full tenant management capabilities\n• Financial partner integrations for loans\n\nAdditional Features:\n• Offline mode for property access without internet\n• Biometric authentication for secure login\n• Multi-role support (Manager, Landlord, Tenant, Agency)\n• Real-time notifications and alerts\n• Comprehensive reporting and analytics\n• Insurance marketplace integration\n• Utility provider connections\n• Workflow automation for business processes"
     },
     "keywords": [
       "property management",
@@ -41,10 +41,10 @@
       "Africa",
       "Kenya"
     ],
-    "promotionalText": "Streamline your property management with CALQULUS RMS - the modern solution for landlords, managers, and tenants.",
-    "supportUrl": "https://app.calqulusrms.com/support",
-    "marketingUrl": "https://app.calqulusrms.com",
-    "privacyPolicyUrl": "https://app.calqulusrms.com/privacy"
+    "promotionalText": "Streamline your property management with CALQULUS PMS - the modern solution for landlords, managers, and tenants.",
+    "supportUrl": "https://www.calqulus.site/support",
+    "marketingUrl": "https://www.calqulus.site",
+    "privacyPolicyUrl": "https://www.calqulus.site/legal?tab=privacy"
   },
   "categories": {
     "primary": "Business",
@@ -123,33 +123,33 @@
     ]
   },
   "reviewInformation": {
-    "firstName": "CALQULUS RMS",
+    "firstName": "CALQULUS PMS",
     "lastName": "Team",
-    "email": "support@calqulusrms.com",
+    "email": "support@calqulus.site",
     "phone": "+254700000000"
   },
   "appStoreInformation": {
     "tradeRepresentativeContactInformation": {
-      "firstName": "CALQULUS RMS",
+      "firstName": "CALQULUS PMS",
       "lastName": "Team",
       "addressLine1": "Nairobi, Kenya",
       "city": "Nairobi",
       "state": "Nairobi",
       "country": "Kenya",
       "postalCode": "00100",
-      "email": "support@calqulusrms.com",
+      "email": "support@calqulus.site",
       "phone": "+254700000000"
     },
     "appReviewInformation": {
-      "firstName": "CALQULUS RMS",
+      "firstName": "CALQULUS PMS",
       "lastName": "Team",
-      "email": "support@calqulusrms.com",
+      "email": "support@calqulus.site",
       "phone": "+254700000000"
     }
   },
   "versionInformation": {
     "currentVersion": "1.0.0",
-    "whatsNew": "Initial release of CALQULUS RMS mobile app:\n\n• Complete property management features\n• Multi-role support for landlords, managers, and tenants\n• Secure payment processing via M-Pesa\n• Maintenance request management\n• Financial reporting and analytics\n• Offline mode support\n• Biometric authentication\n• Real-time notifications\n• Water billing integration\n• Contractor marketplace\n• Insurance marketplace\n• Utility provider connections\n• Workflow automation"
+    "whatsNew": "Initial release of CALQULUS PMS mobile app:\n\n• Complete property management features\n• Multi-role support for landlords, managers, and tenants\n• Secure payment processing via M-Pesa\n• Maintenance request management\n• Financial reporting and analytics\n• Offline mode support\n• Biometric authentication\n• Real-time notifications\n• Water billing integration\n• Contractor marketplace\n• Insurance marketplace\n• Utility provider connections\n• Workflow automation"
   },
   "buildSettings": {
     "bundleVersion": "1",
@@ -173,7 +173,7 @@
   "entitlements": {
     "apsEnvironment": "production",
     "com.apple.developer.associated-domains": [
-      "applinks:app.calqulusrms.com"
+      "applinks:www.calqulus.site"
     ]
   },
   "privacyManifest": {

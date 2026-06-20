@@ -98,7 +98,7 @@ const NotFound = () => {
 
         {/* Footer */}
         <p className="mt-12 text-white/20 text-xs">
-          calquluspms.com · If this keeps happening, contact your administrator.
+          calqulus.site · If this keeps happening, contact your administrator.
         </p>
       </div>
     </div>

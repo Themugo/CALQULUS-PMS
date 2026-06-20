@@ -13,7 +13,7 @@ This document outlines all required app assets for iOS App Store and Google Play
 - **Path**: `assets/app-icons/ios-app-icon.png`
 - **Design Guidelines**:
   - Clean, recognizable brand identity
-  - Use CALQULUS RMS brand colors (primary: #0f172a, accent: #3b82f6)
+  - Use CALQULUS PMS brand colors (navy: #0A1628, gold accent: #C9A84C)
   - Simple icon representing property/home
   - No text, gradients, or complex patterns
   - Rounded corners will be applied by Apple
@@ -85,7 +85,7 @@ This document outlines all required app assets for iOS App Store and Google Play
   - Include app icon and tagline
   - Use brand colors
   - Clean, professional design
-  - Suggested text: "CALQULUS RMS - Modern Property Management"
+  - Suggested text: "CALQULUS PMS - Modern Property Management"
 
 ### Screenshots
 - **Required Devices**: Phone and Tablet
@@ -132,8 +132,8 @@ This document outlines all required app assets for iOS App Store and Google Play
 ## Brand Guidelines
 
 ### Color Palette
-- **Primary**: #0f172a (Dark Blue)
-- **Secondary**: #3b82f6 (Blue)
+- **Primary**: #0A1628 (Navy)
+- **Secondary**: #C9A84C (Gold)
 - **Accent**: #10b981 (Green)
 - **Background**: #ffffff (White)
 - **Text**: #1e293b (Dark Gray)

@@ -11,7 +11,7 @@ import calqulusLogo from '@/assets/calqulus-logo-new.png';
 
 const isRecommendedWebhostHost = () => {
   const host = window.location.hostname;
-  return host.startsWith('admin.') || host.endsWith('.calquluspms.com') || host === 'localhost' || host === '127.0.0.1';
+  return host.startsWith('admin.') || host.endsWith('.calqulus.site') || host === 'localhost' || host === '127.0.0.1';
 };
 
 const features = [
@@ -127,7 +127,7 @@ const WebhostAuth = () => {
           </div>
 
           <div className="pt-8 border-t border-white/10">
-            <p className="text-white/20 text-xs">calquluspms.com · Internal use only</p>
+            <p className="text-white/20 text-xs">calqulus.site · Internal use only</p>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@ const WebhostAuth = () => {
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-white/80 text-sm font-medium">Email address</Label>
                 <Input
-                  id="email" type="email" placeholder="admin@calquluspms.com"
+                  id="email" type="email" placeholder="admin@calqulus.site"
                   value={email} onChange={e => setEmail(e.target.value)} required
                   className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11"
                 />

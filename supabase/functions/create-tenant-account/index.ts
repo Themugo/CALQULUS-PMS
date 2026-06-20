@@ -508,7 +508,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         companyName || "CALQULUS RMS Properties",
         property,
         unit,
-        portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
+        portalUrl || getEnv("SITE_URL", "https://www.calqulus.site")
       );
       emailSent = true;
 
@@ -521,7 +521,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           companyName || "CALQULUS RMS Properties",
           property,
           unit,
-          portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
+          portalUrl || getEnv("SITE_URL", "https://www.calqulus.site")
         );
         smsSent = true;
       }
@@ -535,7 +535,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           companyName || "CALQULUS RMS Properties",
           property,
           unit,
-          portalUrl || getEnv("SITE_URL", "https://calqulusrms.com")
+          portalUrl || getEnv("SITE_URL", "https://www.calqulus.site")
         );
         whatsappSent = true;
       }

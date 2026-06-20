@@ -233,7 +233,7 @@ serve(async (req: Request): Promise<Response> => {
     const managerName = profile?.full_name || user.email;
 
     // Build the invitation URL - Use the published app URL
-    const appUrl = getEnv("SITE_URL", "https://calqulusrms.com");
+    const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
     const invitationUrl = `${appUrl}/tenant/invitation?token=${invitation.token}`;
 
     logStep("Invitation URL generated", { url: invitationUrl });

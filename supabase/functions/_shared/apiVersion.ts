@@ -108,7 +108,7 @@ export function checkApiVersion(
         code: "API_VERSION_DEPRECATED",
         currentVersion: functionVersion,
         minSupportedVersion: MIN_SUPPORTED_VERSION,
-        upgradeUrl: "https://docs.calqulusrms.com/api/versioning",
+        upgradeUrl: "https://docs.calqulus.site/api/versioning",
       }),
       {
         status: 426,

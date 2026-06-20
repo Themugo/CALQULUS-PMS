@@ -1,9 +1,9 @@
 /**
  * _shared/cors.ts
  *
- * Centralised CORS configuration for all CALQULUS RMS edge functions.
+ * Centralised CORS configuration for all CALQULUS PMS edge functions.
  *
- * In production, restrict to the canonical CALQULUS RMS domain.
+ * In production, restrict to the canonical CALQULUS PMS domain.
  * During local development, Supabase CLI uses localhost.
  *
  * Why not wildcard (*)?
@@ -15,9 +15,9 @@
  */
 
 const ALLOWED_ORIGINS = [
-  "https://calqulusrms.com",
-  "https://www.calqulusrms.com",
-  "https://app.calqulusrms.com",
+  "https://calqulus.site",
+  "https://www.calqulus.site",
+  "https://app.calqulus.site",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",

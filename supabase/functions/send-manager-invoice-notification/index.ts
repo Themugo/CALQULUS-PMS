@@ -40,7 +40,7 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
 };
 
-const getSiteUrl = () => (getEnv("SITE_URL", "https://calqulusrms.com")).replace(/\/+$/, "");
+const getSiteUrl = () => (getEnv("SITE_URL", "https://www.calqulus.site")).replace(/\/+$/, "");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);

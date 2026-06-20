@@ -188,7 +188,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Parse request body for options
     let sendEmails = true;
-    let portalUrl = getEnv("SITE_URL", "https://calqulusrms.com");
+    let portalUrl = getEnv("SITE_URL", "https://www.calqulus.site");
     let dryRun = false;
     
     try {

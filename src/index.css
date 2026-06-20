@@ -232,43 +232,57 @@
   }
 
   .dark {
-    --background: 218 67% 8%;
-    --foreground: 42 60% 88%;
+    /* CALQULUS dark theme — built from the same navy brand hue (218°) used
+       throughout the light theme, hero gradients, and sidebar — not a
+       generic slate-grey. Layered surface system gives real depth:
+       background (deepest) → card (raised) → popover (highest) → muted
+       (recessed), each a deliberate step apart so panels read as distinct
+       surfaces rather than collapsing into one dark mass. Gold accent
+       carries through at full saturation so the brand stays unmistakable
+       in dark mode, the way it already does on the auth/landing screens. */
+    --background: 218 42% 9%;
+    --foreground: 220 20% 96%;
 
-    --card: 218 62% 11%;
-    --card-foreground: 42 60% 88%;
+    --card: 218 38% 13%;
+    --card-foreground: 220 20% 96%;
 
-    --popover: 218 62% 11%;
-    --popover-foreground: 42 60% 88%;
+    --popover: 218 36% 15%;
+    --popover-foreground: 220 20% 96%;
 
-    --primary: 42 51% 55%;
-    --primary-foreground: 218 67% 8%;
+    --primary: 42 70% 60%;
+    --primary-foreground: 218 50% 8%;
 
-    --secondary: 218 55% 18%;
-    --secondary-foreground: 42 60% 88%;
+    --secondary: 218 30% 20%;
+    --secondary-foreground: 220 20% 96%;
 
-    --muted: 218 55% 18%;
-    --muted-foreground: 218 30% 65%;
+    --muted: 218 30% 16%;
+    --muted-foreground: 218 16% 70%;
 
-    --accent: 42 51% 55%;
-    --accent-foreground: 218 67% 8%;
+    --accent: 42 70% 60%;
+    --accent-foreground: 218 50% 8%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 42 60% 88%;
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 218 55% 18%;
-    --input: 218 55% 18%;
-    --ring: 42 51% 55%;
+    --success: 142 64% 48%;
+    --success-foreground: 0 0% 100%;
 
-    --sidebar-background: 218 67% 6%;
-    --sidebar-foreground: 42 60% 88%;
-    --sidebar-primary: 42 51% 55%;
-    --sidebar-primary-foreground: 218 67% 8%;
-    --sidebar-accent: 218 62% 14%;
-    --sidebar-accent-foreground: 42 60% 88%;
-    --sidebar-border: 218 55% 16%;
-    --sidebar-ring: 42 51% 55%;
-    --sidebar-muted: 218 25% 55%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 218 50% 8%;
+
+    --border: 218 26% 26%;
+    --input: 218 28% 22%;
+    --ring: 42 70% 60%;
+
+    --sidebar-background: 218 48% 7%;
+    --sidebar-foreground: 42 40% 90%;
+    --sidebar-primary: 42 70% 60%;
+    --sidebar-primary-foreground: 218 50% 8%;
+    --sidebar-accent: 218 32% 16%;
+    --sidebar-accent-foreground: 42 40% 90%;
+    --sidebar-border: 218 28% 22%;
+    --sidebar-ring: 42 70% 60%;
+    --sidebar-muted: 218 18% 64%;
   }
 }
 
@@ -307,18 +321,28 @@
   .card-shadow {
     box-shadow: 0 4px 6px -1px hsl(218 67% 10% / 0.08), 0 2px 4px -2px hsl(218 67% 10% / 0.05);
   }
+  .dark .card-shadow {
+    box-shadow: 0 1px 0 0 hsl(218 26% 32% / 0.6), 0 4px 10px -2px hsl(218 50% 4% / 0.45);
+  }
 
   .card-shadow-lg {
     box-shadow: 0 10px 25px -3px hsl(218 67% 10% / 0.12), 0 4px 6px -4px hsl(218 67% 10% / 0.08);
+  }
+  .dark .card-shadow-lg {
+    box-shadow: 0 1px 0 0 hsl(218 26% 34% / 0.7), 0 16px 32px -8px hsl(218 50% 3% / 0.55);
   }
 
   .card-shadow-gold {
     box-shadow: 0 4px 20px -4px hsl(42 51% 55% / 0.25);
   }
 
-  /* Sidebar: deep navy gradient */
+  /* Sidebar: deep navy gradient — kept darker than cards so it reads as a
+     distinct "rail" rather than blending with the lighter card surfaces. */
   .sidebar-gradient {
     background: linear-gradient(180deg, hsl(218 67% 10%) 0%, hsl(218 62% 13%) 60%, hsl(218 58% 16%) 100%);
+  }
+  .dark .sidebar-gradient {
+    background: linear-gradient(180deg, hsl(218 48% 7%) 0%, hsl(218 44% 9%) 55%, hsl(218 40% 11%) 100%);
   }
 
   /* Gold shimmer overlay for premium feel */
@@ -400,8 +424,8 @@
     border: 1px solid hsl(42 51% 55% / 0.12);
   }
   .dark .glass {
-    background: hsl(218 62% 11% / 0.75);
-    border: 1px solid hsl(42 51% 55% / 0.15);
+    background: hsl(218 32% 16% / 0.78);
+    border: 1px solid hsl(42 65% 58% / 0.18);
   }
 
   .glass-strong {
@@ -411,8 +435,8 @@
     border: 1px solid hsl(42 51% 55% / 0.15);
   }
   .dark .glass-strong {
-    background: hsl(218 67% 8% / 0.88);
-    border: 1px solid hsl(42 51% 55% / 0.18);
+    background: hsl(218 34% 13% / 0.9);
+    border: 1px solid hsl(42 65% 58% / 0.2);
   }
 
   .card-glass {
@@ -423,8 +447,8 @@
     box-shadow: 0 8px 32px hsl(218 67% 10% / 0.08);
   }
   .dark .card-glass {
-    background: hsl(218 62% 11% / 0.55);
-    border: 1px solid hsl(42 51% 55% / 0.12);
+    background: hsl(218 32% 16% / 0.6);
+    border: 1px solid hsl(42 65% 58% / 0.15);
   }
 
   /* Stat card with gold accent left border */
@@ -447,10 +471,10 @@
     background: hsl(218 30% 70%);
   }
   .dark ::-webkit-scrollbar-thumb {
-    background: hsl(218 55% 22%);
+    background: hsl(218 26% 28%);
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: hsl(218 55% 30%);
+    background: hsl(218 26% 36%);
   }
 
   *:focus-visible {
@@ -465,7 +489,7 @@
     box-shadow: 0 12px 28px hsl(218 67% 10% / 0.1), 0 0 0 1px hsl(42 51% 55% / 0.1);
   }
   .dark .card-hover:hover {
-    box-shadow: 0 12px 28px hsl(218 67% 10% / 0.25), 0 0 0 1px hsl(42 51% 55% / 0.15);
+    box-shadow: 0 1px 0 0 hsl(218 26% 34% / 0.8), 0 16px 32px -6px hsl(218 50% 3% / 0.5), 0 0 0 1px hsl(42 65% 58% / 0.18);
   }
 
   .shimmer {
@@ -474,7 +498,7 @@
     animation: shimmer 2s infinite;
   }
   .dark .shimmer {
-    background: linear-gradient(90deg, hsl(218 55% 16%) 25%, hsl(218 55% 20%) 50%, hsl(218 55% 16%) 75%);
+    background: linear-gradient(90deg, hsl(218 28% 18%) 25%, hsl(218 28% 24%) 50%, hsl(218 28% 18%) 75%);
     background-size: 200% 100%;
   }
 

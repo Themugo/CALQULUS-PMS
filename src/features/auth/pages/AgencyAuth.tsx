@@ -118,7 +118,7 @@ const AgencyAuth = () => {
           </div>
 
           <div className="flex items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-white/30 text-xs">calquluspms.com</p>
+            <p className="text-white/30 text-xs">calqulus.site</p>
             <div className="flex gap-3">
               <Link to="/landlord" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Manager login</Link>
               <Link to="/webhost/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Admin login</Link>

@@ -44,9 +44,9 @@ function isValidPortalUrl(url: string, allowedDomains: string[]): boolean {
 }
 
 function getAllowedPortalDomains(): string[] {
-  const siteUrl = getEnv("SITE_URL", "https://calqulusrms.com");
+  const siteUrl = getEnv("SITE_URL", "https://www.calqulus.site");
   const configuredHost = new URL(siteUrl).hostname;
-  return [...new Set([configuredHost, "calqulusrms.com", "www.calqulusrms.com", "localhost"])];
+  return [...new Set([configuredHost, "calqulus.site", "www.calqulus.site", "localhost"])];
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {

@@ -170,7 +170,7 @@ Deno.test("rateLimitResponse: returns 429 with correct structure", async () => {
 
 // ── Test: CORS headers are present on error responses ───────────────
 Deno.test("CORS: error responses include CORS headers", () => {
-  const allowedOrigins = ["https://calqulusrms.com", "http://localhost:5173"];
+  const allowedOrigins = ["https://www.calqulus.site", "http://localhost:5173"];
 
   for (const origin of allowedOrigins) {
     const req = new Request("https://example.com", {

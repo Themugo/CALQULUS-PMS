@@ -128,7 +128,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
             <!-- CTA Button -->
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://calqulusrms.com${portalUrl}" 
+              <a href="https://www.calqulus.site${portalUrl}" 
                  style="display: inline-block; background: ${isManager ? '#4f46e5' : '#10b981'}; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
                 Go to Your ${isManager ? 'Dashboard' : 'Portal'}
               </a>

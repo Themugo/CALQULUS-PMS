@@ -184,7 +184,7 @@ const PendingApproval = () => {
 
               <p className="text-white/40 text-xs">
                 {isRejected 
-                  ? 'Contact support@calqulusrms.com for more information.'
+                  ? 'Contact support@calqulus.site for more information.'
                   : 'This usually takes 24-48 hours. If you have any questions, please contact support.'
                 }
               </p>

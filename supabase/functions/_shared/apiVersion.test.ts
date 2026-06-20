@@ -147,7 +147,7 @@ Deno.test("withApiVersion: uses CURRENT_API_VERSION by default", () => {
 // ── Integration: version headers on error responses ─────────────────
 Deno.test("API versioning: CORS headers present on version error responses", () => {
   const req = new Request("https://example.com", {
-    headers: { "X-API-Version": "2020-01-01", Origin: "https://calqulusrms.com" },
+    headers: { "X-API-Version": "2020-01-01", Origin: "https://www.calqulus.site" },
   });
   const result = checkApiVersion(req, CURRENT_API_VERSION);
   assert(result !== null);

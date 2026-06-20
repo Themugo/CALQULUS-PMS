@@ -263,7 +263,7 @@ export function getCDNManager(config?: CDNConfig): CDNManager {
   if (!globalCDNManager) {
     const defaultConfig: CDNConfig = {
       provider: 'custom',
-      domain: 'cdn.calqulusrms.com',
+      domain: 'cdn.calqulus.site',
       enabled: true,
       cacheRules: [],
     };

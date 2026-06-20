@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /portal
+Disallow: /landlord/dashboard
+Disallow: /webhost
+Disallow: /agency
+Disallow: /reset-password
+
+Sitemap: https://www.calqulus.site/sitemap.xml
