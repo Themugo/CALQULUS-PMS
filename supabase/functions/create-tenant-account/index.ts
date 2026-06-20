@@ -1,8 +1,14 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
-
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { createLogger } from "../_shared/logger.ts";
+import { validateRequired, validateEmail } from "../_shared/validation.ts";
+import { errorResponse, successResponse } from "../_shared/errors.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
+import { logTenantEvent } from "../_shared/audit.ts";
+
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
+const logger = createLogger("create-tenant-account");
 
 interface CreateTenantRequest {
   name: string;
@@ -43,7 +49,7 @@ async function sendActivationEmail(
   portalUrl: string
 ): Promise<void> {
   if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY not configured, skipping activation email");
+    logger.warn("RESEND_API_KEY not configured, skipping activation email");
     return;
   }
 
@@ -153,7 +159,9 @@ async function sendActivationEmail(
 
   const responseData = await emailResponse.json();
   if (!emailResponse.ok) {
-    console.error("Failed to send activation email:", responseData);
+    logger.error("Failed to send activation email", responseData);
+  } else {
+    logger.info("Activation email sent", { email });
   }
 }
 
@@ -190,10 +198,12 @@ async function sendActivationSms(
 
     const result = await response.json();
     if (!result.success) {
-      console.error("SMS sending failed:", result.error);
+      logger.error("SMS sending failed", result.error);
+    } else {
+      logger.info("SMS sent successfully", { phone });
     }
   } catch (error) {
-    console.error("Error sending SMS:", error);
+    logger.error("Error sending SMS", { error: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -231,10 +241,12 @@ async function sendActivationWhatsapp(
 
     const result = await response.json();
     if (!result.success) {
-      console.error("WhatsApp sending failed:", result.message || result.error);
+      logger.error("WhatsApp sending failed", result.message || result.error);
+    } else {
+      logger.info("WhatsApp sent successfully", { whatsappNumber });
     }
   } catch (error) {
-    console.error("Error sending WhatsApp:", error);
+    logger.error("Error sending WhatsApp", { error: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -242,14 +254,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
   try {
+    logger.info("Tenant account creation started");
 
     // Verify caller is authenticated manager
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+      return errorResponse("Unauthorized", 401);
     }
 
     const supabaseClient = createClient(
@@ -260,34 +270,43 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const { data: { user: caller }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !caller) {
-      return new Response(
-        JSON.stringify({ error: "Invalid authentication" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+      logger.error("Authentication failed", { error: authError?.message });
+      return errorResponse("Invalid authentication", 401);
     }
 
-    // Check caller has manager or webhost role
-    const { data: roleData } = await supabaseClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", caller.id)
-      .single();
+    logger.info("User authenticated", { userId: caller.id });
 
-    if (roleData?.role !== "manager" && roleData?.role !== "webhost") {
-      return new Response(
-        JSON.stringify({ error: "Insufficient permissions" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+    // Check caller has manager or webhost role
+    const roleCheck = await checkRoleAccess(caller.id, ["manager", "webhost"]);
+    if (!roleCheck.allowed) {
+      logger.warn("Unauthorized role access attempt", { userId: caller.id });
+      return errorResponse("Insufficient permissions", 403);
     }
 
     const { name, email, phone, whatsapp, property, property_id, unit, move_in_date, companyName, portalUrl, manager_id, sendSms, sendWhatsapp, monthlyRent, depositAmount }: CreateTenantRequest = await req.json();
 
-    if (!name || !email) {
-      return new Response(
-        JSON.stringify({ error: "Name and email are required" }),
-        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+    // Validate required fields
+    const nameValidation = validateRequired(name, "Name");
+    if (!nameValidation.valid) {
+      return errorResponse(nameValidation.error, 400);
     }
+
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      return errorResponse(emailValidation.error, 400);
+    }
+
+    const propertyValidation = validateRequired(property, "Property");
+    if (!propertyValidation.valid) {
+      return errorResponse(propertyValidation.error, 400);
+    }
+
+    const unitValidation = validateRequired(unit, "Unit");
+    if (!unitValidation.valid) {
+      return errorResponse(unitValidation.error, 400);
+    }
+
+    logger.info("Request validated", { email, property, unit });
 
     // Use the caller's ID as manager_id if not explicitly provided
     const effectiveManagerId = manager_id || caller.id;
@@ -308,6 +327,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     if (existingUser) {
       userId = existingUser.id;
+      logger.info("User already exists", { email, userId });
     } else {
       // Create new auth user with a random password they won't know
       // They will set their own password via the activation flow
@@ -320,12 +340,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
       });
 
       if (createError) {
-        console.error("Error creating auth user:", createError);
+        logger.error("Error creating auth user", { error: createError.message });
         throw new Error(`Failed to create user account: ${createError.message}`);
       }
 
       userId = newUser.user.id;
       isNewUser = true;
+      logger.info("New auth user created", { userId, email });
 
       // Create activation token for secure password setup
       const { data: activation, error: activationError } = await supabaseAdmin
@@ -338,7 +359,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .single();
 
       if (activationError) {
-        console.error("Error creating activation token:", activationError);
+        logger.error("Error creating activation token", { error: activationError.message });
         // Clean up the user we just created
         await supabaseAdmin.auth.admin.deleteUser(userId);
         throw new Error(`Failed to create activation token: ${activationError.message}`);
@@ -360,6 +381,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
       if (existingUnit) {
         unitId = existingUnit.id;
+        logger.info("Unit found", { unitId, unit });
         // Update existing unit status to occupied + set rent if provided
         const { error: unitUpdateError } = await supabaseAdmin
           .from("units")
@@ -385,6 +407,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           .single();
         if (unitCreateError) throw new Error(`Failed to create unit record: ${unitCreateError.message}`);
         if (newUnit) unitId = newUnit.id;
+        logger.info("Unit created", { unitId, unit });
       }
 
       // Recalculate and update property.occupied count from live units table
@@ -423,12 +446,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .single();
 
     if (tenantError) {
-      console.error("Error creating tenant:", tenantError);
+      logger.error("Error creating tenant", { error: tenantError.message });
       if (isNewUser) {
         await supabaseAdmin.auth.admin.deleteUser(userId);
       }
       throw new Error(`Failed to create tenant record: ${tenantError.message}`);
     }
+
+    logger.info("Tenant record created", { tenantId: tenant.id });
 
     // Check if user_role already exists
     const { data: existingRole } = await supabaseAdmin
@@ -447,7 +472,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         });
 
       if (roleError) {
-        console.error("Error creating user role:", roleError);
+        logger.error("Error creating user role", { error: roleError.message });
         throw new Error(`Failed to create user role: ${roleError.message}`);
       }
     } else {
@@ -457,7 +482,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq("user_id", userId);
 
       if (updateRoleError) {
-        console.error("Error updating user role:", updateRoleError);
+        logger.error("Error updating user role", { error: updateRoleError.message });
       }
     }
 
@@ -492,7 +517,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       p_paybill:            paybillNumber,
       p_account_ref:        accountReference,
       p_tenancy_type:       "standard",
-    }).catch((err: Error) => console.warn("Payment details sync failed (non-critical):", err.message));
+    }).catch((err: Error) => logger.warn("Payment details sync failed (non-critical)", { error: err.message }));
 
     // Send activation notifications if new user
     let emailSent = false;
@@ -541,31 +566,37 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
     }
 
+    // Log tenant event
+    await logTenantEvent(caller.id, "tenant_created", { 
+      tenantId: tenant.id, 
+      name, 
+      email, 
+      property, 
+      unit,
+      isNewUser 
+    });
+
     const methods = [];
     if (emailSent) methods.push('email');
     if (smsSent) methods.push('SMS');
     if (whatsappSent) methods.push('WhatsApp');
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        tenant,
-        isNewUser,
-        emailSent,
-        smsSent,
-        whatsappSent,
-        message: isNewUser 
-          ? `Tenant account created. Activation sent via ${methods.join(', ')}.`
-          : "Tenant linked to existing user account",
-      }),
-      { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
+    logger.info("Tenant account creation completed", { tenantId: tenant.id, isNewUser, methods });
+
+    return successResponse({
+      tenant,
+      isNewUser,
+      emailSent,
+      smsSent,
+      whatsappSent,
+      message: isNewUser 
+        ? `Tenant account created. Activation sent via ${methods.join(', ')}.`
+        : "Tenant linked to existing user account",
+    });
+
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-    console.error("Error in create-tenant-account:", error);
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
+    logger.error("Error in create-tenant-account", { error: errorMessage });
+    return errorResponse(errorMessage, 500);
   }
 });
