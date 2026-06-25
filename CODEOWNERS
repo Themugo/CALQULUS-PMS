@@ -1,0 +1,45 @@
+# Code Owners for CALQULUS PMS
+
+# Global code owners - approval required for all changes
+* @Themugo
+
+# Security-sensitive files - require security team approval
+.supabase/functions/ @Themugo
+supabase/migrations/ @Themugo
+src/integrations/supabase/ @Themugo
+src/context/AuthContext.tsx @Themugo
+
+# Payment and financial logic
+supabase/functions/process-payment/ @Themugo
+supabase/functions/mpesa-callback/ @Themugo
+supabase/functions/stripe-webhook/ @Themugo
+src/components/payments/ @Themugo
+src/pages/payments/ @Themugo
+
+# Database schema
+supabase/migrations/ @Themugo
+supabase/types/ @Themugo
+
+# Authentication and authorization
+src/context/AuthContext.tsx @Themugo
+src/hooks/usePermissions.ts @Themugo
+src/hooks/useAdminPermissions.ts @Themugo
+
+# Infrastructure and deployment
+.github/ @Themugo
+vercel.json @Themugo
+netlify.toml @Themugo
+terraform/ @Themugo
+k8s/ @Themugo
+helm/ @Themugo
+
+# Configuration files
+.env.example @Themugo
+vite.config.ts @Themugo
+eslint.config.js @Themugo
+tsconfig.json @Themugo
+
+# Documentation
+SECURITY.md @Themugo
+README.md @Themugo
+API_DOCUMENTATION.md @Themugo

@@ -26,7 +26,8 @@
     "release:report": "node scripts/release-readiness-report.mjs",
     "smoke:deploy": "node scripts/smoke-deploy.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test:all && npm run build && npm audit --audit-level=high && npm run audit:prod",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.0",
@@ -113,6 +114,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.1.0",
+    "@commitlint/config-conventional": "^21.1.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4.3.0",
@@ -129,9 +132,12 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "k6": "^0.0.0",
+    "lint-staged": "^17.0.8",
     "postcss": "^8.5.6",
+    "prettier": "^3.8.4",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0",
@@ -140,5 +146,14 @@
   },
   "description": "Modern property management platform for Kenya and East Africa",
   "author": "CALQULUS PMS",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
 }
