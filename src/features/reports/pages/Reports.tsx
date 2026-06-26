@@ -15,9 +15,10 @@ import {
 } from 'recharts';
 import {
   TrendingUp, TrendingDown, Building2, Users, CreditCard,
-  AlertTriangle, BarChart3, PieChartIcon, Activity, Home
+  AlertTriangle, BarChart3, PieChartIcon, Activity, Home, FileDown
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { RentCollectionSummary } from '@/features/reports/components/RentCollectionSummary';
 
 const COLORS = ['#C9A84C', '#1E6FD9', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4']; // CALQULUS brand palette
 
@@ -189,6 +190,9 @@ const Reports: React.FC = () => {
             <TabsTrigger value="by-property" className="gap-1.5 text-xs">
               <BarChart3 className="h-3.5 w-3.5" />By property
             </TabsTrigger>
+            <TabsTrigger value="collection-report" className="gap-1.5 text-xs">
+              <FileDown className="h-3.5 w-3.5" />Collection report
+            </TabsTrigger>
           </TabsList>
 
           {/* Revenue trend */}
@@ -331,6 +335,11 @@ const Reports: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Collection report */}
+          <TabsContent value="collection-report" className="mt-4">
+            <RentCollectionSummary />
           </TabsContent>
 
           {/* Revenue by property */}
