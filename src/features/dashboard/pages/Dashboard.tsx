@@ -33,6 +33,7 @@ import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/utils";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { useLeaseExpiryReminders } from "@/shared/hooks/useLeaseExpiryReminders";
 
 interface DashboardStats {
   totalTenants: number;
@@ -64,6 +65,7 @@ const quickActions = [
 const Dashboard = () => {
   const { user } = useAuth();
   const { managerId } = useManagerScope();
+  useLeaseExpiryReminders();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
