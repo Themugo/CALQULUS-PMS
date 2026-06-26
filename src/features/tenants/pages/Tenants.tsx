@@ -1,4 +1,5 @@
 ﻿import { format } from "date-fns";
+import { logError } from "@/shared/lib/errorLogger";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
@@ -332,7 +333,7 @@ const Tenants = () => {
         }
       }
     } catch (err) {
-      console.error('[Tenants] fetchTenants error:', err);
+      logError('Tenants.fetchTenants', err);
       toast({ title: "Error", description: "Failed to load tenants. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
@@ -361,7 +362,7 @@ const Tenants = () => {
       const { data, error } = await query;
       if (!error && data) setProperties(data);
     } catch (err) {
-      console.error('[Tenants] fetchProperties error:', err);
+      logError('Tenants.fetchProperties', err);
     }
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 

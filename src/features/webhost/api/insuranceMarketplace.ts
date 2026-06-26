@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logError } from '@/shared/lib/errorLogger';
 
 // Types for Insurance Marketplace
 export interface InsuranceProvider {
@@ -89,7 +90,7 @@ export const insuranceMarketplaceService = {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching insurance providers:', error);
+      logError('Error fetching insurance providers:', error);
       return [];
     }
 
@@ -107,7 +108,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error fetching insurance provider:', error);
+      logError('Error fetching insurance provider:', error);
       return null;
     }
 
@@ -139,7 +140,7 @@ export const insuranceMarketplaceService = {
     const { data, error } = await query.order('start_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching insurance policies:', error);
+      logError('Error fetching insurance policies:', error);
       return [];
     }
 
@@ -177,7 +178,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error creating insurance policy:', error);
+      logError('Error creating insurance policy:', error);
       return null;
     }
 
@@ -207,7 +208,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error updating insurance policy:', error);
+      logError('Error updating insurance policy:', error);
       return null;
     }
 
@@ -246,7 +247,7 @@ export const insuranceMarketplaceService = {
     const { data, error } = await query.order('submitted_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching insurance claims:', error);
+      logError('Error fetching insurance claims:', error);
       return [];
     }
 
@@ -282,7 +283,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error creating insurance claim:', error);
+      logError('Error creating insurance claim:', error);
       return null;
     }
 
@@ -314,7 +315,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error updating insurance claim:', error);
+      logError('Error updating insurance claim:', error);
       return null;
     }
 
@@ -340,7 +341,7 @@ export const insuranceMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error fetching provider performance:', error);
+      logError('Error fetching provider performance:', error);
       return null;
     }
 
@@ -379,7 +380,7 @@ export const insuranceMarketplaceService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error approving insurance claim:', error);
+      logError('Error approving insurance claim:', error);
       return false;
     }
 
@@ -396,7 +397,7 @@ export const insuranceMarketplaceService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error rejecting insurance claim:', error);
+      logError('Error rejecting insurance claim:', error);
       return false;
     }
 
@@ -416,7 +417,7 @@ export const insuranceMarketplaceService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error marking claim as paid:', error);
+      logError('Error marking claim as paid:', error);
       return false;
     }
 

@@ -9,6 +9,7 @@ import { Separator } from "@/shared/components/ui/separator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { useToast } from "@/shared/hooks/use-toast";
+import { logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Loader2, Upload, X, User, Lock, Bell, Wallet, Globe, Building2, Receipt, Clock, Users, Shield } from "lucide-react";
@@ -150,7 +151,7 @@ const Settings = () => {
         const oldPath = publicStoragePath(photoUrl, "profile-photos");
         if (oldPath && oldPath !== fileName) {
           const { error: removeError } = await supabase.storage.from("profile-photos").remove([oldPath]);
-          if (removeError) console.warn("Profile photo cleanup failed", removeError);
+          if (removeError) logError("Settings.photoCleanup", removeError);
         }
       }
       const { error: uploadError } = await supabase.storage

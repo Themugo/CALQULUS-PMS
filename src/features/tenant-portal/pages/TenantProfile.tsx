@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
+import { logError } from '@/shared/lib/errorLogger';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
@@ -192,7 +193,7 @@ const TenantProfile = () => {
         .eq('id', userRole.tenant_id);
 
       if (error) {
-        console.error('Error updating tenant profile:', error);
+        logError('TenantProfile.updateProfile', error);
         throw error;
       }
 
@@ -202,7 +203,7 @@ const TenantProfile = () => {
         description: 'Your profile has been saved successfully',
       });
     } catch (error) {
-      console.error('Failed to save profile:', error);
+      logError('TenantProfile.saveProfile', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to save profile',

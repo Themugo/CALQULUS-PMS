@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
+import { logError } from '@/shared/lib/errorLogger';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -227,7 +228,7 @@ const TenantMaintenance = () => {
           requestId: newRequest.id,
           type: 'created',
         },
-      }).catch((err: unknown) => console.error('Failed to send maintenance notification:', err));
+      }).catch((err: unknown) => logError('TenantMaintenance.sendNotification', err));
 
       toast({
         title: "Request submitted",

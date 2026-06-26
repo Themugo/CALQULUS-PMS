@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logError } from '@/shared/lib/errorLogger';
 
 // Types for Financial Partners
 export interface FinancialPartner {
@@ -86,7 +87,7 @@ export const financialPartnersService = {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching financial partners:', error);
+      logError('Error fetching financial partners:', error);
       return [];
     }
 
@@ -104,7 +105,7 @@ export const financialPartnersService = {
       .single();
 
     if (error) {
-      console.error('Error fetching financial partner:', error);
+      logError('Error fetching financial partner:', error);
       return null;
     }
 
@@ -136,7 +137,7 @@ export const financialPartnersService = {
     const { data, error } = await query.order('submitted_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching loan applications:', error);
+      logError('Error fetching loan applications:', error);
       return [];
     }
 
@@ -173,7 +174,7 @@ export const financialPartnersService = {
       .single();
 
     if (error) {
-      console.error('Error creating loan application:', error);
+      logError('Error creating loan application:', error);
       return null;
     }
 
@@ -205,7 +206,7 @@ export const financialPartnersService = {
       .single();
 
     if (error) {
-      console.error('Error updating loan application:', error);
+      logError('Error updating loan application:', error);
       return null;
     }
 
@@ -229,7 +230,7 @@ export const financialPartnersService = {
       .select('*');
 
     if (error) {
-      console.error('Error fetching payment processing:', error);
+      logError('Error fetching payment processing:', error);
       return [];
     }
 
@@ -251,7 +252,7 @@ export const financialPartnersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error activating payment processing:', error);
+      logError('Error activating payment processing:', error);
       return false;
     }
 
@@ -268,7 +269,7 @@ export const financialPartnersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deactivating payment processing:', error);
+      logError('Error deactivating payment processing:', error);
       return false;
     }
 
@@ -287,7 +288,7 @@ export const financialPartnersService = {
       .single();
 
     if (error) {
-      console.error('Error fetching partner performance:', error);
+      logError('Error fetching partner performance:', error);
       return null;
     }
 
@@ -325,7 +326,7 @@ export const financialPartnersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error accepting loan application:', error);
+      logError('Error accepting loan application:', error);
       return false;
     }
 
@@ -342,7 +343,7 @@ export const financialPartnersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error rejecting loan application:', error);
+      logError('Error rejecting loan application:', error);
       return false;
     }
 

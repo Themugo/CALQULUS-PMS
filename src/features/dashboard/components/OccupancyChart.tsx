@@ -82,7 +82,7 @@ export function OccupancyChart() {
 
       const { data: properties, error } = await query;
 
-      if (error) { console.error(error); return; }
+      if (error) { logError('OccupancyChart.fetchData', error); return; }
 
       const occupancyData: PropertyOccupancy[] = (properties || []).map((p) => ({
         name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,

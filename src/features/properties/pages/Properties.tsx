@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, Fragment } from "react";
+import { logError } from "@/shared/lib/errorLogger";
 import { Link } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -204,7 +205,7 @@ const Properties = () => {
         setTenants(tenantsRes.data || []);
       }
     } catch (err) {
-      console.error('[Properties] fetchData error:', err);
+      logError('Properties.fetchData', err);
       toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);

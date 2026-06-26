@@ -160,7 +160,7 @@ export function RecentActivity() {
         .order("created_at", { ascending: false })
         .limit(8);
 
-      if (error) { console.error(error); return; }
+      if (error) { logError('RecentActivity.fetchActivities', error); return; }
 
       if (!data || data.length === 0) {
         setActivities([]);

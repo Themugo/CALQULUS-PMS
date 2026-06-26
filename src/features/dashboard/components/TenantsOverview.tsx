@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avat
 import { Users, ArrowRight, Home, Mail } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { logError } from "@/shared/lib/errorLogger";
 
 interface Tenant {
   id: string;
@@ -79,14 +80,14 @@ export function TenantsOverview() {
 
       const { data, error } = await query;
 
-      if (error) { console.error(error); return; }
+      if (error) { logError('TenantsOverview.fetchTenants', error); return; }
       setTenants(data || []);
       
       if (data && data.length > 0) {
         generateSignedUrls(data);
       }
     } catch (err) {
-      console.error('TenantsOverview.fetchTenants', err);
+      logError('TenantsOverview.fetchTenants', err);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
@@ -73,7 +74,7 @@ export function PendingDepositRefunds() {
         .order("created_at", { ascending: false })
         .limit(10);
 
-      if (error) { console.error(error); return []; }
+      if (error) { logError('PendingDepositRefunds.fetchRefunds', error); return []; }
 
       return (data || []).map(r => ({
         ...r,
@@ -97,7 +98,7 @@ export function PendingDepositRefunds() {
         } as unknown)
         .eq("id", refundId);
 
-      if (error) { console.error(error); return; }
+      if (error) { logError('PendingDepositRefunds.markComplete', error); return; }
 
       toast({ title: "Refund marked as completed" });
       refetch();

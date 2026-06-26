@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { logError } from '@/shared/lib/errorLogger';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import {
@@ -215,7 +216,7 @@ const BroadcastCenter: React.FC = () => {
             });
             pushSent++;
           } catch (error) {
-            console.error('Broadcast push failed', { tenantId: tenant.id, error });
+            logError(`Broadcast push failed [tenant:${tenant.id}]`, error);
           }
         }
 
@@ -226,7 +227,7 @@ const BroadcastCenter: React.FC = () => {
             await notify('send-sms-notification', { phoneNumber: tenant.phone, message: personalised });
             smsSent++;
           } catch (error) {
-            console.error('Broadcast SMS failed', { tenantId: tenant.id, error });
+            logError(`Broadcast SMS failed [tenant:${tenant.id}]`, error);
           }
         }
 
@@ -243,7 +244,7 @@ const BroadcastCenter: React.FC = () => {
             });
             emailSent++;
           } catch (error) {
-            console.error('Broadcast email failed', { tenantId: tenant.id, error });
+            logError(`Broadcast email failed [tenant:${tenant.id}]`, error);
           }
         }
 
@@ -257,7 +258,7 @@ const BroadcastCenter: React.FC = () => {
             });
             waSent++;
           } catch (error) {
-            console.error('Broadcast WhatsApp failed', { tenantId: tenant.id, error });
+            logError(`Broadcast WhatsApp failed [tenant:${tenant.id}]`, error);
           }
         }
       };

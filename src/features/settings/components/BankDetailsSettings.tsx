@@ -6,6 +6,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
+import { logError } from '@/shared/lib/errorLogger';
 import { Building2, CreditCard, Loader2, Save, Plus, Trash2, Star, CheckCircle2, XCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
@@ -266,7 +267,7 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
             recipients: tenantsWithPhone.map((t) => ({ phoneNumber: t.phone, name: t.name })),
             message,
           },
-        }).catch((err) => console.error('SMS notification failed:', err));
+        }).catch((err) => logError('BankDetailsSettings.smsSend', err));
       }
 
       const tenantsWithEmail = tenants.filter((t) => t.email);
@@ -286,7 +287,7 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
               till_number: account.till_number,
             },
           },
-        }).catch((err) => console.error('Email notification failed:', err));
+        }).catch((err) => logError('BankDetailsSettings.emailSend', err));
       }
     } catch (error) {
     }

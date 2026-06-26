@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logError } from '@/shared/lib/errorLogger';
 
 // Types for Utility Providers
 export interface UtilityProvider {
@@ -88,7 +89,7 @@ export const utilityProvidersService = {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching utility providers:', error);
+      logError('Error fetching utility providers:', error);
       return [];
     }
 
@@ -106,7 +107,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error fetching utility provider:', error);
+      logError('Error fetching utility provider:', error);
       return null;
     }
 
@@ -138,7 +139,7 @@ export const utilityProvidersService = {
     const { data, error } = await query.order('connection_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching utility connections:', error);
+      logError('Error fetching utility connections:', error);
       return [];
     }
 
@@ -176,7 +177,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error creating utility connection:', error);
+      logError('Error creating utility connection:', error);
       return null;
     }
 
@@ -208,7 +209,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error updating utility connection:', error);
+      logError('Error updating utility connection:', error);
       return null;
     }
 
@@ -247,7 +248,7 @@ export const utilityProvidersService = {
     const { data, error } = await query.order('generated_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching utility bills:', error);
+      logError('Error fetching utility bills:', error);
       return [];
     }
 
@@ -286,7 +287,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error creating utility bill:', error);
+      logError('Error creating utility bill:', error);
       return null;
     }
 
@@ -316,7 +317,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error updating utility bill:', error);
+      logError('Error updating utility bill:', error);
       return null;
     }
 
@@ -342,7 +343,7 @@ export const utilityProvidersService = {
       .single();
 
     if (error) {
-      console.error('Error fetching provider performance:', error);
+      logError('Error fetching provider performance:', error);
       return null;
     }
 
@@ -377,7 +378,7 @@ export const utilityProvidersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error activating utility connection:', error);
+      logError('Error activating utility connection:', error);
       return false;
     }
 
@@ -397,7 +398,7 @@ export const utilityProvidersService = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error marking bill as paid:', error);
+      logError('Error marking bill as paid:', error);
       return false;
     }
 

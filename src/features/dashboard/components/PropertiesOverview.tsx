@@ -7,6 +7,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Building2, ArrowRight, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { logError } from "@/shared/lib/errorLogger";
 
 interface Property {
   id: string;
@@ -46,10 +47,10 @@ export function PropertiesOverview() {
 
       const { data, error } = await query;
 
-      if (error) { console.error(error); return; }
+      if (error) { logError('PropertiesOverview.fetchProperties', error); return; }
       setProperties(data || []);
     } catch (err) {
-      console.error('PropertiesOverview.fetchProperties', err);
+      logError('PropertiesOverview.fetchProperties', err);
     } finally {
       setLoading(false);
     }

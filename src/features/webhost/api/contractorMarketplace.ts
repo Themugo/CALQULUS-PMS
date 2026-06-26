@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logError } from '@/shared/lib/errorLogger';
 
 // Types for Contractor Marketplace
 export interface Contractor {
@@ -87,7 +88,7 @@ export const contractorMarketplaceService = {
     const { data, error } = await query;
 
     if (error) {
-      console.error('Error fetching contractors:', error);
+      logError('Error fetching contractors:', error);
       return [];
     }
 
@@ -105,7 +106,7 @@ export const contractorMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error fetching contractor:', error);
+      logError('Error fetching contractor:', error);
       return null;
     }
 
@@ -137,7 +138,7 @@ export const contractorMarketplaceService = {
     const { data, error } = await query.order('created_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching work orders:', error);
+      logError('Error fetching work orders:', error);
       return [];
     }
 
@@ -171,7 +172,7 @@ export const contractorMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error creating work order:', error);
+      logError('Error creating work order:', error);
       return null;
     }
 
@@ -205,7 +206,7 @@ export const contractorMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error updating work order:', error);
+      logError('Error updating work order:', error);
       return null;
     }
 
@@ -230,7 +231,7 @@ export const contractorMarketplaceService = {
       .eq('work_order_id', workOrderId);
 
     if (error) {
-      console.error('Error fetching bids:', error);
+      logError('Error fetching bids:', error);
       return [];
     }
 
@@ -260,7 +261,7 @@ export const contractorMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error creating bid:', error);
+      logError('Error creating bid:', error);
       return null;
     }
 
@@ -285,7 +286,7 @@ export const contractorMarketplaceService = {
       .single();
 
     if (error) {
-      console.error('Error fetching contractor performance:', error);
+      logError('Error fetching contractor performance:', error);
       return null;
     }
 
@@ -320,7 +321,7 @@ export const contractorMarketplaceService = {
       .eq('id', bidId);
 
     if (error) {
-      console.error('Error accepting bid:', error);
+      logError('Error accepting bid:', error);
       return false;
     }
 
@@ -337,7 +338,7 @@ export const contractorMarketplaceService = {
       .eq('id', bidId);
 
     if (error) {
-      console.error('Error rejecting bid:', error);
+      logError('Error rejecting bid:', error);
       return false;
     }
 

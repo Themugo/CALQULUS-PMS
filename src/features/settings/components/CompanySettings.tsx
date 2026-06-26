@@ -6,6 +6,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Loader2, Building2, Upload, X, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
+import { logError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 
@@ -131,7 +132,7 @@ export const CompanySettings = () => {
         const oldPath = publicStoragePath(logoUrl, "company-logos");
         if (oldPath && oldPath !== fileName) {
           const { error: removeError } = await supabase.storage.from("company-logos").remove([oldPath]);
-          if (removeError) console.warn("Company logo cleanup failed", removeError);
+          if (removeError) logError("CompanySettings.logoCleanup", removeError);
         }
       }
 

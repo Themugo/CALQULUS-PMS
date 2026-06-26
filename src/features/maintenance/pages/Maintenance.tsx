@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
+import { logError } from "@/shared/lib/errorLogger";
 import { Layout } from "@/shared/components/layout/Layout";
 import ServiceMarketplace from "@/features/services/components/ServiceMarketplace";
 import { Button } from "@/shared/components/ui/button";
@@ -299,7 +300,7 @@ export default function Maintenance() {
       // Send notification for status change
       supabase.functions.invoke('send-maintenance-notification', {
         body: { requestId: id, type: 'status_changed', oldStatus, newStatus: status },
-      }).catch((err) => console.error('Failed to send maintenance notification:', err));
+      }).catch((err) => logError('Maintenance.sendNotification', err));
 
       logActivity({
         action: `maintenance_${status}`,
@@ -337,7 +338,7 @@ export default function Maintenance() {
           type: 'assigned',
           assignedTo: assignedTo,
         },
-      }).catch((err) => console.error('Failed to send maintenance notification:', err));
+      }).catch((err) => logError('Maintenance.sendNotification', err));
 
       toast({
         title: "Success",

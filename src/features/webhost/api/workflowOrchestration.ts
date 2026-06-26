@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logError } from '@/shared/lib/errorLogger';
 
 // Types for Workflow Orchestration
 export interface WorkflowTemplate {
@@ -80,7 +81,7 @@ export const workflowOrchestrationService = {
     const { data, error } = await query.order('last_used', { ascending: false });
 
     if (error) {
-      console.error('Error fetching workflow templates:', error);
+      logError('Error fetching workflow templates:', error);
       return [];
     }
 
@@ -101,7 +102,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error fetching workflow template:', error);
+      logError('Error fetching workflow template:', error);
       return null;
     }
 
@@ -131,7 +132,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error creating workflow template:', error);
+      logError('Error creating workflow template:', error);
       return null;
     }
 
@@ -158,7 +159,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error updating workflow template:', error);
+      logError('Error updating workflow template:', error);
       return null;
     }
 
@@ -193,7 +194,7 @@ export const workflowOrchestrationService = {
     const { data, error } = await query.order('started_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching workflow instances:', error);
+      logError('Error fetching workflow instances:', error);
       return [];
     }
 
@@ -230,7 +231,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error creating workflow instance:', error);
+      logError('Error creating workflow instance:', error);
       return null;
     }
 
@@ -263,7 +264,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error updating workflow instance:', error);
+      logError('Error updating workflow instance:', error);
       return null;
     }
 
@@ -289,7 +290,7 @@ export const workflowOrchestrationService = {
       .order('step_number', { ascending: true });
 
     if (error) {
-      console.error('Error fetching workflow steps:', error);
+      logError('Error fetching workflow steps:', error);
       return [];
     }
 
@@ -322,7 +323,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error creating workflow step:', error);
+      logError('Error creating workflow step:', error);
       return null;
     }
 
@@ -351,7 +352,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error updating workflow step:', error);
+      logError('Error updating workflow step:', error);
       return null;
     }
 
@@ -372,7 +373,7 @@ export const workflowOrchestrationService = {
       .select('*');
 
     if (error) {
-      console.error('Error fetching workflow automations:', error);
+      logError('Error fetching workflow automations:', error);
       return [];
     }
 
@@ -404,7 +405,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error creating workflow automation:', error);
+      logError('Error creating workflow automation:', error);
       return null;
     }
 
@@ -432,7 +433,7 @@ export const workflowOrchestrationService = {
       .single();
 
     if (error) {
-      console.error('Error updating workflow automation:', error);
+      logError('Error updating workflow automation:', error);
       return null;
     }
 
@@ -479,7 +480,7 @@ export const workflowOrchestrationService = {
       .eq('id', instanceId);
 
     if (error) {
-      console.error('Error pausing workflow:', error);
+      logError('Error pausing workflow:', error);
       return false;
     }
 
@@ -496,7 +497,7 @@ export const workflowOrchestrationService = {
       .eq('id', instanceId);
 
     if (error) {
-      console.error('Error resuming workflow:', error);
+      logError('Error resuming workflow:', error);
       return false;
     }
 
@@ -513,7 +514,7 @@ export const workflowOrchestrationService = {
       .eq('id', instanceId);
 
     if (error) {
-      console.error('Error cancelling workflow:', error);
+      logError('Error cancelling workflow:', error);
       return false;
     }
 
@@ -530,7 +531,7 @@ export const workflowOrchestrationService = {
       .eq('id', automationId);
 
     if (error) {
-      console.error('Error pausing automation:', error);
+      logError('Error pausing automation:', error);
       return false;
     }
 
@@ -547,7 +548,7 @@ export const workflowOrchestrationService = {
       .eq('id', automationId);
 
     if (error) {
-      console.error('Error activating automation:', error);
+      logError('Error activating automation:', error);
       return false;
     }
 
