@@ -11,6 +11,7 @@ import { PropertiesOverview } from "@/features/dashboard/components/PropertiesOv
 import { TenantsOverview } from "@/features/dashboard/components/TenantsOverview";
 import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
 import ManagerOnboarding from "@/features/auth/pages/ManagerOnboarding";
+import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import {
   Users, FileText, CreditCard, Building2, TrendingUp,
   Home, AlertCircle, Zap, Plus, UserPlus, Wrench,
@@ -166,6 +167,74 @@ const Dashboard = () => {
     return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
   }, [fetchStats]);
 
+  const { data: leaseExpiryData } = useQuery({
+    queryKey: ['lease-expiry-4w', managerId],
+    queryFn: async () => {
+      if (!managerId) return { counts: [], labels: [], urgentWeeks: [] };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const weeks = Array.from({ length: 4 }, (_, i) => {
+        const start = new Date(today);
+        start.setDate(today.getDate() + i * 7);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        return { start, end, label: `Wk ${i + 1}` };
+      });
+      const results = await Promise.all(
+        weeks.map(({ start, end }) =>
+          supabase
+            .from('leases')
+            .select('id', { count: 'exact', head: true })
+            .eq('manager_id', managerId)
+            .eq('status', 'active')
+            .gte('end_date', start.toISOString().split('T')[0])
+            .lte('end_date', end.toISOString().split('T')[0])
+        )
+      );
+      const counts = results.map(r => r.count ?? 0);
+      const max = Math.max(...counts, 1);
+      return {
+        counts,
+        labels: weeks.map(w => w.label),
+        urgentWeeks: counts.map(c => c >= Math.ceil(max * 0.7)),
+      };
+    },
+    enabled: !!managerId,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: tenantSparkData } = useQuery({
+    queryKey: ['tenant-sparkline-7d', managerId],
+    queryFn: async () => {
+      if (!managerId) return { counts: [], labels: [] };
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return d;
+      });
+      const results = await Promise.all(
+        days.map(d => {
+          const start = new Date(d); start.setHours(0, 0, 0, 0);
+          const end   = new Date(d); end.setHours(23, 59, 59, 999);
+          return supabase
+            .from('tenants')
+            .select('id', { count: 'exact', head: true })
+            .eq('manager_id', managerId)
+            .gte('created_at', start.toISOString())
+            .lte('created_at', end.toISOString());
+        })
+      );
+      const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return {
+        counts: results.map(r => r.count ?? 0),
+        labels: days.map(d => DAY_LABELS[d.getDay()]),
+      };
+    },
+    enabled: !!managerId,
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <Layout
       title={`${getGreeting()}, ${userName}`}
@@ -179,7 +248,6 @@ const Dashboard = () => {
             onClick={() => { queryClient.invalidateQueries(); fetchStats(); }}
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             <RefreshCw className="h-4 w-4" />
           </Button>
           <Select value={currency} onValueChange={setCurrency}>
@@ -223,19 +291,25 @@ const Dashboard = () => {
             <StatCard title="Properties" value={stats.totalProperties.toString()}
               change={`${stats.totalUnits} units`} changeType="neutral" icon={Building2} iconColor="primary" />
             <StatCard title="Tenants" value={stats.totalTenants.toString()}
-              change={`${stats.activeTenants} active`}
-              changeType={stats.activeTenants > 0 ? "positive" : "neutral"} icon={Users} iconColor="accent" />
+              change={`+${stats.newTenantsThisMonth} this month`}
+              changeType={stats.newTenantsThisMonth > 0 ? "positive" : "neutral"} icon={Users} iconColor="accent"
+              sparkData={tenantSparkData?.counts}
+              sparkLabels={tenantSparkData?.labels} />
             <StatCard title="Occupancy" value={`${stats.occupancyRate}%`}
               change={`${stats.occupiedUnits}/${stats.totalUnits} units`}
               changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
-              icon={Home} iconColor="success" />
+              icon={Home} iconColor="success" progressValue={stats.occupancyRate} />
             <StatCard title="Revenue MTD" value={formatCurrency(stats.revenueMTD)}
               change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
               changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
               icon={TrendingUp} iconColor="warning" />
             <StatCard title="Active Leases" value={stats.activeLeases.toString()}
               change={stats.expiringLeases > 0 ? `${stats.expiringLeases} expiring soon` : "All good"}
-              changeType={stats.expiringLeases > 0 ? "neutral" : "positive"} icon={FileText} iconColor="primary" />
+              changeType={stats.expiringLeases > 0 ? "neutral" : "positive"} icon={FileText} iconColor="primary"
+              sparkData={leaseExpiryData?.counts}
+              sparkLabels={leaseExpiryData?.labels}
+              sparkUnit="lease"
+              sparkCaption="expiring next 4 weeks" />
             <StatCard title="Invoices Due" value={(stats.pendingInvoices + stats.overdueInvoices).toString()}
               change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue` : "All on time"}
               changeType={stats.overdueInvoices > 0 ? "negative" : "positive"} icon={CreditCard} iconColor="accent" />
@@ -264,6 +338,9 @@ const Dashboard = () => {
           </Button>
         </div>
       )}
+
+      {/* ── Arrears Heat Map ── */}
+      {!loading && stats && stats.overdueInvoices > 0 && <ArrearsHeatMap />}
 
       {/* ── Quick Actions ── */}
       <Card className="mb-6">

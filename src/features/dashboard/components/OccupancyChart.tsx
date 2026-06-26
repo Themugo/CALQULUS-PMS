@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { logError } from "@/shared/lib/errorLogger";
 import {
   Bar,
   BarChart,
@@ -93,7 +94,7 @@ export function OccupancyChart() {
 
       setData(occupancyData);
     } catch (err) {
-      console.error('OccupancyChart.fetchOccupancyData', err);
+      logError('OccupancyChart.fetchOccupancyData', err);
     } finally {
       setLoading(false);
     }

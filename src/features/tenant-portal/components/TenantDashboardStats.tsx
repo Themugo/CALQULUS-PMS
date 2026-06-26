@@ -1,15 +1,15 @@
-﻿import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import React from 'react';
 import { Badge } from '@/shared/components/ui/badge';
-import { format, differenceInDays, isPast, isFuture } from 'date-fns';
-import { 
-  Calendar, 
-  FileText, 
+import { cn } from '@/shared/lib/utils';
+import { format, differenceInDays, isPast } from 'date-fns';
+import {
+  Calendar,
+  FileText,
   TrendingUp,
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Home
+  Home,
 } from 'lucide-react';
 
 interface Lease {
@@ -37,6 +37,49 @@ interface TenantDashboardStatsProps {
   formatCurrency: (amount: number) => string;
 }
 
+interface StatTileProps {
+  label: string;
+  value: React.ReactNode;
+  sub?: string;
+  icon: React.ElementType;
+  iconBg: string;
+  iconColor: string;
+  accent: string;
+  badge?: { label: string; variant: 'default' | 'destructive' | 'secondary' | 'outline' };
+}
+
+function StatTile({ label, value, sub, icon: Icon, iconBg, iconColor, accent, badge }: StatTileProps) {
+  return (
+    <div
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5",
+        "shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+        "border-border/60 hover:border-amber-400/20 animate-fade-in"
+      )}
+    >
+      <div className={cn(
+        "absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+        `bg-gradient-to-r from-transparent ${accent} to-transparent`
+      )} />
+
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest">{label}</p>
+        <div className={cn("rounded-xl border p-2 flex-shrink-0 transition-all duration-300 group-hover:scale-110", iconBg)}>
+          <Icon className={cn("h-4 w-4", iconColor)} />
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <div className="flex items-end gap-2">
+          <div className="font-heading text-2xl font-bold text-card-foreground leading-none">{value}</div>
+          {badge && <Badge variant={badge.variant} className="text-[10px] h-4 px-1.5 mb-0.5">{badge.label}</Badge>}
+        </div>
+        {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
 const TenantDashboardStats: React.FC<TenantDashboardStatsProps> = ({
   lease,
   recentPayments,
@@ -44,171 +87,126 @@ const TenantDashboardStats: React.FC<TenantDashboardStatsProps> = ({
   overdueInvoicesCount,
   formatCurrency,
 }) => {
-  // Calculate lease expiry status
   const getLeaseExpiryInfo = () => {
     if (!lease) return null;
-    
     const endDate = new Date(lease.end_date);
     const today = new Date();
     const daysUntilExpiry = differenceInDays(endDate, today);
-    
+
     if (isPast(endDate)) {
-      return {
-        status: 'expired',
-        message: 'Lease expired',
-        variant: 'destructive' as const,
-        days: Math.abs(daysUntilExpiry),
-        icon: AlertTriangle,
-      };
+      return { status: 'expired', message: 'Expired', variant: 'destructive' as const, days: Math.abs(daysUntilExpiry), icon: AlertTriangle };
     } else if (daysUntilExpiry <= 30) {
-      return {
-        status: 'expiring',
-        message: `Expires in ${daysUntilExpiry} days`,
-        variant: 'destructive' as const,
-        days: daysUntilExpiry,
-        icon: Clock,
-      };
+      return { status: 'expiring', message: `${daysUntilExpiry}d left`, variant: 'destructive' as const, days: daysUntilExpiry, icon: Clock };
     } else if (daysUntilExpiry <= 90) {
-      return {
-        status: 'upcoming',
-        message: `${daysUntilExpiry} days remaining`,
-        variant: 'secondary' as const,
-        days: daysUntilExpiry,
-        icon: Calendar,
-      };
+      return { status: 'upcoming', message: `${daysUntilExpiry}d left`, variant: 'secondary' as const, days: daysUntilExpiry, icon: Calendar };
     } else {
-      return {
-        status: 'active',
-        message: 'Active lease',
-        variant: 'default' as const,
-        days: daysUntilExpiry,
-        icon: CheckCircle2,
-      };
+      return { status: 'active', message: 'Active', variant: 'default' as const, days: daysUntilExpiry, icon: CheckCircle2 };
     }
   };
 
   const leaseInfo = getLeaseExpiryInfo();
+  const totalPaid = recentPayments.reduce((s, p) => s + p.amount, 0);
+  const allClear = overdueInvoicesCount === 0 && pendingInvoicesCount === 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      {/* Lease Status Card */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {/* Lease Status */}
       {lease && leaseInfo && (
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Home className="h-4 w-4" />
-              Lease Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold">{lease.property}</p>
-                <p className="text-sm text-muted-foreground">Unit {lease.unit}</p>
+        <div className={cn(
+          "group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5",
+          "shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+          "border-border/60 hover:border-amber-400/20 animate-fade-in"
+        )}>
+          <div className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent" />
+
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest">Lease Status</p>
+            <div className="rounded-xl border p-2 flex-shrink-0 bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/20 transition-all duration-300 group-hover:scale-110">
+              <Home className="h-4 w-4 text-emerald-500" />
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-semibold truncate">{lease.property}</p>
+                <p className="text-xs text-muted-foreground">Unit {lease.unit}</p>
               </div>
-              <Badge variant={leaseInfo.variant} className="flex items-center gap-1">
+              <Badge variant={leaseInfo.variant} className="flex items-center gap-1 shrink-0 text-xs">
                 <leaseInfo.icon className="h-3 w-3" />
                 {leaseInfo.message}
               </Badge>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-sm">
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-muted/50 rounded-lg p-2">
-                <p className="text-muted-foreground text-xs">Start Date</p>
+                <p className="text-muted-foreground">Start</p>
                 <p className="font-medium">{format(new Date(lease.start_date), 'dd/MM/yy')}</p>
               </div>
               <div className="bg-muted/50 rounded-lg p-2">
-                <p className="text-muted-foreground text-xs">End Date</p>
+                <p className="text-muted-foreground">End</p>
                 <p className="font-medium">{format(new Date(lease.end_date), 'dd/MM/yy')}</p>
               </div>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t">
-              <span className="text-sm text-muted-foreground">Monthly Rent</span>
-              <span className="font-semibold">{formatCurrency(lease.monthly_rent)}</span>
+
+            <div className="flex items-center justify-between pt-2 border-t border-border/40">
+              <span className="text-xs text-muted-foreground">Monthly Rent</span>
+              <span className="font-semibold text-sm">{formatCurrency(lease.monthly_rent)}</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Invoice Summary Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Invoice Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center">
-                  <Clock className="h-4 w-4 text-warning" />
-                </div>
-                <span className="text-sm">Pending Invoices</span>
-              </div>
-              <Badge variant="secondary" className="text-lg font-bold px-3">
-                {pendingInvoicesCount}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
-                </div>
-                <span className="text-sm">Overdue Invoices</span>
-              </div>
-              <Badge 
-                variant={overdueInvoicesCount > 0 ? "destructive" : "secondary"} 
-                className="text-lg font-bold px-3"
-              >
-                {overdueInvoicesCount}
-              </Badge>
-            </div>
-            {overdueInvoicesCount === 0 && pendingInvoicesCount === 0 && (
-              <div className="flex items-center gap-2 text-sm text-success pt-2">
-                <CheckCircle2 className="h-4 w-4" />
-                <span>All invoices paid!</span>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Payments Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Recent Payments
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {recentPayments.length === 0 ? (
-            <div className="text-sm text-muted-foreground text-center py-4">
-              No recent payments
-            </div>
+      {/* Invoice Summary */}
+      <StatTile
+        label="Invoice Summary"
+        icon={FileText}
+        iconBg={allClear
+          ? "bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/20"
+          : overdueInvoicesCount > 0
+            ? "bg-gradient-to-br from-red-500/15 to-red-500/5 border-red-500/20"
+            : "bg-gradient-to-br from-orange-500/15 to-orange-500/5 border-orange-500/20"}
+        iconColor={allClear ? "text-emerald-500" : overdueInvoicesCount > 0 ? "text-red-500" : "text-orange-500"}
+        accent={allClear ? "via-emerald-500/60" : overdueInvoicesCount > 0 ? "via-red-500/60" : "via-orange-500/60"}
+        value={
+          allClear ? (
+            <span className="flex items-center gap-2 text-emerald-500">
+              <CheckCircle2 className="h-5 w-5" />
+              All paid
+            </span>
           ) : (
-            <div className="space-y-2">
-              {recentPayments.slice(0, 3).map((payment) => (
-                <div 
-                  key={payment.id} 
-                  className="flex items-center justify-between py-2 border-b last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{payment.invoice_number}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(payment.paid_date), 'dd/MM/yy')}
-                    </p>
-                  </div>
-                  <span className="text-sm font-semibold text-success">
-                    {formatCurrency(payment.amount)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            <span className={overdueInvoicesCount > 0 ? "text-red-500" : "text-orange-500"}>
+              {pendingInvoicesCount + overdueInvoicesCount}
+            </span>
+          )
+        }
+        sub={
+          allClear
+            ? "No outstanding invoices"
+            : [
+                overdueInvoicesCount > 0 ? `${overdueInvoicesCount} overdue` : null,
+                pendingInvoicesCount > 0 ? `${pendingInvoicesCount} pending` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")
+        }
+        badge={overdueInvoicesCount > 0 ? { label: "Action needed", variant: "destructive" } : undefined}
+      />
+
+      {/* Recent Payments */}
+      <StatTile
+        label="Recent Payments"
+        icon={TrendingUp}
+        iconBg="bg-gradient-to-br from-blue-600/15 to-blue-600/5 border-blue-500/20"
+        iconColor="text-blue-500"
+        accent="via-blue-500/60"
+        value={recentPayments.length > 0 ? formatCurrency(totalPaid) : "—"}
+        sub={
+          recentPayments.length > 0
+            ? `${recentPayments.length} payment${recentPayments.length !== 1 ? "s" : ""} · last ${format(new Date(recentPayments[0].paid_date), "dd MMM")}`
+            : "No recent payments"
+        }
+      />
     </div>
   );
 };

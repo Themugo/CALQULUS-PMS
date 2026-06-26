@@ -20,6 +20,7 @@ import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { logError } from "@/shared/lib/errorLogger";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/shared/components/ui/badge";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
@@ -180,7 +181,7 @@ export function RecentActivity() {
 
       setActivities(activitiesData);
     } catch (err) {
-      console.error('RecentActivity.fetchActivities', err);
+      logError('RecentActivity.fetchActivities', err);
     } finally {
       setLoading(false);
     }

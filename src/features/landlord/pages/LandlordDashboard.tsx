@@ -270,24 +270,79 @@ const LandlordDashboard = () => {
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'My properties', value: propertiesLoading ? '—' : properties.length, icon: Building2, color: 'text-blue-600' },
-            { label: 'Occupancy rate', value: propertiesLoading ? '—' : `${occupancyRate}%`, icon: PieChart, color: 'text-green-600' },
-            { label: 'Revenue share (MTD)', value: propertiesLoading ? '—' : fmt(totalRevenue), icon: TrendingUp, color: 'text-amber-600' },
-            { label: 'Total paid out', value: payoutsLoading ? '—' : fmt(totalPaid), icon: Banknote, color: 'text-purple-600' },
+            {
+              label: 'My Properties',
+              value: propertiesLoading ? '—' : String(properties.length),
+              sub: propertiesLoading ? '' : `${totalUnits} total units`,
+              icon: Building2,
+              iconBg: 'bg-gradient-to-br from-blue-600/15 to-blue-600/5 border-blue-500/20',
+              iconColor: 'text-blue-500',
+              accent: 'via-blue-500/60',
+              progress: undefined as number | undefined,
+            },
+            {
+              label: 'Occupancy Rate',
+              value: propertiesLoading ? '—' : `${occupancyRate}%`,
+              sub: propertiesLoading ? '' : `${totalOccupied} of ${totalUnits} occupied`,
+              icon: PieChart,
+              iconBg: 'bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/20',
+              iconColor: 'text-emerald-500',
+              accent: 'via-emerald-500/60',
+              progress: propertiesLoading ? undefined : occupancyRate,
+            },
+            {
+              label: 'Revenue Share MTD',
+              value: propertiesLoading ? '—' : fmt(totalRevenue),
+              sub: 'Your portion of collected rent',
+              icon: TrendingUp,
+              iconBg: 'bg-gradient-to-br from-amber-400/15 to-amber-400/5 border-amber-400/25',
+              iconColor: 'text-amber-500',
+              accent: 'via-amber-400/60',
+              progress: undefined,
+            },
+            {
+              label: 'Total Paid Out',
+              value: payoutsLoading ? '—' : fmt(totalPaid),
+              sub: payoutsLoading ? '' : `${pendingPayouts} request${pendingPayouts !== 1 ? 's' : ''} pending`,
+              icon: Banknote,
+              iconBg: 'bg-gradient-to-br from-violet-500/15 to-violet-500/5 border-violet-500/20',
+              iconColor: 'text-violet-500',
+              accent: 'via-violet-500/60',
+              progress: undefined,
+            },
           ].map(stat => (
-            <Card key={stat.label}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            <div
+              key={stat.label}
+              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-amber-400/20 animate-fade-in"
+            >
+              <div className={`absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent ${stat.accent} to-transparent`} />
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest truncate">{stat.label}</p>
+                  {propertiesLoading || payoutsLoading ? (
+                    <Skeleton className="h-7 w-24" />
+                  ) : (
+                    <p className="font-heading text-2xl font-bold text-card-foreground tracking-tight truncate">{stat.value}</p>
+                  )}
+                  {stat.sub && !propertiesLoading && !payoutsLoading && (
+                    <p className="text-xs text-muted-foreground truncate">{stat.sub}</p>
+                  )}
                 </div>
-                {propertiesLoading ? (
-                  <Skeleton className="h-7 w-24" />
-                ) : (
-                  <p className="text-xl font-semibold">{stat.value}</p>
-                )}
-              </CardContent>
-            </Card>
+                <div className={`rounded-xl border p-2.5 flex-shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110 ${stat.iconBg}`}>
+                  <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+                </div>
+              </div>
+              {stat.progress !== undefined && !propertiesLoading && (
+                <div className="mt-3 pt-3 border-t border-border/40">
+                  <div className="h-1.5 w-full rounded-full bg-muted/60 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-emerald-500 transition-all duration-700 ease-out"
+                      style={{ width: `${Math.min(100, Math.max(0, stat.progress))}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
