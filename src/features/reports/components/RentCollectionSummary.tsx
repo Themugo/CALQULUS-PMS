@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, subMonths, parseISO } from 'date-fns';
 import jsPDF from 'jspdf';
@@ -16,11 +16,27 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Separator } from '@/shared/components/ui/separator';
+import { Switch } from '@/shared/components/ui/switch';
 import {
   FileDown, Send, Plus, X, Building2, CheckCircle2,
   AlertTriangle, Clock, TrendingUp, Loader2, Mail, Users,
+  CalendarClock, Bell, BellOff, RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+
+// ─── Schedule row type (rent_report_schedules table) ─────────────────────────
+
+interface ScheduleRow {
+  id: string;
+  manager_id: string;
+  recipients: string[];
+  enabled: boolean;
+  send_day: number;
+  last_sent_at: string | null;
+  updated_at: string;
+}
+
+const SEND_DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -238,6 +254,14 @@ export const RentCollectionSummary: React.FC = () => {
   const [emailInput,  setEmailInput]  = useState('');
   const [sending, setSending] = useState(false);
 
+  // ── Schedule state ─────────────────────────────────────────────────────
+  const [schedEnabled,    setSchedEnabled]    = useState(false);
+  const [schedSendDay,    setSchedSendDay]     = useState(1);
+  const [schedRecipients, setSchedRecipients] = useState<string[]>([]);
+  const [schedEmailInput, setSchedEmailInput] = useState('');
+  const [schedSaving,     setSchedSaving]     = useState(false);
+  const [schedTesting,    setSchedTesting]    = useState(false);
+
   const periodStart  = startOfMonth(new Date(year, month - 1, 1));
   const periodEnd    = endOfMonth(periodStart);
   const periodLabel  = format(periodStart, 'MMMM yyyy');
@@ -280,6 +304,30 @@ export const RentCollectionSummary: React.FC = () => {
 
   const companyName = settings?.company_name ?? 'CALQULUS PMS';
 
+  // ── Fetch existing schedule ───────────────────────────────────────────
+  const { data: schedule, refetch: refetchSchedule } = useQuery<ScheduleRow | null>({
+    queryKey: ['rent-report-schedule', user?.id],
+    queryFn: async () => {
+      const { data } = await (supabase as unknown as {
+        from: (t: string) => { select: (c: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: ScheduleRow | null }> } } }
+      }).from('rent_report_schedules')
+        .select('*')
+        .eq('manager_id', user!.id)
+        .maybeSingle();
+      return data ?? null;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Sync schedule → local state
+  useEffect(() => {
+    if (schedule) {
+      setSchedEnabled(schedule.enabled);
+      setSchedSendDay(schedule.send_day);
+      setSchedRecipients(schedule.recipients ?? []);
+    }
+  }, [schedule]);
+
   // ── Group by property ────────────────────────────────────────────────────
   const properties = useMemo<PropertyGroup[]>(() => {
     const map = new Map<string, PropertyGroup>();
@@ -304,6 +352,78 @@ export const RentCollectionSummary: React.FC = () => {
   const totalOutstanding = properties.reduce((s, p) => s + p.outstanding, 0);
   const collectionRate   = totalBilled > 0 ? (totalCollected / totalBilled) * 100 : 0;
   const arrearsCount     = invoices.filter(i => i.status === 'overdue').length;
+
+  // ── Schedule actions ──────────────────────────────────────────────────
+  const addSchedRecipient = () => {
+    const email = schedEmailInput.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ title: 'Invalid email', variant: 'destructive' }); return;
+    }
+    if (schedRecipients.includes(email)) return;
+    setSchedRecipients(r => [...r, email]);
+    setSchedEmailInput('');
+  };
+
+  const saveSchedule = async () => {
+    setSchedSaving(true);
+    try {
+      const payload = {
+        manager_id:  user!.id,
+        enabled:     schedEnabled,
+        send_day:    schedSendDay,
+        recipients:  schedRecipients,
+        updated_at:  new Date().toISOString(),
+      };
+      const db = supabase as unknown as {
+        from: (t: string) => {
+          insert: (d: object) => Promise<{ error: unknown }>;
+          update: (d: object) => { eq: (k: string, v: string) => Promise<{ error: unknown }> };
+        }
+      };
+      if (schedule?.id) {
+        const { error } = await db.from('rent_report_schedules').update(payload).eq('id', schedule.id);
+        if (error) throw error;
+      } else {
+        const { error } = await db.from('rent_report_schedules').insert(payload);
+        if (error) throw error;
+      }
+      await refetchSchedule();
+      toast({
+        title: 'Schedule saved',
+        description: schedEnabled
+          ? `Report will be emailed on day ${schedSendDay} of each month.`
+          : 'Auto-send is disabled.',
+      });
+    } catch (err) {
+      logError('RentCollectionSummary.saveSchedule', err);
+      toast({ title: 'Failed to save schedule', variant: 'destructive' });
+    } finally {
+      setSchedSaving(false);
+    }
+  };
+
+  const testSendNow = async () => {
+    if (!schedRecipients.length) {
+      toast({ title: 'Add at least one recipient first', variant: 'destructive' }); return;
+    }
+    setSchedTesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('auto-send-rent-report', {
+        body: { managerId: user!.id, force: true },
+      });
+      if (error) throw error;
+      const sent = (data as { sent?: number })?.sent ?? 0;
+      toast({
+        title: 'Test send complete',
+        description: `Sent last month's report to ${sent} recipient${sent !== 1 ? 's' : ''}.`,
+      });
+    } catch (err) {
+      logError('RentCollectionSummary.testSend', err);
+      toast({ title: 'Test send failed', variant: 'destructive' });
+    } finally {
+      setSchedTesting(false);
+    }
+  };
 
   // ── Actions ──────────────────────────────────────────────────────────────
   const addRecipient = () => {
@@ -527,13 +647,166 @@ export const RentCollectionSummary: React.FC = () => {
         </div>
       )}
 
-      {/* ── Email recipients & send ── */}
+      {/* ── Scheduled auto-send ── */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CalendarClock className="h-4 w-4 text-blue-500" />
+                Scheduled Auto-Send
+              </CardTitle>
+              <CardDescription className="mt-0.5">
+                Automatically email last month's HTML collection report to saved recipients on a set day each month
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {schedEnabled
+                ? <Bell className="h-3.5 w-3.5 text-emerald-500" />
+                : <BellOff className="h-3.5 w-3.5 text-muted-foreground" />}
+              <Switch
+                checked={schedEnabled}
+                onCheckedChange={setSchedEnabled}
+                aria-label="Enable scheduled auto-send"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Send day */}
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Send on day of month</Label>
+              <Select value={String(schedSendDay)} onValueChange={v => setSchedSendDay(Number(v))}>
+                <SelectTrigger className="w-24 h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SEND_DAYS.map(d => (
+                    <SelectItem key={d} value={String(d)}>
+                      {d === 1 ? '1st' : d === 2 ? '2nd' : d === 3 ? '3rd' : `${d}th`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {schedule?.last_sent_at && (
+              <div className="text-xs text-muted-foreground pb-1">
+                Last sent: <span className="font-medium">
+                  {format(parseISO(schedule.last_sent_at), 'dd MMM yyyy, HH:mm')}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Saved recipient chips */}
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Default recipients (landlords, agencies, managers)</Label>
+            {schedRecipients.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {schedRecipients.map(r => (
+                  <span key={r} className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
+                    <Users className="h-2.5 w-2.5" />
+                    {r}
+                    <button
+                      className="ml-0.5 hover:text-red-500 transition-colors"
+                      onClick={() => setSchedRecipients(rs => rs.filter(x => x !== r))}
+                    >
+                      <X className="h-2.5 w-2.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                type="email"
+                placeholder="landlord@example.com or agency@example.com"
+                value={schedEmailInput}
+                onChange={e => setSchedEmailInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSchedRecipient(); } }}
+                className="h-8 text-sm flex-1"
+              />
+              <Button variant="outline" size="sm" className="h-8 gap-1 text-xs shrink-0" onClick={addSchedRecipient}>
+                <Plus className="h-3 w-3" />Add
+              </Button>
+            </div>
+          </div>
+
+          {schedEnabled && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-3 text-xs text-emerald-700 dark:text-emerald-400">
+              <strong>Active:</strong> An HTML summary of last month's rent collection will be sent to{' '}
+              {schedRecipients.length > 0 ? `${schedRecipients.length} recipient${schedRecipients.length > 1 ? 's' : ''}` : 'saved recipients'}{' '}
+              on day {schedSendDay} of each month at 07:00 EAT.
+              {' '}A "Download PDF" link inside the email lets recipients get the full PDF.
+            </div>
+          )}
+
+          <Separator />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="sm" className="gap-1.5 text-xs" onClick={saveSchedule} disabled={schedSaving}>
+              {schedSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+              Save schedule
+            </Button>
+            <Button
+              variant="outline" size="sm" className="gap-1.5 text-xs"
+              onClick={testSendNow}
+              disabled={schedTesting || !schedRecipients.length}
+              title="Immediately sends last month's report to test the configuration"
+            >
+              {schedTesting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              Send now (test)
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              "Send now" fires immediately using last month's data
+            </span>
+          </div>
+
+          {/* pg_cron setup hint */}
+          <details className="mt-1">
+            <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none">
+              ⚙️ One-time setup: enable the cron job in Supabase
+            </summary>
+            <div className="mt-2 rounded-lg border bg-muted/40 p-3 space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Paste this into <strong>Supabase → SQL Editor</strong>. Replace{' '}
+                <code className="bg-muted px-1 rounded">&lt;PROJECT_REF&gt;</code> and{' '}
+                <code className="bg-muted px-1 rounded">&lt;SERVICE_ROLE_KEY&gt;</code> from your project's
+                API settings. Requires the <strong>pg_cron</strong> and <strong>pg_net</strong> extensions (Supabase Pro).
+              </p>
+              <pre className="text-[10px] bg-slate-900 text-slate-100 rounded p-3 overflow-x-auto whitespace-pre-wrap">
+{`SELECT cron.schedule(
+  'monthly-rent-collection-report',
+  '0 7 1 * *',  -- 07:00 EAT on 1st of each month
+  $$
+  SELECT net.http_post(
+    url     := 'https://<PROJECT_REF>.supabase.co/functions/v1/auto-send-rent-report',
+    headers := jsonb_build_object(
+                 'Content-Type',  'application/json',
+                 'Authorization', 'Bearer <SERVICE_ROLE_KEY>'
+               ),
+    body    := '{}'::jsonb
+  ) AS request_id;
+  $$
+);`}
+              </pre>
+              <p className="text-[10px] text-muted-foreground">
+                To verify: <code className="bg-muted px-1 rounded">SELECT * FROM cron.job;</code>
+                &nbsp; To remove: <code className="bg-muted px-1 rounded">SELECT cron.unschedule('monthly-rent-collection-report');</code>
+              </p>
+            </div>
+          </details>
+        </CardContent>
+      </Card>
+
+      {/* ── Email recipients & send (one-off) ── */}
       {!isLoading && invoices.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <Mail className="h-4 w-4 text-amber-500" />
-              Send Report
+              Send Report Now (One-off)
             </CardTitle>
             <CardDescription>Add landlord, agency, or manager email addresses — the PDF is attached automatically</CardDescription>
           </CardHeader>
