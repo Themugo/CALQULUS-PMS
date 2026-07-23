@@ -316,22 +316,22 @@ const ComplianceDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="incidents" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Incidents
           </TabsTrigger>
-          <TabsTrigger value="data-retention" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="data-retention" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Database className="h-4 w-4 mr-2" />
             Data Retention
           </TabsTrigger>
-          <TabsTrigger value="privacy" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="privacy" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Privacy
           </TabsTrigger>

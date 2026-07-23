@@ -222,9 +222,9 @@ const ExecutiveIntelligenceDashboard = () => {
       case 'critical':
         return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status.replace('_', ' ')}</Badge>;
       case 'active':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'acknowledged':
-        return <Badge className="bg-amber-400/15 text-amber-700 border-blue-200"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'info':
         return <Badge className="bg-gray-100 text-gray-800 border-gray-300">{status}</Badge>;
       default:
@@ -252,7 +252,7 @@ const ExecutiveIntelligenceDashboard = () => {
       case 'risk':
         return <Badge variant="outline" className="text-red-300 border-red-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'recommendation':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Target className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Target className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -349,18 +349,18 @@ const ExecutiveIntelligenceDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="kpis" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="kpis" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Target className="h-4 w-4 mr-2" />
             KPIs
           </TabsTrigger>
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="alerts" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Alerts
           </TabsTrigger>
-          <TabsTrigger value="insights" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="insights" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Insights
           </TabsTrigger>

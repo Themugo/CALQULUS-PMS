@@ -28,7 +28,7 @@ const STATUS_STYLE: Record<string, string> = {
   paid:      'bg-green-100 text-green-800 border-green-200',
   overdue:   'bg-red-100 text-red-800 border-red-200',
   cancelled: 'bg-slate-100 text-muted-foreground border-slate-200',
-  waived:    'bg-blue-100 text-blue-800 border-blue-200',
+  waived:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
 };
 
 const INVOICE_TYPES = [
@@ -186,7 +186,7 @@ const LandlordBilling: React.FC = () => {
               </TableHeader>
               <TableBody>
                 {invoices.map((inv: { id: string; invoice_number: string; invoice_type: string; amount: number; due_date: string; status: string; landlord_user_id: string }) => (
-                  <TableRow key={inv.id} className="border-purple-800/20 hover:bg-purple-900/10">
+                  <TableRow key={inv.id} className="border-[hsl(218_58%_24%/0.2)] hover:bg-[hsl(218_58%_16%/0.1)]">
                     <TableCell className="font-mono text-xs text-foreground/90">{inv.invoice_number}</TableCell>
                     <TableCell className="text-xs text-foreground/90">{inv.landlord_user_id?.slice(0, 8)}…</TableCell>
                     <TableCell>

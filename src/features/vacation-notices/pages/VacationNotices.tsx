@@ -63,7 +63,7 @@ interface VacationNotice {
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
   pending: { label: "Pending", variant: "secondary", icon: Clock, color: "text-yellow-500", badgeClass: "bg-amber-500 text-white" },
-  acknowledged: { label: "Acknowledged", variant: "default", icon: Check, color: "text-blue-500", badgeClass: "bg-blue-600 text-white" },
+  acknowledged: { label: "Acknowledged", variant: "default", icon: Check, color: "text-[hsl(214_73%_48%)]", badgeClass: "bg-[hsl(214_73%_45%)] text-white" },
   approved: { label: "Approved", variant: "default", icon: Check, color: "text-green-500", badgeClass: "bg-emerald-600 text-white" },
   rejected: { label: "Rejected", variant: "destructive", icon: X, color: "text-red-500", badgeClass: "bg-red-600 text-white" },
   completed: { label: "Completed", variant: "outline", icon: Check, color: "text-gray-500", badgeClass: "bg-slate-600 text-white" },
@@ -185,8 +185,8 @@ const VacationNotices = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="rounded-full bg-blue-500/10 p-3">
-                <Eye className="h-6 w-6 text-blue-500" />
+              <div className="rounded-full bg-[hsl(214_73%_48%/0.1)] p-3">
+                <Eye className="h-6 w-6 text-[hsl(214_73%_48%)]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{acknowledgedCount}</p>

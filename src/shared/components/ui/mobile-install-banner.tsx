@@ -54,10 +54,11 @@ export const MobileInstallBanner = () => {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    window.addEventListener("appinstalled", () => {
+    const handleAppInstalled = () => {
       setIsVisible(false);
       setDeferredPrompt(null);
-    });
+    };
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     // Show banner for Android even without prompt (manual instructions)
     if (isAndroidDevice) {
@@ -66,6 +67,7 @@ export const MobileInstallBanner = () => {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 

@@ -21,12 +21,12 @@ const STATUS_BADGE: Record<string, string> = {
   occupied:    'bg-green-100 text-green-800 border-green-200',
   vacant:      'bg-amber-100 text-amber-800 border-amber-200',
   maintenance: 'bg-red-100 text-red-800 border-red-200',
-  reserved:    'bg-blue-100 text-blue-800 border-blue-200',
+  reserved:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
 };
 
 const MAINTENANCE_STATUS: Record<string, string> = {
   pending:     'bg-amber-100 text-amber-800 border-amber-200',
-  in_progress: 'bg-blue-100 text-blue-800 border-blue-200',
+  in_progress: 'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
   completed:   'bg-green-100 text-green-800 border-green-200',
   cancelled:   'bg-slate-100 text-slate-600 border-slate-200',
 };
@@ -144,7 +144,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
         {[
           { label: 'Occupancy', value: `${occupancyRate}%`, sub: `${occupiedUnits}/${totalUnits} units`, icon: Home, color: 'text-green-600', bg: 'bg-green-50' },
           { label: 'Vacant units', value: vacantUnits, sub: maintenanceUnits > 0 ? `+${maintenanceUnits} on maintenance` : 'Ready to let', icon: Building2, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { label: 'Monthly gross rent', value: fmt(monthlyGross), sub: `${fmt(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Monthly gross rent', value: fmt(monthlyGross), sub: `${fmt(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-[hsl(214_73%_45%)]', bg: 'bg-[hsl(214_73%_48%/0.08)]' },
           { label: 'Open maintenance', value: openMaintenance, sub: openMaintenance > 0 ? 'Requires attention' : 'All clear', icon: Wrench, color: openMaintenance > 0 ? 'text-red-600' : 'text-green-600', bg: openMaintenance > 0 ? 'bg-red-50' : 'bg-green-50' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl border border-border p-4 ${s.bg}`}>

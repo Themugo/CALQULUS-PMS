@@ -26,9 +26,9 @@ const fmt = (n: number | null | undefined) =>
 
 const TENANCY_BADGE: Record<string, string> = {
   standard:     'bg-green-100 text-green-800 border-green-200',
-  formal_lease: 'bg-blue-100 text-blue-800 border-blue-200',
+  formal_lease: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   short_term:   'bg-amber-100 text-amber-800 border-amber-200',
-  commercial:   'bg-blue-100 text-blue-800 border-blue-200',
+  commercial:   'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
 };
 
 const TENANCY_LABELS: Record<string, string> = {
@@ -122,10 +122,10 @@ const TenantMultiUnit: React.FC<TenantMultiUnitProps> = ({ tenantId, onUnitSelec
   if (links.length <= 1 && leases.length <= 1) return null; // Only show if multi-unit
 
   return (
-    <Card className="border-blue-200 bg-blue-50/30">
+    <Card className="border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-blue-600" />
+          <Building2 className="h-4 w-4 text-[hsl(214_73%_45%)]" />
           Your units & tenancies
         </CardTitle>
         <CardDescription>
@@ -138,11 +138,11 @@ const TenantMultiUnit: React.FC<TenantMultiUnitProps> = ({ tenantId, onUnitSelec
           const unit = link.units;
           const prop = unit?.properties;
           return (
-            <div key={link.id} className={`rounded-xl border p-3 ${link.is_primary ? 'border-blue-300 bg-white' : 'border-border bg-white/60'}`}>
+            <div key={link.id} className={`rounded-xl border p-3 ${link.is_primary ? 'border-[hsl(214_73%_48%/0.35)] bg-white' : 'border-border bg-white/60'}`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3">
-                  <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${link.is_primary ? 'bg-blue-100' : 'bg-slate-100'}`}>
-                    <Home className={`h-4 w-4 ${link.is_primary ? 'text-blue-600' : 'text-slate-500'}`} />
+                  <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${link.is_primary ? 'bg-[hsl(214_73%_48%/0.12)]' : 'bg-slate-100'}`}>
+                    <Home className={`h-4 w-4 ${link.is_primary ? 'text-[hsl(214_73%_45%)]' : 'text-slate-500'}`} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -150,7 +150,7 @@ const TenantMultiUnit: React.FC<TenantMultiUnitProps> = ({ tenantId, onUnitSelec
                       <Badge variant="outline" className={`text-xs ${TENANCY_BADGE[link.tenancy_type] ?? ''}`}>
                         {TENANCY_LABELS[link.tenancy_type] ?? link.tenancy_type}
                       </Badge>
-                      {link.is_primary && <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-200">Primary</Badge>}
+                      {link.is_primary && <Badge className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">Primary</Badge>}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {prop?.name}{unit?.floor_number ? ` · Floor ${unit.floor_number}` : ''}
@@ -170,7 +170,7 @@ const TenantMultiUnit: React.FC<TenantMultiUnitProps> = ({ tenantId, onUnitSelec
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-6 text-xs text-blue-600 gap-1 mt-1"
+                      className="h-6 text-xs text-[hsl(214_73%_45%)] gap-1 mt-1"
                       onClick={() => onUnitSelect(link.unit_id, unit.properties?.id)}
                     >
                       View <ArrowRight className="h-3 w-3" />
@@ -184,16 +184,16 @@ const TenantMultiUnit: React.FC<TenantMultiUnitProps> = ({ tenantId, onUnitSelec
 
         {/* Formal leases (from leases table) */}
         {leases.map((lease: LeaseRow) => (
-          <div key={lease.id} className="rounded-xl border border-blue-200 bg-white p-3">
+          <div key={lease.id} className="rounded-xl border border-[hsl(214_73%_48%/0.25)] bg-white p-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                  <CreditCard className="h-4 w-4 text-blue-600" />
+                <div className="h-9 w-9 rounded-lg bg-[hsl(214_73%_48%/0.12)] flex items-center justify-center shrink-0">
+                  <CreditCard className="h-4 w-4 text-[hsl(214_73%_45%)]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-medium text-sm">Unit {lease.unit}</p>
-                    <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 border-blue-200">Formal lease</Badge>
+                    <Badge variant="outline" className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">Formal lease</Badge>
                     <Badge variant="outline" className={`text-xs capitalize ${lease.status === 'active' ? 'bg-green-100 text-green-800' : ''}`}>
                       {lease.status}
                     </Badge>

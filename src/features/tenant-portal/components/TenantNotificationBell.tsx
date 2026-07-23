@@ -31,9 +31,9 @@ const TYPE_CONFIG: Record<string, { icon: React.ComponentType<{ className?: stri
   payment:     { icon: CreditCard,    color: 'text-green-600',  bg: 'bg-green-50' },
   maintenance: { icon: Wrench,        color: 'text-amber-600',  bg: 'bg-amber-50' },
   notice:      { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50' },
-  broadcast:   { icon: Megaphone,     color: 'text-blue-600',   bg: 'bg-blue-50' },
-  announcement:{ icon: Megaphone,     color: 'text-blue-600',   bg: 'bg-blue-50' },
-  contract:    { icon: FileSignature, color: 'text-purple-600', bg: 'bg-purple-50' },
+  broadcast:   { icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]' },
+  announcement:{ icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]' },
+  contract:    { icon: FileSignature, color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]' },
   reminder:    { icon: BellRing,      color: 'text-red-600',    bg: 'bg-red-50' },
   alert:       { icon: AlertTriangle, color: 'text-red-600',    bg: 'bg-red-50' },
   info:        { icon: Info,          color: 'text-slate-600',  bg: 'bg-slate-50' },
@@ -118,7 +118,7 @@ const TenantNotificationBell: React.FC = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9">
+        <Button variant="ghost" size="icon" className="relative h-9 w-9" aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}>
           {unread > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
           {unread > 0 && (
             <span className="absolute -top-0.5 -right-0.5 h-5 min-w-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center px-1">
@@ -151,7 +151,7 @@ const TenantNotificationBell: React.FC = () => {
               return (
                 <div
                   key={n.id}
-                  className={`flex items-start gap-3 px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-blue-50/40 dark:bg-blue-950/20' : ''}`}
+                  className={`flex items-start gap-3 px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-[hsl(214_73%_48%/0.06)] dark:bg-[hsl(214_73%_30%/0.15)]' : ''}`}
                   onClick={() => handleClick(n)}
                 >
                   <div className={`h-8 w-8 rounded-full ${config.bg} flex items-center justify-center shrink-0 mt-0.5`}>
@@ -161,7 +161,7 @@ const TenantNotificationBell: React.FC = () => {
                     <div className="flex items-start justify-between gap-2">
                       <p className={`text-sm leading-tight ${!n.is_read ? 'font-semibold' : 'font-medium'}`}>{n.title}</p>
                       {!n.is_read && (
-                        <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 mt-1" />
+                        <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_48%)] shrink-0 mt-1" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.body}</p>

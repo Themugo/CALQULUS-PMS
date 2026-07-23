@@ -24,10 +24,10 @@ const webhostVisibleResourceTypes = ['contract', 'payment', 'invoice', 'mpesa_se
 
 const actionColors: Record<string, string> = {
   create: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  update: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  update: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] dark:bg-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_80%)]',
   delete: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   view: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  export: 'bg-amber-400/15 text-amber-700 dark:bg-purple-900 dark:text-amber-100/80',
+  export: 'bg-amber-400/15 text-amber-700 dark:bg-[hsl(218_58%_16%)] dark:text-amber-100/80',
   download: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
 };
 

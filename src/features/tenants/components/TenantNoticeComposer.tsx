@@ -41,7 +41,7 @@ const NOTICE_TYPES = [
   { value: 'rent_increase',   label: 'Rent increase notice',    icon: TrendingUp,    color: 'text-amber-600', template: true },
   { value: 'arrears_demand',  label: 'Arrears demand letter',   icon: AlertTriangle, color: 'text-red-600',   template: true },
   { value: 'eviction_warning',label: 'Eviction warning',        icon: Home,          color: 'text-red-700',   template: true },
-  { value: 'entry_notice',    label: 'Maintenance entry notice', icon: Home,          color: 'text-blue-600',  template: true },
+  { value: 'entry_notice',    label: 'Maintenance entry notice', icon: Home,          color: 'text-[hsl(214_73%_45%)]',  template: true },
   { value: 'lease_renewal',   label: 'Lease renewal offer',     icon: FileText,      color: 'text-green-600', template: true },
   { value: 'rule_violation',  label: 'Rule violation notice',   icon: AlertTriangle, color: 'text-orange-600', template: false },
   { value: 'general',         label: 'General notice',          icon: Bell,          color: 'text-slate-600', template: false },
@@ -66,7 +66,7 @@ const TEMPLATES: Record<string, (t: Tenant, extra?: Record<string, unknown>) => 
 
 const STATUS_COLORS: Record<string, string> = {
   draft:        'bg-slate-100 text-slate-700 border-slate-200',
-  sent:         'bg-blue-100 text-blue-800 border-blue-200',
+  sent:         'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   delivered:    'bg-green-100 text-green-800 border-green-200',
   acknowledged: 'bg-green-100 text-green-800 border-green-200',
   disputed:     'bg-red-100 text-red-800 border-red-200',
@@ -144,10 +144,11 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
       });
       if (error) throw error;
 
+      let emailDelivered = true;
       if (!asDraft) {
         // Send via email/SMS
         if (form.delivery_method === 'email' || form.delivery_method === 'both') {
-          await supabase.functions.invoke('send-tenant-notice', {
+          const { data: sendResult, error: sendError } = await supabase.functions.invoke('send-tenant-notice', {
             body: {
               tenantEmail:    tenant.email,
               tenantName:     tenant.name,
@@ -157,13 +158,30 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
               property:       tenant.property,
               unit:           tenant.unit,
             },
-          }).catch(() => {}); // non-blocking
+          });
+          // Non-blocking for the record itself (the notice is already saved), but we
+          // must not tell the manager it was delivered when it wasn't.
+          if (sendError || sendResult?.sent === false) {
+            emailDelivered = false;
+            console.error('[TenantNoticeComposer] send-tenant-notice failed:', sendError ?? sendResult);
+          }
         }
       }
+      return { asDraft, emailDelivered };
     },
-    onSuccess: (_, asDraft) => {
+    onSuccess: ({ asDraft, emailDelivered }) => {
       queryClient.invalidateQueries({ queryKey: ['tenant-notices', tenant.id] });
-      toast({ title: asDraft ? 'Notice saved as draft' : 'Notice sent', description: asDraft ? '' : `Delivered to ${tenant.email}` });
+      if (asDraft) {
+        toast({ title: 'Notice saved as draft' });
+      } else if (emailDelivered) {
+        toast({ title: 'Notice sent', description: `Delivered to ${tenant.email}` });
+      } else {
+        toast({
+          title: 'Notice saved, but email failed to send',
+          description: `The notice was recorded, but we couldn't deliver it to ${tenant.email}. Please follow up manually or resend.`,
+          variant: 'destructive',
+        });
+      }
       setDialogOpen(false);
       setForm(p => ({ ...p, title: '', body: '', new_rent: '', effective_date: '' }));
     },

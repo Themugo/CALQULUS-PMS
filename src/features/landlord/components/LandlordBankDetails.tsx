@@ -173,7 +173,7 @@ const LandlordBankDetails: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Landmark className="h-4 w-4 text-blue-600" />
+            <Landmark className="h-4 w-4 text-[hsl(214_73%_45%)]" />
             Bank account details
           </CardTitle>
         </CardHeader>

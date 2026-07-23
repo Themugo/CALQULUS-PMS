@@ -6,7 +6,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Globe, Users, Building, Home, LogOut, Shield,
-  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers,
+  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag,
 } from 'lucide-react';
 import ManagerManagement from '@/features/webhost/components/ManagerManagement';
 import PropertyAssignment from '@/features/webhost/components/PropertyAssignment';
@@ -16,6 +16,9 @@ import WebhostContracts from '@/features/webhost/components/WebhostContracts';
 import { SecurityAuditLogs } from '@/features/webhost/components/SecurityAuditLogs';
 import ErrorLogsTab from '@/features/webhost/components/ErrorLogsTab';
 import TierManagement from '@/features/webhost/components/TierManagement';
+import PlatformBillingRules from '@/features/webhost/components/PlatformBillingRules';
+import CustomerBillingBlocks from '@/features/webhost/components/CustomerBillingBlocks';
+import WebhookDeadLetterPanel from '@/features/webhost/components/WebhookDeadLetterPanel';
 import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccountSecurity';
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,7 +87,7 @@ const WebhostDashboard = () => {
         );
       case 'admin':
         return (
-          <Badge className="bg-blue-500/15 text-blue-400 border border-blue-500/30 ml-2 gap-1">
+          <Badge className="bg-[hsl(214_73%_48%/0.15)] text-[hsl(214_73%_60%)] border border-[hsl(214_73%_48%/0.3)] ml-2 gap-1">
             <Shield className="h-3 w-3" />Admin
           </Badge>
         );
@@ -178,6 +181,16 @@ const WebhostDashboard = () => {
                     <Layers className="h-3.5 w-3.5 mr-1.5" />Tiers
                   </TabsTrigger>
                 )}
+                {(isSuperAdmin || canViewBilling) && (
+                  <TabsTrigger value="billing-rules" className={tabCls}>
+                    <ScrollText className="h-3.5 w-3.5 mr-1.5" />Billing Rules
+                  </TabsTrigger>
+                )}
+                {(isSuperAdmin || canViewBilling) && (
+                  <TabsTrigger value="custom-pricing" className={tabCls}>
+                    <Tag className="h-3.5 w-3.5 mr-1.5" />Custom Pricing
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="contracts" className={tabCls}>
                   <FileSignature className="h-3.5 w-3.5 mr-1.5" />Contracts
                 </TabsTrigger>
@@ -199,12 +212,15 @@ const WebhostDashboard = () => {
             {canViewLandlords && <TabsContent value="unlinked-landlords"><SystemLandlordManagement /></TabsContent>}
             {canViewBilling && <TabsContent value="billing"><ManagerBilling /></TabsContent>}
             {(isSuperAdmin || canViewBilling) && <TabsContent value="tiers"><TierManagement /></TabsContent>}
+            {(isSuperAdmin || canViewBilling) && <TabsContent value="billing-rules"><PlatformBillingRules /></TabsContent>}
+            {(isSuperAdmin || canViewBilling) && <TabsContent value="custom-pricing"><CustomerBillingBlocks /></TabsContent>}
             <TabsContent value="contracts"><WebhostContracts /></TabsContent>
             {canViewSecurity && (
               <TabsContent value="security">
                 <div className="space-y-4">
                   <WebhostAccountSecurity />
                   <SecurityAuditLogs />
+                  <WebhookDeadLetterPanel />
                 </div>
               </TabsContent>
             )}

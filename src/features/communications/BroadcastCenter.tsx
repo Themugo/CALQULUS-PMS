@@ -479,7 +479,7 @@ const BroadcastCenter: React.FC = () => {
                         </div>
                         <div className="ml-auto flex gap-0.5">
                           {sendSms && t.phone && <Smartphone className="h-3 w-3 text-green-600" />}
-                          {sendEmail && <Mail className="h-3 w-3 text-blue-600" />}
+                          {sendEmail && <Mail className="h-3 w-3 text-[hsl(214_73%_45%)]" />}
                           {sendWhatsapp && t.phone && <MessageSquare className="h-3 w-3 text-green-500" />}
                         </div>
                       </div>
@@ -586,7 +586,7 @@ const BroadcastCenter: React.FC = () => {
                         <TableCell>
                           <Badge variant="outline" className={`text-xs ${
                             c.status === 'sent' ? 'border-green-300 text-green-700 bg-green-50' :
-                            c.status === 'sending' ? 'border-blue-300 text-blue-700 bg-blue-50' :
+                            c.status === 'sending' ? 'border-[hsl(214_73%_48%/0.35)] text-[hsl(214_73%_35%)] bg-[hsl(214_73%_48%/0.06)]' :
                             c.status === 'failed' ? 'border-red-300 text-red-700 bg-red-50' :
                             'border-slate-300 text-slate-600'
                           }`}>

@@ -29,8 +29,15 @@ serve(async (req) => {
     );
     if (authError || !user) throw new Error("Authentication failed");
 
-    const { name, email, phone }: SelfRegisterRequest = await req.json();
-    if (!name || !email) throw new Error("Missing required fields: name, email");
+    const { name, email: requestedEmail, phone }: SelfRegisterRequest = await req.json();
+    if (!name) throw new Error("Missing required field: name");
+    // Use the verified authenticated email, not a client-supplied one —
+    // tenants are matched by email elsewhere (e.g. claim-tenant), so
+    // trusting an arbitrary value here would let a user register under
+    // someone else's email address.
+    const email = user.email;
+    if (!email) throw new Error("Your account has no verified email on file");
+    void requestedEmail;
 
     // Check if already registered as tenant
     const { data: existingRole } = await supabase

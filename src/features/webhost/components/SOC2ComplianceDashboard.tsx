@@ -215,7 +215,7 @@ const SOC2ComplianceDashboard = () => {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'security':
-        return 'text-blue-400';
+        return 'text-[hsl(214_73%_58%)]';
       case 'availability':
         return 'text-green-400';
       case 'processing_integrity':
@@ -223,7 +223,7 @@ const SOC2ComplianceDashboard = () => {
       case 'confidentiality':
         return 'text-orange-400';
       case 'privacy':
-        return 'text-pink-400';
+        return 'text-[hsl(38_52%_55%)]';
       default:
         return 'text-gray-400';
     }
@@ -310,18 +310,18 @@ const SOC2ComplianceDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="evidence" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="evidence" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Evidence
           </TabsTrigger>
-          <TabsTrigger value="incidents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="incidents" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Incidents
           </TabsTrigger>
@@ -414,7 +414,7 @@ const SOC2ComplianceDashboard = () => {
                     placeholder="Search controls..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select

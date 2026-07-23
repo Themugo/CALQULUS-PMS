@@ -113,34 +113,34 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
     <div className="space-y-6">
       {/* Billing Tiers */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 border-blue-800/30">
+        <Card className="bg-gradient-to-br from-[hsl(214_73%_20%/0.5)] to-[hsl(218_58%_20%/0.5)] border-[hsl(214_73%_40%/0.3)]">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-400" />
+              <div className="h-10 w-10 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
+                <Users className="h-5 w-5 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
                 <CardTitle className="text-white text-lg">{billingConfig.registration.name}</CardTitle>
-                <CardDescription className="text-blue-300">{billingConfig.registration.description}</CardDescription>
+                <CardDescription className="text-[hsl(214_73%_65%)]">{billingConfig.registration.description}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-white">KES {billingConfig.registration.amount.toLocaleString()}</span>
-              <span className="text-blue-300">one-time</span>
+              <span className="text-[hsl(214_73%_65%)]">one-time</span>
             </div>
-            <div className="mt-3 text-xs text-blue-300 space-y-1">
+            <div className="mt-3 text-xs text-[hsl(214_73%_65%)] space-y-1">
               <p>• Required for new manager registration</p>
               <p>• Paid: {stats.registrationsPaid} / Pending: {stats.registrationsPending}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border-amber-400/12">
+        <Card className="bg-gradient-to-br from-[hsl(218_58%_16%/0.5)] to-indigo-900/50 border-amber-400/12">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
                 <Percent className="h-5 w-5 text-amber-500" />
               </div>
               <div>
@@ -167,7 +167,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-amber-500" />
               </div>
               <div>
@@ -209,8 +209,8 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Receipt className="h-6 w-6 text-blue-400" />
+              <div className="h-12 w-12 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
+                <Receipt className="h-6 w-6 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Pending Amount</p>
@@ -251,7 +251,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
             <div className="grid gap-4 md:grid-cols-2">
               {paymentSettings?.bank_name && (
                 <div className="p-4 bg-slate-700/50 rounded-lg flex items-start gap-3">
-                  <Building className="h-5 w-5 text-blue-400 mt-0.5" />
+                  <Building className="h-5 w-5 text-[hsl(214_73%_58%)] mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-white">{paymentSettings.bank_name}</p>
                     <p className="text-xs text-amber-400/70">{paymentSettings.bank_account_name}</p>

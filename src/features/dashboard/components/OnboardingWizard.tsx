@@ -77,7 +77,7 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
             <CardTitle className="text-base">Getting Started</CardTitle>
             <Badge variant="secondary" className="text-xs">{completedCount}/{steps.length}</Badge>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onDismiss}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onDismiss} aria-label="Dismiss">
             <X className="h-4 w-4" />
           </Button>
         </div>

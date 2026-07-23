@@ -15,10 +15,10 @@ interface SearchResult {
 }
 
 const typeConfig = {
-  property: { icon: Building2, color: "text-blue-500", label: "Property" },
+  property: { icon: Building2, color: "text-[hsl(214_73%_48%)]", label: "Property" },
   tenant: { icon: Users, color: "text-emerald-500", label: "Tenant" },
   invoice: { icon: CreditCard, color: "text-amber-500", label: "Invoice" },
-  lease: { icon: FileText, color: "text-purple-500", label: "Lease" },
+  lease: { icon: FileText, color: "text-[hsl(38_52%_42%)]", label: "Lease" },
   maintenance: { icon: Wrench, color: "text-red-500", label: "Maintenance" },
 };
 

@@ -8,6 +8,8 @@ import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import { Separator } from '@/shared/components/ui/separator';
+import { ProviderReviewsSection } from '@/features/services/components/ProviderReviewsSection';
 import {
   Search, Star, MapPin, Phone, CheckCircle, Clock,
   Zap, Wrench, Paintbrush, Droplets, Shield, Sparkles,
@@ -250,7 +252,7 @@ const ProviderCard: React.FC<{
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="font-semibold text-sm">{provider.business_name}</p>
                   {provider.is_verified && (
-                    <CheckCircle className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                    <CheckCircle className="h-3.5 w-3.5 text-[hsl(214_73%_48%)] shrink-0" />
                   )}
                   {!provider.is_available && (
                     <Badge variant="outline" className="text-xs text-slate-500">Unavailable</Badge>
@@ -317,7 +319,7 @@ const ProviderProfile: React.FC<{ provider: ServiceProviderItem; onSelect?: () =
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           {provider.business_name}
-          {provider.is_verified && <CheckCircle className="h-4 w-4 text-blue-500" />}
+          {provider.is_verified && <CheckCircle className="h-4 w-4 text-[hsl(214_73%_48%)]" />}
         </DialogTitle>
         <DialogDescription>
           {provider.town ? `${provider.town}, ` : ''}{provider.county}
@@ -386,6 +388,9 @@ const ProviderProfile: React.FC<{ provider: ServiceProviderItem; onSelect?: () =
             ))}
           </div>
         </div>
+
+        <Separator />
+        <ProviderReviewsSection providerId={provider.id} />
 
         {onSelect && (
           <Button className="w-full gap-2" onClick={onSelect}>

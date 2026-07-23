@@ -364,7 +364,7 @@ const LegalAuditDocumentation = () => {
       case 'policy':
         return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'contract':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><FileSignature className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><FileSignature className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'agreement':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Briefcase className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'certificate':
@@ -464,26 +464,26 @@ const LegalAuditDocumentation = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="requirements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="requirements" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Scale className="h-4 w-4 mr-2" />
             Requirements
           </TabsTrigger>
-          <TabsTrigger value="documents" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="documents" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Documents
           </TabsTrigger>
-          <TabsTrigger value="audit-trail" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="audit-trail" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Shield className="h-4 w-4 mr-2" />
             Audit Trail
           </TabsTrigger>
-          <TabsTrigger value="agreements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="agreements" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Briefcase className="h-4 w-4 mr-2" />
             Agreements
           </TabsTrigger>
-          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Legal Holds
           </TabsTrigger>
@@ -557,7 +557,7 @@ const LegalAuditDocumentation = () => {
                     placeholder="Search requirements..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select

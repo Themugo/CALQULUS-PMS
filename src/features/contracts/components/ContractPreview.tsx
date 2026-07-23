@@ -113,34 +113,34 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
       </div>
 
       {/* Contract Content */}
-      <div className="prose prose-sm max-w-none p-6 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-        <div className="whitespace-pre-wrap font-serif leading-relaxed text-blue-900 dark:text-blue-50">
+      <div className="prose prose-sm max-w-none p-6 bg-[hsl(214_73%_48%/0.06)] dark:bg-[hsl(214_73%_25%/0.2)] rounded-lg border border-[hsl(214_73%_48%/0.25)] dark:border-[hsl(214_73%_40%/0.3)]">
+        <div className="whitespace-pre-wrap font-serif leading-relaxed text-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_90%)]">
           {contract.content.split('\n').map((line, i) => {
             if (line.startsWith('# ')) {
-              return <h1 key={i} className="text-2xl font-bold mt-6 mb-4 text-blue-800 dark:text-white">{line.slice(2)}</h1>;
+              return <h1 key={i} className="text-2xl font-bold mt-6 mb-4 text-[hsl(214_73%_30%)] dark:text-white">{line.slice(2)}</h1>;
             }
             if (line.startsWith('## ')) {
-              return <h2 key={i} className="text-xl font-semibold mt-4 mb-2 text-blue-800 dark:text-white">{line.slice(3)}</h2>;
+              return <h2 key={i} className="text-xl font-semibold mt-4 mb-2 text-[hsl(214_73%_30%)] dark:text-white">{line.slice(3)}</h2>;
             }
             if (line.startsWith('### ')) {
-              return <h3 key={i} className="text-lg font-medium mt-3 mb-1 text-blue-700 dark:text-blue-100">{line.slice(4)}</h3>;
+              return <h3 key={i} className="text-lg font-medium mt-3 mb-1 text-[hsl(214_73%_38%)] dark:text-[hsl(214_73%_85%)]">{line.slice(4)}</h3>;
             }
             if (line.startsWith('**') && line.endsWith('**')) {
-              return <p key={i} className="font-bold text-blue-800 dark:text-white">{line.slice(2, -2)}</p>;
+              return <p key={i} className="font-bold text-[hsl(214_73%_30%)] dark:text-white">{line.slice(2, -2)}</p>;
             }
             if (line.startsWith('- ')) {
-              return <li key={i} className="ml-4 text-blue-900 dark:text-blue-50">{line.slice(2)}</li>;
+              return <li key={i} className="ml-4 text-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_90%)]">{line.slice(2)}</li>;
             }
             if (line === '---') {
-              return <hr key={i} className="my-4 border-blue-300 dark:border-blue-700" />;
+              return <hr key={i} className="my-4 border-[hsl(214_73%_48%/0.35)] dark:border-[hsl(214_73%_40%/0.4)]" />;
             }
             if (line.trim() === '') {
               return <br key={i} />;
             }
             // Handle inline bold - sanitize to prevent XSS
-            const boldProcessed = line.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-blue-800 dark:text-white">$1</strong>');
+            const boldProcessed = line.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-[hsl(214_73%_30%)] dark:text-white">$1</strong>');
             const sanitized = DOMPurify.sanitize(boldProcessed);
-            return <p key={i} className="text-blue-900 dark:text-blue-50" dangerouslySetInnerHTML={{ __html: sanitized }} />;
+            return <p key={i} className="text-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_90%)]" dangerouslySetInnerHTML={{ __html: sanitized }} />;
           })}
         </div>
       </div>

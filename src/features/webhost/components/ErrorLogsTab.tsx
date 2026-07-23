@@ -55,7 +55,7 @@ export default function ErrorLogsTab() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <Info className="h-8 w-8 text-blue-500" />
+            <Info className="h-8 w-8 text-[hsl(214_73%_48%)]" />
             <div>
               <div className="text-2xl font-bold">{logs.length}</div>
               <div className="text-sm text-muted-foreground">Total events</div>

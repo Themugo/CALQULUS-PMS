@@ -301,7 +301,7 @@ const OccupancyForecastingDashboard = () => {
         return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status.replace('_', ' ')}</Badge>;
       case 'stable':
       case 'unknown':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -310,7 +310,7 @@ const OccupancyForecastingDashboard = () => {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'apartment':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Building className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Building className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'house':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Home className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'commercial':
@@ -329,7 +329,7 @@ const OccupancyForecastingDashboard = () => {
       case 'risk':
         return <Badge variant="outline" className="text-red-300 border-red-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'trend':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><LineChart className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><LineChart className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -426,22 +426,22 @@ const OccupancyForecastingDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="forecasts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="forecasts" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <TrendingUp className="h-4 w-4 mr-2" />
             Forecasts
           </TabsTrigger>
-          <TabsTrigger value="seasonal" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="seasonal" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Calendar className="h-4 w-4 mr-2" />
             Seasonal
           </TabsTrigger>
-          <TabsTrigger value="leases" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="leases" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <CalendarDays className="h-4 w-4 mr-2" />
             Leases
           </TabsTrigger>
-          <TabsTrigger value="insights" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="insights" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Insights
           </TabsTrigger>
@@ -526,7 +526,7 @@ const OccupancyForecastingDashboard = () => {
                     placeholder="Search properties..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
@@ -751,7 +751,7 @@ const OccupancyForecastingDashboard = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           {getInsightBadge(insight.type)}
-                          <Badge className="bg-blue-500 text-white border-blue-600">
+                          <Badge className="bg-[hsl(214_73%_48%)] text-white border-[hsl(214_73%_40%)]">
                             {insight.confidence}% confidence
                           </Badge>
                         </div>

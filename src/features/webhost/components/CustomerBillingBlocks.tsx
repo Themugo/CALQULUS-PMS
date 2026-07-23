@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/shared/components/ui/badge';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useAuth } from '@/features/auth/AuthContext';
-import { DollarSign, Percent, Plus, Pencil, Tag, Shield, Ban } from 'lucide-react';
+import { DollarSign, Plus, Pencil, Tag, Shield, Ban } from 'lucide-react';
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
 
 interface CustomerBillingBlock {
@@ -56,7 +56,7 @@ const CustomerBillingBlocks = () => {
 
   const [form, setForm] = useState({
     customer_id: '',
-    customer_type: 'manager' as 'manager' | 'landlord',
+    customer_type: 'manager' as 'manager' | 'landlord' | 'agency',
     price_per_unit: '',
     unit_count_locked: false,
     registration_fee_waived: false,
@@ -245,11 +245,12 @@ const CustomerBillingBlocks = () => {
                   </div>
                   <div className="space-y-2">
                     <Label>Customer Type</Label>
-                    <Select value={form.customer_type} onValueChange={(v: 'manager' | 'landlord') => setForm(f => ({ ...f, customer_type: v }))}>
+                    <Select value={form.customer_type} onValueChange={(v: 'manager' | 'landlord' | 'agency') => setForm(f => ({ ...f, customer_type: v }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="manager">Manager</SelectItem>
                         <SelectItem value="landlord">Landlord</SelectItem>
+                        <SelectItem value="agency">Agency</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

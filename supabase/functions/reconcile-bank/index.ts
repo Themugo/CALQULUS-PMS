@@ -24,7 +24,7 @@ serve(async (req) => {
     // Single bank payment recording
     if (body.invoiceId) {
       const { invoiceId, amount, bankRef, paymentDate, managerId } = body;
-      if (!invoiceId || !amount || !bankRef) {
+      if (!invoiceId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !bankRef) {
         return new Response(JSON.stringify({ error: "invoiceId, amount, bankRef required" }),
           { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
       }

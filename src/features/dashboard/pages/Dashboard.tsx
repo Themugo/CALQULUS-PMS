@@ -54,12 +54,12 @@ interface DashboardStats {
 }
 
 const quickActions = [
-  { label: "Add Property",    icon: Building2,      href: "/properties",    accent: "text-blue-500",    bg: "bg-blue-500/10 border-blue-500/20" },
+  { label: "Add Property",    icon: Building2,      href: "/properties",    accent: "text-[hsl(214_73%_48%)]",    bg: "bg-[hsl(214_73%_48%/0.1)] border-[hsl(214_73%_48%/0.2)]" },
   { label: "Add Tenant",      icon: UserPlus,       href: "/tenants",       accent: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20" },
   { label: "New Invoice",     icon: CreditCard,     href: "/billing",       accent: "text-amber-500",   bg: "bg-amber-400/12 border-amber-400/25" },
-  { label: "Maintenance",     icon: Wrench,         href: "/maintenance",   accent: "text-violet-500",  bg: "bg-violet-500/10 border-violet-500/20" },
-  { label: "Water Billing",   icon: Droplets,       href: "/water-billing", accent: "text-cyan-500",    bg: "bg-cyan-500/10 border-cyan-500/20" },
-  { label: "Statements",      icon: FileSpreadsheet,href: "/statements",    accent: "text-rose-500",    bg: "bg-rose-500/10 border-rose-500/20" },
+  { label: "Maintenance",     icon: Wrench,         href: "/maintenance",   accent: "text-[hsl(38_52%_42%)]",  bg: "bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]" },
+  { label: "Water Billing",   icon: Droplets,       href: "/water-billing", accent: "text-[hsl(195_60%_42%)]",    bg: "bg-[hsl(195_60%_42%/0.1)] border-[hsl(195_60%_42%/0.2)]" },
+  { label: "Statements",      icon: FileSpreadsheet,href: "/statements",    accent: "text-[hsl(218_58%_40%)]",    bg: "bg-[hsl(218_58%_40%/0.1)] border-[hsl(218_58%_40%/0.2)]" },
 ];
 
 const Dashboard = () => {

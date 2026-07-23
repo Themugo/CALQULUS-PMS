@@ -68,6 +68,7 @@ import {
   Legend,
 } from "recharts";
 import RecordPaymentDialog from "@/features/payments/components/RecordPaymentDialog";
+import { BRAND_CHART_COLORS } from "@/shared/lib/chartColors";
 
 interface PaidInvoice {
   id: string;
@@ -675,7 +676,7 @@ const ManagerPaymentHistory = () => {
     });
   };
 
-  const CHART_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+  const CHART_COLORS = BRAND_CHART_COLORS;
 
   return (
     <Layout
@@ -816,7 +817,7 @@ const ManagerPaymentHistory = () => {
                               </p>
                             )}
                             {inv.installment_plan && (
-                              <Badge variant="outline" className="text-xs h-4 border-purple-300 text-purple-700 mt-0.5">
+                              <Badge variant="outline" className="text-xs h-4 border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] mt-0.5">
                                 Instalment plan
                               </Badge>
                             )}
@@ -937,8 +938,8 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in" style={{ animationDelay: "150ms" }}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-blue-500" />
+              <div className="h-12 w-12 rounded-xl bg-[hsl(214_73%_48%/0.1)] flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-[hsl(214_73%_48%)]" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">This Month</p>
@@ -1330,8 +1331,8 @@ const ManagerPaymentHistory = () => {
                         </>
                       ) : (
                         <>
-                          <CreditCard className="h-4 w-4 text-blue-500" />
-                          <span className="text-sm text-blue-400">Card/Other</span>
+                          <CreditCard className="h-4 w-4 text-[hsl(214_73%_48%)]" />
+                          <span className="text-sm text-[hsl(214_73%_55%)]">Card/Other</span>
                         </>
                       )}
                     </div>

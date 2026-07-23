@@ -369,7 +369,7 @@ const Reports: React.FC = () => {
                         <div key={p.name} className="flex items-center gap-3 text-sm">
                           <span className="text-muted-foreground w-5 text-right text-xs">{i + 1}.</span>
                           <span className="flex-1 truncate">{p.name}</span>
-                          <span className="font-semibold text-blue-600 dark:text-blue-400">{fmt(p.revenue)}</span>
+                          <span className="font-semibold text-[hsl(214_73%_45%)] dark:text-[hsl(214_73%_65%)]">{fmt(p.revenue)}</span>
                         </div>
                       ))}
                     </div>

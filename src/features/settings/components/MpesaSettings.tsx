@@ -373,18 +373,18 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
                 </div>
 
                 {/* Daraja API callback URL — shown so manager can configure Safaricom portal */}
-                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 space-y-2">
-                  <p className="text-xs font-semibold text-blue-900">Safaricom Daraja API Setup</p>
-                  <p className="text-xs text-blue-800">
+                <div className="p-3 rounded-lg bg-[hsl(214_73%_48%/0.06)] border border-[hsl(214_73%_48%/0.25)] space-y-2">
+                  <p className="text-xs font-semibold text-[hsl(214_73%_30%)]">Safaricom Daraja API Setup</p>
+                  <p className="text-xs text-[hsl(214_73%_32%)]">
                     Register this callback URL in your Safaricom Daraja portal so M-Pesa payments are automatically processed:
                   </p>
-                  <div className="flex items-center gap-2 bg-white rounded border border-blue-200 px-2 py-1.5">
-                    <code className="text-xs font-mono text-blue-900 flex-1 break-all">
+                  <div className="flex items-center gap-2 bg-white rounded border border-[hsl(214_73%_48%/0.25)] px-2 py-1.5">
+                    <code className="text-xs font-mono text-[hsl(214_73%_30%)] flex-1 break-all">
                       {`${mpesaCallbackUrl}?secret=YOUR_WEBHOOK_SECRET`}
                     </code>
                     <button
                       type="button"
-                      className="text-xs text-blue-600 hover:text-blue-800 shrink-0 font-medium"
+                      className="text-xs text-[hsl(214_73%_45%)] hover:text-[hsl(214_73%_32%)] shrink-0 font-medium"
                       onClick={() => {
                         navigator.clipboard.writeText(mpesaCallbackUrl);
                       }}
@@ -392,7 +392,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
                       Copy
                     </button>
                   </div>
-                  <p className="text-xs text-blue-700">
+                  <p className="text-xs text-[hsl(214_73%_38%)]">
                     Replace YOUR_WEBHOOK_SECRET with the MPESA_CALLBACK_SECRET in your Supabase Edge Function secrets.
                   </p>
                 </div>

@@ -112,10 +112,10 @@ export function PendingDepositRefunds() {
 
   const getMethodBadge = (method: string) => {
     const methods: Record<string, { label: string; className: string }> = {
-      bank_transfer: { label: "Bank", className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+      bank_transfer: { label: "Bank", className: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]" },
       mpesa: { label: "M-Pesa", className: "bg-green-500/10 text-green-600 border-green-500/20" },
       cash: { label: "Cash", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-      cheque: { label: "Cheque", className: "bg-purple-500/10 text-purple-600 border-amber-400/50/20" },
+      cheque: { label: "Cheque", className: "bg-[hsl(218_58%_38%/0.1)] text-[hsl(218_58%_38%)] border-[hsl(218_58%_38%/0.2)]" },
     };
     const m = methods[method] || { label: method, className: "bg-muted text-muted-foreground" };
     return <Badge variant="outline" className={m.className}>{m.label}</Badge>;
@@ -151,7 +151,7 @@ export function PendingDepositRefunds() {
             {pendingRefunds.length} refund{pendingRefunds.length !== 1 ? "s" : ""} awaiting action
           </CardDescription>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => refetch()}>
+        <Button variant="ghost" size="icon" onClick={() => refetch()} aria-label="Refresh">
           <RefreshCw className="h-4 w-4" />
         </Button>
       </CardHeader>

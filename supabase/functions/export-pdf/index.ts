@@ -2,7 +2,7 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
+import { requireEnv } from "../_shared/env.ts";
 // This function returns structured JSON data that the frontend
 // uses to generate PDFs client-side with jsPDF + autoTable.
 // Heavy PDF generation happens client-side to avoid timeout limits.
@@ -15,7 +15,59 @@ serve(async (req) => {
       requireEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
+    // ── Caller authentication ─────────────────────────────────────────
+    // Previously unauthenticated — any authenticated (or in some Supabase
+    // setups, unauthenticated) caller could pull full financial documents
+    // (receipts, invoices, tenant statements, property statements) for
+    // any managerId/tenantId/propertyId on the platform. This is a data
+    // leak (rent amounts, payment history, contact details) even though
+    // it doesn't write anything.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    if (authErr || !caller) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const { data: roleRow } = await supabase.from("user_roles")
+      .select("role").eq("user_id", caller.id).maybeSingle();
+    const callerRole = (roleRow as any)?.role;
+
+    let effectiveManagerId = caller.id;
+    if (callerRole === "submanager") {
+      const { data: rel } = await supabase.from("manager_submanagers")
+        .select("manager_id").eq("submanager_user_id", caller.id).maybeSingle();
+      effectiveManagerId = (rel as any)?.manager_id ?? caller.id;
+    }
+
     const { type, id, managerId, month, tenantId, propertyId } = await req.json();
+
+    // Authorize based on the resource being requested, per type.
+    const forbidden = () => new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
+
+    if (callerRole === "tenant") {
+      // Tenants may only pull their own statement.
+      if (type !== "statement" || tenantId !== caller.id) return forbidden();
+    } else if (["manager", "submanager"].includes(callerRole)) {
+      if (type === "statement" || type === "receipt" || type === "invoice") {
+        if (tenantId) {
+          const { data: tenantRow } = await supabase.from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
+          if (!tenantRow || (tenantRow as any).manager_id !== effectiveManagerId) return forbidden();
+        } else if (managerId && managerId !== effectiveManagerId) {
+          return forbidden();
+        }
+      }
+      if (type === "property_statement" && propertyId) {
+        const { data: propRow } = await supabase.from("properties").select("manager_id").eq("id", propertyId).maybeSingle();
+        if (!propRow || (propRow as any).manager_id !== effectiveManagerId) return forbidden();
+      }
+    } else if (callerRole !== "webhost") {
+      return forbidden();
+    }
 
     let data: any = {};
 
@@ -27,9 +79,9 @@ serve(async (req) => {
           .eq("id", id)
           .single();
         const { data: settings } = await supabase
-          .from("manager_settings")
-          .select("company_name, address, phone, email, receipt_footer, logo_url")
-          .eq("manager_id", managerId)
+          .from("company_settings")
+          .select("company_name, address, phone, email, logo_url")
+          .eq("manager_user_id", managerId)
           .maybeSingle();
         data = { type: "receipt", payment, settings };
         break;
@@ -41,9 +93,9 @@ serve(async (req) => {
           .eq("id", id)
           .single();
         const { data: settings } = await supabase
-          .from("manager_settings")
+          .from("company_settings")
           .select("company_name, address, phone, email, logo_url")
-          .eq("manager_id", managerId)
+          .eq("manager_user_id", managerId)
           .maybeSingle();
         data = { type: "invoice", invoice, settings };
         break;
@@ -60,9 +112,9 @@ serve(async (req) => {
           .eq("id", tenantId)
           .single();
         const { data: settings } = await supabase
-          .from("manager_settings")
+          .from("company_settings")
           .select("company_name, address, phone, email, logo_url")
-          .eq("manager_id", managerId)
+          .eq("manager_user_id", managerId)
           .maybeSingle();
         data = { type: "statement", invoices, tenant, settings };
         break;

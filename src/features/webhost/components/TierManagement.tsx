@@ -32,7 +32,7 @@ const TIER_DESCRIPTIONS: Record<string, string> = {
 
 const TIER_COLORS_FULL: Record<string, string> = {
   lite:       'border-slate-300 bg-slate-50',
-  pro:        'border-blue-300 bg-blue-50',
+  pro:        'border-[hsl(214_73%_48%/0.35)] bg-[hsl(214_73%_48%/0.06)]',
   enterprise: 'border-amber-300 bg-amber-50',
 };
 

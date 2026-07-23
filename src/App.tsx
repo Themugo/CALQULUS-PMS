@@ -162,7 +162,7 @@ const AppRoutes = () => {
 // ── App root ────────────────────────────────────────────────────────
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system">
+    <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <ErrorBoundary fallback={null}>
           <Toaster />

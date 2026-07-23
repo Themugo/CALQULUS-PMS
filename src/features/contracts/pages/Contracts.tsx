@@ -1242,7 +1242,7 @@ const Contracts = () => {
                   <div className="text-xs text-muted-foreground">Awaiting Manager</div>
                 </div>
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-500">
+                  <div className="text-2xl font-bold text-[hsl(214_73%_48%)]">
                     {contracts.filter(c => c.manager_signature && !c.tenant_signature && c.status === 'pending_signature').length}
                   </div>
                   <div className="text-xs text-muted-foreground">Awaiting Tenant</div>

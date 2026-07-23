@@ -41,6 +41,13 @@ serve(async (req) => {
     const { email, propertyId, unitId }: ClaimRequest = await req.json();
     if (!email) throw new Error("Missing required field: email");
 
+    if (propertyId) {
+      const { data: prop } = await supabase.from("properties").select("manager_id").eq("id", propertyId).maybeSingle();
+      if (!prop || (prop as any).manager_id !== user.id) {
+        throw new Error("Forbidden: property is not in your managed portfolio");
+      }
+    }
+
     // Find orphan tenant by email (manager_id IS NULL)
     const { data: tenant, error: tenantError } = await supabase
       .from("tenants")

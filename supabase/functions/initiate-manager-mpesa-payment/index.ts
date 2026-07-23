@@ -43,7 +43,7 @@ serve(async (req) => {
     const { invoiceId, amount, phoneNumber, description }: PaymentRequest = await req.json();
     logStep("Request data", { invoiceId, amount, phoneNumber, description });
 
-    if (!invoiceId || !amount || !phoneNumber) {
+    if (!invoiceId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !phoneNumber) {
       throw new Error("Invoice ID, amount, and phone number are required");
     }
 

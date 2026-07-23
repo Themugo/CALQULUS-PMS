@@ -47,18 +47,18 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Invoice related
   if (actionLower.includes("invoice created") || actionLower.includes("invoice generated")) {
-    return { icon: Receipt, iconBg: "bg-blue-500/10 text-blue-500", category: "Invoice" };
+    return { icon: Receipt, iconBg: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)]", category: "Invoice" };
   }
   if (actionLower.includes("invoice")) {
-    return { icon: FileText, iconBg: "bg-blue-500/10 text-blue-500", category: "Invoice" };
+    return { icon: FileText, iconBg: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)]", category: "Invoice" };
   }
   
   // Lease related
   if (actionLower.includes("lease created") || actionLower.includes("lease signed")) {
-    return { icon: Key, iconBg: "bg-violet-500/10 text-violet-500", category: "Lease" };
+    return { icon: Key, iconBg: "bg-[hsl(38_52%_42%/0.1)] text-[hsl(38_52%_42%)]", category: "Lease" };
   }
   if (actionLower.includes("lease")) {
-    return { icon: FileText, iconBg: "bg-violet-500/10 text-violet-500", category: "Lease" };
+    return { icon: FileText, iconBg: "bg-[hsl(38_52%_42%/0.1)] text-[hsl(38_52%_42%)]", category: "Lease" };
   }
   
   // Tenant related
@@ -77,10 +77,10 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Property related
   if (actionLower.includes("property")) {
-    return { icon: Building2, iconBg: "bg-indigo-500/10 text-indigo-500", category: "Property" };
+    return { icon: Building2, iconBg: "bg-[hsl(218_58%_40%/0.1)] text-[hsl(218_58%_40%)]", category: "Property" };
   }
   if (actionLower.includes("unit")) {
-    return { icon: Home, iconBg: "bg-indigo-500/10 text-indigo-500", category: "Property" };
+    return { icon: Home, iconBg: "bg-[hsl(218_58%_40%/0.1)] text-[hsl(218_58%_40%)]", category: "Property" };
   }
   
   // Maintenance related
@@ -98,7 +98,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Status updates
   if (actionLower.includes("updated") || actionLower.includes("renewed")) {
-    return { icon: RefreshCw, iconBg: "bg-cyan-500/10 text-cyan-500", category: "Update" };
+    return { icon: RefreshCw, iconBg: "bg-[hsl(195_60%_42%/0.1)] text-[hsl(195_60%_42%)]", category: "Update" };
   }
   
   return { icon: Clock, iconBg: "bg-muted text-muted-foreground", category: "Activity" };

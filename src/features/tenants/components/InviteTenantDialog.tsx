@@ -301,7 +301,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
                 {phone && (
                   <Button
                     variant="outline"
-                    className="w-full bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20 text-blue-700"
+                    className="w-full bg-[hsl(214_73%_48%/0.1)] border-[hsl(214_73%_48%/0.3)] hover:bg-[hsl(214_73%_48%/0.2)] text-[hsl(214_73%_35%)]"
                     onClick={handleSendSMS}
                     disabled={isSendingSms || smsSent}
                   >

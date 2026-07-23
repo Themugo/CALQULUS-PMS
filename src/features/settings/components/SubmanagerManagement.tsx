@@ -832,7 +832,7 @@ const SubmanagerManagement = () => {
                 <div className="space-y-3 border rounded-lg p-3">
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-blue-400 inline-block" />
+                      <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_58%)] inline-block" />
                       What they can view
                     </p>
                     {VIEW_PERMISSION_KEYS.map((key) => (
@@ -923,7 +923,7 @@ const SubmanagerManagement = () => {
               <div className="space-y-3 border rounded-lg p-3 max-h-72 overflow-y-auto">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-blue-400 inline-block" />
+                    <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_58%)] inline-block" />
                     What they can view
                   </p>
                   {VIEW_PERMISSION_KEYS.map((key) => (

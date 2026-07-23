@@ -101,7 +101,7 @@ const statusConfig: Record<ContractStatus, { label: string; styles: string; icon
   pending: { label: "Pending Review", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
   approved: { label: "Approved", styles: "bg-emerald-600 text-white border-emerald-700", icon: CheckCircle },
   rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
-  signed: { label: "Signed", styles: "bg-blue-600 text-white border-blue-700", icon: ShieldCheck },
+  signed: { label: "Signed", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: ShieldCheck },
   expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
   cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-border", icon: XCircle },
 };
@@ -566,10 +566,10 @@ const WebhostContracts = () => {
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-amber-400/70">Signed</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-blue-400" />
+            <ShieldCheck className="h-4 w-4 text-[hsl(214_73%_58%)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-400">{stats.signed}</div>
+            <div className="text-2xl font-bold text-[hsl(214_73%_58%)]">{stats.signed}</div>
           </CardContent>
         </Card>
         <Card className="bg-card border-amber-400/15">
@@ -586,10 +586,10 @@ const WebhostContracts = () => {
       {/* Tabs */}
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="all" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+          <TabsTrigger value="all" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900">
             All Contracts
           </TabsTrigger>
-          <TabsTrigger value="by-manager" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+          <TabsTrigger value="by-manager" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900">
             <Users className="h-4 w-4 mr-2" />
             By Manager
           </TabsTrigger>
@@ -692,7 +692,7 @@ const WebhostContracts = () => {
                               {format(new Date(contract.valid_until), "dd/MM/yy")}
                             </span>
                           ) : (
-                            <span className="text-purple-500">Not set</span>
+                            <span className="text-[hsl(218_58%_50%)]">Not set</span>
                           )}
                         </TableCell>
                         <TableCell className="text-amber-400/70">
@@ -707,7 +707,7 @@ const WebhostContracts = () => {
                                 setSelectedContract(contract);
                                 setPreviewDialogOpen(true);
                               }}
-                              className="h-8 w-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
+                              className="h-8 w-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -716,7 +716,7 @@ const WebhostContracts = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleDownloadContract(contract)}
-                                className="h-8 w-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
+                                className="h-8 w-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -793,7 +793,7 @@ const WebhostContracts = () => {
                     <div key={manager.id} className="border border-amber-400/30/30 rounded-lg overflow-hidden">
                       <div className="bg-slate-700/50 px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-purple-600/20 flex items-center justify-center">
+                          <div className="h-10 w-10 rounded-full bg-[hsl(218_58%_40%/0.2)] flex items-center justify-center">
                             <Building className="h-5 w-5 text-amber-500" />
                           </div>
                           <div>
@@ -802,7 +802,7 @@ const WebhostContracts = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className="bg-purple-600/20 text-amber-400/70 border-amber-400/20">
+                          <Badge className="bg-[hsl(218_58%_40%/0.2)] text-amber-400/70 border-amber-400/20">
                             {managerContracts.length} contract(s)
                           </Badge>
                           <div className="relative">
@@ -843,7 +843,7 @@ const WebhostContracts = () => {
                                         setSelectedContract(contract);
                                         setPreviewDialogOpen(true);
                                       }}
-                                      className="h-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
+                                      className="h-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                                     >
                                       <Eye className="h-3 w-3 mr-1" />
                                       View
@@ -853,7 +853,7 @@ const WebhostContracts = () => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleDownloadContract(contract)}
-                                        className="h-8 text-amber-500 hover:text-white hover:bg-purple-600/20"
+                                        className="h-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                                       >
                                         <Download className="h-3 w-3 mr-1" />
                                         Download
@@ -942,7 +942,7 @@ const WebhostContracts = () => {
 
               {/* AI Parsed Content Section */}
               {(parsedContent || selectedContract?.parsed_content) && (
-                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-purple-900/30 to-slate-800/50 border border-amber-400/20">
+                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-[hsl(218_58%_16%/0.3)] to-slate-800/50 border border-amber-400/20">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-white" />
                     <p className="text-sm font-medium text-white">AI Extracted Terms</p>
@@ -1018,7 +1018,7 @@ const WebhostContracts = () => {
                   variant="outline"
                   onClick={handleParseContract}
                   disabled={isParsing}
-                  className="border-amber-400/25 text-amber-500 hover:text-white hover:bg-purple-600/20"
+                  className="border-amber-400/25 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                 >
                   {isParsing ? (
                     <>
@@ -1224,7 +1224,7 @@ const WebhostContracts = () => {
               <div 
                 className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer
                   ${selectedFile 
-                    ? "border-amber-400/50 bg-purple-500/10" 
+                    ? "border-amber-400/50 bg-[hsl(218_58%_50%/0.1)]" 
                     : "border-amber-400/20 hover:border-amber-400/50/50 hover:bg-muted/30"
                   }`}
                 onClick={() => fileInputRef.current?.click()}
@@ -1262,7 +1262,7 @@ const WebhostContracts = () => {
                   <div className="text-amber-500">
                     <Upload className="h-8 w-8 mx-auto mb-2" />
                     <p className="font-medium text-sm">Click to upload</p>
-                    <p className="text-xs text-purple-500">PDF, JPEG, PNG, WebP (max 10MB)</p>
+                    <p className="text-xs text-[hsl(218_58%_50%)]">PDF, JPEG, PNG, WebP (max 10MB)</p>
                   </div>
                 )}
               </div>

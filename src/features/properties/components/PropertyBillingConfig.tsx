@@ -176,7 +176,7 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
           </div>
 
           {/* Charge-level override explanation */}
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800">
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-[hsl(214_73%_48%/0.06)] border border-[hsl(214_73%_48%/0.25)] text-xs text-[hsl(214_73%_35%)]">
             <Info className="h-4 w-4 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium mb-0.5">Per-charge overrides</p>

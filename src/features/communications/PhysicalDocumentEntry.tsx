@@ -66,7 +66,7 @@ function LineItemEditor({ lines, type, total, onUpdateLine, onRemoveLine, onAddL
           <Input value={l.label} onChange={e => onUpdateLine(type, i, 'label', e.target.value)} placeholder="Description" className="flex-1 h-8 text-sm" />
           <Input type="number" value={l.amount || ''} onChange={e => onUpdateLine(type, i, 'amount', Number(e.target.value))} placeholder="Amount" className="w-28 h-8 text-sm" />
           {lines.length > 1 && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => onRemoveLine(type, i)}>
+            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => onRemoveLine(type, i)} aria-label="Remove line">
               <X className="h-3.5 w-3.5" />
             </Button>
           )}

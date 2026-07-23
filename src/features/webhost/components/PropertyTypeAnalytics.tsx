@@ -82,7 +82,7 @@ const PropertyTypeAnalytics: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total properties',    value: String(totalProperties),    color: 'text-amber-500' },
-          { label: 'Total units',         value: String(totalUnits),         color: 'text-blue-400' },
+          { label: 'Total units',         value: String(totalUnits),         color: 'text-[hsl(214_73%_58%)]' },
           { label: 'Occupied units',      value: String(totalOccupied),      color: 'text-green-400' },
           { label: 'Platform occupancy',  value: `${occupancyRate}%`,         color: occupancyRate >= 75 ? 'text-green-400' : 'text-amber-400' },
         ].map(k => (
@@ -163,8 +163,8 @@ const PropertyTypeAnalytics: React.FC = () => {
                     labelStyle={{ color: '#e2e8f0' }}
                     itemStyle={{ color: '#94a3b8' }}
                   />
-                  <Bar dataKey="count" name="Properties" fill="#8b5cf6" radius={[0,3,3,0]}/>
-                  <Bar dataKey="units"  name="Units"      fill="#3b82f6" radius={[0,3,3,0]}/>
+                  <Bar dataKey="count" name="Properties" fill="#C9A84C" radius={[0,3,3,0]}/>
+                  <Bar dataKey="units"  name="Units"      fill="#1E6FD9" radius={[0,3,3,0]}/>
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -183,7 +183,7 @@ const PropertyTypeAnalytics: React.FC = () => {
             {Object.entries(byGroup).sort((a, b) => b[1].count - a[1].count).map(([group, stats]) => {
               const occ = stats.units > 0 ? Math.round((stats.occupied / stats.units) * 100) : 0;
               return (
-                <div key={group} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/40 border border-purple-800/20">
+                <div key={group} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/40 border border-[hsl(218_58%_24%/0.2)]">
                   <Badge variant="outline" className={`text-xs shrink-0 ${GROUP_COLORS[group]}`}>
                     {GROUP_LABELS[group]}
                   </Badge>

@@ -271,26 +271,26 @@ const LandlordAuth = () => {
         }} />
 
         <div className="relative z-10 flex flex-col h-full p-12">
-          {/* Logo */}
-          <div className="flex items-center gap-4 mb-16">
+          {/* Navbar strip */}
+          <div className="flex items-center gap-4 pb-8 mb-12 border-b border-white/10">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
             <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1">Property Management System</p>
+              <p className="font-heading font-bold text-xl text-gradient leading-none tracking-tight">CALQULUS</p>
+              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1.5">Property Management System</p>
             </div>
           </div>
 
           {/* Main headline */}
           <div className="flex-1 flex flex-col justify-center">
-            <p className="text-amber-400/70 text-sm font-semibold tracking-widest uppercase mb-4">Elevating Property Management</p>
-            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
+            <p className="text-amber-400/70 text-sm font-semibold tracking-[0.2em] uppercase mb-5">Elevating Property Management</p>
+            <h1 className="font-heading text-[3.4rem] font-bold leading-[1.08] tracking-tight mb-6">
               <span className="text-white">Manage smarter.</span>
               <br />
               <span className="text-gradient">Collect faster.</span>
               <br />
               <span className="text-white/70">Grow bigger.</span>
             </h1>
-            <p className="text-white/50 text-lg leading-relaxed max-w-md mb-12">
+            <p className="text-white/55 text-lg leading-relaxed max-w-md mb-12">
               The complete property management platform for East Africa — from single units to full portfolios.
             </p>
 
@@ -310,12 +310,13 @@ const LandlordAuth = () => {
             </div>
           </div>
 
-          {/* Bottom */}
-          <div className="flex items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-white/30 text-xs">calqulus.site</p>
-            <div className="flex gap-3">
+          {/* Footer strip */}
+          <div className="flex items-center justify-between gap-6 pt-8 mt-4 border-t border-white/10">
+            <p className="text-white/30 text-xs">© {new Date().getFullYear()} CALQULUS · calqulus.site</p>
+            <div className="flex gap-5">
               <a href="/tenant/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Tenant portal</a>
               <a href="/webhost/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Admin login</a>
+              <a href="/legal" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Legal</a>
             </div>
           </div>
         </div>
@@ -334,7 +335,7 @@ const LandlordAuth = () => {
           {/* Form card */}
           <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
             <div className="mb-6">
-              <h2 className="font-heading text-2xl font-bold text-white mb-1">Welcome back</h2>
+              <h2 className="font-heading text-[1.75rem] font-bold text-white tracking-tight mb-1.5">Welcome back</h2>
               <p className="text-white/50 text-sm">Sign in to your CALQULUS PMS account</p>
             </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  Settings, LogOut, User, ChevronDown, Menu, Moon, Sun,
+  Settings, LogOut, User, ChevronDown, Menu, Moon, Sun, Monitor, Check,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
@@ -27,7 +27,7 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isManager, isTenant, signOut } = useAuth();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [fullName, setFullName] = useState<string>("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -101,14 +101,34 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
         <GlobalSearch />
         <NotificationsDropdown />
 
-        {/* Dark mode toggle */}
-        <Button
-          variant="ghost" size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-foreground"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        >
-          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
+        {/* Theme picker */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost" size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+              title="Choose theme"
+            >
+              {resolvedTheme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel>Theme</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setTheme("light")} className="flex items-center justify-between">
+              <span className="flex items-center gap-2"><Sun className="h-4 w-4" /> Light</span>
+              {theme === "light" && <Check className="h-3.5 w-3.5" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")} className="flex items-center justify-between">
+              <span className="flex items-center gap-2"><Moon className="h-4 w-4" /> Dark</span>
+              {theme === "dark" && <Check className="h-3.5 w-3.5" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")} className="flex items-center justify-between">
+              <span className="flex items-center gap-2"><Monitor className="h-4 w-4" /> System</span>
+              {theme === "system" && <Check className="h-3.5 w-3.5" />}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -63,7 +63,7 @@ serve(async (req) => {
       { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }));
   }
 
-  if (!invoiceId || !amount) {
+  if (!invoiceId || typeof amount !== "number" || !isFinite(amount) || amount <= 0) {
     return withApiVersion(new Response(JSON.stringify({ error: "invoiceId and amount are required" }),
       { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }));
   }

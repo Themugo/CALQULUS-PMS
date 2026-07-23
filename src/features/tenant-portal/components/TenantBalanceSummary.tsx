@@ -121,10 +121,10 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">Credit balance</p>
-              <Gift className="h-4 w-4 text-purple-500" />
+              <Gift className="h-4 w-4 text-[hsl(214_73%_48%)]" />
             </div>
             {balLoading ? <Skeleton className="h-7 w-24" /> : (
-              <p className={`text-xl font-semibold ${creditBalance > 0 ? 'text-purple-700' : 'text-muted-foreground'}`}>
+              <p className={`text-xl font-semibold ${creditBalance > 0 ? 'text-[hsl(214_73%_40%)]' : 'text-muted-foreground'}`}>
                 {fmt(creditBalance)}
               </p>
             )}
@@ -138,7 +138,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">Total paid</p>
-              <TrendingUp className="h-4 w-4 text-blue-500" />
+              <TrendingUp className="h-4 w-4 text-[hsl(214_73%_48%)]" />
             </div>
             {balLoading ? <Skeleton className="h-7 w-24" /> : (
               <p className="text-xl font-semibold">{fmt(Number(balance?.total_paid ?? 0))}</p>
@@ -150,9 +150,9 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
 
       {/* Instalment plan (if active) */}
       {schedule && (
-        <Card className="border-purple-200 bg-purple-50/50">
+        <Card className="border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)]">
           <CardHeader className="pb-2 pt-4">
-            <CardTitle className="text-sm flex items-center gap-2 text-purple-900">
+            <CardTitle className="text-sm flex items-center gap-2 text-[hsl(214_73%_30%)]">
               <Clock className="h-4 w-4" />
               Instalment plan active
             </CardTitle>
@@ -160,26 +160,26 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="pb-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               <div>
-                <p className="text-xs text-purple-700">Total owed</p>
-                <p className="font-semibold text-purple-900">{fmt(schedule.total_owed)}</p>
+                <p className="text-xs text-[hsl(214_73%_40%)]">Total owed</p>
+                <p className="font-semibold text-[hsl(214_73%_30%)]">{fmt(schedule.total_owed)}</p>
               </div>
               <div>
-                <p className="text-xs text-purple-700">Total paid</p>
-                <p className="font-semibold text-purple-900">{fmt(schedule.total_paid)}</p>
+                <p className="text-xs text-[hsl(214_73%_40%)]">Total paid</p>
+                <p className="font-semibold text-[hsl(214_73%_30%)]">{fmt(schedule.total_paid)}</p>
               </div>
               <div>
-                <p className="text-xs text-purple-700">Instalments</p>
-                <p className="font-semibold text-purple-900">{schedule.paid_count}/{schedule.instalment_count}</p>
+                <p className="text-xs text-[hsl(214_73%_40%)]">Instalments</p>
+                <p className="font-semibold text-[hsl(214_73%_30%)]">{schedule.paid_count}/{schedule.instalment_count}</p>
               </div>
               <div>
-                <p className="text-xs text-purple-700">Next due</p>
-                <p className="font-semibold text-purple-900">
+                <p className="text-xs text-[hsl(214_73%_40%)]">Next due</p>
+                <p className="font-semibold text-[hsl(214_73%_30%)]">
                   {schedule.next_due_date ? format(new Date(schedule.next_due_date), 'dd MMM') : '—'}
                 </p>
               </div>
             </div>
             {schedule.notes && (
-              <p className="text-xs text-purple-700 mt-2">{schedule.notes}</p>
+              <p className="text-xs text-[hsl(214_73%_40%)] mt-2">{schedule.notes}</p>
             )}
           </CardContent>
         </Card>
@@ -216,7 +216,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
                           entry.entry_type === 'credit'
                             ? 'border-green-300 text-green-700 bg-green-50'
                             : entry.entry_type === 'refund'
-                              ? 'border-blue-300 text-blue-700 bg-blue-50'
+                              ? 'border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] bg-[hsl(214_73%_48%/0.08)]'
                               : 'border-amber-300 text-amber-700 bg-amber-50'
                         }
                       >

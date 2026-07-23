@@ -45,8 +45,8 @@ const METHODS = [
 
 const PAYER_COLORS: Record<string, string> = {
   self:          'bg-green-100 text-green-800 border-green-200',
-  employer:      'bg-blue-100 text-blue-800 border-blue-200',
-  parent:        'bg-blue-100 text-blue-800 border-blue-200',
+  employer:      'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
+  parent:        'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
   housing_assoc: 'bg-teal-100 text-teal-800 border-teal-200',
   guarantor:     'bg-amber-100 text-amber-800 border-amber-200',
   split:         'bg-orange-100 text-orange-800 border-orange-200',
@@ -355,7 +355,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
               <Input value={form.notes} onChange={f('notes')} placeholder="Any additional notes" className="mt-1" />
             </div>
 
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800">
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-[hsl(214_73%_48%/0.06)] border border-[hsl(214_73%_48%/0.25)] text-xs text-[hsl(214_73%_35%)]">
               <Info className="h-4 w-4 shrink-0 mt-0.5" />
               <span>When recording payments, you can specify which payer made the payment. Receipts will show the payer's name and organisation, not just the tenant's name.</span>
             </div>

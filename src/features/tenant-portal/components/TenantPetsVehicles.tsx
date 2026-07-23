@@ -216,7 +216,7 @@ const TenantPetsVehicles: React.FC = () => {
                   {vehicles.map((v: Tables<'tenant_vehicles'>) => (
                     <div key={v.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
-                        <Car className="h-5 w-5 text-blue-600" />
+                        <Car className="h-5 w-5 text-[hsl(214_73%_45%)]" />
                         <div>
                           <p className="text-sm font-semibold font-mono">{v.plate_number}</p>
                           <p className="text-xs text-muted-foreground">
@@ -275,7 +275,7 @@ const TenantPetsVehicles: React.FC = () => {
       <Dialog open={vehicleOpen} onOpenChange={setVehicleOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Car className="h-5 w-5 text-blue-600" />Register a vehicle</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Car className="h-5 w-5 text-[hsl(214_73%_45%)]" />Register a vehicle</DialogTitle>
             <DialogDescription>Your manager will review and assign a parking bay if available.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">

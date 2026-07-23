@@ -321,7 +321,7 @@ const FinancialPartners = () => {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'bank':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Building2 className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Building2 className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'microfinance':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Building2 className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'fintech':
@@ -424,19 +424,19 @@ const FinancialPartners = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="partners" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="partners" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Building2 className="h-4 w-4 mr-2" />
             Partners
           </TabsTrigger>
-          <TabsTrigger value="loans" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="loans" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Loan Applications
           </TabsTrigger>
-          <TabsTrigger value="payments" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="payments" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <CreditCard className="h-4 w-4 mr-2" />
             Payment Processing
           </TabsTrigger>
-          <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="performance" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Award className="h-4 w-4 mr-2" />
             Performance
           </TabsTrigger>
@@ -459,7 +459,7 @@ const FinancialPartners = () => {
                     placeholder="Search partners..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
@@ -484,7 +484,7 @@ const FinancialPartners = () => {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-white font-medium">{partner.name}</span>
                           {partner.verified && (
-                            <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Shield className="h-3 w-3 mr-1" />Verified</Badge>
+                            <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Verified</Badge>
                           )}
                         </div>
                         {getTypeBadge(partner.type)}

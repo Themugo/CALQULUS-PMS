@@ -30,6 +30,9 @@ verify_jwt = false
 [functions.send-contract-notification]
 verify_jwt = true
 
+[functions.send-tenant-notice]
+verify_jwt = true
+
 [functions.send-monthly-report]
 verify_jwt = false
 
@@ -249,5 +252,5 @@ verify_jwt = false
 [functions.send-payment-reminders]
 verify_jwt = false
 
-[functions.send-tenant-invite]
+[functions.auto-send-rent-report]
 verify_jwt = true

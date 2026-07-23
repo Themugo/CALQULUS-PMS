@@ -120,12 +120,12 @@ const TenantPaymentSchedule: React.FC = () => {
         const daysUntil = nextDue ? differenceInDays(nextDue, new Date()) : null;
 
         return (
-          <Card key={schedule.id} className={`border-2 ${schedule.status === 'defaulted' ? 'border-red-300' : 'border-purple-200'}`}>
+          <Card key={schedule.id} className={`border-2 ${schedule.status === 'defaulted' ? 'border-red-300' : 'border-[hsl(214_73%_48%/0.3)]'}`}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-purple-600" />
+                    <TrendingDown className="h-4 w-4 text-[hsl(214_73%_45%)]" />
                     Instalment plan
                   </CardTitle>
                   {schedule.notes && (
@@ -133,7 +133,7 @@ const TenantPaymentSchedule: React.FC = () => {
                   )}
                 </div>
                 <Badge className={`text-xs capitalize ${
-                  schedule.status === 'active'    ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                  schedule.status === 'active'    ? 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]' :
                   schedule.status === 'completed' ? 'bg-green-100 text-green-800 border-green-200' :
                   schedule.status === 'defaulted' ? 'bg-red-100 text-red-800 border-red-200' : ''
                 }`}>

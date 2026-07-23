@@ -27,7 +27,7 @@ const STATUS_COLORS: Record<string, string> = {
   overdue:   'bg-red-100 text-red-800 border-red-200',
   completed: 'bg-green-100 text-green-800 border-green-200',
   open:      'bg-amber-100 text-amber-800 border-amber-200',
-  in_progress: 'bg-blue-100 text-blue-800 border-blue-200',
+  in_progress: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
 };
 
 interface TenancyRecord {
@@ -302,10 +302,10 @@ const TenantPortableHistory: React.FC = () => {
                 <Card key={c.id} className={c.archived_at ? 'opacity-75' : ''}>
                   <CardContent className="p-4 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${c.archived_at ? 'bg-slate-100' : 'bg-blue-50'}`}>
+                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${c.archived_at ? 'bg-slate-100' : 'bg-[hsl(214_73%_48%/0.08)]'}`}>
                         {c.archived_at
                           ? <Archive className="h-4 w-4 text-slate-500" />
-                          : <FileSignature className="h-4 w-4 text-blue-600" />
+                          : <FileSignature className="h-4 w-4 text-[hsl(214_73%_45%)]" />
                         }
                       </div>
                       <div>

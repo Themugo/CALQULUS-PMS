@@ -281,7 +281,7 @@ const DataRetentionManagement = () => {
         return <Badge className="bg-gray-100 text-gray-800 border-gray-300">{status}</Badge>;
       case 'released':
       case 'expired':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300">{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]">{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -294,7 +294,7 @@ const DataRetentionManagement = () => {
       case 'secure_delete':
         return <Badge variant="outline" className="text-red-300 border-red-700"><Shield className="h-3 w-3 mr-1" />Secure Delete</Badge>;
       case 'archive':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Archive className="h-3 w-3 mr-1" />Archive</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Archive className="h-3 w-3 mr-1" />Archive</Badge>;
       case 'anonymize':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Lock className="h-3 w-3 mr-1" />Anonymize</Badge>;
       default:
@@ -407,19 +407,19 @@ const DataRetentionManagement = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="policies" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="policies" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Policies
           </TabsTrigger>
-          <TabsTrigger value="records" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="records" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Database className="h-4 w-4 mr-2" />
             Records
           </TabsTrigger>
-          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="legal-holds" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Lock className="h-4 w-4 mr-2" />
             Legal Holds
           </TabsTrigger>
-          <TabsTrigger value="disposal" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="disposal" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Trash2 className="h-4 w-4 mr-2" />
             Disposal Log
           </TabsTrigger>
@@ -442,7 +442,7 @@ const DataRetentionManagement = () => {
                     placeholder="Search policies..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select

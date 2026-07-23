@@ -69,7 +69,7 @@ const fmt = (n: number) =>
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  approved: 'bg-blue-100 text-blue-700 border-blue-200',
+  approved: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   paid: 'bg-green-100 text-green-700 border-green-200',
   rejected: 'bg-red-100 text-red-700 border-red-200',
 };
@@ -430,7 +430,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-7 text-xs border-blue-300 text-blue-700 hover:bg-blue-50"
+                            className="h-7 text-xs border-[hsl(214_73%_48%/0.35)] text-[hsl(214_73%_35%)] hover:bg-[hsl(214_73%_48%/0.06)]"
                             onClick={() => {
                               setPayDialogOpen(payout.id);
                               setMgmtFeePct('');

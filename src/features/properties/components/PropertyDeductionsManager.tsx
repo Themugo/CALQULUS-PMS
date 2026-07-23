@@ -225,7 +225,7 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
                       <Switch checked={d.is_active} onCheckedChange={() => handleToggleActive("property_deductions", d.id, d.is_active)} />
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteDeduction(d.id)}>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteDeduction(d.id)} aria-label="Delete deduction">
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
@@ -272,7 +272,7 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
                       <Switch checked={a.is_active} onCheckedChange={() => handleToggleActive("property_amenity_charges", a.id, a.is_active)} />
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteAmenity(a.id)}>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteAmenity(a.id)} aria-label="Delete amenity">
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

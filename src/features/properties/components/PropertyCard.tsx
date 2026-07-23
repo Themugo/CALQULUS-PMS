@@ -107,7 +107,7 @@ export const PropertyCard = ({
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" aria-label="Expand property details">
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

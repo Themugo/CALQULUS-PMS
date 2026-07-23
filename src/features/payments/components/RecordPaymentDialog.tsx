@@ -256,7 +256,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
               />
               {enteredAmount > 0 && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  {isOverpayment && <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">Advance</Badge>}
+                  {isOverpayment && <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)] text-xs">Advance</Badge>}
                   {isPartial && <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">Partial</Badge>}
                   {isExact && <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">Exact</Badge>}
                 </div>
@@ -353,12 +353,12 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
 
           {/* Advance credit notice */}
           {isOverpayment && (
-            <div className="p-3 rounded-lg border border-purple-200 bg-purple-50/50">
+            <div className="p-3 rounded-lg border border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)]">
               <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
+                <Info className="h-4 w-4 text-[hsl(214_73%_45%)] shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-purple-900">Advance payment detected</p>
-                  <p className="text-xs text-purple-700 mt-0.5">
+                  <p className="text-sm font-medium text-[hsl(214_73%_30%)]">Advance payment detected</p>
+                  <p className="text-xs text-[hsl(214_73%_40%)] mt-0.5">
                     {fmt(enteredAmount - targetBalance)} will be held as credit and automatically applied to the next invoice.
                   </p>
                 </div>

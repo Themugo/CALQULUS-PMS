@@ -202,7 +202,7 @@ const WebhostOverview = () => {
             </div>
           )}
           {(stats?.pendingPayouts ?? 0) > 0 && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 text-xs font-medium">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.08)] dark:border-[hsl(214_73%_48%/0.3)] dark:bg-[hsl(214_73%_30%/0.15)] text-[hsl(214_73%_38%)] dark:text-[hsl(214_73%_65%)] text-xs font-medium">
               <Receipt className="h-3.5 w-3.5" />
               {stats!.pendingPayouts} payout request{stats!.pendingPayouts !== 1 ? 's' : ''} pending
             </div>
@@ -235,7 +235,7 @@ const WebhostOverview = () => {
             badge={stats?.overdueManagerInvoices ? { label: 'Overdue', variant: 'destructive' } : undefined} />
           <WebhostStatCard label="Pending payouts" value={stats?.pendingPayouts ?? 0}
             icon={Receipt} loading={isLoading}
-            color={stats?.pendingPayouts ? 'text-blue-600' : undefined}
+            color={stats?.pendingPayouts ? 'text-[hsl(214_73%_45%)]' : undefined}
             badge={stats?.pendingPayouts ? { label: 'Review', variant: 'secondary' } : undefined} />
         </div>
       </div>
@@ -313,12 +313,12 @@ const WebhostOverview = () => {
       </Card>
 
       {/* Access policy notice */}
-      <Card className="border-blue-200/60 bg-blue-50/30 dark:border-blue-900/30 dark:bg-blue-950/10">
+      <Card className="border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)] dark:border-[hsl(214_73%_48%/0.25)] dark:bg-[hsl(214_73%_25%/0.15)]">
         <CardContent className="p-4 flex items-start gap-3">
-          <Shield className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+          <Shield className="h-4 w-4 text-[hsl(214_73%_48%)] shrink-0 mt-0.5" />
           <div>
-            <p className="text-xs font-semibold text-blue-800 dark:text-blue-300">Platform access policy</p>
-            <p className="text-xs text-blue-700/70 dark:text-blue-400/70 mt-1 leading-relaxed">
+            <p className="text-xs font-semibold text-[hsl(214_73%_35%)] dark:text-[hsl(214_73%_70%)]">Platform access policy</p>
+            <p className="text-xs text-[hsl(214_73%_35%/0.7)] dark:text-[hsl(214_73%_70%/0.7)] mt-1 leading-relaxed">
               Webhost admins have zero access to tenant data, rent payments, or tenant personal information.
               Stats above show only platform-level subscription billing — not rent collected from tenants.
             </p>

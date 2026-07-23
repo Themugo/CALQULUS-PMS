@@ -216,11 +216,11 @@ const FraudDetectionAlerts = () => {
       case 'investigating':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'detected':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'confirmed':
         return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'monitoring':
-        return <Badge className="bg-amber-400/15 text-amber-700 border-blue-200"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'active':
         return <Badge className="bg-orange-100 text-orange-800 border-orange-300"><AlertCircle className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
@@ -250,7 +250,7 @@ const FraudDetectionAlerts = () => {
       case 'identity':
         return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><User className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'rental':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Building className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Building className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'application':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'maintenance':
@@ -269,7 +269,7 @@ const FraudDetectionAlerts = () => {
       case 'decreasing':
         return <TrendingUp className="h-4 w-4 text-green-400 rotate-180" />;
       case 'stable':
-        return <Activity className="h-4 w-4 text-blue-400" />;
+        return <Activity className="h-4 w-4 text-[hsl(214_73%_58%)]" />;
       default:
         return null;
     }
@@ -366,18 +366,18 @@ const FraudDetectionAlerts = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="alerts" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Alerts
           </TabsTrigger>
-          <TabsTrigger value="patterns" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="patterns" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Patterns
           </TabsTrigger>
-          <TabsTrigger value="statistics" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="statistics" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <TrendingUp className="h-4 w-4 mr-2" />
             Statistics
           </TabsTrigger>
@@ -456,7 +456,7 @@ const FraudDetectionAlerts = () => {
                     placeholder="Search alerts..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
@@ -637,7 +637,7 @@ const FraudDetectionAlerts = () => {
                         <div className="text-xs text-amber-400/70">Medium</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-blue-400">{stat.low}</div>
+                        <div className="text-2xl font-bold text-[hsl(214_73%_58%)]">{stat.low}</div>
                         <div className="text-xs text-amber-400/70">Low</div>
                       </div>
                       <div>

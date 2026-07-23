@@ -98,9 +98,9 @@ interface EventIconConfig {
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-green-100 text-green-800 border-green-200',
   archived: 'bg-slate-100 text-slate-700 border-slate-200',
-  transferred: 'bg-blue-100 text-blue-800 border-blue-200',
+  transferred: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   open: 'bg-amber-100 text-amber-800 border-amber-200',
-  in_progress: 'bg-blue-100 text-blue-800 border-blue-200',
+  in_progress: 'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
   completed: 'bg-green-100 text-green-800 border-green-200',
   cancelled: 'bg-slate-100 text-slate-600 border-slate-200',
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -108,7 +108,7 @@ const STATUS_COLORS: Record<string, string> = {
   draft: 'bg-slate-100 text-slate-600 border-slate-200',
   expired: 'bg-red-100 text-red-700 border-red-200',
   terminated: 'bg-red-100 text-red-700 border-red-200',
-  acknowledged: 'bg-blue-100 text-blue-800 border-blue-200',
+  acknowledged: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   approved: 'bg-green-100 text-green-800 border-green-200',
 };
 
@@ -200,12 +200,12 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
     maintenance_raised:    { icon: Wrench,        color: 'text-amber-600',  bg: 'bg-amber-50' },
     maintenance_resolved:  { icon: CheckCircle,   color: 'text-green-600',  bg: 'bg-green-50' },
     notice_submitted:      { icon: CalendarX,     color: 'text-orange-600', bg: 'bg-orange-50' },
-    lease_created:         { icon: FileSignature, color: 'text-blue-600',   bg: 'bg-blue-50'  },
+    lease_created:         { icon: FileSignature, color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]'  },
     lease_signed:          { icon: CheckCircle,   color: 'text-green-600',  bg: 'bg-green-50' },
     contract_signed:       { icon: CheckCircle,   color: 'text-green-600',  bg: 'bg-green-50' },
     payment_recorded:      { icon: TrendingUp,    color: 'text-green-600',  bg: 'bg-green-50' },
-    deposit_received:      { icon: TrendingUp,    color: 'text-purple-600', bg: 'bg-purple-50' },
-    deposit_refunded:      { icon: Activity,      color: 'text-blue-600',   bg: 'bg-blue-50'  },
+    deposit_received:      { icon: TrendingUp,    color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]' },
+    deposit_refunded:      { icon: Activity,      color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]'  },
   };
 
   return (

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Progress } from "@/shared/components/ui/progress";
+import { BRAND_CHART_COLORS } from "@/shared/lib/chartColors";
 import {
   Collapsible,
   CollapsibleContent,
@@ -48,16 +49,7 @@ interface MaintenanceBudgetDashboardProps {
   requests: MaintenanceRequest[];
 }
 
-const COLORS = [
-  "hsl(221, 83%, 53%)", // Blue
-  "hsl(142, 71%, 45%)", // Green
-  "hsl(45, 93%, 47%)", // Yellow
-  "hsl(0, 84%, 60%)", // Red
-  "hsl(280, 67%, 51%)", // Purple
-  "hsl(199, 89%, 48%)", // Cyan
-  "hsl(24, 95%, 53%)", // Orange
-  "hsl(330, 81%, 60%)", // Pink
-];
+const COLORS = BRAND_CHART_COLORS;
 
 export function MaintenanceBudgetDashboard({
   requests,
@@ -154,7 +146,7 @@ export function MaintenanceBudgetDashboard({
                     {spentPercentage}% utilized
                   </Badge>
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label={isOpen ? "Collapse" : "Expand"}>
                   {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
               </div>

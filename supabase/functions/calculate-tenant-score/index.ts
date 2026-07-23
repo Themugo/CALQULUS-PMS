@@ -1,11 +1,9 @@
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-// NOTE: This function requires the following tables/columns that are NOT yet in the schema:
-// - tenants.credit_score (column)
-// Run the migration to add these before deploying this function.
+import { requireEnv } from "../_shared/env.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
@@ -16,6 +14,31 @@ serve(async (req) => {
   );
 
   try {
+    // ── Caller authentication ─────────────────────────────────────────
+    // Previously unauthenticated — this read a tenant's entire payment
+    // history (a data leak on its own) and wrote credit_score for any
+    // tenantId supplied. Only the tenant themselves, their manager, or
+    // a webhost admin may trigger a recalculation.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    if (authErr || !caller) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const { data: roleRow } = await supabase.from("user_roles")
+      .select("role").eq("user_id", caller.id).maybeSingle();
+    const callerRole = (roleRow as any)?.role;
+    if (!["tenant", "manager", "submanager", "webhost"].includes(callerRole)) {
+      return new Response(JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const allowed = await checkRateLimit(supabase, caller.id, "calculate-tenant-score", 30, { failClosed: true });
+    if (!allowed) return rateLimitResponse(req);
+
     const { tenantId } = await req.json();
 
     if (!tenantId) {
@@ -23,6 +46,26 @@ serve(async (req) => {
         status: 400,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
+    }
+
+    if (callerRole === "tenant" && tenantId !== caller.id) {
+      return new Response(JSON.stringify({ error: "Forbidden: you can only view your own score" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    if (["manager", "submanager"].includes(callerRole)) {
+      let effectiveManagerId = caller.id;
+      if (callerRole === "submanager") {
+        const { data: rel } = await supabase.from("manager_submanagers")
+          .select("manager_id").eq("submanager_user_id", caller.id).maybeSingle();
+        effectiveManagerId = (rel as any)?.manager_id ?? caller.id;
+      }
+      const { data: tenantOwner } = await supabase.from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
+      if (!tenantOwner || (tenantOwner as any).manager_id !== effectiveManagerId) {
+        return new Response(JSON.stringify({ error: "Forbidden: tenant is not in your managed portfolio" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Fetch payment history

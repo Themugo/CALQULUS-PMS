@@ -228,7 +228,7 @@ export function UpcomingPayments() {
                     </Badge>
                   )}
                   {payment.status === "upcoming" && (
-                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-blue-500/20 text-blue-600 border-blue-500/30">
+                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-[hsl(214_73%_48%/0.15)] text-[hsl(214_73%_42%)] border-[hsl(214_73%_48%/0.3)]">
                       {payment.daysUntilDue}d
                     </Badge>
                   )}

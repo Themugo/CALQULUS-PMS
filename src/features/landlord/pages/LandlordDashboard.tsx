@@ -65,7 +65,7 @@ const fmt = (n: number, currency = 'KES') =>
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  approved: 'bg-blue-100 text-blue-800 border-blue-200',
+  approved: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   paid: 'bg-green-100 text-green-800 border-green-200',
   rejected: 'bg-red-100 text-red-800 border-red-200',
 };
@@ -275,9 +275,15 @@ const LandlordDashboard = () => {
               value: propertiesLoading ? '—' : String(properties.length),
               sub: propertiesLoading ? '' : `${totalUnits} total units`,
               icon: Building2,
+<<<<<<< HEAD
               iconBg: 'bg-gradient-to-br from-blue-600/15 to-blue-600/5 border-blue-500/20',
               iconColor: 'text-blue-500',
               accent: 'via-blue-500/60',
+=======
+              iconBg: 'bg-gradient-to-br from-[hsl(214_73%_48%/0.15)] to-[hsl(214_73%_48%/0.05)] border-[hsl(214_73%_48%/0.2)]',
+              iconColor: 'text-[hsl(214_73%_48%)]',
+              accent: 'via-[hsl(214_73%_48%/0.6)]',
+>>>>>>> 8963edc (Frontend stability improvements and feature updates)
               progress: undefined as number | undefined,
             },
             {
@@ -305,9 +311,15 @@ const LandlordDashboard = () => {
               value: payoutsLoading ? '—' : fmt(totalPaid),
               sub: payoutsLoading ? '' : `${pendingPayouts} request${pendingPayouts !== 1 ? 's' : ''} pending`,
               icon: Banknote,
+<<<<<<< HEAD
               iconBg: 'bg-gradient-to-br from-violet-500/15 to-violet-500/5 border-violet-500/20',
               iconColor: 'text-violet-500',
               accent: 'via-violet-500/60',
+=======
+              iconBg: 'bg-gradient-to-br from-[hsl(38_52%_42%/0.15)] to-[hsl(38_52%_42%/0.05)] border-[hsl(38_52%_42%/0.2)]',
+              iconColor: 'text-[hsl(38_52%_42%)]',
+              accent: 'via-[hsl(38_52%_42%/0.6)]',
+>>>>>>> 8963edc (Frontend stability improvements and feature updates)
               progress: undefined,
             },
           ].map(stat => (

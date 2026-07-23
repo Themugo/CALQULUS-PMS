@@ -47,7 +47,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   draft: { label: "Draft", variant: "outline", icon: Clock, color: "text-muted-foreground", badgeClass: "bg-slate-600 text-white border-slate-700" },
   pending_signature: { label: "Awaiting Signature", variant: "secondary", icon: PenTool, color: "text-amber-500", badgeClass: "bg-amber-500 text-white border-amber-600" },
   signed: { label: "Signed", variant: "default", icon: CheckCircle, color: "text-emerald-500", badgeClass: "bg-emerald-600 text-white border-emerald-700" },
-  active: { label: "Active", variant: "default", icon: CheckCircle, color: "text-blue-500", badgeClass: "bg-blue-600 text-white border-blue-700" },
+  active: { label: "Active", variant: "default", icon: CheckCircle, color: "text-[hsl(214_73%_48%)]", badgeClass: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]" },
   expired: { label: "Expired", variant: "destructive", icon: AlertCircle, color: "text-red-500", badgeClass: "bg-red-600 text-white border-red-700" },
 };
 

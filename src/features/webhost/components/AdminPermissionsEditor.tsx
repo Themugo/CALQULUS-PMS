@@ -118,7 +118,7 @@ const AdminPermissionsEditor: React.FC<AdminPermissionsEditorProps> = ({
             )}
             <SelectItem value="admin">
               <div className="flex items-center gap-2">
-                <Shield className="h-3.5 w-3.5 text-blue-600" />
+                <Shield className="h-3.5 w-3.5 text-[hsl(214_73%_45%)]" />
                 Admin — broad management access
               </div>
             </SelectItem>
@@ -151,7 +151,7 @@ const AdminPermissionsEditor: React.FC<AdminPermissionsEditorProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{label}</span>
                   {isForced && (
-                    <Badge variant="outline" className="text-xs h-4 px-1 border-blue-300 text-blue-600">
+                    <Badge variant="outline" className="text-xs h-4 px-1 border-[hsl(214_73%_48%/0.35)] text-[hsl(214_73%_45%)]">
                       auto
                     </Badge>
                   )}

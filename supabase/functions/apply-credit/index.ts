@@ -56,8 +56,22 @@ serve(async (req: Request): Promise<Response> => {
       }
       const { data: roleRow } = await supabase.from("user_roles")
         .select("role").eq("user_id", caller.id).maybeSingle();
-      if (!["manager", "submanager"].includes((roleRow as any)?.role)) {
+      const callerRole = (roleRow as any)?.role;
+      if (!["manager", "submanager"].includes(callerRole)) {
         return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+
+      let effectiveManagerId = caller.id;
+      if (callerRole === "submanager") {
+        const { data: rel } = await supabase.from("manager_submanagers")
+          .select("manager_id").eq("submanager_user_id", caller.id).maybeSingle();
+        effectiveManagerId = (rel as any)?.manager_id ?? caller.id;
+      }
+      const { data: tenantOwner } = await supabase.from("tenants").select("manager_id").eq("id", tenant_id).maybeSingle();
+      if (!tenantOwner || (tenantOwner as any).manager_id !== effectiveManagerId) {
+        return new Response(JSON.stringify({ error: "Forbidden: tenant is not in your managed portfolio" }), {
           status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }

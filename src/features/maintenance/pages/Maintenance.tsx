@@ -94,14 +94,14 @@ interface Unit {
 
 const statusColors: Record<RequestStatus, string> = {
   open: "bg-amber-500 text-white border-amber-600",
-  in_progress: "bg-blue-600 text-white border-blue-700",
+  in_progress: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]",
   completed: "bg-emerald-600 text-white border-emerald-700",
   cancelled: "bg-slate-600 text-white border-slate-700",
 };
 
 const priorityColors: Record<RequestPriority, string> = {
   low: "bg-slate-500 text-white border-slate-600",
-  medium: "bg-blue-500 text-white border-blue-600",
+  medium: "bg-[hsl(214_73%_48%)] text-white border-[hsl(214_73%_40%)]",
   high: "bg-orange-500 text-white border-orange-600",
   urgent: "bg-red-600 text-white border-red-700",
 };
@@ -403,8 +403,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500/10">
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-[hsl(214_73%_48%/0.1)]">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(214_73%_48%)]" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">In Progress</p>
@@ -722,7 +722,7 @@ export default function Maintenance() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
+                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                         </TableCell>
@@ -828,7 +828,7 @@ export default function Maintenance() {
                           <Badge variant="outline" className={priorityColors[request.priority]}>
                             {request.priority} priority
                           </Badge>
-                          <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
+                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                           <Badge variant="outline" className="bg-slate-500/10 text-slate-300 border-slate-500/30">

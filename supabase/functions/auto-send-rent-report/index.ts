@@ -296,9 +296,15 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         // Fetch company name
         const { data: settings } = await supabase
+<<<<<<< HEAD
           .from("manager_settings")
           .select("company_name")
           .eq("manager_id", schedule.manager_id)
+=======
+          .from("company_settings")
+          .select("company_name")
+          .eq("manager_user_id", schedule.manager_id)
+>>>>>>> 8963edc (Frontend stability improvements and feature updates)
           .maybeSingle();
         const companyName = settings?.company_name ?? "CALQULUS PMS";
 

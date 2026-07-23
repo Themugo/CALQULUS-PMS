@@ -477,7 +477,7 @@ const WebhostManagement = () => {
             </TableHeader>
             <TableBody>
               {webhosts.map((webhost) => (
-                <TableRow key={webhost.id} className="border-amber-400/12 hover:bg-purple-900/20">
+                <TableRow key={webhost.id} className="border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)]">
                   <TableCell className="text-white font-medium">
                     <div className="flex items-center gap-2">
                       {webhost.permissions?.admin_level === 'super_admin' ? (
@@ -518,7 +518,7 @@ const WebhostManagement = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEditPermissions(webhost)}
-                          className="text-amber-500 hover:text-amber-400/70 hover:bg-purple-900/20"
+                          className="text-amber-500 hover:text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.2)]"
                           title="Edit permissions"
                         >
                           <Settings className="h-4 w-4" />

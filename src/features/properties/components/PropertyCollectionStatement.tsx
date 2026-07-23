@@ -407,7 +407,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
           {[
             { label: 'Rent payable', value: totals.rent_payable, color: 'text-foreground' },
             { label: 'Rent collected', value: totals.rent_paid, color: 'text-green-700' },
-            { label: 'Water collected', value: totals.water_paid, color: 'text-cyan-700' },
+            { label: 'Water collected', value: totals.water_paid, color: 'text-[hsl(195_60%_32%)]' },
             {
               label: 'Total outstanding',
               value: totals.bal,

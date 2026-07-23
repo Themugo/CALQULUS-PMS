@@ -156,10 +156,10 @@ const ManagerBillingDrilldown: React.FC = () => {
       ) : (
         <div className="space-y-1.5">
           {filtered.map(m => (
-            <div key={m.user_id} className="rounded-xl border border-purple-800/20 bg-muted/20 overflow-hidden">
+            <div key={m.user_id} className="rounded-xl border border-[hsl(218_58%_24%/0.2)] bg-muted/20 overflow-hidden">
               {/* Manager row */}
               <div
-                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-purple-900/10 transition-colors"
+                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-[hsl(218_58%_16%/0.1)] transition-colors"
                 onClick={() => setExpanded(expanded === m.user_id ? null : m.user_id)}
               >
                 <div className="flex-1 min-w-0">
@@ -270,10 +270,10 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
   if (!invoices.length) return <p className="p-3 text-xs text-muted-foreground/70">No invoices yet.</p>;
 
   return (
-    <div className="border-t border-purple-800/20 bg-slate-950/30 px-3 pb-3 pt-2">
+    <div className="border-t border-[hsl(218_58%_24%/0.2)] bg-slate-950/30 px-3 pb-3 pt-2">
       <Table>
         <TableHeader>
-          <TableRow className="border-purple-800/20 hover:bg-transparent">
+          <TableRow className="border-[hsl(218_58%_24%/0.2)] hover:bg-transparent">
             {['Invoice #', 'Type', 'Amount', 'Due', 'Paid', 'Status', ''].map(h => (
               <TableHead key={h} className="text-amber-500 text-xs py-1">{h}</TableHead>
             ))}
@@ -281,7 +281,7 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
         </TableHeader>
         <TableBody>
           {invoices.map((inv: { id: string; invoice_number: string; invoice_type: string; amount: number; due_date: string; paid_date: string | null; status: string }) => (
-            <TableRow key={inv.id} className="border-purple-800/10 hover:bg-purple-900/5">
+            <TableRow key={inv.id} className="border-[hsl(218_58%_24%/0.1)] hover:bg-[hsl(218_58%_16%/0.05)]">
               <TableCell className="font-mono text-xs text-foreground/90 py-1.5">{inv.invoice_number}</TableCell>
               <TableCell className="text-xs text-muted-foreground py-1.5 capitalize">{inv.invoice_type?.replace(/_/g, ' ')}</TableCell>
               <TableCell className="text-sm font-medium text-white py-1.5">{fmt(Number(inv.amount))}</TableCell>

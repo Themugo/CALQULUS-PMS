@@ -32,7 +32,7 @@ const fmt = (n: number) =>
 
 const CONDITION_COLORS: Record<string, string> = {
   excellent: 'text-green-700 bg-green-100',
-  good:      'text-blue-700 bg-blue-100',
+  good:      'text-[hsl(214_73%_35%)] bg-[hsl(214_73%_48%/0.12)]',
   fair:      'text-amber-700 bg-amber-100',
   poor:      'text-red-700 bg-red-100',
 };
@@ -280,7 +280,7 @@ const TenantDocuments: React.FC = () => {
                       <div className="text-right">
                         <p className="font-semibold text-sm">{fmt(Number(r.amount))}</p>
                         {r.document_url && (
-                          <a href={r.document_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline flex items-center gap-1 justify-end mt-0.5">
+                          <a href={r.document_url} target="_blank" rel="noopener noreferrer" className="text-xs text-[hsl(214_73%_45%)] hover:underline flex items-center gap-1 justify-end mt-0.5">
                             <Download className="h-3 w-3" />Download
                           </a>
                         )}

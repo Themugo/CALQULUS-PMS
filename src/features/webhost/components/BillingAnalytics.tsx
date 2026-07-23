@@ -6,6 +6,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { TrendingUp, TrendingDown, DollarSign, Percent, Users, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, parseISO } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { BRAND_CHART_COLORS, CHART_STATUS_COLORS } from '@/shared/lib/chartColors';
 
 interface MonthlyData {
   month: string;
@@ -25,8 +26,6 @@ interface ManagerStats {
   email: string;
   full_name: string | null;
 }
-
-const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
 const BillingAnalytics = () => {
   // Fetch all invoices for analytics
@@ -182,8 +181,8 @@ const BillingAnalytics = () => {
       .reduce((sum, inv) => sum + Number(inv.amount), 0);
 
     return [
-      { name: 'Registration', value: registrationTotal, color: '#3b82f6' },
-      { name: 'Subscription', value: subscriptionTotal, color: '#8b5cf6' },
+      { name: 'Registration', value: registrationTotal, color: BRAND_CHART_COLORS[1] },
+      { name: 'Subscription', value: subscriptionTotal, color: BRAND_CHART_COLORS[0] },
     ].filter(item => item.value > 0);
   }, [invoices]);
 
@@ -209,8 +208,8 @@ const BillingAnalytics = () => {
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-400" />
+              <div className="h-10 w-10 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
+                <Users className="h-5 w-5 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Registrations</p>
@@ -223,7 +222,7 @@ const BillingAnalytics = () => {
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
                 <Percent className="h-5 w-5 text-amber-500" />
               </div>
               <div>
@@ -290,8 +289,8 @@ const BillingAnalytics = () => {
                     type="monotone"
                     dataKey="registrationRevenue"
                     stackId="1"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
+                    stroke={BRAND_CHART_COLORS[1]}
+                    fill={BRAND_CHART_COLORS[1]}
                     fillOpacity={0.6}
                     name="Registration"
                   />
@@ -299,8 +298,8 @@ const BillingAnalytics = () => {
                     type="monotone"
                     dataKey="subscriptionRevenue"
                     stackId="1"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
+                    stroke={BRAND_CHART_COLORS[0]}
+                    fill={BRAND_CHART_COLORS[0]}
                     fillOpacity={0.6}
                     name="Subscription"
                   />
@@ -309,11 +308,11 @@ const BillingAnalytics = () => {
             </div>
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <div className="w-3 h-3 rounded-full bg-[hsl(214_73%_48%)]" />
                 <span className="text-sm text-amber-400/70">Registration</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-purple-500" />
+                <div className="w-3 h-3 rounded-full bg-[hsl(218_58%_50%)]" />
                 <span className="text-sm text-amber-400/70">Subscription</span>
               </div>
             </div>
@@ -397,14 +396,14 @@ const BillingAnalytics = () => {
                   labelStyle={{ color: '#fff' }}
                   formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                 />
-                <Bar dataKey="total_paid" fill="#8b5cf6" radius={[0, 4, 4, 0]} name="Paid" />
-                <Bar dataKey="pending_amount" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Pending" />
+                <Bar dataKey="total_paid" fill={BRAND_CHART_COLORS[0]} radius={[0, 4, 4, 0]} name="Paid" />
+                <Bar dataKey="pending_amount" fill={CHART_STATUS_COLORS.warning} radius={[0, 4, 4, 0]} name="Pending" />
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="flex justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
+              <div className="w-3 h-3 rounded-full bg-[hsl(218_58%_50%)]" />
               <span className="text-sm text-amber-400/70">Paid</span>
             </div>
             <div className="flex items-center gap-2">
@@ -436,8 +435,8 @@ const BillingAnalytics = () => {
                   labelStyle={{ color: '#fff' }}
                   formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                 />
-                <Bar dataKey="netCollection" fill="#10b981" radius={[4, 4, 0, 0]} name="Net Collection" />
-                <Bar dataKey="subscriptionRevenue" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Commission (1%)" />
+                <Bar dataKey="netCollection" fill={CHART_STATUS_COLORS.positive} radius={[4, 4, 0, 0]} name="Net Collection" />
+                <Bar dataKey="subscriptionRevenue" fill={BRAND_CHART_COLORS[0]} radius={[4, 4, 0, 0]} name="Commission (1%)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -447,7 +446,7 @@ const BillingAnalytics = () => {
               <span className="text-sm text-amber-400/70">Net Collection</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
+              <div className="w-3 h-3 rounded-full bg-[hsl(218_58%_50%)]" />
               <span className="text-sm text-amber-400/70">Commission (1%)</span>
             </div>
           </div>

@@ -37,9 +37,9 @@ const ENTITY_ICONS: Record<string, React.ElementType> = {
 };
 
 const ROLE_BADGE: Record<string, string> = {
-  manager:    'bg-blue-100 text-blue-800 border-blue-200',
+  manager:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   submanager: 'bg-slate-100 text-slate-700 border-slate-200',
-  webhost:    'bg-blue-100 text-blue-800 border-blue-200',
+  webhost:    'bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_32%)] border-[hsl(38_52%_42%/0.25)]',
   landlord:   'bg-amber-100 text-amber-800 border-amber-200',
   system:     'bg-green-100 text-green-700 border-green-200',
 };
@@ -47,12 +47,12 @@ const ROLE_BADGE: Record<string, string> = {
 const ACTION_COLOR = (action: string): string => {
   const a = action.toLowerCase();
   if (a.includes('create') || a.includes('add') || a.includes('invite')) return 'bg-green-100 text-green-800';
-  if (a.includes('update') || a.includes('edit') || a.includes('change')) return 'bg-blue-100 text-blue-800';
+  if (a.includes('update') || a.includes('edit') || a.includes('change')) return 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)]';
   if (a.includes('delete') || a.includes('remove') || a.includes('archive')) return 'bg-red-100 text-red-800';
   if (a.includes('approve') || a.includes('complete')) return 'bg-emerald-100 text-emerald-800';
   if (a.includes('reject') || a.includes('deny') || a.includes('fail')) return 'bg-orange-100 text-orange-800';
   if (a.includes('sign') || a.includes('contract')) return 'bg-amber-400/15 text-amber-700';
-  if (a.includes('pay') || a.includes('invoice')) return 'bg-cyan-100 text-cyan-800';
+  if (a.includes('pay') || a.includes('invoice')) return 'bg-[hsl(195_60%_42%/0.12)] text-[hsl(195_60%_28%)]';
   return 'bg-slate-100 text-slate-700';
 };
 

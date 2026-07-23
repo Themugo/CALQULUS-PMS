@@ -37,13 +37,13 @@ interface DepositAccountabilityStatementProps {
 }
 
 const DEDUCTION_CATEGORIES = [
-  { value: 'cleaning',        label: 'Professional cleaning',   color: 'text-blue-600' },
+  { value: 'cleaning',        label: 'Professional cleaning',   color: 'text-[hsl(214_73%_45%)]' },
   { value: 'damages',         label: 'Physical damages',        color: 'text-red-600' },
   { value: 'unpaid_rent',     label: 'Unpaid rent arrears',     color: 'text-orange-600' },
-  { value: 'unpaid_water',    label: 'Unpaid water bill',       color: 'text-cyan-600' },
+  { value: 'unpaid_water',    label: 'Unpaid water bill',       color: 'text-[hsl(195_60%_38%)]' },
   { value: 'unpaid_bills',    label: 'Other unpaid charges',    color: 'text-amber-600' },
   { value: 'key_replacement', label: 'Key / lock replacement',  color: 'text-slate-600' },
-  { value: 'repainting',      label: 'Repainting',              color: 'text-purple-600' },
+  { value: 'repainting',      label: 'Repainting',              color: 'text-[hsl(218_58%_38%)]' },
   { value: 'maintenance',     label: 'Maintenance (linked)',     color: 'text-green-600' },
   { value: 'general',         label: 'General deduction',       color: 'text-gray-600' },
   { value: 'other',           label: 'Other',                   color: 'text-gray-600' },
@@ -106,6 +106,28 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
     },
   });
 
+  // Fetch the deposit ledger — a chronological, running-balance record of
+  // every receipt/deduction/refund, distinct from the deposit_deductions
+  // list above (which only tracks itemized deductions, not the full history).
+  const { data: ledgerEntries } = useQuery({
+    queryKey: ['unit-deposit-ledger', unitId, tenant.id],
+    queryFn: async () => {
+      if (!unitId) return [];
+      const { data, error } = await (supabase.from('unit_deposit_ledger') as any)
+        .select('*')
+        .eq('unit_id', unitId)
+        .eq('tenant_id', tenant.id)
+        .order('transaction_date', { ascending: false })
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as {
+        id: string; entry_type: string; amount: number; balance_after: number;
+        description: string | null; transaction_date: string; deposit_type: string;
+      }[];
+    },
+    enabled: !!unitId,
+  });
+
   // Add deduction
   const addDeduction = useMutation({
     mutationFn: async () => {
@@ -142,6 +164,24 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       const original = Number(tenant.deposit_amount ?? 0);
       const newBalance = Math.max(0, original - totalDeducted);
       await supabase.from('tenants').update({ deposit_balance: newBalance }).eq('id', tenant.id);
+
+      // Record in the deposit ledger too, so there's an itemized audit
+      // trail rather than just an overwritten balance number.
+      if (unitId) {
+        try {
+          await (supabase.from('unit_deposit_ledger') as any).insert({
+            unit_id: unitId,
+            tenant_id: tenant.id,
+            manager_id: authUser!.id,
+            deposit_type: 'house',
+            entry_type: 'deduction',
+            amount: Number(form.amount),
+            balance_after: newBalance,
+            description: form.description,
+            transaction_date: form.deduction_date,
+          });
+        } catch { /* best-effort audit trail; deposit_deductions above is authoritative */ }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deposit-deductions-full', tenant.id] });
@@ -162,6 +202,22 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       if (error) throw error;
       const newBalance = (tenant.deposit_balance ?? 0) + Number(ded.amount);
       await supabase.from('tenants').update({ deposit_balance: newBalance }).eq('id', tenant.id);
+
+      if (unitId) {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        try {
+          await (supabase.from('unit_deposit_ledger') as any).insert({
+            unit_id: unitId,
+            tenant_id: tenant.id,
+            manager_id: authUser?.id ?? null,
+            deposit_type: 'house',
+            entry_type: 'refund',
+            amount: Number(ded.amount),
+            balance_after: newBalance,
+            description: `Reversed: ${ded.description}`,
+          });
+        } catch { /* best-effort audit trail */ }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deposit-deductions-full', tenant.id] });
@@ -355,7 +411,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                           </div>
                           {d.evidence_url && (
                             <a href={d.evidence_url} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center gap-1 text-blue-600 hover:underline">
+                              className="flex items-center gap-1 text-[hsl(214_73%_45%)] hover:underline">
                               <ImageIcon className="h-3 w-3" />
                               View evidence
                             </a>
@@ -395,6 +451,43 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
           )}
         </CardContent>
       </Card>
+
+      {ledgerEntries && ledgerEntries.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Deposit ledger</CardTitle>
+            <CardDescription>Chronological running balance — receipts, deductions, and refunds</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {ledgerEntries.map((entry) => (
+              <div key={entry.id} className="flex items-center justify-between text-sm border-b last:border-0 pb-2 last:pb-0">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={
+                        entry.entry_type === 'received' ? 'border-emerald-300 text-emerald-700 bg-emerald-50' :
+                        entry.entry_type === 'refund' ? 'border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] bg-[hsl(214_73%_48%/0.06)]' :
+                        'border-red-300 text-red-700 bg-red-50'
+                      }
+                    >
+                      {entry.entry_type}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{format(new Date(entry.transaction_date), 'dd MMM yyyy')}</span>
+                  </div>
+                  {entry.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{entry.description}</p>}
+                </div>
+                <div className="text-right shrink-0 pl-3">
+                  <p className={entry.entry_type === 'deduction' ? 'text-red-600 font-medium' : 'text-emerald-600 font-medium'}>
+                    {entry.entry_type === 'deduction' ? '−' : '+'}{fmt(Number(entry.amount))}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Bal: {fmt(Number(entry.balance_after))}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add deduction dialog */}
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>

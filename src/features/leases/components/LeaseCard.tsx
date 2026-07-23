@@ -42,7 +42,7 @@ const statusStyles: Record<LeaseStatus, string> = {
   active: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
   expiring: "bg-amber-500/10 text-amber-700 border-amber-500/20",
   expired: "bg-red-500/10 text-red-700 border-red-500/20",
-  pending: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+  pending: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.2)]",
   terminated: "bg-gray-500/10 text-gray-700 border-gray-500/20",
 };
 

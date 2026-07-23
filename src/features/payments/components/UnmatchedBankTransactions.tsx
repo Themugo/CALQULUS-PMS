@@ -303,7 +303,7 @@ const UnmatchedBankTransactions: React.FC = () => {
                 return (
                   <div className={`p-3 rounded-lg border text-xs ${
                     Math.abs(diff) < 1 ? 'border-green-300 bg-green-50 text-green-800' :
-                    diff > 0 ? 'border-purple-300 bg-purple-50 text-purple-800' :
+                    diff > 0 ? 'border-[hsl(214_73%_48%/0.3)] bg-[hsl(214_73%_48%/0.08)] text-[hsl(214_73%_35%)]' :
                     'border-amber-300 bg-amber-50 text-amber-800'
                   }`}>
                     {Math.abs(diff) < 1 ? '✓ Exact match — invoice will be closed' :

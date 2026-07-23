@@ -232,6 +232,27 @@ const Properties = () => {
       return;
     }
 
+    // Enforce the tier/category limit that check_tier_allows_property was
+    // built for — previously only a cosmetic "Enterprise"/"Pro+" badge was
+    // shown next to restricted categories with nothing actually blocking
+    // selection, so any tier could create any category of property.
+    const { data: tierAllows, error: tierCheckError } = await supabase.rpc(
+      'check_tier_allows_property' as unknown as string,
+      { p_manager_id: managerId, p_category_key: newProperty.property_type || 'flat' }
+    );
+    if (tierCheckError) {
+      toast({ title: "Couldn't verify plan limits", description: tierCheckError.message, variant: "destructive" });
+      return;
+    }
+    if (tierAllows === false) {
+      toast({
+        title: "Not available on your plan",
+        description: "This property type requires a higher subscription tier. Upgrade at Platform Billing to add it.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSaving(true);
     const now = new Date().toISOString();
     const { error } = await supabase.from("properties").insert({
@@ -614,7 +635,7 @@ const Properties = () => {
                             <div className="flex items-center justify-between w-full gap-3">
                               <span>{cat.name}</span>
                               {cat.requiresTier !== 'lite' && (
-                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${cat.requiresTier === 'enterprise' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${cat.requiresTier === 'enterprise' ? 'bg-amber-100 text-amber-800' : 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)]'}`}>
                                   {cat.requiresTier === 'enterprise' ? 'Enterprise' : 'Pro+'}
                                 </span>
                               )}

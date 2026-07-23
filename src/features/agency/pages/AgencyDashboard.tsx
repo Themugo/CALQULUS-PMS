@@ -157,9 +157,9 @@ const AgencyDashboard = () => {
 
   const statCards = [
     { label: 'Properties', value: stats?.totalProperties, sub: `${stats?.totalUnits ?? 0} units`, icon: Building2, color: 'text-amber-500' },
-    { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : undefined, sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units`, icon: Home, color: 'text-blue-500' },
+    { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : undefined, sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units`, icon: Home, color: 'text-[hsl(214_73%_48%)]' },
     { label: 'Active tenants', value: stats?.activeTenants, sub: `${stats?.totalTenants ?? 0} total`, icon: Users, color: 'text-amber-500' },
-    { label: 'Active leases', value: stats?.activeLeases, sub: (stats?.expiringLeases ?? 0) > 0 ? `${stats?.expiringLeases} expiring` : 'None expiring', icon: FileText, color: 'text-blue-500' },
+    { label: 'Active leases', value: stats?.activeLeases, sub: (stats?.expiringLeases ?? 0) > 0 ? `${stats?.expiringLeases} expiring` : 'None expiring', icon: FileText, color: 'text-[hsl(38_52%_42%)]' },
     { label: 'Invoices due', value: stats?.invoicesDue, sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'All on time', icon: CreditCard, color: (stats?.overdueInvoices ?? 0) > 0 ? 'text-amber-400' : 'text-amber-500' },
     { label: 'Revenue (MTD)', value: stats ? fmt(stats.revenueMTD) : undefined, sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last mo.` : 'vs last month', icon: TrendingUp, color: 'text-amber-500' },
   ];
@@ -256,7 +256,7 @@ const AgencyDashboard = () => {
                 <h3 className="text-card-foreground font-semibold text-sm">Occupancy by property</h3>
                 <p className="text-xs text-muted-foreground">Top {Math.min(stats?.occupancyByProperty?.length ?? 0, 5) || 5} by size</p>
               </div>
-              <Home className="h-4 w-4 text-blue-400" />
+              <Home className="h-4 w-4 text-[hsl(214_73%_58%)]" />
             </div>
             {isLoading ? (
               <div className="space-y-3">
@@ -303,12 +303,12 @@ const AgencyDashboard = () => {
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
             {[
-              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-blue-500',    bg: 'bg-blue-500/10 border-blue-500/20' },
+              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-[hsl(214_73%_48%)]',    bg: 'bg-[hsl(214_73%_48%/0.1)] border-[hsl(214_73%_48%/0.2)]' },
               { label: 'Tenants',     icon: Users,      href: '/agency/tenants',       accent: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
               { label: 'Billing',     icon: CreditCard, href: '/agency/billing',       accent: 'text-amber-500',   bg: 'bg-amber-400/12 border-amber-400/25' },
-              { label: 'Landlords',   icon: Handshake,  href: '/agency/landlords',     accent: 'text-violet-500',  bg: 'bg-violet-500/10 border-violet-500/20' },
-              { label: 'Maintenance', icon: Wrench,     href: '/agency/maintenance',   accent: 'text-cyan-500',    bg: 'bg-cyan-500/10 border-cyan-500/20' },
-              { label: 'Reports',     icon: BarChart3,  href: '/agency/reports',       accent: 'text-rose-500',    bg: 'bg-rose-500/10 border-rose-500/20' },
+              { label: 'Landlords',   icon: Handshake,  href: '/agency/landlords',     accent: 'text-[hsl(38_52%_42%)]',  bg: 'bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]' },
+              { label: 'Maintenance', icon: Wrench,     href: '/agency/maintenance',   accent: 'text-[hsl(195_60%_42%)]',    bg: 'bg-[hsl(195_60%_42%/0.1)] border-[hsl(195_60%_42%/0.2)]' },
+              { label: 'Reports',     icon: BarChart3,  href: '/agency/reports',       accent: 'text-[hsl(218_58%_40%)]',    bg: 'bg-[hsl(218_58%_40%/0.1)] border-[hsl(218_58%_40%/0.2)]' },
             ].map(a => (
               <button key={a.label} onClick={() => navigate(a.href)}
                 className={`group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 touch-manipulation ${a.bg}`}>

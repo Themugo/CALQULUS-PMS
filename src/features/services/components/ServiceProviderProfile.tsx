@@ -402,7 +402,7 @@ const ServiceProviderProfile: React.FC = () => {
                 <Input value={entry.rate_notes}
                   onChange={e => setRateEntries(p => p.map((en, i) => i === idx ? {...en, rate_notes: e.target.value} : en))}
                   placeholder="Notes (e.g. materials extra)" className="h-7 text-xs flex-1" />
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive shrink-0"
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive shrink-0" aria-label="Delete service"
                   onClick={() => {
                     if (entry.id) deleteService.mutate(entry.id);
                     else setRateEntries(p => p.filter((_, i) => i !== idx));

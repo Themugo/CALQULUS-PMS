@@ -183,9 +183,29 @@ serve(async (req) => {
       invoiceId, invoiceIds, unitId, propertyId, unitNumber, phone, recordedBy, notes, transactionId,
     } = body;
 
-    if (!tenantId || !managerId || !amount || !paymentMethod || !paymentDate || !reference) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }),
+    if (!tenantId || !managerId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !paymentMethod || !paymentDate || !reference) {
+      return new Response(JSON.stringify({ error: "Missing or invalid required fields" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    if (!isServiceCall && callerUserId) {
+      // Resolve the caller's own manager scope rather than trusting the
+      // managerId supplied in the request body, and verify the target
+      // tenant is actually inside that scope.
+      const { data: callerRoleRow } = await supabase.from("user_roles")
+        .select("role").eq("user_id", callerUserId).maybeSingle();
+      let effectiveManagerId = callerUserId;
+      if ((callerRoleRow as any)?.role === "submanager") {
+        const { data: rel } = await supabase.from("manager_submanagers")
+          .select("manager_id").eq("submanager_user_id", callerUserId).maybeSingle();
+        effectiveManagerId = (rel as any)?.manager_id ?? callerUserId;
+      }
+      const { data: tenantOwner, error: tenantOwnerErr } = await supabase
+        .from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
+      if (tenantOwnerErr || !tenantOwner || (tenantOwner as any).manager_id !== effectiveManagerId) {
+        return new Response(JSON.stringify({ error: "Forbidden: tenant is not in your managed portfolio" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
     }
 
     log("Processing payment", { tenantId, amount, paymentMethod, reference });

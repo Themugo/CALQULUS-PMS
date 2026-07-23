@@ -62,7 +62,7 @@ type MaintenanceInsert = Database['public']['Tables']['maintenance_requests']['I
 
 const statusConfig: Record<RequestStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
   open: { label: "Open", variant: "secondary", icon: Clock, color: "text-warning", badgeClass: "bg-amber-500 text-white" },
-  in_progress: { label: "In Progress", variant: "default", icon: Wrench, color: "text-amber-500", badgeClass: "bg-blue-600 text-white" },
+  in_progress: { label: "In Progress", variant: "default", icon: Wrench, color: "text-amber-500", badgeClass: "bg-[hsl(214_73%_45%)] text-white" },
   completed: { label: "Completed", variant: "outline", icon: CheckCircle, color: "text-success", badgeClass: "bg-emerald-600 text-white" },
   cancelled: { label: "Cancelled", variant: "destructive", icon: AlertCircle, color: "text-destructive", badgeClass: "bg-slate-600 text-white" },
 };
@@ -516,7 +516,7 @@ const TenantMaintenance = () => {
                 <Badge className={priorityConfig[selectedRequest.priority].color}>
                   {priorityConfig[selectedRequest.priority].label} Priority
                 </Badge>
-                <Badge variant="outline" className="bg-purple-500/10 text-amber-500 border-amber-400/50/20">
+                <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
                   {getCategoryLabel(selectedRequest.category)}
                 </Badge>
               </div>
@@ -657,7 +657,7 @@ function RequestCard({ request, onClick }: RequestCardProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h4 className="font-medium truncate">{request.title}</h4>
-              <Badge variant="outline" className="text-xs bg-purple-500/10 text-amber-500 border-amber-400/50/20">
+              <Badge variant="outline" className="text-xs bg-amber-400/10 text-amber-600 border-amber-400/20">
                 {getCategoryLabel(request.category)}
               </Badge>
             </div>

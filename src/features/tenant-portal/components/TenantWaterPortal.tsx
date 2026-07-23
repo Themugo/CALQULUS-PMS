@@ -190,12 +190,12 @@ const TenantWaterPortal: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header card */}
-      <Card className="border-cyan-200 bg-cyan-50/50">
+      <Card className="border-[hsl(195_60%_42%/0.3)] bg-[hsl(195_60%_42%/0.06)]">
         <CardContent className="p-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-cyan-100 flex items-center justify-center">
-                <Droplets className="h-5 w-5 text-cyan-700" />
+              <div className="h-10 w-10 rounded-xl bg-[hsl(195_60%_42%/0.12)] flex items-center justify-center">
+                <Droplets className="h-5 w-5 text-[hsl(195_60%_32%)]" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Water billing</p>
@@ -204,7 +204,7 @@ const TenantWaterPortal: React.FC = () => {
                   {meterNo !== 'Not assigned' && ` · Meter: ${meterNo}`}
                 </p>
                 {waterCompany?.paybill_number ? (
-                  <p className="text-xs text-cyan-700">M-Pesa Paybill: <strong>{waterCompany.paybill_number}</strong></p>
+                  <p className="text-xs text-[hsl(195_60%_32%)]">M-Pesa Paybill: <strong>{waterCompany.paybill_number}</strong></p>
                 ) : waterCompany?.payment_note ? (
                   <p className="text-xs text-amber-700">{waterCompany.payment_note}</p>
                 ) : null}
@@ -220,7 +220,7 @@ const TenantWaterPortal: React.FC = () => {
               )}
               <Button
                 size="sm"
-                className="bg-cyan-600 hover:bg-cyan-700 text-white gap-1.5"
+                className="bg-[hsl(195_60%_38%)] hover:bg-[hsl(195_60%_32%)] text-white gap-1.5"
                 onClick={() => setSubmitOpen(true)}
               >
                 <Camera className="h-4 w-4" />
@@ -268,7 +268,7 @@ const TenantWaterPortal: React.FC = () => {
                 const consumption = Number(r.current_reading) - Number(r.previous_reading);
                 const bill = Number(r.total_amount ?? (consumption * Number(r.rate_per_unit)));
                 return (
-                  <div key={r.id} className={`rounded-lg border p-3 flex items-center justify-between gap-3 ${r.disputed ? 'border-orange-300 bg-orange-50/40' : r.submitted_by_tenant && !r.manager_verified ? 'border-blue-200 bg-blue-50/30' : 'border-border'}`}>
+                  <div key={r.id} className={`rounded-lg border p-3 flex items-center justify-between gap-3 ${r.disputed ? 'border-orange-300 bg-orange-50/40' : r.submitted_by_tenant && !r.manager_verified ? 'border-[hsl(195_60%_42%/0.3)] bg-[hsl(195_60%_42%/0.06)]' : 'border-border'}`}>
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <div className="text-xs text-muted-foreground shrink-0 pt-0.5 w-20">
                         {r.reading_date ? format(new Date(r.reading_date), 'dd/MM/yy') : '—'}
@@ -280,7 +280,7 @@ const TenantWaterPortal: React.FC = () => {
                             <span className="text-muted-foreground ml-1">({consumption} m³ used)</span>
                           </p>
                           {r.submitted_by_tenant && (
-                            <Badge variant="outline" className="text-xs border-blue-300 text-blue-700 bg-blue-50">Self-reported</Badge>
+                            <Badge variant="outline" className="text-xs border-[hsl(195_60%_42%/0.35)] text-[hsl(195_60%_32%)] bg-[hsl(195_60%_42%/0.08)]">Self-reported</Badge>
                           )}
                           {!r.manager_verified && r.submitted_by_tenant && (
                             <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">
@@ -330,7 +330,7 @@ const TenantWaterPortal: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5 text-cyan-600" />
+              <Droplets className="h-5 w-5 text-[hsl(195_60%_38%)]" />
               Submit meter reading
             </DialogTitle>
             <DialogDescription>
@@ -342,7 +342,7 @@ const TenantWaterPortal: React.FC = () => {
             <div>
               <Label>Meter photo (required for verification)</Label>
               <div
-                className="mt-1 border-2 border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-cyan-400 transition-colors"
+                className="mt-1 border-2 border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-[hsl(195_60%_50%)] transition-colors"
                 onClick={() => photoRef.current?.click()}
               >
                 {photoPreview ? (
@@ -382,12 +382,12 @@ const TenantWaterPortal: React.FC = () => {
 
             {/* Live calculation preview */}
             {previewConsumption > 0 && (
-              <div className="p-3 rounded-lg bg-cyan-50 border border-cyan-200 text-sm">
-                <div className="flex items-center gap-1 text-cyan-800 font-medium mb-2">
+              <div className="p-3 rounded-lg bg-[hsl(195_60%_42%/0.08)] border border-[hsl(195_60%_42%/0.25)] text-sm">
+                <div className="flex items-center gap-1 text-[hsl(195_60%_28%)] font-medium mb-2">
                   <Calculator className="h-4 w-4" />
                   Bill estimate
                 </div>
-                <div className="space-y-1 text-xs text-cyan-700">
+                <div className="space-y-1 text-xs text-[hsl(195_60%_32%)]">
                   <div className="flex justify-between">
                     <span>Consumption</span>
                     <span className="font-medium">{previewConsumption.toFixed(3)} m³</span>
@@ -402,12 +402,12 @@ const TenantWaterPortal: React.FC = () => {
                       <span className="font-medium">{fmt(waterCompany.standing_charge)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between border-t border-cyan-300 pt-1 font-bold">
+                  <div className="flex justify-between border-t border-[hsl(195_60%_42%/0.4)] pt-1 font-bold">
                     <span>Estimated total</span>
                     <span>{fmt(previewBill + (waterCompany?.standing_charge ?? 0))}</span>
                   </div>
                 </div>
-                <p className="text-xs text-cyan-600 mt-2 flex items-center gap-1">
+                <p className="text-xs text-[hsl(195_60%_38%)] mt-2 flex items-center gap-1">
                   <Info className="h-3 w-3" />Estimate — final bill set by manager after verification
                 </p>
               </div>
@@ -418,7 +418,7 @@ const TenantWaterPortal: React.FC = () => {
             <Button
               onClick={() => submitReading.mutate()}
               disabled={submitReading.isPending || uploading || !currentReading}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white gap-2"
+              className="bg-[hsl(195_60%_38%)] hover:bg-[hsl(195_60%_32%)] text-white gap-2"
             >
               {(submitReading.isPending || uploading)
                 ? <><Loader2 className="h-4 w-4 animate-spin" />{uploading ? 'Uploading…' : 'Submitting…'}</>

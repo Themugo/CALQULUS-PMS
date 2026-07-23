@@ -89,9 +89,9 @@ interface Lease {
 
 const EXPENDITURE_CATEGORIES = [
   { key: "electricity", label: "Electricity", icon: Zap, color: "text-yellow-500" },
-  { key: "water", label: "Water", icon: Droplets, color: "text-blue-500" },
+  { key: "water", label: "Water", icon: Droplets, color: "text-[hsl(195_60%_42%)]" },
   { key: "security", label: "Security", icon: Shield, color: "text-red-500" },
-  { key: "staff", label: "Staff Salaries", icon: Users, color: "text-purple-500" },
+  { key: "staff", label: "Staff Salaries", icon: Users, color: "text-[hsl(218_58%_40%)]" },
   { key: "other", label: "Other Expenses", icon: Receipt, color: "text-muted-foreground" },
 ];
 

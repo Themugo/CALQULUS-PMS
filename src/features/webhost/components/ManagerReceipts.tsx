@@ -98,7 +98,7 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
   const getInvoiceTypeBadge = (type: string) => {
     if (type === 'registration') {
       return (
-        <Badge className="bg-blue-600/20 text-blue-400 border-blue-600/30">
+        <Badge className="bg-[hsl(214_73%_45%/0.2)] text-[hsl(214_73%_58%)] border-[hsl(214_73%_45%/0.3)]">
           <Users className="h-3 w-3 mr-1" />
           Registration
         </Badge>
@@ -154,8 +154,8 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Users className="h-6 w-6 text-blue-400" />
+              <div className="h-12 w-12 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
+                <Users className="h-6 w-6 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Registration Fees</p>
@@ -168,7 +168,7 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
         <Card className="bg-card border-amber-400/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
                 <Percent className="h-6 w-6 text-amber-500" />
               </div>
               <div>
@@ -267,7 +267,7 @@ const ManagerReceipts: React.FC<ManagerReceiptsProps> = ({ managers, invoices, i
               </TableHeader>
               <TableBody>
                 {filteredReceipts.map((invoice) => (
-                  <TableRow key={invoice.id} className="border-amber-400/12 hover:bg-purple-900/20">
+                  <TableRow key={invoice.id} className="border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)]">
                     <TableCell className="text-white font-mono">{invoice.invoice_number}</TableCell>
                     <TableCell>{getInvoiceTypeBadge(invoice.invoice_type || 'subscription')}</TableCell>
                     <TableCell>

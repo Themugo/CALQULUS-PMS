@@ -485,7 +485,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
                   <code className="flex-1 bg-muted px-3 py-2 rounded text-sm truncate">
                     {getShareableLink()}
                   </code>
-                  <Button variant="outline" size="icon" onClick={handleCopyLink}>
+                  <Button variant="outline" size="icon" onClick={handleCopyLink} aria-label={copied ? "Link copied" : "Copy link"}>
                     {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>

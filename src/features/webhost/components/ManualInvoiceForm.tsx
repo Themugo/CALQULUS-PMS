@@ -178,7 +178,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           variant={invoiceType === 'registration' ? 'default' : 'outline'}
           className={invoiceType === 'registration' 
             ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-purple-900/30'}
+            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('registration')}
         >
           Registration
@@ -188,7 +188,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           variant={invoiceType === 'subscription' ? 'default' : 'outline'}
           className={invoiceType === 'subscription' 
             ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-purple-900/30'}
+            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('subscription')}
         >
           Subscription
@@ -198,7 +198,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           variant={invoiceType === 'custom' ? 'default' : 'outline'}
           className={invoiceType === 'custom' 
             ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-purple-900/30'}
+            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('custom')}
         >
           Custom
@@ -218,7 +218,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                 <div className="flex items-center gap-2">
                   <span>{manager.full_name || manager.email}</span>
                   {invoiceType === 'subscription' && (
-                    <Badge variant="outline" className="text-xs text-amber-400/70 border-purple-600">
+                    <Badge variant="outline" className="text-xs text-amber-400/70 border-[hsl(218_58%_40%)]">
                       KES {manager.net_collection.toLocaleString()}
                     </Badge>
                   )}
@@ -324,7 +324,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="w-full text-amber-500 hover:text-amber-400/70 hover:bg-purple-900/20 border border-dashed border-amber-400/20"
+                    className="w-full text-amber-500 hover:text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.2)] border border-dashed border-amber-400/20"
                     onClick={addLineItem}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -335,7 +335,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             )}
 
             {/* Total Row */}
-            <TableRow className="bg-purple-900/30 border-amber-400/30/30 hover:bg-purple-900/30">
+            <TableRow className="bg-[hsl(218_58%_16%/0.3)] border-amber-400/30/30 hover:bg-[hsl(218_58%_16%/0.3)]">
               <TableCell colSpan={invoiceType === 'custom' ? 3 : 3} className="text-right text-amber-100/80 font-semibold">
                 Total:
               </TableCell>

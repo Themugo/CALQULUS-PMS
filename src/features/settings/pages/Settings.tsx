@@ -289,7 +289,7 @@ const Settings = () => {
                           </AvatarFallback>
                         </Avatar>
                         {photoUrl && (
-                          <Button variant="destructive" size="icon" className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-5 w-5 sm:h-6 sm:w-6 rounded-full" onClick={handleRemovePhoto} disabled={uploadingPhoto}>
+                          <Button variant="destructive" size="icon" className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-5 w-5 sm:h-6 sm:w-6 rounded-full" onClick={handleRemovePhoto} disabled={uploadingPhoto} aria-label="Remove photo">
                             <X className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
                         )}

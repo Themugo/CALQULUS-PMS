@@ -50,6 +50,25 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
     enabled: !!selectedPropertyId && !!user?.id,
   });
 
+  // Per-unit breakdown — surfaces get_landlord_property_revenue_summary,
+  // a privacy-safe RPC (no tenant names/emails/phones) that existed with
+  // no UI consumer anywhere in the app.
+  const { data: unitSummary, isLoading: isLoadingUnits } = useQuery({
+    queryKey: ['landlord-unit-summary', selectedPropertyId, user?.id],
+    queryFn: async () => {
+      if (!selectedPropertyId) return [];
+      const { data, error } = await supabase.rpc('get_landlord_property_revenue_summary' as unknown as string, {
+        p_property_id: selectedPropertyId,
+      });
+      if (error) throw error;
+      return (data ?? []) as Array<{
+        unit_id: string; lease_start: string | null; monthly_rent: number;
+        status: string; unit_number: string; total_paid: number; payment_count: number;
+      }>;
+    },
+    enabled: !!selectedPropertyId && !!user?.id,
+  });
+
   // 6-month trend
   const { data: trend = [] } = useQuery({
     queryKey: ['landlord-trend', selectedPropertyId, user?.id],
@@ -105,7 +124,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-blue-700',  bg: 'bg-blue-50' },
+              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-[hsl(214_73%_35%)]',  bg: 'bg-[hsl(214_73%_48%/0.08)]' },
               { label: `Management fee (${mgmtFee}%)`, value: fmt(financials.management_fee), icon: TrendingDown, color: 'text-slate-600', bg: 'bg-slate-50' },
               { label: 'Your net revenue',       value: fmt(financials.net_to_landlord),    icon: Banknote,    color: 'text-green-700', bg: 'bg-green-50' },
               { label: 'Payout pending',         value: fmt(financials.payout_pending),     icon: DollarSign,  color: 'text-amber-700', bg: 'bg-amber-50' },
@@ -147,6 +166,47 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                 </p>
               </div>
             </div>
+          )}
+
+          {/* Per-unit breakdown */}
+          {!isLoadingUnits && unitSummary && unitSummary.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Units on this property</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs text-muted-foreground border-b">
+                        <th className="pb-2 font-medium">Unit</th>
+                        <th className="pb-2 font-medium">Status</th>
+                        <th className="pb-2 font-medium text-right">Monthly rent</th>
+                        <th className="pb-2 font-medium text-right">Total collected</th>
+                        <th className="pb-2 font-medium text-right">Payments</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {unitSummary.map((u) => (
+                        <tr key={u.unit_id} className="border-b last:border-0">
+                          <td className="py-2 font-medium">{u.unit_number}</td>
+                          <td className="py-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              u.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'
+                            }`}>
+                              {u.status}
+                            </span>
+                          </td>
+                          <td className="py-2 text-right">{fmt(Number(u.monthly_rent || 0))}</td>
+                          <td className="py-2 text-right font-medium">{fmt(Number(u.total_paid || 0))}</td>
+                          <td className="py-2 text-right text-muted-foreground">{u.payment_count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Revenue breakdown */}

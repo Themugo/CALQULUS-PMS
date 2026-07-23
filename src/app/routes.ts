@@ -3,6 +3,7 @@ import { lazy, type LazyExoticComponent, type ComponentType } from "react";
 // ── Lazy-loaded page components ─────────────────────────────────────
 const Dashboard = lazy(() => import("@/features/dashboard/pages/Dashboard"));
 const Tenants = lazy(() => import("@/features/tenants/pages/Tenants"));
+const TenantScreening = lazy(() => import("@/features/tenants/pages/TenantScreening"));
 const Leases = lazy(() => import("@/features/leases/pages/Leases"));
 const Billing = lazy(() => import("@/features/billing/pages/Billing"));
 const Properties = lazy(() => import("@/features/properties/pages/Properties"));
@@ -131,6 +132,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/properties", element: Properties, protected: true },
       { path: "/properties/:id", element: PropertyDetail, protected: true },
       { path: "/tenants", element: Tenants, protected: true },
+      { path: "/tenant-screening", element: TenantScreening, protected: true },
       { path: "/billing", element: Billing, protected: true },
       { path: "/maintenance", element: Maintenance, protected: true },
       { path: "/services", element: ServicesPage, protected: true },
@@ -224,6 +226,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/properties", element: Properties, protected: true },
       { path: "/properties/:id", element: PropertyDetail, protected: true },
       { path: "/tenants", element: Tenants, protected: true },
+      { path: "/tenant-screening", element: TenantScreening, protected: true },
       { path: "/billing", element: Billing, protected: true },
       { path: "/maintenance", element: Maintenance, protected: true },
       { path: "/services", element: ServicesPage, protected: true },

@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Settings, LogOut, ChevronRight, ChevronLeft, X,
   Globe, Shield, Users, FileText, Wrench,
   Calendar, CreditCard, BarChart3, Droplets, Mail,
-  Handshake, FileSpreadsheet,
+  Handshake, FileSpreadsheet, UserX,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -24,6 +24,7 @@ const managerNav: NavItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Leases", href: "/leases", icon: FileText },
   { name: "Tenants", href: "/tenants", icon: Users },
+  { name: "Tenant Screening", href: "/tenant-screening", icon: UserX },
   { name: "Invites", href: "/invites", icon: Mail },
   { name: "Vacation Notices", href: "/vacation-notices", icon: Calendar },
   { name: "Billing", href: "/billing", icon: CreditCard },

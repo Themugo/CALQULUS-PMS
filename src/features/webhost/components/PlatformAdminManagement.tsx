@@ -25,8 +25,8 @@ const ADMIN_TYPE_LABELS: Record<PlatformAdminType, string> = {
 
 const ADMIN_TYPE_BADGES: Record<PlatformAdminType, React.ReactNode> = {
   owner: <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Crown className="h-3 w-3 mr-1" />Owner</Badge>,
-  business: <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Shield className="h-3 w-3 mr-1" />Business</Badge>,
-  admin: <Badge variant="outline" className="border-blue-200 text-purple-700"><User className="h-3 w-3 mr-1" />Admin</Badge>,
+  business: <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Business</Badge>,
+  admin: <Badge variant="outline" className="border-[hsl(214_73%_48%/0.3)] text-[hsl(218_58%_32%)]"><User className="h-3 w-3 mr-1" />Admin</Badge>,
 };
 
 const SUSPENSION_RULES = {

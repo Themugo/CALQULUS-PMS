@@ -33,7 +33,7 @@ interface VacationNotice {
 
 const statusConfig: Record<string, { label: string; color: string; badgeClass: string }> = {
   pending: { label: "Pending", color: "text-yellow-500", badgeClass: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-  acknowledged: { label: "Acknowledged", color: "text-blue-500", badgeClass: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+  acknowledged: { label: "Acknowledged", color: "text-[hsl(214_73%_48%)]", badgeClass: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]" },
   approved: { label: "Approved", color: "text-green-500", badgeClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
   rejected: { label: "Rejected", color: "text-red-500", badgeClass: "bg-red-500/10 text-red-600 border-red-500/20" },
   completed: { label: "Completed", color: "text-gray-500", badgeClass: "bg-slate-500/10 text-slate-600 border-slate-500/20" },

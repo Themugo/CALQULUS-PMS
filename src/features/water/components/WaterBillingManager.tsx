@@ -41,8 +41,8 @@ import { cn } from "@/shared/lib/utils";
 interface WaterCompanyRow {
   short_code: string;
   company_name: string;
-  county_name: string;
-  rate_per_unit: number;
+  county: string;
+  domestic_rate: number;
 }
 
 // All 47 Kenyan county water companies (2024/25)
@@ -104,16 +104,16 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
     queryKey: ['kenya-water-companies'],
     queryFn: async () => {
       const { data } = await (supabase.from('kenya_water_companies')
-        .select('short_code, company_name, county_name, rate_per_unit')
+        .select('short_code, company_name, county, domestic_rate')
         .eq('active', true)
-        .order('county_name'));
+        .order('county'));
       if (!data?.length) return FALLBACK_PROVIDERS;
       return [
         ...(data as WaterCompanyRow[]).map(c => ({
           value: c.short_code,
-          label: `${c.company_name} (${c.county_name})`,
-          county: c.county_name,
-          rate: Number(c.rate_per_unit ?? 0),
+          label: `${c.company_name} (${c.county})`,
+          county: c.county,
+          rate: Number(c.domestic_rate ?? 0),
         })),
         { value: 'borehole', label: 'Borehole / Private supply', county: '', rate: 30 },
         { value: 'custom',   label: 'Other (enter manually)',    county: '', rate: 0  },
@@ -419,7 +419,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Droplets className="h-5 w-5 text-blue-500" />
+                <Droplets className="h-5 w-5 text-[hsl(195_60%_42%)]" />
                 Water Billing Configuration — {propertyName}
               </CardTitle>
             </CardHeader>
@@ -580,7 +580,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <GaugeCircle className="h-5 w-5 text-blue-500" />
+                <GaugeCircle className="h-5 w-5 text-[hsl(195_60%_42%)]" />
                 {billingMethod === "meter" ? "Meter Readings" : "Water Charges"}
               </CardTitle>
               <Button onClick={() => { resetReadingForm(); setIsReadingDialogOpen(true); }}>
@@ -625,7 +625,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                             <TableCell>{reading.previous_reading}</TableCell>
                             <TableCell>{reading.current_reading}</TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/20">
+                              <Badge variant="outline" className="bg-[hsl(195_60%_42%/0.1)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.2)]">
                                 {reading.consumption} m³
                               </Badge>
                             </TableCell>
@@ -638,7 +638,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                           <Badge variant="outline" className={cn(
                             "capitalize",
                             reading.status === "paid" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                            reading.status === "invoiced" && "bg-blue-500/10 text-blue-600 border-blue-500/20",
+                            reading.status === "invoiced" && "bg-[hsl(195_60%_42%/0.1)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.2)]",
                             reading.status === "pending" && "bg-amber-500/10 text-amber-600 border-amber-500/20"
                           )}>
                             {reading.status}
@@ -658,15 +658,15 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-blue-500" />
+                <Receipt className="h-5 w-5 text-[hsl(195_60%_42%)]" />
                 Water Billing Summary
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="p-4 rounded-lg bg-blue-500/10">
+                <div className="p-4 rounded-lg bg-[hsl(195_60%_42%/0.1)]">
                   <p className="text-xs text-muted-foreground font-medium">Total Billed</p>
-                  <p className="text-xl font-bold text-blue-600">
+                  <p className="text-xl font-bold text-[hsl(195_60%_32%)]">
                     {formatCurrency(readings.reduce((sum, r) => sum + (r.total_amount || 0), 0))}
                   </p>
                 </div>
@@ -717,7 +717,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5 text-blue-500" />
+              <Droplets className="h-5 w-5 text-[hsl(195_60%_42%)]" />
               {billingMethod === "meter" ? "Record Meter Reading" : "Add Water Charge"}
             </DialogTitle>
             <DialogDescription>
@@ -764,7 +764,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                   />
                 </div>
                 {prevReading && currReading && parseFloat(currReading) >= parseFloat(prevReading) && (
-                  <div className="col-span-2 p-3 rounded-lg bg-blue-500/10">
+                  <div className="col-span-2 p-3 rounded-lg bg-[hsl(195_60%_42%/0.1)]">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Consumption:</span>
                       <span className="font-medium">{(parseFloat(currReading) - parseFloat(prevReading)).toFixed(2)} m³</span>

@@ -123,8 +123,8 @@ export const PaymentInstructionsGuide = ({
             <AccordionItem value="bank" className="border rounded-lg px-4">
               <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Building2 className="h-4 w-4 text-blue-600" />
+                  <div className="h-8 w-8 rounded-full bg-[hsl(214_73%_48%/0.12)] flex items-center justify-center">
+                    <Building2 className="h-4 w-4 text-[hsl(214_73%_45%)]" />
                   </div>
                   <span className="font-medium">Bank Transfer</span>
                 </div>

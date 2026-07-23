@@ -65,8 +65,8 @@ serve(async (req) => {
       instalmentCount,
     } = body;
 
-    if (!tenantId || !amount || !reference) {
-      return new Response(JSON.stringify({ error: "tenantId, amount, reference required" }),
+    if (!tenantId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !reference) {
+      return new Response(JSON.stringify({ error: "tenantId, positive amount, and reference required" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
@@ -76,6 +76,16 @@ serve(async (req) => {
       const { data: rel } = await supabase.from("manager_submanagers")
         .select("manager_id").eq("submanager_user_id", user.id).maybeSingle();
       effectiveManagerId = (rel as any)?.manager_id ?? user.id;
+    }
+
+    // Verify this tenant actually belongs to the caller's managed portfolio.
+    // Without this check, any authenticated manager/submanager could record
+    // a fabricated payment against a tenant they don't manage.
+    const { data: tenantOwner, error: tenantOwnerErr } = await supabase
+      .from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
+    if (tenantOwnerErr || !tenantOwner || (tenantOwner as any).manager_id !== effectiveManagerId) {
+      return new Response(JSON.stringify({ error: "Forbidden: tenant is not in your managed portfolio" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
     // If creating an installment plan, set that up first

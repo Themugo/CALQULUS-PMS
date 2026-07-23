@@ -20,13 +20,13 @@ import {
 } from 'lucide-react';
 
 const CHARGE_TYPES = [
-  { value: 'rent',           label: 'Monthly Rent',       icon: Home,     color: 'text-blue-600' },
-  { value: 'water',          label: 'Water',               icon: Droplets, color: 'text-cyan-600' },
+  { value: 'rent',           label: 'Monthly Rent',       icon: Home,     color: 'text-[hsl(214_73%_45%)]' },
+  { value: 'water',          label: 'Water',               icon: Droplets, color: 'text-[hsl(195_60%_38%)]' },
   { value: 'garbage',        label: 'Garbage Collection',  icon: Trash,    color: 'text-orange-600' },
   { value: 'security',       label: 'Security Levy',       icon: Shield,   color: 'text-green-600' },
-  { value: 'service_charge', label: 'Service Charge',      icon: Settings2, color: 'text-purple-600' },
+  { value: 'service_charge', label: 'Service Charge',      icon: Settings2, color: 'text-[hsl(218_58%_38%)]' },
   { value: 'caretaker',      label: 'Caretaker Fee',       icon: Home,     color: 'text-amber-600' },
-  { value: 'wifi',           label: 'Internet / WiFi',     icon: Wifi,     color: 'text-indigo-600' },
+  { value: 'wifi',           label: 'Internet / WiFi',     icon: Wifi,     color: 'text-[hsl(38_52%_42%)]' },
   { value: 'parking',        label: 'Parking',             icon: Car,      color: 'text-slate-600' },
   { value: 'electricity',    label: 'Electricity',         icon: Zap,      color: 'text-yellow-600' },
   { value: 'custom',         label: 'Custom Charge',       icon: Plus,     color: 'text-gray-600' },
@@ -243,7 +243,7 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
                           <div>
                             <p className="text-sm font-medium">{c.charge_label}</p>
                             {c.is_metered && (
-                              <span className="text-xs text-cyan-600">Metered</span>
+                              <span className="text-xs text-[hsl(195_60%_38%)]">Metered</span>
                             )}
                           </div>
                         </div>
@@ -270,12 +270,13 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)} aria-label="Edit charge">
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                           <Button
                             variant="ghost" size="icon"
                             className="h-7 w-7 text-destructive hover:bg-destructive/10"
+                            aria-label="Delete charge"
                             onClick={() => deleteCharge.mutate(c.id)}
                             disabled={deleteCharge.isPending}
                           >

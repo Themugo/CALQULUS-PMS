@@ -443,18 +443,18 @@ const ISO27001ComplianceDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="risks" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="risks" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Risk className="h-4 w-4 mr-2" />
             Risks
           </TabsTrigger>
-          <TabsTrigger value="assets" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="assets" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Target className="h-4 w-4 mr-2" />
             Assets
           </TabsTrigger>
@@ -546,7 +546,7 @@ const ISO27001ComplianceDashboard = () => {
                     placeholder="Search controls..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
@@ -634,7 +634,7 @@ const ISO27001ComplianceDashboard = () => {
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className="bg-amber-400/15 text-amber-700 border-blue-200">
+                          <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25">
                             Score: {risk.riskScore}
                           </Badge>
                           {getStatusBadge(risk.status)}

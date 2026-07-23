@@ -56,7 +56,7 @@ interface VacationNotice {
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
   pending: { label: "Pending", variant: "secondary", icon: Clock, color: "text-warning", badgeClass: "bg-amber-500 text-white" },
-  acknowledged: { label: "Acknowledged", variant: "default", icon: CheckCircle, color: "text-amber-500", badgeClass: "bg-blue-600 text-white" },
+  acknowledged: { label: "Acknowledged", variant: "default", icon: CheckCircle, color: "text-amber-500", badgeClass: "bg-[hsl(214_73%_45%)] text-white" },
   processed: { label: "Processed", variant: "outline", icon: CheckCircle, color: "text-success", badgeClass: "bg-emerald-600 text-white" },
   cancelled: { label: "Cancelled", variant: "destructive", icon: AlertCircle, color: "text-destructive", badgeClass: "bg-red-600 text-white" },
 };

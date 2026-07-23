@@ -159,7 +159,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                     {prop && <p className="text-xs text-muted-foreground">{prop.name}</p>}
                     <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(thread.created_at), { addSuffix: true })}</p>
                   </div>
-                  {unread && <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 mt-1" />}
+                  {unread && <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_48%)] shrink-0 mt-1" />}
                 </div>
               </div>
             );

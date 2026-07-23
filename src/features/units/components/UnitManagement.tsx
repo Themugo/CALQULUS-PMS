@@ -49,9 +49,15 @@ import {
   Ruler,
   History,
   Settings2,
+  Images,
+  ListChecks,
+  Gauge,
 } from "lucide-react";
 import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import UnitHistoryPanel from "@/features/units/components/UnitHistoryPanel";
+import UnitPhotoGallery from "@/features/units/components/UnitPhotoGallery";
+import UnitAmenitiesManager from "@/features/units/components/UnitAmenitiesManager";
+import UnitUtilityMeters from "@/features/units/components/UnitUtilityMeters";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -94,9 +100,9 @@ const unitStatuses = [
 
 const statusStyles: Record<string, string> = {
   vacant: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  occupied: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  occupied: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]",
   maintenance: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  reserved: "bg-purple-500/10 text-purple-600 border-amber-400/50/20",
+  reserved: "bg-[hsl(218_58%_38%/0.1)] text-[hsl(218_58%_38%)] border-[hsl(218_58%_38%/0.2)]",
 };
 
 export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onUnitsChange }: UnitManagementProps) {
@@ -111,6 +117,9 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
   const [expandedBillingUnitId, setExpandedBillingUnitId] = useState<string | null>(null);
   const [expandedHistoryUnitId, setExpandedHistoryUnitId] = useState<string | null>(null);
+  const [expandedPhotosUnitId, setExpandedPhotosUnitId] = useState<string | null>(null);
+  const [expandedAmenitiesUnitId, setExpandedAmenitiesUnitId] = useState<string | null>(null);
+  const [expandedMetersUnitId, setExpandedMetersUnitId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
   // Form state
@@ -135,6 +144,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   const [bulkCount, setBulkCount] = useState("10");
   const [bulkRent, setBulkRent] = useState("");
   const [bulkCreating, setBulkCreating] = useState(false);
+  const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({});
 
   const fetchUnits = useCallback(async () => {
     setIsLoading(true);
@@ -155,6 +165,26 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
     }
     setIsLoading(false);
   }, [propertyId, toast]);
+
+  // One batched query for every unit's cover photo, rather than a query per
+  // row — keeps this to a single round trip regardless of how many units
+  // the property has.
+  const fetchCoverPhotos = useCallback(async () => {
+    const { data } = await (supabase.from('unit_photos') as any)
+      .select('unit_id, photo_url')
+      .eq('property_id', propertyId)
+      .eq('is_cover', true);
+    const map: Record<string, string> = {};
+    (data || []).forEach((row: { unit_id: string; photo_url: string }) => {
+      map[row.unit_id] = row.photo_url;
+    });
+    setCoverPhotos(map);
+  }, [propertyId]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCoverPhotos();
+  }, [propertyId, fetchCoverPhotos]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -430,14 +460,22 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   <TableRow>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className={cn(
-                          "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium",
-                          unit.status === "occupied" ? "bg-blue-500/10 text-blue-600" :
-                          unit.status === "vacant" ? "bg-emerald-500/10 text-emerald-600" :
-                          "bg-muted text-muted-foreground"
-                        )}>
-                          <Home className="h-4 w-4" />
-                        </div>
+                        {coverPhotos[unit.id] ? (
+                          <img
+                            src={coverPhotos[unit.id]}
+                            alt=""
+                            className="h-8 w-8 rounded-lg object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className={cn(
+                            "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium",
+                            unit.status === "occupied" ? "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)]" :
+                            unit.status === "vacant" ? "bg-emerald-500/10 text-emerald-600" :
+                            "bg-muted text-muted-foreground"
+                          )}>
+                            <Home className="h-4 w-4" />
+                          </div>
+                        )}
                         <span className="font-medium">{unit.unit_number}</span>
                       </div>
                     </TableCell>
@@ -493,6 +531,9 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                           onClick={() => {
                             setExpandedHistoryUnitId(expandedHistoryUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
+                            setExpandedPhotosUnitId(null);
+                            setExpandedAmenitiesUnitId(null);
+                            setExpandedMetersUnitId(null);
                           }}
                           className={expandedHistoryUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
                         >
@@ -501,10 +542,59 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                         <Button
                           variant="ghost"
                           size="sm"
+                          title="Photos"
+                          onClick={() => {
+                            setExpandedPhotosUnitId(expandedPhotosUnitId === unit.id ? null : unit.id);
+                            setExpandedBillingUnitId(null);
+                            setExpandedHistoryUnitId(null);
+                            setExpandedAmenitiesUnitId(null);
+                            setExpandedMetersUnitId(null);
+                            fetchCoverPhotos();
+                          }}
+                          className={expandedPhotosUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
+                        >
+                          <Images className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Amenities"
+                          onClick={() => {
+                            setExpandedAmenitiesUnitId(expandedAmenitiesUnitId === unit.id ? null : unit.id);
+                            setExpandedBillingUnitId(null);
+                            setExpandedHistoryUnitId(null);
+                            setExpandedPhotosUnitId(null);
+                            setExpandedMetersUnitId(null);
+                          }}
+                          className={expandedAmenitiesUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
+                        >
+                          <ListChecks className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Utility meters"
+                          onClick={() => {
+                            setExpandedMetersUnitId(expandedMetersUnitId === unit.id ? null : unit.id);
+                            setExpandedBillingUnitId(null);
+                            setExpandedHistoryUnitId(null);
+                            setExpandedPhotosUnitId(null);
+                            setExpandedAmenitiesUnitId(null);
+                          }}
+                          className={expandedMetersUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
+                        >
+                          <Gauge className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           title="Configure charges"
                           onClick={() => {
                             setExpandedBillingUnitId(expandedBillingUnitId === unit.id ? null : unit.id);
                             setExpandedHistoryUnitId(null);
+                            setExpandedPhotosUnitId(null);
+                            setExpandedAmenitiesUnitId(null);
+                            setExpandedMetersUnitId(null);
                           }}
                           className={expandedBillingUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
                         >
@@ -544,6 +634,39 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                     <TableRow>
                       <TableCell colSpan={8} className="p-3 bg-muted/10">
                         <UnitHistoryPanel
+                          unitId={unit.id}
+                          unitLabel={unit.unit_number}
+                          propertyId={propertyId}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {expandedPhotosUnitId === unit.id && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                        <UnitPhotoGallery
+                          unitId={unit.id}
+                          unitLabel={unit.unit_number}
+                          propertyId={propertyId}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {expandedAmenitiesUnitId === unit.id && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                        <UnitAmenitiesManager
+                          unitId={unit.id}
+                          unitLabel={unit.unit_number}
+                          propertyId={propertyId}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {expandedMetersUnitId === unit.id && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                        <UnitUtilityMeters
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
                           propertyId={propertyId}

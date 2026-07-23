@@ -447,7 +447,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
   const getStatusBadge = (status: string) => {
     const styles: Record<string, { icon: React.ReactNode; className: string }> = {
       pending: { icon: <Clock className="h-3 w-3" />, className: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
-      processing: { icon: <Loader2 className="h-3 w-3 animate-spin" />, className: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
+      processing: { icon: <Loader2 className="h-3 w-3 animate-spin" />, className: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]" },
       completed: { icon: <CheckCircle2 className="h-3 w-3" />, className: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
       cancelled: { icon: <Ban className="h-3 w-3" />, className: "bg-slate-500/10 text-slate-500 border-slate-500/20" },
     };

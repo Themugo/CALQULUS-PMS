@@ -201,7 +201,7 @@ const OrphanTenantHome: React.FC = () => {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'Total recorded',     value: fmt(totalPaid),           color: 'text-green-400' },
-          { label: 'Payments logged',    value: String(payments.length),  color: 'text-blue-400' },
+          { label: 'Payments logged',    value: String(payments.length),  color: 'text-[hsl(214_73%_60%)]' },
           { label: 'Condition photos',   value: String(photos.length),    color: 'text-amber-500' },
         ].map(k => (
           <div key={k.label} className="rounded-xl border border-border/50 bg-card p-3 text-center">
@@ -295,7 +295,7 @@ const OrphanTenantHome: React.FC = () => {
             </Button>
           </div>
 
-          <div className="rounded-lg bg-blue-50/10 border border-blue-500/20 p-3 text-xs text-blue-300">
+          <div className="rounded-lg bg-[hsl(214_73%_48%/0.08)] border border-[hsl(214_73%_48%/0.25)] p-3 text-xs text-[hsl(214_73%_65%)]">
             <p className="flex items-center gap-1.5 font-medium mb-1"><ShieldCheck className="h-3.5 w-3.5" />Why log condition photos?</p>
             <p>Photos are timestamped when saved. This creates evidence of the property's condition at move-in — protecting you from false damage claims when you move out.</p>
           </div>

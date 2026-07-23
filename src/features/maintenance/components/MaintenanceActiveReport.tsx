@@ -62,14 +62,14 @@ interface MaintenanceActiveReportProps {
 
 const priorityColors: Record<RequestPriority, string> = {
   low: "bg-slate-500 text-white",
-  medium: "bg-blue-500 text-white",
+  medium: "bg-[hsl(214_73%_48%)] text-white",
   high: "bg-orange-500 text-white",
   urgent: "bg-red-600 text-white",
 };
 
 const statusColors: Record<RequestStatus, string> = {
   open: "bg-amber-500 text-white",
-  in_progress: "bg-blue-600 text-white",
+  in_progress: "bg-[hsl(214_73%_45%)] text-white",
   completed: "bg-emerald-600 text-white",
   cancelled: "bg-slate-600 text-white",
 };
@@ -227,7 +227,7 @@ export function MaintenanceActiveReport({
                   <Download className="h-4 w-4 mr-2" />
                   {isExporting ? "Exporting..." : "Export PDF"}
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label={isOpen ? "Collapse" : "Expand"}>
                   {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
               </div>

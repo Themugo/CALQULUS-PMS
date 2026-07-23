@@ -119,7 +119,7 @@ const PlatformOversight = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Eye className="h-5 w-5 text-purple-500" />
+            <Eye className="h-5 w-5 text-[hsl(218_58%_50%)]" />
             Manager Oversight
           </CardTitle>
           <CardDescription>

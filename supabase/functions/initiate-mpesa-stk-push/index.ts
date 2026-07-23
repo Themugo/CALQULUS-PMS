@@ -77,9 +77,9 @@ serve(async (req) => {
         : []
     ).filter(Boolean);
 
-    if (!targetIds.length || !amount || !phoneNumber || !paymentType) {
+    if (!targetIds.length || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !phoneNumber || !paymentType) {
       throw new Error(
-        "Missing required fields: invoiceId or invoiceIds, amount, phoneNumber, paymentType"
+        "Missing or invalid required fields: invoiceId or invoiceIds, positive amount, phoneNumber, paymentType"
       );
     }
 

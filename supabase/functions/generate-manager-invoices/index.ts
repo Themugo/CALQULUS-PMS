@@ -25,6 +25,30 @@ serve(async (req) => {
       getEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
+    // ── Caller authentication ─────────────────────────────────────────
+    // This generates real subscription invoices for every manager on the
+    // platform. verify_jwt is off at the gateway (so cron can call it
+    // without a user session), but that also meant anyone on the
+    // internet could trigger a platform-wide billing run with no check
+    // at all. Restrict to webhost admins or the service-role key.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const isServiceCall = authHeader === `Bearer ${getEnv("SUPABASE_SERVICE_ROLE_KEY")}`;
+    if (!isServiceCall) {
+      const { data: { user: caller }, error: authErr } = await supabaseClient.auth.getUser(
+        authHeader.replace("Bearer ", "")
+      );
+      if (authErr || !caller) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
+      const { data: roleRow } = await supabaseClient.from("user_roles")
+        .select("role").eq("user_id", caller.id).maybeSingle();
+      if ((roleRow as any)?.role !== "webhost") {
+        return new Response(JSON.stringify({ error: "Forbidden: only platform admins may run billing" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
+    }
+
     // Fetch billing settings from webhost_payment_settings
     const { data: paymentSettings, error: settingsError } = await supabaseClient
       .from("webhost_payment_settings")

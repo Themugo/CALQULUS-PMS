@@ -1,6 +1,7 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { requireEnv } from "../_shared/env.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -12,6 +13,39 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
+    // ── Caller authentication ─────────────────────────────────────────
+    // CRITICAL, and also factually broken: previously unauthenticated,
+    // AND it called `initiate-mpesa-payment` with a payout-shaped body
+    // (phone/amount/reference) — but that function is actually a
+    // Paystack invoice-COLLECTION endpoint expecting invoiceId/
+    // invoiceNumber/email (collecting rent FROM a tenant), not a
+    // disbursement mechanism. There is no real "send money to a
+    // landlord" integration anywhere in this codebase — no B2C M-Pesa,
+    // no bank transfer API. This function is rebuilt to do only what
+    // the real payout_requests schema supports: mark a request
+    // "approved" by a platform admin. Actually paying the landlord
+    // (bank transfer / M-Pesa) happens manually outside the system;
+    // a separate action should then call mark-payout-paid (or similar)
+    // to record paid_at once that manual transfer is confirmed.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+    if (authErr || !caller) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const { data: roleRow } = await supabase.from("user_roles")
+      .select("role").eq("user_id", caller.id).maybeSingle();
+    if ((roleRow as any)?.role !== "webhost") {
+      return new Response(JSON.stringify({ error: "Forbidden: only platform admins may approve payout requests" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const allowed = await checkRateLimit(supabase, caller.id, "execute-payout", 20, { failClosed: true });
+    if (!allowed) return rateLimitResponse(req);
+
     const { payoutId } = await req.json();
     if (!payoutId) {
       return new Response(JSON.stringify({ error: "payoutId required" }), {
@@ -19,50 +53,33 @@ serve(async (req) => {
       });
     }
 
-    const { data: payout, error } = await supabase
-      .from("payouts")
-      .select("*")
+    // Atomically claim the request: only proceed if it's still "pending",
+    // so two concurrent approvals can't both succeed.
+    const { data: approved, error: claimErr } = await supabase
+      .from("payout_requests")
+      .update({ status: "approved", approved_at: new Date().toISOString(), approved_by: caller.id })
       .eq("id", payoutId)
-      .single();
+      .eq("status", "pending")
+      .select("*")
+      .maybeSingle();
 
-    if (error || !payout) throw new Error("Payout not found");
-    if (payout.status !== "pending") {
-      return new Response(JSON.stringify({ error: "Payout is not in pending status" }), {
+    if (claimErr || !approved) {
+      return new Response(JSON.stringify({ error: "Payout request not found or not in pending status" }), {
         status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
 
-    const executionResult: any = { method: payout.method };
-
-    if (payout.method === "mpesa" && payout.mpesa_phone) {
-      // Initiate M-Pesa B2C via Daraja
-      const b2cResult = await supabase.functions.invoke("initiate-mpesa-payment", {
-        body: {
-          phone: payout.mpesa_phone,
-          amount: payout.amount,
-          reference: payoutId,
-          remarks: "Landlord payout",
-        },
-      });
-      executionResult.mpesa = b2cResult.data;
-    }
-
-    // Mark payout as processing
-    await supabase
-      .from("payouts")
-      .update({ status: "processing", processed_at: new Date().toISOString(), execution_result: executionResult })
-      .eq("id", payoutId);
-
-    // Send notification
+    // Notify the landlord that their request was approved (actual funds
+    // transfer happens manually outside this system).
     await supabase.functions.invoke("send-push-notification", {
       body: {
-        userId: payout.landlord_id,
-        title: "Payout initiated",
-        body: `Your withdrawal of KES ${Number(payout.amount).toLocaleString()} is being processed.`,
+        userId: approved.landlord_user_id,
+        title: "Payout approved",
+        body: `Your payout request of KES ${Number(approved.amount).toLocaleString()} has been approved.`,
       },
     }).catch(() => {});
 
-    return new Response(JSON.stringify({ success: true, payoutId, status: "processing" }), {
+    return new Response(JSON.stringify({ success: true, payoutId, status: "approved" }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   } catch (error: any) {

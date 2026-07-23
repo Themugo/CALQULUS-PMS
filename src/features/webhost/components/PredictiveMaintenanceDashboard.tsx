@@ -253,7 +253,7 @@ const PredictiveMaintenanceDashboard = () => {
         return <Badge className="bg-green-100 text-green-800 border-green-300"><CheckCircle className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'good':
       case 'scheduled':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'fair':
       case 'in_progress':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
@@ -285,9 +285,9 @@ const PredictiveMaintenanceDashboard = () => {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'hvac':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Fan className="h-3 w-3 mr-1" />{type.toUpperCase()}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Fan className="h-3 w-3 mr-1" />{type.toUpperCase()}</Badge>;
       case 'plumbing':
-        return <Badge variant="outline" className="text-cyan-300 border-cyan-700"><Droplets className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(195_60%_60%)] border-[hsl(195_60%_38%)]"><Droplets className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'electrical':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><Lightbulb className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'elevator':
@@ -317,9 +317,9 @@ const PredictiveMaintenanceDashboard = () => {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'hvac':
-        return <Fan className="h-4 w-4 text-blue-400" />;
+        return <Fan className="h-4 w-4 text-[hsl(214_73%_58%)]" />;
       case 'plumbing':
-        return <Droplets className="h-4 w-4 text-cyan-400" />;
+        return <Droplets className="h-4 w-4 text-[hsl(195_60%_50%)]" />;
       case 'electrical':
         return <Lightbulb className="h-4 w-4 text-yellow-400" />;
       case 'elevator':
@@ -422,22 +422,22 @@ const PredictiveMaintenanceDashboard = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="equipment" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Wrench className="h-4 w-4 mr-2" />
             Equipment
           </TabsTrigger>
-          <TabsTrigger value="predictions" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="predictions" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Predictions
           </TabsTrigger>
-          <TabsTrigger value="schedule" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="schedule" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Calendar className="h-4 w-4 mr-2" />
             Schedule
           </TabsTrigger>
-          <TabsTrigger value="costs" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="costs" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <BarChart3 className="h-4 w-4 mr-2" />
             Costs
           </TabsTrigger>
@@ -529,7 +529,7 @@ const PredictiveMaintenanceDashboard = () => {
                     placeholder="Search equipment..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select

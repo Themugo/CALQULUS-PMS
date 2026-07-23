@@ -100,7 +100,7 @@ interface ManagerContract {
 
 const contractStatusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   pending: { label: "Pending Review", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
-  approved: { label: "Ready to Sign", styles: "bg-blue-600 text-white border-blue-700", icon: CheckCircle },
+  approved: { label: "Ready to Sign", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: CheckCircle },
   rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
   signed: { label: "Signed", styles: "bg-emerald-600 text-white border-emerald-700", icon: ShieldCheck },
   expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
@@ -129,7 +129,7 @@ const ContractCard = ({
   highlight = false,
 }: ContractCardProps) => {
   return (
-    <Card className={`transition-all ${highlight ? "border-blue-500/50 bg-blue-500/5" : "border-border/50 bg-card/50"}`}>
+    <Card className={`transition-all ${highlight ? "border-[hsl(214_73%_48%/0.5)] bg-[hsl(214_73%_48%/0.05)]" : "border-border/50 bg-card/50"}`}>
       <CardContent className="p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
@@ -748,7 +748,7 @@ Status: PAID
               <FileSignature className="h-4 w-4" />
               Platform Contracts
               {approvedContracts.length > 0 && (
-                <Badge className="ml-1 bg-blue-500 text-white">{approvedContracts.length}</Badge>
+                <Badge className="ml-1 bg-[hsl(214_73%_48%)] text-white">{approvedContracts.length}</Badge>
               )}
             </TabsTrigger>
           </TabsList>
@@ -958,7 +958,7 @@ Status: PAID
                                   variant="ghost"
                                   onClick={() => handleSendReceiptEmail(invoice)}
                                   disabled={isSendingEmail === invoice.id}
-                                  className="text-blue-500 hover:bg-blue-500/10"
+                                  className="text-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_48%/0.1)]"
                                   title="Send to Email"
                                 >
                                   {isSendingEmail === invoice.id ? (
@@ -1027,7 +1027,7 @@ Status: PAID
                   <CardTitle className="text-sm font-medium text-muted-foreground">Ready to Sign</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-500">{approvedContracts.length}</div>
+                  <div className="text-2xl font-bold text-[hsl(214_73%_48%)]">{approvedContracts.length}</div>
                 </CardContent>
               </Card>
               <Card className="bg-card/50 border-border/50">

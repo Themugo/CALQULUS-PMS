@@ -203,7 +203,7 @@ export const ContractsTable = ({
                         size="icon"
                         onClick={() => onSign(contract)}
                         title="Sign"
-                        className="text-blue-500 hover:text-blue-600"
+                        className="text-[hsl(214_73%_48%)] hover:text-[hsl(214_73%_40%)]"
                       >
                         <FileSignature className="h-4 w-4" />
                       </Button>
@@ -216,7 +216,7 @@ export const ContractsTable = ({
                         onClick={() => onSendEmail(contract)}
                         disabled={isSendingEmail === contract.id}
                         title="Send Email Notification"
-                        className="text-blue-500 hover:text-blue-600"
+                        className="text-[hsl(214_73%_48%)] hover:text-[hsl(214_73%_40%)]"
                       >
                         {isSendingEmail === contract.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -307,7 +307,7 @@ export const ContractsTable = ({
                           size="icon"
                           onClick={() => onSign(contract)}
                           title="Sign"
-                          className="text-blue-500 hover:text-blue-600"
+                          className="text-[hsl(214_73%_48%)] hover:text-[hsl(214_73%_40%)]"
                         >
                           <FileSignature className="h-4 w-4" />
                         </Button>

@@ -44,13 +44,15 @@ export const DesktopInstallBanner = () => {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    window.addEventListener("appinstalled", () => {
+    const handleAppInstalled = () => {
       setIsVisible(false);
       setDeferredPrompt(null);
-    });
+    };
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 

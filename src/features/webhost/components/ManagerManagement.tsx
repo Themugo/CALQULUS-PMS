@@ -31,8 +31,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 
 const TIER_BADGE: Record<string, string> = {
   starter:      'bg-slate-100 text-slate-700 border-slate-200',
-  growth:       'bg-blue-100 text-blue-800 border-blue-200',
-  professional: 'bg-blue-100 text-blue-800 border-blue-200',
+  growth:       'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
+  professional: 'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
   enterprise:   'bg-amber-100 text-amber-800 border-amber-200',
 };
 
@@ -262,13 +262,13 @@ const ManagerManagement: React.FC = () => {
                 <Button size="sm" variant="outline" className="border-red-500 text-red-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'reject', manager: m }); setActionReason(''); }}><UserX className="h-3.5 w-3.5 mr-1" />Reject</Button>
               </>)}
               {m.approval_status === 'approved' && (<>
-                <Button size="sm" variant="outline" className="border-purple-600 text-amber-400/70 h-7 text-xs" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
+                <Button size="sm" variant="outline" className="border-[hsl(218_58%_40%)] text-amber-400/70 h-7 text-xs" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
                 <Button size="sm" variant="outline" className="border-orange-500 text-orange-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'suspend', manager: m }); setActionReason(''); }}><Ban className="h-3.5 w-3.5 mr-1" />Suspend</Button>
               </>)}
               {(m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment' || m.approval_status === 'rejected') && (
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
               )}
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setExpandedId(expanded ? null : m.user_id)}>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
                 {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
               </Button>
             </div>
@@ -322,7 +322,7 @@ const ManagerManagement: React.FC = () => {
           <p className="text-muted-foreground text-sm">{managers.length} total · {pending.length} pending · {active.length} active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/70 hover:bg-purple-900/30" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
+          <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
           <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900" onClick={() => setAddOpen(true)}><UserPlus className="h-4 w-4 mr-2" />Add Manager</Button>
         </div>
       </div>
@@ -337,7 +337,7 @@ const ManagerManagement: React.FC = () => {
       <Tabs defaultValue="pending">
         <TabsList className="bg-card/80 border border-border/60 flex-wrap h-auto gap-1 p-1">
           {[['pending', `Pending (${pending.length})`], ['active', `Active (${active.length})`], ['suspended', `Suspended (${suspended.length})`], ['rejected', `Rejected (${rejected.length})`]].map(([v, l]) => (
-            <TabsTrigger key={v} value={v} className="text-muted-foreground data-[state=active]:bg-purple-600 data-[state=active]:text-white text-xs">{l}</TabsTrigger>
+            <TabsTrigger key={v} value={v} className="text-muted-foreground data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-xs">{l}</TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="pending"><TabList managers={pending} /></TabsContent>

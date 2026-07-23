@@ -31,13 +31,13 @@ const NOTICE_ICONS: Record<string, NoticeIconConfig> = {
   rent_increase:    { icon: TrendingUp,    color: 'text-amber-600',  bg: 'bg-amber-50',  label: 'Rent increase' },
   arrears_demand:   { icon: AlertTriangle, color: 'text-red-600',    bg: 'bg-red-50',    label: 'Arrears demand' },
   eviction_warning: { icon: Home,          color: 'text-red-700',    bg: 'bg-red-50',    label: 'Eviction warning' },
-  entry_notice:     { icon: Home,          color: 'text-blue-600',   bg: 'bg-blue-50',   label: 'Entry notice' },
+  entry_notice:     { icon: Home,          color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]',   label: 'Entry notice' },
   lease_renewal:    { icon: FileText,      color: 'text-green-600',  bg: 'bg-green-50',  label: 'Lease renewal' },
   rule_violation:   { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', label: 'Rule violation' },
   general:          { icon: MessageSquare, color: 'text-slate-600',  bg: 'bg-slate-50',  label: 'Notice' },
-  announcement:     { icon: Megaphone,     color: 'text-blue-600',   bg: 'bg-blue-50',   label: 'Announcement' },
+  announcement:     { icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]',   label: 'Announcement' },
   payment_reminder: { icon: Bell,          color: 'text-amber-600',  bg: 'bg-amber-50',  label: 'Payment reminder' },
-  maintenance_update: { icon: Wrench,      color: 'text-purple-600', bg: 'bg-purple-50', label: 'Maintenance update' },
+  maintenance_update: { icon: Wrench,      color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]', label: 'Maintenance update' },
 };
 
 const TenantInbox: React.FC = () => {
@@ -181,7 +181,7 @@ const TenantInbox: React.FC = () => {
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <Badge variant="outline" className="text-xs">{config.label}</Badge>
                 {!notice.tenant_acknowledged && (
-                  <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-200">New</Badge>
+                  <Badge className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">New</Badge>
                 )}
                 {notice.status === 'disputed' && (
                   <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200">Disputed</Badge>
@@ -220,7 +220,7 @@ const TenantInbox: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                {!msg.is_read && <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-200">New</Badge>}
+                {!msg.is_read && <Badge className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">New</Badge>}
                 {msg.message_type && (
                   <Badge variant="outline" className="text-xs capitalize">{msg.message_type.replace(/_/g, ' ')}</Badge>
                 )}

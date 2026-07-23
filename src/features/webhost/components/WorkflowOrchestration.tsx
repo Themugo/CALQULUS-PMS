@@ -297,7 +297,7 @@ const WorkflowOrchestration = () => {
         return <Badge className="bg-green-100 text-green-800 border-green-300"><CheckCircle className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'running':
       case 'in_progress':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-300"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'paused':
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
@@ -309,7 +309,7 @@ const WorkflowOrchestration = () => {
       case 'skipped':
         return <Badge className="bg-gray-100 text-gray-800 border-gray-300"><MoreHorizontal className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'draft':
-        return <Badge className="bg-amber-400/15 text-amber-700 border-blue-200"><FileText className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25"><FileText className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -318,7 +318,7 @@ const WorkflowOrchestration = () => {
   const getCategoryBadge = (category: string) => {
     switch (category) {
       case 'onboarding':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><Layers className="h-3 w-3 mr-1" />{category}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Layers className="h-3 w-3 mr-1" />{category}</Badge>;
       case 'maintenance':
         return <Badge variant="outline" className="text-orange-300 border-orange-700"><Settings className="h-3 w-3 mr-1" />{category}</Badge>;
       case 'billing':
@@ -335,7 +335,7 @@ const WorkflowOrchestration = () => {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'manual':
-        return <Badge variant="outline" className="text-blue-300 border-blue-700"><User className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><User className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'automated':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Zap className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'conditional':
@@ -438,19 +438,19 @@ const WorkflowOrchestration = () => {
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="templates" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="templates" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Layers className="h-4 w-4 mr-2" />
             Templates
           </TabsTrigger>
-          <TabsTrigger value="instances" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="instances" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Activity className="h-4 w-4 mr-2" />
             Instances
           </TabsTrigger>
-          <TabsTrigger value="steps" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="steps" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <GitBranch className="h-4 w-4 mr-2" />
             Steps
           </TabsTrigger>
-          <TabsTrigger value="automations" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-amber-400/70">
+          <TabsTrigger value="automations" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
             <Zap className="h-4 w-4 mr-2" />
             Automations
           </TabsTrigger>
@@ -473,7 +473,7 @@ const WorkflowOrchestration = () => {
                     placeholder="Search templates..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-purple-400"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
@@ -618,7 +618,7 @@ const WorkflowOrchestration = () => {
                     <div className="flex flex-col items-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         step.status === 'completed' ? 'bg-green-600' :
-                        step.status === 'in_progress' ? 'bg-blue-600' :
+                        step.status === 'in_progress' ? 'bg-[hsl(214_73%_45%)]' :
                         step.status === 'failed' ? 'bg-red-600' :
                         'bg-gray-600'
                       }`}>
@@ -633,7 +633,7 @@ const WorkflowOrchestration = () => {
                         )}
                       </div>
                       {idx < workflowSteps.length - 1 && (
-                        <div className="w-0.5 h-8 bg-purple-800 mt-2" />
+                        <div className="w-0.5 h-8 bg-[hsl(218_58%_24%)] mt-2" />
                       )}
                     </div>
                     <div className="flex-1">

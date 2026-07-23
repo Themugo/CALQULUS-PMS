@@ -170,7 +170,7 @@ const WebhostPaymentSettings: React.FC = () => {
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
               <Percent className="h-5 w-5 text-amber-500" />
             </div>
             <div>
@@ -182,9 +182,9 @@ const WebhostPaymentSettings: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert className="bg-blue-900/30 border-blue-700">
-            <AlertCircle className="h-4 w-4 text-blue-400" />
-            <AlertDescription className="text-blue-300">
+          <Alert className="bg-[hsl(214_73%_25%/0.3)] border-[hsl(214_73%_40%)]">
+            <AlertCircle className="h-4 w-4 text-[hsl(214_73%_58%)]" />
+            <AlertDescription className="text-[hsl(214_73%_65%)]">
               These settings will be used when generating new invoices for managers. Existing invoices will not be affected.
             </AlertDescription>
           </Alert>
@@ -228,8 +228,8 @@ const WebhostPaymentSettings: React.FC = () => {
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <Building className="h-5 w-5 text-blue-400" />
+            <div className="h-10 w-10 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
+              <Building className="h-5 w-5 text-[hsl(214_73%_58%)]" />
             </div>
             <div>
               <CardTitle className="text-white">Bank Account Details</CardTitle>
@@ -474,7 +474,7 @@ const TierPricingEditor: React.FC = () => {
         </thead>
         <tbody>
           {tiers.map((tier: SubscriptionTier, i: number) => (
-            <tr key={tier.id} className={i < tiers.length - 1 ? 'border-b border-purple-800/20' : ''}>
+            <tr key={tier.id} className={i < tiers.length - 1 ? 'border-b border-[hsl(218_58%_24%/0.2)]' : ''}>
               <td className="py-2 px-3">
                 <span className="text-white font-medium capitalize">{TIER_LABELS[tier.tier_key] ?? tier.tier_key}</span>
               </td>

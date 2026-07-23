@@ -98,7 +98,7 @@ const PropertyAssignment: React.FC = () => {
                 <div key={key}>
                   {/* Manager header */}
                   <div className="flex items-center gap-3 mb-2 px-1">
-                    <div className="h-8 w-8 rounded-lg bg-purple-600/30 flex items-center justify-center shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-[hsl(218_58%_40%/0.3)] flex items-center justify-center shrink-0">
                       <Users className="h-4 w-4 text-amber-500" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -116,7 +116,7 @@ const PropertyAssignment: React.FC = () => {
                   {/* Property cards */}
                   <div className="space-y-1.5 pl-11">
                     {props.map(p => (
-                      <div key={p.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-purple-800/20 bg-muted/20 hover:bg-purple-900/10 transition-colors">
+                      <div key={p.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-[hsl(218_58%_24%/0.2)] bg-muted/20 hover:bg-[hsl(218_58%_16%/0.1)] transition-colors">
                         <Building className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-white truncate">{p.name}</p>

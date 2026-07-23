@@ -342,13 +342,13 @@ const UnitInspectionChecklist: React.FC<Props> = ({
   return (
     <div className="space-y-6">
       {/* Protection notice */}
-      <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50">
-        <Shield className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-3 p-4 rounded-xl border border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)]">
+        <Shield className="h-5 w-5 text-[hsl(214_73%_45%)] shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-blue-900">
+          <p className="text-sm font-semibold text-[hsl(214_73%_30%)]">
             {inspectionType === 'move_in' ? 'Move-in' : 'Move-out'} condition record
           </p>
-          <p className="text-xs text-blue-700 mt-0.5">
+          <p className="text-xs text-[hsl(214_73%_40%)] mt-0.5">
             {inspectionType === 'move_in'
               ? 'Record every item\'s condition now. Pre-existing issues documented here cannot be charged to your deposit when you leave. Take photos as evidence.'
               : 'Compare with move-in record. Only new damage (not pre-existing at move-in) can be deducted from your deposit.'

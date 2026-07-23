@@ -26,9 +26,9 @@ import type { BillingInvoice, BillingExpenditure } from "../hooks/useBillingData
 
 const EXPENDITURE_CATEGORIES = [
   { key: "electricity", label: "Electricity",     icon: Zap,      color: "text-yellow-500" },
-  { key: "water",       label: "Water",            icon: Droplets, color: "text-blue-500"   },
+  { key: "water",       label: "Water",            icon: Droplets, color: "text-[hsl(195_60%_42%)]"   },
   { key: "security",    label: "Security",         icon: Shield,   color: "text-red-500"    },
-  { key: "staff",       label: "Staff Salaries",   icon: Users,    color: "text-purple-500" },
+  { key: "staff",       label: "Staff Salaries",   icon: Users,    color: "text-[hsl(218_58%_40%)]" },
   { key: "other",       label: "Other Expenses",   icon: Receipt,  color: "text-muted-foreground" },
 ] as const;
 
@@ -141,8 +141,8 @@ export function ExpendituresTab({
             color: netProfit >= 0 ? "text-emerald-400" : "text-red-400",
           },
           {
-            icon: <Wallet className="h-6 w-6 text-blue-500" />,
-            bg: "bg-blue-500/10",
+            icon: <Wallet className="h-6 w-6 text-[hsl(214_73%_48%)]" />,
+            bg: "bg-[hsl(214_73%_48%/0.1)]",
             label: "Payments Received",
             value: monthlyPaidInvoices.length.toString(),
             color: "text-foreground",

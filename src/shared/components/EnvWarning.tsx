@@ -36,8 +36,8 @@ export default function EnvWarning() {
             </code>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
-            <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Quick fix</p>
+          <div className="bg-[hsl(214_73%_48%/0.06)] dark:bg-[hsl(214_73%_25%/0.2)] rounded-lg p-3 border border-[hsl(214_73%_48%/0.25)] dark:border-[hsl(214_73%_40%/0.3)]">
+            <p className="text-xs font-semibold text-[hsl(214_73%_45%)] dark:text-[hsl(214_73%_65%)] uppercase tracking-wider mb-1">Quick fix</p>
             <ol className="text-sm text-slate-600 dark:text-slate-300 space-y-1 list-decimal list-inside">
               <li>Copy <code className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-1 rounded">.env.example</code> to <code className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-1 rounded">.env.local</code></li>
               <li>Fill in your Supabase project URL and anon key</li>

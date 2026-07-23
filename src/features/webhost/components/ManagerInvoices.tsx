@@ -546,9 +546,9 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
           
           <div className="space-y-4">
             {paymentSettings.payment_instructions && (
-              <Alert className="bg-blue-900/30 border-blue-700">
-                <Info className="h-4 w-4 text-blue-400" />
-                <AlertDescription className="text-blue-300">
+              <Alert className="bg-[hsl(214_73%_25%/0.3)] border-[hsl(214_73%_40%)]">
+                <Info className="h-4 w-4 text-[hsl(214_73%_58%)]" />
+                <AlertDescription className="text-[hsl(214_73%_65%)]">
                   {paymentSettings.payment_instructions}
                 </AlertDescription>
               </Alert>
@@ -557,7 +557,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             {hasBank && (
               <div className="p-4 bg-slate-700/50 rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
-                  <Building className="h-5 w-5 text-blue-400" />
+                  <Building className="h-5 w-5 text-[hsl(214_73%_58%)]" />
                   <h4 className="text-white font-semibold">Bank Transfer</h4>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -737,7 +737,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
   const getInvoiceTypeBadge = (type: string) => {
     if (type === 'registration') {
       return (
-        <Badge className="bg-blue-600/20 text-blue-400 border-blue-600/30">
+        <Badge className="bg-[hsl(214_73%_45%/0.2)] text-[hsl(214_73%_58%)] border-[hsl(214_73%_45%/0.3)]">
           <Users className="h-3 w-3 mr-1" />
           Registration
         </Badge>
@@ -762,7 +762,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
           <CardContent className="py-3">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <Badge className="bg-purple-600 text-white">
+                <Badge className="bg-[hsl(218_58%_40%)] text-white">
                   {selectedCount} selected
                 </Badge>
                 <span className="text-amber-100/80 text-sm">
@@ -773,7 +773,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-purple-600 text-amber-400/70 hover:bg-purple-600/20"
+                  className="border-[hsl(218_58%_40%)] text-amber-400/70 hover:bg-[hsl(218_58%_40%/0.2)]"
                   onClick={bulkSendReminders}
                   disabled={bulkActionLoading}
                 >
@@ -841,7 +841,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
           <div className="flex gap-2 flex-wrap">
             <Button 
               variant="outline" 
-              className="border-purple-600 text-amber-500 hover:bg-purple-600/20"
+              className="border-[hsl(218_58%_40%)] text-amber-500 hover:bg-[hsl(218_58%_40%/0.2)]"
               onClick={handleGenerateInvoices}
               disabled={isGeneratingInvoices}
             >
@@ -897,7 +897,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                     <Checkbox
                       checked={selectedIds.size === pendingInvoices.length && pendingInvoices.length > 0}
                       onCheckedChange={toggleAllSelection}
-                      className="border-purple-600 data-[state=checked]:bg-purple-600"
+                      className="border-[hsl(218_58%_40%)] data-[state=checked]:bg-[hsl(218_58%_40%)]"
                     />
                   </TableHead>
                   <TableHead className="text-amber-400/70">Invoice #</TableHead>
@@ -913,13 +913,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 {pendingInvoices.map((invoice) => (
                   <TableRow 
                     key={invoice.id} 
-                    className={`border-amber-400/12 hover:bg-purple-900/20 ${selectedIds.has(invoice.id) ? 'bg-purple-900/30' : ''}`}
+                    className={`border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)] ${selectedIds.has(invoice.id) ? 'bg-[hsl(218_58%_16%/0.3)]' : ''}`}
                   >
                     <TableCell>
                       <Checkbox
                         checked={selectedIds.has(invoice.id)}
                         onCheckedChange={() => toggleSelection(invoice.id)}
-                        className="border-purple-600 data-[state=checked]:bg-purple-600"
+                        className="border-[hsl(218_58%_40%)] data-[state=checked]:bg-[hsl(218_58%_40%)]"
                       />
                     </TableCell>
                     <TableCell className="text-white font-mono">{invoice.invoice_number}</TableCell>
@@ -938,14 +938,14 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                         <DropdownMenuContent align="end" className="bg-slate-800 border-amber-400/20">
                           <DropdownMenuItem
                             onClick={() => sendReminder.mutate(invoice.id)}
-                            className="text-amber-400/70 hover:bg-purple-900/50 cursor-pointer"
+                            className="text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.5)] cursor-pointer"
                           >
                             <Send className="h-4 w-4 mr-2" />
                             Send Reminder
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handlePayWithStripe(invoice)}
-                            className="text-blue-300 hover:bg-blue-900/50 cursor-pointer"
+                            className="text-[hsl(214_73%_65%)] hover:bg-[hsl(214_73%_25%/0.5)] cursor-pointer"
                           >
                             <CreditCard className="h-4 w-4 mr-2" />
                             Pay with Card
@@ -970,7 +970,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                             <Info className="h-4 w-4 mr-2" />
                             View Payment Details
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-purple-700/50" />
+                          <DropdownMenuSeparator className="bg-[hsl(218_58%_32%/0.5)]" />
                           <DropdownMenuItem
                             onClick={() => markAsPaid.mutate(invoice.id)}
                             className="text-emerald-300 hover:bg-emerald-900/50 cursor-pointer"
@@ -1060,10 +1060,10 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             <div className="p-4 bg-amber-400/6 rounded-lg border border-amber-400/15">
               <p className="text-sm text-amber-400/70 mb-2">Available placeholders:</p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{name}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{amount}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{invoices}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-purple-600">{'{count}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{name}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{amount}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{invoices}'}</Badge>
+                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{count}'}</Badge>
               </div>
             </div>
             <div className="space-y-2">
@@ -1082,7 +1082,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             <Button
               variant="outline"
               onClick={() => setBulkSmsDialogOpen(false)}
-              className="border-purple-600 text-amber-400/70"
+              className="border-[hsl(218_58%_40%)] text-amber-400/70"
             >
               Cancel
             </Button>
