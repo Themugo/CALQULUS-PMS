@@ -1,7 +1,7 @@
--- ============================================================
+
 -- Demo Data for Manager Account
 -- Manager: demo.manager@calqulusrms.com (ID: 4cbb0a75-a9d8-4aef-8a64-9c99245eab64)
--- ============================================================
+
 
 -- Fixed UUIDs for demo data
 DO $$

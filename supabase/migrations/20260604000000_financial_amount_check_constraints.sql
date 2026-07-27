@@ -1,4 +1,4 @@
--- ============================================================================
+
 -- Migration: Enforce positive-amount CHECK constraints on financial tables
 --
 -- The financial-integrity test suite (src/test/financial-integrity/*) mirrors
@@ -15,7 +15,7 @@
 --
 --   ALTER TABLE public.invoices VALIDATE CONSTRAINT invoices_amount_positive;
 --
--- ============================================================================
+
 
 DO $$
 BEGIN
@@ -140,14 +140,13 @@ BEGIN
   END IF;
 END $$;
 
--- ============================================================================
+
 -- Foreign key hardening: ensure invoices.property_id / unit_id / tenant_id
 -- relations used by payment_transactions(*, invoices(*)) joins in the
 -- reconciliation flows resolve correctly (ON DELETE behaviour audit).
 -- These FKs already exist (added in base schema); this section only adds
 -- the supporting index used by the reconciliation query pattern
 -- `payment_transactions.select('*, invoices(*)')`.
--- ============================================================================
 
 CREATE INDEX IF NOT EXISTS payment_transactions_invoice_id_idx
   ON public.payment_transactions (invoice_id);

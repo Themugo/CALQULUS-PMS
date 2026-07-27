@@ -469,9 +469,8 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 "@
 
-# ============================================================
 # 17. ORPHAN PAYMENT ENTRIES
-# ============================================================
+
 Write-Host "[17/19] Inserting orphan_payment_entries..." -ForegroundColor Yellow
 Run-Sql -Sql @"
 INSERT INTO public.orphan_payment_entries (id, amount, payment_date, description)
@@ -482,9 +481,9 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 "@
 
-# ============================================================
+
 # 18. MANAGER MPESA SETTINGS
-# ============================================================
+
 Write-Host "[18/19] Inserting manager_mpesa_settings..." -ForegroundColor Yellow
 Run-Sql -Sql @"
 INSERT INTO public.manager_mpesa_settings (id, manager_user_id, consumer_key, consumer_secret, passkey, shortcode, is_live)

@@ -34,15 +34,15 @@ This document establishes database governance policies and procedures for CALQUL
 
 #### Migration Structure
 ```sql
--- ============================================================================
+
 -- Migration: [Description]
 -- Author: [Author Name]
 -- Date: [YYYY-MM-DD]
 -- Ticket: [JIRA/Ticket Number]
 -- Risk Level: [LOW/MEDIUM/HIGH]
--- ============================================================================
+
 -- [Description of changes]
--- ============================================================================
+
 
 -- Migration SQL here
 

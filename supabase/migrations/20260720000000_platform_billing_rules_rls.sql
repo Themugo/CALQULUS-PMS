@@ -1,6 +1,6 @@
 -- ============================================================
 -- CALQULUS RMS: Add missing RLS policy for platform_billing_rules
--- ============================================================
+
 -- platform_billing_rules had ROW LEVEL SECURITY enabled since it was
 -- created (20260506000017_monetisation_enforcement.sql) but no policy
 -- was ever defined for it. RLS with zero policies denies ALL access —
