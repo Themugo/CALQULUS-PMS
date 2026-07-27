@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>CALQULUS PMS - Property Management</title>
+    <meta name="description" content="CALQULUS PMS - Modern property management solution for landlords and tenants" />
+    <meta name="author" content="CALQULUS PMS" />
+    <link rel="canonical" href="https://www.calqulus.site/" />
+
+    <!-- Security Meta Tags (fallback for servers without CSP header) -->
+    <!-- These provide XSS protection when CSP header is not present -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Content Security Policy (fallback) -->
+    <!-- Primary CSP is set via vercel.json headers for full protection -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://api.resend.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CALQULUS PMS" />
+    <meta name="theme-color" content="#0A1628" />
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#0A1628" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="CALQULUS PMS - Property Management" />
+    <meta property="og:description" content="Modern property management solution for landlords and tenants" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.calqulus.site/" />
+    <meta property="og:site_name" content="CALQULUS PMS" />
+    <meta property="og:image" content="https://www.calqulus.site/pwa-512x512.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@CALQULUSPMS" />
+    <meta name="twitter:image" content="https://www.calqulus.site/pwa-512x512.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
