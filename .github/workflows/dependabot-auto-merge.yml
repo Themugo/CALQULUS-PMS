@@ -1,0 +1,121 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: read
+
+jobs:
+  enable-auto-merge:
+    name: Enable Auto-Merge for Dependabot PR
+    runs-on: ubuntu-latest
+    # Only run for Dependabot PRs
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Enable auto-merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            if (!pr) {
+              console.log('No pull request data');
+              return;
+            }
+            
+            if (pr.auto_merge) {
+              console.log('Auto-merge already enabled for PR #' + pr.number);
+              return;
+            }
+            
+            try {
+              await github.rest.repos.enableAutoMerge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                merge_method: 'squash'
+              });
+              
+              console.log('Auto-merge enabled for PR #' + pr.number);
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '🤖 Auto-merge enabled! This Dependabot PR will be automatically merged once all CI checks pass.'
+              });
+            } catch (error) {
+              console.log('Could not enable auto-merge:', error.message);
+            }
+
+  # Fallback job that runs on a schedule to catch any PRs that might have been missed
+  check-missed-prs:
+    name: Check Missed Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    concurrency:
+      group: dependabot-check
+      cancel-in-progress: true
+    steps:
+      - name: Find and enable auto-merge for Dependabot PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'updated',
+              direction: 'desc'
+            });
+            
+            const dependabotPrs = prs.filter(pr => pr.user?.login === 'dependabot[bot]');
+            console.log(`Found ${dependabotPrs.length} open Dependabot PRs`);
+            
+            for (const pr of dependabotPrs) {
+              if (pr.auto_merge) {
+                console.log(`PR #${pr.number}: auto-merge already enabled`);
+                continue;
+              }
+              
+              // Check status checks
+              const { data: statuses } = await github.rest.repos.listCommitStatusesForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: pr.head.sha
+              });
+              
+              const hasFailing = statuses.some(s => s.state === 'failure');
+              const hasPending = statuses.some(s => s.state === 'pending');
+              
+              if (!hasFailing && !hasPending && pr.mergeable === 'MERGEABLE') {
+                console.log(`PR #${pr.number}: enabling auto-merge...`);
+                try {
+                  await github.rest.repos.enableAutoMerge({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    merge_method: 'squash'
+                  });
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    body: '🤖 Auto-merge enabled! This PR will be automatically merged once all CI checks pass.'
+                  });
+                } catch (error) {
+                  console.log(`PR #${pr.number}: failed - ${error.message}`);
+                }
+              } else {
+                console.log(`PR #${pr.number}: waiting - hasFailing=${hasFailing}, hasPending=${hasPending}, mergeable=${pr.mergeable}`);
+              }
+            }
