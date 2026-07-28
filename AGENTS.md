@@ -27,6 +27,53 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 - Set secrets: Supabase Dashboard → Edge Functions → Secrets
 - Vercel auto-deploys from GitHub `main` branch
 
+## Observability Stack
+
+### Frontend Observability
+- **Structured Logging** (`src/shared/lib/observability.ts`)
+  - Correlation IDs for request tracing
+  - Session context tracking
+  - Component-level loggers
+  - Performance marks and measures
+  - Web Vitals monitoring (LCP, FID, CLS, TTFB)
+
+- **Business KPIs** (`kpi.track()`)
+  - Payment metrics (success/failed/pending)
+  - Tenant events (signup, lease_signed, move_in/out)
+  - Property events (created, unit_added, unit_occupied)
+  - Revenue tracking by source
+
+- **Application Metrics** (`metrics.record()`)
+  - Counter, gauge, timing metrics
+  - Batch flush to Supabase
+  - Performance marks
+
+- **Production Diagnostics** (`ProductionDiagnostics.tsx`)
+  - Real-time component health checks
+  - Ctrl+Shift+D to toggle
+  - Correlation ID display for support
+
+### Edge Function Observability
+- **Health Check** (`supabase/functions/health-check/`)
+  - GET `/health-check` - Basic health
+  - GET `/health-check?detailed=true` - Full component status
+  - GET `/health-check?metrics=true` - With metrics
+  - Checks: Database, Auth, Storage, Edge Functions
+
+### Monitoring Dashboards
+- `monitoring/grafana-dashboards/observability.json` - Full observability dashboard
+  - System Health Overview
+  - Request Rate & Error Rate
+  - Payment Operations
+  - Web Vitals
+  - Business KPIs
+
+### Alerting
+- Prometheus metrics-based alerts (`monitoring/alerts.yml`)
+- Payment failure alerts
+- Database connection pool monitoring
+- Security alerts (failed logins, MFA bypass)
+
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflows

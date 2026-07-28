@@ -5,6 +5,7 @@ import "./index.css";
 import { initGlobalErrorCatcher } from "@/shared/lib/errorLogger";
 import { initSentry } from "@/shared/lib/sentry";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { ProductionDiagnostics } from "@/shared/components/ProductionDiagnostics";
 
 // Catch all unhandled errors and log them to Supabase activity_logs.
 // View errors: SELECT * FROM activity_logs WHERE action LIKE 'error:%' ORDER BY created_at DESC;
@@ -33,6 +34,8 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
     <React.StrictMode>
       <ErrorBoundary>
         <App />
+        {/* Production diagnostics panel - visible via Ctrl+Shift+D */}
+        <ProductionDiagnostics />
       </ErrorBoundary>
     </React.StrictMode>
   );

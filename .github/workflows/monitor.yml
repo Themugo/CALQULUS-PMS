@@ -25,6 +25,7 @@ jobs:
         id: app-health
         run: |
           APP_URL="https://app.calqulusrms.com"
+          HEALTH_URL="https://aelzsqxllkypbzslxyju.supabase.co/functions/v1/health-check"
           SUPABASE_URL="https://aelzsqxllkypbzslxyju.supabase.co"
           
           # Check app
@@ -33,6 +34,18 @@ jobs:
             echo "✅ App: HTTP $APP_CODE"
           else
             echo "::error title=App Unreachable::HTTP $APP_CODE"
+          fi
+          
+          # Check Supabase edge function health
+          HEALTH_RESPONSE=$(curl -s "$HEALTH_URL?detailed=true" --max-time 10 2>/dev/null || echo "{}")
+          HEALTH_STATUS=$(echo "$HEALTH_RESPONSE" | grep -o '"status":"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+          
+          if [ "$HEALTH_STATUS" == "healthy" ]; then
+            echo "✅ Health Check: Healthy"
+          elif [ "$HEALTH_STATUS" == "degraded" ]; then
+            echo "⚠️ Health Check: Degraded"
+          else
+            echo "❌ Health Check: Issues detected"
           fi
           
           # Check Supabase
@@ -49,6 +62,7 @@ jobs:
           echo "| Service | Status | Code |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|--------|------|" >> $GITHUB_STEP_SUMMARY
           echo "| App | $([ "$APP_CODE" == "200" ] && echo "✅ Up" || echo "❌ Down") | $APP_CODE |" >> $GITHUB_STEP_SUMMARY
+          echo "| Health Check | $([ "$HEALTH_STATUS" == "healthy" ] && echo "✅ $HEALTH_STATUS" || echo "⚠️ $HEALTH_STATUS") | - |" >> $GITHUB_STEP_SUMMARY
           echo "| Supabase | $([ "$SB_CODE" == "200" ] && echo "✅ Up" || echo "⚠️ Degraded") | $SB_CODE |" >> $GITHUB_STEP_SUMMARY
 
   # ── Performance Monitor ─────────────────────────────────────────────
