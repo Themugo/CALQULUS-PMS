@@ -7,6 +7,14 @@ on:
       - main
       - master
 
+# Prevent redundant builds
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
 jobs:
   # ── Fast feedback ─────────────────────────────────────────────
   # Lint + typecheck + unit tests in a single small job. Gives a
@@ -23,7 +31,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
@@ -37,6 +45,111 @@ jobs:
 
       - name: Tests
         run: npm test
+
+  # ── Security: Dependency Check ───────────────────────────────
+  security-deps:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+  # ── Security: Secret Detection ──────────────────────────────
+  secrets-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Security: Code Quality ─────────────────────────────────
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check for console.log/error statements
+        run: |
+          CONSOLE_LOGS=$(grep -r "console\.\(log\|debug\|info\)" --include="*.tsx" --include="*.ts" src/ | grep -v "// " | wc -l || echo 0)
+          if [ "$CONSOLE_LOGS" -gt 10 ]; then
+            echo "Warning: Found $CONSOLE_LOGS console statements"
+          fi
+
+  # ── Build Verification ─────────────────────────────────────
+  build:
+    name: Production Build
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: https://example.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-anon-key
+      VITE_ENABLE_PUBLIC_DEMO: "false"
+      VITE_ENABLE_DEMO_SEED: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f dist/index.html ]; then
+            echo "Build failed: index.html not found"
+            exit 1
+          fi
+          if [ ! -d dist/assets ]; then
+            echo "Build failed: assets directory not found"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
 
   # ── Full release gate ─────────────────────────────────────────
   # Runs the heavyweight checks: production build, `npm audit` at
@@ -61,7 +174,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
@@ -69,3 +182,44 @@ jobs:
 
       - name: Verify release gate
         run: npm run verify
+
+  # ── Bundle Size Check ────────────────────────────────────────
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Check main bundle size
+        run: |
+          MAX_SIZE=2500000  # 2.5MB
+          for bundle in dist/assets/index-*.js; do
+            SIZE=$(stat -c%s "$bundle")
+            echo "$bundle: $((SIZE / 1024))KB"
+            if [ "$SIZE" -gt "$MAX_SIZE" ]; then
+              echo "::warning ::Bundle exceeds recommended size: $((SIZE / 1024))KB"
+            fi
+          done
+
+  # ── CI Summary ──────────────────────────────────────────────
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [quick, security-deps, secrets-scan, build, verify]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint + Tests | ${{ needs.quick.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Audit | ${{ needs.security-deps.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scan | ${{ needs.secrets-scan.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Full Verify | ${{ needs.verify.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

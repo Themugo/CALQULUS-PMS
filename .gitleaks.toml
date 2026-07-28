@@ -1,0 +1,127 @@
+# GitLeaks Configuration for CALQULUS RMS
+# https://github.com/gitleaks/gitleaks
+
+[allowlist]
+  description = "CALQULUS RMS - Allowlisted secrets"
+  # Allow example domains in documentation
+  files = [
+    "^docs/.*$",
+    "^README.md$",
+    "^CHANGELOG.md$"
+  ]
+  
+  # Allow example placeholder values
+  regexes = [
+    "^example\\.",
+    "^ci-placeholder-",
+    "^test-",
+    "^your-",
+    "^<.*>$"
+  ]
+
+[[rules]]
+  id = "supabase-key"
+  description = "Supabase API Key"
+  regex = '''supabase[_-]?(anon|service)[_-]?(key|token)[=:]\s*['"]?([A-Za-z0-9_-]{20,})['"]?'''
+  secretGroup = 3
+  tags = ["supabase", "api-key"]
+
+[[rules]]
+  id = "mpesa-credentials"
+  description = "M-Pesa API Credentials"
+  regex = '''mpesa[_-]?(consumer[_-]?(key|secret)|passkey|shortcode)[=:]\s*['"]?([A-Za-z0-9_=]{10,})['"]?'''
+  secretGroup = 3
+  tags = ["mpesa", "payment"]
+
+[[rules]]
+  id = "sentry-dsn"
+  description = "Sentry DSN"
+  regex = '''sentry[_-]?dsn[=:]\s*['"]?(https://[a-f0-9]+@[a-z0-9.-]+/[0-9]+)['"]?'''
+  secretGroup = 1
+  tags = ["sentry", "monitoring"]
+
+[[rules]]
+  id = "vercel-token"
+  description = "Vercel Token"
+  regex = '''vercel[_-]?(token|api[_-]?key)[=:]\s*['"]?([A-Za-z0-9_=-]{20,})['"]?'''
+  secretGroup = 2
+  tags = ["vercel", "deployment"]
+
+[[rules]]
+  id = "stripe-key"
+  description = "Stripe API Key"
+  regex = '''(sk|pk)_(test|live)_[0-9a-zA-Z]{24,}'''
+  tags = ["stripe", "payment"]
+
+[[rules]]
+  id = "github-token"
+  description = "GitHub Personal Access Token"
+  regex = '''gh[pousr]_[A-Za-z0-9_]{36,}'''
+  tags = ["github", "api-key"]
+
+[[rules]]
+  id = "generic-api-key"
+  description = "Generic API Key"
+  regex = '''api[_-]?(key|token|secret)[=:]\s*['"]?[A-Za-z0-9_=-]{20,}['"]?'''
+  secretGroup = 3
+  tags = ["api-key"]
+
+[[rules]]
+  id = "generic-secret"
+  description = "Generic Secret"
+  regex = '''(secret|password|passwd|pwd)[_-]?(key|token|secret)?[=:]\s*['"]?[A-Za-z0-9_@#$%^&*]{8,}['"]?'''
+  secretGroup = 3
+  tags = ["secret"]
+
+[[rules]]
+  id = "jwt-token"
+  description = "JWT Token"
+  regex = '''eyJ[A-Za-z0-9_-]*\.eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*'''
+  tags = ["jwt", "token"]
+
+[[rules]]
+  id = "resend-api-key"
+  description = "Resend API Key"
+  regex = '''resend[_-]?(api[_-]?key)?[=:]\s*['"]?(re_[A-Za-z0-9_]{24,})['"]?'''
+  secretGroup = 2
+  tags = ["resend", "email"]
+
+[[rules]]
+  id = "africas-talking-key"
+  description = "Africa's Talking API Key"
+  regex = '''africa[s_]?talk(ing)?[_-]?(api[_-]?key)?[=:]\s*['"]?([A-Za-z0-9_]{20,})['"]?'''
+  secretGroup = 3
+  tags = ["africas-talking", "sms"]
+
+[[rules]]
+  id = "whatsapp-token"
+  description = "WhatsApp Business Token"
+  regex = '''(meta|whatsapp)[_-]?(whatsapp[_-]?)?(token|api[_-]?key)?[=:]\s*['"]?([A-Za-z0-9_]{20,})['"]?'''
+  secretGroup = 4
+  tags = ["whatsapp", "meta", "messaging"]
+
+[[rules]]
+  id = "database-url"
+  description = "Database Connection String"
+  regex = '''(postgres|mysql|mongodb|redis)[_-]?(url|connection|conn)?[=:]\s*['"]?[a-zA-Z0-9_@:/\-?=&]{20,}['"]?'''
+  tags = ["database", "connection"]
+
+# Path-specific rules
+[[rules]]
+  id = "env-variable-assignment"
+  description = "Environment variable assignment with value"
+  path = '''\.env(\.local|\.production|\.development)?$'''
+  regex = '''[A-Z_]+=(?!(true|false|null|undefined|""|''))[^\n]{10,}'''
+  tags = ["env", "config"]
+
+# Allowlist patterns for specific files
+[allowlist]
+  paths = [
+    "^node_modules/",
+    "^dist/",
+    "^build/",
+    "^.git/",
+    "^coverage/",
+    "^public/",
+    "^\\.next/"
+  ]
