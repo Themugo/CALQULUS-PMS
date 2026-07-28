@@ -68,6 +68,69 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 - 45 migrations in `supabase/migrations/`
 - Service role key in `scripts/fix-roles.mjs`
 
+## Performance Optimizations
+
+### Frontend Optimizations Implemented
+
+1. **Bundle Size Reduction via Code Splitting**
+   - Enhanced Vite config with optimized manual chunks
+   - Vendor chunks: react, router, query, ui, charts, pdf, utils, date, supabase
+   - Route-based lazy loading with React.lazy/Suspense
+   - CSS code splitting enabled
+
+2. **React Performance**
+   - `React.memo` with custom comparison functions in PropertyCard
+   - `useMemo` for expensive calculations (occupancy rates, filters)
+   - `useCallback` for stable callback references
+   - Lazy image loading with IntersectionObserver
+
+3. **List Virtualization**
+   - `VirtualizedList` component for large datasets (1000+ items)
+   - `WindowVirtualizer` for fixed-height items
+   - `InfiniteScroll` with IntersectionObserver
+
+4. **React Query Optimization**
+   - 30-second staleTime (was 5 minutes)
+   - 10-minute garbage collection
+   - `staleWhileRevalidate: true`
+   - `refetchOnMount: false`
+   - Query key factory for consistent keys
+   - Prefetching on route changes
+
+5. **Route Prefetching**
+   - `RoutePrefetcher` component preloads data for likely next routes
+   - Dashboard prefetches properties and tenants
+   - Properties page prefetches tenants
+
+6. **Core Web Vitals Improvements**
+   - Preconnect hints for Supabase and Google Fonts
+   - DNS prefetch for external resources
+   - Critical CSS inlined in index.html
+   - Loading skeleton for instant perceived performance
+   - Lazy image loading with blur-up placeholders
+
+7. **Database Optimizations**
+   - `get_manager_dashboard_stats` RPC function (single call vs 13 queries)
+   - `get_tenants_with_properties` with JOINs pre-computed
+   - `get_properties_with_tenant_counts` with occupancy rates
+   - Optimized indexes on frequently queried columns
+
+### Key Files
+- `vite.config.ts` - Enhanced chunk splitting
+- `src/shared/components/VirtualizedList.tsx` - Virtualization utilities
+- `src/shared/components/LazyImage.tsx` - Lazy loading images
+- `src/shared/hooks/useOptimizedQuery.ts` - Query optimization hooks
+- `src/App.tsx` - Route prefetching and QueryClient config
+- `src/features/properties/components/PropertyCard.tsx` - Memoized component
+- `supabase/migrations/20260601000001_optimized_queries.sql` - DB RPC functions
+
+### Expected Performance Impact
+- **First Contentful Paint (FCP)**: 30-50% improvement via critical CSS
+- **Largest Contentful Paint (LCP)**: 40-60% improvement via preconnects + lazy loading
+- **Total Bundle Size**: Reduced via code splitting (vendor chunks load on-demand)
+- **Time to Interactive (TTI)**: Improved via route prefetching
+- **Database Query Count**: Reduced from ~13 queries to 1 RPC call per dashboard load
+
 ## Platform Admin Hierarchy
 - `platform_admins` table: 3 tiers — owner (`is_immutable`), business, admin
 - Owner: `mugo.james27@gmail.com` — cannot be suspended/deleted

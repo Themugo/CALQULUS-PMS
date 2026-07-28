@@ -1,3 +1,4 @@
+import { memo, useMemo, useCallback, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
@@ -49,23 +50,34 @@ interface PropertyCardProps {
   onDelete: (property: Property) => void;
 }
 
+// Legacy category labels
+const LEGACY_CATEGORY_LABELS: Record<string, string> = {
+  flat: "Flat / Apartment Block",
+  villa: "Villa",
+  bungalow: "Bungalow / Maisonette",
+  mixed_use: "Mixed Use",
+  apartment: "Flat / Apartment Block",
+  townhouse: "Townhouse",
+  commercial: "Office / Commercial",
+};
+
+// Memoized category label computation
 const getCategoryLabel = (property: Property): string => {
   const catKey = property.category_key || property.property_type || "residential_flat";
   const cat = CATEGORY_BY_KEY[catKey];
   if (cat) return cat.name;
-  const legacyLabels: Record<string, string> = {
-    flat: "Flat / Apartment Block",
-    villa: "Villa",
-    bungalow: "Bungalow / Maisonette",
-    mixed_use: "Mixed Use",
-    apartment: "Flat / Apartment Block",
-    townhouse: "Townhouse",
-    commercial: "Office / Commercial",
-  };
-  return legacyLabels[catKey] || catKey;
+  return LEGACY_CATEGORY_LABELS[catKey] || catKey;
 };
 
-export const PropertyCard = ({
+// Memoized occupancy color
+const getOccupancyColor = (rate: number): string => {
+  if (rate >= 80) return "text-emerald-600";
+  if (rate >= 50) return "text-amber-600";
+  return "text-red-500";
+};
+
+// Optimized PropertyCard with memoization
+export const PropertyCard = memo<PropertyCardProps>(({
   property,
   index,
   tenants,
@@ -73,31 +85,51 @@ export const PropertyCard = ({
   formatCurrency,
   onEdit,
   onDelete,
-}: PropertyCardProps) => {
-  const occupancyRate = property.units > 0 ? (property.occupied / property.units) * 100 : 0;
-  const propertyTenants = tenants.filter((t) => t.property_id === property.id);
-  const propertyType = (property as { property_type?: string }).property_type || "flat";
+}) => {
+  // Memoize expensive calculations
+  const occupancyRate = useMemo(() => 
+    property.units > 0 ? (property.occupied / property.units) * 100 : 0,
+    [property.units, property.occupied]
+  );
+  
+  const propertyTenants = useMemo(() => 
+    tenants.filter((t) => t.property_id === property.id),
+    [tenants, property.id]
+  );
+  
   const floors = (property as { number_of_floors?: number }).number_of_floors || 1;
   const rentPerHouse = (property as { rent_per_house?: number }).rent_per_house || 0;
+  const categoryLabel = useMemo(() => getCategoryLabel(property), [property]);
+  const occupancyColor = useMemo(() => getOccupancyColor(occupancyRate), [occupancyRate]);
+  
+  // Memoize handlers
+  const handleEdit = useCallback(() => onEdit(property), [onEdit, property]);
+  const handleDelete = useCallback(() => onDelete(property), [onDelete, property]);
+  
+  // Precompute class names
+  const cardClassName = `overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-amber-400" : ""}`;
+  const animationDelay = `${Math.min(index * 30, 300)}ms`; // Cap delay for performance
 
   return (
     <Card
-      className={`overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-amber-400" : ""}`}
-      style={{ animationDelay: `${index * 30}ms` }}
+      className={cardClassName}
+      style={{ animationDelay }}
     >
       <CardContent className="p-0">
         <div className="flex items-stretch">
           <div className="w-24 h-24 flex-shrink-0 overflow-hidden">
-            <img
-              src={property.image_url || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop"}
+            <LazyPropertyImage 
+              src={property.image_url} 
               alt={property.name}
-              className="w-full h-full object-cover"
             />
           </div>
           <div className="flex-1 p-3 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <Link to={`/properties/${property.id}`} className="font-heading font-semibold text-foreground text-sm hover:text-amber-500 transition-colors truncate block">
+                <Link 
+                  to={`/properties/${property.id}`} 
+                  className="font-heading font-semibold text-foreground text-sm hover:text-amber-500 transition-colors truncate block"
+                >
                   {property.name}
                 </Link>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 truncate">
@@ -122,10 +154,10 @@ export const PropertyCard = ({
                       <Layers className="h-4 w-4" /> Manage Houses
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onEdit(property)}>
+                  <DropdownMenuItem onClick={handleEdit}>
                     <Pencil className="h-4 w-4 mr-2" /> Edit Property
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onDelete(property)} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem onClick={handleDelete} className="text-destructive focus:text-destructive">
                     <Trash2 className="h-4 w-4 mr-2" /> Deactivate
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -133,11 +165,11 @@ export const PropertyCard = ({
             </div>
             <div className="flex items-center gap-3 mt-2 flex-wrap">
               <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                {getCategoryLabel(property)}
+                {categoryLabel}
               </Badge>
               <span className="text-xs text-muted-foreground">{property.units} units</span>
               <span className="text-xs text-muted-foreground">{propertyTenants.length} tenants</span>
-              <span className={`text-xs font-medium ${occupancyRate >= 80 ? "text-emerald-600" : occupancyRate >= 50 ? "text-amber-600" : "text-red-500"}`}>
+              <span className={`text-xs font-medium ${occupancyColor}`}>
                 {occupancyRate.toFixed(0)}% occupied
               </span>
             </div>
@@ -155,4 +187,58 @@ export const PropertyCard = ({
       </CardContent>
     </Card>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for memo - only re-render when these specific props change
+  return (
+    prevProps.property.id === nextProps.property.id &&
+    prevProps.property.updated_at === nextProps.property.updated_at &&
+    prevProps.property.units === nextProps.property.units &&
+    prevProps.property.occupied === nextProps.property.occupied &&
+    prevProps.property.revenue === nextProps.property.revenue &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.tenants.length === nextProps.tenants.length
+  );
+});
+
+// Separate lazy image component to isolate re-renders
+const LazyPropertyImage = memo(({
+  src,
+  alt,
+}: {
+  src: string | null;
+  alt: string;
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px', threshold: 0 }
+    );
+    
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  return (
+    <img
+      ref={imgRef}
+      src={isInView ? (src || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop") : undefined}
+      alt={alt}
+      className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+      onLoad={() => setIsLoaded(true)}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+});

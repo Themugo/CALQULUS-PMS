@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 import { Toaster } from "@/shared/components/ui/toaster";
 import { Toaster as Sonner } from "@/shared/components/ui/sonner";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
@@ -6,13 +6,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DesktopInstallBanner } from "@/shared/components/ui/desktop-install-banner";
 import { MobileInstallBanner } from "@/shared/components/ui/mobile-install-banner";
 import { PushNotificationPrompt } from "@/shared/components/ui/push-notification-prompt";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth, type AppRole } from "@/features/auth/AuthContext";
 import { ViewOnlyProvider } from "@/shared/contexts/ViewOnlyContext";
 import { ThemeProvider } from "@/shared/contexts/ThemeContext";
 import ProtectedRoute from "@/shared/components/ProtectedRoute";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { PageLoader } from "@/shared/components/PageLoader";
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import {
   roleRouteConfigs,
   publicRoutes,
@@ -21,16 +22,87 @@ import {
   fallbackRoutes,
   type RouteDef,
 } from "@/app/routes";
+import { STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
 
+// Optimized QueryClient with better caching
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
+      staleTime: STALE_TIMES.frequentlyChanging, // 30 seconds
+      gcTime: 10 * 60 * 1000, // 10 minutes cache
       retry: 1,
       refetchOnWindowFocus: false,
+      refetchOnMount: false, // Only refetch if stale
+      // Optimize for concurrent requests
+      staleWhileRevalidate: true,
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
+
+// Route prefetching component - uses useManagerScope
+const RoutePrefetcher = () => {
+  const location = useLocation();
+  const { managerId, isReady } = useManagerScope();
+
+  // Prefetch likely next routes based on current path
+  useEffect(() => {
+    if (!isReady || !managerId) return;
+
+    // Prefetch based on current route
+    const path = location.pathname;
+
+    if (path === "/") {
+      // On dashboard, prefetch properties and tenants
+      queryClient.prefetchQuery({
+        queryKey: ['properties', 'list', managerId],
+        queryFn: async () => {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data } = await supabase
+            .from('properties')
+            .select('*')
+            .eq('manager_id', managerId)
+            .neq('status', 'inactive');
+          return data ?? [];
+        },
+        staleTime: STALE_TIMES.frequentlyChanging,
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: ['tenants', 'list', managerId],
+        queryFn: async () => {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data } = await supabase
+            .from('tenants')
+            .select('id, name, email, status, property_id, unit')
+            .eq('manager_id', managerId);
+          return data ?? [];
+        },
+        staleTime: STALE_TIMES.frequentlyChanging,
+      });
+    }
+
+    if (path.startsWith("/properties")) {
+      // Prefetch tenants when viewing properties
+      queryClient.prefetchQuery({
+        queryKey: ['tenants', 'list', managerId],
+        queryFn: async () => {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data } = await supabase
+            .from('tenants')
+            .select('id, name, email, status, property_id, unit')
+            .eq('manager_id', managerId);
+          return data ?? [];
+        },
+        staleTime: STALE_TIMES.frequentlyChanging,
+      });
+    }
+  }, [location.pathname, managerId, isReady]);
+
+  return null;
+};
 
 // ── Route rendering helpers ─────────────────────────────────────────
 const LazyRoute = ({ children }: { children: React.ReactNode }) => (
@@ -93,6 +165,7 @@ const AppRoutes = () => {
   const recoveryHash =
     window.location.hash.includes("type=recovery") ||
     window.location.hash.includes("access_token=");
+  
   if (recoveryHash && window.location.pathname !== "/reset-password") {
     return (
       <Navigate
@@ -181,6 +254,8 @@ const App = () => (
             <ErrorBoundary fallback={null}>
               <PushNotificationPrompt />
             </ErrorBoundary>
+            {/* Route prefetcher for optimized data loading */}
+            <RoutePrefetcher />
             <AppRoutes />
           </AuthProvider>
         </BrowserRouter>

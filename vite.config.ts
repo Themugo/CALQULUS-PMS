@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,20 +12,79 @@ export default defineConfig(({ mode }) => ({
     port: 5173,
   },
   build: {
+    target: "esnext",
     // 'hidden' produces source maps but does NOT reference them from the
     // bundle, so they are uploaded to Sentry but never delivered to the
     // browser. Production stack traces become readable without leaking
     // source to end users.
     sourcemap: "hidden",
+    // Enable minification with esbuild (faster than terser)
+    minify: "esbuild",
+    // Chunk size warning limit
+    chunkSizeWarningLimit: 600,
+    // CSS code splitting
+    cssCodeSplit: true,
+    // Disable hoisting of static imports for better caching
+    assetsInlineLimit: 4096, // 4KB - inline small assets as base64
     rollupOptions: {
       output: {
+        // Consistent chunk naming for better caching
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
+        // Manual chunk splitting for optimal bundle sizes
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
-          if (/[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id)) return "vendor-react";
-          if (id.includes("@radix-ui")) return "vendor-ui";
-          if (id.includes("@tanstack/react-query")) return "vendor-query";
-          if (id.includes("jspdf")) return "vendor-pdf";
-          if (id.includes("recharts")) return "vendor-charts";
+          
+          // React core - rarely changes, maximum caching
+          if (/[\\/]node_modules[\\/](react|react-dom)[\\/]/.test(id)) {
+            return "vendor-react";
+          }
+          
+          // React Router - stable routing chunk
+          if (/[\\/]node_modules[\\/](react-router-dom|react-router)[\\/]/.test(id)) {
+            return "vendor-router";
+          }
+          
+          // Radix UI - many small components, group together
+          if (id.includes("@radix-ui")) {
+            return "vendor-ui";
+          }
+          
+          // TanStack Query - state management
+          if (id.includes("@tanstack")) {
+            return "vendor-query";
+          }
+          
+          // PDF generation - large, lazy load
+          if (id.includes("jspdf") || id.includes("jspdf-autotable")) {
+            return "vendor-pdf";
+          }
+          
+          // Charts - large, lazy load
+          if (id.includes("recharts")) {
+            return "vendor-charts";
+          }
+          
+          // Date utilities
+          if (id.includes("date-fns")) {
+            return "vendor-date";
+          }
+          
+          // Supabase client
+          if (id.includes("@supabase")) {
+            return "vendor-supabase";
+          }
+          
+          // Radix UI animations and hooks
+          if (id.includes("@radix-ui/react-") && !id.includes("@radix-ui/react-dialog")) {
+            return "vendor-ui-animations";
+          }
+          
+          // Heavy libraries - PDF, image processing
+          if (id.includes("html2canvas") || id.includes("dompurify")) {
+            return "vendor-utils";
+          }
         },
       },
     },
