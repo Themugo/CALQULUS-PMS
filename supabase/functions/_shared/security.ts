@@ -163,6 +163,7 @@ export function detectInjection(input: string): boolean {
     /document\.(cookie|domain|referrer)/i,
     /window\.(location|name|parent)/i,
     /\.\./g, // Path traversal
+    // eslint-disable-next-line no-control-regex
     /[\x00-\x08\x0B\x0C\x0E-\x1F]/, // Non-printable characters
     /union\s+(select|all)/gi,
     /insert\s+into/gi,

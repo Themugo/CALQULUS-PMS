@@ -25,9 +25,6 @@ serve(async (req) => {
   // ── Authentication ─────────────────────────────────────────────────
   const authHeader = req.headers.get("Authorization") ?? "";
 
-  let callerUserId: string | null = null;
-  let callerRole: string | null = null;
-
   const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
     authHeader.replace("Bearer ", "")
   );
@@ -37,8 +34,8 @@ serve(async (req) => {
   }
   const { data: roleRow } = await supabase.from("user_roles")
     .select("role").eq("user_id", caller.id).maybeSingle();
-  callerUserId = caller.id;
-  callerRole = (roleRow as any)?.role ?? null;
+  const callerUserId: string = caller.id;
+  const callerRole: string = (roleRow as any)?.role ?? null;
 
   if (!["webhost", "manager", "submanager", "tenant"].includes(callerRole)) {
     return new Response(JSON.stringify({ error: "Forbidden" }),

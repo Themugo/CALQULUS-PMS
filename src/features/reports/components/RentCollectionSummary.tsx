@@ -255,12 +255,12 @@ export const RentCollectionSummary: React.FC = () => {
   const [sending, setSending] = useState(false);
 
   // ── Schedule state ─────────────────────────────────────────────────────
-  const [schedEnabled,    setSchedEnabled]    = useState(false);
-  const [schedSendDay,    setSchedSendDay]     = useState(1);
+  const [schedEnabled, setSchedEnabled] = useState(false);
+  const [schedSendDay, setSchedSendDay] = useState(1);
   const [schedRecipients, setSchedRecipients] = useState<string[]>([]);
   const [schedEmailInput, setSchedEmailInput] = useState('');
-  const [schedSaving,     setSchedSaving]     = useState(false);
-  const [schedTesting,    setSchedTesting]    = useState(false);
+  const [schedSaving, setSchedSaving] = useState(false);
+  const [schedTesting, setSchedTesting] = useState(false);
 
   const periodStart  = startOfMonth(new Date(year, month - 1, 1));
   const periodEnd    = endOfMonth(periodStart);
@@ -319,9 +319,11 @@ export const RentCollectionSummary: React.FC = () => {
     enabled: !!user?.id,
   });
 
-  // Sync schedule → local state
+  // Sync schedule data to state when query returns
+  // This is intentional - schedule data from useQuery comes after initial render
   useEffect(() => {
     if (schedule) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSchedEnabled(schedule.enabled);
       setSchedSendDay(schedule.send_day);
       setSchedRecipients(schedule.recipients ?? []);

@@ -48,7 +48,7 @@ const sendEmail = async (to: string, subject: string, html: string) => {
   });
 
   const responseText = await response.text();
-  let result: Record<string, unknown> = {};
+  let result: Record<string, unknown>;
   try {
     result = responseText ? JSON.parse(responseText) : {};
   } catch {
