@@ -160,7 +160,7 @@ function validateStkCallback(callback: StkCallback): { valid: boolean; errors: s
   // Non-zero ResultCode indicates failure
   if (stkCallback.ResultCode !== 0 && stkCallback.ResultCode !== undefined) {
     // Log the failure reason but still process
-    console.log(`M-Pesa failure: ${stkCallback.ResultCode} - ${stkCallback.ResultDesc}`);
+    console.warn(`M-Pesa failure: ${stkCallback.ResultCode} - ${stkCallback.ResultDesc}`);
   }
 
   return { valid: errors.length === 0, errors, receipt };

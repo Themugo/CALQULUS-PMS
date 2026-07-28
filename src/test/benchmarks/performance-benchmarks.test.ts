@@ -65,13 +65,13 @@ function benchmark<T>(
 }
 
 function logBenchmark(result: BenchmarkResult) {
-  console.log(`\n📊 ${result.name}`);
-  console.log(`   Iterations: ${result.iterations}`);
-  console.log(`   Total: ${result.totalMs.toFixed(2)}ms`);
-  console.log(`   Average: ${result.averageMs.toFixed(4)}ms`);
-  console.log(`   Min: ${result.minMs.toFixed(4)}ms`);
-  console.log(`   Max: ${result.maxMs.toFixed(4)}ms`);
-  console.log(`   Ops/sec: ${result.opsPerSecond.toFixed(2)}`);
+  console.warn(`\n📊 ${result.name}`);
+  console.warn(`   Iterations: ${result.iterations}`);
+  console.warn(`   Total: ${result.totalMs.toFixed(2)}ms`);
+  console.warn(`   Average: ${result.averageMs.toFixed(4)}ms`);
+  console.warn(`   Min: ${result.minMs.toFixed(4)}ms`);
+  console.warn(`   Max: ${result.maxMs.toFixed(4)}ms`);
+  console.warn(`   Ops/sec: ${result.opsPerSecond.toFixed(2)}`);
 }
 
 // ── Test Data Generators ──────────────────────────────────────────────────────
@@ -504,26 +504,26 @@ describe("Performance Benchmarks", () => {
 
 describe("Benchmark Summary", () => {
   it("should generate comprehensive benchmark summary", () => {
-    console.log("\n" + "=".repeat(60));
-    console.log("PERFORMANCE BENCHMARK SUMMARY");
-    console.log("=".repeat(60));
+    console.warn("\n" + "=".repeat(60));
+    console.warn("PERFORMANCE BENCHMARK SUMMARY");
+    console.warn("=".repeat(60));
     
     // Quick benchmarks
     const quickCalc = benchmark("Quick Balance Calculation", 
       () => calculateBalanceDue({ amount: 25000, paid_amount: 10000 }), 1000);
-    console.log(`\n✅ Balance Calculation: ${quickCalc.opsPerSecond.toFixed(0)} ops/sec`);
+    console.warn(`\n✅ Balance Calculation: ${quickCalc.opsPerSecond.toFixed(0)} ops/sec`);
     
     const search100 = benchmark("Search 100 items",
       () => searchTenants(Array.from({ length: 100 }, (_, i) => ({
         full_name: `Tenant ${i}`, email: `t${i}@e.com`, phone: "254700000000"
       })), "Tenant"), 1000);
-    console.log(`✅ Search 100 items: ${search100.averageMs.toFixed(4)}ms avg`);
+    console.warn(`✅ Search 100 items: ${search100.averageMs.toFixed(4)}ms avg`);
     
     const pagination = benchmark("Paginate 1000 items",
       () => paginate(Array.from({ length: 1000 }, (_, i) => i), 10, 20), 1000);
-    console.log(`✅ Pagination 1000 items: ${pagination.averageMs.toFixed(4)}ms avg`);
+    console.warn(`✅ Pagination 1000 items: ${pagination.averageMs.toFixed(4)}ms avg`);
     
-    console.log("\n" + "=".repeat(60));
+    console.warn("\n" + "=".repeat(60));
     
     expect(true).toBe(true); // Always pass - this is informational
   });

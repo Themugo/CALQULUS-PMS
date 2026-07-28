@@ -140,7 +140,8 @@ class StructuredLogger {
         critical: '🚨',
       }[entry.level];
 
-      console[entry.level === 'debug' ? 'debug' : entry.level === 'warn' ? 'warn' : 'error'](
+      const logFn = entry.level === 'debug' ? console.debug : entry.level === 'warn' ? console.warn : console.error;
+      logFn(
         `${prefix} [${entry.component}] ${entry.action}`,
         entry
       );

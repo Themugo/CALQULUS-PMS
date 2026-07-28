@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -167,14 +168,7 @@ export const TenantStatement = ({
     .filter((inv) => inv.status === "pending" || inv.status === "overdue")
     .reduce((sum, inv) => sum + Number(inv.amount), 0);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-KE", {
-      style: "currency",
-      currency: "KES",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const formatKES = (amount: number) => formatCurrency(amount, "KES", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const generatePDF = async () => {
     if (!tenant) return;
@@ -322,16 +316,16 @@ export const TenantStatement = ({
     });
 
     doc.setFont("helvetica", "normal");
-    doc.text(formatCurrency(totalBilled), 14 + colWidth / 2, yPos + 18, {
+    doc.text(formatKES(totalBilled), 14 + colWidth / 2, yPos + 18, {
       align: "center",
     });
     doc.setTextColor(34, 197, 94);
-    doc.text(formatCurrency(totalPaid), 14 + colWidth + colWidth / 2, yPos + 18, {
+    doc.text(formatKES(totalPaid), 14 + colWidth + colWidth / 2, yPos + 18, {
       align: "center",
     });
     doc.setTextColor(outstandingBalance > 0 ? 245 : 0, outstandingBalance > 0 ? 158 : 0, outstandingBalance > 0 ? 11 : 0);
     doc.text(
-      formatCurrency(outstandingBalance),
+      formatKES(outstandingBalance),
       14 + colWidth * 2 + colWidth / 2,
       yPos + 18,
       { align: "center" }
@@ -347,7 +341,7 @@ export const TenantStatement = ({
       format(new Date(inv.due_date), 'dd/MM/yy'),
       inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : "-",
       inv.status.charAt(0).toUpperCase() + inv.status.slice(1),
-      formatCurrency(Number(inv.amount)),
+      formatKES(Number(inv.amount)),
     ]);
 
     autoTable(doc, {
@@ -529,14 +523,14 @@ export const TenantStatement = ({
               <Wallet className="h-5 w-5 mx-auto mb-1 text-amber-500" />
               <p className="text-xs text-muted-foreground">Total Billed</p>
               <p className="text-sm font-semibold text-foreground">
-                {formatCurrency(totalBilled)}
+                {formatKES(totalBilled)}
               </p>
             </div>
             <div className="bg-emerald-500/10 rounded-lg p-3 text-center">
               <CheckCircle className="h-5 w-5 mx-auto mb-1 text-emerald-400" />
               <p className="text-xs text-muted-foreground">Total Paid</p>
               <p className="text-sm font-semibold text-emerald-400">
-                {formatCurrency(totalPaid)}
+                {formatKES(totalPaid)}
               </p>
             </div>
             <div
@@ -557,7 +551,7 @@ export const TenantStatement = ({
                   outstandingBalance > 0 ? "text-amber-400" : "text-foreground"
                 }`}
               >
-                {formatCurrency(outstandingBalance)}
+                {formatKES(outstandingBalance)}
               </p>
             </div>
           </div>
@@ -621,7 +615,7 @@ export const TenantStatement = ({
                           )}
                         </div>
                         <span className="font-semibold text-foreground">
-                          {formatCurrency(Number(invoice.amount))}
+                          {formatKES(Number(invoice.amount))}
                         </span>
                       </div>
                     </div>

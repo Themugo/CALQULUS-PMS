@@ -169,7 +169,7 @@ export function ProductionDiagnostics() {
     if (isOpen && diagnostics.length === 0) {
       runDiagnostics();
     }
-  }, [isOpen]);
+  }, [isOpen, diagnostics.length, runDiagnostics]);
 
   // Keyboard shortcut to toggle (Ctrl+Shift+D)
   useEffect(() => {

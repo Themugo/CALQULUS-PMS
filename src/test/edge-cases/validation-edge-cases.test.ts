@@ -545,8 +545,10 @@ describe("Edge-Case Validation Tests", () => {
     });
 
     it("should handle null in comparisons", () => {
-      expect(null === undefined).toBe(false);
-      expect(null == undefined).toBe(true); // Loose equality
+      const a = null;
+      const b = undefined;
+      expect(a === b).toBe(false);
+      expect(a == b).toBe(true); // Loose equality
     });
   });
 

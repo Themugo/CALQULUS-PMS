@@ -151,7 +151,7 @@ function generateInvitationExpiryDate(createdAt: Date, daysValid = 14): Date {
 
 function formatPhoneForSMS(phone: string): string {
   // Convert to international format (254...)
-  let formatted = phone.replace(/\D/g, "");
+  const formatted = phone.replace(/\D/g, "");
   
   // Handle 9-digit numbers starting with 7
   if (formatted.length === 9 && formatted.startsWith("7")) {

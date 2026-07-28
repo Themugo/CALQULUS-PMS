@@ -577,7 +577,7 @@ describe("Payment Workflow Regression Suite", () => {
     });
 
     it("should not allow transition from failed to completed", () => {
-      let status: PaymentTransaction["status"] = "failed";
+      const status: PaymentTransaction["status"] = "failed";
       
       // Attempt to mark failed payment as completed (should not happen)
       if (status !== "pending") {
