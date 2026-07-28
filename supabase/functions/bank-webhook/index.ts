@@ -7,17 +7,19 @@
  * Banks push a JSON payload when rent lands in the account.
  * This function:
  *   1. Verifies the webhook signature / secret
- *   2. Deduplicates (external_id uniqueness)
- *   3. Stores raw transaction in bank_transactions
- *   4. Attempts auto-reconciliation against pending invoices
- *   5. If matched → calls process-payment → receipt + SMS fired instantly
- *   6. If unmatched → stores as unmatched for manual review
+ *   2. Validates payload structure with schema validation
+ *   3. Deduplicates (external_id uniqueness)
+ *   4. Stores raw transaction in bank_transactions
+ *   5. Attempts auto-reconciliation against pending invoices
+ *   6. If matched → calls process-payment → receipt + SMS fired instantly
+ *   7. If unmatched → stores as unmatched for manual review
  */
 
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { timingSafeEqual, getWebhookSecret, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
+import { validateBankWebhook, normalizeBankPayload } from "../_shared/webhookSchemas.ts";
 import { requireEnv } from "../_shared/env.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -25,8 +27,8 @@ const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 const log = (s: string, d?: unknown) => console.log(`[BANK-WEBHOOK] ${s}`, d ? JSON.stringify(d) : "");
 
-// Normalize different bank payload formats into a common shape
-function normalizeBankPayload(bankName: string, raw: Record<string, unknown>) {
+// Legacy normalizer kept for backward compatibility - new code uses webhookSchemas.ts
+function normalizeBankPayloadLegacy(bankName: string, raw: Record<string, unknown>) {
   switch (bankName.toLowerCase()) {
     case "equity":
       return {
@@ -185,7 +187,17 @@ serve(async (req) => {
     }
 
     const rawPayload = await req.json();
-    const tx = normalizeBankPayload(bankName, rawPayload);
+    
+    // Validate payload structure
+    const validation = validateBankWebhook(rawPayload);
+    if (!validation.valid) {
+      log("Invalid payload", { error: validation.error, bank: bankName, managerId });
+      return new Response(JSON.stringify({ error: `Invalid payload: ${validation.error}` }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    // Normalize bank-specific payload to common format
+    const tx = normalizeBankPayload(rawPayload as any);
 
     log("Webhook received", { bank: bankName, managerId, amount: tx.amount, ref: tx.reference });
 

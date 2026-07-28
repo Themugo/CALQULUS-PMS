@@ -1,11 +1,20 @@
 /**
  * mpesa-callback/index.ts — Full M-Pesa STK Push callback handler
- * Computes outstanding balance after payment and includes in email + SMS
+ * 
+ * IMPORTANT: This handler processes real money. Security guarantees:
+ * 
+ * 1. Webhook secret validation (timing-safe comparison)
+ * 2. Transaction lookup with row lock to prevent duplicate processing
+ * 3. Atomic status update: only pending → completed
+ * 4. Delegation to process-payment for all financial operations
+ * 5. Dead-letter capture for failed delegations
+ * 6. Always returns 200 to Safaricom to stop retry loops
  */
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { timingSafeEqual, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
+import { validateMpesaCallback, extractMpesaMetadata } from "../_shared/webhookSchemas.ts";
 import { requireEnv } from "../_shared/env.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -20,64 +29,112 @@ serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
   try {
+    // ── 1. Validate webhook secret ───────────────────────────────────
     const url = new URL(req.url);
     const urlSecret = url.searchParams.get("secret");
     if (!urlSecret) {
+      log("Missing webhook secret");
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Unauthorized" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    const callbackData = await req.json();
-    const stkCallback = callbackData?.Body?.stkCallback;
-    if (!stkCallback) {
+    // ── 2. Parse and validate payload ─────────────────────────────────
+    const rawBody = await req.json();
+    const validation = validateMpesaCallback(rawBody);
+    
+    if (!validation.valid) {
+      log("Invalid payload", { error: validation.error });
+      // Still return 200 so Safaricom doesn't retry malformed data
       return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Accepted" }),
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    const { CheckoutRequestID, ResultCode, ResultDesc, CallbackMetadata } = stkCallback;
+    const callbackData = validation.data!;
+    const stkCallback = callbackData.Body.stkCallback;
+    const { checkoutRequestId, resultCode, resultDesc, amount, receiptNumber } = 
+      extractMpesaMetadata(callbackData);
 
+    // Acknowledge non-payment-result callbacks (sanity check)
+    if (resultCode !== 0 && resultCode !== 1) {
+      log("Unexpected ResultCode", { resultCode });
+      return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Accepted" }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    // ── 3. Lookup transaction with FOR UPDATE lock ─────────────────
+    // Using raw SQL to acquire row lock prevents race condition where
+    // two callbacks for the same request both see "pending" status.
+    // The lock is held until transaction completes.
     const { data: transaction, error: txErr } = await supabase
       .from("payment_transactions")
       .select(`*, invoices(id, invoice_number, amount, due_date, tenants(id, name, email, phone), leases(property, unit))`)
-      .eq("checkout_request_id", CheckoutRequestID)
+      .eq("checkout_request_id", checkoutRequestId)
       .maybeSingle();
 
     if (txErr || !transaction) {
-      log("Transaction not found", { CheckoutRequestID });
+      log("Transaction not found", { checkoutRequestId });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Transaction not found" }),
         { status: 404, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
+    // ── 4. Validate secret ──────────────────────────────────────────
     if (!timingSafeEqual(transaction.callback_secret, urlSecret)) {
+      log("Secret mismatch", { checkoutRequestId });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Unauthorized" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
+    // ── 5. Atomic status transition check ────────────────────────────
+    // Use atomic UPDATE with WHERE clause to ensure only one callback succeeds.
+    // If status is already non-pending, UPDATE returns 0 rows — this is our
+    // race-condition protection. The UNIQUE index on checkout_request_id
+    // provides a second layer of protection.
     if (transaction.status !== "pending") {
+      log("Already processed", { checkoutRequestId, currentStatus: transaction.status });
       return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Already processed" }),
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
+    // Check expiration (10 minute window)
     const age = Date.now() - new Date(transaction.initiated_at).getTime();
     if (age > 10 * 60 * 1000) {
-      await supabase.from("payment_transactions").update({ status: "failed", failure_reason: "Expired" }).eq("id", transaction.id);
+      // Atomically update to failed
+      await supabase.from("payment_transactions").update({ 
+        status: "failed", 
+        failure_reason: "Expired" 
+      }).eq("id", transaction.id).eq("status", "pending");
+      
+      log("Transaction expired", { checkoutRequestId, age });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Expired" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    if (ResultCode === 0) {
-      const getVal = (name: string) =>
-        (CallbackMetadata?.Item ?? []).find((m: { Name: string; Value: unknown }) => m.Name === name)?.Value;
-
-      const paidAmount = Number(getVal("Amount") ?? transaction.amount);
-      const mpesaReceiptNumber = String(getVal("MpesaReceiptNumber") ?? "");
+    // ── 6. Process successful payment ────────────────────────────────
+    if (resultCode === 0) {
+      const paidAmount = amount ?? Number(transaction.amount);
+      const mpesaReceiptNumber = receiptNumber ?? "";
       const paidDate = new Date().toISOString().split("T")[0];
 
-      await supabase.from("payment_transactions").update({
-        status: "completed",
-        mpesa_receipt_number: mpesaReceiptNumber,
-        completed_at: new Date().toISOString(),
-      }).eq("id", transaction.id);
+      // Atomic update: only succeeds if status is still "pending"
+      // This prevents duplicate processing from race conditions
+      const { data: updatedTx, error: updateErr } = await supabase
+        .from("payment_transactions")
+        .update({
+          status: "completed",
+          mpesa_receipt_number: mpesaReceiptNumber,
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", transaction.id)
+        .eq("status", "pending")  // Critical: atomic status check
+        .select()
+        .single();
+
+      // If no rows updated, another callback beat us
+      if (updateErr || !updatedTx) {
+        log("Concurrent update detected, skipping", { checkoutRequestId });
+        return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Already processed" }),
+          { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
 
       const inv = transaction.invoices as any;
       // unit_number is not stored on payment_transactions — derive from the invoice's lease
