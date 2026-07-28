@@ -197,15 +197,9 @@ const TenantDashboardStats: React.FC<TenantDashboardStatsProps> = ({
       <StatTile
         label="Recent Payments"
         icon={TrendingUp}
-<<<<<<< HEAD
-        iconBg="bg-gradient-to-br from-blue-600/15 to-blue-600/5 border-blue-500/20"
-        iconColor="text-blue-500"
-        accent="via-blue-500/60"
-=======
         iconBg="bg-gradient-to-br from-[hsl(214_73%_48%/0.15)] to-[hsl(214_73%_48%/0.05)] border-[hsl(214_73%_48%/0.2)]"
         iconColor="text-[hsl(214_73%_48%)]"
         accent="via-[hsl(214_73%_48%/0.6)]"
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
         value={recentPayments.length > 0 ? formatCurrency(totalPaid) : "—"}
         sub={
           recentPayments.length > 0

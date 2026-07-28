@@ -554,11 +554,7 @@ export const RentCollectionSummary: React.FC = () => {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-<<<<<<< HEAD
-            { label: 'Total Billed',       val: totalBilled,      icon: TrendingUp,   color: 'text-blue-600',    bg: 'bg-blue-50    dark:bg-blue-950/30' },
-=======
             { label: 'Total Billed',       val: totalBilled,      icon: TrendingUp,   color: 'text-[hsl(214_73%_45%)]',    bg: 'bg-[hsl(214_73%_48%/0.08)]    dark:bg-[hsl(214_73%_25%/0.2)]' },
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
             { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
             { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50   dark:bg-amber-950/30' },
             { label: 'Arrears invoices',   val: arrearsCount,     icon: AlertTriangle,color: 'text-red-600',     bg: 'bg-red-50     dark:bg-red-950/30', count: true },
@@ -600,11 +596,7 @@ export const RentCollectionSummary: React.FC = () => {
               <CardHeader className="pb-2 pt-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <CardTitle className="text-sm flex items-center gap-2">
-<<<<<<< HEAD
-                    <Building2 className="h-4 w-4 text-blue-500" />
-=======
                     <Building2 className="h-4 w-4 text-[hsl(214_73%_48%)]" />
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
                     {prop.name}
                   </CardTitle>
                   <div className="flex flex-wrap gap-2 text-xs">
@@ -661,11 +653,7 @@ export const RentCollectionSummary: React.FC = () => {
           <div className="flex items-center justify-between gap-3">
             <div>
               <CardTitle className="text-sm flex items-center gap-2">
-<<<<<<< HEAD
-                <CalendarClock className="h-4 w-4 text-blue-500" />
-=======
                 <CalendarClock className="h-4 w-4 text-[hsl(214_73%_48%)]" />
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
                 Scheduled Auto-Send
               </CardTitle>
               <CardDescription className="mt-0.5">
@@ -717,11 +705,7 @@ export const RentCollectionSummary: React.FC = () => {
             {schedRecipients.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {schedRecipients.map(r => (
-<<<<<<< HEAD
-                  <span key={r} className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
-=======
                   <span key={r} className="flex items-center gap-1 bg-[hsl(214_73%_48%/0.08)] dark:bg-[hsl(214_73%_25%/0.2)] border border-[hsl(214_73%_48%/0.25)] dark:border-[hsl(214_73%_40%/0.3)] px-2 py-0.5 rounded-full text-xs font-medium text-[hsl(214_73%_38%)] dark:text-[hsl(214_73%_75%)]">
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
                     <Users className="h-2.5 w-2.5" />
                     {r}
                     <button

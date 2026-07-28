@@ -21,15 +21,6 @@ interface StatCardProps {
 
 const iconColorMap = {
   primary: {
-<<<<<<< HEAD
-    bg: "bg-gradient-to-br from-blue-600/15 to-blue-600/5 border-blue-500/20",
-    icon: "text-blue-500",
-    glow: "shadow-blue-500/10",
-    progress: "bg-blue-500",
-    accentVia: "via-blue-500/60",
-    spark: "bg-blue-500",
-    sparkMuted: "bg-blue-500/25",
-=======
     bg: "bg-gradient-to-br from-[hsl(214_73%_48%/0.15)] to-[hsl(214_73%_48%/0.05)] border-[hsl(214_73%_48%/0.2)]",
     icon: "text-[hsl(214_73%_48%)]",
     glow: "shadow-[hsl(214_73%_48%/0.1)]",
@@ -37,7 +28,6 @@ const iconColorMap = {
     accentVia: "via-[hsl(214_73%_48%/0.6)]",
     spark: "bg-[hsl(214_73%_48%)]",
     sparkMuted: "bg-[hsl(214_73%_48%/0.25)]",
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
   },
   accent: {
     bg: "bg-gradient-to-br from-amber-400/15 to-amber-400/5 border-amber-400/25",
@@ -188,11 +178,7 @@ export function StatCard({
                       isLast ? colors.spark : colors.sparkMuted,
                       isLast && "ring-1 ring-offset-0",
                       isLast && iconColor === "accent"      && "ring-amber-400/40",
-<<<<<<< HEAD
-                      isLast && iconColor === "primary"     && "ring-blue-500/40",
-=======
                       isLast && iconColor === "primary"     && "ring-[hsl(214_73%_48%/0.4)]",
->>>>>>> 8963edc (Frontend stability improvements and feature updates)
                       isLast && iconColor === "success"     && "ring-emerald-500/40",
                       isLast && iconColor === "warning"     && "ring-orange-500/40",
                       isLast && iconColor === "destructive" && "ring-red-500/40",
