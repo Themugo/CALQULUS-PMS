@@ -2,9 +2,9 @@
  * _shared/errors.ts
  *
  * Standardized error handling and response formatting for CALQULUS PMS edge functions.
- *
- * Provides consistent error responses across all functions,
- * eliminating code duplication and ensuring proper error reporting.
+ * 
+ * SECURITY: All error responses are sanitized to prevent information disclosure.
+ * Stack traces and internal error details are NEVER exposed to clients.
  *
  * Usage:
  *   import { errorResponse, successResponse, ValidationError } from "../_shared/errors.ts";
@@ -20,9 +20,17 @@
  */
 
 import { getCorsHeaders } from "./cors.ts";
+import { getEnv } from "./env.ts";
+
+// Check if we're in production (for security-sensitive error handling)
+function isProduction(): boolean {
+  const env = getEnv("ENVIRONMENT") || getEnv("NODE_ENV");
+  return env === "production" || env === "prod";
+}
 
 /**
  * Standard error response format.
+ * SECURITY: Never expose stack traces or internal details in production.
  */
 export interface ErrorResponse {
   error: string;
@@ -113,6 +121,7 @@ export class ConflictError extends Error {
 
 /**
  * Create a standardized error response.
+ * SECURITY: In production, internal error details are logged but NOT exposed.
  */
 export function errorResponse(
   message: string,
@@ -126,7 +135,7 @@ export function errorResponse(
   };
 
   if (code) errorBody.code = code;
-  if (details) errorBody.details = details;
+  if (details && !isProduction()) errorBody.details = details;
 
   return new Response(JSON.stringify(errorBody), {
     status,
@@ -164,39 +173,62 @@ export function successResponse<T = any>(
 
 /**
  * Handle errors and return appropriate error response.
+ * SECURITY: Stack traces and internal details are NEVER exposed to clients.
+ * They are logged server-side for debugging but never sent in responses.
  */
 export function handleError(error: unknown, context?: string): Response {
-  console.error(`[Error${context ? ` in ${context}` : ""}]`, error);
+  // Log full error details server-side (for debugging)
+  const errorId = crypto.randomUUID();
+  console.error(`[ERROR:${errorId}]`, {
+    context,
+    error: error instanceof Error ? {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    } : String(error),
+    timestamp: new Date().toISOString(),
+  });
 
+  // Client-safe error messages by error type
   if (error instanceof ValidationError) {
     return errorResponse(error.message, 400, error.code, error.details);
   }
 
   if (error instanceof AuthenticationError) {
-    return errorResponse(error.message, 401, error.code, error.details);
+    return errorResponse(error.message, 401, error.code);
   }
 
   if (error instanceof AuthorizationError) {
-    return errorResponse(error.message, 403, error.code, error.details);
+    return errorResponse(error.message, 403, error.code);
   }
 
   if (error instanceof NotFoundError) {
-    return errorResponse(error.message, 404, error.code, error.details);
+    return errorResponse(error.message, 404, error.code);
   }
 
   if (error instanceof ConflictError) {
-    return errorResponse(error.message, 409, error.code, error.details);
+    return errorResponse(error.message, 409, error.code);
   }
 
+  // SECURITY: Generic internal error message - never expose details
   if (error instanceof Error) {
+    if (isProduction()) {
+      // In production: log details, send generic message
+      return errorResponse(
+        "An internal error occurred. Please try again later.",
+        500,
+        "INTERNAL_ERROR"
+      );
+    }
+    // In development: show details for debugging
     return errorResponse(error.message, 500, "INTERNAL_ERROR", {
       name: error.name,
-      stack: error.stack,
+      errorId, // Reference the logged error ID
     });
   }
 
   return errorResponse(
-    `Unknown error: ${String(error)}`,
+    "An unexpected error occurred. Please try again later.",
     500,
     "UNKNOWN_ERROR"
   );

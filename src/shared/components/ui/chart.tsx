@@ -37,7 +37,9 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  // SECURITY: Sanitize the id to prevent XSS in CSS selectors
+  const rawId = id || uniqueId.replace(/:/g, "");
+  const chartId = `chart-${sanitizeChartId(rawId)}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -58,6 +60,12 @@ const ChartContainer = React.forwardRef<
 });
 ChartContainer.displayName = "Chart";
 
+// SECURITY: Validate and sanitize chart ID to prevent XSS in CSS selectors
+function sanitizeChartId(id: string): string {
+  // Allow only alphanumeric characters, hyphens, and underscores
+  return id.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64);
+}
+
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
 
@@ -65,13 +73,16 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  // SECURITY: Always sanitize the chart ID before using in CSS selector
+  const safeId = sanitizeChartId(id);
+
   return (
     <style
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix} [data-chart=${safeId}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;

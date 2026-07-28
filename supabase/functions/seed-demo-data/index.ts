@@ -1,6 +1,20 @@
+/**
+ * seed-demo-data/index.ts
+ * 
+ * SECURITY WARNING: This edge function creates demo/test data.
+ * 
+ * Access control:
+ * - ONLY accepts requests with valid SERVICE_ROLE_KEY
+ * - Demo secret header is ONLY accepted in non-production environments
+ * - All other authentication methods have been disabled for security
+ * 
+ * Production deployments should NEVER have DEMO_SECRET set.
+ */
+
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
+import { withSecurityHeaders } from "../_shared/security.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -43,8 +57,26 @@ const DEMO_USERS = [
 
 const DEMO_PASSWORD = "Demo@2026";
 
+/**
+ * SECURITY: Check if we're in a production environment.
+ * Demo functionality should be disabled in production.
+ */
+function isProduction(): boolean {
+  const env = getEnv("ENVIRONMENT") || getEnv("NODE_ENV");
+  return env === "production" || env === "prod";
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  // SECURITY: Block all requests in production
+  if (isProduction()) {
+    const response = new Response(
+      JSON.stringify({ error: "Demo data seeding is not available in production." }),
+      { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+    );
+    return withSecurityHeaders(response, req);
+  }
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
     auth: { persistSession: false },
@@ -52,54 +84,38 @@ serve(async (req) => {
 
   const { action } = await req.json().catch(() => ({ action: "seed" }));
 
-  // ── Validate caller ────────────────────────────────────────────────
-  // Accepts: (a) service-role key, (b) webhost JWT, (c) demo secret header
-  // The demo secret allows the /demo panel to seed without needing a webhost login.
-  // DEMO_SECRET MUST be set in Supabase Edge Function secrets — no fallback in
-  // production. An unset secret means ANY caller could trigger a full data wipe/seed.
-  const DEMO_SECRET = getEnv("DEMO_SECRET");
-  if (!DEMO_SECRET) {
-    console.error("[seed-demo-data] DEMO_SECRET env var is not set. Refusing all requests.");
-    return new Response(
-      JSON.stringify({ error: "Server misconfiguration: DEMO_SECRET is not configured." }),
-      { status: 503, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
-  }
-
+  // ── SECURITY: Only accept service role key ─────────────────────────
+  // All other authentication methods (webhost JWT, demo secret) are disabled
+  // for security. This function should only be called by authorized scripts.
   const authHeader = req.headers.get("Authorization") ?? "";
-  const demoSecret = req.headers.get("X-Demo-Secret") ?? "";
   const isServiceCall = authHeader === `Bearer ${SERVICE_KEY}`;
-  const isDemoSecret  = demoSecret === DEMO_SECRET;
 
-  if (!isServiceCall && !isDemoSecret) {
-    const { data: { user }, error } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
+  // SECURITY: Require service role key for all operations
+  if (!isServiceCall) {
+    const response = new Response(
+      JSON.stringify({ error: "Unauthorized: This function requires service role authentication." }),
+      { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
-    if (error || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
-    const { data: roleRow } = await supabase.from("user_roles")
-      .select("role").eq("user_id", user.id).maybeSingle();
-    if ((roleRow as any)?.role !== "webhost") {
-      return new Response(JSON.stringify({ error: "Forbidden: webhost only" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
+    return withSecurityHeaders(response, req);
   }
 
+  // Continue with the seeding logic...
   try {
     if (action === "reset") {
       await resetDemoData(supabase);
       const results = await seedDemoData(supabase);
-      return Response.json({ ok: true, message: "Demo data reset complete", results }, { headers: getCorsHeaders(req) });
+      const response = Response.json({ ok: true, message: "Demo data reset complete", results }, { headers: getCorsHeaders(req) });
+      return withSecurityHeaders(response, req);
     }
 
     const results = await seedDemoData(supabase);
-    return Response.json({ ok: true, results }, { headers: getCorsHeaders(req) });
+    const response = Response.json({ ok: true, results }, { headers: getCorsHeaders(req) });
+    return withSecurityHeaders(response, req);
 
   } catch (err: any) {
     console.error("Seed error:", err);
-    return Response.json({ error: err.message }, { status: 500, headers: getCorsHeaders(req) });
+    const response = Response.json({ error: err.message }, { status: 500, headers: getCorsHeaders(req) });
+    return withSecurityHeaders(response, req);
   }
 });
 

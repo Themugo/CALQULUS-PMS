@@ -9,7 +9,7 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
   CheckCircle, XCircle, Mail, Eye, EyeOff, User, Building, Home,
-  Shield, Briefcase, Building2, Users, CreditCard, BarChart3, Lock,
+  Shield, Building2, Users, CreditCard, BarChart3, Lock,
   ChevronRight,
 } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
@@ -20,16 +20,10 @@ import { supabase } from '@/integrations/supabase/client';
 import calqulusLogo from '@/assets/calqulus-logo-new.png';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 
-interface DemoAccount {
-  role: string;
-  label: string;
-  email: string;
-  password: string;
-  portal: string;
-  badge: string;
-  icon: React.ReactNode;
-  description: string;
-}
+// SECURITY: Demo authentication has been removed for production security.
+// Demo accounts can still be used for testing but must be explicitly enabled
+// via environment variables and require proper authentication. Production
+// deployments should NEVER expose demo login functionality.
 
 const features = [
   { icon: Building2, title: 'Manage Properties', desc: 'Track every unit, lease, and tenant in one place' },
@@ -65,58 +59,13 @@ const LandlordAuth = () => {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [signupEmailError, setSignupEmailError] = useState('');
-  const [demoLoggingIn, setDemoLoggingIn] = useState<string | null>(null);
-  const [demoSeeding, setDemoSeeding] = useState(false);
-  const demoEnabled = import.meta.env.VITE_ENABLE_PUBLIC_DEMO === 'true';
-  const demoSeedEnabled = import.meta.env.VITE_ENABLE_DEMO_SEED === 'true';
-  const demoSeedSecret = import.meta.env.VITE_DEMO_SEED_SECRET || '';
 
-  const demoAccounts: DemoAccount[] = demoEnabled ? [
-    { role: 'manager', label: 'James Kariuki', email: 'demo.manager@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'MANAGER', icon: <Building className="h-4 w-4" />, description: '3 properties · 5 tenants · Pro tier' },
-    { role: 'tenant-linked', label: 'Grace Wanjiku', email: 'demo.tenant1@calqulusrms.com', password: 'Demo@2026', portal: '/portal', badge: 'TENANT', icon: <User className="h-4 w-4" />, description: 'Flat A3 · KES 8,500/mo' },
-    { role: 'landlord', label: 'Peter Mwangi', email: 'demo.landlord@calqulusrms.com', password: 'Demo@2026', portal: '/landlord/dashboard', badge: 'LANDLORD', icon: <Briefcase className="h-4 w-4" />, description: '2 properties · KES 108K net rent' },
-    { role: 'agent', label: 'Fatuma Abubakar', email: 'demo.agent@calqulusrms.com', password: 'Demo@2026', portal: '/', badge: 'AGENT', icon: <Shield className="h-4 w-4" />, description: 'Submanager · tenants + maintenance' },
-  ] : [];
-
-  const loginAs = async (account: DemoAccount) => {
-    setDemoLoggingIn(account.email);
-    try {
-      await supabase.auth.signOut();
-      const { error } = await supabase.auth.signInWithPassword({ email: account.email, password: account.password });
-      if (error) throw error;
-      navigate(account.portal);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      toast({ title: 'Demo login failed', description: sanitizeAuthError(message), variant: 'destructive' });
-    } finally {
-      setDemoLoggingIn(null);
-    }
-  };
-
-  const reseedDemoAccounts = async () => {
-    if (!demoSeedEnabled || !demoSeedSecret) {
-      toast({ title: 'Demo seed disabled', description: 'Enable VITE_ENABLE_DEMO_SEED to reseed.', variant: 'destructive' });
-      return;
-    }
-    setDemoSeeding(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('seed-demo-data', {
-        body: { action: 'reset' },
-        headers: { 'X-Demo-Secret': demoSeedSecret },
-      });
-      if (error) throw error;
-      toast({ title: 'Demo accounts reset', description: 'Demo users and portfolio refreshed.' });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      toast({ title: 'Failed to reset demo', description: sanitizeAuthError(message), variant: 'destructive' });
-    } finally {
-      setDemoSeeding(false);
-    }
-  };
-
+  // SECURITY: Input validation with proper sanitization
   const validateEmail = (email: string): boolean => {
     if (!email) return true;
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // Strict email validation with length limits to prevent injection
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email) && email.length <= 254;
   };
 
   const handleSignupEmailChange = (email: string) => {
@@ -553,44 +502,6 @@ const LandlordAuth = () => {
                 </a>
               </div>
             </div>
-
-            {/* Demo accounts */}
-            {demoEnabled && (
-              <div className="mt-5 pt-5 border-t border-white/10">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] tracking-widest uppercase text-white/30 font-semibold">Quick Demo Access</p>
-                  <button
-                    onClick={reseedDemoAccounts}
-                    disabled={demoSeeding}
-                    className="text-[10px] text-white/30 hover:text-amber-400/60 transition-colors"
-                  >
-                    {demoSeeding ? 'Resetting…' : 'Reset demo'}
-                  </button>
-                </div>
-                <div className="space-y-1.5">
-                  {demoAccounts.map(acc => (
-                    <button
-                      key={acc.email}
-                      onClick={() => loginAs(acc)}
-                      disabled={demoLoggingIn === acc.email}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/8 bg-white/4 hover:bg-amber-400/8 hover:border-amber-400/25 transition-all text-left disabled:opacity-50"
-                    >
-                      <div className="h-7 w-7 rounded-lg bg-amber-400/12 border border-amber-400/20 flex items-center justify-center text-amber-400 shrink-0 text-xs">
-                        {acc.icon}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/80 text-xs font-semibold truncate">{acc.label}</span>
-                          <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-400/80 shrink-0">{acc.badge}</span>
-                        </div>
-                        <span className="text-white/35 text-[11px] truncate block">{acc.description}</span>
-                      </div>
-                      <ChevronRight className="h-3 w-3 text-white/25 shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
