@@ -27,6 +27,64 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 - Set secrets: Supabase Dashboard → Edge Functions → Secrets
 - Vercel auto-deploys from GitHub `main` branch
 
+## CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+1. **ci.yml** - Continuous Integration
+   - Lint + Typecheck + Tests (fast feedback)
+   - Security: Dependency Audit (npm audit --audit-level=high)
+   - Security: Secret Detection (GitLeaks)
+   - Build Verification
+   - Bundle Size Check
+   - Full Verify (production audit)
+   - CI Summary Dashboard
+
+2. **security-scan.yml** - Security Scanning (Weekly + On Push)
+   - Secret Detection (GitLeaks)
+   - Dependency Security Audit (npm audit)
+   - CodeQL Security Analysis
+   - Dependency Health Check
+   - Supply Chain Security
+   - SBOM Generation
+
+3. **deploy-production.yml** - Production Deployment
+   - Pre-deployment Quality Gate
+   - Production Build
+   - Lighthouse Performance Audit
+   - E2E Test Verification
+   - Vercel Deployment
+   - Health Check
+   - Rollback Validation
+   - Deployment Notifications
+
+4. **monitor.yml** - Deployment Monitoring (Every 15 min)
+   - Endpoint Health Monitor
+   - Performance Monitoring
+   - SSL Certificate Check
+   - Uptime Verification
+   - Database Health Check
+   - Rollback Capability Check
+
+### Quality Gates
+- Bundle size limit: 2.5MB (warning threshold)
+- Lighthouse performance scores: Performance ≥0.8, Accessibility ≥0.9, Best Practices ≥0.9
+- Critical/High vulnerabilities: Block deployment
+- Secret detection: Block deployment
+
+### Configuration Files
+- `.gitleaks.toml` - Secret scanning rules
+- `lighthouse-budget.json` - Performance budgets
+- `scripts/check-outdated-deps.mjs` - Dependency health checks
+
+### Secrets Required (GitHub Actions)
+- `VERCEL_TOKEN` - Vercel deployment
+- `VERCEL_ORG_ID` - Vercel organization
+- `VERCEL_PROJECT_ID` - Vercel project
+- `E2E_MANAGER_EMAIL` / `E2E_MANAGER_PASSWORD` - E2E tests
+- `E2E_TENANT_EMAIL` / `E2E_TENANT_PASSWORD` - E2E tests
+- `SUPABASE_SERVICE_KEY` - Database health checks
+
 ## Progress
 
 ### Done
