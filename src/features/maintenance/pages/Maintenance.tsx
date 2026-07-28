@@ -191,7 +191,6 @@ export default function Maintenance() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRequests();
     fetchPropertiesAndUnits();
   }, [fetchRequests, fetchPropertiesAndUnits]);
@@ -199,7 +198,6 @@ export default function Maintenance() {
   // Filter units when property changes
   useEffect(() => {
     if (formData.property_id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilteredUnits(units.filter(u => u.property_id === formData.property_id));
     } else {
       setFilteredUnits([]);

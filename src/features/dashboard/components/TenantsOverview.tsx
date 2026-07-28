@@ -94,7 +94,6 @@ export function TenantsOverview() {
   }, [assignedPropertyIds, generateSignedUrls, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenants();
 
     const channel = supabase

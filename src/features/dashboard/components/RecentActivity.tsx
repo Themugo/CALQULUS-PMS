@@ -188,7 +188,6 @@ export function RecentActivity() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchActivities();
 
     // Subscribe to real-time tenant_history changes

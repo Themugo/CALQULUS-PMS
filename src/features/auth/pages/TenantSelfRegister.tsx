@@ -88,7 +88,6 @@ const TenantSelfRegister = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (inviteCode && searchParams.get('code')) verifyInvite();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

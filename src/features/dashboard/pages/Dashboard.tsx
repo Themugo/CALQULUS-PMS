@@ -158,7 +158,6 @@ const Dashboard = () => {
   }, [managerId, user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
     const channels = [
       supabase.channel('dash-tenants').on('postgres_changes',{ event:'*',schema:'public',table:'tenants'},fetchStats).subscribe(),

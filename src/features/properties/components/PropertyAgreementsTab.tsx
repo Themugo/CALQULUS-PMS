@@ -76,7 +76,6 @@ export function PropertyAgreementsTab({ propertyId, propertyName }: PropertyAgre
     setIsLoading(false);
   }, [propertyId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData, propertyId]);
 
   const getTenantName = (id: string | null) => tenants.find(t => t.id === id)?.name || "—";

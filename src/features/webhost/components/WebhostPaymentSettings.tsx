@@ -63,7 +63,6 @@ const WebhostPaymentSettings: React.FC = () => {
   // Update form when settings are loaded
   useEffect(() => {
     if (settings) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         id: settings.id,
         registration_fee: settings.registration_fee,
@@ -434,7 +433,6 @@ const TierPricingEditor: React.FC = () => {
   React.useEffect(() => {
     const map: Record<string, string> = {};
     tiers.forEach((t: SubscriptionTier) => { map[t.tier_key] = String(t.price_per_property ?? ''); });
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrices(map);
   }, [tiers]);
 

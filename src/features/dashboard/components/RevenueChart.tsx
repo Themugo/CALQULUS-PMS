@@ -137,7 +137,6 @@ export function RevenueChart() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRevenueData();
 
     // Subscribe to real-time invoice changes

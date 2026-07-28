@@ -117,7 +117,6 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
 
   useEffect(() => {
     if (user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
       fetchSettings();
     }

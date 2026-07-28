@@ -1,142 +1,133 @@
-import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { serve } from "std/http/server.ts";
-import { createClient } from "supabase/supabase-js@2";
+/**
+ * self-register-tenant/index.ts
+ *
+ * Allows users to self-register as tenants (no manager invite required).
+ * Uses verified authenticated email for security.
+ */
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-const logStep = (step: string, details?: Record<string, unknown>) => {
-  console.log(`[self-register-tenant] ${step}`, details ?? "");
-};
+import { serve } from "std/http/server.ts";
+import { withMiddleware, errorResponse, successResponse } from "../_shared/middleware.ts";
+import { getEnv } from "../_shared/env.ts";
 
 interface SelfRegisterRequest {
   name: string;
-  email: string;
   phone?: string;
 }
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return preflightResponse(req);
+serve(
+  withMiddleware(
+    {
+      functionName: "self-register-tenant",
+      requireAuth: true,
+    },
+    async (req, ctx) => {
+      const { name, phone }: SelfRegisterRequest = await req.json();
 
-  try {
-    const supabaseUrl = requireEnv("SUPABASE_URL");
-    const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      if (!name) {
+        throw errorResponse("Missing required field: name", 400);
+      }
 
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Missing authorization header");
+      // SECURITY: Use verified authenticated email, not client-supplied one
+      // Tenants are matched by email elsewhere (e.g. claim-tenant), so trusting
+      // an arbitrary value would let a user register under someone else's email
+      const email = ctx.user!.email;
+      if (!email) {
+        throw errorResponse("Your account has no verified email on file", 400);
+      }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authError || !user) throw new Error("Authentication failed");
+      // Check if already registered as tenant
+      const { data: existingRole } = await ctx.supabase
+        .from("user_roles")
+        .select("tenant_id, role")
+        .eq("user_id", ctx.user!.id)
+        .eq("role", "tenant")
+        .maybeSingle();
 
-    const { name, email: requestedEmail, phone }: SelfRegisterRequest = await req.json();
-    if (!name) throw new Error("Missing required field: name");
-    // Use the verified authenticated email, not a client-supplied one —
-    // tenants are matched by email elsewhere (e.g. claim-tenant), so
-    // trusting an arbitrary value here would let a user register under
-    // someone else's email address.
-    const email = user.email;
-    if (!email) throw new Error("Your account has no verified email on file");
-    void requestedEmail;
+      if (existingRole) {
+        throw errorResponse("You are already registered as a tenant", 409);
+      }
 
-    // Check if already registered as tenant
-    const { data: existingRole } = await supabase
-      .from("user_roles")
-      .select("tenant_id, role")
-      .eq("user_id", user.id)
-      .eq("role", "tenant")
-      .maybeSingle();
-    if (existingRole) {
-      throw new Error("You are already registered as a tenant");
-    }
+      // Create the orphan tenant record
+      const { data: tenant, error: tenantError } = await ctx.supabase
+        .from("tenants")
+        .insert({
+          name,
+          email,
+          phone: phone ?? null,
+          manager_id: null,
+          status: "active",
+          source: "self_registered",
+        })
+        .select()
+        .single();
 
-    // Create the orphan tenant record
-    const { data: tenant, error: tenantError } = await supabase
-      .from("tenants")
-      .insert({
-        name,
-        email,
-        phone: phone ?? null,
-        manager_id: null,
-        status: "active",
-        source: "self_registered",
-      })
-      .select()
-      .single();
-    if (tenantError || !tenant) {
-      throw new Error(`Failed to create tenant record: ${tenantError?.message}`);
-    }
+      if (tenantError || !tenant) {
+        throw errorResponse(`Failed to create tenant record: ${tenantError?.message}`, 500);
+      }
 
-    // Link auth user to tenant record
-    const { error: roleError } = await supabase
-      .from("user_roles")
-      .insert({
-        user_id: user.id,
-        tenant_id: tenant.id,
-        role: "tenant",
-        approval_status: "approved",
-      });
-    if (roleError) {
-      // Cleanup tenant record if role insert fails
-      await supabase.from("tenants").delete().eq("id", tenant.id);
-      throw new Error(`Failed to link user to tenant: ${roleError.message}`);
-    }
-
-    // Ensure profile exists
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (!existingProfile) {
-      await supabase.from("profiles").insert({
-        id: user.id,
-        email,
-        full_name: name,
-        phone: phone ?? null,
-      });
-    }
-
-    // Log the transfer
-    await supabase.from("tenant_transfer_log").insert({
-      tenant_id: tenant.id,
-      from_manager_id: null,
-      to_manager_id: null,
-      transfer_type: "self_register",
-      transferred_by: user.id,
-      notes: "Self-registered via tenant portal",
-    });
-
-    logStep("Tenant self-registered", { tenantId: tenant.id });
-
-    if (phone) {
-      await fetch(`${supabaseUrl}/functions/v1/send-sms-notification`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseServiceKey}`,
-        },
-        body: JSON.stringify({
-          phoneNumber: phone,
-          message: `Welcome to CALQULUS RMS, ${name}. Your tenant account is active. You can now track rent, receipts, and property records from your portal.`,
-        }),
-      }).catch((smsError) => {
-        logStep("Welcome SMS failed", {
-          message: smsError instanceof Error ? smsError.message : String(smsError),
+      // Link auth user to tenant record
+      const { error: roleError } = await ctx.supabase
+        .from("user_roles")
+        .insert({
+          user_id: ctx.user!.id,
+          tenant_id: tenant.id,
+          role: "tenant",
+          approval_status: "approved",
         });
-      });
-    }
 
-    return new Response(
-      JSON.stringify({ success: true, tenant: { id: tenant.id, name, email } }),
-      { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logStep("Error", { message });
-    return new Response(
-      JSON.stringify({ success: false, error: message }),
-      { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
-  }
-});
+      if (roleError) {
+        // Cleanup tenant record if role insert fails
+        await ctx.supabase.from("tenants").delete().eq("id", tenant.id);
+        throw errorResponse(`Failed to link user to tenant: ${roleError.message}`, 500);
+      }
+
+      // Ensure profile exists
+      const { data: existingProfile } = await ctx.supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", ctx.user!.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        await ctx.supabase.from("profiles").insert({
+          id: ctx.user!.id,
+          email,
+          full_name: name,
+          phone: phone ?? null,
+        });
+      }
+
+      // Log the transfer
+      await ctx.supabase.from("tenant_transfer_log").insert({
+        tenant_id: tenant.id,
+        from_manager_id: null,
+        to_manager_id: null,
+        transfer_type: "self_register",
+        transferred_by: ctx.user!.id,
+        notes: "Self-registered via tenant portal",
+      });
+
+      // Send welcome SMS
+      if (phone) {
+        const supabaseUrl = getEnv("SUPABASE_URL");
+        const serviceKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+        fetch(`${supabaseUrl}/functions/v1/send-sms-notification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${serviceKey}`,
+          },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            message: `Welcome to CALQULUS RMS, ${name}. Your tenant account is active. You can now track rent, receipts, and property records from your portal.`,
+          }),
+        }).catch(() => {
+          // Non-critical, don't fail the request
+        });
+      }
+
+      return { tenant: { id: tenant.id, name, email } };
+    }
+  )
+);

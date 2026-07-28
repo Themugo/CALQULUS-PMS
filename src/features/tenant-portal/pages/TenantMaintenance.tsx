@@ -138,7 +138,6 @@ const TenantMaintenance = () => {
   }, [userRole?.tenant_id, toast]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchTenantInfo]);
   
@@ -167,7 +166,6 @@ const TenantMaintenance = () => {
 
   useEffect(() => {
     if (tenantInfo?.email) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchRequests();
     }
   }, [tenantInfo?.email, fetchRequests]);

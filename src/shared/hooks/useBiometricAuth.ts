@@ -36,7 +36,6 @@ export function useBiometricAuth(): UseBiometricAuth {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshStatus();
   }, [refreshStatus]);
 

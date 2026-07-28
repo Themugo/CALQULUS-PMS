@@ -212,7 +212,6 @@ const Properties = () => {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 

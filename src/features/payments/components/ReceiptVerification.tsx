@@ -162,7 +162,6 @@ export const ReceiptVerification = () => {
   }, [statusFilter, toast, user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReceipts();
   }, [statusFilter, fetchReceipts]);
 

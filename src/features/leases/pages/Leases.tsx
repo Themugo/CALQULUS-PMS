@@ -311,14 +311,12 @@ const Leases = () => {
   }, [properties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLeases();
     fetchTenants();
     fetchProperties();
   }, [fetchLeases, fetchTenants, fetchProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUnits();
   }, [fetchUnits]);
 
@@ -326,7 +324,6 @@ const Leases = () => {
   useEffect(() => {
     if (newLease.property_id) {
       const propertyUnits = units.filter(u => u.property_id === newLease.property_id);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilteredUnits(propertyUnits);
     } else {
       setFilteredUnits([]);

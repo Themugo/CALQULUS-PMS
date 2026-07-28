@@ -101,7 +101,6 @@ export function OccupancyChart() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOccupancyData();
 
     // Subscribe to real-time property changes

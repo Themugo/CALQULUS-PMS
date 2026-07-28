@@ -182,12 +182,10 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   }, [propertyId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCoverPhotos();
   }, [propertyId, fetchCoverPhotos]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUnits();
   }, [propertyId, fetchUnits]);
 

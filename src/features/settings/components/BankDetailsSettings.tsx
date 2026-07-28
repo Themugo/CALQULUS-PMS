@@ -230,7 +230,6 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
 
   useEffect(() => {
     if (user && isManager) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [user, isManager, fetchData]);

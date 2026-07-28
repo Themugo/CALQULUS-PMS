@@ -64,7 +64,6 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
     setLoading(false);
   }, [propertyId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchNotices(); }, [fetchNotices, propertyId]);
 
   const updateStatus = async (noticeId: string, status: string) => {

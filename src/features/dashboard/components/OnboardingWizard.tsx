@@ -59,7 +59,6 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
   }, [managerId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkProgress();
   }, [checkProgress]);
 

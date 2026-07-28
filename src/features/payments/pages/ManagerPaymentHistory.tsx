@@ -182,7 +182,6 @@ const ManagerPaymentHistory = () => {
   }, [toast]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPayments();
   }, [fetchPayments]);
 

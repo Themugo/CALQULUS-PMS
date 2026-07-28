@@ -150,7 +150,6 @@ export const TenantStatement = ({
   useEffect(() => {
     if (tenant && isOpen) {
       if (!isManagerView && tenant.statement_history_months) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHistoryLimit(tenant.statement_history_months);
       } else {
         setHistoryLimit(null);

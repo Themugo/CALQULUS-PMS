@@ -43,7 +43,6 @@ const PendingApproval = () => {
       }
     };
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCountdown(30);
     cdRef.current = setInterval(() => {
       setCountdown(p => {

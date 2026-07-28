@@ -57,7 +57,6 @@ export function PropertiesOverview() {
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProperties();
 
     const channel = supabase

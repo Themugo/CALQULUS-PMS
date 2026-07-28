@@ -61,34 +61,7 @@ export function CreateContractDialog({
 
   const selectedLease = leases.find((l) => l.id === leaseId);
 
-  // Auto-populate fields when lease is selected
-  useEffect(() => {
-    if (selectedLease) {
-      setValidFrom(selectedLease.start_date);
-      setValidUntil(selectedLease.end_date);
-      setTitle(`Lease Agreement - ${selectedLease.property} Unit ${selectedLease.unit}`);
-
-      // If template is already selected, populate content
-      if (templateId) {
-        const template = templates.find((t) => t.id === templateId);
-        if (template) {
-          populateContent(template.content, selectedLease);
-        }
-      }
-    }
-  }, [selectedLease, templateId, templates]);
-
-  // Auto-populate content when template is selected
-  const handleTemplateSelect = useCallback(async (id: string) => {
-    setTemplateId(id);
-    const template = templates.find((t) => t.id === id);
-    if (template && selectedLease) {
-      populateContent(template.content, selectedLease);
-    } else if (template) {
-      setContent(template.content);
-    }
-  }, [templates, selectedLease]);
-
+  // Populate content helper - declared before useEffect to avoid forward reference
   const populateContent = useCallback(async (
     templateContent: string,
     lease: LeaseRow
@@ -105,6 +78,34 @@ export function CreateContractDialog({
     );
     setContent(populated);
   }, [formatCurrency]);
+
+  // Auto-populate fields when lease is selected
+  useEffect(() => {
+    if (selectedLease) {
+      setValidFrom(selectedLease.start_date);
+      setValidUntil(selectedLease.end_date);
+      setTitle(`Lease Agreement - ${selectedLease.property} Unit ${selectedLease.unit}`);
+
+      // If template is already selected, populate content
+      if (templateId) {
+        const template = templates.find((t) => t.id === templateId);
+        if (template) {
+          populateContent(template.content, selectedLease);
+        }
+      }
+    }
+  }, [selectedLease, templateId, templates, populateContent]);
+
+  // Auto-populate content when template is selected
+  const handleTemplateSelect = useCallback(async (id: string) => {
+    setTemplateId(id);
+    const template = templates.find((t) => t.id === id);
+    if (template && selectedLease) {
+      populateContent(template.content, selectedLease);
+    } else if (template) {
+      setContent(template.content);
+    }
+  }, [templates, selectedLease, populateContent]);
 
   const handleSubmit = async () => {
     if (!leaseId || !title || !content) {

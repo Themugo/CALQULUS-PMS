@@ -54,7 +54,6 @@ const Settings = () => {
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && settingsTabs.some((settingsTab) => settingsTab.id === tab)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
   }, [searchParams]);

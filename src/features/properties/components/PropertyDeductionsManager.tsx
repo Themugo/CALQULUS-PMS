@@ -93,7 +93,6 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
     setIsLoading(false);
   }, [propertyId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData, propertyId]);
 
   const handleAddDeduction = async () => {

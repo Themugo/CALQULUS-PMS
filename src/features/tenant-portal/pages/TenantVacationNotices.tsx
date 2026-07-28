@@ -115,7 +115,6 @@ const TenantVacationNotices = () => {
   }, [userRole?.tenant_id, toast]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchTenantInfo]);
   
@@ -144,7 +143,6 @@ const TenantVacationNotices = () => {
 
   useEffect(() => {
     if (tenantInfo?.id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchNotices();
     }
   }, [tenantInfo?.id, fetchNotices]);

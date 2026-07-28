@@ -62,7 +62,6 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
   useEffect(() => {
     if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhone(tenantPhone?.replace(/^\+/, '') || '');
       setStatus('idle');
       setMpesaReceipt(null);

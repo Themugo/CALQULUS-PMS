@@ -87,7 +87,6 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 
   // Initialize network status
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshStatus();
 
     // Listen for network changes
@@ -144,7 +143,6 @@ export function NetworkStatusBanner() {
 
   useEffect(() => {
     if (!isOnline) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(true);
     } else {
       // Hide after 3 seconds when coming back online

@@ -194,7 +194,6 @@ const PropertyDetail = () => {
   }, [id, toast, navigate]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPropertyData();
   }, [fetchPropertyData, id]);
 

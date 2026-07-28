@@ -98,7 +98,6 @@ export function MpesaPaymentDialog({
   useEffect(() => {
     if (!open || !invoice?.lease_id) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettingsError(null);
     setMpesaSettings(null);
 

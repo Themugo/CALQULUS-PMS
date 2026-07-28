@@ -217,7 +217,6 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                   <Badge variant="outline" className={statusStyles[tenant.status] || statusStyles.active}>
                     {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
                   </Badge>
-                // eslint-disable-next-line react-hooks/set-state-in-effect
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
@@ -380,7 +379,6 @@ const Tenants = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTenants();
     fetchProperties();
   }, [fetchTenants, fetchProperties]);

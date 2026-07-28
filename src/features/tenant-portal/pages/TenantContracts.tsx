@@ -101,7 +101,6 @@ const TenantContracts = () => {
   }, [userRole?.tenant_id]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchContracts();
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchContracts, fetchTenantInfo]);

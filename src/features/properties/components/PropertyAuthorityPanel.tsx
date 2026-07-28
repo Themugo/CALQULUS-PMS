@@ -48,7 +48,6 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
   const [delegateEmail, setDelegateEmail] = useState('');
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOperatingModel((link.operating_model as OperatingModel) || 'agency_collects_full_management');
     setRevenueShare(String(link.revenue_share_pct ?? 100));
     setMgmtFee(link.management_fee_pct != null ? String(link.management_fee_pct) : '');

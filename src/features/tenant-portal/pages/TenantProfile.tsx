@@ -135,7 +135,6 @@ const TenantProfile = () => {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProfile();
     loadNotificationPreferences();
   }, [userRole?.tenant_id, fetchProfile, loadNotificationPreferences]);

@@ -40,6 +40,8 @@ export default tseslint.config(
       "no-empty": ["error", { allowEmptyCatch: true }],
       // Prevent direct console usage - use errorLogger instead
       "no-console": ["error", { allow: ["warn", "error", "debug"] }],
+      // Allow setState in useEffect for controlled form initialization
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   {

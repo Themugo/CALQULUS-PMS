@@ -184,7 +184,6 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
   }, [propertyId, KENYAN_WATER_PROVIDERS]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [propertyId, fetchData]);
 
@@ -379,7 +378,6 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
     if (selectedUnitId && billingMethod === "meter") {
       const lastReading = readings.find(r => r.unit_id === selectedUnitId);
       if (lastReading) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPrevReading(lastReading.current_reading.toString());
       }
     }

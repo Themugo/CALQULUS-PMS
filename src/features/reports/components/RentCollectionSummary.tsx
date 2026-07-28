@@ -323,7 +323,6 @@ export const RentCollectionSummary: React.FC = () => {
   // This is intentional - schedule data from useQuery comes after initial render
   useEffect(() => {
     if (schedule) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSchedEnabled(schedule.enabled);
       setSchedSendDay(schedule.send_day);
       setSchedRecipients(schedule.recipients ?? []);

@@ -22,7 +22,6 @@ export const PushNotificationPrompt = () => {
     // Check if already dismissed in this session
     const dismissed = localStorage.getItem("push-notification-dismissed");
     if (dismissed) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }

@@ -16,7 +16,6 @@ export const DesktopInstallBanner = () => {
     // Check if already dismissed in this session
     const dismissed = sessionStorage.getItem("pwa-install-dismissed");
     if (dismissed) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }

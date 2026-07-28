@@ -168,7 +168,6 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
 
   useEffect(() => {
     if (managerId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchBankDetails();
     }
   }, [managerId, propertyId, fetchBankDetails]);

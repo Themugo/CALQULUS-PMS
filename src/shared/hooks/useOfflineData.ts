@@ -131,13 +131,11 @@ export function useOfflineData<T>(
   }, [fetcher, getCachedData, setCachedData, options?.enabled]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
   useEffect(() => {
     if (!isOffline && isFromCache) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchData();
     }
   }, [isOffline, isFromCache, fetchData]);

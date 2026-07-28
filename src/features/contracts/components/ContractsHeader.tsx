@@ -22,7 +22,7 @@ import {
   Search,
   FileText,
   Upload,
-  Templates,
+  LayoutTemplate,
 } from "lucide-react";
 import type { ContractStatus } from "@/features/contracts/hooks/useContractsUI";
 
@@ -87,7 +87,7 @@ export function ContractsHeader({
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="templates" className="gap-2">
-            <Templates className="h-4 w-4" />
+            <LayoutTemplate className="h-4 w-4" />
             Templates
           </TabsTrigger>
           <TabsTrigger value="uploaded" className="gap-2">

@@ -180,7 +180,6 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
   const [form, setForm] = useState<Partial<TenantProfileRecord>>({});
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (profile) setForm(profile);
   }, [profile]);
 

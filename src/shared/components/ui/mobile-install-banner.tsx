@@ -18,7 +18,6 @@ export const MobileInstallBanner = () => {
     // Check if already dismissed in this session
     const dismissed = sessionStorage.getItem("pwa-mobile-install-dismissed");
     if (dismissed) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
       return;
     }

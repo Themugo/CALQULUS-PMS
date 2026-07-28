@@ -82,7 +82,6 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
 
   useEffect(() => {
     if (config) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         invoice_mode:          config.invoice_mode ?? 'compiled',
         due_day_of_month:      String(config.due_day_of_month ?? 1),

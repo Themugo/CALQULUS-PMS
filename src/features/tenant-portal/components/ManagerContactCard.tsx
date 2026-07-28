@@ -104,7 +104,6 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
 
   useEffect(() => {
     if (managerId || propertyId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchManagerInfo();
     } else {
       setLoading(false);

@@ -244,14 +244,12 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   }, [user?.id, selectedMonth, propertyId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchInvoices();
     fetchLeases();
     fetchTenants();
   }, [fetchInvoices, fetchLeases, fetchTenants, propertyId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (user?.id) fetchExpenditures();
   }, [user?.id, selectedMonth, propertyId, fetchExpenditures]);
 

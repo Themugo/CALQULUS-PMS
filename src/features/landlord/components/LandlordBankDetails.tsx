@@ -56,7 +56,6 @@ const LandlordBankDetails: React.FC = () => {
 
   useEffect(() => {
     if (details) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         mpesa_number:        details.mpesa_number ?? '',
         mpesa_name:          details.mpesa_name ?? '',

@@ -52,7 +52,6 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [token]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!token) { setStatus('error'); return; }
     loadInvitation();
   }, [token, loadInvitation]);
@@ -90,7 +89,6 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [user, invitation, toast, navigate, property]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (user && invitation) acceptInvitation();
   }, [user, invitation, acceptInvitation]);
 
