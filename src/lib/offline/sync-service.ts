@@ -8,7 +8,7 @@
  * - Retry logic
  */
 
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, HttpResponse } from '@capacitor/core';
 import { Network } from '@capacitor/network';
 import db, {
   queueOperation,
@@ -24,17 +24,75 @@ import db, {
   resolveConflict,
 } from './database';
 
-// Sync configuration
+// ── Sync Types ────────────────────────────────────────────────────────────────
+
+/** Operation types supported for offline sync */
+export type SyncOperationType = 'create' | 'update' | 'delete';
+
+/** Operation status in the sync queue */
+export type SyncOperationStatus = 'pending' | 'syncing' | 'completed' | 'failed';
+
+/** Conflict resolution strategy */
+export type ConflictResolution = 'local' | 'server' | 'merge';
+
+/** Queued operation record from the database */
+export interface QueuedOperation {
+  id: number;
+  operation: SyncOperationType;
+  endpoint: string;
+  payload: Record<string, unknown>;
+  retryCount: number;
+  status: SyncOperationStatus;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/** Conflict record for tracking sync conflicts */
+export interface ConflictRecord {
+  id: number;
+  operationId: number;
+  localPayload: Record<string, unknown>;
+  serverPayload: Record<string, unknown> | null;
+  resolved: boolean;
+  resolution?: ConflictResolution;
+  createdAt: number;
+  resolvedAt?: number;
+}
+
+/** Sync metadata stored locally */
+export interface SyncMetadata {
+  lastSyncAt: number;
+  lastAttemptAt: number;
+}
+
+/** Current sync status */
+export interface SyncStatus {
+  isOnline: boolean;
+  isSyncing: boolean;
+  pendingOperations: number;
+  lastSyncAt: number | undefined;
+  conflicts: number;
+}
+
+/** HTTP response from sync operation */
+interface SyncResponse {
+  status: number;
+  data: unknown;
+}
+
+// ── Configuration ───────────────────────────────────────────────────────────
+
 const SYNC_CONFIG = {
   maxRetries: 3,
   retryDelay: 5000, // 5 seconds
   syncInterval: 30000, // 30 seconds
   batchSize: 10,
-};
+} as const;
 
-// Sync state
+// ── State ─────────────────────────────────────────────────────────────────
+
 let isSyncing = false;
-let syncInterval: NodeJS.Timeout | null = null;
+let syncInterval: ReturnType<typeof setInterval> | null = null;
 let isOnline = true;
 
 /**
@@ -133,30 +191,30 @@ export async function syncPendingOperations(): Promise<void> {
 /**
  * Process batch of operations
  */
-async function processBatch(operations: any[]): Promise<void> {
+async function processBatch(operations: QueuedOperation[]): Promise<void> {
   for (const operation of operations) {
     try {
-      await updateOperationStatus(operation.id!, 'syncing');
+      await updateOperationStatus(operation.id, 'syncing');
       await executeOperation(operation);
-      await updateOperationStatus(operation.id!, 'completed');
-      await deleteOperation(operation.id!);
+      await updateOperationStatus(operation.id, 'completed');
+      await deleteOperation(operation.id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      await incrementRetryCount(operation.id!);
+      await incrementRetryCount(operation.id);
       
       if (operation.retryCount >= SYNC_CONFIG.maxRetries) {
-        await updateOperationStatus(operation.id!, 'failed', errorMessage);
+        await updateOperationStatus(operation.id, 'failed', errorMessage);
         
         // Record conflict if it's a conflict error
         if (errorMessage.includes('conflict') || errorMessage.includes('409')) {
           await recordConflict(
-            operation.id!,
+            operation.id,
             operation.payload,
             null // Server data would be fetched separately
           );
         }
       } else {
-        await updateOperationStatus(operation.id!, 'pending');
+        await updateOperationStatus(operation.id, 'pending');
       }
     }
   }
@@ -165,10 +223,10 @@ async function processBatch(operations: any[]): Promise<void> {
 /**
  * Execute single operation
  */
-async function executeOperation(operation: any): Promise<void> {
+async function executeOperation(operation: QueuedOperation): Promise<unknown> {
   const { operation: opType, endpoint, payload } = operation;
 
-  let response;
+  let response: SyncResponse;
   switch (opType) {
     case 'create':
       response = await CapacitorHttp.post({
@@ -177,7 +235,7 @@ async function executeOperation(operation: any): Promise<void> {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }) as SyncResponse;
       break;
 
     case 'update':
@@ -187,7 +245,7 @@ async function executeOperation(operation: any): Promise<void> {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }) as SyncResponse;
       break;
 
     case 'delete':
@@ -196,7 +254,7 @@ async function executeOperation(operation: any): Promise<void> {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }) as SyncResponse;
       break;
 
     default:
@@ -204,7 +262,10 @@ async function executeOperation(operation: any): Promise<void> {
   }
 
   if (response.status >= 400) {
-    throw new Error(`HTTP ${response.status}: ${response.data?.message || 'Request failed'}`);
+    const message = response.data && typeof response.data === 'object' && 'message' in response.data 
+      ? String((response.data as { message: unknown }).message) 
+      : 'Request failed';
+    throw new Error(`HTTP ${response.status}: ${message}`);
   }
 
   return response.data;

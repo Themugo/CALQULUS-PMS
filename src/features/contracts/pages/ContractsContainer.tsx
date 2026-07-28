@@ -14,7 +14,7 @@
 
 import { useCallback } from "react";
 import { useToast } from "@/shared/hooks/use-toast";
-import { useContractsData } from "@/features/contracts/hooks/useContractsData";
+import { useContractsData, ContractWithRelations, ContractStatus } from "@/features/contracts/hooks/useContractsData";
 import { useContractsUI } from "@/features/contracts/hooks/useContractsUI";
 import {
   createContract,
@@ -104,7 +104,7 @@ export function ContractsContainer() {
       toast({ title: "Contract Deleted", description: "The contract has been marked for deletion." });
       closeDeleteDialog();
       invalidateContracts();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to delete contract", variant: "destructive" });
     } finally {
       setLoadingState("isDeleting", false);
@@ -131,7 +131,7 @@ export function ContractsContainer() {
       toast({ title: "Contracts Deleted", description: `${selection.selectedContracts.size} contracts deleted.` });
       clearSelection();
       invalidateContracts();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to delete contracts", variant: "destructive" });
     } finally {
       setLoadingState("isDeleting", false);
@@ -143,12 +143,12 @@ export function ContractsContainer() {
       await submitForApproval(contractId);
       toast({ title: "Submitted for Approval", description: "The contract has been submitted for webhost approval." });
       invalidateContracts();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to submit for approval", variant: "destructive" });
     }
   }, [invalidateContracts, toast]);
 
-  const handleSendForSignature = useCallback(async (contract: any) => {
+  const handleSendForSignature = useCallback(async (contract: ContractWithRelations) => {
     setLoadingState("isSendingEmail", contract.id);
     try {
       await updateContractStatus(contract.id, { status: "pending_signature" });
@@ -162,7 +162,7 @@ export function ContractsContainer() {
             contract.id,
             contract.tenants.email,
             contract.tenants.name,
-            contract.title,
+            contract.title ?? "",
             contract.leases ? `${contract.leases.property} - ${contract.leases.unit}` : "N/A",
             contract.valid_from ? format(new Date(contract.valid_from), "dd/MM/yy") : "Not set",
             contract.valid_until ? format(new Date(contract.valid_until), "dd/MM/yy") : "Not set",
@@ -170,26 +170,26 @@ export function ContractsContainer() {
             company?.company_name || "CALQULUS PMS Properties"
           );
           toast({ title: "Contract Sent", description: `Contract sent to ${contract.tenants.name}.` });
-        } catch (emailError) {
+        } catch {
           toast({ title: "Contract Sent", description: `Status updated, but email notification failed.` });
         }
       } else {
         toast({ title: "Contract Sent", description: "Status updated. No email sent (tenant email not available)." });
       }
       invalidateContracts();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to send contract", variant: "destructive" });
     } finally {
       setLoadingState("isSendingEmail", null);
     }
   }, [invalidateContracts, setLoadingState, toast]);
 
-  const handleStatusChange = useCallback(async (contractId: string, status: string) => {
+  const handleStatusChange = useCallback(async (contractId: string, status: ContractStatus) => {
     try {
-      await updateContractStatus(contractId, { status: status as any });
+      await updateContractStatus(contractId, { status });
       toast({ title: "Status Updated", description: `Contract status changed to ${status}.` });
       invalidateContracts();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
     }
   }, [invalidateContracts, toast]);

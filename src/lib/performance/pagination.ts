@@ -464,12 +464,26 @@ export class PaginationMiddleware {
   }
 
   /**
+   * Supabase query builder interface
+   */
+  private static supabaseQueryBuilder<T>(): {
+    range(start: number, end: number): T;
+    order(column: string, options: { ascending: boolean }): T;
+  } {
+    // This is a marker interface - actual implementation depends on Supabase client
+    throw new Error("This is a type helper, not an implementation");
+  }
+
+  /**
    * Apply pagination to Supabase query
    */
-  static applyToSupabaseQuery(
-    query: any,
+  static applyToSupabaseQuery<T extends { 
+    range(start: number, end: number): T; 
+    order(column: string, options: { ascending: boolean }): T;
+  }>(
+    query: T,
     options: PaginationOptions
-  ): any {
+  ): T {
     const validated = this.sanitize(options);
     const offset = PaginationHelper.calculateOffset(validated.page, validated.pageSize);
 
