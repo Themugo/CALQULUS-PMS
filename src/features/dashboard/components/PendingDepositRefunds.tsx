@@ -39,9 +39,10 @@ export function PendingDepositRefunds() {
   const { formatCurrency } = useCurrency();
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const { data: pendingRefunds = [], isLoading, refetch } = useQuery({
-    queryKey: ["pending-deposit-refunds", managerId, assignedPropertyIds],
+    queryKey: ["pending-deposit-refunds", managerId, assignedPropertyIdsKey],
     queryFn: async () => {
       if (!managerId) return [];
       if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return [];

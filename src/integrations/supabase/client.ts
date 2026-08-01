@@ -2,18 +2,25 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
-const PLACEHOLDER_ENV =
-  SUPABASE_URL === "https://example.supabase.co" ||
-  SUPABASE_PUBLISHABLE_KEY === "ci-placeholder-anon-key";
-const MISSING_ENV = !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || PLACEHOLDER_ENV;
+const isPlaceholderUrl = !SUPABASE_URL || 
+  SUPABASE_URL.includes("example.supabase.co") || 
+  SUPABASE_URL.includes("your-project.supabase.co") || 
+  SUPABASE_URL.includes("placeholder");
+
+const isPlaceholderKey = !SUPABASE_PUBLISHABLE_KEY || 
+  SUPABASE_PUBLISHABLE_KEY.includes("ci-placeholder") || 
+  SUPABASE_PUBLISHABLE_KEY.includes("your-anon-key") || 
+  SUPABASE_PUBLISHABLE_KEY.includes("placeholder");
+
+const MISSING_ENV = isPlaceholderUrl || isPlaceholderKey;
 if (MISSING_ENV) {
   console.warn(
-    '%c[CALQULUS PMS] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY).\n' +
-    '  The app will load but auth and data features will be unavailable.\n' +
-    '  Copy .env.example to .env.local and fill in your Supabase project values.',
+    '%c[CALQULUS PMS] Missing or placeholder Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY).\n' +
+    '  The app will load in preview mode with simulated client state.\n' +
+    '  Copy .env.example to .env.local and fill in your Supabase project values for live backend sync.',
     'color: #eab308; font-weight: bold'
   );
 }
@@ -104,19 +111,44 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
     return builder;
   }
 
+  const noopFunctions = {
+    invoke: () => Promise.resolve({ data: null, error: null }),
+  };
+
+  const noopStorage = {
+    from: () => ({
+      upload: () => Promise.resolve({ data: null, error: null }),
+      download: () => Promise.resolve({ data: null, error: null }),
+      remove: () => Promise.resolve({ data: [], error: null }),
+      list: () => Promise.resolve({ data: [], error: null }),
+      getPublicUrl: (path: string) => ({ data: { publicUrl: path } }),
+    }),
+  };
+
   const noop = new Proxy({}, {
     get(_target, prop) {
       if (prop === 'then' || prop === 'catch' || prop === 'finally') return undefined;
       if (prop === 'auth') return noopAuth;
-      if (prop === 'from' || prop === 'rpc' || prop === 'storage') {
+      if (prop === 'functions') return noopFunctions;
+      if (prop === 'storage') return noopStorage;
+      if (prop === 'from' || prop === 'rpc') {
         return () => createNoopBuilder();
       }
       if (prop === 'channel') {
-        return () => ({
-          on: () => ({ subscribe: () => ({}) }),
-          subscribe: () => ({}),
-          unsubscribe: () => {},
-        });
+        return () => {
+          const mockChannel = {
+            on: () => mockChannel,
+            subscribe: () => mockChannel,
+            unsubscribe: () => {},
+            send: () => {},
+            track: () => {},
+            untrack: () => {},
+          };
+          return mockChannel;
+        };
+      }
+      if (prop === 'removeChannel' || prop === 'removeAllChannels') {
+        return () => {};
       }
       return typeof prop === 'string'
         ? () => createNoopBuilder()
@@ -126,9 +158,12 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
   return noop as unknown as ReturnType<typeof createClient<Database>>;
 }
 
-export const supabase = MISSING_ENV
-  ? createNoopProxy()
-  : createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+function initSupabaseClient() {
+  if (MISSING_ENV) {
+    return createNoopProxy();
+  }
+  try {
+    return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       auth: {
         storage: safeStorage,
         persistSession: true,
@@ -136,3 +171,10 @@ export const supabase = MISSING_ENV
         detectSessionInUrl: true,
       }
     });
+  } catch (err) {
+    console.warn('[CALQULUS PMS] Failed to create Supabase client, falling back to proxy:', err);
+    return createNoopProxy();
+  }
+}
+
+export const supabase = initSupabaseClient();

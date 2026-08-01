@@ -7,7 +7,6 @@ on:
       - main
       - master
 
-# Prevent redundant builds
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -16,11 +15,6 @@ env:
   NODE_VERSION: "22"
 
 jobs:
-  # ── Fast feedback ─────────────────────────────────────────────
-  # Lint + typecheck + unit tests in a single small job. Gives a
-  # contributor a pass/fail signal within ~90s of pushing, while
-  # the heavier `verify` job (build + audit + production-audit
-  # script) continues in parallel below.
   quick:
     name: Lint + Typecheck + Tests
     runs-on: ubuntu-latest
@@ -46,7 +40,6 @@ jobs:
       - name: Tests
         run: npm test
 
-  # ── Security: Dependency Check ───────────────────────────────
   security-deps:
     name: Dependency Audit
     runs-on: ubuntu-latest
@@ -66,7 +59,6 @@ jobs:
       - name: Run npm audit
         run: npm audit --audit-level=high
 
-  # ── Security: Secret Detection ──────────────────────────────
   secrets-scan:
     name: Secret Detection
     runs-on: ubuntu-latest
@@ -81,7 +73,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ── Security: Code Quality ─────────────────────────────────
   code-quality:
     name: Code Quality
     runs-on: ubuntu-latest
@@ -108,7 +99,6 @@ jobs:
             echo "Warning: Found $CONSOLE_LOGS console statements"
           fi
 
-  # ── Build Verification ─────────────────────────────────────
   build:
     name: Production Build
     runs-on: ubuntu-latest
@@ -151,14 +141,6 @@ jobs:
           path: dist/
           retention-days: 1
 
-  # ── Full release gate ─────────────────────────────────────────
-  # Runs the heavyweight checks: production build, `npm audit` at
-  # the high level (was moderate — too noisy for legitimate PRs),
-  # and the project-specific `audit:prod` script that verifies
-  # migrations, edge function configs, and required env vars line
-  # up. The quick job above effectively dedups lint/typecheck/test
-  # but we still include them via `verify` so this job can also be
-  # run standalone (e.g. for a release tag).
   verify:
     name: Full Verify
     runs-on: ubuntu-latest
@@ -183,7 +165,6 @@ jobs:
       - name: Verify release gate
         run: npm run verify
 
-  # ── Bundle Size Check ────────────────────────────────────────
   bundle-size:
     name: Bundle Size Check
     runs-on: ubuntu-latest
@@ -193,11 +174,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
+          path: dist
 
       - name: Check main bundle size
         run: |
-          MAX_SIZE=2500000  # 2.5MB
-          for bundle in dist/assets/index-*.js; do
+          MAX_SIZE=2500000
+          shopt -s nullglob
+          bundles=(dist/assets/index-*.js)
+          if [ ${#bundles[@]} -eq 0 ]; then
+            echo "No index bundle found under dist/assets/"
+            ls -la dist/assets/ || true
+            exit 1
+          fi
+          for bundle in "${bundles[@]}"; do
             SIZE=$(stat -c%s "$bundle")
             echo "$bundle: $((SIZE / 1024))KB"
             if [ "$SIZE" -gt "$MAX_SIZE" ]; then
@@ -205,11 +194,10 @@ jobs:
             fi
           done
 
-  # ── CI Summary ──────────────────────────────────────────────
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [quick, security-deps, secrets-scan, build, verify]
+    needs: [quick, security-deps, secrets-scan, build, verify, bundle-size]
     if: always()
     steps:
       - name: Summary
@@ -223,3 +211,4 @@ jobs:
           echo "| Secret Scan | ${{ needs.secrets-scan.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Full Verify | ${{ needs.verify.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Bundle Size | ${{ needs.bundle-size.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

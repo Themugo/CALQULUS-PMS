@@ -12,7 +12,7 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
-import { Loader2, Upload, X, User, Lock, Bell, Wallet, Globe, Building2, Receipt, Clock, Users, Shield } from "lucide-react";
+import { Loader2, Upload, X, User, Lock, Bell, Wallet, Globe, Building2, Receipt, Clock, Users, Shield, HardDrive } from "lucide-react";
 import { UserRoleManagement } from "@/features/settings/components/UserRoleManagement";
 import { PasswordChange } from "@/features/settings/components/PasswordChange";
 import { CompanySettings } from "@/features/settings/components/CompanySettings";
@@ -26,6 +26,7 @@ import SubmanagerManagement from "@/features/settings/components/SubmanagerManag
 import BankIntegrationSettings from "@/features/payments/components/BankIntegrationSettings";
 import UnmatchedBankTransactions from "@/features/payments/components/UnmatchedBankTransactions";
 import { DateSettings } from "@/features/settings/components/DateSettings";
+import { CacheManagementSettings } from "@/features/settings/components/CacheManagementSettings";
 import { cn } from "@/shared/lib/utils";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 
@@ -42,6 +43,7 @@ const settingsTabs = [
   { id: "date-time", label: "Date & Time", icon: Clock },
   { id: "submanagers", label: "Submanagers", icon: Users },
   { id: "roles", label: "User Roles", icon: Shield },
+  { id: "cache", label: "Cache Management", icon: HardDrive },
 ];
 
 const Settings = () => {
@@ -417,6 +419,8 @@ const Settings = () => {
         return <SubmanagerManagement />;
       case "roles":
         return <UserRoleManagement />;
+      case "cache":
+        return <CacheManagementSettings />;
       default:
         return null;
     }

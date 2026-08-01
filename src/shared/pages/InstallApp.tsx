@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Download, Smartphone, CheckCircle, Share, Plus, MoreVertical } from "lucide-react";
+import { Download, Smartphone, CheckCircle, Share, Plus, MoreVertical, QrCode, Copy, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
+import { toast } from "sonner";
+import { downloadQrCodeAsPng } from "@/shared/lib/downloadQrCode";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -15,6 +18,30 @@ const InstallApp = () => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
+
+  const handleCopyUrl = async () => {
+    if (!appUrl) return;
+    try {
+      await navigator.clipboard.writeText(appUrl);
+      setCopied(true);
+      toast.success("Application URL copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy URL");
+    }
+  };
+
+  const handleDownloadQrCode = () => {
+    const success = downloadQrCodeAsPng("install-app-qr-code", "calqulus-rms-app-qr.png");
+    if (success) {
+      toast.success("QR code downloaded as PNG!");
+    } else {
+      toast.error("Failed to download QR code");
+    }
+  };
 
   useEffect(() => {
     // Check if already installed
@@ -193,6 +220,76 @@ const InstallApp = () => {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* QR Code Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5 text-amber-500" />
+              Scan or Share App Link
+            </CardTitle>
+            <CardDescription>
+              Scan this QR code on a mobile device or copy the application link below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center space-y-4">
+            <div className="p-4 bg-white rounded-xl shadow-sm border border-border flex flex-col items-center justify-center gap-3">
+              {appUrl ? (
+                <>
+                  <QRCodeSVG
+                    id="install-app-qr-code"
+                    value={appUrl}
+                    size={180}
+                    bgColor="#FFFFFF"
+                    fgColor="#0F172A"
+                    level="H"
+                    includeMargin={false}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleDownloadQrCode}
+                    className="w-full text-xs font-semibold gap-1.5 shadow-xs border-primary/20 text-primary hover:bg-primary/5"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download QR Code (PNG)
+                  </Button>
+                </>
+              ) : (
+                <div className="h-[180px] w-[180px] flex items-center justify-center text-muted-foreground text-xs">
+                  Loading QR code...
+                </div>
+              )}
+            </div>
+
+            <div className="w-full space-y-2">
+              <p className="text-xs font-medium text-muted-foreground text-center">Application URL</p>
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/60 border border-border/50">
+                <span className="text-xs font-mono text-foreground truncate flex-1 px-1">
+                  {appUrl || "Loading..."}
+                </span>
+                <Button
+                  size="sm"
+                  variant={copied ? "default" : "secondary"}
+                  onClick={handleCopyUrl}
+                  className="h-8 px-3 shrink-0 gap-1.5 transition-all"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span>Copy Link</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
 

@@ -13,6 +13,7 @@
  */
 
 import { useCallback } from "react";
+import { Layout } from "@/shared/components/layout/Layout";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useContractsData, ContractWithRelations, ContractStatus } from "@/features/contracts/hooks/useContractsData";
 import { useContractsUI } from "@/features/contracts/hooks/useContractsUI";
@@ -239,65 +240,70 @@ export function ContractsContainer() {
 
   // Main contracts tab
   return (
-    <div className="container mx-auto py-6">
-      <ContractsHeader
-        searchQuery={filters.searchQuery}
-        onSearchChange={(v) => updateFilter("searchQuery", v)}
-        statusFilter={filters.statusFilter}
-        onStatusFilterChange={(v) => updateFilter("statusFilter", v)}
-        activeTab={filters.activeTab}
-        onTabChange={(v) => updateFilter("activeTab", v)}
-        totalContracts={contracts.length}
-        filteredCount={filteredContracts.length}
-        selectedCount={selection.selectedContracts.size}
-        onCreateClick={() => openDialog("createDialogOpen")}
-      />
+    <Layout
+      title="Contracts & Documents"
+      subtitle="Manage lease contracts, templates, and digital signatures"
+    >
+      <div className="space-y-6">
+        <ContractsHeader
+          searchQuery={filters.searchQuery}
+          onSearchChange={(v) => updateFilter("searchQuery", v)}
+          statusFilter={filters.statusFilter}
+          onStatusFilterChange={(v) => updateFilter("statusFilter", v)}
+          activeTab={filters.activeTab}
+          onTabChange={(v) => updateFilter("activeTab", v)}
+          totalContracts={contracts.length}
+          filteredCount={filteredContracts.length}
+          selectedCount={selection.selectedContracts.size}
+          onCreateClick={() => openDialog("createDialogOpen")}
+        />
 
-      <ContractsTable
-        contracts={filteredContracts}
-        isLoading={isLoading}
-        selectedContracts={selection.selectedContracts}
-        onToggleSelect={toggleContractSelection}
-        onSelectAll={(select) => selectAllContracts(select)}
-        onPreview={(contract) => openDialog("previewDialogOpen", contract)}
-        onSign={(contract) => openDialog("signDialogOpen", contract)}
-        onDelete={(contract) => openDeleteDialog(contract)}
-        onSubmitForApproval={handleSubmitForApproval}
-        onSendForSignature={handleSendForSignature}
-        onStatusChange={handleStatusChange}
-        isSendingEmail={loading.isSendingEmail}
-      />
+        <ContractsTable
+          contracts={filteredContracts}
+          isLoading={isLoading}
+          selectedContracts={selection.selectedContracts}
+          onToggleSelect={toggleContractSelection}
+          onSelectAll={(select) => selectAllContracts(select)}
+          onPreview={(contract) => openDialog("previewDialogOpen", contract)}
+          onSign={(contract) => openDialog("signDialogOpen", contract)}
+          onDelete={(contract) => openDeleteDialog(contract)}
+          onSubmitForApproval={handleSubmitForApproval}
+          onSendForSignature={handleSendForSignature}
+          onStatusChange={handleStatusChange}
+          isSendingEmail={loading.isSendingEmail}
+        />
 
-      {/* Create Contract Dialog */}
-      <CreateContractDialog
-        open={dialogs.createDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) resetNewContract();
-          closeDialog("createDialogOpen");
-        }}
-        leases={leases}
-        templates={templates}
-        onSuccess={handleCreateSuccess}
-      />
+        {/* Create Contract Dialog */}
+        <CreateContractDialog
+          open={dialogs.createDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) resetNewContract();
+            closeDialog("createDialogOpen");
+          }}
+          leases={leases}
+          templates={templates}
+          onSuccess={handleCreateSuccess}
+        />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={dialogs.deleteDialogOpen} onOpenChange={(open) => !open && closeDeleteDialog()}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Contract</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{selection.contractToDelete?.title}"?
-              This action will mark the contract for deletion and requires confirmation.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={closeDeleteDialog}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteContract}>
-              {loading.isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={dialogs.deleteDialogOpen} onOpenChange={(open) => !open && closeDeleteDialog()}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Contract</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{selection.contractToDelete?.title}"?
+                This action will mark the contract for deletion and requires confirmation.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={closeDeleteDialog}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteContract}>
+                {loading.isDeleting ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </Layout>
   );
 }

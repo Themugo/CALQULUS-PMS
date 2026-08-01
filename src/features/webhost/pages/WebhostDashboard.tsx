@@ -21,6 +21,7 @@ import CustomerBillingBlocks from '@/features/webhost/components/CustomerBilling
 import WebhookDeadLetterPanel from '@/features/webhost/components/WebhookDeadLetterPanel';
 import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccountSecurity';
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
+import { EnterpriseAdminPlatform } from '@/shared/components/admin';
 import { supabase } from '@/integrations/supabase/client';
 import calqulusLogo from '@/assets/calqulus-logo-new.png';
 
@@ -107,7 +108,7 @@ const WebhostDashboard = () => {
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-amber-400/10 bg-card/90 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="hidden sm:block min-w-0">
@@ -136,7 +137,7 @@ const WebhostDashboard = () => {
       </header>
 
       {/* Main */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!myPermissions ? (
           <div className="rounded-2xl border border-amber-400/20 bg-white/5 backdrop-blur-sm p-10 text-center">
             <div className="h-16 w-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mx-auto mb-4">
@@ -155,6 +156,9 @@ const WebhostDashboard = () => {
               <TabsList className="bg-white/5 border border-white/10 h-auto p-1 gap-1 flex-nowrap inline-flex min-w-max">
                 <TabsTrigger value="overview" className={tabCls}>
                   <Home className="h-3.5 w-3.5 mr-1.5" />Overview
+                </TabsTrigger>
+                <TabsTrigger value="admin-suite" className={tabCls}>
+                  <Crown className="h-3.5 w-3.5 mr-1.5 text-amber-400" />Admin Platform
                 </TabsTrigger>
                 {canViewManagers && (
                   <TabsTrigger value="managers" className={tabCls}>
@@ -207,6 +211,7 @@ const WebhostDashboard = () => {
             </div>
 
             <TabsContent value="overview"><WebhostOverview /></TabsContent>
+            <TabsContent value="admin-suite"><EnterpriseAdminPlatform /></TabsContent>
             {canViewManagers && <TabsContent value="managers"><ManagerManagement /></TabsContent>}
             {canViewProperties && <TabsContent value="properties"><PropertyAssignment /></TabsContent>}
             {canViewLandlords && <TabsContent value="unlinked-landlords"><SystemLandlordManagement /></TabsContent>}

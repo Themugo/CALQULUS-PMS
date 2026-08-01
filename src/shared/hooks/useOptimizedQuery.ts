@@ -285,22 +285,28 @@ export function useDebouncedSearch<T>(
   const [results, setResults] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
-  
+  const searchFnRef = useRef(searchFn);
+
+  useEffect(() => {
+    searchFnRef.current = searchFn;
+  }, [searchFn]);
+
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
+      setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     timeoutRef.current = setTimeout(async () => {
       try {
-        const data = await searchFn(query);
+        const data = await searchFnRef.current(query);
         setResults(data);
       } catch (error) {
         logError('useDebouncedSearch', error);
@@ -308,14 +314,14 @@ export function useDebouncedSearch<T>(
         setIsLoading(false);
       }
     }, debounceMs);
-    
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [query, searchFn, debounceMs]);
-  
+  }, [query, debounceMs]);
+
   return { query, setQuery, results, isLoading };
 }
 

@@ -1,4 +1,4 @@
-﻿import jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { CurrencyCode, CURRENCIES } from "@/shared/hooks/useCurrency";
 

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 
 const EMPTY_PROPERTY_IDS: string[] = [];
@@ -20,12 +21,19 @@ export const useManagerScope = () => {
   const restrictToAssignedProperties =
     isSubmanager && !!submanagerPermissions?.restrict_to_assigned_properties;
 
-  return {
+  const rawPropertyIdsStr = submanagerPermissions?.assigned_property_ids?.join(',') ?? '';
+
+  const assignedPropertyIds = useMemo(() => {
+    if (!restrictToAssignedProperties || !rawPropertyIdsStr) {
+      return EMPTY_PROPERTY_IDS;
+    }
+    return rawPropertyIdsStr.split(',').filter(Boolean);
+  }, [restrictToAssignedProperties, rawPropertyIdsStr]);
+
+  return useMemo(() => ({
     managerId,
     isReady: !!managerId,
     restrictToAssignedProperties,
-    assignedPropertyIds: restrictToAssignedProperties
-      ? submanagerPermissions?.assigned_property_ids ?? []
-      : EMPTY_PROPERTY_IDS,
-  };
+    assignedPropertyIds,
+  }), [managerId, restrictToAssignedProperties, assignedPropertyIds]);
 };

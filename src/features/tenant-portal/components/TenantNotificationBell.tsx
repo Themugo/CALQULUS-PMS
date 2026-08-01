@@ -48,13 +48,14 @@ const TenantNotificationBell: React.FC = () => {
   const { data: notifications = [] } = useQuery({
     queryKey: ['tenant-notifications', user?.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('in_app_notifications')
         .select('*')
         .eq('user_id', user!.id)
         .eq('is_dismissed', false)
         .order('created_at', { ascending: false })
         .limit(30);
+      if (error) return [];
       return (data || []) as TenantNotification[];
     },
     enabled: !!user?.id,

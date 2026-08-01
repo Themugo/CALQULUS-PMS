@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ReceiptsTab.tsx
  * Full receipts functionality: table, bulk email, bulk SMS, WhatsApp, per-row actions.
  */

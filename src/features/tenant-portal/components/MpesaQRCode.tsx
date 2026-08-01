@@ -1,6 +1,9 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Smartphone } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
+import { Smartphone, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { downloadQrCodeAsPng } from '@/shared/lib/downloadQrCode';
 
 interface MpesaQRCodeProps {
   paybillNumber?: string | null;
@@ -28,6 +31,26 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
     return lines.join('\n');
   };
 
+  const handleDownloadPaybill = () => {
+    if (!paybillNumber) return;
+    const ok = downloadQrCodeAsPng('mpesa-paybill-qr-code', `mpesa-paybill-${paybillNumber}.png`);
+    if (ok) {
+      toast.success('Paybill QR code downloaded as PNG!');
+    } else {
+      toast.error('Failed to download Paybill QR code');
+    }
+  };
+
+  const handleDownloadTill = () => {
+    if (!tillNumber) return;
+    const ok = downloadQrCodeAsPng('mpesa-till-qr-code', `mpesa-till-${tillNumber}.png`);
+    if (ok) {
+      toast.success('Till QR code downloaded as PNG!');
+    } else {
+      toast.error('Failed to download Till QR code');
+    }
+  };
+
   return (
     <Card className="border-dashed">
       <CardHeader className="pb-3">
@@ -36,14 +59,15 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
           Scan to Pay
         </CardTitle>
         <CardDescription className="text-xs">
-          Scan with your phone camera to copy payment details
+          Scan with your phone camera or download QR code as PNG image
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-6 justify-center">
         {paybillNumber && (
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 flex flex-col items-center">
             <div className="p-3 bg-white rounded-lg inline-block shadow-sm border">
               <QRCodeSVG
+                id="mpesa-paybill-qr-code"
                 value={generateQRData('paybill', paybillNumber)}
                 size={120}
                 level="M"
@@ -51,12 +75,22 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
               />
             </div>
             <p className="text-xs font-medium text-muted-foreground">Paybill: {paybillNumber}</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownloadPaybill}
+              className="h-7 text-[11px] px-2.5 gap-1.5 shadow-xs"
+            >
+              <Download className="h-3 w-3" />
+              Download PNG
+            </Button>
           </div>
         )}
         {tillNumber && (
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 flex flex-col items-center">
             <div className="p-3 bg-white rounded-lg inline-block shadow-sm border">
               <QRCodeSVG
+                id="mpesa-till-qr-code"
                 value={generateQRData('till', tillNumber)}
                 size={120}
                 level="M"
@@ -64,6 +98,15 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
               />
             </div>
             <p className="text-xs font-medium text-muted-foreground">Till: {tillNumber}</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownloadTill}
+              className="h-7 text-[11px] px-2.5 gap-1.5 shadow-xs"
+            >
+              <Download className="h-3 w-3" />
+              Download PNG
+            </Button>
           </div>
         )}
       </CardContent>

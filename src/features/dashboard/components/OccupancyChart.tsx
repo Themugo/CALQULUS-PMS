@@ -57,6 +57,7 @@ export function OccupancyChart() {
   const [data, setData] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState(true);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchOccupancyData = useCallback(async () => {
     try {
@@ -98,7 +99,7 @@ export function OccupancyChart() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchOccupancyData();

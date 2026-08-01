@@ -22,7 +22,7 @@ import {
   Home, LogOut, TrendingUp, Building2, FileText,
   Clock, CheckCircle, AlertCircle,
   Banknote, PieChart, MessageSquare,
-  Settings, BarChart3, Users,
+  Settings, BarChart3, Users, Zap, CheckSquare, DollarSign, Activity, RefreshCw
 } from 'lucide-react';
 import LandlordBankDetails from '@/features/landlord/components/LandlordBankDetails';
 import LandlordFinancialStatement from '@/features/landlord/components/LandlordFinancialStatement';
@@ -31,6 +31,7 @@ import LandlordPropertyDetail from '@/features/landlord/components/LandlordPrope
 import LandlordNotificationPreferences from '@/features/landlord/components/LandlordNotificationPreferences';
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
+import calqulusLogo from '@/assets/calqulus-logo-new.png';
 
 interface PropertySummary {
   id: string;
@@ -134,7 +135,6 @@ const LandlordDashboard = () => {
         const liveUnits = unitMap[p.id];
         return {
           ...p,
-          // Use live unit counts from units table (more accurate than properties.occupied counter)
           units:    liveUnits?.total    ?? p.units,
           occupied: liveUnits?.occupied ?? p.occupied,
           vacant:   liveUnits?.vacant   ?? (p.units - p.occupied),
@@ -184,7 +184,6 @@ const LandlordDashboard = () => {
       if (!selectedProperty || !payoutAmount || !payoutPeriodStart || !payoutPeriodEnd) {
         throw new Error('All fields are required');
       }
-      // Find the property link to get manager_id (null = system landlord → goes to webhost)
       const prop = properties.find(p => p.id === selectedProperty);
       const managerId = (prop as { manager_id?: string | null })?.manager_id ?? null;
       const recipientType = managerId ? 'manager' : 'webhost';
@@ -233,7 +232,7 @@ const LandlordDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
       </div>
     );
@@ -244,30 +243,152 @@ const LandlordDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-amber-400/10 bg-background/95 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain" />
-            <div>
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-card/90 backdrop-blur-xl">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
+            <div className="min-w-0">
               <div className="font-heading font-bold text-sm text-gradient leading-none">CALQULUS PMS</div>
-              <div className="text-[10px] text-muted-foreground tracking-wider">LANDLORD PORTAL</div>
+              <div className="text-[10px] text-muted-foreground tracking-wider">EXECUTIVE LANDLORD PORTAL</div>
             </div>
-            <Badge variant="outline" className="ml-1 text-xs border-amber-300 text-amber-700 bg-amber-50">
-              Property Owner
+            <Badge variant="outline" className="ml-1 text-xs border-amber-400/30 text-amber-500 bg-amber-400/10">
+              Property Owner Workspace
             </Badge>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign out
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => queryClient.invalidateQueries()}
+              className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground"
+              title="Refresh"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground border border-border/60">
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Sign out</span>
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        {/* Stats row */}
+        {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* 1. What requires attention? */}
+          <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
+            <CardContent className="p-3.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  What Requires Attention?
+                </span>
+                <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
+                  {pendingPayouts} Pending
+                </Badge>
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Pending Payout Requests:</span>
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">{pendingPayouts}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Properties Managed:</span>
+                  <span className="font-semibold text-foreground">{properties.length} active</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Vacant Units:</span>
+                  <span className="font-semibold text-foreground">{totalUnits - totalOccupied} vacant</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 2. What generates revenue? */}
+          <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
+            <CardContent className="p-3.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                  <DollarSign className="h-3.5 w-3.5" />
+                  What Generates Revenue?
+                </span>
+                <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
+                  {occupancyRate}% Occupancy
+                </Badge>
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Net Share MTD:</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">{fmt(totalRevenue)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Paid Out:</span>
+                  <span className="font-semibold text-foreground">{fmt(totalPaid)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Occupied Units:</span>
+                  <span className="font-medium text-foreground">{totalOccupied} of {totalUnits}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 3. What needs approval? */}
+          <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
+            <CardContent className="p-3.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                  <CheckSquare className="h-3.5 w-3.5" />
+                  What Needs Approval?
+                </span>
+                <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
+                  Payout Tracker
+                </Badge>
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Manager Payout Reviews:</span>
+                  <span className="font-medium text-foreground">{pendingPayouts} awaiting review</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Approved Payouts:</span>
+                  <span className="font-medium text-emerald-600">{payouts.filter(p => p.status === 'approved' || p.status === 'paid').length} processed</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 4. Portfolio Scope */}
+          <Card className="border-l-4 border-l-purple-500 border-border/70 bg-card hover:shadow-md transition-all">
+            <CardContent className="p-3.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5" />
+                  Portfolio Summary
+                </span>
+                <Badge variant="outline" className="text-[10px] h-4 border-purple-300 text-purple-700 dark:text-purple-400">
+                  {properties.length} Properties
+                </Badge>
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Units Owned:</span>
+                  <span className="font-semibold text-foreground">{totalUnits} units</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Occupancy Rate:</span>
+                  <span className="font-semibold text-emerald-600">{occupancyRate}%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ── KPI GRID ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
             {
@@ -278,7 +399,6 @@ const LandlordDashboard = () => {
               iconBg: 'bg-gradient-to-br from-[hsl(214_73%_48%/0.15)] to-[hsl(214_73%_48%/0.05)] border-[hsl(214_73%_48%/0.2)]',
               iconColor: 'text-[hsl(214_73%_48%)]',
               accent: 'via-[hsl(214_73%_48%/0.6)]',
-              progress: undefined as number | undefined,
             },
             {
               label: 'Occupancy Rate',
@@ -298,7 +418,6 @@ const LandlordDashboard = () => {
               iconBg: 'bg-gradient-to-br from-amber-400/15 to-amber-400/5 border-amber-400/25',
               iconColor: 'text-amber-500',
               accent: 'via-amber-400/60',
-              progress: undefined,
             },
             {
               label: 'Total Paid Out',
@@ -308,12 +427,11 @@ const LandlordDashboard = () => {
               iconBg: 'bg-gradient-to-br from-[hsl(38_52%_42%/0.15)] to-[hsl(38_52%_42%/0.05)] border-[hsl(38_52%_42%/0.2)]',
               iconColor: 'text-[hsl(38_52%_42%)]',
               accent: 'via-[hsl(38_52%_42%/0.6)]',
-              progress: undefined,
             },
           ].map(stat => (
             <div
               key={stat.label}
-              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-amber-400/20 animate-fade-in"
+              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-amber-400/20"
             >
               <div className={`absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent ${stat.accent} to-transparent`} />
               <div className="flex items-start justify-between gap-3">
@@ -346,9 +464,9 @@ const LandlordDashboard = () => {
           ))}
         </div>
 
-        {/* Tabs */}
+        {/* ── WORKSPACE TABS ── */}
         <Tabs defaultValue="properties">
-          <TabsList className="mb-6 flex-wrap h-auto gap-1 p-1">
+          <TabsList className="mb-6 flex-wrap h-auto gap-1 p-1 bg-muted/60 border border-border/60">
             <TabsTrigger value="properties" className="gap-1.5 text-xs">
               <Building2 className="h-3.5 w-3.5" />My Properties
             </TabsTrigger>
@@ -378,40 +496,40 @@ const LandlordDashboard = () => {
             {propertiesLoading ? (
               Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)
             ) : properties.length === 0 ? (
-              <Card className="border-amber-200 bg-amber-50/30">
+              <Card className="border-amber-200 bg-amber-50/30 dark:border-amber-900/40 dark:bg-amber-950/20">
                 <CardContent className="py-12 text-center space-y-4">
-                  <Building2 className="h-12 w-12 mx-auto text-amber-400 mb-2" />
+                  <Building2 className="h-12 w-12 mx-auto text-amber-500 mb-2" />
                   <div>
-                    <h3 className="font-semibold text-amber-900">No properties linked to your account yet</h3>
-                    <p className="text-sm text-amber-700 mt-1 max-w-md mx-auto">
+                    <h3 className="font-semibold text-amber-900 dark:text-amber-300">No properties linked to your account yet</h3>
+                    <p className="text-sm text-amber-700 dark:text-amber-400 mt-1 max-w-md mx-auto">
                       To see your properties and revenue, your property manager needs to link them to your account.
                     </p>
                   </div>
-                  <div className="rounded-lg border border-amber-200 bg-white p-4 text-left max-w-sm mx-auto space-y-2">
-                    <p className="text-xs font-semibold text-amber-900 uppercase tracking-wide">Next steps</p>
-                    <ol className="text-sm text-amber-800 space-y-1">
+                  <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-card p-4 text-left max-w-sm mx-auto space-y-2">
+                    <p className="text-xs font-semibold text-amber-900 dark:text-amber-300 uppercase tracking-wide">Next steps</p>
+                    <ol className="text-sm text-amber-800 dark:text-amber-400 space-y-1">
                       <li className="flex gap-2"><span className="font-bold shrink-0">1.</span>Share your account email with your property manager</li>
                       <li className="flex gap-2"><span className="font-bold shrink-0">2.</span>They will link your properties from their portal</li>
-                      <li className="flex gap-2"><span className="font-bold shrink-0">3.</span>You will receive an email once access is granted</li>
+                      <li className="flex gap-2"><span className="font-bold shrink-0">3.</span>You will receive access immediately</li>
                     </ol>
-                    <p className="text-xs text-amber-600 pt-1">Your email: <strong>{user?.email}</strong></p>
+                    <p className="text-xs text-amber-600 dark:text-amber-500 pt-1">Your email: <strong>{user?.email}</strong></p>
                   </div>
                 </CardContent>
               </Card>
             ) : (
               properties.map(prop => {
                 const occRate = prop.units > 0 ? Math.round((prop.occupied / prop.units) * 100) : 0;
-                const barColor = occRate >= 80 ? 'bg-green-500' : occRate >= 50 ? 'bg-amber-400' : 'bg-red-400';
-                const textColor = occRate >= 80 ? 'text-green-700' : occRate >= 50 ? 'text-amber-700' : 'text-red-700';
+                const barColor = occRate >= 80 ? 'bg-emerald-500' : occRate >= 50 ? 'bg-amber-400' : 'bg-red-400';
+                const textColor = occRate >= 80 ? 'text-emerald-600 dark:text-emerald-400' : occRate >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400';
                 return (
                 <React.Fragment key={prop.id}>
-                <Card className="hover:shadow-md transition-shadow">
+                <Card className="border-border/60 hover:shadow-md transition-shadow">
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold truncate">{prop.name}</h3>
-                          <Badge variant="outline" className="text-xs shrink-0">
+                          <h3 className="font-semibold truncate text-foreground">{prop.name}</h3>
+                          <Badge variant="outline" className="text-xs shrink-0 border-amber-400/30 text-amber-500">
                             {prop.revenue_share_pct}% share
                           </Badge>
                         </div>
@@ -444,11 +562,11 @@ const LandlordDashboard = () => {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <p className="text-xs text-muted-foreground">Units</p>
-                            <p className="font-medium text-sm">{prop.occupied}/{prop.units} filled</p>
+                            <p className="font-medium text-sm text-foreground">{prop.occupied}/{prop.units} filled</p>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">Your share (MTD)</p>
-                            <p className="font-medium text-sm text-green-700">
+                            <p className="font-medium text-sm text-emerald-600 dark:text-emerald-400">
                               {fmt(prop.revenue * prop.revenue_share_pct / 100)}
                             </p>
                           </div>
@@ -504,12 +622,12 @@ const LandlordDashboard = () => {
           <TabsContent value="payouts" className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-semibold">Payout Requests</h2>
+                <h2 className="font-semibold text-foreground">Payout Requests</h2>
                 <p className="text-sm text-muted-foreground">Submit and track revenue payout requests to your manager</p>
               </div>
               <Dialog open={payoutDialogOpen} onOpenChange={setPayoutDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold">
                     <Banknote className="h-4 w-4 mr-2" />
                     New Payout Request
                   </Button>
@@ -525,7 +643,7 @@ const LandlordDashboard = () => {
                     <div>
                       <Label>Property</Label>
                       <select
-                        className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
                         value={selectedProperty}
                         onChange={e => setSelectedProperty(e.target.value)}
                       >
@@ -571,7 +689,7 @@ const LandlordDashboard = () => {
                     <Button
                       onClick={() => createPayout.mutate()}
                       disabled={createPayout.isPending}
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold"
                     >
                       {createPayout.isPending ? 'Submitting...' : 'Submit Request'}
                     </Button>
@@ -583,7 +701,7 @@ const LandlordDashboard = () => {
             {payoutsLoading ? (
               Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)
             ) : payouts.length === 0 ? (
-              <Card>
+              <Card className="border-border/60">
                 <CardContent className="py-16 text-center">
                   <Banknote className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
                   <h3 className="font-medium text-muted-foreground">No payout requests yet</h3>
@@ -593,7 +711,7 @@ const LandlordDashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <Card>
+              <Card className="border-border/60">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -607,13 +725,13 @@ const LandlordDashboard = () => {
                   <TableBody>
                     {payouts.map(payout => (
                       <TableRow key={payout.id}>
-                        <TableCell className="font-medium">{payout.property_name}</TableCell>
+                        <TableCell className="font-medium text-foreground">{payout.property_name}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {format(new Date(payout.period_start), 'dd/MM')}
                           {' – '}
                           {format(new Date(payout.period_end), 'dd/MM/yy')}
                         </TableCell>
-                        <TableCell className="font-semibold">{fmt(payout.amount)}</TableCell>
+                        <TableCell className="font-semibold text-foreground">{fmt(payout.amount)}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${statusColors[payout.status]}`}>
                             {payout.status === 'paid' && <CheckCircle className="h-3 w-3" />}
@@ -636,7 +754,7 @@ const LandlordDashboard = () => {
           {/* ── Financials Tab ── */}
           <TabsContent value="financials" className="space-y-4">
             {properties.length === 0 ? (
-              <Card>
+              <Card className="border-border/60">
                 <CardContent className="py-12 text-center text-muted-foreground">
                   <BarChart3 className="h-10 w-10 mx-auto mb-3 opacity-30" />
                   <p className="text-sm">Link a property first to view financials.</p>
@@ -650,7 +768,7 @@ const LandlordDashboard = () => {
           {/* ── Messages Tab ── */}
           <TabsContent value="messages" className="space-y-4">
             {properties.length === 0 ? (
-              <Card>
+              <Card className="border-border/60">
                 <CardContent className="py-12 text-center text-muted-foreground">
                   <MessageSquare className="h-10 w-10 mx-auto mb-3 opacity-30" />
                   <p className="text-sm">No properties linked yet — no managers to message.</p>

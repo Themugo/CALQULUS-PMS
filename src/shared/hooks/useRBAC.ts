@@ -12,6 +12,7 @@
  *   whoAmI                          // { role, adminLevel, managerId }
  */
 
+import { useCallback, useMemo } from 'react';
 import { useAuth, type SubmanagerPermissions, type WebhostPermissions } from '@/features/auth/AuthContext';
 
 // ── Permission keys ──────────────────────────────────────────────────────────
@@ -114,7 +115,7 @@ export const useRBAC = () => {
    * - Super admins always return true for webhost permissions.
    * - For unknown keys, returns false.
    */
-  const can = (permission: PermissionKey): boolean => {
+  const can = useCallback((permission: PermissionKey): boolean => {
     // Managers have all permissions in their scope
     if (isManager) return true;
 
@@ -137,7 +138,7 @@ export const useRBAC = () => {
     }
 
     return false;
-  };
+  }, [isManager, isTenant, isLandlord, isWebhost, isSuperAdmin, webhostPermissions, isSubmanager, submanagerPermissions]);
 
   /**
    * Check if the current user is a given role (or admin level).
@@ -145,7 +146,7 @@ export const useRBAC = () => {
    *   is('manager')       — true if manager role
    *   is('super_admin')   — true if webhost with super_admin level
    */
-  const is = (roleOrLevel: RoleCheck): boolean => {
+  const is = useCallback((roleOrLevel: RoleCheck): boolean => {
     switch (roleOrLevel) {
       case 'manager':       return isManager;
       case 'tenant':        return isTenant;
@@ -160,21 +161,26 @@ export const useRBAC = () => {
       case 'platform_admin':   return isPlatformAdmin;
       default:              return false;
     }
-  };
+  }, [isManager, isTenant, isWebhost, isSubmanager, isLandlord, isSuperAdmin, webhostPermissions?.admin_level, isPlatformOwner, isPlatformBusiness, isPlatformAdmin]);
+
+  const assignedPropertyIdsStr = submanagerPermissions?.assigned_property_ids?.join(',') ?? '';
+  const assignedPropertyIds = useMemo(() => {
+    return submanagerPermissions?.assigned_property_ids ?? [];
+  }, [assignedPropertyIdsStr, submanagerPermissions?.assigned_property_ids]);
 
   /** Summary of who the current user is */
-  const whoAmI = {
+  const whoAmI = useMemo(() => ({
     role:       userRole?.role ?? null,
     adminLevel: webhostPermissions?.admin_level ?? null,
     platformAdminType: platformAdminInfo?.admin_type ?? null,
     platformAdminSuspended: platformAdminInfo?.suspended ?? false,
     managerId:  submanagerPermissions?.manager_id ?? null,
-    assignedPropertyIds: submanagerPermissions?.assigned_property_ids ?? [],
+    assignedPropertyIds,
     landlordPropertyIds,
     approvalStatus: userRole?.approval_status ?? null,
-  };
+  }), [userRole?.role, userRole?.approval_status, webhostPermissions?.admin_level, platformAdminInfo?.admin_type, platformAdminInfo?.suspended, submanagerPermissions?.manager_id, assignedPropertyIds, landlordPropertyIds]);
 
-  return { can, is, whoAmI, canAccessProperty };
+  return useMemo(() => ({ can, is, whoAmI, canAccessProperty }), [can, is, whoAmI, canAccessProperty]);
 };
 
 export type { PermissionKey, RoleCheck, SubmanagerCan, WebhostCan };

@@ -1,4 +1,4 @@
-﻿import { format } from "date-fns";
+import { format } from "date-fns";
 import React, { useState, useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -470,7 +470,7 @@ const TenantPortal = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-4 md:py-8">
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 space-y-6">
         {/* Offline indicator */}
         {(isOffline || isFromCache) && (
           <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
@@ -545,31 +545,133 @@ const TenantPortal = () => {
           />
         ) : (
           <>
-            {/* Desktop Welcome Section */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-2">
-                {getGreeting()}, {tenantInfo?.name?.split(' ')[0] || 'there'}! 👋
-              </h2>
-              <p className="text-muted-foreground">{propertyInfo}</p>
+            {/* Desktop Executive Header */}
+            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/60 p-5 rounded-2xl shadow-sm">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground">
+                    {getGreeting()}, {tenantInfo?.name?.split(' ')[0] || 'there'}! 👋
+                  </h2>
+                  <Badge variant="outline" className="border-emerald-300 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20">
+                    Active Tenant
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-0.5">{propertyInfo}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
+                  onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
+                  disabled={urgentInvoices.length === 0}
+                >
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Quick Pay M-Pesa
+                </Button>
+              </div>
             </div>
 
-            {/* Dashboard Stats */}
-            <TenantDashboardStats
-              lease={lease}
-              recentPayments={recentPayments}
-              pendingInvoicesCount={stats.pendingCount}
-              overdueInvoicesCount={stats.overdueCount}
-              formatCurrency={(amount) => formatCurrency(amount)}
-            />
+            {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+              {/* 1. What requires attention? */}
+              <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      What Requires Attention?
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
+                      {stats.overdueCount + stats.pendingCount} Due
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total Balance Due:</span>
+                      <span className="font-bold text-amber-600 dark:text-amber-400">{formatCurrency(stats.totalDue)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Overdue Invoices:</span>
+                      <span className="font-semibold text-red-500">{stats.overdueCount} overdue</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* Stats Cards */}
-            <TenantStatsCards
-              totalDue={stats.totalDue}
-              paidThisYear={stats.paidThisYear}
-              pendingCount={stats.pendingCount}
-              overdueCount={stats.overdueCount}
-              formatCurrency={(amount) => formatCurrency(amount)}
-            />
+              {/* 2. What generates payments? */}
+              <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                      <CreditCard className="h-3.5 w-3.5" />
+                      Paid This Year
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
+                      YTD Payments
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total Paid:</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(stats.paidThisYear)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Recent Payments:</span>
+                      <span className="font-semibold text-foreground">{recentPayments.length} recorded</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 3. Lease Details */}
+              <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                      <FileText className="h-3.5 w-3.5" />
+                      Lease Overview
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
+                      {lease?.status || 'Active'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Monthly Rent:</span>
+                      <span className="font-semibold text-foreground">{lease ? formatCurrency(lease.monthly_rent) : '—'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Lease End:</span>
+                      <span className="font-semibold text-foreground">{lease ? formatDate(lease.end_date) : '—'}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 4. Unit Info */}
+              <Card className="border-l-4 border-l-purple-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                      <Building2 className="h-3.5 w-3.5" />
+                      Assigned Unit
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4 border-purple-300 text-purple-700 dark:text-purple-400">
+                      Unit {tenantInfo?.unit || '—'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Property Name:</span>
+                      <span className="font-semibold text-foreground truncate">{tenantInfo?.property || '—'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Tenant Name:</span>
+                      <span className="font-semibold text-foreground truncate">{tenantInfo?.name || '—'}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
         {/* Lease expiry warning — shown ≤60 days before expiry */}
         {lease && (() => {

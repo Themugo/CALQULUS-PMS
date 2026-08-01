@@ -119,6 +119,7 @@ export function RecentActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchActivities = useCallback(async () => {
     try {
@@ -185,7 +186,7 @@ export function RecentActivity() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchActivities();

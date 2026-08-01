@@ -91,6 +91,7 @@ const Properties = () => {
   const { logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   // Check property limit from subscription tier
   const { data: subProfile } = useQuery({
@@ -209,7 +210,7 @@ const Properties = () => {
       toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties, toast]);
 
   useEffect(() => {
     fetchData();

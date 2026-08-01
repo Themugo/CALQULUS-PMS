@@ -26,6 +26,7 @@ export function UpcomingPayments() {
   const [loading, setLoading] = useState(true);
   const { formatCurrency } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -131,7 +132,7 @@ export function UpcomingPayments() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchPayments();

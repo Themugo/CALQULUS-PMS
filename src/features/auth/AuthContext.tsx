@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { logError, logWarning } from '@/shared/lib/errorLogger';
@@ -259,6 +259,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return data as PlatformAdminInfo | null;
   }, []);
 
+  const [userRolesList, setUserRolesList] = useState<UserRole[]>([]);
+
   const fetchLandlordPropertyIds = useCallback(async (userId: string): Promise<string[]> => {
     const { data } = await supabase
       .from('property_landlords')
@@ -271,10 +273,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data, error } = await supabase.from('user_roles').select('role, tenant_id, approval_status').eq('user_id', userId);
     if (error) {
       logError('AuthContext.fetchUserRole', error);
-      // Retry with exponential backoff up to 3 times. Single-retry was too
-      // tight for fresh signups where replication lag on a read replica can
-      // exceed 500ms, leaving brand-new managers stuck on the role-resolve
-      // screen and getting bounced to /auth.
       if (retryCount < 3) {
         const delay = 400 * Math.pow(2, retryCount); // 400ms, 800ms, 1600ms
         await new Promise(r => setTimeout(r, delay));
@@ -283,9 +281,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return null;
     }
-    if (!data || data.length === 0) return null;
+    if (!data || data.length === 0) {
+      setUserRolesList([]);
+      return null;
+    }
     const roles = data as UserRole[];
-    const pathname = pathnameOverride ?? location.pathname ?? window.location.pathname ?? '/';
+    setUserRolesList(roles);
+    const pathname = pathnameOverride ?? window.location.pathname ?? '/';
     const picked = pickRoleForPath(roles, pathname);
     if (picked.role === 'webhost') {
       fetchWebhostPermissions(userId).then(setWebhostPermissions);
@@ -302,7 +304,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLandlordPropertyIds([]);
     }
     return picked;
-  }, [location.pathname, pickRoleForPath, fetchWebhostPermissions, fetchSubmanagerPermissions, fetchLandlordPropertyIds, fetchPlatformAdminInfo]);
+  }, [pickRoleForPath, fetchWebhostPermissions, fetchSubmanagerPermissions, fetchLandlordPropertyIds, fetchPlatformAdminInfo]);
+
+  const fetchUserRoleRef = useRef(fetchUserRole);
+  useEffect(() => {
+    fetchUserRoleRef.current = fetchUserRole;
+  }, [fetchUserRole]);
 
   useEffect(() => {
     // Safety valve: if loading hasn't resolved within 8 s (was 5 s — too
@@ -320,23 +327,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     }, Number.isFinite(authTimeoutMs) && authTimeoutMs > 0 ? authTimeoutMs : 8000);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setLoading(true);
+    let isInitialMount = true;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        setUserRole(null);
-        fetchUserRole(session.user.id).then(setUserRole).finally(() => setLoading(false));
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+      if (nextUser) {
+        // Fetch role if signed in, user changed, or initial mount without role
+        if (event === 'SIGNED_IN' || isInitialMount) {
+          isInitialMount = false;
+          fetchUserRoleRef.current(nextUser.id).then(setUserRole).finally(() => setLoading(false));
+        } else {
+          setLoading(false);
+        }
       } else {
-        setUserRole(null); setWebhostPermissions(null); setSubmanagerPermissions(null); setPlatformAdminInfo(null);
+        isInitialMount = false;
+        setUserRole(null); setUserRolesList([]); setWebhostPermissions(null); setSubmanagerPermissions(null); setPlatformAdminInfo(null);
         setLandlordPropertyIds([]); setLoading(false);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session); setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserRole(session.user.id)
+      setSession(session);
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+      if (nextUser && isInitialMount) {
+        fetchUserRoleRef.current(nextUser.id)
           .then(setUserRole)
           .catch((err) => {
             logError('AuthContext', `Failed to fetch user role: ${err}`);
@@ -352,41 +368,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => { clearTimeout(timeout); subscription.unsubscribe(); };
-    // `fetchUserRole` is memoised with useCallback. `loading` is intentionally
-    // excluded — including it would cause this effect to re-run (and re-subscribe)
-    // every time loading flips, creating a subscription leak / re-render loop.
-  }, [fetchUserRole, authTimeoutMs]);
+  }, [authTimeoutMs]);
 
   // Route-change role re-pick: only needed for users with multiple roles
   // (e.g. someone who is both a manager AND a landlord) so we select the right
-  // role for the current portal. We do NOT re-fetch from the DB on every
-  // navigation — `location.pathname` alone triggers a local re-pick from the
-  // already-loaded `userRole`, keeping navigation instant and query-free.
+  // role for the current portal.
+  const currentRoleName = userRole?.role;
+  const userRolesKey = userRolesList.map(r => r.role).join(',');
   useEffect(() => {
-    if (!user?.id || !userRole) return;
-    // Re-pick from cached roles without hitting the DB.
-    // fetchUserRole is only called here when the pathname changes to a portal
-    // the current role doesn't own (multi-role users crossing portals).
-    const roleMatchesPath = (
-      (userRole.role === 'manager'    && !location.pathname.startsWith('/portal') && !location.pathname.startsWith('/landlord/dashboard') && !location.pathname.startsWith('/webhost') && !location.pathname.startsWith('/agency')) ||
-      (userRole.role === 'tenant'     && location.pathname.startsWith('/portal')) ||
-      (userRole.role === 'landlord'   && location.pathname.startsWith('/landlord/dashboard')) ||
-      (userRole.role === 'webhost'    && location.pathname.startsWith('/webhost')) ||
-      (userRole.role === 'submanager' && !location.pathname.startsWith('/portal') && !location.pathname.startsWith('/landlord/dashboard') && !location.pathname.startsWith('/webhost') && !location.pathname.startsWith('/agency')) ||
-      (userRole.role === 'agency'     && location.pathname.startsWith('/agency'))
-    );
-    if (!roleMatchesPath) {
-      // User navigated to a different portal — re-fetch once to pick the right role.
-      fetchUserRole(user.id).then(setUserRole);
+    if (!user?.id || !currentRoleName || userRolesList.length <= 1) return;
+    const newlyPicked = pickRoleForPath(userRolesList, location.pathname);
+    if (newlyPicked && newlyPicked.role !== currentRoleName) {
+      setUserRole(newlyPicked);
+      if (newlyPicked.role === 'webhost') {
+        fetchWebhostPermissions(user.id).then(setWebhostPermissions);
+        fetchPlatformAdminInfo(user.id).then(setPlatformAdminInfo);
+      } else {
+        setWebhostPermissions(null);
+        setPlatformAdminInfo(null);
+      }
+      if (newlyPicked.role === 'submanager') fetchSubmanagerPermissions(user.id).then(setSubmanagerPermissions);
+      else setSubmanagerPermissions(null);
+      if (newlyPicked.role === 'landlord') {
+        fetchLandlordPropertyIds(user.id).then(setLandlordPropertyIds);
+      } else {
+        setLandlordPropertyIds([]);
+      }
     }
-  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location.pathname, user?.id, currentRoleName, userRolesKey, pickRoleForPath, fetchWebhostPermissions, fetchPlatformAdminInfo, fetchSubmanagerPermissions, fetchLandlordPropertyIds]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error ? new Error(error.message) : null };
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, role: AppRole, tenantId?: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, tenantId?: string) => {
     const redirectPath = signupRedirectPath(role);
     const { data, error } = await supabase.auth.signUp({ email, password,
       options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { full_name: fullName, role } } });
@@ -406,15 +422,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     return { error: null };
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     // Clear ALL cached queries so next user never sees previous user's data
     queryClient.clear();
     setUser(null); setSession(null); setUserRole(null);
     setWebhostPermissions(null); setSubmanagerPermissions(null); setPlatformAdminInfo(null); setLandlordPropertyIds([]);
-  };
+  }, [queryClient]);
 
   const isManager    = userRole?.role === 'manager';
   const isTenant     = userRole?.role === 'tenant';
@@ -427,25 +443,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isPlatformBusiness = isWebhost && platformAdminInfo?.admin_type === 'business';
   const isPlatformAdmin = isWebhost && platformAdminInfo?.admin_type === 'admin';
 
-  const hasWebhostPermission = (key: keyof WebhostPermissions): boolean => {
+  const hasWebhostPermission = useCallback((key: keyof WebhostPermissions): boolean => {
     if (!isWebhost || !webhostPermissions) return false;
     if (isSuperAdmin) return true;
     return !!webhostPermissions[key];
-  };
+  }, [isWebhost, webhostPermissions, isSuperAdmin]);
 
-  const canSubmanager = (key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
+  const canSubmanager = useCallback((key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
     if (!isSubmanager || !submanagerPermissions) return false;
     return !!submanagerPermissions[key];
-  };
+  }, [isSubmanager, submanagerPermissions]);
 
   // canWrite: managers always true; submanagers check write flags
-  const canWrite = (key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
+  const canWrite = useCallback((key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
     if (isManager) return true;
     if (!isSubmanager || !submanagerPermissions) return false;
     return !!submanagerPermissions[key];
-  };
+  }, [isManager, isSubmanager, submanagerPermissions]);
 
-  const canAccessProperty = (propertyId: string): boolean => {
+  const canAccessProperty = useCallback((propertyId: string): boolean => {
     if (isManager) return true;
     if (isLandlord && landlordPropertyIds.length > 0) {
       return landlordPropertyIds.includes(propertyId);
@@ -453,17 +469,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!isSubmanager || !submanagerPermissions) return false;
     if (!submanagerPermissions.restrict_to_assigned_properties) return true;
     return submanagerPermissions.assigned_property_ids.includes(propertyId);
-  };
+  }, [isManager, isLandlord, landlordPropertyIds, isSubmanager, submanagerPermissions]);
+
+  const value = useMemo(() => ({
+    user, session, userRole, loading,
+    isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
+    platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
+    webhostPermissions, submanagerPermissions, landlordPropertyIds,
+    hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
+    signIn, signUp, signOut,
+  }), [
+    user, session, userRole, loading,
+    isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
+    platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
+    webhostPermissions, submanagerPermissions, landlordPropertyIds,
+    hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
+    signIn, signUp, signOut,
+  ]);
 
   return (
-    <AuthContext.Provider value={{
-      user, session, userRole, loading,
-      isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
-      platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
-      webhostPermissions, submanagerPermissions, landlordPropertyIds,
-      hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
-      signIn, signUp, signOut,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

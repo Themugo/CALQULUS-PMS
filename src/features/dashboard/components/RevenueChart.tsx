@@ -60,6 +60,7 @@ export function RevenueChart() {
   const [loading, setLoading] = useState(true);
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchRevenueData = useCallback(async () => {
     try {
@@ -134,7 +135,7 @@ export function RevenueChart() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchRevenueData();

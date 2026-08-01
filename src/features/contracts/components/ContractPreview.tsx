@@ -1,4 +1,4 @@
-﻿import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { format } from "date-fns";
 import DOMPurify from "dompurify";

@@ -4,7 +4,8 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
+import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import AgencyLayout from '@/features/agency/components/AgencyLayout';
 import {
@@ -13,7 +14,8 @@ import {
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import {
   Building2, Users, TrendingUp, Shield, DollarSign, Handshake,
-  Home, FileText, CreditCard, AlertCircle,
+  Home, FileText, CreditCard, AlertCircle, Zap, Wrench, BarChart3,
+  CheckSquare, Activity, ArrowRight, RefreshCw, CheckCircle2, Calendar
 } from 'lucide-react';
 
 const fmt = (n: number) =>
@@ -23,9 +25,6 @@ const fmtCompact = (n: number) =>
 
 interface MonthPoint { month: string; paid: number; pending: number; }
 interface OccupancyRow { name: string; occupied: number; units: number; rate: number; }
-
-const sumAmount = (rows: { amount: number | string | null }[] | null) =>
-  (rows || []).reduce((s, r) => s + Number(r.amount ?? 0), 0);
 
 const AgencyDashboard = () => {
   const { user, userRole, loading } = useAuth();
@@ -68,7 +67,6 @@ const AgencyDashboard = () => {
         supabase.from('invoices').select('amount, due_date').eq('manager_id', user.id).in('status', ['pending', 'overdue']).gte('due_date', seriesStart),
       ]);
 
-      // Occupancy roll-up
       const props = (propRows || []) as { name: string; units: number; occupied: number }[];
       const totalUnits = props.reduce((s, p) => s + Number(p.units ?? 0), 0);
       const occupiedUnits = props.reduce((s, p) => s + Number(p.occupied ?? 0), 0);
@@ -83,7 +81,6 @@ const AgencyDashboard = () => {
         .sort((a, b) => b.units - a.units)
         .slice(0, 5);
 
-      // Revenue: MTD + last month from the paid series (no extra round-trips)
       const inMonth = (d: string | null, start: string, end?: string) =>
         !!d && d >= start && (!end || d <= end);
       const paid = (paidSeries || []) as { amount: number | string | null; paid_date: string | null }[];
@@ -93,7 +90,6 @@ const AgencyDashboard = () => {
         ? Math.round(((revenueMTD - revenueLastMonth) / revenueLastMonth) * 100)
         : 0;
 
-      // 6-month trend (bucket client-side)
       const pend = (pendingSeries || []) as { amount: number | string | null; due_date: string | null }[];
       const series: MonthPoint[] = [];
       for (let i = 5; i >= 0; i--) {
@@ -130,7 +126,6 @@ const AgencyDashboard = () => {
     enabled: !!user && userRole?.role === 'agency',
   });
 
-  // Live refresh — mirror the manager dashboard behaviour
   useEffect(() => {
     if (!user || userRole?.role !== 'agency') return;
     const invalidate = () => queryClient.invalidateQueries({ queryKey: ['agency-dashboard-stats', user.id] });
@@ -145,7 +140,7 @@ const AgencyDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
       </div>
     );
@@ -165,8 +160,119 @@ const AgencyDashboard = () => {
   ];
 
   return (
-    <AgencyLayout title="Agency Dashboard">
-      {/* Stats row */}
+    <AgencyLayout title="Executive Agency Command Center">
+      {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {/* 1. What requires attention? */}
+        <Card className="border-l-4 border-l-red-500 border-border/70 bg-card hover:shadow-md transition-all">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                <AlertCircle className="h-3.5 w-3.5" />
+                What Requires Attention?
+              </span>
+              <Badge variant="outline" className="text-[10px] h-4 border-red-200 text-red-700 dark:text-red-400">
+                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0)} Issues
+              </Badge>
+            </div>
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Arrears Balance:</span>
+                <span className="font-semibold text-red-600 dark:text-red-400">{fmt(stats?.arrearsTotal ?? 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Overdue Invoices:</span>
+                <span className="font-semibold text-foreground">{stats?.overdueInvoices ?? 0} overdue</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Expiring Leases:</span>
+                <span className="font-semibold text-amber-500">{stats?.expiringLeases ?? 0} expiring</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 2. What generates revenue? */}
+        <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <DollarSign className="h-3.5 w-3.5" />
+                What Generates Revenue?
+              </span>
+              <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
+                +{stats?.revenueChange ?? 0}% MoM
+              </Badge>
+            </div>
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Revenue MTD:</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">{fmt(stats?.revenueMTD ?? 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Occupancy Rate:</span>
+                <span className="font-semibold text-foreground">{stats?.occupancyRate ?? 0}% occupied</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Invoices Due:</span>
+                <span className="font-medium text-foreground">{stats?.invoicesDue ?? 0} total</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 3. What needs approval? */}
+        <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                <CheckSquare className="h-3.5 w-3.5" />
+                What Needs Approval?
+              </span>
+              <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
+                Agency Ops
+              </Badge>
+            </div>
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Pending Invoices:</span>
+                <span className="font-semibold text-amber-500">{stats?.pendingInvoices ?? 0} pending</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Lease Expiries:</span>
+                <span className="font-medium text-foreground">{stats?.expiringLeases ?? 0} for review</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 4. Portfolio Scope */}
+        <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                <Building2 className="h-3.5 w-3.5" />
+                Agency Roster
+              </span>
+              <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
+                {stats?.totalProperties ?? 0} Properties
+              </Badge>
+            </div>
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Active Tenants:</span>
+                <span className="font-semibold text-foreground">{stats?.activeTenants ?? 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Active Leases:</span>
+                <span className="font-semibold text-foreground">{stats?.activeLeases ?? 0}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* KPI Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         {statCards.map(stat => (
           <Card key={stat.label} className="bg-card border-border/60">
@@ -176,7 +282,7 @@ const AgencyDashboard = () => {
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
               {isLoading ? (
-                <Skeleton className="h-7 w-20 bg-slate-700/60" />
+                <Skeleton className="h-7 w-20 bg-muted/60" />
               ) : (
                 <>
                   <p className={`text-xl font-bold ${stat.color}`}>{stat.value ?? 0}</p>
@@ -188,122 +294,129 @@ const AgencyDashboard = () => {
         ))}
       </div>
 
-      {/* Arrears alert (only when there are arrears) */}
+      {/* Arrears Alert Banner */}
       {!isLoading && (stats?.arrearsTotal ?? 0) > 0 && (
-        <Card className="bg-red-950/30 border-red-800/40 mb-6">
-          <CardContent className="p-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-red-200">
-                {fmt(stats!.arrearsTotal)} in arrears across {stats!.overdueInvoices} overdue invoice{stats!.overdueInvoices !== 1 ? 's' : ''}
-              </p>
-              <p className="text-xs text-red-300/70">Follow up to keep collections on track.</p>
+        <Card className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/40 mb-6">
+          <CardContent className="p-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+                  {fmt(stats!.arrearsTotal)} in arrears across {stats!.overdueInvoices} overdue invoice{stats!.overdueInvoices !== 1 ? 's' : ''}
+                </p>
+                <p className="text-xs text-red-600/70 dark:text-red-400/70">Immediate collection follow-up recommended.</p>
+              </div>
             </div>
-            <Button size="sm" variant="outline" className="border-red-700/50 text-red-200 hover:bg-red-900/40" onClick={() => navigate('/agency/billing')}>
-              View billing
+            <Button size="sm" variant="outline" className="border-red-300 text-red-700 dark:border-red-800 dark:text-red-300 shrink-0" onClick={() => navigate('/agency/billing')}>
+              View Billing Matrix <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </CardContent>
         </Card>
       )}
 
       {/* Revenue trend + occupancy snapshot */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <Card className="bg-card border-border/60">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-card-foreground font-semibold text-sm">Revenue overview</h3>
-                <p className="text-xs text-muted-foreground">Last 6 months</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+        <div className="lg:col-span-7">
+          <Card className="bg-card border-border/60 h-full">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-card-foreground font-semibold text-sm">Revenue Overview</h3>
+                  <p className="text-xs text-muted-foreground">6-Month Paid vs Pending Collections</p>
+                </div>
+                <TrendingUp className="h-4 w-4 text-emerald-500" />
               </div>
-              <TrendingUp className="h-4 w-4 text-emerald-400" />
-            </div>
-            {isLoading ? (
-              <Skeleton className="h-[220px] w-full bg-slate-700/60" />
-            ) : (
-              <div className="h-[220px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="agencyPaid" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(42 51% 55%)" stopOpacity={0.35} />
-                        <stop offset="95%" stopColor="hsl(42 51% 55%)" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="agencyPending" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
-                    <Tooltip
-                      contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
-                      formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
-                    />
-                    <Area type="monotone" dataKey="paid" stroke="hsl(42 51% 55%)" strokeWidth={2} fill="url(#agencyPaid)" />
-                    <Area type="monotone" dataKey="pending" stroke="#fbbf24" strokeWidth={2} fill="url(#agencyPending)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border/60">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-card-foreground font-semibold text-sm">Occupancy by property</h3>
-                <p className="text-xs text-muted-foreground">Top {Math.min(stats?.occupancyByProperty?.length ?? 0, 5) || 5} by size</p>
-              </div>
-              <Home className="h-4 w-4 text-[hsl(214_73%_58%)]" />
-            </div>
-            {isLoading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full bg-slate-700/60" />)}
-              </div>
-            ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
-              <div className="py-10 text-center">
-                <Building2 className="h-9 w-9 mx-auto mb-2 text-amber-400/40" />
-                <p className="text-sm text-muted-foreground">No properties yet</p>
-                <Button size="sm" className="mt-3 btn-brand" onClick={() => navigate('/agency/properties')}>
-                  Add a property
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {stats!.occupancyByProperty.map(p => (
-                  <div key={p.name}>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-card-foreground truncate pr-2">{p.name}</span>
-                      <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${p.rate >= 90 ? 'bg-emerald-500' : p.rate >= 70 ? 'bg-amber-500' : 'bg-red-500'}`}
-                        style={{ width: `${Math.min(p.rate, 100)}%` }}
+              {isLoading ? (
+                <Skeleton className="h-[220px] w-full bg-muted/60" />
+              ) : (
+                <div className="h-[230px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="agencyPaid" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(42 51% 55%)" stopOpacity={0.35} />
+                          <stop offset="95%" stopColor="hsl(42 51% 55%)" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="agencyPending" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
+                        formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
                       />
-                    </div>
-                  </div>
-                ))}
+                      <Area type="monotone" dataKey="paid" stroke="hsl(42 51% 55%)" strokeWidth={2} fill="url(#agencyPaid)" />
+                      <Area type="monotone" dataKey="pending" stroke="#fbbf24" strokeWidth={2} fill="url(#agencyPending)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-5">
+          <Card className="bg-card border-border/60 h-full">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-card-foreground font-semibold text-sm">Occupancy by Property</h3>
+                  <p className="text-xs text-muted-foreground">Top properties by size</p>
+                </div>
+                <Home className="h-4 w-4 text-[hsl(214_73%_58%)]" />
               </div>
-            )}
-          </CardContent>
-        </Card>
+              {isLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full bg-muted/60" />)}
+                </div>
+              ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
+                <div className="py-10 text-center">
+                  <Building2 className="h-9 w-9 mx-auto mb-2 text-amber-400/40" />
+                  <p className="text-sm text-muted-foreground">No properties yet</p>
+                  <Button size="sm" className="mt-3" onClick={() => navigate('/agency/properties')}>
+                    Add a property
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3.5">
+                  {stats!.occupancyByProperty.map(p => (
+                    <div key={p.name}>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-card-foreground font-medium truncate pr-2">{p.name}</span>
+                        <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${p.rate >= 90 ? 'bg-emerald-500' : p.rate >= 70 ? 'bg-amber-500' : 'bg-red-500'}`}
+                          style={{ width: `${Math.min(p.rate, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Quick Actions */}
-      <Card className="mb-6">
+      {/* Quick Actions Desk */}
+      <Card className="mb-6 border-border/60">
         <CardContent className="p-4 sm:p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="h-6 w-6 rounded-md bg-amber-400/15 border border-amber-400/25 flex items-center justify-center">
-              <Zap className="h-3.5 w-3.5 text-amber-500" />
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-amber-500" />
+              <span className="text-sm font-semibold text-foreground">Agency Action Desk</span>
             </div>
-            <span className="text-sm font-semibold text-foreground">Quick Actions</span>
+            <Badge variant="outline" className="text-xs">Direct Access</Badge>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
             {[
-              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-[hsl(214_73%_48%)]',    bg: 'bg-[hsl(214_73%_48%/0.1)] border-[hsl(214_73%_48%/0.2)]' },
+              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-[hsl(214_73%_48%)]',    bg: 'bg-[hsl(214_73%_48%/0.08)] border-[hsl(214_73%_48%/0.2)]' },
               { label: 'Tenants',     icon: Users,      href: '/agency/tenants',       accent: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
               { label: 'Billing',     icon: CreditCard, href: '/agency/billing',       accent: 'text-amber-500',   bg: 'bg-amber-400/12 border-amber-400/25' },
               { label: 'Landlords',   icon: Handshake,  href: '/agency/landlords',     accent: 'text-[hsl(38_52%_42%)]',  bg: 'bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]' },
@@ -324,16 +437,15 @@ const AgencyDashboard = () => {
 
       {/* Info card */}
       <Card className="bg-card border-border/60">
-        <CardContent className="p-6">
+        <CardContent className="p-5">
           <div className="flex items-start gap-3">
             <Shield className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-card-foreground">Agency Operating Model</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                As an agency, you operate as a property agent — managing properties on behalf of landlords,
-                collecting rent (to your agency accounts or to landlords), and earning commission.
-                You have full tenant management capabilities and can link landlords to properties
-                with configurable revenue sharing.
+              <p className="text-sm font-semibold text-card-foreground">Agency Operating Architecture</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                As a property agency, you operate as a full agent — managing properties on behalf of landlords,
+                collecting rent directly or forwarding to landlord destination accounts, and managing tenant relationships.
+                Your portal provides tenant lifecycle management, landlord revenue sharing configurations, and staff submanager controls.
               </p>
             </div>
           </div>

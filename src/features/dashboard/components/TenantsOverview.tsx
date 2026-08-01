@@ -32,6 +32,7 @@ export function TenantsOverview() {
   const [loading, setLoading] = useState(true);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const generateSignedUrls = useCallback(async (tenantsList: Tenant[]) => {
     const urlMap: Record<string, string> = {};
@@ -91,7 +92,7 @@ export function TenantsOverview() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, generateSignedUrls, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, generateSignedUrls, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchTenants();

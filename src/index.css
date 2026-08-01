@@ -1,7 +1,7 @@
-@import "@fontsource/outfit/400.css";
-@import "@fontsource/outfit/500.css";
-@import "@fontsource/outfit/600.css";
-@import "@fontsource/outfit/700.css";
+@import "@fontsource/outfit/latin-400.css";
+@import "@fontsource/outfit/latin-500.css";
+@import "@fontsource/outfit/latin-600.css";
+@import "@fontsource/outfit/latin-700.css";
 
 @import "tailwindcss";
 
@@ -162,127 +162,120 @@
 @utility slide-out-to-bottom { --tw-exit-translate-y: 100%; }
 @utility slide-out-to-left { --tw-exit-translate-x: -100%; }
 @utility slide-out-to-right { --tw-exit-translate-x: 100%; }
-@utility slide-out-to-left-half { --tw-exit-translate-x: -50%; }
-@utility slide-out-to-top-48pct { --tw-exit-translate-y: -48%; }
-@utility slide-out-to-right-full { --tw-exit-translate-x: 100%; }
 
-/* ── CALQULUS PMS Design Tokens ─────────────────────────────────────── */
-/* Palette:
-   Navy Dark:   #0A1628  (hsl 218 67% 10%)
-   Navy Mid:    #0F2040  (hsl 218 62% 15%)
-   Navy Light:  #1A3260  (hsl 218 58% 24%)
-   Gold:        #C9A84C  (hsl 42 51% 55%)
-   Gold Light:  #E8C96E  (hsl 42 73% 67%)
-   Gold Dim:    #8B6E2A  (hsl 38 52% 36%)
-   Blue Accent: #1E6FD9  (hsl 214 73% 48%)
+/* ── CALQULUS PMS Design Tokens (Enterprise SaaS) ─────────────────────── */
+/* Primary Colors:
+   Deep Indigo: #304FFE (hsl 231 100% 59%)
+   Slate Blue:  #546E7A (hsl 201 18% 41%)
+   Emerald:     #00A878 (hsl 163 100% 33%)
+   Sky Blue:    #039BE5 (hsl 199 97% 45%)
+   Soft Orange: #F57C00 (hsl 30 100% 48%)
+   Background:  #F6F8FB (hsl 216 43% 97%)
+   Surface:     #FFFFFF (hsl 0 0% 100%)
+   Borders:     #E5E7EB (hsl 220 13% 91%)
+   Text:        #1F2937 (hsl 215 25% 17%)
+   Muted:       #6B7280 (hsl 215 9% 46%)
 */
 
 @layer base {
   :root {
-    /* Light theme — clean white with navy/gold accents */
-    --background: 220 30% 97%;
-    --foreground: 218 67% 10%;
+    --background: 216 43% 97%;
+    --foreground: 215 25% 17%;
 
     --card: 0 0% 100%;
-    --card-foreground: 218 67% 10%;
+    --card-foreground: 215 25% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 218 67% 10%;
+    --popover-foreground: 215 25% 17%;
 
-    /* Primary = deep navy */
-    --primary: 218 67% 18%;
+    /* Primary = Deep Indigo #304FFE */
+    --primary: 231 100% 59%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary = soft grey-blue */
-    --secondary: 218 30% 93%;
-    --secondary-foreground: 218 67% 18%;
+    /* Secondary = Slate Blue background tint */
+    --secondary: 201 18% 94%;
+    --secondary-foreground: 201 18% 30%;
 
-    --muted: 218 25% 96%;
-    --muted-foreground: 218 25% 42%;
+    --muted: 216 20% 94%;
+    --muted-foreground: 215 9% 46%;
 
-    /* Accent = gold */
-    --accent: 42 51% 55%;
-    --accent-foreground: 218 67% 10%;
+    /* Accent = Sky Blue #039BE5 */
+    --accent: 199 97% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%;
+    /* Success = Emerald #00A878 */
+    --success: 163 100% 33%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    /* Warning = Soft Orange #F57C00 */
+    --warning: 30 100% 48%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 218 25% 84%;
-    --input: 218 25% 65%;
-    --ring: 42 51% 55%;
+    --border: 220 13% 91%;
+    --input: 220 13% 85%;
+    --ring: 231 100% 59%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Sidebar = deep navy */
-    --sidebar-background: 218 62% 11%;
-    --sidebar-foreground: 42 60% 88%;
-    --sidebar-primary: 42 51% 55%;
-    --sidebar-primary-foreground: 218 67% 10%;
-    --sidebar-accent: 218 62% 18%;
-    --sidebar-accent-foreground: 42 60% 88%;
-    --sidebar-border: 218 55% 20%;
-    --sidebar-ring: 42 51% 55%;
-    --sidebar-muted: 218 30% 60%;
+    /* Sidebar = Enterprise Dark Slate */
+    --sidebar-background: 215 28% 12%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 231 100% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 18%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 215 20% 20%;
+    --sidebar-ring: 231 100% 59%;
+    --sidebar-muted: 215 15% 60%;
   }
 
   .dark {
-    /* CALQULUS dark theme — built from the same navy brand hue (218°) used
-       throughout the light theme, hero gradients, and sidebar — not a
-       generic slate-grey. Layered surface system gives real depth:
-       background (deepest) → card (raised) → popover (highest) → muted
-       (recessed), each a deliberate step apart so panels read as distinct
-       surfaces rather than collapsing into one dark mass. Gold accent
-       carries through at full saturation so the brand stays unmistakable
-       in dark mode, the way it already does on the auth/landing screens. */
-    --background: 218 42% 9%;
-    --foreground: 220 20% 96%;
+    --background: 215 28% 12%;
+    --foreground: 210 40% 98%;
 
-    --card: 218 38% 13%;
-    --card-foreground: 220 20% 96%;
+    --card: 215 25% 16%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 218 36% 15%;
-    --popover-foreground: 220 20% 96%;
+    --popover: 215 25% 18%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 42 70% 60%;
-    --primary-foreground: 218 50% 8%;
+    --primary: 231 100% 65%;
+    --primary-foreground: 215 28% 10%;
 
-    --secondary: 218 30% 20%;
-    --secondary-foreground: 220 20% 96%;
+    --secondary: 215 20% 22%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 218 30% 16%;
-    --muted-foreground: 218 16% 70%;
+    --muted: 215 20% 20%;
+    --muted-foreground: 215 15% 65%;
 
-    --accent: 42 70% 60%;
-    --accent-foreground: 218 50% 8%;
+    --accent: 199 97% 55%;
+    --accent-foreground: 215 28% 10%;
 
     --destructive: 0 72% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 64% 48%;
+    --success: 163 90% 40%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 58%;
-    --warning-foreground: 218 50% 8%;
+    --warning: 30 95% 52%;
+    --warning-foreground: 0 0% 100%;
 
-    --border: 218 26% 26%;
-    --input: 218 28% 22%;
-    --ring: 42 70% 60%;
+    --border: 215 20% 24%;
+    --input: 215 20% 26%;
+    --ring: 231 100% 65%;
 
-    --sidebar-background: 218 48% 7%;
-    --sidebar-foreground: 42 40% 90%;
-    --sidebar-primary: 42 70% 60%;
-    --sidebar-primary-foreground: 218 50% 8%;
-    --sidebar-accent: 218 32% 16%;
-    --sidebar-accent-foreground: 42 40% 90%;
-    --sidebar-border: 218 28% 22%;
-    --sidebar-ring: 42 70% 60%;
-    --sidebar-muted: 218 18% 64%;
+    --sidebar-background: 215 30% 9%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 231 100% 65%;
+    --sidebar-primary-foreground: 215 28% 10%;
+    --sidebar-accent: 215 22% 16%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 215 20% 20%;
+    --sidebar-ring: 231 100% 65%;
+    --sidebar-muted: 215 15% 60%;
   }
 }
 
@@ -300,100 +293,73 @@
   }
 }
 
-/* ── Custom utilities ──────────────────────────────────────────────── */
+/* ── Custom Enterprise utilities ──────────────────────────────────────────────── */
 @layer utilities {
-  /* Gold gradient text — the signature CALQULUS brand treatment */
   .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(42 73% 67%) 0%, hsl(42 51% 55%) 50%, hsl(38 52% 42%) 100%);
+    @apply text-foreground font-semibold;
   }
 
   .text-gradient-logo {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(42 73% 72%) 0%, hsl(42 51% 55%) 100%);
+    @apply text-primary font-bold;
   }
 
   .text-gradient-blue {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(214 73% 60%) 0%, hsl(218 62% 45%) 100%);
+    @apply text-primary font-semibold;
   }
 
   .card-shadow {
-    box-shadow: 0 4px 6px -1px hsl(218 67% 10% / 0.08), 0 2px 4px -2px hsl(218 67% 10% / 0.05);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
   }
   .dark .card-shadow {
-    box-shadow: 0 1px 0 0 hsl(218 26% 32% / 0.6), 0 4px 10px -2px hsl(218 50% 4% / 0.45);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
   }
 
   .card-shadow-lg {
-    box-shadow: 0 10px 25px -3px hsl(218 67% 10% / 0.12), 0 4px 6px -4px hsl(218 67% 10% / 0.08);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   }
   .dark .card-shadow-lg {
-    box-shadow: 0 1px 0 0 hsl(218 26% 34% / 0.7), 0 16px 32px -8px hsl(218 50% 3% / 0.55);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   }
 
-  .card-shadow-gold {
-    box-shadow: 0 4px 20px -4px hsl(42 51% 55% / 0.25);
-  }
-
-  /* Sidebar: deep navy gradient — kept darker than cards so it reads as a
-     distinct "rail" rather than blending with the lighter card surfaces. */
   .sidebar-gradient {
-    background: linear-gradient(180deg, hsl(218 67% 10%) 0%, hsl(218 62% 13%) 60%, hsl(218 58% 16%) 100%);
+    background: #111827;
   }
   .dark .sidebar-gradient {
-    background: linear-gradient(180deg, hsl(218 48% 7%) 0%, hsl(218 44% 9%) 55%, hsl(218 40% 11%) 100%);
+    background: #0B0F17;
   }
 
-  /* Gold shimmer overlay for premium feel */
-  .gold-shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-  .gold-shimmer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 40%, hsl(42 51% 55% / 0.08) 50%, transparent 60%);
-    animation: shimmer-gold 3s ease-in-out infinite;
-  }
-
-  /* Auth page hero background */
   .auth-gradient {
-    background: linear-gradient(135deg, hsl(218 67% 8%) 0%, hsl(218 62% 14%) 40%, hsl(218 58% 18%) 70%, hsl(218 67% 10%) 100%);
+    background: #F6F8FB;
+  }
+  .dark .auth-gradient {
+    background: #0F172A;
   }
 
-  /* Landing hero */
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(218 67% 8%) 0%, hsl(218 62% 12%) 50%, hsl(218 55% 16%) 100%);
+    background: #F6F8FB;
   }
-
-  .gold-border {
-    border-image: linear-gradient(135deg, hsl(42 73% 67%), hsl(42 51% 45%), hsl(42 73% 67%)) 1;
+  .dark .hero-gradient {
+    background: #0F172A;
   }
 
   .btn-brand {
-    background: linear-gradient(135deg, hsl(42 73% 60%) 0%, hsl(42 51% 50%) 100%);
-    color: hsl(218 67% 10%);
-    font-weight: 700;
-    box-shadow: 0 4px 16px hsl(42 51% 55% / 0.4);
-    transition: all 0.2s ease;
+    background-color: #304FFE;
+    color: #FFFFFF;
+    font-weight: 600;
+    transition: all 0.15s ease-in-out;
   }
   .btn-brand:hover {
-    background: linear-gradient(135deg, hsl(42 73% 65%) 0%, hsl(42 51% 55%) 100%);
-    box-shadow: 0 6px 20px hsl(42 51% 55% / 0.5);
-    transform: translateY(-1px);
+    background-color: #243BDB;
   }
 
   .btn-navy {
-    background: linear-gradient(135deg, hsl(218 62% 18%) 0%, hsl(218 67% 12%) 100%);
-    color: hsl(42 60% 88%);
-    border: 1px solid hsl(218 55% 28%);
-    box-shadow: 0 2px 8px hsl(218 67% 8% / 0.4);
+    background-color: #546E7A;
+    color: #FFFFFF;
+    border: 1px solid #455A64;
   }
 
   .logo-gradient {
-    background: linear-gradient(135deg, hsl(42 73% 67%) 0%, hsl(42 51% 55%) 100%);
+    background-color: #304FFE;
   }
 
   .safe-area-bottom {
@@ -416,44 +382,35 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Glass morphism — navy-tinted */
   .glass {
-    background: hsl(0 0% 100% / 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(42 51% 55% / 0.12);
+    background: hsl(0 0% 100% / 0.9);
+    border: 1px solid #E5E7EB;
   }
   .dark .glass {
-    background: hsl(218 32% 16% / 0.78);
-    border: 1px solid hsl(42 65% 58% / 0.18);
+    background: hsl(215 25% 16% / 0.9);
+    border: 1px solid #334155;
   }
 
   .glass-strong {
-    background: hsl(0 0% 100% / 0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(42 51% 55% / 0.15);
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
   }
   .dark .glass-strong {
-    background: hsl(218 34% 13% / 0.9);
-    border: 1px solid hsl(42 65% 58% / 0.2);
+    background: hsl(215 25% 16%);
+    border: 1px solid #334155;
   }
 
   .card-glass {
-    background: hsl(0 0% 100% / 0.55);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(42 51% 55% / 0.1);
-    box-shadow: 0 8px 32px hsl(218 67% 10% / 0.08);
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
   }
   .dark .card-glass {
-    background: hsl(218 32% 16% / 0.6);
-    border: 1px solid hsl(42 65% 58% / 0.15);
+    background: hsl(215 25% 16%);
+    border: 1px solid #334155;
   }
 
-  /* Stat card with gold accent left border */
-  .stat-card-gold {
-    border-left: 3px solid hsl(42 51% 55%);
+  .stat-card-indigo {
+    border-left: 3px solid #304FFE;
   }
 
   ::-webkit-scrollbar {
@@ -464,17 +421,17 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(218 30% 82%);
+    background: #CBD5E1;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(218 30% 70%);
+    background: #94A3B8;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background: hsl(218 26% 28%);
+    background: #334155;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: hsl(218 26% 36%);
+    background: #475569;
   }
 
   *:focus-visible {
@@ -482,60 +439,41 @@
   }
 
   .card-hover {
-    transition: all 0.2s ease;
+    transition: all 0.15s ease-in-out;
   }
   .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px hsl(218 67% 10% / 0.1), 0 0 0 1px hsl(42 51% 55% / 0.1);
-  }
-  .dark .card-hover:hover {
-    box-shadow: 0 1px 0 0 hsl(218 26% 34% / 0.8), 0 16px 32px -6px hsl(218 50% 3% / 0.5), 0 0 0 1px hsl(42 65% 58% / 0.18);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
   .shimmer {
-    background: linear-gradient(90deg, hsl(218 30% 95%) 25%, hsl(218 30% 90%) 50%, hsl(218 30% 95%) 75%);
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
     background-size: 200% 100%;
-    animation: shimmer 2s infinite;
+    animation: shimmer 1.5s infinite;
   }
   .dark .shimmer {
-    background: linear-gradient(90deg, hsl(218 28% 18%) 25%, hsl(218 28% 24%) 50%, hsl(218 28% 18%) 75%);
+    background: linear-gradient(90deg, #1E293B 25%, #334155 50%, #1E293B 75%);
     background-size: 200% 100%;
   }
 
-  /* prose */
-  .prose { max-width: 65ch; line-height: 1.75; }
+  .prose { max-width: 65ch; line-height: 1.6; }
   .prose-sm { font-size: 0.875rem; line-height: 1.5; }
-  .prose p { margin-top: 1em; margin-bottom: 1em; }
-  .prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 600; margin-top: 1.5em; margin-bottom: 0.5em; }
-  .prose ul, .prose ol { padding-left: 1.5em; margin-top: 0.5em; margin-bottom: 0.5em; }
+  .prose p { margin-top: 0.75em; margin-bottom: 0.75em; }
+  .prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 600; margin-top: 1.25em; margin-bottom: 0.5em; }
+  .prose ul, .prose ol { padding-left: 1.25em; margin-top: 0.5em; margin-bottom: 0.5em; }
   .prose li { margin-top: 0.25em; margin-bottom: 0.25em; }
-  .prose a { color: hsl(var(--primary)); text-decoration: underline; }
+  .prose a { color: #304FFE; text-decoration: underline; }
   .prose strong { font-weight: 600; }
-  .prose code { font-size: 0.875em; background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 3px; }
-  .prose blockquote { border-left: 3px solid hsl(var(--accent)); padding-left: 1em; color: hsl(var(--muted-foreground)); }
+  .prose code { font-size: 0.875em; background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 4px; }
+  .prose blockquote { border-left: 3px solid #304FFE; padding-left: 1em; color: hsl(var(--muted-foreground)); }
   .prose img { max-width: 100%; border-radius: var(--radius); }
   .dark .prose { color: hsl(var(--foreground)); }
 
-  /* Gold dot/badge accent */
-  .badge-gold {
-    background: linear-gradient(135deg, hsl(42 73% 60%) 0%, hsl(42 51% 48%) 100%);
-    color: hsl(218 67% 10%);
-    font-weight: 700;
+  .badge-indigo {
+    background-color: #304FFE;
+    color: #FFFFFF;
+    font-weight: 600;
     font-size: 0.7rem;
     padding: 0.15rem 0.5rem;
-    border-radius: 9999px;
-    box-shadow: 0 2px 6px hsl(42 51% 55% / 0.3);
-  }
-
-  /* Noise overlay for depth */
-  .noise-overlay::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    pointer-events: none;
-    z-index: 0;
+    border-radius: 4px;
   }
 }

@@ -228,7 +228,7 @@ export function populateTemplateContent(
   lease: LeaseForContract,
   company?: { company_name?: string; address?: string; city?: string; state?: string; zip_code?: string; email?: string; phone?: string } | null,
   property?: { address?: string } | null,
-  formatCurrency: (amount: number) => string
+  formatCurrency: (amount: number) => string = (amount: number) => `KES ${amount.toLocaleString()}`
 ): string {
   const replacements: Record<string, string> = {
     "{{company_name}}": company?.company_name || "Property Management LLC",

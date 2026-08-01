@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { openSafely } from "@/shared/lib/safeWindow";
 import { Input } from "@/shared/components/ui/input";

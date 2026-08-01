@@ -16,27 +16,14 @@ initGlobalErrorCatcher();
 // We deliberately do NOT await it so it never blocks first paint.
 initSentry();
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
 const rootEl = document.getElementById("root")!;
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  import("./shared/components/EnvWarning").then(({ default: EnvWarning }) => {
-    createRoot(rootEl).render(
-      <React.StrictMode>
-        <EnvWarning />
-      </React.StrictMode>
-    );
-  });
-} else {
-  createRoot(rootEl).render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <App />
-        {/* Production diagnostics panel - visible via Ctrl+Shift+D */}
-        <ProductionDiagnostics />
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
-}
+createRoot(rootEl).render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <App />
+      {/* Production diagnostics panel - visible via Ctrl+Shift+D */}
+      <ProductionDiagnostics />
+    </ErrorBoundary>
+  </React.StrictMode>
+);

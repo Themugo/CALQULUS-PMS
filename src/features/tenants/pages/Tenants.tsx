@@ -1,4 +1,4 @@
-﻿import { format } from "date-fns";
+import { format } from "date-fns";
 import { logError } from "@/shared/lib/errorLogger";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRBAC } from "@/shared/hooks/useRBAC";
@@ -264,6 +264,7 @@ const Tenants = () => {
   const { toast } = useToast();
   const { can } = useRBAC();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
   const [tenants, setTenants] = useState<TenantData[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -336,7 +337,7 @@ const Tenants = () => {
       toast({ title: "Error", description: "Failed to load tenants. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties, toast]);
 
   const fetchProperties = useCallback(async () => {
     if (!managerId) {
@@ -363,7 +364,7 @@ const Tenants = () => {
     } catch (err) {
       logError('Tenants.fetchProperties', err);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   const fetchTenantHistory = async (tenantId: string) => {
     const { data, error } = await supabase

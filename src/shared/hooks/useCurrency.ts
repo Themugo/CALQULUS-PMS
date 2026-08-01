@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 
@@ -13,64 +13,69 @@ export type CurrencyCode = typeof CURRENCIES[number]["code"];
 
 export function useCurrency() {
   const { user } = useAuth();
+  const userId = user?.id;
   const [currency, setCurrencyState] = useState<CurrencyCode>("KES");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCurrency = async () => {
-      if (!user) {
-        setLoading(false);
+      if (!userId) {
+        if (isMounted) setLoading(false);
         return;
       }
 
       const { data } = await supabase
         .from("profiles")
         .select("currency")
-        .eq("id", user.id)
+        .eq("id", userId)
         .maybeSingle();
 
-      if (data?.currency) {
-        setCurrencyState(data.currency as CurrencyCode);
+      if (isMounted) {
+        if (data?.currency) {
+          setCurrencyState(data.currency as CurrencyCode);
+        }
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchCurrency();
-  }, [user]);
+    return () => { isMounted = false; };
+  }, [userId]);
 
-  const setCurrency = async (value: CurrencyCode) => {
+  const setCurrency = useCallback(async (value: CurrencyCode) => {
     setCurrencyState(value);
-    if (user) {
+    if (userId) {
       await supabase
         .from("profiles")
         .update({ currency: value })
-        .eq("id", user.id);
+        .eq("id", userId);
     }
-  };
+  }, [userId]);
 
-  const formatCurrency = (amount: number, options?: { minimumFractionDigits?: number; maximumFractionDigits?: number }) => {
+  const formatCurrency = useCallback((amount: number, options?: { minimumFractionDigits?: number; maximumFractionDigits?: number }) => {
     return new Intl.NumberFormat("en-KE", {
       style: "currency",
       currency: currency,
       minimumFractionDigits: options?.minimumFractionDigits ?? 0,
       maximumFractionDigits: options?.maximumFractionDigits ?? 0,
     }).format(amount);
-  };
+  }, [currency]);
 
-  const formatCurrencyCompact = (value: number) => {
+  const formatCurrencyCompact = useCallback((value: number) => {
     if (value >= 1000) {
       const symbol = CURRENCIES.find(c => c.code === currency)?.symbol || "$";
       return `${symbol}${(value / 1000).toFixed(0)}k`;
     }
     return formatCurrency(value);
-  };
+  }, [currency, formatCurrency]);
 
-  return {
+  return useMemo(() => ({
     currency,
     setCurrency,
     formatCurrency,
     formatCurrencyCompact,
     loading,
     currencies: CURRENCIES,
-  };
+  }), [currency, setCurrency, formatCurrency, formatCurrencyCompact, loading]);
 }

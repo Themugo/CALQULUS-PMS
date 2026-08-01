@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TenantPayNowDialog — Self-initiated M-Pesa STK push (single or combined bills).
  */
 import { format } from "date-fns";

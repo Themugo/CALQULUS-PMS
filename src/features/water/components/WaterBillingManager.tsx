@@ -1,4 +1,4 @@
-﻿import { format } from "date-fns";
+import { format } from "date-fns";
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -181,7 +181,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
     setUnits((unitsRes.data as unknown as Unit[]) || []);
     setReadings((readingsRes.data as unknown as MeterReading[]) || []);
     setIsLoading(false);
-  }, [propertyId, KENYAN_WATER_PROVIDERS]);
+  }, [propertyId]);
 
   useEffect(() => {
     fetchData();

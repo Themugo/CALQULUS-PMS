@@ -4,18 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default:     "border-transparent bg-gradient-to-br from-amber-400 to-amber-500 text-slate-900 shadow-sm shadow-amber-400/20",
+        default:     "border-transparent bg-primary text-primary-foreground shadow-sm",
         secondary:   "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline:     "text-foreground border-border",
-        success:     "border-transparent bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-400",
-        warning:     "border-transparent bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-400",
-        info:        "border-transparent bg-[hsl(214_73%_48%/0.15)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)] dark:text-[hsl(214_73%_65%)]",
-        gold:        "border-amber-400/30 bg-amber-400/12 text-amber-700 dark:text-amber-400",
+        destructive: "border-transparent bg-destructive/15 text-destructive border-destructive/30",
+        outline:     "text-foreground border-border bg-background",
+        success:     "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium",
+        warning:     "border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-400 font-medium",
+        info:        "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-400 font-medium",
+        indigo:      "border-[#304FFE]/20 bg-[#304FFE]/10 text-[#304FFE] dark:text-indigo-400 font-medium",
+        slate:       "border-slate-500/20 bg-slate-500/10 text-slate-700 dark:text-slate-300 font-medium",
+        gold:        "border-primary/20 bg-primary/10 text-primary font-medium",
       },
     },
     defaultVariants: {

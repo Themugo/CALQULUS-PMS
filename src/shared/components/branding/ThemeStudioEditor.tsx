@@ -1,0 +1,202 @@
+import React, { useState } from "react";
+import { Palette, Type, Sliders, Check, RefreshCw, Moon, Sun, Sparkles, Layout } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import { Badge } from "@/shared/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { Switch } from "@/shared/components/ui/switch";
+import { cn } from "@/shared/lib/utils";
+
+export interface BrandThemeConfig {
+  primaryColorHex: string;
+  secondaryColorHex: string;
+  accentColorHex: string;
+  fontFamilyHeading: string;
+  fontFamilyBody: string;
+  borderRadiusPx: number;
+  enableDarkMode: boolean;
+  tenantPortalThemeName: string;
+}
+
+const PRESET_THEMES: { name: string; primary: string; secondary: string; accent: string }[] = [
+  { name: "Calqulus Emerald Enterprise", primary: "#10b981", secondary: "#065f46", accent: "#f59e0b" },
+  { name: "Royal Sapphire Agency", primary: "#2563eb", secondary: "#1e3a8a", accent: "#10b981" },
+  { name: "Luxury Onyx & Amber", primary: "#d97706", secondary: "#78350f", accent: "#3b82f6" },
+  { name: "Teal Modern Urban", primary: "#14b8a6", secondary: "#134e4a", accent: "#ec4899" },
+];
+
+export function ThemeStudioEditor({
+  config = {
+    primaryColorHex: "#10b981",
+    secondaryColorHex: "#065f46",
+    accentColorHex: "#f59e0b",
+    fontFamilyHeading: "Plus Jakarta Sans",
+    fontFamilyBody: "Inter",
+    borderRadiusPx: 12,
+    enableDarkMode: true,
+    tenantPortalThemeName: "Calqulus Emerald Enterprise",
+  },
+  onChange,
+  className,
+}: {
+  config?: BrandThemeConfig;
+  onChange?: (updated: BrandThemeConfig) => void;
+  className?: string;
+}) {
+  const [currentConfig, setCurrentConfig] = useState<BrandThemeConfig>(config);
+
+  const handleUpdate = (field: keyof BrandThemeConfig, value: any) => {
+    const updated = { ...currentConfig, [field]: value };
+    setCurrentConfig(updated);
+    if (onChange) onChange(updated);
+  };
+
+  const handleApplyPreset = (preset: typeof PRESET_THEMES[0]) => {
+    const updated: BrandThemeConfig = {
+      ...currentConfig,
+      primaryColorHex: preset.primary,
+      secondaryColorHex: preset.secondary,
+      accentColorHex: preset.accent,
+      tenantPortalThemeName: preset.name,
+    };
+    setCurrentConfig(updated);
+    if (onChange) onChange(updated);
+  };
+
+  return (
+    <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
+      <CardHeader className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <Palette className="h-4 w-4 text-primary" />
+            <CardTitle className="text-base font-bold text-foreground">Theme Studio & Color Palette Engine</CardTitle>
+          </div>
+          <CardDescription className="text-xs text-muted-foreground">
+            Customize HSL/HEX color tokens, font pairings, and UI component border curvature for your tenant brand.
+          </CardDescription>
+        </div>
+
+        <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+          CSS Variables Injected
+        </Badge>
+      </CardHeader>
+
+      <CardContent className="p-4 space-y-5 text-xs">
+        {/* Preset Palettes */}
+        <div className="space-y-2">
+          <Label className="text-xs font-bold text-foreground block">Quick Brand Presets</Label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {PRESET_THEMES.map((p) => (
+              <button
+                key={p.name}
+                onClick={() => handleApplyPreset(p)}
+                className={cn(
+                  "p-2.5 rounded-xl border text-left flex flex-col justify-between space-y-2 hover:border-primary transition-all",
+                  currentConfig.tenantPortalThemeName === p.name ? "border-primary bg-primary/5 ring-1 ring-primary" : "bg-card"
+                )}
+              >
+                <span className="font-bold text-[11px] text-foreground truncate">{p.name}</span>
+                <div className="flex items-center gap-1">
+                  <span className="h-3.5 w-3.5 rounded-full border shadow-xs" style={{ backgroundColor: p.primary }} />
+                  <span className="h-3.5 w-3.5 rounded-full border shadow-xs" style={{ backgroundColor: p.secondary }} />
+                  <span className="h-3.5 w-3.5 rounded-full border shadow-xs" style={{ backgroundColor: p.accent }} />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Custom Color Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Primary Color */}
+          <div className="p-3 border rounded-xl bg-card space-y-1.5">
+            <Label className="text-[11px] font-bold text-foreground block">Primary Brand Color</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentConfig.primaryColorHex}
+                onChange={(e) => handleUpdate("primaryColorHex", e.target.value)}
+                className="h-8 w-8 rounded cursor-pointer border border-border p-0"
+              />
+              <Input
+                value={currentConfig.primaryColorHex}
+                onChange={(e) => handleUpdate("primaryColorHex", e.target.value)}
+                className="h-8 text-xs font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Secondary Color */}
+          <div className="p-3 border rounded-xl bg-card space-y-1.5">
+            <Label className="text-[11px] font-bold text-foreground block">Secondary Brand Color</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentConfig.secondaryColorHex}
+                onChange={(e) => handleUpdate("secondaryColorHex", e.target.value)}
+                className="h-8 w-8 rounded cursor-pointer border border-border p-0"
+              />
+              <Input
+                value={currentConfig.secondaryColorHex}
+                onChange={(e) => handleUpdate("secondaryColorHex", e.target.value)}
+                className="h-8 text-xs font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Accent Highlight Color */}
+          <div className="p-3 border rounded-xl bg-card space-y-1.5">
+            <Label className="text-[11px] font-bold text-foreground block">Accent Highlight Color</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentConfig.accentColorHex}
+                onChange={(e) => handleUpdate("accentColorHex", e.target.value)}
+                className="h-8 w-8 rounded cursor-pointer border border-border p-0"
+              />
+              <Input
+                value={currentConfig.accentColorHex}
+                onChange={(e) => handleUpdate("accentColorHex", e.target.value)}
+                className="h-8 text-xs font-mono"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Typography & Curved Corners */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="p-3 border rounded-xl bg-card space-y-1.5">
+            <Label className="text-[11px] font-bold text-foreground block">Display Heading Font</Label>
+            <Select value={currentConfig.fontFamilyHeading} onValueChange={(v) => handleUpdate("fontFamilyHeading", v)}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Plus Jakarta Sans" className="text-xs">Plus Jakarta Sans (Modern Clean)</SelectItem>
+                <SelectItem value="Playfair Display" className="text-xs">Playfair Display (Luxury Serif)</SelectItem>
+                <SelectItem value="Outfit" className="text-xs">Outfit (Geometric Tech)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="p-3 border rounded-xl bg-card space-y-1.5">
+            <Label className="text-[11px] font-bold text-foreground block">Card & Button Radius (px)</Label>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={24}
+                value={currentConfig.borderRadiusPx}
+                onChange={(e) => handleUpdate("borderRadiusPx", parseInt(e.target.value))}
+                className="flex-1 accent-primary"
+              />
+              <span className="font-mono text-xs font-bold text-foreground w-8 text-right">{currentConfig.borderRadiusPx}px</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

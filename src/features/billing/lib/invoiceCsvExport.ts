@@ -1,4 +1,4 @@
-﻿import { format } from "date-fns";
+import { format } from "date-fns";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
 
 interface InvoiceForExport {

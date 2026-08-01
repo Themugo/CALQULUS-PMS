@@ -59,7 +59,14 @@ const AgencyWaterBilling = lazy(() => import("@/features/agency/pages/AgencyWate
 const AgencyInvites = lazy(() => import("@/features/agency/pages/AgencyInvites"));
 const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatements"));
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
+const MarketingWebsite = lazy(() => import("@/features/marketing/MarketingWebsite"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
+
+// Specialized Operational Command Center Dashboards
+const AccountantDashboard = lazy(() => import("@/features/dashboard/pages/AccountantDashboard"));
+const MaintenanceDashboard = lazy(() => import("@/features/dashboard/pages/MaintenanceDashboard"));
+const LeasingDashboard = lazy(() => import("@/features/dashboard/pages/LeasingDashboard"));
+const SupportDashboard = lazy(() => import("@/features/dashboard/pages/SupportDashboard"));
 
 // ── Route definition types ──────────────────────────────────────────
 export interface RouteDef {
@@ -82,6 +89,8 @@ export interface RoleRouteConfig {
 
 // ── Shared public routes (available when not logged in) ─────────────
 export const publicRoutes: RouteDef[] = [
+  { path: "/landing", element: MarketingWebsite },
+  { path: "/welcome", element: MarketingWebsite },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/auth", element: Auth },
@@ -127,6 +136,10 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/auth", redirect: "/" },
       { path: "/landlord", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
+      { path: "/dashboard/accountant", element: AccountantDashboard, protected: true },
+      { path: "/dashboard/maintenance", element: MaintenanceDashboard, protected: true },
+      { path: "/dashboard/leasing", element: LeasingDashboard, protected: true },
+      { path: "/dashboard/support", element: SupportDashboard, protected: true },
       { path: "/payments", element: ManagerPaymentHistory, protected: true },
       { path: "/communications", element: Communications, protected: true },
       { path: "/properties", element: Properties, protected: true },
@@ -218,6 +231,10 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/tenant/signup", redirect: "/" },
       { path: "/portal/*", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
+      { path: "/dashboard/accountant", element: AccountantDashboard, protected: true },
+      { path: "/dashboard/maintenance", element: MaintenanceDashboard, protected: true },
+      { path: "/dashboard/leasing", element: LeasingDashboard, protected: true },
+      { path: "/dashboard/support", element: SupportDashboard, protected: true },
       { path: "/payments", element: ManagerPaymentHistory, protected: true },
       { path: "/communications", element: Communications, protected: true },
       { path: "/platform-billing", element: ManagerPlatformBilling, protected: true },

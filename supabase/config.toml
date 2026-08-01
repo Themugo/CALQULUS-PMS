@@ -1,5 +1,8 @@
 project_id = "aelzsqxllkypbzslxyju"
 
+[functions.health-check]
+verify_jwt = false
+
 [functions.backfill-tenant-accounts]
 verify_jwt = true
 

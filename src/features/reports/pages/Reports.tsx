@@ -19,6 +19,14 @@ import {
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { RentCollectionSummary } from '@/features/reports/components/RentCollectionSummary';
+import {
+  ExecutiveAnalyticsWorkspace,
+  ReportCenterCatalog,
+  CustomReportBuilder,
+  AnalyticsAlertPanel,
+  ReportSchedulingModal,
+} from '@/shared/components/bi';
+import { Sparkles, FileText, Sliders, ShieldAlert, Clock } from 'lucide-react';
 
 const COLORS = ['#C9A84C', '#1E6FD9', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4']; // CALQULUS brand palette
 
@@ -29,6 +37,8 @@ const Reports: React.FC = () => {
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
   const [period, setPeriod] = useState('6');
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [selectedReportTitle, setSelectedReportTitle] = useState("Executive Performance Statement");
 
   // ── Revenue trend ──────────────────────────────────────────
   const { data: revenueTrend = [], isLoading: revLoading } = useQuery({
@@ -176,24 +186,61 @@ const Reports: React.FC = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="revenue">
+        <Tabs defaultValue="executive">
           <TabsList className="flex-wrap h-auto gap-1">
+            <TabsTrigger value="executive" className="gap-1.5 text-xs font-bold">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />Executive Analytics
+            </TabsTrigger>
+            <TabsTrigger value="catalog" className="gap-1.5 text-xs">
+              <FileText className="h-3.5 w-3.5" />Report Catalog
+            </TabsTrigger>
+            <TabsTrigger value="builder" className="gap-1.5 text-xs">
+              <Sliders className="h-3.5 w-3.5" />Custom Report Builder
+            </TabsTrigger>
             <TabsTrigger value="revenue" className="gap-1.5 text-xs">
-              <TrendingUp className="h-3.5 w-3.5" />Revenue trend
+              <TrendingUp className="h-3.5 w-3.5" />Revenue Trend
             </TabsTrigger>
             <TabsTrigger value="occupancy" className="gap-1.5 text-xs">
               <Building2 className="h-3.5 w-3.5" />Occupancy
             </TabsTrigger>
             <TabsTrigger value="arrears" className="gap-1.5 text-xs">
-              <AlertTriangle className="h-3.5 w-3.5" />Arrears aging
+              <AlertTriangle className="h-3.5 w-3.5" />Arrears Aging
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="gap-1.5 text-xs">
+              <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />Analytics Alerts
             </TabsTrigger>
             <TabsTrigger value="by-property" className="gap-1.5 text-xs">
-              <BarChart3 className="h-3.5 w-3.5" />By property
+              <BarChart3 className="h-3.5 w-3.5" />By Property
             </TabsTrigger>
             <TabsTrigger value="collection-report" className="gap-1.5 text-xs">
-              <FileDown className="h-3.5 w-3.5" />Collection report
+              <FileDown className="h-3.5 w-3.5" />Collection Report
             </TabsTrigger>
           </TabsList>
+
+          {/* Executive Analytics */}
+          <TabsContent value="executive" className="mt-4 space-y-6">
+            <ExecutiveAnalyticsWorkspace />
+          </TabsContent>
+
+          {/* Report Catalog */}
+          <TabsContent value="catalog" className="mt-4 space-y-6">
+            <ReportCenterCatalog
+              onScheduleReport={(title) => {
+                setSelectedReportTitle(title);
+                setScheduleModalOpen(true);
+              }}
+            />
+          </TabsContent>
+
+          {/* Custom Report Builder */}
+          <TabsContent value="builder" className="mt-4 space-y-6">
+            <CustomReportBuilder />
+          </TabsContent>
+
+          {/* Analytics Alerts */}
+          <TabsContent value="alerts" className="mt-4 space-y-6">
+            <AnalyticsAlertPanel />
+          </TabsContent>
 
           {/* Revenue trend */}
           <TabsContent value="revenue" className="mt-4">
@@ -379,6 +426,12 @@ const Reports: React.FC = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <ReportSchedulingModal
+          isOpen={scheduleModalOpen}
+          onClose={() => setScheduleModalOpen(false)}
+          reportTitle={selectedReportTitle}
+        />
       </div>
     </Layout>
   );

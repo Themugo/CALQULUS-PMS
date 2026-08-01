@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { openSafely } from "@/shared/lib/safeWindow";

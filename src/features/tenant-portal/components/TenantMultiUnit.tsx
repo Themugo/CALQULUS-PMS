@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TenantMultiUnit
  *
  * Shown when a tenant has more than one active unit/lease.

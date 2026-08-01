@@ -1,8 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get Supabase URL and anon key from environment
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aelzsqxllkypbzslxyju.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbHpzcXhsbGt5cGJ6c2x4eWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MzU4MjksImV4cCI6MjA4ODExMTgyOX0.g5pQXBCiwS2KKEJUBI2KONzppM5IgUiid_lffLsOIEk';
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('Missing SUPABASE_URL and SUPABASE_ANON_KEY (or VITE_* equivalents).');
+  process.exit(1);
+}
 
 // Demo accounts to test
 const DEMO_ACCOUNTS = [

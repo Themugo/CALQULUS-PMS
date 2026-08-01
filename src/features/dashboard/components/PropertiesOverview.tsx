@@ -22,6 +22,7 @@ export function PropertiesOverview() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchProperties = useCallback(async () => {
     try {
@@ -54,7 +55,7 @@ export function PropertiesOverview() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchProperties();
