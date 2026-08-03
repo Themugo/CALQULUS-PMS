@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 const CACHE_PREFIX = 'calqulusrms_offline_';
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000;
@@ -32,6 +32,11 @@ export function useOfflineData<T>(
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [isFromCache, setIsFromCache] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  const fetcherRef = useRef(fetcher);
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  }, [fetcher]);
 
   const cacheKey = `${CACHE_PREFIX}${key}`;
 
@@ -113,7 +118,7 @@ export function useOfflineData<T>(
     }
 
     try {
-      const freshData = await fetcher();
+      const freshData = await fetcherRef.current();
       setData(freshData);
       setIsFromCache(false);
       setCachedData(freshData);
@@ -128,17 +133,19 @@ export function useOfflineData<T>(
     } finally {
       setLoading(false);
     }
-  }, [fetcher, getCachedData, setCachedData, options?.enabled]);
+  }, [getCachedData, setCachedData, options?.enabled]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
+  const wasOfflineRef = useRef(isOffline);
   useEffect(() => {
-    if (!isOffline && isFromCache) {
+    if (wasOfflineRef.current && !isOffline) {
       fetchData();
     }
-  }, [isOffline, isFromCache, fetchData]);
+    wasOfflineRef.current = isOffline;
+  }, [isOffline, fetchData]);
 
   const refetch = useCallback(() => {
     return fetchData();

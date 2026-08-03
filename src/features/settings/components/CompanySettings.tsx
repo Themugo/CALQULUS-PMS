@@ -94,7 +94,7 @@ export const CompanySettings = () => {
     };
 
     fetchCompanySettings();
-  }, [isManager, toast, user]);
+  }, [isManager, user?.id]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

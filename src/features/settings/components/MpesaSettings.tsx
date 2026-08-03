@@ -120,7 +120,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
       setIsLoading(true);
       fetchSettings();
     }
-  }, [user, fetchSettings]);
+  }, [user?.id, fetchSettings]);
 
   const handleSave = async () => {
     if (!user) return;

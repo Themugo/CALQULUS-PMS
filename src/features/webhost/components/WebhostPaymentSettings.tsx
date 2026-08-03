@@ -79,7 +79,7 @@ const WebhostPaymentSettings: React.FC = () => {
         payment_instructions: settings.payment_instructions || '',
       });
     }
-  }, [settings]);
+  }, [settings?.id, settings?.updated_at]);
 
   // Save mutation
   const saveMutation = useMutation({
@@ -414,11 +414,13 @@ const TIER_LABELS: Record<string, string> = {
   professional:'Professional (≤50 props)',
 };
 
+const EMPTY_TIERS: SubscriptionTier[] = [];
+
 const TierPricingEditor: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: tiers = [], isLoading } = useQuery({
+  const { data: tiers = EMPTY_TIERS, isLoading } = useQuery({
     queryKey: ['subscription-tiers-edit'],
     queryFn: async () => {
       const { data } = await supabase.from('subscription_tiers')
@@ -430,11 +432,14 @@ const TierPricingEditor: React.FC = () => {
 
   const [prices, setPrices] = React.useState<Record<string, string>>({});
 
+  const tiersKey = tiers.map((t: SubscriptionTier) => `${t.id}:${t.price_per_property}`).join(',');
+
   React.useEffect(() => {
+    if (!tiers.length) return;
     const map: Record<string, string> = {};
     tiers.forEach((t: SubscriptionTier) => { map[t.tier_key] = String(t.price_per_property ?? ''); });
     setPrices(map);
-  }, [tiers]);
+  }, [tiersKey]);
 
   const saveTiers = useMutation({
     mutationFn: async () => {

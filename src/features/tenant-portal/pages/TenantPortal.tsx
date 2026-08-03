@@ -81,6 +81,7 @@ const TenantPortal = () => {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
+  const paymentProcessedRef = useRef(false);
 
   // Time-based greeting
   const getGreeting = () => {
@@ -234,7 +235,9 @@ const TenantPortal = () => {
   // Handle payment return from Stripe - only show notification, actual update via webhook
   useEffect(() => {
     const payment = searchParams.get('payment');
+    if (!payment || paymentProcessedRef.current) return;
 
+    paymentProcessedRef.current = true;
     if (payment === 'success') {
       toast({
         title: 'Payment processing',

@@ -52,7 +52,7 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
     setRevenueShare(String(link.revenue_share_pct ?? 100));
     setMgmtFee(link.management_fee_pct != null ? String(link.management_fee_pct) : '');
     setAllowsDelegate(link.allows_delegated_manager ?? true);
-  }, [link]);
+  }, [link.id, link.operating_model, link.revenue_share_pct, link.management_fee_pct, link.allows_delegated_manager]);
 
   const meta = OPERATING_MODELS.find((m) => m.id === operatingModel) ?? OPERATING_MODELS[2];
   const showMgmtFee = operatingModel === 'agency_manages_fee_from_landlord';

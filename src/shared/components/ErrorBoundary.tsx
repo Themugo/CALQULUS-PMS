@@ -27,6 +27,22 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logError('ErrorBoundary', { error: error.message, componentStack: errorInfo.componentStack });
+
+    // Handle production deployment chunk mismatches (Vercel new deployments)
+    const isChunkError =
+      error?.name === 'ChunkLoadError' ||
+      /Loading chunk .* failed/i.test(error?.message || '') ||
+      /Failed to fetch dynamically imported module/i.test(error?.message || '');
+
+    if (isChunkError) {
+      const chunkReloadKey = 'calqulus_chunk_reload_timestamp';
+      const lastReload = sessionStorage.getItem(chunkReloadKey);
+      const now = Date.now();
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(chunkReloadKey, now.toString());
+        window.location.reload();
+      }
+    }
   }
 
   handleReset = () => this.setState({ hasError: false, error: null });
@@ -51,7 +67,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-[200px] flex items-center justify-center p-6">
+        <div className="min-h-[200px] flex items-center justify-center p-6 bg-background text-foreground">
           <div className="text-center space-y-3 max-w-sm">
             <div className="h-10 w-10 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center mx-auto">
               <AlertTriangle className="h-5 w-5 text-destructive" />

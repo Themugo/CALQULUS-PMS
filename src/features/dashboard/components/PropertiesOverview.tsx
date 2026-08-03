@@ -55,7 +55,7 @@ export function PropertiesOverview() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchProperties();

@@ -327,7 +327,7 @@ export const RentCollectionSummary: React.FC = () => {
       setSchedSendDay(schedule.send_day);
       setSchedRecipients(schedule.recipients ?? []);
     }
-  }, [schedule]);
+  }, [schedule?.id, schedule?.enabled, schedule?.send_day, schedule?.updated_at]);
 
   // ── Group by property ────────────────────────────────────────────────────
   const properties = useMemo<PropertyGroup[]>(() => {

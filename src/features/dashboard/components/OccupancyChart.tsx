@@ -99,7 +99,7 @@ export function OccupancyChart() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchOccupancyData();

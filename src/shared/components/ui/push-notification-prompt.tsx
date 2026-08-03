@@ -32,7 +32,7 @@ export const PushNotificationPrompt = () => {
       const timer = setTimeout(() => setIsVisible(true), 5000);
       return () => clearTimeout(timer);
     }
-  }, [isSupported, user, permission, isSubscribed]);
+  }, [isSupported, user?.id, permission, isSubscribed]);
 
   const handleEnable = async () => {
     if (permission === "default") {

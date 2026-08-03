@@ -95,6 +95,9 @@ interface DepositDeductionDialogProps {
   trigger?: React.ReactNode;
 }
 
+const EMPTY_MAINTENANCE_REQUESTS: MaintenanceRequest[] = [];
+const EMPTY_DEDUCTION_HISTORY: DepositDeduction[] = [];
+
 export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeductionDialogProps>(
   function DepositDeductionDialog({ tenant, onDeductionComplete, trigger }, ref) {
   const [open, setOpen] = useState(false);
@@ -122,7 +125,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
   const originalDeposit = tenant.deposit_amount ?? 0;
 
   // Fetch maintenance requests
-  const { data: maintenanceRequests = [] } = useQuery({
+  const { data: maintenanceRequests = EMPTY_MAINTENANCE_REQUESTS } = useQuery({
     queryKey: ["maintenance-for-deposit", tenant.property_id],
     queryFn: async () => {
       if (!tenant.property_id) return [];
@@ -140,7 +143,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
   });
 
   // Fetch deduction history
-  const { data: deductionHistory = [], refetch: refetchHistory } = useQuery({
+  const { data: deductionHistory = EMPTY_DEDUCTION_HISTORY, refetch: refetchHistory } = useQuery({
     queryKey: ["deposit-deductions", tenant.id],
     queryFn: async () => {
       const { data, error } = await supabase

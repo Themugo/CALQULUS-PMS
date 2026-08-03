@@ -57,7 +57,7 @@ const PendingApproval = () => {
       if (pollRef.current) clearInterval(pollRef.current);
       if (cdRef.current) clearInterval(cdRef.current);
     };
-  }, [isTerminal, user?.id, user, navigate]);
+  }, [isTerminal, user?.id, navigate]);
 
   // Fetch manager profile to check if suspended (vs simply rejected)
   const { data: managerProfile } = useQuery({

@@ -337,7 +337,7 @@ const Tenants = () => {
       toast({ title: "Error", description: "Failed to load tenants. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
-  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties, toast]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   const fetchProperties = useCallback(async () => {
     if (!managerId) {
@@ -364,7 +364,7 @@ const Tenants = () => {
     } catch (err) {
       logError('Tenants.fetchProperties', err);
     }
-  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   const fetchTenantHistory = async (tenantId: string) => {
     const { data, error } = await supabase

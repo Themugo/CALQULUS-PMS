@@ -96,6 +96,19 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      // `injectManifest` lets us own the service worker source (src/sw.ts),
+      // which merges Workbox precaching with the push-notification handlers
+      // that used to live in public/sw.js. The previous strategy,
+      // `generateSW`, writes its own generated sw.js straight to dist/,
+      // which silently overwrote the hand-written push-notification
+      // service worker on every single production build.
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectManifest: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+      },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
         name: "CALQULUS PMS — Property Management",
@@ -123,29 +136,6 @@ export default defineConfig(({ mode }) => ({
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable",
-          },
-        ],
-      },
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        // Don't cache external image domains — let them go to network directly.
-        // CacheFirst on cross-origin URLs causes "no-response" errors when
-        // the SW intercepts before the network has a chance to respond.
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api/],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "image-cache",
-              networkTimeoutSeconds: 5,
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-              },
-            },
           },
         ],
       },

@@ -181,7 +181,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
 
   React.useEffect(() => {
     if (profile) setForm(profile);
-  }, [profile]);
+  }, [profile?.id, profile?.updated_at]);
 
   const f = (k: keyof TenantProfileRecord) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((p: Partial<TenantProfileRecord>) => ({ ...p, [k]: e.target.value }));

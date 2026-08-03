@@ -15,6 +15,8 @@
 import { useCallback, useMemo } from 'react';
 import { useAuth, type SubmanagerPermissions, type WebhostPermissions } from '@/features/auth/AuthContext';
 
+const EMPTY_ARRAY: string[] = [];
+
 // ── Permission keys ──────────────────────────────────────────────────────────
 
 /** Permissions available to submanagers — granted by their manager */
@@ -163,10 +165,7 @@ export const useRBAC = () => {
     }
   }, [isManager, isTenant, isWebhost, isSubmanager, isLandlord, isSuperAdmin, webhostPermissions?.admin_level, isPlatformOwner, isPlatformBusiness, isPlatformAdmin]);
 
-  const assignedPropertyIdsStr = submanagerPermissions?.assigned_property_ids?.join(',') ?? '';
-  const assignedPropertyIds = useMemo(() => {
-    return submanagerPermissions?.assigned_property_ids ?? [];
-  }, [assignedPropertyIdsStr, submanagerPermissions?.assigned_property_ids]);
+  const assignedPropertyIds = submanagerPermissions?.assigned_property_ids ?? EMPTY_ARRAY;
 
   /** Summary of who the current user is */
   const whoAmI = useMemo(() => ({

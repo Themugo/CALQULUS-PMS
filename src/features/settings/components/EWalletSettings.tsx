@@ -87,7 +87,7 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
     };
 
     fetchSettings();
-  }, [isManager, user, propertyId]);
+  }, [isManager, user?.id, propertyId]);
 
   const handleSave = async () => {
     if (!user) return;

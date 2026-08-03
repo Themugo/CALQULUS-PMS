@@ -99,7 +99,7 @@ const Settings = () => {
       }
     };
     fetchProfile();
-  }, [toast, user]);
+  }, [user?.id]);
 
   useEffect(() => {
     const fetchNotificationSettings = async () => {
@@ -131,7 +131,7 @@ const Settings = () => {
       }
     };
     fetchNotificationSettings();
-  }, [toast, user]);
+  }, [user?.id]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

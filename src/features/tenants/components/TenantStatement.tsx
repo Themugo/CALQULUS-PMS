@@ -146,7 +146,7 @@ export const TenantStatement = ({
       setInvoices(data || []);
     }
     setIsLoading(false);
-  }, [tenant, isManagerView, toast]);
+  }, [tenant?.id, tenant?.statement_history_months, isManagerView, toast]);
 
   useEffect(() => {
     if (tenant && isOpen) {
@@ -158,7 +158,7 @@ export const TenantStatement = ({
       fetchInvoices();
       fetchCompanySettings();
     }
-  }, [tenant, isOpen, isManagerView, fetchInvoices]);
+  }, [tenant?.id, tenant?.statement_history_months, isOpen, isManagerView, fetchInvoices]);
 
   const totalBilled = invoices.reduce((sum, inv) => sum + Number(inv.amount), 0);
   const totalPaid = invoices

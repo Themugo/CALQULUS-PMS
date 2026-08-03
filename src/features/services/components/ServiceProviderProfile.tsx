@@ -105,7 +105,7 @@ const ServiceProviderProfile: React.FC = () => {
         })));
       }
     }
-  }, [provider]);
+  }, [provider?.id, provider?.updated_at]);
 
   // Categories for picker
   const { data: categories = [] } = useQuery({

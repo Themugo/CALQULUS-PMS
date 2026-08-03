@@ -184,6 +184,7 @@ const ManagerPlatformBilling = () => {
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
+  const paymentProcessedRef = useRef(false);
   const [activeTab, setActiveTab] = useState("invoices");
 
   // Invoice state
@@ -241,6 +242,9 @@ const ManagerPlatformBilling = () => {
   // Check for payment success/failure in URL
   useEffect(() => {
     const payment = searchParams.get('payment');
+    if (!payment || paymentProcessedRef.current) return;
+
+    paymentProcessedRef.current = true;
     if (payment === 'success') {
       toast({ 
         title: 'Payment processing', 

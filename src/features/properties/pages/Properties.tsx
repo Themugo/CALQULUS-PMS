@@ -210,7 +210,7 @@ const Properties = () => {
       toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
-  }, [assignedPropertyIdsKey, managerId, restrictToAssignedProperties, toast]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   useEffect(() => {
     fetchData();

@@ -235,7 +235,7 @@ export function isSignedURLExpired(signedUrl: SignedURL): boolean {
  */
 export function getSignedURLConfig(): SignedURLConfig {
   return {
-    secretKey: process.env.VITE_SIGNED_URL_SECRET || 'default-secret-key-change-in-production',
+    secretKey: import.meta.env.VITE_SIGNED_URL_SECRET || 'default-secret-key-change-in-production',
     algorithm: 'HS256',
     expiresIn: 3600, // 1 hour
     issuer: window.location.origin,

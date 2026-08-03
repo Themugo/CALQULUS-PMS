@@ -150,6 +150,11 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
   const [billingCycleDay, setBillingCycleDay] = useState("1");
   const [isActive, setIsActive] = useState(true);
 
+  const providersRef = useRef(KENYAN_WATER_PROVIDERS);
+  useEffect(() => {
+    providersRef.current = KENYAN_WATER_PROVIDERS;
+  }, [KENYAN_WATER_PROVIDERS]);
+
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -172,7 +177,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
       setInvoiceMode(c.invoice_mode);
       setBillingCycleDay(c.billing_cycle_day?.toString() || "1");
       setIsActive(c.is_active);
-      if (c.water_provider && !KENYAN_WATER_PROVIDERS.find(p => p.value === c.water_provider)) {
+      if (c.water_provider && !providersRef.current.find(p => p.value === c.water_provider)) {
         setCustomProvider(c.water_provider);
         setWaterProvider("custom");
       }
@@ -373,15 +378,16 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
     return provider ? provider.label : value;
   };
 
+  const lastReadingValue = selectedUnitId
+    ? readings.find(r => r.unit_id === selectedUnitId)?.current_reading
+    : undefined;
+
   // Auto-fill previous reading from last reading for selected unit
   useEffect(() => {
-    if (selectedUnitId && billingMethod === "meter") {
-      const lastReading = readings.find(r => r.unit_id === selectedUnitId);
-      if (lastReading) {
-        setPrevReading(lastReading.current_reading.toString());
-      }
+    if (selectedUnitId && billingMethod === "meter" && lastReadingValue !== undefined) {
+      setPrevReading(lastReadingValue.toString());
     }
-  }, [selectedUnitId, readings, billingMethod]);
+  }, [selectedUnitId, billingMethod, lastReadingValue]);
 
   if (isLoading) {
     return (

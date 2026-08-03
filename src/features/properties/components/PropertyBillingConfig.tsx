@@ -97,7 +97,7 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
         receipt_prefix:        config.receipt_prefix ?? 'RCP',
       });
     }
-  }, [config]);
+  }, [config?.id, config?.updated_at]);
 
   const saveConfig = useMutation({
     mutationFn: async () => {

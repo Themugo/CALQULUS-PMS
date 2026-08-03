@@ -35,7 +35,7 @@ export function ProfileMenu() {
       }
     };
     fetchProfile();
-  }, [user]);
+  }, [user?.id]);
 
   const getInitials = (name: string) => {
     if (!name) return user?.email?.substring(0, 2).toUpperCase() || "U";

@@ -92,7 +92,7 @@ export function TenantsOverview() {
     } finally {
       setLoading(false);
     }
-  }, [assignedPropertyIdsKey, generateSignedUrls, managerId, restrictToAssignedProperties]);
+  }, [assignedPropertyIds, generateSignedUrls, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchTenants();

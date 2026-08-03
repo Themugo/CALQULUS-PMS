@@ -27,11 +27,14 @@ const ManagerBilling = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
+  const paymentProcessedRef = useRef(false);
 
   // Check for payment success/failure in URL
   useEffect(() => {
     const payment = searchParams.get('payment');
-    
+    if (!payment || paymentProcessedRef.current) return;
+
+    paymentProcessedRef.current = true;
     if (payment === 'success') {
       toast({ 
         title: 'Payment processing', 

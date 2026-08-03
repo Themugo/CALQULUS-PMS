@@ -395,6 +395,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLandlordPropertyIds([]);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, user?.id, currentRoleName, userRolesKey, pickRoleForPath, fetchWebhostPermissions, fetchPlatformAdminInfo, fetchSubmanagerPermissions, fetchLandlordPropertyIds]);
 
   const signIn = useCallback(async (email: string, password: string) => {

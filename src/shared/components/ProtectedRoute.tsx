@@ -43,6 +43,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requirePermission,
 }) => {
   const { user, userRole, loading, webhostPermissions, isSuperAdmin } = useAuth();
+  const currentPath = window.location.pathname;
+
+  const safeRedirect = (target: string) => {
+    if (currentPath === target) return null;
+    return <Navigate to={target} replace />;
+  };
 
   // ── Loading ─────────────────────────────────────────────────────
   if (loading) {
@@ -57,7 +63,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (!user) {
     // Pick login path based on what role this route requires
     const targetRole = allowedRoles?.[0] ?? 'manager';
-    return <Navigate to={LOGIN_PATH[targetRole] ?? '/landlord'} replace />;
+    return safeRedirect(LOGIN_PATH[targetRole] ?? '/landlord');
   }
 
   // ── Role not resolved yet ────────────────────────────────────────
@@ -77,15 +83,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // grant a pending manager access to a manager-only page if App-level
   // routing is ever bypassed (defence in depth).
   if (effectiveRole === 'manager' && userRole.approval_status === 'pending') {
-    return <Navigate to="/" replace />;
+    return safeRedirect('/');
   }
   if (effectiveRole === 'manager' && userRole.approval_status === 'rejected') {
-    return <Navigate to="/" replace />;
+    return safeRedirect('/');
   }
 
   // ── Role check ───────────────────────────────────────────────────
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(effectiveRole)) {
-    return <Navigate to={ROLE_HOME[effectiveRole] ?? '/auth'} replace />;
+    return safeRedirect(ROLE_HOME[effectiveRole] ?? '/auth');
   }
 
   // ── Webhost: admin level check ───────────────────────────────────
@@ -93,14 +99,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const required = ADMIN_LEVEL_ORDER[minAdminLevel] ?? 0;
     const actual   = ADMIN_LEVEL_ORDER[webhostPermissions.admin_level] ?? 0;
     if (actual < required) {
-      return <Navigate to="/webhost" replace />;
+      return safeRedirect('/webhost');
     }
   }
 
   // ── Webhost: specific permission check ──────────────────────────
   if (effectiveRole === 'webhost' && requirePermission && !isSuperAdmin) {
     if (!webhostPermissions || !webhostPermissions[requirePermission]) {
-      return <Navigate to="/webhost" replace />;
+      return safeRedirect('/webhost');
     }
   }
 
@@ -109,19 +115,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // by role in App.tsx, but this catches any misconfiguration.
   if (effectiveRole === 'webhost') {
     const blockedPrefixes = ['/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing', '/contracts'];
-    const currentPath = window.location.pathname;
     if (blockedPrefixes.some(p => currentPath.startsWith(p))) {
-      return <Navigate to="/webhost" replace />;
+      return safeRedirect('/webhost');
     }
   }
 
   // ── Landlord: HARD BLOCK from manager/tenant routes ─────────────
   if (effectiveRole === 'landlord') {
     const blockedPrefixes = ['/portal', '/tenant', '/', '/properties'];
-    const currentPath = window.location.pathname;
     if (blockedPrefixes.some(p => currentPath === p) ||
         currentPath.startsWith('/portal') || currentPath.startsWith('/tenant/')) {
-      return <Navigate to="/landlord/dashboard" replace />;
+      return safeRedirect('/landlord/dashboard');
     }
   }
 

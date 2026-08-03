@@ -43,10 +43,13 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const tenantIdsKey = tenants.map(t => t.id).sort().join(",");
+
   useEffect(() => {
     const fetchInvoices = async () => {
       const tenantIds = tenants.map(t => t.id);
       if (tenantIds.length === 0) {
+        setInvoices([]);
         setIsLoading(false);
         return;
       }
@@ -62,7 +65,7 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
       setIsLoading(false);
     };
     fetchInvoices();
-  }, [tenants]);
+  }, [tenantIdsKey]);
 
   const getTenantName = (tenantId: string | null) => {
     if (!tenantId) return "—";

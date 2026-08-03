@@ -175,7 +175,7 @@ export function GlobalSearch() {
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [assignedPropertyIdsKey, managerId, query, restrictToAssignedProperties]);
+  }, [assignedPropertyIds, managerId, query, restrictToAssignedProperties]);
 
   const handleSelect = (result: SearchResult) => {
     navigate(result.route);

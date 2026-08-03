@@ -67,7 +67,7 @@ export const ReceiptSettings = () => {
     };
 
     fetchSettings();
-  }, [isManager, user]);
+  }, [isManager, user?.id]);
 
   const handleSave = async () => {
     if (!user) return;
