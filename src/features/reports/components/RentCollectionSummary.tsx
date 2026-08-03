@@ -293,9 +293,9 @@ export const RentCollectionSummary: React.FC = () => {
     queryKey: ['manager-settings-company', user?.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('manager_settings')
+        .from('company_settings')
         .select('company_name')
-        .eq('manager_id', user!.id)
+        .eq('manager_user_id', user!.id)
         .maybeSingle();
       return data;
     },

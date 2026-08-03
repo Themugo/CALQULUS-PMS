@@ -145,5 +145,8 @@
   },
   "description": "Modern property management platform for Kenya and East Africa",
   "author": "CALQULUS PMS",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "overrides": {
+    "react-router": "8.3.0"
+  }
 }
