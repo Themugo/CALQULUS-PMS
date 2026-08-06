@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/components/ui/card";
+import { StatCard } from "@/shared/components/StatCard";
 import {
   Dialog,
   DialogContent,
@@ -774,19 +775,13 @@ Status: PAID
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-emerald-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Paid</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(invoiceStats.totalPaid)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={CheckCircle}
+                iconBgClass="bg-emerald-500/10"
+                iconColorClass="text-emerald-500"
+                label="Total Paid"
+                value={formatCurrency(invoiceStats.totalPaid)}
+              />
 
               <Card className="bg-card border-border">
                 <CardContent className="p-6">
@@ -868,19 +863,13 @@ Status: PAID
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-emerald-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Paid</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(invoiceStats.totalPaid)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={CheckCircle}
+                iconBgClass="bg-emerald-500/10"
+                iconColorClass="text-emerald-500"
+                label="Total Paid"
+                value={formatCurrency(invoiceStats.totalPaid)}
+              />
 
               <Card className="bg-card border-border">
                 <CardContent className="p-6">

@@ -12,7 +12,7 @@ import {
 import { MapPin, ChevronDown, Eye, Layers, Pencil, Trash2 } from "lucide-react";
 import { CATEGORY_BY_KEY } from "@/shared/constants/propertyTypes";
 
-interface Property {
+export interface Property {
   id: string;
   name: string;
   address: string;
@@ -31,7 +31,7 @@ interface Property {
   payment_details?: string;
 }
 
-interface Tenant {
+export interface Tenant {
   id: string;
   name: string;
   email: string;

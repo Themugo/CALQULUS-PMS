@@ -55,36 +55,8 @@ import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { useQuery } from "@tanstack/react-query";
 import { CATEGORY_BY_KEY, CATEGORIES_BY_GROUP, GROUP_LABELS, PROPERTY_CATEGORIES } from "@/shared/constants/propertyTypes";
-import { PropertyCard } from "@/features/properties/components/PropertyCard";
+import { PropertyCard, type Property, type Tenant } from "@/features/properties/components/PropertyCard";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
-
-interface Property {
-  id: string;
-  name: string;
-  address: string;
-  house_number: string | null;
-  units: number;
-  occupied: number;
-  revenue: number;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  category_key?: string;
-  property_type?: string;
-  number_of_floors?: number;
-  rent_per_house?: number;
-  house_label_prefix?: string;
-  payment_details?: string;
-}
-
-interface Tenant {
-  id: string;
-  name: string;
-  email: string;
-  unit: string | null;
-  property_id: string | null;
-  status: string;
-}
 
 const Properties = () => {
   const { toast } = useToast();
