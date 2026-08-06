@@ -1,8 +1,8 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
+import { createCurrencyFormatter, fetchCompanySettings } from "@/shared/lib/pdf/companyPdfHeader";
 
 interface MaintenanceRequest {
   id: string;
@@ -21,41 +21,6 @@ interface MaintenanceRequest {
   requested_date: string;
   created_at: string;
 }
-
-interface CompanySettings {
-  company_name: string;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  zip_code: string | null;
-  email: string | null;
-  phone: string | null;
-  website: string | null;
-  logo_url: string | null;
-}
-
-const createCurrencyFormatter = (currency: CurrencyCode = "KES") => {
-  const locale = currency === "KES" ? "en-KE" : currency === "USD" ? "en-US" : currency === "EUR" ? "de-DE" : "en-GB";
-  return (amount: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-};
-
-const fetchCompanySettings = async (): Promise<CompanySettings | null> => {
-  const { data, error } = await supabase
-    .from("company_settings")
-    .select("*")
-    .maybeSingle();
-
-  if (!error && data) {
-    return data;
-  }
-  return null;
-};
 
 const getPriorityLabel = (priority: string): string => {
   const labels: Record<string, string> = {

@@ -2,8 +2,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/shared/lib/dateFormat";
-
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
+import { createCurrencyFormatter, fetchCompanySettings, drawCompanyPdfHeader } from "@/shared/lib/pdf/companyPdfHeader";
 
 interface LineItem {
   description: string;
@@ -31,18 +31,6 @@ interface ReceiptData {
   } | null;
 }
 
-interface CompanySettings {
-  company_name: string;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  zip_code: string | null;
-  email: string | null;
-  phone: string | null;
-  website: string | null;
-  logo_url: string | null;
-}
-
 interface ReceiptSettings {
   primary_color: string;
   secondary_color: string;
@@ -50,34 +38,11 @@ interface ReceiptSettings {
   include_logo: boolean;
 }
 
-const createCurrencyFormatter = (currency: CurrencyCode = "KES") => {
-  const locale = currency === "KES" ? "en-KE" : currency === "USD" ? "en-US" : currency === "EUR" ? "de-DE" : "en-GB";
-  return (amount: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-};
-
 const hexToRgb = (hex: string): [number, number, number] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
     : [34, 197, 94]; // Default green
-};
-
-const fetchCompanySettings = async (): Promise<CompanySettings | null> => {
-  const { data, error } = await supabase
-    .from("company_settings")
-    .select("*")
-    .maybeSingle();
-
-  if (!error && data) {
-    return data;
-  }
-  return null;
 };
 
 const fetchReceiptSettings = async (userId: string): Promise<ReceiptSettings | null> => {
@@ -140,81 +105,7 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
   const footerMessage = receiptSettings?.footer_message || "Thank you for your payment!";
   const includeLogo = receiptSettings?.include_logo ?? true;
 
-  let yPos = 14;
-  let logoWidth = 0;
-
-  // Company Header with Logo
-  if (companySettings) {
-    if (companySettings.logo_url && includeLogo) {
-      try {
-        const response = await fetch(companySettings.logo_url);
-        const blob = await response.blob();
-        const base64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
-        
-        const img = new Image();
-        img.src = base64;
-        await new Promise((resolve) => { img.onload = resolve; });
-        const aspectRatio = img.width / img.height;
-        const logoHeight = 20;
-        logoWidth = logoHeight * aspectRatio;
-        
-        doc.addImage(base64, "PNG", 14, yPos - 4, logoWidth, logoHeight);
-      } catch {
-      }
-    }
-
-    const textStartX = logoWidth > 0 ? 14 + logoWidth + 6 : 14;
-    
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text(companySettings.company_name, textStartX, yPos);
-    yPos += 6;
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-
-    if (companySettings.address) {
-      doc.text(companySettings.address, textStartX, yPos);
-      yPos += 4;
-    }
-
-    if (companySettings.city || companySettings.state || companySettings.zip_code) {
-      const cityStateZip = [
-        companySettings.city,
-        companySettings.state,
-        companySettings.zip_code,
-      ]
-        .filter(Boolean)
-        .join(", ");
-      doc.text(cityStateZip, textStartX, yPos);
-      yPos += 4;
-    }
-
-    const contactInfo: string[] = [];
-    if (companySettings.phone) contactInfo.push(`Tel: ${companySettings.phone}`);
-    if (companySettings.email) contactInfo.push(companySettings.email);
-    if (contactInfo.length > 0) {
-      doc.text(contactInfo.join(" | "), textStartX, yPos);
-      yPos += 4;
-    }
-
-    if (companySettings.website) {
-      doc.text(companySettings.website, textStartX, yPos);
-      yPos += 4;
-    }
-
-    doc.setTextColor(0, 0, 0);
-    
-    if (logoWidth > 0) {
-      yPos = Math.max(yPos, 14 + 20 + 6);
-    }
-    yPos += 6;
-  }
+  let yPos = await drawCompanyPdfHeader(doc, companySettings, 14, { includeLogo });
 
   // Receipt Title with checkmark using primary color
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);

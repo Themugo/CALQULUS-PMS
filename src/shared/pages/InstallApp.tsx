@@ -105,7 +105,7 @@ const InstallApp = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate("/dashboard")} className="w-full">
+            <Button onClick={() => navigate("/")} className="w-full">
               Open App
             </Button>
           </CardContent>
