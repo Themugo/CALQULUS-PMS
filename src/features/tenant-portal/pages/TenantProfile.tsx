@@ -1,3 +1,4 @@
+import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -14,7 +15,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Separator } from '@/shared/components/ui/separator';
-import { ArrowLeft, User, Bell, Mail, Phone, Save, Camera, LogOut, Loader2, Fingerprint, ShieldCheck, ScanFace } from 'lucide-react';
+import { User, Bell, Mail, Phone, Save, Camera, LogOut, Loader2, Fingerprint, ShieldCheck, ScanFace } from 'lucide-react';
 
 interface TenantProfile {
   id: string;
@@ -412,20 +413,7 @@ const TenantProfile = () => {
 
   return (
     <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-card border-b border-border safe-area-top">
-        <div className="flex items-center justify-between px-4 h-14">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/portal')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-semibold text-lg">Profile</h1>
-          <div className="w-10" />
-        </div>
-      </header>
+      <MobilePageHeader title="Profile" onBack={() => navigate('/portal')} />
 
       <main className="p-4 max-w-2xl mx-auto space-y-6">
         {/* Profile Photo & Basic Info */}

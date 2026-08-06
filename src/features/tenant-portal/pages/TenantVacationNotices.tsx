@@ -1,3 +1,4 @@
+import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -15,7 +16,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { format, addDays } from 'date-fns';
 import { downloadVacationNoticePdf } from '@/features/vacation-notices/lib/vacationNoticePdfExport';
 import { 
-  ArrowLeft, 
   Plus, 
   Clock, 
   CheckCircle, 
@@ -340,26 +340,15 @@ const TenantVacationNotices = () => {
 
   return (
     <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-card border-b border-border safe-area-top">
-        <div className="flex items-center justify-between px-4 h-14">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/portal')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-semibold text-lg">Vacation Notices</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCreateDialogOpen(true)}
-          >
+      <MobilePageHeader
+        title="Vacation Notices"
+        onBack={() => navigate('/portal')}
+        trailing={
+          <Button variant="ghost" size="icon" onClick={() => setCreateDialogOpen(true)}>
             <Plus className="h-5 w-5" />
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       <main className="p-4 max-w-2xl mx-auto space-y-4">
         {/* Summary Cards */}

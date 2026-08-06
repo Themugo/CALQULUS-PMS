@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
+import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -13,7 +14,6 @@ import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { formatDate, formatDateTime12h } from '@/shared/lib/dateFormat';
 import DOMPurify from 'dompurify';
 import { 
-  ArrowLeft, 
   FileText, 
   PenTool, 
   Eye, 
@@ -316,20 +316,7 @@ const TenantContracts = () => {
 
   return (
     <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-card border-b border-border safe-area-top">
-        <div className="flex items-center justify-between px-4 h-14">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/portal')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-semibold text-lg">Contracts</h1>
-          <div className="w-10" />
-        </div>
-      </header>
+      <MobilePageHeader title="Contracts" onBack={() => navigate('/portal')} />
 
       <main className="p-4 max-w-2xl mx-auto space-y-4">
         {/* Summary Cards */}

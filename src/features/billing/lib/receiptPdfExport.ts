@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import autoTable, { type UserOptions } from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
@@ -172,47 +172,29 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
   // Payment Details Table with line items breakdown
   const hasLineItems = effectiveLineItems && effectiveLineItems.length > 0;
   
+  // Full breakdown table (Qty/Rate/Amount columns + a Total footer row) when
+  // line items are available; otherwise a single summary row.
+  let tableBody: (string | number)[][];
+  let tableFoot: UserOptions["foot"];
+  let tableFootStyles: UserOptions["footStyles"];
+
   if (hasLineItems) {
-    // Full breakdown table with Qty, Rate, Amount columns
-    const tableBody: (string | number)[][] = effectiveLineItems.map(item => [
+    tableBody = effectiveLineItems.map(item => [
       item.description,
       item.quantity,
       formatCurrency(item.rate),
       formatCurrency(item.amount),
     ]);
-
-    autoTable(doc, {
-      startY: yPos,
-      head: [["Description", "Qty", "Rate", "Amount"]],
-      body: tableBody,
-      theme: "striped",
-      headStyles: {
-        fillColor: primaryColor,
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-      },
-      columnStyles: {
-        0: { cellWidth: 90 },
-        1: { halign: "center", cellWidth: 25 },
-        2: { halign: "right", cellWidth: 35 },
-        3: { halign: "right", fontStyle: "bold", cellWidth: 35 },
-      },
-      foot: [[
-        { content: "Total", colSpan: 3, styles: { halign: "right", fontStyle: "bold" } },
-        { content: formatCurrency(receipt.amount), styles: { halign: "right", fontStyle: "bold" } }
-      ]],
-      footStyles: {
-        fillColor: [245, 245, 245],
-        textColor: secondaryColor,
-      },
-    });
+    tableFoot = [[
+      { content: "Total", colSpan: 3, styles: { halign: "right", fontStyle: "bold" } },
+      { content: formatCurrency(receipt.amount), styles: { halign: "right", fontStyle: "bold" } }
+    ]];
+    tableFootStyles = {
+      fillColor: [245, 245, 245],
+      textColor: secondaryColor,
+    };
   } else {
-    // Simple table for single description
-    const tableBody: string[][] = [
+    tableBody = [
       [
         effectiveDescription || "Monthly Rent",
         "1",
@@ -220,33 +202,33 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
         formatCurrency(receipt.amount),
       ],
     ];
-
     if (receipt.mpesa_receipt) {
       tableBody.push(["M-Pesa Receipt", "", "", receipt.mpesa_receipt]);
     }
-
-    autoTable(doc, {
-      startY: yPos,
-      head: [["Description", "Qty", "Rate", "Amount"]],
-      body: tableBody,
-      theme: "striped",
-      headStyles: {
-        fillColor: primaryColor,
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-      },
-      columnStyles: {
-        0: { cellWidth: 90 },
-        1: { halign: "center", cellWidth: 25 },
-        2: { halign: "right", cellWidth: 35 },
-        3: { halign: "right", fontStyle: "bold", cellWidth: 35 },
-      },
-    });
   }
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [["Description", "Qty", "Rate", "Amount"]],
+    body: tableBody,
+    theme: "striped",
+    headStyles: {
+      fillColor: primaryColor,
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+    },
+    styles: {
+      fontSize: 10,
+      cellPadding: 5,
+    },
+    columnStyles: {
+      0: { cellWidth: 90 },
+      1: { halign: "center", cellWidth: 25 },
+      2: { halign: "right", cellWidth: 35 },
+      3: { halign: "right", fontStyle: "bold", cellWidth: 35 },
+    },
+    ...(tableFoot ? { foot: tableFoot, footStyles: tableFootStyles } : {}),
+  });
 
   const finalY = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
 

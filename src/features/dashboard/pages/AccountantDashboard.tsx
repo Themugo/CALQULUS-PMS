@@ -1,3 +1,4 @@
+import { DashboardLoadingSkeleton } from "@/features/dashboard/components/DashboardLoadingSkeleton";
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +8,6 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
   DollarSign, CreditCard, Receipt, TrendingUp, AlertCircle, ArrowUpRight,
   FileText, Download, CheckCircle, Clock, RefreshCw, Scale, Building2,
@@ -76,15 +76,7 @@ export default function AccountantDashboard() {
   });
 
   if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
-        </div>
-        <Skeleton className="h-80 rounded-xl" />
-      </div>
-    );
+    return <DashboardLoadingSkeleton />;
   }
 
   const alerts = [
