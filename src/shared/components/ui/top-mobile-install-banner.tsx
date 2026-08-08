@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
+import type { BeforeInstallPromptEvent } from "@/shared/types/pwa";
 import { Download, X, Share, Smartphone, Zap } from "lucide-react";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 export const TopMobileInstallBanner = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);

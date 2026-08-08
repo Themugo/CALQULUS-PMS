@@ -9,7 +9,7 @@ import { Handshake, Shield, Eye, EyeOff, ChevronRight, Building2, Users, CreditC
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import calqulusLogo from '@/assets/calqulus-logo-new.png';
-import { AuthLoadingScreen, AuthGridOverlay } from '@/features/auth/components/AuthHeroChrome';
+import { AuthLoadingScreen, AuthGridOverlay, AuthLegalFooterLinks, OtherPortalsGrid } from '@/features/auth/components/AuthHeroChrome';
 
 const features = [
   { icon: Building2,  text: 'Manage properties on behalf of landlords' },
@@ -183,27 +183,15 @@ const AgencyAuth = () => {
             </div>
 
             {/* Other portals */}
-            <div className="mt-5 pt-5 border-t border-white/10">
-              <p className="text-white/30 text-[11px] text-center mb-3">Other portals</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: 'Manager', href: '/landlord' },
-                  { label: 'Landlord', href: '/landlord/login' },
-                  { label: 'Admin',    href: '/webhost/login' },
-                ].map(p => (
-                  <Link key={p.href} to={p.href}
-                    className="flex items-center justify-center py-2 px-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/8 hover:border-amber-400/20 transition-all text-white/40 hover:text-white/70 text-xs font-medium">
-                    {p.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <OtherPortalsGrid
+              portals={[
+                { label: 'Manager', href: '/landlord' },
+                { label: 'Landlord', href: '/landlord/login' },
+                { label: 'Admin', href: '/webhost/login' },
+              ]}
+            />
 
-            <div className="flex justify-center gap-4 mt-4">
-              <Link to="/legal?tab=privacy" className="text-xs text-white/20 hover:text-white/50 transition-colors">Privacy</Link>
-              <span className="text-white/20 text-xs">·</span>
-              <Link to="/legal?tab=terms" className="text-xs text-white/20 hover:text-white/50 transition-colors">Terms</Link>
-            </div>
+            <AuthLegalFooterLinks />
           </div>
         </div>
       </div>

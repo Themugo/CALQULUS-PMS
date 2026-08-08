@@ -1,4 +1,5 @@
 import calqulusLogo from "@/assets/calqulus-logo-new.png";
+import { Link } from "react-router-dom";
 
 /**
  * Shared decorative chrome for the role-specific auth screens
@@ -46,5 +47,36 @@ export function AuthGridOverlay() {
         }}
       />
     </>
+  );
+}
+
+/** Bottom-of-form legal links, identical across the amber/dark-themed role auth screens. */
+export function AuthLegalFooterLinks() {
+  return (
+    <div className="flex justify-center gap-4 mt-4">
+      <Link to="/legal?tab=privacy" className="text-xs text-white/20 hover:text-white/50 transition-colors">Privacy</Link>
+      <span className="text-white/20 text-xs">·</span>
+      <Link to="/legal?tab=terms" className="text-xs text-white/20 hover:text-white/50 transition-colors">Terms</Link>
+    </div>
+  );
+}
+
+/** "Other portals" 3-up quick-switch grid, identical layout across role auth screens (data varies per page). */
+export function OtherPortalsGrid({ portals }: { portals: { label: string; href: string }[] }) {
+  return (
+    <div className="mt-5 pt-5 border-t border-white/10">
+      <p className="text-white/30 text-[11px] text-center mb-3">Other portals</p>
+      <div className="grid grid-cols-3 gap-2">
+        {portals.map((p) => (
+          <Link
+            key={p.href}
+            to={p.href}
+            className="flex items-center justify-center py-2 px-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/8 hover:border-amber-400/20 transition-all text-white/40 hover:text-white/70 text-xs font-medium"
+          >
+            {p.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
