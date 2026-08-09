@@ -7,7 +7,7 @@ import {
   Wrench, CreditCard, Settings, BarChart3, Menu, X,
   Calendar, Handshake, Droplets, Mail, FileSpreadsheet, ChevronRight,
 } from 'lucide-react';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 
 const navItems = [
   { label: 'Dashboard',        href: '/agency',                    icon: LayoutDashboard },

@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 interface Invitation {

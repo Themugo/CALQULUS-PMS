@@ -11,7 +11,7 @@ import {
   Building2, CreditCard, CheckCircle, ChevronRight,
   Loader2, Smartphone, Landmark, User, Zap,
 } from 'lucide-react';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 
 const STEPS = [
   { id: 'agency',  title: 'Your agency',    icon: Building2,   desc: 'Agency profile' },

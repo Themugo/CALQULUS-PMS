@@ -7,7 +7,7 @@ import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from 'lucide-react';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { AuthLoadingScreen, AuthGridOverlay } from '@/features/auth/components/AuthHeroChrome';
 
 const isRecommendedWebhostHost = () => {

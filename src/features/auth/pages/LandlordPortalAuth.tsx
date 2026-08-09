@@ -8,7 +8,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Home, Shield, Eye, EyeOff, ChevronRight, TrendingUp, FileText, Building2 } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { AuthLoadingScreen, AuthGridOverlay, AuthLegalFooterLinks, OtherPortalsGrid } from '@/features/auth/components/AuthHeroChrome';
 
 const features = [

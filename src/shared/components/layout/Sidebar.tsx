@@ -37,7 +37,7 @@ import { useNavHistory } from "@/shared/hooks/useNavHistory";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/calqulus-logo-new.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 
 interface NavItem {
   name: string;

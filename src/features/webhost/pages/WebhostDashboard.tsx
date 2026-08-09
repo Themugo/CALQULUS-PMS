@@ -23,7 +23,7 @@ import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccount
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
 import { EnterpriseAdminPlatform } from '@/shared/components/admin';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 
 // NOTE: TenantManagement is intentionally NOT imported.
 // Webhosts have zero access to tenant data by platform policy.

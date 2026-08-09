@@ -1,4 +1,4 @@
-import calqulusLogo from "@/assets/calqulus-logo-new.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 import { Link } from "react-router-dom";
 
 /**

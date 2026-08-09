@@ -10,7 +10,7 @@ import {
   CheckCircle, XCircle, Eye, EyeOff, ChevronRight,
   User, Home, KeyRound, Loader2,
 } from 'lucide-react';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 
 const STEPS = [
   { id: 'verify', title: 'Verify invite',  icon: KeyRound },

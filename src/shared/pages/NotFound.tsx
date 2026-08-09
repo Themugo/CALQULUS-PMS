@@ -4,7 +4,7 @@ import { logError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/shared/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
-import calqulusLogo from "@/assets/calqulus-logo-new.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 
 const NotFound = () => {
   const location = useLocation();

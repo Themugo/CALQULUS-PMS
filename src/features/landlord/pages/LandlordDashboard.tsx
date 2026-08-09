@@ -31,7 +31,7 @@ import LandlordPropertyDetail from '@/features/landlord/components/LandlordPrope
 import LandlordNotificationPreferences from '@/features/landlord/components/LandlordNotificationPreferences';
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
-import calqulusLogo from '@/assets/calqulus-logo-new.png';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 
 interface PropertySummary {
   id: string;

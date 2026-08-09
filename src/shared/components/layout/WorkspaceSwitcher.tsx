@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/calqulus-logo-new.png";
+import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 
 interface WorkspaceSwitcherProps {
   collapsed?: boolean;
