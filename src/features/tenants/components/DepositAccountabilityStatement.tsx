@@ -428,6 +428,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                         <span className="text-sm font-bold text-red-700">{fmt(Number(d.amount))}</span>
                         <Button
                           variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          aria-label="Remove deduction"
                           onClick={() => removeDeduction.mutate(d.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />

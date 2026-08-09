@@ -216,6 +216,7 @@ export function CustomReportBuilder() {
                     <Button
                       size="icon"
                       variant="ghost"
+                      aria-label="Remove filter"
                       onClick={() => handleRemoveFilter(idx)}
                       className="h-7 w-7 text-muted-foreground hover:text-red-600"
                     >

@@ -58,6 +58,7 @@ export function Header({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Open menu"
           className="lg:hidden h-8 w-8 text-muted-foreground hover:text-foreground shrink-0"
           onClick={onMenuClick}
         >
@@ -96,6 +97,7 @@ export function Header({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Search"
           className="md:hidden h-8 w-8 text-muted-foreground hover:text-foreground"
           onClick={onOpenCommandPalette}
         >

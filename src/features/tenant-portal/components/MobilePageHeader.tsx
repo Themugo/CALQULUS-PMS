@@ -18,7 +18,7 @@ export function MobilePageHeader({ title, onBack, trailing }: MobilePageHeaderPr
   return (
     <header className="sticky top-0 z-40 bg-card border-b border-border safe-area-top">
       <div className="flex items-center justify-between px-4 h-14">
-        <Button variant="ghost" size="icon" onClick={onBack}>
+        <Button variant="ghost" size="icon" aria-label="Go back" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-semibold text-lg">{title}</h1>

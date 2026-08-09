@@ -342,8 +342,16 @@ const TenantWaterPortal: React.FC = () => {
             <div>
               <Label>Meter photo (required for verification)</Label>
               <div
+                role="button"
+                tabIndex={0}
                 className="mt-1 border-2 border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-[hsl(195_60%_50%)] transition-colors"
                 onClick={() => photoRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    photoRef.current?.click();
+                  }
+                }}
               >
                 {photoPreview ? (
                   <img src={photoPreview} alt="meter" className="w-full h-40 object-cover" />

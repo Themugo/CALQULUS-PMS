@@ -125,6 +125,7 @@ export function DashboardWidget({
             <Button
               variant="ghost"
               size="icon"
+              aria-label={isCollapsed ? "Expand widget" : "Collapse widget"}
               className="h-7 w-7 text-muted-foreground hover:text-foreground"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >

@@ -269,7 +269,18 @@ export const AddTenantToPropertyDialog = ({
         <div className="grid gap-4 py-4">
           {/* Photo Upload */}
           <div className="flex flex-col items-center gap-3">
-            <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+            <div
+              className="relative cursor-pointer group"
+              role="button"
+              tabIndex={0}
+              onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+            >
               <Avatar className="h-20 w-20 border-2 border-dashed border-border group-hover:border-amber-400/60 transition-colors">
                 {photoPreview ? <AvatarImage src={photoPreview} /> : (
                   <AvatarFallback className="bg-muted"><Upload className="h-6 w-6 text-muted-foreground" /></AvatarFallback>

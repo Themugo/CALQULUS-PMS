@@ -344,7 +344,7 @@ const TenantVacationNotices = () => {
         title="Vacation Notices"
         onBack={() => navigate('/portal')}
         trailing={
-          <Button variant="ghost" size="icon" onClick={() => setCreateDialogOpen(true)}>
+          <Button variant="ghost" size="icon" aria-label="New vacation notice" onClick={() => setCreateDialogOpen(true)}>
             <Plus className="h-5 w-5" />
           </Button>
         }

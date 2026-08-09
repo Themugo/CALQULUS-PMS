@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useNavHistory, NavPage } from "@/shared/hooks/useNavHistory";
+import { onActivateKey } from "@/shared/lib/a11y";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -284,8 +285,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 return (
                   <div
                     key={page.href}
+                    role="button"
+                    tabIndex={0}
                     className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/80 transition-colors group cursor-pointer"
                     onClick={() => handleSelect(page.href)}
+                    onKeyDown={onActivateKey(() => handleSelect(page.href))}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0 group-hover:text-primary" />

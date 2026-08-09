@@ -258,6 +258,7 @@ const BankIntegrationSettings: React.FC = () => {
                         />
                         <Button
                           variant="ghost" size="icon"
+                          aria-label="Delete integration"
                           className="h-7 w-7 text-destructive hover:bg-destructive/10"
                           onClick={() => deleteIntegration.mutate(intg.id)}
                         >

@@ -6,6 +6,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/shared/lib/utils";
+import { onActivateKey } from "@/shared/lib/a11y";
 
 export interface OrganizationTenant {
   id: string;
@@ -70,7 +71,10 @@ export function MultiTenantManager({ className }: { className?: string }) {
             return (
               <div
                 key={org.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => setSelectedOrg(org.id)}
+                onKeyDown={onActivateKey(() => setSelectedOrg(org.id))}
                 className={cn(
                   "p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between space-y-3",
                   isSelected

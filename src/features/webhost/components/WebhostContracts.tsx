@@ -702,6 +702,7 @@ const WebhostContracts = () => {
                             <Button
                               variant="ghost"
                               size="icon"
+                              aria-label="Preview contract"
                               onClick={() => {
                                 setSelectedContract(contract);
                                 setPreviewDialogOpen(true);
@@ -714,6 +715,7 @@ const WebhostContracts = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Download contract"
                                 onClick={() => handleDownloadContract(contract)}
                                 className="h-8 w-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                               >
@@ -725,6 +727,7 @@ const WebhostContracts = () => {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  aria-label="Approve contract"
                                   onClick={() => {
                                     setSelectedContract(contract);
                                     setApproveDialogOpen(true);
@@ -736,6 +739,7 @@ const WebhostContracts = () => {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  aria-label="Reject contract"
                                   onClick={() => {
                                     setSelectedContract(contract);
                                     setRejectDialogOpen(true);
@@ -750,6 +754,7 @@ const WebhostContracts = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Retake contract"
                                 onClick={() => handleRetakeContract(contract)}
                                 className="h-8 w-8 text-amber-400 hover:text-white hover:bg-amber-600/20"
                               >
@@ -1226,7 +1231,15 @@ const WebhostContracts = () => {
                     ? "border-amber-400/50 bg-[hsl(218_58%_50%/0.1)]" 
                     : "border-amber-400/20 hover:border-amber-400/50/50 hover:bg-muted/30"
                   }`}
+                role="button"
+                tabIndex={0}
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
               >
                 <input
                   ref={fileInputRef}

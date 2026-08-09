@@ -69,6 +69,7 @@ import {
 } from "recharts";
 import RecordPaymentDialog from "@/features/payments/components/RecordPaymentDialog";
 import { BRAND_CHART_COLORS } from "@/shared/lib/chartColors";
+import { onActivateKey } from "@/shared/lib/a11y";
 
 interface PaidInvoice {
   id: string;
@@ -1099,23 +1100,28 @@ const ManagerPaymentHistory = () => {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {tenantBreakdownData.slice(0, 6).map((tenant) => (
+              {tenantBreakdownData.slice(0, 6).map((tenant) => {
+                const toggleTenantSelection = () => {
+                  if (selectedTenant === tenant.id) {
+                    setSelectedTenant(null);
+                    setTenantFilter("all");
+                  } else {
+                    setSelectedTenant(tenant.id);
+                    setTenantFilter(tenant.id);
+                  }
+                };
+                return (
                 <div
                   key={tenant.id}
+                  role="button"
+                  tabIndex={0}
                   className={`p-4 rounded-lg border transition-all cursor-pointer ${
                     selectedTenant === tenant.id
                       ? "border-amber-400/50 bg-amber-400/8"
                       : "border-border hover:border-amber-400/60/50 hover:bg-muted/30"
                   }`}
-                  onClick={() => {
-                    if (selectedTenant === tenant.id) {
-                      setSelectedTenant(null);
-                      setTenantFilter("all");
-                    } else {
-                      setSelectedTenant(tenant.id);
-                      setTenantFilter(tenant.id);
-                    }
-                  }}
+                  onClick={toggleTenantSelection}
+                  onKeyDown={onActivateKey(toggleTenantSelection)}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <Avatar className="h-10 w-10">
@@ -1156,7 +1162,8 @@ const ManagerPaymentHistory = () => {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
           {tenantBreakdownData.length > 6 && (

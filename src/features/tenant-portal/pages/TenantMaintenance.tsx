@@ -272,7 +272,7 @@ const TenantMaintenance = () => {
         title="Maintenance"
         onBack={() => navigate('/portal')}
         trailing={
-          <Button variant="ghost" size="icon" onClick={() => setCreateDialogOpen(true)}>
+          <Button variant="ghost" size="icon" aria-label="New maintenance request" onClick={() => setCreateDialogOpen(true)}>
             <Plus className="h-5 w-5" />
           </Button>
         }

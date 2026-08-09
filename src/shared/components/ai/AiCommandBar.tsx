@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
 import { cn } from "@/shared/lib/utils";
+import { onActivateKey } from "@/shared/lib/a11y";
 
 export interface SuggestedActionItem {
   id: string;
@@ -46,7 +47,10 @@ export function AiCommandBar({
     <div className={cn("relative w-full", className)}>
       {/* Quick Access Command Trigger */}
       <div
+        role="button"
+        tabIndex={0}
         onClick={() => setIsOpen(true)}
+        onKeyDown={onActivateKey(() => setIsOpen(true))}
         className="flex items-center justify-between p-2.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 cursor-pointer transition-all text-xs"
       >
         <div className="flex items-center gap-2 text-foreground font-semibold">
@@ -95,10 +99,16 @@ export function AiCommandBar({
                 {SAMPLE_SUGGESTED_ACTIONS.map((action) => (
                   <div
                     key={action.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
                       if (onSelectAction) onSelectAction(action);
                       setIsOpen(false);
                     }}
+                    onKeyDown={onActivateKey(() => {
+                      if (onSelectAction) onSelectAction(action);
+                      setIsOpen(false);
+                    })}
                     className="p-3 rounded-xl border bg-card hover:border-primary/40 hover:bg-primary/5 cursor-pointer transition-all flex items-center justify-between gap-3 group"
                   >
                     <div className="space-y-0.5">

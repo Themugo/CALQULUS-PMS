@@ -286,6 +286,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Copy email address"
                 onClick={() => copyToClipboard(manager.email, 'Email')}
                 className="h-8 w-8"
               >
@@ -298,6 +299,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Email manager"
                 onClick={handleEmailClick}
                 className="h-8 w-8"
               >
@@ -322,6 +324,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Copy phone number"
                   onClick={() => copyToClipboard(manager.phone!, 'Phone')}
                   className="h-8 w-8"
                 >
@@ -334,6 +337,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Call manager"
                   onClick={handlePhoneClick}
                   className="h-8 w-8"
                 >
@@ -342,6 +346,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Message on WhatsApp"
                   onClick={handleWhatsAppClick}
                   className="h-8 w-8 text-green-600 hover:text-green-700"
                 >

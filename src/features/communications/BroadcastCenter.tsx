@@ -22,6 +22,7 @@ import {
   Search, Loader2, BarChart3, RefreshCw
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 // ── Message type presets ────────────────────────────────────────────
 const MESSAGE_TYPES = [
@@ -430,7 +431,10 @@ const BroadcastCenter: React.FC = () => {
                     ].map(ch => (
                       <div
                         key={ch.key}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => ch.set(!ch.state)}
+                        onKeyDown={onActivateKey(() => ch.set(!ch.state))}
                         className={`rounded-lg border p-3 cursor-pointer transition-colors ${ch.state ? 'border-amber-400/50 bg-amber-400/8' : 'border-border'}`}
                       >
                         <div className="flex items-center justify-between mb-1">

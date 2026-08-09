@@ -19,6 +19,7 @@ import {
   PROPERTY_CATEGORIES, CATEGORIES_BY_GROUP, GROUP_LABELS, GROUP_COLORS,
   TIER_NAMES, TIER_BADGE_COLORS, getCategoryGroup
 } from '@/shared/constants/propertyTypes';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 const TIER_ICONS: Record<string, React.ElementType> = {
   lite: Zap, pro: Star, enterprise: Crown,
@@ -258,8 +259,11 @@ const TierManagement: React.FC = () => {
               <div key={group} className={`rounded-xl border overflow-hidden ${isAllowed ? 'border-amber-400/12' : 'border-border/30'}`}>
                 {/* Group header */}
                 <div
+                  role="button"
+                  tabIndex={0}
                   className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isAllowed ? 'bg-muted/30 hover:bg-amber-400/6' : 'bg-slate-900/20 hover:bg-muted/20'}`}
                   onClick={() => setExpandedGroups(p => ({ ...p, [group]: !isExpanded }))}
+                  onKeyDown={onActivateKey(() => setExpandedGroups(p => ({ ...p, [group]: !isExpanded })))}
                 >
                   <div className="flex items-center gap-3">
                     <Badge variant="outline" className={`text-xs ${GROUP_COLORS[group]}`}>

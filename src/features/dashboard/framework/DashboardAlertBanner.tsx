@@ -108,6 +108,7 @@ export function DashboardAlertBanner({
                 <Button
                   size="icon"
                   variant="ghost"
+                  aria-label="Dismiss alert"
                   onClick={() => onDismiss(alert.id)}
                   className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 >

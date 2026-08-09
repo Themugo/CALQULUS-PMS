@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Label } from '@/shared/components/ui/label';
 import { format } from 'date-fns';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -159,8 +160,11 @@ const ManagerBillingDrilldown: React.FC = () => {
             <div key={m.user_id} className="rounded-xl border border-[hsl(218_58%_24%/0.2)] bg-muted/20 overflow-hidden">
               {/* Manager row */}
               <div
+                role="button"
+                tabIndex={0}
                 className="flex items-center gap-3 p-3 cursor-pointer hover:bg-[hsl(218_58%_16%/0.1)] transition-colors"
                 onClick={() => setExpanded(expanded === m.user_id ? null : m.user_id)}
+                onKeyDown={onActivateKey(() => setExpanded(expanded === m.user_id ? null : m.user_id))}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">

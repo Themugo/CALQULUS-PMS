@@ -125,6 +125,7 @@ export const DesktopInstallBanner = () => {
           <Button
             size="icon"
             variant="ghost"
+            aria-label="Dismiss"
             className="h-7 w-7 -mt-1 -mr-1 text-muted-foreground hover:text-foreground rounded-full"
             onClick={handleDismiss}
           >

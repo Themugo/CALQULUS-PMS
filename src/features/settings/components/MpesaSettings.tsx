@@ -224,6 +224,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
           type="button"
           variant="ghost"
           size="icon"
+          aria-label={showSecrets[field] ? "Hide value" : "Show value"}
           className="absolute right-0 top-0 h-full"
           onClick={() => toggleShowSecret(field)}
         >

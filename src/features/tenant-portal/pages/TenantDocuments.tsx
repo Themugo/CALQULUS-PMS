@@ -26,6 +26,7 @@ import TenantPaymentSchedule from '@/features/tenant-portal/components/TenantPay
 import UnitInspectionChecklist from '@/features/units/components/UnitInspectionChecklist';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -355,6 +356,8 @@ const TenantDocuments: React.FC = () => {
                     return (
                       <div key={insp.id} className="rounded-lg border border-border overflow-hidden">
                         <div
+                          role="button"
+                          tabIndex={0}
                           className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/30"
                           onClick={() =>
                             setExpandedInspectionIds((current) => ({
@@ -362,6 +365,12 @@ const TenantDocuments: React.FC = () => {
                               [insp.id]: !current[insp.id],
                             }))
                           }
+                          onKeyDown={onActivateKey(() =>
+                            setExpandedInspectionIds((current) => ({
+                              ...current,
+                              [insp.id]: !current[insp.id],
+                            }))
+                          )}
                         >
                           <div className="flex items-center gap-3 flex-wrap">
                             <Badge variant="outline" className="text-xs capitalize">{insp.inspection_type?.replace('_', ' ')}</Badge>

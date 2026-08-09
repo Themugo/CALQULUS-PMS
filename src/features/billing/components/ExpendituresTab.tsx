@@ -250,6 +250,7 @@ export function ExpendituresTab({
                           <div className="flex gap-1">
                             <Button
                               variant="ghost" size="icon" className="h-8 w-8"
+                              aria-label="Save category"
                               onClick={() => handleSave(cat.key, cat.label)}
                               disabled={isSaving}
                             >
@@ -259,6 +260,7 @@ export function ExpendituresTab({
                             </Button>
                             <Button
                               variant="ghost" size="icon" className="h-8 w-8"
+                              aria-label="Cancel editing"
                               onClick={() => cancelEditing(cat.key)}
                               disabled={isSaving}
                             >
@@ -268,6 +270,7 @@ export function ExpendituresTab({
                         ) : (
                           <Button
                             variant="ghost" size="icon" className="h-8 w-8"
+                            aria-label="Edit category"
                             onClick={() => startEditing(cat.key)}
                           >
                             <Pencil className="h-4 w-4" />

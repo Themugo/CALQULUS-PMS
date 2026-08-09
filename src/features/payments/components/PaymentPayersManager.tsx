@@ -217,6 +217,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
                         />
                         <Button
                           variant="ghost" size="icon"
+                          aria-label="Delete payer"
                           className="h-7 w-7 text-destructive hover:bg-destructive/10"
                           onClick={() => deletePayer.mutate(payer.id)}
                         >

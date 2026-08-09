@@ -18,6 +18,7 @@ import { logError } from "@/shared/lib/errorLogger";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/shared/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { onActivateKey } from "@/shared/lib/a11y";
 
 interface Notification {
   id: string;
@@ -271,7 +272,10 @@ export function NotificationsDropdown() {
                       : "bg-amber-400/6 hover:bg-amber-400/10 dark:bg-amber-400/[0.04]",
                     notif.action_url ? "cursor-pointer" : "cursor-default",
                   )}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleClick(notif)}
+                  onKeyDown={onActivateKey(() => handleClick(notif))}
                 >
                   {/* Icon */}
                   <div className={cn(

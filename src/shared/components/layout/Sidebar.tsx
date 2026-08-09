@@ -253,6 +253,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Close sidebar"
               className="lg:hidden text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/60 h-7 w-7 rounded-md"
               onClick={onClose}
             >

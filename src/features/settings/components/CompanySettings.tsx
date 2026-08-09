@@ -328,6 +328,7 @@ export const CompanySettings = () => {
                       <Button
                         variant="destructive"
                         size="icon"
+                        aria-label="Remove logo"
                         className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
                         onClick={handleRemoveLogo}
                         disabled={uploading}

@@ -145,6 +145,7 @@ export const MobileInstallBanner = () => {
           <Button
             size="icon"
             variant="ghost"
+            aria-label="Dismiss"
             className="h-8 w-8 -mt-1 -mr-1 text-muted-foreground hover:text-foreground rounded-full"
             onClick={handleDismiss}
           >

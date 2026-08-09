@@ -3,7 +3,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
-import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -29,6 +28,21 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     // Disable hoisting of static imports for better caching
     assetsInlineLimit: 4096, // 4KB - inline small assets as base64
+    modulePreload: {
+      // By default Vite's preload-list resolution treats every manualChunks
+      // vendor bundle that shares ANY transitive edge with the entry graph
+      // as eagerly preloadable, which pulls the recharts (vendor-charts)
+      // and jsPDF (vendor-pdf) bundles — ~270KB gzip combined — into the
+      // <link rel="modulepreload"> list on every single page load, even
+      // though both are only ever imported from routes behind React.lazy()
+      // (Reports/Dashboard/billing PDF export, etc.) and are explicitly
+      // chunked separately for that reason (see manualChunks below).
+      // Strip them from the eagerly-injected list; they still get their
+      // own on-demand preload the moment the lazy route that needs them
+      // is actually navigated to.
+      resolveDependencies: (_filename, deps) =>
+        deps.filter((dep) => !/vendor-(charts|pdf)-/.test(dep)),
+    },
     rollupOptions: {
       output: {
         // Consistent chunk naming for better caching

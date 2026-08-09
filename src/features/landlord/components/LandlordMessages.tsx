@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Send, Plus, MessageSquare, Loader2 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 interface Props {
   properties: Array<{ id: string; name: string; manager_name: string | null; manager_id?: string | null }>;
@@ -148,8 +149,11 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
             return (
               <div
                 key={thread.id}
+                role="button"
+                tabIndex={0}
                 className={`p-3 border-b border-border cursor-pointer hover:bg-muted/40 transition-colors ${selectedThread === thread.id ? 'bg-amber-400/6 border-l-2 border-l-primary' : ''}`}
                 onClick={() => setSelectedThread(thread.id)}
+                onKeyDown={onActivateKey(() => setSelectedThread(thread.id))}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -213,6 +217,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                 />
                 <Button
                   size="icon"
+                  aria-label="Send message"
                   className="self-end h-9 w-9"
                   disabled={!replyText.trim() || send.isPending}
                   onClick={() => send.mutate({ isNew: false, parentId: selectedThread })}

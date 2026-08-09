@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { onActivateKey } from "@/shared/lib/a11y";
 
 interface TenantNotification {
   id: string;
@@ -153,7 +154,10 @@ const TenantNotificationBell: React.FC = () => {
                 <div
                   key={n.id}
                   className={`flex items-start gap-3 px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-[hsl(214_73%_48%/0.06)] dark:bg-[hsl(214_73%_30%/0.15)]' : ''}`}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleClick(n)}
+                  onKeyDown={onActivateKey(() => handleClick(n))}
                 >
                   <div className={`h-8 w-8 rounded-full ${config.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                     <Icon className={`h-4 w-4 ${config.color}`} />

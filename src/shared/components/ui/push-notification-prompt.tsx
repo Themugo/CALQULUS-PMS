@@ -93,6 +93,7 @@ export const PushNotificationPrompt = () => {
           <Button
             size="icon"
             variant="ghost"
+            aria-label="Dismiss"
             className="h-6 w-6 -mt-1 -mr-1 text-muted-foreground hover:text-foreground"
             onClick={handleDismiss}
           >

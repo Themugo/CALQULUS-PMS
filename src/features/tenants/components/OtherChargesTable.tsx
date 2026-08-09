@@ -95,6 +95,7 @@ export const OtherChargesTable: React.FC<OtherChargesTableProps> = ({
                         type="button"
                         variant="ghost"
                         size="icon"
+                        aria-label="Remove charge"
                         onClick={() => removeItem(index)}
                         className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
