@@ -115,14 +115,20 @@ export function ProductionDiagnostics() {
     const networkCheck = { ...results[3] };
     const networkStart = performance.now();
     try {
-      await fetch('https://aelzsqxllkypbzslxyju.supabase.co/rest/v1/', {
-        method: 'HEAD',
-        mode: 'no-cors',
-      });
-      networkCheck.status = 'pass';
-      networkCheck.duration = Math.round(performance.now() - networkStart);
-      networkCheck.message = `${networkCheck.duration}ms`;
-      logger.info('Network latency check', { duration: networkCheck.duration });
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!supabaseUrl) {
+        networkCheck.status = 'warn';
+        networkCheck.message = 'Supabase URL not configured';
+      } else {
+        await fetch(`${supabaseUrl}/rest/v1/`, {
+          method: 'HEAD',
+          mode: 'no-cors',
+        });
+        networkCheck.status = 'pass';
+        networkCheck.duration = Math.round(performance.now() - networkStart);
+        networkCheck.message = `${networkCheck.duration}ms`;
+        logger.info('Network latency check', { duration: networkCheck.duration });
+      }
     } catch {
       networkCheck.status = 'warn';
       networkCheck.duration = Math.round(performance.now() - networkStart);

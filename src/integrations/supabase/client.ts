@@ -2,7 +2,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const DEFAULT_SUPABASE_URL = "https://aelzsqxllkypbzslxyju.supabase.co";
+// Use a placeholder default so the app boots in preview mode when env vars
+// are absent. The real project URL must come from VITE_SUPABASE_URL — never
+// commit it here (the production audit forbids hardcoded Supabase URLs).
+const DEFAULT_SUPABASE_URL = "https://your-project.supabase.co";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 

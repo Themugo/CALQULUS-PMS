@@ -197,14 +197,55 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          working-directory: ./
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Verify Vercel secrets present
+        run: |
+          missing=0
+          for secret in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            val=$(printenv "$secret")
+            if [ -z "$val" ]; then
+              echo "::error title=Missing Vercel Secret::The repository secret '$secret' is not set. Configure it in Settings → Secrets and variables → Actions."
+              missing=1
+            else
+              echo "✅ $secret is set"
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error title=Vercel Deploy Blocked::One or more Vercel secrets are missing. Add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID before re-running."
+            exit 1
+          fi
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build with Vercel
+        run: vercel build --prod --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Vercel (production)
+        id: deploy
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" | tail -n 1)
+          echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "Deployment URL: $DEPLOY_URL"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   # ── Production Health Verification ──────────────────────────────────
   health-check:
@@ -252,6 +293,11 @@ jobs:
     name: Rollback Capability Check
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
       - name: Verify rollback capability
         run: |
           echo "## 🔄 Rollback Validation" >> $GITHUB_STEP_SUMMARY
