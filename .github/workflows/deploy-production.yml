@@ -209,7 +209,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: production
-      url: https://app.calqulusrms.com
+      url: ${{ steps.deploy.outputs.DEPLOY_URL || 'https://app.calqulusrms.com' }}
+    outputs:
+      DEPLOY_URL: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -243,6 +245,19 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
+      - name: Link project (non-interactive)
+        run: |
+          mkdir -p .vercel
+          if [ -n "$VERCEL_ORG_ID" ]; then
+            echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" > .vercel/project.json
+            echo "✅ Wrote .vercel/project.json from VERCEL_ORG_ID/VERCEL_PROJECT_ID secrets"
+          else
+            echo "No VERCEL_ORG_ID — assuming project is already linked via .vercel/project.json"
+          fi
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Pull Vercel environment
         run: vercel pull --yes --token "$VERCEL_TOKEN"
         env:
@@ -251,7 +266,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build with Vercel
-        run: vercel build --prod --token "$VERCEL_TOKEN"
+        run: vercel build --prod --yes --token "$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -260,7 +275,17 @@ jobs:
       - name: Deploy to Vercel (production)
         id: deploy
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" | tail -n 1)
+          set -o pipefail
+          # Capture full output, extract the production deployment URL robustly.
+          # `vercel deploy` prints the URL to stdout as the final line; grep for
+          # an https URL to avoid picking up trailing confirmation/banner text.
+          OUTPUT=$(vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN")
+          echo "$OUTPUT"
+          DEPLOY_URL=$(echo "$OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "::error title=Vercel Deploy::Could not parse deployment URL from vercel output"
+            exit 1
+          fi
           echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_OUTPUT
           echo "Deployment URL: $DEPLOY_URL"
         env:
@@ -283,15 +308,25 @@ jobs:
       - name: Health Check
         id: health
         run: |
-          URL="${{ needs.deploy-vercel.outputs.url || 'https://app.calqulusrms.com' }}"
-          
-          # Check main endpoint
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" --max-time 30)
-          
+          URL="${{ needs.deploy-vercel.outputs.DEPLOY_URL || 'https://app.calqulusrms.com' }}"
+          echo "Checking $URL"
+
+          # Retry for up to ~90s; a fresh production deployment can take a
+          # moment before it responds with 200.
+          HTTP_CODE="000"
+          for i in $(seq 1 6); do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" --max-time 30 || echo "000")
+            if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "304" ]; then
+              break
+            fi
+            echo "Attempt $i: HTTP $HTTP_CODE, retrying in 15s..."
+            sleep 15
+          done
+
           if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "304" ]; then
             echo "✅ Health check passed (HTTP $HTTP_CODE)"
           else
-            echo "::error title=Health Check Failed::HTTP $HTTP_CODE"
+            echo "::error title=Health Check Failed::HTTP $HTTP_CODE for $URL"
             exit 1
           fi
 
