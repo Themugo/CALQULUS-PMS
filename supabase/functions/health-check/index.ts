@@ -6,6 +6,7 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { requireEnv, getEnv } from '../_shared/env.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -54,7 +55,7 @@ serve(async (req: Request) => {
   const health: HealthStatus = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: Deno.env.get('APP_VERSION') || '1.0.0',
+    version: getEnv('APP_VERSION', '1.0.0'),
     uptime: Math.floor((Date.now() - startTime) / 1000),
     checks: {
       database: { status: 'healthy' },
@@ -66,8 +67,8 @@ serve(async (req: Request) => {
 
   // Check Supabase connection
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = requireEnv('SUPABASE_URL');
+    const supabaseKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
     
     const dbStart = Date.now();
     const dbResponse = await fetch(`${supabaseUrl}/rest/v1/`, {
@@ -92,8 +93,8 @@ serve(async (req: Request) => {
 
   // Check Auth
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = requireEnv('SUPABASE_URL');
+    const supabaseKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
     
     const authStart = Date.now();
     const authResponse = await fetch(`${supabaseUrl}/auth/v1/health`, {
@@ -117,8 +118,8 @@ serve(async (req: Request) => {
 
   // Check Storage
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = requireEnv('SUPABASE_URL');
+    const supabaseKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
     
     const storageStart = Date.now();
     const storageResponse = await fetch(`${supabaseUrl}/storage/v1/health`, {
@@ -158,8 +159,8 @@ serve(async (req: Request) => {
   if (includeMetrics) {
     try {
       // Query activity logs for metrics
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabaseUrl = requireEnv('SUPABASE_URL');
+      const supabaseKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
       
       const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
       
