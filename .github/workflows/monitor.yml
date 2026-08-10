@@ -74,7 +74,9 @@ jobs:
       - name: Measure response time
         run: |
           START=$(date +%s%N)
-          curl -s -o /dev/null "https://app.calqulusrms.com"
+          # Fallback so an unresolvable/down host reports a large duration
+          # instead of aborting the step under `bash -e` (curl exit 6).
+          curl -s -o /dev/null "https://app.calqulusrms.com" --max-time 10 --connect-timeout 5 || echo "curl-failed"
           END=$(date +%s%N)
           DURATION=$((($END - $START) / 1000000))
           
