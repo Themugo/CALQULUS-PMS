@@ -14,7 +14,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 
 ## Build & Verify
 - `npm run build` â€” production build (Vite/Rolldown)
-- `npm run dev` â€” dev server at `http://localhost:5173`
+- `npm run dev` â€” dev server at `http://localhost:3000` (vite.config.ts server.port overrides Vite's 5173 default)
 - `npx tsc --noEmit` â€” TypeScript check
 - `npx eslint src` â€” ESLint
 - `npx vitest run` â€” 125 unit tests (12 files)
@@ -407,11 +407,18 @@ Tier 3: Tenants
 - Once secrets are set, re-run the failed deploy job: `gh run rerun <RUN_ID> --repo Themugo/CALQULUS-PMS --failed`.
 
 ## CI/CD Audit (2026-08-10)
-- All GitHub Actions workflows now pass on `main` except the Vercel deploy (blocked only on the 3 repo secrets above).
+- **The app IS deploying successfully via Vercel's NATIVE GitHub integration.** Every push to `main` triggers a `vercel[bot]` "Production" deployment (GitHub Deployments API, creator=`vercel[bot]`) that completes. The GitHub Actions `deploy-production.yml` `deploy-vercel` job is **redundant** with the native integration and is the source of the "Vercel deploy failure" the user saw (it fails on missing `VERCEL_TOKEN`/`VERCEL_ORG_ID`/`VERCEL_PROJECT_ID` secrets, while native Vercel still deploys fine). Architectural decision needed: keep the Actions deploy (adds health-check/E2E/rollback + a `environment: production` approval gate) OR drop it and rely on native Vercel (simpler, no secrets needed).
+- Deployments are behind **Vercel Deployment Protection** (Vercel Authentication): both preview and production `*.vercel.app` URLs 302→`vercel.com/sso-api` when curled without a bypass secret. Set a Protection Bypass secret (Vercel → Settings → Deployment Protection) for automated/CI access, or disable protection for production.
+- The custom domain **`app.calqulusrms.com` does NOT resolve** (no DNS configured in Vercel/Namecheap). The `monitor.yml` Deployment Monitor curls this domain and gets DNS-failure (PR #8 made that resilient). To make it live: add the custom domain in Vercel → Settings → Domains and point DNS (CNAME) to `cname.vercel-dns.com`.
 - `deploy-production.yml` Performance Audit (Lighthouse) job previously failed with `CHROME_INTERSTITIAL_ERROR` because it ran `npm run preview` without building first; now builds with placeholder Supabase env + readiness poll before Lighthouse.
-- `monitor.yml` Deployment Monitor: all 7 jobs pass. `Performance Monitoring` and `Uptime Check` curl calls now have `--max-time`/`--connect-timeout` + `|| echo` fallbacks so an unresolvable `app.calqulusrms.com` (not deployed yet) warns instead of aborting. `Rollback Health` has `actions/checkout` (was `fatal: not a git repository`).
+- `monitor.yml` Deployment Monitor: all 7 jobs pass. `Performance Monitoring` and `Uptime Check` curl calls now have `--max-time`/`--connect-timeout` + `|| echo` fallbacks so an unresolvable `app.calqulusrms.com` warns instead of aborting. `Rollback Health` has `actions/checkout` (was `fatal: not a git repository`).
+- `dependabot-auto-merge.yml` `check-missed-prs` job had `if: github.event_name == 'schedule'` but no schedule trigger → always skipped. Added daily `schedule: 0 6 * * *` (PR #10) so the fallback actually runs.
 - Local `npm run verify` (lint + typecheck + 578 tests + build + audit + audit:prod) passes end-to-end.
-- `.vercel/project.json` is intentionally NOT committed (linked at deploy time from secrets).
+- `.vercel/project.json` is intentionally NOT committed (linked at deploy time from secrets OR by native integration).
+- **Dev server port is 3000** (vite.config.ts `server.port: 3000` overrides Vite's 5173 default). `playwright.config.ts` webServer correctly uses 3000. The earlier "5173" note elsewhere is stale.
+- `.env.example` was AI Studio/Cloud Run boilerplate (`GEMINI_API_KEY`, `APP_URL`); replaced with accurate Vercel+Supabase template (PR #11).
+- App runtime is hardened: `client.ts` has placeholder detection + full Supabase noop-proxy fallback; `App.tsx` wraps in `ErrorBoundary`+`Suspense`; all 63 lazy-loaded routes resolve to real files; prod `dist/index.html` asset refs all exist. No white-screen risk with missing env.
+- CSP/COEP headers in `vercel.json` don't break anything currently used (Google Fonts/GA are only preconnect/dns-prefetch hints, not actually loaded; Sentry is npm-imported in-page).
 
 ## Sentry
 - DSN in `.env.local` (gitignored)
