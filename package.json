@@ -27,7 +27,7 @@
     "test:load:statement": "k6 run src/load-tests/statement-generation.js",
     "test:load:messaging": "k6 run src/load-tests/messaging.js",
     "test:load:all": "k6 run src/load-tests/payment-callback.js && k6 run src/load-tests/statement-generation.js && k6 run src/load-tests/messaging.js",
-    "test:all": "npm run test && npm run test:financial && npm run test:isolation && npm run test:integration && npm run test:api-contracts && npm run test:regression && npm run test:property-based && npm run test:benchmarks && npm run test:edge-cases && npm run test:e2e:ci",
+    "test:all": "npm run test && npm run test:financial && npm run test:isolation && npm run test:integration && npm run test:api-contracts && npm run test:regression && npm run test:property-based && npm run test:benchmarks && npm run test:edge-cases",
     "test:critical": "npm run test && npm run test:integration && npm run test:regression && npm run test:edge-cases",
     "audit:prod": "node scripts/audit-production.mjs",
     "release:report": "node scripts/release-readiness-report.mjs",

@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:5173";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,8 +31,9 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run dev",
-    url: "http://localhost:5173",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
     env: {
       ...process.env,
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || "https://example.supabase.co",

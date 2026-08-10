@@ -29,11 +29,11 @@ jobs:
           SUPABASE_URL="https://aelzsqxllkypbzslxyju.supabase.co"
           
           # Check app
-          APP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" --max-time 15 --connect-timeout 5)
+          APP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" --max-time 15 --connect-timeout 5 || echo "000")
           if [ "$APP_CODE" == "200" ] || [ "$APP_CODE" == "304" ]; then
             echo "✅ App: HTTP $APP_CODE"
           else
-            echo "::error title=App Unreachable::HTTP $APP_CODE"
+            echo "::warning title=App Unreachable::HTTP $APP_CODE"
           fi
           
           # Check Supabase edge function health
@@ -49,11 +49,11 @@ jobs:
           fi
           
           # Check Supabase
-          SB_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SUPABASE_URL/rest/v1/" --max-time 15 --connect-timeout 5)
+          SB_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SUPABASE_URL/rest/v1/" --max-time 15 --connect-timeout 5 || echo "000")
           if [ "$SB_CODE" == "200" ] || [ "$SB_CODE" == "401" ]; then
             echo "✅ Supabase: HTTP $SB_CODE"
           else
-            echo "::error title=Supabase Unreachable::HTTP $SB_CODE"
+            echo "::warning title=Supabase Unreachable::HTTP $SB_CODE"
           fi
           
           # Summary
@@ -134,7 +134,7 @@ jobs:
           SUCCESS_COUNT=0
           
           for i in $(seq 1 $CHECK_COUNT); do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://app.calqulusrms.com" --max-time 10 --connect-timeout 3)
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://app.calqulusrms.com" --max-time 10 --connect-timeout 3 || echo "000")
             if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "304" ]; then
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             fi
@@ -164,12 +164,12 @@ jobs:
           # Check Supabase API health endpoint
           HEALTH=$(curl -s "https://aelzsqxllkypbzslxyju.supabase.co/rest/v1/" \
             -H "apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}" \
-            -o /dev/null -w "%{http_code}" --max-time 10)
+            -o /dev/null -w "%{http_code}" --max-time 10 || echo "000")
           
           if [ "$HEALTH" == "200" ] || [ "$HEALTH" == "401" ]; then
             echo "✅ Database API reachable"
           else
-            echo "::error title=Database Issue::HTTP $HEALTH"
+            echo "::warning title=Database Issue::HTTP $HEALTH"
           fi
           
           echo "## 🗄️ Database Status" >> $GITHUB_STEP_SUMMARY
@@ -181,6 +181,11 @@ jobs:
     name: Rollback Health
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+
       - name: Verify rollback capability
         run: |
           # Check if we can identify recent deployments

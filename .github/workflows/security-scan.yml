@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run GitLeaks
-        uses: goreleaser/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v2
         with:
           config-path: .gitleaks.toml
         env:
