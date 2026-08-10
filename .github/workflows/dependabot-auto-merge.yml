@@ -7,6 +7,10 @@ on:
       - synchronize
       - reopened
       - ready_for_review
+  schedule:
+    # Daily fallback to enable auto-merge on any Dependabot PRs that were
+    # opened before this workflow existed or missed the pull_request events.
+    - cron: "0 6 * * *"
 
 permissions:
   contents: write
