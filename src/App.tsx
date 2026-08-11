@@ -162,6 +162,7 @@ const RoleRoutes = ({ role, allowedRoles, wrapper }: {
 // ── Main route dispatcher ───────────────────────────────────────────
 const AppRoutes = () => {
   const { user, loading, userRole, devAccessEnabled } = useAuth();
+  const location = useLocation();
   const isAdminDomain = window.location.hostname.startsWith("admin.");
   const recoveryHash =
     window.location.hash.includes("type=recovery") ||
@@ -177,6 +178,21 @@ const AppRoutes = () => {
   }
 
   if (loading) return <PageLoader />;
+
+  // Open-access dev mode: route by URL path so every portal renders
+  // directly with no login wall. The auto-login and account switcher
+  // still provide a real session (for data); the path just decides
+  // which portal's routes are shown.
+  if (devAccessEnabled) {
+    const path = location.pathname;
+    const devRole =
+      path.startsWith("/webhost") ? "webhost" :
+      path.startsWith("/agency") ? "agency" :
+      path.startsWith("/portal") ? "tenant" :
+      path.startsWith("/landlord") ? "landlord" :
+      "manager";
+    return <RoleRoutes role={devRole} allowedRoles={[devRole as AppRole]} />;
+  }
 
   // User logged in but role not yet resolved
   if (user && !userRole) {
@@ -225,11 +241,6 @@ const AppRoutes = () => {
 
   // Not logged in
   if (!user) {
-    // Open-access dev mode: never show a login wall — land in the manager
-    // portal so the DevPortalSwitcher can hop to any other account.
-    if (devAccessEnabled) {
-      return <RoleRoutes role="manager" allowedRoles={["manager"]} />;
-    }
     const routes = isAdminDomain ? adminDomainRoutes : publicRoutes;
     return <Routes>{routes.map(r => renderRoute(r))}</Routes>;
   }
