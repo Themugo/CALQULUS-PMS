@@ -7,14 +7,13 @@ import { Label } from '@/shared/components/ui/label';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
-  Eye, EyeOff, User, Building, Home,
+  Eye, EyeOff, User,
   Shield, Building2, Users, CreditCard, BarChart3, Lock,
-  ChevronRight, Zap, Handshake,
+  ChevronRight,
 } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
-import { supabase } from '@/integrations/supabase/client';
 import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { ensureSignedInRole } from '@/features/auth/lib/authFlow';
 
@@ -63,27 +62,6 @@ const LandlordAuth = () => {
       else navigate('/properties');
     }
   }, [user, loading, userRole, navigate]);
-
-  const handleQuickBypass = async (email: string, pass: string, targetPath: string) => {
-    setIsSubmitting(true);
-    try {
-      if (user) {
-        await supabase.auth.signOut();
-      }
-      const { error } = await signIn(email, pass);
-      if (error) {
-        toast({ title: 'Quick login failed', description: error.message, variant: 'destructive' });
-      } else {
-        toast({ title: 'Logged in successfully', description: `Redirecting to ${targetPath}` });
-        navigate(targetPath);
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Login error';
-      toast({ title: 'Error', description: msg, variant: 'destructive' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleBiometricLogin = async () => {
     setIsBiometricLoggingIn(true);
@@ -255,67 +233,6 @@ const LandlordAuth = () => {
                 </div>
               </div>
             )}
-
-            {/* 1-Click Dev Bypass */}
-            <div className="mb-6 p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/35 shadow-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Zap className="h-3.5 w-3.5 text-amber-400 animate-pulse" /> 1-Click Dev Bypass
-                </span>
-                <span className="text-[10px] text-white/60 font-medium">Skip Login</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                <button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={() => handleQuickBypass('jimmythemugo@gmail.com', 'CALQULUS RMS@2026!', '/')}
-                  className="flex items-center gap-1.5 p-2 rounded-lg bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-300 text-xs font-bold transition-all text-left"
-                >
-                  <Building2 className="h-3.5 w-3.5 flex-shrink-0 text-blue-400" />
-                  <span className="truncate">Manager</span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={() => handleQuickBypass('mugo.james27@gmail.com', 'CALQULUS RMS@2026!', '/webhost')}
-                  className="flex items-center gap-1.5 p-2 rounded-lg bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-300 text-xs font-bold transition-all text-left"
-                >
-                  <Shield className="h-3.5 w-3.5 flex-shrink-0 text-amber-400" />
-                  <span className="truncate">Webhost</span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={() => handleQuickBypass('kamauwamakena@gmail.com', 'CALQULUS RMS@2026!', '/portal')}
-                  className="flex items-center gap-1.5 p-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500/25 text-emerald-300 text-xs font-bold transition-all text-left"
-                >
-                  <User className="h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
-                  <span className="truncate">Tenant</span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={() => handleQuickBypass('demo.manager@calqulusrms.com', 'Demo@2026', '/agency')}
-                  className="flex items-center gap-1.5 p-2 rounded-lg bg-purple-500/15 border border-purple-500/30 hover:bg-purple-500/25 text-purple-300 text-xs font-bold transition-all text-left"
-                >
-                  <Handshake className="h-3.5 w-3.5 flex-shrink-0 text-purple-400" />
-                  <span className="truncate">Agency</span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={() => handleQuickBypass('demo.landlord@calqulusrms.com', 'Demo@2026', '/landlord/dashboard')}
-                  className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-500/15 border border-rose-500/30 hover:bg-rose-500/25 text-rose-300 text-xs font-bold transition-all text-left"
-                >
-                  <Home className="h-3.5 w-3.5 flex-shrink-0 text-rose-400" />
-                  <span className="truncate">Landlord</span>
-                </button>
-              </div>
-            </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
