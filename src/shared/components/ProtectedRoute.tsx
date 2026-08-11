@@ -46,7 +46,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const currentPath = window.location.pathname;
 
   const safeRedirect = (target: string) => {
-    if (currentPath === target) return null;
+    const normCurrent = currentPath.replace(/\/$/, '') || '/';
+    const normTarget = target.replace(/\/$/, '') || '/';
+    if (normCurrent === normTarget) {
+      return null;
+    }
     return <Navigate to={target} replace />;
   };
 

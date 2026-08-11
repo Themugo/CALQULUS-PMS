@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 /** Full-screen branded loading state shown while auth state is resolving. */
 export function AuthLoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center hero-gradient">
+    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white hero-gradient">
       <div className="flex flex-col items-center gap-4">
         <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
         <div className="flex gap-1.5">
@@ -54,9 +54,9 @@ export function AuthGridOverlay() {
 export function AuthLegalFooterLinks() {
   return (
     <div className="flex justify-center gap-4 mt-4">
-      <Link to="/legal?tab=privacy" className="text-xs text-white/20 hover:text-white/50 transition-colors">Privacy</Link>
-      <span className="text-white/20 text-xs">·</span>
-      <Link to="/legal?tab=terms" className="text-xs text-white/20 hover:text-white/50 transition-colors">Terms</Link>
+      <Link to="/legal?tab=privacy" className="text-xs text-white/60 hover:text-white transition-colors font-medium">Privacy</Link>
+      <span className="text-white/40 text-xs">·</span>
+      <Link to="/legal?tab=terms" className="text-xs text-white/60 hover:text-white transition-colors font-medium">Terms</Link>
     </div>
   );
 }
@@ -65,13 +65,13 @@ export function AuthLegalFooterLinks() {
 export function OtherPortalsGrid({ portals }: { portals: { label: string; href: string }[] }) {
   return (
     <div className="mt-5 pt-5 border-t border-white/10">
-      <p className="text-white/30 text-[11px] text-center mb-3">Other portals</p>
+      <p className="text-white/60 text-[11px] text-center font-medium mb-3">Other portals</p>
       <div className="grid grid-cols-3 gap-2">
         {portals.map((p) => (
           <Link
             key={p.href}
             to={p.href}
-            className="flex items-center justify-center py-2 px-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/8 hover:border-amber-400/20 transition-all text-white/40 hover:text-white/70 text-xs font-medium"
+            className="flex items-center justify-center py-2 px-2 rounded-lg border border-white/15 bg-white/8 hover:bg-white/15 hover:border-amber-400/40 transition-all text-white/80 hover:text-white text-xs font-semibold"
           >
             {p.label}
           </Link>

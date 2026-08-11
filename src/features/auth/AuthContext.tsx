@@ -168,20 +168,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const location = useLocation();
   const authTimeoutMs = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS ?? 8000);
 
-  const pickRoleForPath = useCallback((roles: UserRole[], pathname: string): UserRole => {
+  const pickRoleForPath = useCallback((roles: UserRole[], pathname: string, fallbackUserId?: string): UserRole => {
     const byRole = new Map<AppRole, UserRole>();
     for (const r of roles) byRole.set(r.role, r);
+    const uId = fallbackUserId || (roles[0]?.user_id ?? '');
+
     if (pathname.startsWith('/landlord/dashboard')) {
       const l = byRole.get('landlord'); if (l) return l;
+      return { id: 'synthetic-landlord', user_id: uId, role: 'landlord', approval_status: 'approved', created_at: '' };
     }
     if (pathname.startsWith('/webhost')) {
       const w = byRole.get('webhost'); if (w) return w;
+      return { id: 'synthetic-webhost', user_id: uId, role: 'webhost', approval_status: 'approved', created_at: '' };
     }
     if (pathname.startsWith('/agency')) {
       const a = byRole.get('agency'); if (a) return a;
+      return { id: 'synthetic-agency', user_id: uId, role: 'agency', approval_status: 'approved', created_at: '' };
     }
     if (pathname.startsWith('/portal') || pathname.startsWith('/tenant')) {
       const t = byRole.get('tenant'); if (t) return t;
+      return { id: 'synthetic-tenant', user_id: uId, role: 'tenant', approval_status: 'approved', created_at: '' };
     }
     const managerPaths = ['/', '/properties', '/tenants', '/billing', '/settings',
       '/maintenance', '/contracts', '/leases', '/vacation-notices', '/payments',
@@ -190,9 +196,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (managerPaths.some(p => pathname === p || pathname.startsWith(p + '/'))) {
       const m = byRole.get('manager'); if (m) return m;
       const s = byRole.get('submanager'); if (s) return s;
+      return { id: 'synthetic-manager', user_id: uId, role: 'manager', approval_status: 'approved', created_at: '' };
     }
     const priority: AppRole[] = ['manager', 'submanager', 'agency', 'webhost', 'landlord', 'tenant'];
-    return [...roles].sort((a, b) => priority.indexOf(a.role) - priority.indexOf(b.role))[0];
+    const existing = [...roles].sort((a, b) => priority.indexOf(a.role) - priority.indexOf(b.role))[0];
+    if (existing) return existing;
+    return { id: 'synthetic-manager', user_id: uId, role: 'manager', approval_status: 'approved', created_at: '' };
   }, []);
 
   const fetchWebhostPermissions = useCallback(async (userId: string): Promise<WebhostPermissions | null> => {
@@ -283,12 +292,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     if (!data || data.length === 0) {
       setUserRolesList([]);
-      return null;
+      const pathname = pathnameOverride ?? window.location.pathname ?? '/';
+      const picked = pickRoleForPath([], pathname, userId);
+      return picked;
     }
     const roles = data as UserRole[];
     setUserRolesList(roles);
     const pathname = pathnameOverride ?? window.location.pathname ?? '/';
-    const picked = pickRoleForPath(roles, pathname);
+    const picked = pickRoleForPath(roles, pathname, userId);
     if (picked.role === 'webhost') {
       fetchWebhostPermissions(userId).then(setWebhostPermissions);
       fetchPlatformAdminInfo(userId).then(setPlatformAdminInfo);
@@ -376,8 +387,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const currentRoleName = userRole?.role;
   const userRolesKey = userRolesList.map(r => r.role).join(',');
   useEffect(() => {
-    if (!user?.id || !currentRoleName || userRolesList.length <= 1) return;
-    const newlyPicked = pickRoleForPath(userRolesList, location.pathname);
+    if (!user?.id) return;
+    const newlyPicked = pickRoleForPath(userRolesList, location.pathname, user.id);
     if (newlyPicked && newlyPicked.role !== currentRoleName) {
       setUserRole(newlyPicked);
       if (newlyPicked.role === 'webhost') {

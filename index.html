@@ -67,8 +67,8 @@
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-      /* Hide loading state once React mounts */
-      #root:has(> *) .initial-loader {
+      /* Hide loading state once React mounts actual content */
+      #root:has(> :not(.initial-loader)) .initial-loader {
         display: none;
       }
     </style>

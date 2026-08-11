@@ -163,14 +163,14 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center auth-gradient">
+      <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white auth-gradient">
         <div className="animate-spin rounded-full h-10 w-10 border-2 border-white/30 border-t-white" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center auth-gradient relative overflow-hidden px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white auth-gradient relative overflow-hidden px-4">
       {/* Decorative elements */}
       <div className="absolute inset-0 noise-overlay" />
       <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl" />

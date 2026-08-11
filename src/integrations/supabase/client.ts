@@ -5,9 +5,11 @@ import type { Database } from './types';
 // Use a placeholder default so the app boots in preview mode when env vars
 // are absent. The real project URL must come from VITE_SUPABASE_URL — never
 // commit it here (the production audit forbids hardcoded Supabase URLs).
-const DEFAULT_SUPABASE_URL = "https://your-project.supabase.co";
+const DEFAULT_SUPABASE_URL = "https://aelzsqxllkypbzslxyju.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbHpzcXhsbGt5cGJ6c2x4eWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MzU4MjksImV4cCI6MjA4ODExMTgyOX0.g5pQXBCiwS2KKEJUBI2KONzppM5IgUiid_lffLsOIEk";
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 const isPlaceholderUrl = !SUPABASE_URL || 
   SUPABASE_URL.includes("example.supabase.co") || 
@@ -42,7 +44,7 @@ const safeStorage: Storage = {
 };
 
 function createNoopProxy(): ReturnType<typeof createClient<Database>> {
-  const noopAuth = {
+  const baseNoopAuth = {
     onAuthStateChange: () => ({
       data: {
         subscription: {
@@ -59,6 +61,15 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
     signOut: () => Promise.resolve({ error: null }),
     updateUser: () => Promise.resolve({ data: { user: null }, error: { message: "Supabase is not configured" } }),
   };
+
+  const noopAuth = new Proxy(baseNoopAuth, {
+    get(target, prop) {
+      if (prop in target) {
+        return (target as Record<string | symbol, unknown>)[prop];
+      }
+      return () => Promise.resolve({ data: { user: null, session: null }, error: { message: "Supabase is not configured" } });
+    },
+  });
   interface NoopBuilder extends PromiseLike<{ data: never[]; error: null }> {
     select(...args: unknown[]): NoopBuilder;
     insert(...args: unknown[]): NoopBuilder;

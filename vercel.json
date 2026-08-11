@@ -4,7 +4,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|fonts/|.*\\..*).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -60,7 +60,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' blob: https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live; img-src 'self' data: blob: https:; font-src 'self' data: https://vercel.live https://assets.vercel.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://*.sentry-key.com https://vercel.live wss://ws-us3.pusher.com; frame-src https://vercel.live; frame-ancestors 'self' https://vercel.com https://*.vercel.app; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live; img-src 'self' data: blob: https:; font-src 'self' data: https://vercel.live https://assets.vercel.com; connect-src 'self' https: wss:; worker-src 'self' blob:; frame-src 'self' https://vercel.live; frame-ancestors 'self' https://vercel.com https://*.vercel.app; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
         },
         {
           "key": "X-Download-Options",
@@ -71,21 +71,14 @@
           "value": "none"
         },
         {
-          "key": "Cross-Origin-Embedder-Policy",
-          "value": "credentialless"
-        },
-        {
           "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
+          "value": "same-origin-allow-popups"
         },
         {
           "key": "Cross-Origin-Resource-Policy",
-          "value": "same-origin"
+          "value": "cross-origin"
         }
       ]
     }
-  ],
-  "env": {
-    "NODE_VERSION": "22"
-  }
+  ]
 }

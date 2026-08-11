@@ -22,6 +22,7 @@ import {
   fallbackRoutes,
   type RouteDef,
 } from "@/app/routes";
+import { DevPortalSwitcher } from "@/shared/components/DevPortalSwitcher";
 import { STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
 
 // Optimized QueryClient with better caching
@@ -257,6 +258,7 @@ const App = () => (
             {/* Route prefetcher for optimized data loading */}
             <RoutePrefetcher />
             <AppRoutes />
+            <DevPortalSwitcher />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

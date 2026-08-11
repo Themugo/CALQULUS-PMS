@@ -21,7 +21,8 @@ interface ExpiringLease {
   end_date: string;
   property: string;
   unit: string | null;
-  tenants: { name: string } | null;
+  tenant_name?: string | null;
+  tenants?: { name: string } | null;
 }
 
 function getWindow(daysLeft: number): 30 | 60 | 90 | null {
@@ -36,7 +37,7 @@ function buildNotification(
   daysLeft: number,
   userId: string,
 ) {
-  const tenantName = lease.tenants?.name ?? "Tenant";
+  const tenantName = lease.tenant_name ?? lease.tenants?.name ?? "Tenant";
   const unitLabel = lease.unit ? `, Unit ${lease.unit}` : "";
   const endFormatted = format(new Date(lease.end_date), "dd MMM yyyy");
   const body = `${tenantName} · ${lease.property}${unitLabel} · expires ${endFormatted}`;
@@ -79,7 +80,7 @@ async function runExpiryCheck(userId: string, managerId: string) {
   const todayStr = format(today, "yyyy-MM-dd");
   const maxDate = format(addDays(today, MAX_DAYS), "yyyy-MM-dd");
 
-  // 1. Fetch active leases expiring within the window
+  // 1. Fetch active leases expiring within the window (using scalar columns to avoid RLS recursion)
   const { data: leases, error: leasesErr } = await supabase
     .from("leases")
     .select(`
@@ -87,7 +88,7 @@ async function runExpiryCheck(userId: string, managerId: string) {
       end_date,
       property,
       unit,
-      tenants ( name )
+      tenant_name
     `)
     .eq("manager_id", managerId)
     .eq("status", "active")

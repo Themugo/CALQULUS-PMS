@@ -52,7 +52,7 @@ const LandlordPortalAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex hero-gradient">
+    <div className="min-h-screen flex bg-[#0A1628] text-white hero-gradient">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         <AuthGridOverlay />

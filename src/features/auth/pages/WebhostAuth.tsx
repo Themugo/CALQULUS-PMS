@@ -66,7 +66,7 @@ const WebhostAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex hero-gradient">
+    <div className="min-h-screen flex bg-[#0A1628] text-white hero-gradient">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         <AuthGridOverlay />
@@ -76,14 +76,14 @@ const WebhostAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
+              <p className="text-[11px] text-amber-400 font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
             </div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/30 bg-red-500/10 mb-6 self-start">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/40 bg-red-500/15 mb-6 self-start">
               <Shield className="h-3.5 w-3.5 text-red-400" />
-              <span className="text-xs text-red-300 font-medium">Restricted Access — Authorized Personnel Only</span>
+              <span className="text-xs text-red-300 font-semibold">Restricted Access — Authorized Personnel Only</span>
             </div>
 
             <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
@@ -91,7 +91,7 @@ const WebhostAuth = () => {
               <br />
               <span className="text-gradient">entire platform.</span>
             </h1>
-            <p className="text-white/50 text-lg leading-relaxed max-w-md mb-12">
+            <p className="text-white/80 text-lg leading-relaxed max-w-md mb-12">
               Super-admin access for platform-wide management, billing enforcement, security, and compliance.
             </p>
 
@@ -101,14 +101,14 @@ const WebhostAuth = () => {
                   <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
                     <f.icon className="h-4 w-4 text-amber-400" />
                   </div>
-                  <p className="text-white/70 text-sm font-medium">{f.text}</p>
+                  <p className="text-white/90 text-sm font-medium">{f.text}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="pt-8 border-t border-white/10">
-            <p className="text-white/20 text-xs">calqulus.site · Internal use only</p>
+            <p className="text-white/60 text-xs">calqulus.site · Internal use only</p>
           </div>
         </div>
       </div>
@@ -120,35 +120,35 @@ const WebhostAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          <div className="rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/25 bg-amber-400/8 mb-4">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/30 bg-amber-400/10 mb-4">
                 <Globe className="h-3 w-3 text-amber-400" />
                 <span className="text-[11px] text-amber-300 font-semibold tracking-wider uppercase">Webhost Portal</span>
               </div>
               <h2 className="font-heading text-2xl font-bold text-white mb-1">Administrator login</h2>
-              <p className="text-white/50 text-sm">Authorized access only</p>
+              <p className="text-white/70 text-sm">Authorized access only</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-white/80 text-sm font-medium">Email address</Label>
+                <Label htmlFor="email" className="text-white/90 text-sm font-medium">Email address</Label>
                 <Input
                   id="email" type="email" placeholder="admin@calqulus.site"
                   value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11"
+                  className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-white/80 text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-white/90 text-sm font-medium">Password</Label>
                 <div className="relative">
                   <Input
                     id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
                     value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11 pr-11"
+                    className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11 pr-11"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>

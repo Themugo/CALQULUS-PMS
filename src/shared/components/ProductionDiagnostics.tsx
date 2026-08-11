@@ -37,19 +37,32 @@ export function ProductionDiagnostics() {
 
   // Collect session info
   useEffect(() => {
-    const { sessionId, userId } = supabase.auth.getSession().then(({ data }) => ({
-      sessionId: data.session?.access_token ? 'active' : 'none',
-      userId: data.session?.user?.id,
-    }));
+    let isMounted = true;
+    const cid = generateCorrelationId();
+    setCorrelationId(cid);
 
-    setSessionInfo({
-      sessionId: correlationId,
-      userId: undefined,
-      environment: import.meta.env.PROD ? 'production' : import.meta.env.MODE || 'development',
-      version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return;
+      setSessionInfo({
+        sessionId: cid,
+        userId: data.session?.user?.id,
+        environment: import.meta.env.PROD ? 'production' : import.meta.env.MODE || 'development',
+        version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+      });
+    }).catch(() => {
+      if (!isMounted) return;
+      setSessionInfo({
+        sessionId: cid,
+        userId: undefined,
+        environment: import.meta.env.PROD ? 'production' : import.meta.env.MODE || 'development',
+        version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+      });
     });
-    setCorrelationId(generateCorrelationId());
-  }, [correlationId]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Run diagnostics
   const runDiagnostics = useCallback(async () => {

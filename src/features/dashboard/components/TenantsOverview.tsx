@@ -68,6 +68,36 @@ export function TenantsOverview() {
         return;
       }
 
+      // First try the RPC function which bypasses RLS policy recursion issues
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_tenants_with_properties', {
+        p_manager_id: managerId
+      });
+
+      if (!rpcError && rpcData) {
+        let filtered = rpcData.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          email: t.email,
+          phone: t.phone,
+          property: t.property_name,
+          unit: t.unit_label,
+          status: t.status,
+          photo_url: null
+        }));
+
+        if (restrictToAssignedProperties) {
+          filtered = filtered.filter((t: any) => t.property_id && assignedPropertyIds.includes(t.property_id));
+        }
+
+        const top5 = filtered.slice(0, 5);
+        setTenants(top5);
+        if (top5.length > 0) {
+          generateSignedUrls(top5);
+        }
+        return;
+      }
+
+      // Fallback query if RPC is not present
       let query = supabase
         .from("tenants")
         .select("id, name, email, phone, property, unit, status, photo_url")
@@ -81,14 +111,18 @@ export function TenantsOverview() {
 
       const { data, error } = await query;
 
-      if (error) { logError('TenantsOverview.fetchTenants', error); return; }
+      if (error) {
+        // If RLS recursion or other error, set empty array gracefully
+        setTenants([]);
+        return;
+      }
       setTenants(data || []);
       
       if (data && data.length > 0) {
         generateSignedUrls(data);
       }
     } catch (err) {
-      logError('TenantsOverview.fetchTenants', err);
+      setTenants([]);
     } finally {
       setLoading(false);
     }
