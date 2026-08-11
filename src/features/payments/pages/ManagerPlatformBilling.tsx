@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
+import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { openSafely } from "@/shared/lib/safeWindow";
 import { Layout } from "@/shared/components/layout/Layout";
@@ -659,7 +660,7 @@ const ManagerPlatformBilling = () => {
     );
   }
 
-  if (!user || userRole?.role !== "manager") {
+  if (!isDevAccessEnabled() && (!user || userRole?.role !== "manager")) {
     return <Navigate to="/landlord/login" replace />;
   }
 

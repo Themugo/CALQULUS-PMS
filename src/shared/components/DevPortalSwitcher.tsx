@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -97,11 +98,20 @@ const DIRECT_LINKS = [
 ];
 
 export function DevPortalSwitcher() {
-  const [isOpen, setIsOpen] = useState(false);
+  // Auto-open once per browser session in open-access dev mode so the
+  // account options are immediately visible — closing it stores the flag.
+  const [isOpen, setIsOpen] = useState(() => {
+    if (!isDevAccessEnabled()) return false;
+    return sessionStorage.getItem('dev-switcher-seen') !== '1';
+  });
   const [switching, setSwitching] = useState(false);
   const { user, userRole, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isOpen) sessionStorage.setItem('dev-switcher-seen', '1');
+  }, [isOpen]);
 
   const handlePresetLogin = async (preset: AccountPreset) => {
     setSwitching(true);

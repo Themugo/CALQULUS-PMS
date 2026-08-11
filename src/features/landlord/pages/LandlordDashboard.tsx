@@ -4,6 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/components/ui/button';
 
@@ -238,7 +239,7 @@ const LandlordDashboard = () => {
     );
   }
 
-  if (!user || userRole?.role !== 'landlord') {
+  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'landlord')) {
     return <Navigate to="/landlord/login" replace />;
   }
 

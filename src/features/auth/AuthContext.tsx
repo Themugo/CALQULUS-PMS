@@ -6,6 +6,7 @@ import { logError, logWarning } from '@/shared/lib/errorLogger';
 import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { signupRedirectPath } from '@/features/auth/lib/authFlow';
+import { isDevAccessEnabled, getDevDefaultAccount } from '@/features/auth/lib/devAccess';
 
 export type AppRole = 'manager' | 'tenant' | 'webhost' | 'submanager' | 'landlord' | 'agency';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
@@ -85,6 +86,8 @@ export interface AuthContextType {
   submanagerPermissions: SubmanagerPermissions | null;
   /** Property IDs linked to the landlord account (owner portal) */
   landlordPropertyIds: string[];
+  /** True when open-access dev mode is active (no-login development builds) */
+  devAccessEnabled: boolean;
   hasWebhostPermission: (key: keyof WebhostPermissions) => boolean;
   canSubmanager: (key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>) => boolean;
   canWrite: (key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>) => boolean;
@@ -167,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const authTimeoutMs = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS ?? 8000);
+  const devAccessEnabled = isDevAccessEnabled();
 
   const pickRoleForPath = useCallback((roles: UserRole[], pathname: string, fallbackUserId?: string): UserRole => {
     const byRole = new Map<AppRole, UserRole>();
@@ -358,9 +362,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      const nextUser = session?.user ?? null;
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      let currentSession = session;
+      if (!currentSession?.user && devAccessEnabled) {
+        // No-login dev mode: silently sign into the default account so the
+        // app opens straight into a working portal (RLS still needs a real
+        // session for data). The DevPortalSwitcher can hop to any other account.
+        const account = getDevDefaultAccount();
+        const { data: auto, error } = await supabase.auth.signInWithPassword({
+          email: account.email,
+          password: account.password,
+        });
+        if (error) {
+          logWarning('AuthContext', `Dev auto-login failed (${error.message}) — continuing in open-access mode`);
+        } else {
+          currentSession = auto.session;
+        }
+      }
+      setSession(currentSession);
+      const nextUser = currentSession?.user ?? null;
       setUser(nextUser);
       if (nextUser && isInitialMount) {
         fetchUserRoleRef.current(nextUser.id)
@@ -379,7 +399,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => { clearTimeout(timeout); subscription.unsubscribe(); };
-  }, [authTimeoutMs]);
+  }, [authTimeoutMs, devAccessEnabled]);
 
   // Route-change role re-pick: only needed for users with multiple roles
   // (e.g. someone who is both a manager AND a landlord) so we select the right
@@ -442,7 +462,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     queryClient.clear();
     setUser(null); setSession(null); setUserRole(null);
     setWebhostPermissions(null); setSubmanagerPermissions(null); setPlatformAdminInfo(null); setLandlordPropertyIds([]);
-  }, [queryClient]);
+    if (devAccessEnabled) {
+      // Open-access dev mode: bounce straight back into the default account.
+      const account = getDevDefaultAccount();
+      supabase.auth.signInWithPassword({ email: account.email, password: account.password }).catch(() => undefined);
+    }
+  }, [queryClient, devAccessEnabled]);
 
   const isManager    = userRole?.role === 'manager';
   const isTenant     = userRole?.role === 'tenant';
@@ -487,14 +512,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user, session, userRole, loading,
     isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
-    webhostPermissions, submanagerPermissions, landlordPropertyIds,
+    webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
     signIn, signUp, signOut,
   }), [
     user, session, userRole, loading,
     isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
-    webhostPermissions, submanagerPermissions, landlordPropertyIds,
+    webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
     signIn, signUp, signOut,
   ]);

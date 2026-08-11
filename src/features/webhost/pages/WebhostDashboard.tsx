@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Button } from '@/shared/components/ui/button';
@@ -66,7 +67,7 @@ const WebhostDashboard = () => {
     );
   }
 
-  if (!user || userRole?.role !== 'webhost') {
+  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'webhost')) {
     return <Navigate to="/webhost/login" replace />;
   }
 

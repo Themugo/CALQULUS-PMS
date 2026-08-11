@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
@@ -127,7 +128,7 @@ const AgencyDashboard = () => {
   });
 
   useEffect(() => {
-    if (!user || userRole?.role !== 'agency') return;
+    if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return;
     const invalidate = () => queryClient.invalidateQueries({ queryKey: ['agency-dashboard-stats', user.id] });
     const channels = [
       supabase.channel('agency-dash-properties').on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, invalidate).subscribe(),
@@ -146,7 +147,7 @@ const AgencyDashboard = () => {
     );
   }
 
-  if (!user || userRole?.role !== 'agency') {
+  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) {
     return <Navigate to="/agency/login" replace />;
   }
 

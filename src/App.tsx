@@ -161,7 +161,7 @@ const RoleRoutes = ({ role, allowedRoles, wrapper }: {
 
 // ── Main route dispatcher ───────────────────────────────────────────
 const AppRoutes = () => {
-  const { user, loading, userRole } = useAuth();
+  const { user, loading, userRole, devAccessEnabled } = useAuth();
   const isAdminDomain = window.location.hostname.startsWith("admin.");
   const recoveryHash =
     window.location.hash.includes("type=recovery") ||
@@ -204,27 +204,32 @@ const AppRoutes = () => {
   }
 
   // Agency (pending/rejected)
-  if (userRole?.role === "agency" && userRole.approval_status !== "approved") {
+  if (!devAccessEnabled && userRole?.role === "agency" && userRole.approval_status !== "approved") {
     return <RoleRoutes role="manager-pending" allowedRoles={["agency"]} />;
   }
 
-  // Agency (approved)
-  if (userRole?.role === "agency" && userRole.approval_status === "approved") {
+  // Agency (approved) — dev access mode treats every account as approved
+  if (userRole?.role === "agency" && (devAccessEnabled || userRole.approval_status === "approved")) {
     return <RoleRoutes role="agency" allowedRoles={["agency"]} />;
   }
 
   // Manager (pending/rejected)
-  if (userRole?.role === "manager" && userRole.approval_status !== "approved") {
+  if (!devAccessEnabled && userRole?.role === "manager" && userRole.approval_status !== "approved") {
     return <RoleRoutes role="manager-pending" allowedRoles={["manager"]} />;
   }
 
   // Manager (approved)
-  if (userRole?.role === "manager" && userRole.approval_status === "approved") {
+  if (userRole?.role === "manager" && (devAccessEnabled || userRole.approval_status === "approved")) {
     return <RoleRoutes role="manager" allowedRoles={["manager"]} />;
   }
 
   // Not logged in
   if (!user) {
+    // Open-access dev mode: never show a login wall — land in the manager
+    // portal so the DevPortalSwitcher can hop to any other account.
+    if (devAccessEnabled) {
+      return <RoleRoutes role="manager" allowedRoles={["manager"]} />;
+    }
     const routes = isAdminDomain ? adminDomainRoutes : publicRoutes;
     return <Routes>{routes.map(r => renderRoute(r))}</Routes>;
   }

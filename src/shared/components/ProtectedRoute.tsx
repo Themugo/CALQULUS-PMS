@@ -42,7 +42,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   minAdminLevel,
   requirePermission,
 }) => {
-  const { user, userRole, loading, webhostPermissions, isSuperAdmin } = useAuth();
+  const { user, userRole, loading, webhostPermissions, isSuperAdmin, devAccessEnabled } = useAuth();
   const currentPath = window.location.pathname;
 
   const safeRedirect = (target: string) => {
@@ -61,6 +61,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
       </div>
     );
+  }
+
+  // ── Open-access dev mode ────────────────────────────────────────
+  // No-login development: skip the login redirect and all role/approval
+  // checks so every portal is reachable without limitations. A real
+  // session (auto-login or the account switcher) still feeds the data.
+  if (devAccessEnabled) {
+    return <>{children}</>;
   }
 
   // ── Not authenticated ────────────────────────────────────────────
