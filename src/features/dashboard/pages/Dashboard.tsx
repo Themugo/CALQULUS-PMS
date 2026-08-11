@@ -10,7 +10,6 @@ import { UpcomingPayments } from "@/features/dashboard/components/UpcomingPaymen
 import { PropertiesOverview } from "@/features/dashboard/components/PropertiesOverview";
 import { TenantsOverview } from "@/features/dashboard/components/TenantsOverview";
 import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
-import ManagerOnboarding from "@/features/auth/pages/ManagerOnboarding";
 import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import {
   Users, FileText, CreditCard, Building2, TrendingUp,
@@ -74,7 +73,6 @@ const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("there");
-  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const { currency, setCurrency, currencies, formatCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -84,25 +82,6 @@ const Dashboard = () => {
     if (h < 17) return "Good afternoon";
     return "Good evening";
   };
-
-  const { data: onboardingState, isLoading: agencyLoading } = useQuery({
-    queryKey: ['manager-onboarding-state', managerId],
-    queryFn: async () => {
-      const [agencyRes, propertiesRes, tenantsRes] = await Promise.all([
-        supabase.from('agencies').select('id').eq('manager_id', managerId!).maybeSingle(),
-        supabase.from('properties').select('id', { count: 'exact', head: true }).eq('manager_id', managerId!),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId!),
-      ]);
-      return {
-        hasAgency: !!agencyRes.data,
-        hasFootprint: (propertiesRes.count ?? 0) > 0 || (tenantsRes.count ?? 0) > 0,
-      };
-    },
-    enabled: !!managerId,
-  });
-
-  const showOnboarding = !agencyLoading && !onboardingDismissed &&
-    onboardingState && !onboardingState.hasAgency && !onboardingState.hasFootprint;
 
   const userId = user?.id;
 
@@ -301,13 +280,6 @@ const Dashboard = () => {
         </div>
       }
     >
-      {showOnboarding && (
-        <ManagerOnboarding onComplete={() => {
-          setOnboardingDismissed(true);
-          queryClient.invalidateQueries({ queryKey: ['manager-onboarding-state'] });
-        }} />
-      )}
-
       <PaymentSetupStatus />
       <ManagerSubscriptionBanner compact />
 
