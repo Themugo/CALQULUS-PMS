@@ -50,7 +50,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <button type="button" className="text-amber-600 hover:text-amber-500 text-sm font-medium">
+          <button type="button" className="text-amber-700 dark:text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 text-sm font-medium">
             Forgot password?
           </button>
         )}

@@ -1,8 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get Supabase URL and anon key from environment
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aelzsqxllkypbzslxyju.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbHpzcXhsbGt5cGJ6c2x4eWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MzU4MjksImV4cCI6MjA4ODExMTgyOX0.g5pQXBCiwS2KKEJUBI2KONzppM5IgUiid_lffLsOIEk';
+// Get Supabase URL and anon key from environment (must be provided)
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('SUPABASE_URL and SUPABASE_ANON_KEY must be provided in the environment.');
+  process.exit(1);
+}
 
 // Demo accounts to test
 const DEMO_ACCOUNTS = [
@@ -64,7 +69,7 @@ async function testDemoAuth() {
   if (failureCount > 0) {
     console.log('\n⚠️  Demo accounts may not exist in the database.');
     console.log('💡 To seed demo accounts, run the seed-demo-data edge function:');
-    console.log('   curl -X POST https://aelzsqxllkypbzslxyju.supabase.co/functions/v1/seed-demo-data \\');
+    console.log('   curl -X POST https://your-project.supabase.co/functions/v1/seed-demo-data \\');
     console.log('     -H "Authorization: Bearer <SERVICE_ROLE_KEY>" \\');
     console.log('     -H "Content-Type: application/json" \\');
     console.log('     -d \'{"action": "seed"}\'');

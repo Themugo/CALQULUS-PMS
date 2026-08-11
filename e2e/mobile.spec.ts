@@ -13,7 +13,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await expect(page.locator("input[type='email']")).toBeVisible({ timeout: 15000 });
       await expect(page.locator("input[type='password']")).toBeVisible({ timeout: 15000 });
-      await expect(page.locator("button:has-text('Sign In')")).toBeVisible({ timeout: 15000 });
+      await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible({ timeout: 15000 });
     });
 
     test("mobile tenant login page loads correctly", async ({ page }) => {
@@ -30,7 +30,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       await expect(page.locator("text=Dashboard")).toBeVisible({ timeout: 10000 });
     });
@@ -41,7 +41,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       await expect(page.locator("text=Dashboard").or(page.locator("text=Home"))).toBeVisible({ timeout: 10000 });
     });
@@ -54,7 +54,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Verify dashboard elements are visible on mobile
@@ -68,7 +68,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to properties
@@ -82,7 +82,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to tenants
@@ -96,7 +96,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to maintenance
@@ -110,7 +110,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to reports
@@ -126,7 +126,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Verify portal elements are visible on mobile
@@ -139,7 +139,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to lease
@@ -153,7 +153,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to payments
@@ -167,7 +167,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to maintenance
@@ -181,7 +181,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to profile
@@ -227,7 +227,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Check for mobile menu button
@@ -250,7 +250,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await expect(passwordInput).toBeVisible({ timeout: 15000 });
       
       // Verify buttons are large enough for touch
-      const signInButton = page.locator("button:has-text('Sign In')");
+      const signInButton = page.getByRole('button', { name: 'Sign In', exact: true });
       await expect(signInButton).toBeVisible({ timeout: 15000 });
     });
 
@@ -260,7 +260,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to properties
@@ -290,7 +290,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       
       const startTime = Date.now();
       await expect(page).toHaveURL("/", { timeout: 15000 });
@@ -326,7 +326,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to properties to cache data
@@ -364,7 +364,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to settings
@@ -398,7 +398,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -420,7 +420,7 @@ test.describe("Mobile App Flows E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.click("button:has-text('Sign In')");
+      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to maintenance

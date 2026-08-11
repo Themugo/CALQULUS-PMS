@@ -139,14 +139,14 @@ const TenantLogin = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <main className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white hero-gradient px-4">
+    <main className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white hero-gradient px-4">
       <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -168,7 +168,7 @@ const TenantLogin = () => {
               biometryType={biometryType}
               onPress={handleBiometricLogin}
               isLoading={isBiometricLoggingIn}
-              className="border-amber-400/40 text-amber-500 dark:text-amber-400 hover:bg-amber-400/8"
+              className="border-amber-400/40 text-amber-700 dark:text-amber-400 hover:bg-amber-400/8"
             />
           )}
 
@@ -178,7 +178,7 @@ const TenantLogin = () => {
                 <span className="w-full border-t border-amber-400/25" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-amber-500 dark:text-amber-400 font-medium">Or continue with email</span>
+                <span className="bg-card px-2 text-amber-700 dark:text-amber-400 font-medium">Or continue with email</span>
               </div>
             </div>
           )}
@@ -201,7 +201,7 @@ const TenantLogin = () => {
                 <ForgotPasswordDialog 
                   variant="tenant"
                   trigger={
-                    <button type="button" className="text-amber-500 dark:text-amber-400 hover:text-amber-400 text-sm font-medium">
+                    <button type="button" className="text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-sm font-medium">
                       Forgot password?
                     </button>
                   }
@@ -230,13 +230,13 @@ const TenantLogin = () => {
             <p className="text-muted-foreground text-sm">Don't have an account?</p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Link to="/tenant/signup" className="flex-1">
-                <Button variant="outline" className="w-full border-amber-400/40 text-amber-500 dark:text-amber-400 hover:bg-amber-400/8 font-medium">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-700 dark:text-amber-400 hover:bg-amber-400/8 font-medium">
                   <UserPlus className="h-4 w-4 mr-2" />
                   Register independently
                 </Button>
               </Link>
               <Link to="/tenant/invitation" className="flex-1">
-                <Button variant="outline" className="w-full border-amber-400/40 text-amber-500 dark:text-amber-400 hover:bg-amber-400/8 font-medium">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-700 dark:text-amber-400 hover:bg-amber-400/8 font-medium">
                   <Link2 className="h-4 w-4 mr-2" />
                   Accept manager invite
                 </Button>
@@ -247,7 +247,7 @@ const TenantLogin = () => {
             </p>
           </div>
           <div className="text-center space-y-1">
-            <Link to="/landlord" className="text-amber-500 dark:text-amber-400 hover:text-amber-400 text-sm font-medium block">
+            <Link to="/landlord" className="text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-sm font-medium block">
               Property Manager? Sign in here →
             </Link>
           </div>
@@ -262,7 +262,7 @@ const TenantLogin = () => {
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </main>
   );
 };
 

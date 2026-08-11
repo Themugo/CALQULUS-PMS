@@ -30,3 +30,27 @@ description = "Placeholder env examples"
 paths = [
   '''\.env\.example''',
 ]
+
+[[allowlists]]
+description = "CI placeholder anon key string (JWT-shaped) and demo API key samples in sandbox-lab components"
+paths = [
+  '''src/integrations/supabase/client\.ts''',
+  '''src/shared/components/integrations/DeveloperPortal\.tsx''',
+  '''src/shared/components/integrations/RestApiExplorer\.tsx''',
+  '''src/shared/components/integrations/WebhookManager\.tsx''',
+  '''src/shared/components/admin/FeatureFlagCenter\.tsx''',
+  '''src/shared/hooks/useNavHistory\.ts''',
+]
+
+[[allowlists]]
+description = "M-Pesa sandbox passkey and fixture credentials in API contract tests"
+paths = [
+  '''src/test/api-contracts/mpesa-api-contracts\.test\.ts''',
+  '''src/test/api-contracts/tenant-invitation-api-contracts\.test\.ts''',
+]
+
+[[allowlists]]
+description = "Placeholder bearer-token and secret examples in function doc comments"
+paths = [
+  '''supabase/functions/bootstrap-webhost/index\.ts''',
+]

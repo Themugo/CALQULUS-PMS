@@ -220,7 +220,7 @@ const Auth = () => {
                   </div>
                   <div className="relative">
                     <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="h-11 pr-10" />
-                    <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} aria-label={showLoginPassword ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-2">
                       {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
@@ -256,7 +256,7 @@ const Auth = () => {
                   <Label htmlFor="signup-password">Password</Label>
                   <div className="relative">
                     <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="h-11 pr-10" />
-                    <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} aria-label={showSignupPassword ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-2">
                       {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
@@ -289,15 +289,15 @@ const Auth = () => {
           <div className="mt-6 space-y-2 text-center">
             <p className="text-sm text-muted-foreground">
               Are you a tenant?{' '}
-              <Link to="/tenant/signup" className="text-amber-600 hover:underline font-medium">Register here</Link>
+              <Link to="/tenant/signup" className="text-amber-700 dark:text-amber-500 hover:underline font-medium">Register here</Link>
             </p>
             <p className="text-sm text-muted-foreground">
               Are you a landlord?{' '}
-              <Link to="/landlord" className="text-amber-600 hover:underline font-medium">Sign in here</Link>
+              <Link to="/landlord" className="text-amber-700 dark:text-amber-500 hover:underline font-medium">Sign in here</Link>
             </p>
             <p className="text-sm text-muted-foreground">
               Platform admin?{' '}
-              <Link to="/webhost/login" className="text-amber-600 hover:underline font-medium">Webhost login</Link>
+              <Link to="/webhost/login" className="text-amber-700 dark:text-amber-500 hover:underline font-medium">Webhost login</Link>
             </p>
           </div>
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t">

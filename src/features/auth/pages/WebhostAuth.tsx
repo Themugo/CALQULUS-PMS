@@ -148,7 +148,8 @@ const WebhostAuth = () => {
                     className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11 pr-11"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-2">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
