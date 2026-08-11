@@ -70,7 +70,7 @@ export function OAuthSsoConfig({ className }: { className?: string }) {
 
               <div className="space-y-1">
                 <Label className="text-[11px]">Authorized Redirect URI</Label>
-                <Input defaultValue="https://app.calqulusrms.com/auth/v2/google/callback" readOnly className="h-8 text-xs font-mono bg-muted/40" />
+                <Input defaultValue="https://www.calqulus.site/auth/v2/google/callback" readOnly className="h-8 text-xs font-mono bg-muted/40" />
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ export function OAuthSsoConfig({ className }: { className?: string }) {
 
               <div className="space-y-1">
                 <Label className="text-[11px]">Authorized Redirect URI</Label>
-                <Input defaultValue="https://app.calqulusrms.com/auth/v2/azure/callback" readOnly className="h-8 text-xs font-mono bg-muted/40" />
+                <Input defaultValue="https://www.calqulus.site/auth/v2/azure/callback" readOnly className="h-8 text-xs font-mono bg-muted/40" />
               </div>
             </div>
           </div>

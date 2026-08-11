@@ -122,7 +122,7 @@ export function DeveloperPortal({ className }: { className?: string }) {
               <pre className="text-[11px] p-2 leading-relaxed text-slate-300 overflow-x-auto">
                 {selectedLanguage === "node" && `import { CalqulusSDK } from "@calqulus/sdk";\n\nconst client = new CalqulusSDK({\n  apiKey: process.env.CALQULUS_API_KEY,\n});\n\nconst properties = await client.properties.list();\nconsole.log(properties);`}
                 {selectedLanguage === "python" && `from calqulus import CalqulusClient\n\nclient = CalqulusClient(api_key="clq_live_...")\nproperties = client.properties.list()\nprint(properties)`}
-                {selectedLanguage === "curl" && `curl -X GET "https://app.calqulusrms.com/api/v2/properties" \\\n  -H "Authorization: Bearer clq_live_..."`}
+                {selectedLanguage === "curl" && `curl -X GET "https://www.calqulus.site/api/v2/properties" \\\n  -H "Authorization: Bearer clq_live_..."`}
               </pre>
             </div>
           </TabsContent>

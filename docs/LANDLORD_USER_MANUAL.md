@@ -31,7 +31,7 @@ As a landlord, you have a revenue-only view of your properties. You will not see
 ### Account Setup
 
 1. **Login to Landlord Dashboard**
-   - Navigate to https://app.calqulusrms.com/landlord/login
+   - Navigate to https://www.calqulus.site/landlord/login
    - Enter your email and password
    - Click "Sign In"
 

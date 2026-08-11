@@ -220,7 +220,7 @@ sentry-cli releases set-commits \
 ```bash
 sentry-cli releases deploy \
   --env production \
-  --url https://app.calqulusrms.com \
+  --url https://www.calqulus.site \
   $(git rev-parse HEAD)
 ```
 
@@ -279,7 +279,7 @@ Set thresholds:
 Sentry.init({
   integrations: [
     new Sentry.BrowserTracing({
-      tracingOrigins: ['localhost', 'https://app.calqulusrms.com'],
+      tracingOrigins: ['localhost', 'https://www.calqulus.site'],
       // Custom performance thresholds
       idleTimeout: 5000,
       maxDuration: 30000,

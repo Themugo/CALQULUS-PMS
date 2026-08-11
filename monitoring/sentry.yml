@@ -62,7 +62,7 @@ integrations:
     tracing_origins:
       - localhost
       - /^\//
-      - https://app.calqulusrms.com
+      - https://www.calqulus.site
       - https://www.calqulusrms.com
 
 # Before send callback for filtering errors

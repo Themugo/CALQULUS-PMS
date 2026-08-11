@@ -7,38 +7,38 @@ Uptime monitoring ensures that CALQULUS RMS services are available and responsiv
 
 ### Primary Endpoints
 1. **Application Health Check**
-   - URL: `https://app.calqulusrms.com/health`
+   - URL: `https://www.calqulus.site/health`
    - Expected: HTTP 200 with JSON response
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 2. **API Health Check**
-   - URL: `https://app.calqulusrms.com/api/health`
+   - URL: `https://www.calqulus.site/api/health`
    - Expected: HTTP 200 with JSON response
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 3. **Database Connectivity**
-   - URL: `https://app.calqulusrms.com/api/health/db`
+   - URL: `https://www.calqulus.site/api/health/db`
    - Expected: HTTP 200 with database status
    - Check interval: 1 minute
    - Alert threshold: 2 consecutive failures
 
 ### Secondary Endpoints
 1. **Authentication Service**
-   - URL: `https://app.calqulusrms.com/api/auth/health`
+   - URL: `https://www.calqulus.site/api/auth/health`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 3 consecutive failures
 
 2. **Payment Processing**
-   - URL: `https://app.calqulusrms.com/api/payments/health`
+   - URL: `https://www.calqulus.site/api/payments/health`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 3 consecutive failures
 
 3. **Static Assets**
-   - URL: `https://app.calqulusrms.com/static/logo.png`
+   - URL: `https://www.calqulus.site/static/logo.png`
    - Expected: HTTP 200
    - Check interval: 5 minutes
    - Alert threshold: 5 consecutive failures

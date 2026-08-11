@@ -465,7 +465,7 @@ describe("Tenant Invitation Workflow Integration", () => {
         expires_at: generateInvitationExpiryDate(new Date()).toISOString(),
       };
 
-      const smsContent = `Hello ${invitation.full_name}, you've been invited to join our property management platform. Your unit rent is KES ${invitation.monthly_rent.toLocaleString()}/month. Click to accept: https://app.calqulusrms.com/invite/${invitation.id}`;
+      const smsContent = `Hello ${invitation.full_name}, you've been invited to join our property management platform. Your unit rent is KES ${invitation.monthly_rent.toLocaleString()}/month. Click to accept: https://www.calqulus.site/invite/${invitation.id}`;
 
       expect(smsContent).toContain("Jane Smith");
       expect(smsContent).toContain("20,000");

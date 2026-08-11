@@ -110,7 +110,7 @@ export function RestApiExplorer({ className }: { className?: string }) {
   };
 
   const handleCopyCurl = () => {
-    const curlStr = `curl -X ${endpoint.method} "https://app.calqulusrms.com${endpoint.path}" \\\n  -H "Authorization: Bearer clq_live_99a8f7e6d5" \\\n  -H "Content-Type: application/json"${endpoint.defaultBody ? ` \\\n  -d '${endpoint.defaultBody.replace(/\n/g, "")}'` : ""}`;
+    const curlStr = `curl -X ${endpoint.method} "https://www.calqulus.site${endpoint.path}" \\\n  -H "Authorization: Bearer clq_live_99a8f7e6d5" \\\n  -H "Content-Type: application/json"${endpoint.defaultBody ? ` \\\n  -d '${endpoint.defaultBody.replace(/\n/g, "")}'` : ""}`;
     navigator.clipboard.writeText(curlStr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

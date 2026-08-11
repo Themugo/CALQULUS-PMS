@@ -379,7 +379,7 @@ export function MarketingWebsite() {
                 <div className="h-3 w-3 rounded-full bg-red-500/80" />
                 <div className="h-3 w-3 rounded-full bg-amber-500/80" />
                 <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
-                <span className="text-xs font-mono text-slate-500 ml-2">app.calqulusrms.com/{activeTab}</span>
+                <span className="text-xs font-mono text-slate-500 ml-2">www.calqulus.site/{activeTab}</span>
               </div>
               <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Live System Sync</Badge>
             </div>

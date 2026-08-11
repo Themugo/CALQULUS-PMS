@@ -28,7 +28,7 @@ CALQULUS RMS Webhost Dashboard is the platform administration interface for mana
 - Unlinked landlord management
 
 ### Access Your Dashboard
-- **URL**: https://app.calqulusrms.com/webhost/login
+- **URL**: https://www.calqulus.site/webhost/login
 - **Role**: Platform Administrator
 
 ### Important Security Notice
@@ -39,7 +39,7 @@ As a Webhost, you have elevated platform access. You can view system-level data 
 ### Account Setup
 
 1. **Login to Webhost Dashboard**
-   - Navigate to https://app.calqulusrms.com/webhost/login
+   - Navigate to https://www.calqulus.site/webhost/login
    - Enter your email and password
    - Complete two-factor authentication
    - Click "Sign In"

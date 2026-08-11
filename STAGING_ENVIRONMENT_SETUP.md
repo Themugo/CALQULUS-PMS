@@ -12,7 +12,7 @@ This guide covers setting up a staging environment for CALQULUS RMS to test chan
 ## Architecture
 
 ```
-Production:  app.calqulusrms.com → Supabase Production
+Production:  www.calqulus.site → Supabase Production
 Staging:     staging.calqulusrms.com → Supabase Staging
 Development: localhost:5173 → Supabase Local/Development
 ```

@@ -16,11 +16,11 @@ export interface BrandAssetsState {
 }
 
 const DEFAULT_ASSETS: BrandAssetsState = {
-  primaryLogoUrl: "https://app.calqulusrms.com/assets/logo-light-demo.png",
-  darkLogoUrl: "https://app.calqulusrms.com/assets/logo-dark-demo.png",
-  faviconUrl: "https://app.calqulusrms.com/favicon.ico",
-  emailHeaderBannerUrl: "https://app.calqulusrms.com/assets/email-banner.png",
-  officialStampUrl: "https://app.calqulusrms.com/assets/company-stamp.png",
+  primaryLogoUrl: "https://www.calqulus.site/assets/logo-light-demo.png",
+  darkLogoUrl: "https://www.calqulus.site/assets/logo-dark-demo.png",
+  faviconUrl: "https://www.calqulus.site/favicon.ico",
+  emailHeaderBannerUrl: "https://www.calqulus.site/assets/email-banner.png",
+  officialStampUrl: "https://www.calqulus.site/assets/company-stamp.png",
 };
 
 export function BrandAssetManager({

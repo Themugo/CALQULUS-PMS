@@ -92,7 +92,7 @@ node scripts/deploy-production.mjs
 
 ```bash
 # Health check
-curl https://app.calqulusrms.com/api/health
+curl https://www.calqulus.site/api/health
 
 # Run smoke tests
 node scripts/smoke-deploy.mjs
@@ -103,12 +103,12 @@ node scripts/smoke-deploy.mjs
 ### Functional Tests
 ```bash
 # Test authentication
-curl -X POST https://app.calqulusrms.com/api/auth/login \
+curl -X POST https://www.calqulus.site/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"test"}'
 
 # Test payment endpoint
-curl -X POST https://app.calqulusrms.com/api/payments/initiate-mpesa-stk-push \
+curl -X POST https://www.calqulus.site/api/payments/initiate-mpesa-stk-push \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"invoiceId":"test","amount":100}'

@@ -15,10 +15,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - app.calqulusrms.com
+    - www.calqulus.site
     secretName: calqulusrms-tls
   rules:
-  - host: app.calqulusrms.com
+  - host: www.calqulus.site
     http:
       paths:
       - path: /

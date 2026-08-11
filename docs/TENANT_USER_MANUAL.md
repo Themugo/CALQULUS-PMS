@@ -25,7 +25,7 @@ CALQULUS RMS Tenant Portal is your dedicated platform for managing your rental e
 - View property announcements
 
 ### Access Your Portal
-- **URL**: https://app.calqulusrms.com/tenant/login
+- **URL**: https://www.calqulus.site/tenant/login
 - **Mobile App**: Available on iOS and Android
 
 ## Getting Started
@@ -33,7 +33,7 @@ CALQULUS RMS Tenant Portal is your dedicated platform for managing your rental e
 ### Account Setup
 
 1. **Login to Tenant Portal**
-   - Navigate to https://app.calqulusrms.com/tenant/login
+   - Navigate to https://www.calqulus.site/tenant/login
    - Enter your email and password
    - Click "Sign In"
 

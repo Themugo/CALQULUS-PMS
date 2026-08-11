@@ -34,7 +34,7 @@ CALQULUS RMS Manager is a comprehensive property management platform designed to
 ### Account Setup
 
 1. **Login to Manager Dashboard**
-   - Navigate to https://app.calqulusrms.com
+   - Navigate to https://www.calqulus.site
    - Enter your email and password
    - Click "Sign In"
 
@@ -142,7 +142,7 @@ View property-specific analytics:
 ### Tenant Portal Access
 
 Tenants can access their portal at:
-- URL: https://app.calqulusrms.com/tenant/login
+- URL: https://www.calqulus.site/tenant/login
 - Features available:
   - View lease details
   - Pay rent online

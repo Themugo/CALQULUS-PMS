@@ -24,7 +24,7 @@ jobs:
       - name: Check application health
         id: app-health
         run: |
-          APP_URL="https://app.calqulusrms.com"
+          APP_URL="https://www.calqulus.site"
           HEALTH_URL="https://aelzsqxllkypbzslxyju.supabase.co/functions/v1/health-check"
           SUPABASE_URL="https://aelzsqxllkypbzslxyju.supabase.co"
           
@@ -76,7 +76,7 @@ jobs:
           START=$(date +%s%N)
           # Fallback so an unresolvable/down host reports a large duration
           # instead of aborting the step under `bash -e` (curl exit 6).
-          curl -s -o /dev/null "https://app.calqulusrms.com" --max-time 10 --connect-timeout 5 || echo "curl-failed"
+          curl -s -o /dev/null "https://www.calqulus.site" --max-time 10 --connect-timeout 5 || echo "curl-failed"
           END=$(date +%s%N)
           DURATION=$((($END - $START) / 1000000))
           
@@ -97,7 +97,7 @@ jobs:
     steps:
       - name: Check SSL expiry
         run: |
-          DOMAIN="app.calqulusrms.com"
+          DOMAIN="www.calqulus.site"
           EXPIRY_DATE=$(echo | openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" 2>/dev/null | openssl x509 -noout -dates 2>/dev/null | grep notAfter | cut -d= -f2)
           
           if [ -n "$EXPIRY_DATE" ]; then
@@ -136,7 +136,7 @@ jobs:
           SUCCESS_COUNT=0
           
           for i in $(seq 1 $CHECK_COUNT); do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://app.calqulusrms.com" --max-time 10 --connect-timeout 3 || echo "000")
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://www.calqulus.site" --max-time 10 --connect-timeout 3 || echo "000")
             if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "304" ]; then
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             fi

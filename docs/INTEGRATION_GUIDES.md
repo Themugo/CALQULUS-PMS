@@ -269,7 +269,7 @@ Stripe integration enables credit and debit card payments for rent collection. C
 1. In Stripe Dashboard, navigate to **Developers** → **Webhooks**
 2. Add webhook endpoint:
    ```
-   URL: https://app.calqulusrms.com/api/webhooks/stripe
+   URL: https://www.calqulus.site/api/webhooks/stripe
    Events: payment_intent.succeeded, payment_intent.failed, charge.refunded
    ```
 3. Copy webhook signing secret

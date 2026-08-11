@@ -162,7 +162,7 @@ function sanitizePhoneNumber(phone: string): string {
   return digits;
 }
 
-function generateInvitationLink(invitationId: string, baseUrl = "https://app.calqulusrms.com"): string {
+function generateInvitationLink(invitationId: string, baseUrl = "https://www.calqulus.site"): string {
   return `${baseUrl}/tenant/signup?invitation_id=${invitationId}`;
 }
 
@@ -429,7 +429,7 @@ describe("Tenant Invitation API Contract Tests", () => {
       const invitationId = "inv-abc123";
       const link = generateInvitationLink(invitationId);
       
-      expect(link).toBe("https://app.calqulusrms.com/tenant/signup?invitation_id=inv-abc123");
+      expect(link).toBe("https://www.calqulus.site/tenant/signup?invitation_id=inv-abc123");
     });
 
     it("should generate invitation link with custom base URL", () => {
@@ -449,7 +449,7 @@ describe("Tenant Invitation API Contract Tests", () => {
         unit_number: "A1",
         monthly_rent: 25000,
         move_in_date: "2024-02-01",
-        invitation_link: "https://app.calqulusrms.com/invite/abc123",
+        invitation_link: "https://www.calqulus.site/invite/abc123",
       });
 
       expect(template.message).toContain("Jane Smith");
@@ -457,7 +457,7 @@ describe("Tenant Invitation API Contract Tests", () => {
       expect(template.message).toContain("A1");
       expect(template.message).toContain("25,000");
       expect(template.message).toContain("2024-02-01");
-      expect(template.message).toContain("https://app.calqulusrms.com/invite/abc123");
+      expect(template.message).toContain("https://www.calqulus.site/invite/abc123");
       expect(template.sender).toBe("CALQULUS");
     });
   });
@@ -470,7 +470,7 @@ describe("Tenant Invitation API Contract Tests", () => {
         unit_number: "A1",
         monthly_rent: 25000,
         move_in_date: "2024-02-01",
-        invitation_link: "https://app.calqulusrms.com/invite/abc123",
+        invitation_link: "https://www.calqulus.site/invite/abc123",
         manager_name: "Property Manager",
       });
 

@@ -82,7 +82,7 @@ checks:
     timeout: 10s
   
   - name: app-health
-    url: https://app.calqulusrms.com
+    url: https://www.calqulus.site
     interval: 1m
     timeout: 5s
 ```

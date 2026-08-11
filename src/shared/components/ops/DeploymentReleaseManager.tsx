@@ -79,7 +79,7 @@ export function DeploymentReleaseManager({ className }: { className?: string }) 
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Production Host:</span>
-              <span className="text-primary font-mono font-bold">app.calqulusrms.com</span>
+              <span className="text-primary font-mono font-bold">www.calqulus.site</span>
             </div>
           </div>
         </Card>

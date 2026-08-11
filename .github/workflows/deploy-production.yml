@@ -23,6 +23,7 @@ concurrency:
 
 env:
   NODE_VERSION: "22"
+  PROD_URL: "https://www.calqulus.site"
 
 jobs:
   # ── Pre-deployment Quality Gates ──────────────────────────────────
@@ -41,20 +42,20 @@ jobs:
         run: |
           NOTES=""
           CAN_DEPLOY="true"
-          
+
           # Check if this is a release tag
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             NOTES="Release tag detected: ${{ github.ref_name }}"
           else
             NOTES="Direct push to main branch"
           fi
-          
+
           # Check for security updates needed
           if grep -q "security:\|fix:.*security\|CVE-" commit-msg.txt 2>/dev/null || \
              grep -q "security" package.json 2>/dev/null; then
             NOTES="$NOTES\n⚠️ Security-related changes detected"
           fi
-          
+
           echo "can_deploy=$CAN_DEPLOY" >> $GITHUB_OUTPUT
           echo "notes=$NOTES" >> $GITHUB_OUTPUT
 
@@ -89,13 +90,13 @@ jobs:
         run: |
           MAX_JS_SIZE=2500000  # 2.5MB max for main JS
           BUNDLE_SIZE=$(stat -c%s dist/assets/index-*.js 2>/dev/null | sort -n | tail -1 || echo 0)
-          
+
           echo "Main bundle size: $BUNDLE_SIZE bytes"
-          
+
           if [ "$BUNDLE_SIZE" -gt "$MAX_JS_SIZE" ]; then
             echo "::warning title=Bundle Size Warning::Bundle exceeds recommended size"
           fi
-          
+
           echo "Bundle size: $((BUNDLE_SIZE / 1024))KB" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload build artifacts
@@ -202,6 +203,10 @@ jobs:
           retention-days: 14
 
   # ── Deploy to Vercel ───────────────────────────────────────────────
+  # Deploys via the Vercel CLI when VERCEL_TOKEN/VERCEL_ORG_ID/
+  # VERCEL_PROJECT_ID secrets are configured. When they are not, the job
+  # skips gracefully: this repo deploys to production automatically via
+  # Vercel's native GitHub integration, so no Action secrets are required.
   deploy-vercel:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
@@ -209,7 +214,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: production
-      url: ${{ steps.deploy.outputs.DEPLOY_URL || 'https://app.calqulusrms.com' }}
+      url: ${{ steps.deploy.outputs.DEPLOY_URL || env.PROD_URL }}
     outputs:
       DEPLOY_URL: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
@@ -221,44 +226,42 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Verify Vercel secrets present
+      - name: Check Vercel secrets
+        id: check-secrets
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          missing=0
-          for secret in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
-            val=$(printenv "$secret")
-            if [ -z "$val" ]; then
-              echo "::error title=Missing Vercel Secret::The repository secret '$secret' is not set. Configure it in Settings → Secrets and variables → Actions."
-              missing=1
-            else
-              echo "✅ $secret is set"
-            fi
-          done
-          if [ "$missing" -eq 1 ]; then
-            echo "::error title=Vercel Deploy Blocked::One or more Vercel secrets are missing. Add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID before re-running."
-            exit 1
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
+            echo "VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID are all set."
+            echo "deploy_enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID are not all set."
+            echo "deploy_enabled=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Skip Vercel CLI deploy
+        if: steps.check-secrets.outputs.deploy_enabled != 'true'
+        run: |
+          echo "::notice title=Vercel CLI Deploy Skipped::VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID secrets are not configured. Production is deployed by Vercel's native GitHub integration (no Action secrets required). To enable CLI deploys from Actions, add the three secrets under Settings → Secrets and variables → Actions."
+
       - name: Install Vercel CLI
+        if: steps.check-secrets.outputs.deploy_enabled == 'true'
         run: npm install -g vercel@latest
 
       - name: Link project (non-interactive)
+        if: steps.check-secrets.outputs.deploy_enabled == 'true'
         run: |
           mkdir -p .vercel
-          if [ -n "$VERCEL_ORG_ID" ]; then
-            echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" > .vercel/project.json
-            echo "✅ Wrote .vercel/project.json from VERCEL_ORG_ID/VERCEL_PROJECT_ID secrets"
-          else
-            echo "No VERCEL_ORG_ID — assuming project is already linked via .vercel/project.json"
-          fi
+          echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" > .vercel/project.json
+          echo "Wrote .vercel/project.json from VERCEL_ORG_ID/VERCEL_PROJECT_ID secrets"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Pull Vercel environment
+        if: steps.check-secrets.outputs.deploy_enabled == 'true'
         run: vercel pull --yes --token "$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -266,6 +269,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build with Vercel
+        if: steps.check-secrets.outputs.deploy_enabled == 'true'
         run: vercel build --prod --yes --token "$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -274,6 +278,7 @@ jobs:
 
       - name: Deploy to Vercel (production)
         id: deploy
+        if: steps.check-secrets.outputs.deploy_enabled == 'true'
         run: |
           set -o pipefail
           # Capture full output, extract the production deployment URL robustly.
@@ -286,7 +291,7 @@ jobs:
             echo "::error title=Vercel Deploy::Could not parse deployment URL from vercel output"
             exit 1
           fi
-          echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "DEPLOY_URL=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           echo "Deployment URL: $DEPLOY_URL"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -308,7 +313,7 @@ jobs:
       - name: Health Check
         id: health
         run: |
-          URL="${{ needs.deploy-vercel.outputs.DEPLOY_URL || 'https://app.calqulusrms.com' }}"
+          URL="${{ needs.deploy-vercel.outputs.DEPLOY_URL || env.PROD_URL }}"
           echo "Checking $URL"
 
           # Retry for up to ~90s; a fresh production deployment can take a
@@ -357,17 +362,17 @@ jobs:
       - name: Verify rollback capability
         run: |
           echo "## 🔄 Rollback Validation" >> $GITHUB_STEP_SUMMARY
-          
+
           # Check git history for rollback points
           git log --oneline -5
-          
+
           # Verify Vercel deployment history
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Last 5 Deployments:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           git log --oneline -5 >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "To rollback, run:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
@@ -386,13 +391,13 @@ jobs:
         run: |
           DEPLOY_STATUS="${{ needs.deploy-vercel.result }}"
           HEALTH_STATUS="${{ needs.health-check.result }}"
-          
+
           if [ "$DEPLOY_STATUS" == "success" ] && [ "$HEALTH_STATUS" == "success" ]; then
             STATUS="✅ Success"
           else
             STATUS="❌ Failed"
           fi
-          
+
           echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
@@ -403,4 +408,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "**URL:** https://app.calqulusrms.com" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** https://www.calqulus.site" >> $GITHUB_STEP_SUMMARY

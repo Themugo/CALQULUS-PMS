@@ -334,7 +334,7 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
             CALQULUS RMS Knowledge Base
           </span>
           <a
-            href="https://app.calqulusrms.com/docs"
+            href="https://www.calqulus.site/docs"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1 text-primary hover:underline font-medium"

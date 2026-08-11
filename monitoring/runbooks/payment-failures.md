@@ -46,7 +46,7 @@ supabase logs --project-id aelzsqxllkypbzslxyju
    - Check status page for API outages
 
 2. **Verify Callback URL**
-   - Ensure callback URL is accessible: `https://app.calqulusrms.com/api/payments/mpesa/callback`
+   - Ensure callback URL is accessible: `https://www.calqulus.site/api/payments/mpesa/callback`
    - Check SSL certificate validity
    - Verify firewall rules allow Safaricom IPs
 
@@ -93,7 +93,7 @@ supabase logs --project-id aelzsqxllkypbzslxyju
 3. Check firewall rules allow payment provider IPs
 4. Test callback endpoint manually:
 ```bash
-curl -X POST https://app.calqulusrms.com/api/payments/mpesa/callback \
+curl -X POST https://www.calqulus.site/api/payments/mpesa/callback \
   -H "Content-Type: application/json" \
   -d '{"test": true}'
 ```

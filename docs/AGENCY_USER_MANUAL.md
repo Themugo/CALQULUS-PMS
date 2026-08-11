@@ -37,7 +37,7 @@ While agencies and managers both manage properties, key differences include:
 - **Agencies** can collect rent to agency accounts or pass through to landlords
 
 ### Access Your Dashboard
-- **URL**: https://app.calqulusrms.com/agency/login
+- **URL**: https://www.calqulus.site/agency/login
 - **Role**: Agency Team Manager
 
 ## Getting Started
@@ -45,7 +45,7 @@ While agencies and managers both manage properties, key differences include:
 ### Account Setup
 
 1. **Login to Agency Dashboard**
-   - Navigate to https://app.calqulusrms.com/agency/login
+   - Navigate to https://www.calqulus.site/agency/login
    - Enter your email and password
    - Click "Sign In"
 
@@ -241,7 +241,7 @@ View landlord-specific performance:
 ### Tenant Portal Access
 
 Tenants can access their portal at:
-- URL: https://app.calqulusrms.com/tenant/login
+- URL: https://www.calqulus.site/tenant/login
 - Features available:
   - View lease details
   - Pay rent online
