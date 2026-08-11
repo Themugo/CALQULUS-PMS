@@ -183,14 +183,15 @@ jobs:
           bundles=(dist/assets/index-*.js)
           if [ ${#bundles[@]} -eq 0 ]; then
             echo "No index bundle found under dist/assets/"
-            ls -la dist/assets/ || true
+            ls -la dist/assets/
             exit 1
           fi
           for bundle in "${bundles[@]}"; do
             SIZE=$(stat -c%s "$bundle")
             echo "$bundle: $((SIZE / 1024))KB"
             if [ "$SIZE" -gt "$MAX_SIZE" ]; then
-              echo "::warning ::Bundle exceeds recommended size: $((SIZE / 1024))KB"
+              echo "::error title=Bundle Size Limit Exceeded::Bundle $bundle ($((SIZE / 1024))KB) exceeds maximum limit of $((MAX_SIZE / 1024))KB"
+              exit 1
             fi
           done
 

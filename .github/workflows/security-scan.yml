@@ -63,15 +63,14 @@ jobs:
         id: audit
         run: |
           npm audit --audit-level=high --json > audit-results.json 2>&1 || true
-          # Count vulnerabilities
           if [ -f audit-results.json ]; then
             CRITICAL=$(grep -o '"critical":[0-9]*' audit-results.json | grep -o '[0-9]*' || echo 0)
             HIGH=$(grep -o '"high":[0-9]*' audit-results.json | grep -o '[0-9]*' || echo 0)
             echo "CRITICAL_VULNS=$CRITICAL" >> $GITHUB_ENV
             echo "HIGH_VULNS=$HIGH" >> $GITHUB_ENV
             
-            if [ "$CRITICAL" -gt 0 ]; then
-              echo "::error title=Critical Vulnerabilities Found::$CRITICAL critical vulnerabilities detected"
+            if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+              echo "::error title=High/Critical Vulnerabilities Found::$CRITICAL critical and $HIGH high vulnerabilities detected"
               exit 1
             fi
           fi
@@ -210,8 +209,8 @@ jobs:
 
       - name: Verify npm package integrity
         run: |
-          npm ci --ignore-scripts 2>/dev/null
-          npm audit --production --json > prod-audit.json 2>&1 || true
+          npm ci --ignore-scripts
+          npm audit --audit-level=high --production
           echo "Production dependencies audited"
 
       - name: Check for known vulnerabilities in lock file

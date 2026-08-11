@@ -86,6 +86,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Production audit
+        run: npm run audit:prod
+
       - name: Bundle size check
         run: |
           MAX_JS_SIZE=2500000  # 2.5MB max for main JS
@@ -94,7 +97,8 @@ jobs:
           echo "Main bundle size: $BUNDLE_SIZE bytes"
 
           if [ "$BUNDLE_SIZE" -gt "$MAX_JS_SIZE" ]; then
-            echo "::warning title=Bundle Size Warning::Bundle exceeds recommended size"
+            echo "::error title=Bundle Size Limit Exceeded::Bundle size $((BUNDLE_SIZE / 1024))KB exceeds 2.5MB maximum limit"
+            exit 1
           fi
 
           echo "Bundle size: $((BUNDLE_SIZE / 1024))KB" >> $GITHUB_STEP_SUMMARY
@@ -192,7 +196,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: npm run test:e2e:ci || true
+        run: npm run test:e2e:ci
 
       - name: Upload E2E report
         if: always()

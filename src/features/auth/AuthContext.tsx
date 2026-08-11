@@ -173,40 +173,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const devAccessEnabled = isDevAccessEnabled();
 
   const pickRoleForPath = useCallback((roles: UserRole[], pathname: string, fallbackUserId?: string): UserRole => {
-    const byRole = new Map<AppRole, UserRole>();
-    for (const r of roles) byRole.set(r.role, r);
     const uId = fallbackUserId || (roles[0]?.user_id ?? '');
 
-    if (pathname.startsWith('/landlord/dashboard')) {
-      const l = byRole.get('landlord'); if (l) return l;
-      return { id: 'synthetic-landlord', user_id: uId, role: 'landlord', approval_status: 'approved', created_at: '' };
+    // Case 1: User has actual database roles — MUST ONLY pick among assigned roles
+    if (roles && roles.length > 0) {
+      const byRole = new Map<AppRole, UserRole>();
+      for (const r of roles) byRole.set(r.role, r);
+
+      if (pathname.startsWith('/landlord/dashboard') && byRole.has('landlord')) return byRole.get('landlord')!;
+      if (pathname.startsWith('/webhost') && byRole.has('webhost')) return byRole.get('webhost')!;
+      if (pathname.startsWith('/agency') && byRole.has('agency')) return byRole.get('agency')!;
+      if ((pathname.startsWith('/portal') || pathname.startsWith('/tenant')) && byRole.has('tenant')) return byRole.get('tenant')!;
+
+      const managerPaths = ['/', '/properties', '/tenants', '/billing', '/settings',
+        '/maintenance', '/contracts', '/leases', '/vacation-notices', '/payments',
+        '/platform-billing', '/water-billing', '/reports',
+        '/communications', '/landlord', '/invites', '/statements', '/services'];
+      if (managerPaths.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+        if (byRole.has('manager')) return byRole.get('manager')!;
+        if (byRole.has('submanager')) return byRole.get('submanager')!;
+      }
+
+      const priority: AppRole[] = ['webhost', 'manager', 'submanager', 'agency', 'landlord', 'tenant'];
+      const sorted = [...roles].sort((a, b) => priority.indexOf(a.role) - priority.indexOf(b.role));
+      return sorted[0];
     }
-    if (pathname.startsWith('/webhost')) {
-      const w = byRole.get('webhost'); if (w) return w;
-      return { id: 'synthetic-webhost', user_id: uId, role: 'webhost', approval_status: 'approved', created_at: '' };
-    }
-    if (pathname.startsWith('/agency')) {
-      const a = byRole.get('agency'); if (a) return a;
-      return { id: 'synthetic-agency', user_id: uId, role: 'agency', approval_status: 'approved', created_at: '' };
-    }
-    if (pathname.startsWith('/portal') || pathname.startsWith('/tenant')) {
-      const t = byRole.get('tenant'); if (t) return t;
-      return { id: 'synthetic-tenant', user_id: uId, role: 'tenant', approval_status: 'approved', created_at: '' };
-    }
-    const managerPaths = ['/', '/properties', '/tenants', '/billing', '/settings',
-      '/maintenance', '/contracts', '/leases', '/vacation-notices', '/payments',
-      '/platform-billing', '/water-billing', '/reports',
-      '/communications', '/landlord', '/invites', '/statements', '/services'];
-    if (managerPaths.some(p => pathname === p || pathname.startsWith(p + '/'))) {
-      const m = byRole.get('manager'); if (m) return m;
-      const s = byRole.get('submanager'); if (s) return s;
+
+    // Case 2: No database roles found
+    if (devAccessEnabled) {
+      if (pathname.startsWith('/landlord/dashboard')) return { id: 'synthetic-landlord', user_id: uId, role: 'landlord', approval_status: 'approved', created_at: '' };
+      if (pathname.startsWith('/webhost')) return { id: 'synthetic-webhost', user_id: uId, role: 'webhost', approval_status: 'approved', created_at: '' };
+      if (pathname.startsWith('/agency')) return { id: 'synthetic-agency', user_id: uId, role: 'agency', approval_status: 'approved', created_at: '' };
+      if (pathname.startsWith('/portal') || pathname.startsWith('/tenant')) return { id: 'synthetic-tenant', user_id: uId, role: 'tenant', approval_status: 'approved', created_at: '' };
       return { id: 'synthetic-manager', user_id: uId, role: 'manager', approval_status: 'approved', created_at: '' };
     }
-    const priority: AppRole[] = ['manager', 'submanager', 'agency', 'webhost', 'landlord', 'tenant'];
-    const existing = [...roles].sort((a, b) => priority.indexOf(a.role) - priority.indexOf(b.role))[0];
-    if (existing) return existing;
-    return { id: 'synthetic-manager', user_id: uId, role: 'manager', approval_status: 'approved', created_at: '' };
-  }, []);
+
+    return { id: 'unassigned', user_id: uId, role: 'tenant', approval_status: 'pending', created_at: '' };
+  }, [devAccessEnabled]);
 
   const fetchWebhostPermissions = useCallback(async (userId: string): Promise<WebhostPermissions | null> => {
     const { data } = await supabase

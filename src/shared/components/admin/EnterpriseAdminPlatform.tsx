@@ -40,6 +40,9 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
             <Badge variant="outline" className="text-[10px] font-bold bg-primary/10 text-primary border-primary/20">
               Platform Layer
             </Badge>
+            <Badge variant="outline" className="text-[10px] font-bold bg-amber-500/10 text-amber-600 border-amber-500/20">
+              CONFIGURATION / LAB CONSOLE
+            </Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
             Cross-tenant administration, visual RBAC control, telemetry, security audit, and feature flag management.

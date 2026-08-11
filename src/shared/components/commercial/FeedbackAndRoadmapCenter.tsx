@@ -57,9 +57,14 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
     <div className={cn("space-y-4 text-xs", className)}>
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
-          <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-indigo-500" /> Centralized Product Feedback & Public Roadmap
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-indigo-500" /> Centralized Product Feedback & Public Roadmap
+            </h3>
+            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+              DEMO / LAB ENVIRONMENT
+            </Badge>
+          </div>
           <p className="text-xs text-muted-foreground mt-0.5">
             Capture client feature requests, customer roadmap voting, beta testing opt-ins, and product iteration loops.
           </p>

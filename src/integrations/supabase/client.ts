@@ -5,8 +5,8 @@ import type { Database } from './types';
 // Use a placeholder default so the app boots in preview mode when env vars
 // are absent. The real project URL must come from VITE_SUPABASE_URL — never
 // commit it here (the production audit forbids hardcoded Supabase URLs).
-const DEFAULT_SUPABASE_URL = "https://aelzsqxllkypbzslxyju.supabase.co";
-const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbHpzcXhsbGt5cGJ6c2x4eWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MzU4MjksImV4cCI6MjA4ODExMTgyOX0.g5pQXBCiwS2KKEJUBI2KONzppM5IgUiid_lffLsOIEk";
+const DEFAULT_SUPABASE_URL = "https://placeholder.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY = "ci-placeholder-anon-key";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_ANON_KEY;

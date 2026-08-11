@@ -105,15 +105,36 @@ vi.mock("@/integrations/supabase/client", () => ({
       signInWithPassword: mockSignIn,
       signOut: mockSignOut,
     },
+    rpc: vi.fn((fnName: string, args: any) => {
+      // Basic mock implementation for rpc calls in test environment
+      return Promise.resolve({ data: null, error: null });
+    }),
+    storage: {
+      from: vi.fn((bucket: string) => ({
+        upload: vi.fn().mockResolvedValue({ data: { path: 'test-path' }, error: null }),
+        download: vi.fn().mockResolvedValue({ data: new Blob(['test-content']), error: null }),
+        remove: vi.fn().mockResolvedValue({ data: [], error: null }),
+        createSignedUrl: vi.fn().mockImplementation((path: string, expiresIn: number) =>
+          Promise.resolve({
+            data: { signedUrl: `https://test.supabase.co/storage/v1/object/signed/${bucket}/${path}?token=mocktoken` },
+            error: null,
+          })
+        ),
+        getPublicUrl: vi.fn().mockImplementation((path: string) => ({
+          data: { publicUrl: `https://test.supabase.co/storage/v1/object/public/${bucket}/${path}` },
+        })),
+      })),
+    },
     from: vi.fn((table: string) => {
       const tableData = mockDatabase.get(table) || [];
       return {
         select: vi.fn((selectArg?: string) => {
           const relations = parseRelations(selectArg);
-          return {
-            eq: vi.fn((field: string, value: any) => {
-              const filtered = tableData.filter((d: any) => d[field] === value);
+          const createSelectEq = (currentFiltered: any[]) => {
+            const eqFn: any = vi.fn((field: string, value: any) => {
+              const filtered = currentFiltered.filter((d: any) => d[field] === value);
               return {
+                eq: createSelectEq(filtered),
                 single: vi.fn(() => {
                   const item = filtered[0] || null;
                   return Promise.resolve({
@@ -128,7 +149,6 @@ vi.mock("@/integrations/supabase/client", () => ({
                     error: null,
                   });
                 }),
-                // Return array when not using single/maybeSingle
                 then: vi.fn((resolve: any) =>
                   resolve({
                     data: filtered.map((d: any) => hydrateRelations(table, d, relations)),
@@ -137,7 +157,12 @@ vi.mock("@/integrations/supabase/client", () => ({
                 ),
                 catch: vi.fn(() => ({ data: filtered, error: null })),
               };
-            }),
+            });
+            return eqFn;
+          };
+
+          return {
+            eq: createSelectEq(tableData),
             // Handle select without eq
             then: vi.fn((resolve: any) =>
               resolve({
@@ -180,38 +205,43 @@ vi.mock("@/integrations/supabase/client", () => ({
             then: vi.fn((resolve: any) => resolve({ data: newItem, error: null })),
           };
         }),
-        update: vi.fn((data: any) => ({
-          eq: vi.fn((field: string, value: any) => ({
-            single: vi.fn(() => {
-              const index = tableData.findIndex((d: any) => d[field] === value);
-              if (index !== -1) {
-                tableData[index] = { ...tableData[index], ...data, updated_at: new Date().toISOString() };
-                mockDatabase.set(table, tableData);
-                return Promise.resolve({ data: tableData[index], error: null });
-              }
-              return Promise.resolve({ data: null, error: { message: 'Not found' } });
-            }),
-            then: vi.fn((resolve: any) => {
-              const index = tableData.findIndex((d: any) => d[field] === value);
-              if (index !== -1) {
-                tableData[index] = { ...tableData[index], ...data, updated_at: new Date().toISOString() };
-                mockDatabase.set(table, tableData);
-                return resolve({ data: tableData[index], error: null });
-              }
-              return resolve({ data: null, error: null });
-            }),
-          })),
-        })),
-        delete: vi.fn(() => ({
-          eq: vi.fn((field: string, value: any) => {
-            const remaining = tableData.filter((d: any) => d[field] !== value);
-            mockDatabase.set(table, remaining);
-            return {
-              single: vi.fn(() => Promise.resolve({ data: null, error: null })),
-              then: vi.fn((resolve: any) => resolve({ data: null, error: null })),
-            };
-          }),
-        })),
+        update: vi.fn((data: any) => {
+          const createUpdateEq = (currentFiltered: any[]) => {
+            const eqFn: any = vi.fn((field: string, value: any) => {
+              const filtered = currentFiltered.filter((d: any) => d[field] === value);
+              return {
+                eq: createUpdateEq(filtered),
+                select: vi.fn(() => Promise.resolve({ data: filtered, error: null })),
+                single: vi.fn(() => {
+                  const item = filtered[0] || null;
+                  return Promise.resolve({ data: item, error: null });
+                }),
+                then: vi.fn((resolve: any) => resolve({ data: filtered, error: null })),
+              };
+            });
+            return eqFn;
+          };
+          return {
+            eq: createUpdateEq(tableData),
+          };
+        }),
+        delete: vi.fn(() => {
+          const createDeleteEq = (currentFiltered: any[]) => {
+            const eqFn: any = vi.fn((field: string, value: any) => {
+              const filtered = currentFiltered.filter((d: any) => d[field] === value);
+              return {
+                eq: createDeleteEq(filtered),
+                select: vi.fn(() => Promise.resolve({ data: [], error: null })),
+                single: vi.fn(() => Promise.resolve({ data: null, error: null })),
+                then: vi.fn((resolve: any) => resolve({ data: [], error: null })),
+              };
+            });
+            return eqFn;
+          };
+          return {
+            eq: createDeleteEq(tableData),
+          };
+        }),
       };
     }),
   },

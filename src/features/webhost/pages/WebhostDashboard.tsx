@@ -121,7 +121,7 @@ const WebhostDashboard = () => {
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
               <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-soft" />
-              <span className="text-xs text-white/60 truncate max-w-[180px]">{user.email}</span>
+              <span className="text-xs text-white/60 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
               {getLevelBadge()}
             </div>
             <Button
