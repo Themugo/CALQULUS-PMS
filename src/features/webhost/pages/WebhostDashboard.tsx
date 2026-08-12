@@ -126,7 +126,7 @@ const WebhostDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
-      {/* Premium executive header — navy gradient (#071A3A → #0B1F45) */}
+      {/* Premium executive header — navy gradient (#050B2A → #0B1440) */}
       <header className="sticky top-0 z-50 navy-executive-gradient border-b border-navy-deep/60 shadow-sm">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
