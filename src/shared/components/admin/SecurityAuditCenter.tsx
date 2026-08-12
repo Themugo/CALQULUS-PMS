@@ -1,38 +1,64 @@
 import React, { useState } from "react";
-import { ShieldAlert, Lock, AlertTriangle, Key, Search, Filter, CheckCircle2, User, Globe, History, Download } from "lucide-react";
+import { ShieldAlert, Search, Download, CheckCircle2, AlertTriangle, MinusCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
+import { useAuditLogs, type AuditLog } from "@/shared/hooks/useAuditLogs";
+import { format } from "date-fns";
 
-export interface AuditLogRecord {
-  id: string;
-  actorEmail: string;
-  action: string;
-  resource: string;
-  ipAddress: string;
-  status: "success" | "failure" | "flagged";
-  timestamp: string;
+function exportLogsCsv(logs: AuditLog[]) {
+  const header = ["Timestamp", "Actor Email", "Actor Role", "Action", "Entity Type", "Entity Label", "Entity ID"];
+  const rows = logs.map((l) => [
+    l.created_at,
+    l.actor_email ?? "",
+    l.actor_role ?? "",
+    l.action,
+    l.entity_type,
+    l.entity_label ?? "",
+    l.entity_id ?? "",
+  ]);
+  const csv = [header, ...rows]
+    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `calqulus-audit-log-${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
-
-const SAMPLE_AUDIT_LOGS: AuditLogRecord[] = [
-  { id: "audit-01", actorEmail: "mugo.james27@gmail.com", action: "PERMISSION_OVERRIDE_SAVED", resource: "Visual RBAC Matrix", ipAddress: "102.217.64.12", status: "success", timestamp: "10 mins ago" },
-  { id: "audit-02", actorEmail: "jimmythemugo@gmail.com", action: "WATER_BILLING_RATE_UPDATE", resource: "Sunset Towers", ipAddress: "197.232.18.42", status: "success", timestamp: "42 mins ago" },
-  { id: "audit-03", actorEmail: "unknown_user@197.232.99.1", action: "FAILED_ADMIN_LOGIN", resource: "/webhost/login", ipAddress: "197.232.99.1", status: "flagged", timestamp: "2 hours ago" },
-  { id: "audit-04", actorEmail: "themugo@calqulusrms.com", action: "FEATURE_FLAG_TOGGLED", resource: "enable_mpesa_stk_v2", ipAddress: "102.217.64.12", status: "success", timestamp: "5 hours ago" },
-];
 
 export function SecurityAuditCenter({ className }: { className?: string }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  const filtered = SAMPLE_AUDIT_LOGS.filter((log) => {
-    const matchesSearch = log.actorEmail.toLowerCase().includes(searchTerm.toLowerCase()) || log.action.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "All" || log.status === statusFilter;
+  // Real audit log source: the activity_logs table via the existing useAuditLogs hook.
+  const { data: logs, isLoading, error } = useAuditLogs({ limit: 200 });
+
+  const filtered = (logs ?? []).filter((log) => {
+    const q = searchTerm.toLowerCase();
+    const matchesSearch =
+      !q ||
+      (log.actor_email?.toLowerCase().includes(q) ?? false) ||
+      log.action.toLowerCase().includes(q) ||
+      log.entity_type.toLowerCase().includes(q) ||
+      (log.entity_label?.toLowerCase().includes(q) ?? false);
+    const isFailure = log.action.toLowerCase().includes("failed") || log.action.toLowerCase().includes("flag");
+    const matchesStatus =
+      statusFilter === "all" || (statusFilter === "failed" && isFailure) || (statusFilter === "flag" && isFailure);
     return matchesSearch && matchesStatus;
   });
+
+  const flaggedCount = (logs ?? []).filter(
+    (l) => l.action.toLowerCase().includes("failed") || l.action.toLowerCase().includes("flag")
+  ).length;
 
   return (
     <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
@@ -40,10 +66,10 @@ export function SecurityAuditCenter({ className }: { className?: string }) {
         <div>
           <div className="flex items-center gap-2">
             <ShieldAlert className="h-4 w-4 text-primary" />
-            <CardTitle className="text-base font-bold text-foreground">Security Center & Audit Log Engine</CardTitle>
+            <CardTitle className="text-base font-bold text-foreground">Security & Audit Log</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Immutably track system administrative events, authentication attempts, and threat alerts.
+            Administrative events, authentication attempts, and resource changes from the platform audit log.
           </CardDescription>
         </div>
 
@@ -59,81 +85,110 @@ export function SecurityAuditCenter({ className }: { className?: string }) {
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-8 text-xs w-28">
+            <SelectTrigger className="h-8 text-xs w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All" className="text-xs">All Event Statuses</SelectItem>
-              <SelectItem value="success" className="text-xs">Success</SelectItem>
-              <SelectItem value="flagged" className="text-xs">Flagged Threats</SelectItem>
+              <SelectItem value="all" className="text-xs">All Events</SelectItem>
+              <SelectItem value="failed" className="text-xs">Failures</SelectItem>
+              <SelectItem value="flag" className="text-xs">Flagged</SelectItem>
             </SelectContent>
           </Select>
 
-          <Button size="sm" variant="outline" className="h-8 text-xs font-semibold gap-1">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => exportLogsCsv(filtered)}
+            disabled={filtered.length === 0}
+            className="h-8 text-xs font-semibold gap-1"
+          >
             <Download className="h-3.5 w-3.5" /> Export CSV
           </Button>
         </div>
       </CardHeader>
 
       <CardContent className="p-4 space-y-4">
-        {/* Security Overview Cards */}
+        {/* Security overview — only show values backed by real data; others labelled unavailable */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-3 rounded-lg border bg-emerald-500/5 border-emerald-500/20 text-xs space-y-1">
-            <span className="text-muted-foreground block text-[10px] font-bold uppercase">MFA Adoption Rate</span>
-            <strong className="text-emerald-600 text-base">98.4%</strong>
-            <span className="text-[10px] text-muted-foreground block">Required for all webhost admins</span>
+          <div className="p-3 rounded-lg border bg-muted/20 border-border/80 text-xs space-y-1">
+            <span className="text-muted-foreground block text-[10px] font-bold uppercase flex items-center gap-1">
+              <MinusCircle className="h-3 w-3" /> MFA Adoption Rate
+            </span>
+            <strong className="text-muted-foreground text-base">—</strong>
+            <span className="text-[10px] text-muted-foreground block">Not reported by auth provider in this view</span>
           </div>
 
-          <div className="p-3 rounded-lg border bg-amber-500/5 border-amber-500/20 text-xs space-y-1">
-            <span className="text-muted-foreground block text-[10px] font-bold uppercase">Active Threats Blocked</span>
-            <strong className="text-amber-600 text-base">3 Flagged</strong>
-            <span className="text-[10px] text-muted-foreground block">Rate limit IP restrictions active</span>
+          <div className="p-3 rounded-lg border border-border/80 text-xs space-y-1">
+            <span className="text-muted-foreground block text-[10px] font-bold uppercase">Flagged / Failed Events</span>
+            {isLoading ? (
+              <Skeleton className="h-5 w-12" />
+            ) : (
+              <strong className={cn("text-base", flaggedCount > 0 ? "text-amber-600" : "text-emerald-600")}>{flaggedCount}</strong>
+            )}
+            <span className="text-[10px] text-muted-foreground block">In current result set</span>
           </div>
 
-          <div className="p-3 rounded-lg border bg-primary/5 border-primary/20 text-xs space-y-1">
-            <span className="text-muted-foreground block text-[10px] font-bold uppercase">Session Timeouts</span>
-            <strong className="text-primary text-base">15 Mins Idle</strong>
-            <span className="text-[10px] text-muted-foreground block">Strict JWT token rotation enabled</span>
+          <div className="p-3 rounded-lg border bg-muted/20 border-border/80 text-xs space-y-1">
+            <span className="text-muted-foreground block text-[10px] font-bold uppercase flex items-center gap-1">
+              <MinusCircle className="h-3 w-3" /> Session Timeout
+            </span>
+            <strong className="text-muted-foreground text-base">—</strong>
+            <span className="text-[10px] text-muted-foreground block">JWT policy not exposed in this view</span>
           </div>
         </div>
 
-        {/* Audit Log Table */}
+        {/* Audit Log Table — real data from activity_logs */}
         <div className="border border-border/80 rounded-xl overflow-hidden text-xs">
-          <table className="w-full text-left">
-            <thead className="bg-muted/30 border-b border-border/80 text-[11px] font-bold text-muted-foreground uppercase">
-              <tr>
-                <th className="p-3">Actor Email</th>
-                <th className="p-3">Action Type</th>
-                <th className="p-3">Resource Target</th>
-                <th className="p-3">IP Address</th>
-                <th className="p-3 text-center">Status</th>
-                <th className="p-3 text-right">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {filtered.map((log) => (
-                <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="p-3 font-bold text-foreground">{log.actorEmail}</td>
-                  <td className="p-3 font-mono text-[11px]">{log.action}</td>
-                  <td className="p-3 text-muted-foreground">{log.resource}</td>
-                  <td className="p-3 font-mono text-[11px] text-muted-foreground">{log.ipAddress}</td>
-                  <td className="p-3 text-center">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[9px] font-bold h-4 uppercase",
-                        log.status === "success" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                        log.status === "flagged" && "bg-red-500/10 text-red-600 border-red-500/20"
-                      )}
-                    >
-                      {log.status}
-                    </Badge>
-                  </td>
-                  <td className="p-3 text-right text-muted-foreground text-[11px]">{log.timestamp}</td>
+          {error ? (
+            <div className="p-4 text-destructive flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" /> Error loading audit logs. You may not have permission to view this data.
+            </div>
+          ) : isLoading ? (
+            <div className="p-3 space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-6 text-center">
+              <CheckCircle2 className="h-6 w-6 mx-auto text-muted-foreground/50 mb-2" />
+              <p className="text-muted-foreground">{searchTerm || statusFilter !== "all" ? "No matching audit events" : "No audit events recorded yet"}</p>
+            </div>
+          ) : (
+            <table className="w-full text-left">
+              <thead className="bg-muted/30 border-b border-border/80 text-[11px] font-bold text-muted-foreground uppercase">
+                <tr>
+                  <th className="p-3">Actor</th>
+                  <th className="p-3">Action</th>
+                  <th className="p-3">Resource</th>
+                  <th className="p-3 text-right">Timestamp</th>
+                  <th className="p-3 text-center">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {filtered.map((log) => {
+                  const isFailure = log.action.toLowerCase().includes("failed") || log.action.toLowerCase().includes("flag");
+                  return (
+                    <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="p-3 font-bold text-foreground truncate max-w-[180px]">{log.actor_email ?? "system"}</td>
+                      <td className="p-3 font-mono text-[11px]">{log.action}</td>
+                      <td className="p-3 text-muted-foreground truncate max-w-[180px]">{log.entity_label ?? log.entity_type}</td>
+                      <td className="p-3 text-right text-muted-foreground text-[11px]">{format(new Date(log.created_at), "MMM d, HH:mm")}</td>
+                      <td className="p-3 text-center">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[9px] font-bold h-4 uppercase",
+                            isFailure ? "bg-red-500/10 text-red-600 border-red-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                          )}
+                        >
+                          {isFailure ? "flag" : "ok"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       </CardContent>
     </Card>

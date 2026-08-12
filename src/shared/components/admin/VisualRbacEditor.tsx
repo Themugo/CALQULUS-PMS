@@ -92,7 +92,7 @@ export function VisualRbacEditor({ className }: { className?: string }) {
             <CardTitle className="text-base font-bold text-foreground">Role-Based Access Control (RBAC) Matrix</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Configure granular CRUD & Approval access controls per enterprise module and role tier.
+            Reference view of granular CRUD &amp; approval access per module and role tier. Actual access is enforced by backend Row-Level Security and the admin_permissions table.
           </CardDescription>
         </div>
 
@@ -107,6 +107,12 @@ export function VisualRbacEditor({ className }: { className?: string }) {
       </CardHeader>
 
       <CardContent className="p-4 space-y-6">
+        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
+          <Lock className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-muted-foreground">
+            <strong className="text-amber-600">Reference matrix.</strong> This view documents the intended role-permission architecture. The backend (<code className="font-mono">admin_permissions</code> + Row-Level Security) remains the source of truth; toggles here do not mutate live authorization.
+          </p>
+        </div>
         {/* Role Selector Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
           {roles.map((r) => (

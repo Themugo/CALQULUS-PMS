@@ -33,10 +33,10 @@ export function SupportOperationsCenter({ className }: { className?: string }) {
       <CardContent className="p-4 space-y-4 text-xs">
         <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-1.5 text-xs">
           <span className="font-bold text-amber-600 flex items-center gap-1.5">
-            <ShieldAlert className="h-4 w-4" /> Enterprise Security Compliance Directive
+            <ShieldAlert className="h-4 w-4" /> Support Session Notice
           </span>
           <p className="text-muted-foreground">
-            All customer impersonation sessions are logged directly into the immutable database audit trail. Actions taken during impersonation will be tagged with your Webhost Admin ID.
+            A backend audit-logged impersonation service is not yet implemented. The session control below is illustrative and does not currently open a real impersonated session or write to the audit trail. Production impersonation must be backed by a server-side service that tags actions with the originating admin ID.
           </p>
         </div>
 

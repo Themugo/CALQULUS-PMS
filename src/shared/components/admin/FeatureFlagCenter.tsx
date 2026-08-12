@@ -52,7 +52,7 @@ export function FeatureFlagCenter({ className }: { className?: string }) {
             <CardTitle className="text-base font-bold text-foreground">Feature Flag & Beta Rollout Center</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Control platform capability toggles, percentage-based rollouts, and organization beta access.
+            Reference catalog of platform capability toggles and rollout intent. No runtime feature-flag service is connected; toggles here are illustrative and are not persisted.
           </CardDescription>
         </div>
 
@@ -86,6 +86,12 @@ export function FeatureFlagCenter({ className }: { className?: string }) {
       </CardHeader>
 
       <CardContent className="p-4 space-y-3">
+        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
+          <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-muted-foreground">
+            <strong className="text-amber-600">Illustrative catalog.</strong> These flags document intended platform capabilities. There is no connected feature-flag service, so toggles do not change live system behavior and are not audit-logged.
+          </p>
+        </div>
         <div className="space-y-2.5">
           {filteredFlags.map((flag) => (
             <div

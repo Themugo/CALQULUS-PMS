@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CreditCard, DollarSign, Users, Building2, Check, Percent, ArrowUpRight, ShieldCheck, Tag } from "lucide-react";
+import { CreditCard, DollarSign, Users, Building2, Check, Percent, ArrowUpRight, ShieldCheck, Tag, AlertCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -33,7 +33,7 @@ export function LicenseSubscriptionCenter({ className }: { className?: string })
             <CardTitle className="text-base font-bold text-foreground">SaaS Subscription & License Allocation Center</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Manage agency subscription tiers, per-unit billing rates, seat allocations, and promo blocks.
+            Control-plane view of subscription tiers and per-unit pricing. Detailed tier configuration and active-agency counts are managed in the Billing &amp; Tiers tabs.
           </CardDescription>
         </div>
 
@@ -43,6 +43,12 @@ export function LicenseSubscriptionCenter({ className }: { className?: string })
       </CardHeader>
 
       <CardContent className="p-4 space-y-4">
+        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
+          <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-muted-foreground">
+            <strong className="text-amber-600">Control-plane summary.</strong> Per-unit prices reflect the configured <code className="font-mono">subscription_tiers.price_per_unit</code>. Active-agency counts shown below are illustrative; live counts are available in the Billing tab.
+          </p>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {SUBSCRIPTION_TIERS.map((tier) => (
             <div

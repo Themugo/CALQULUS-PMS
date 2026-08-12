@@ -65,6 +65,12 @@ export function MultiTenantManager({ className }: { className?: string }) {
       </CardHeader>
 
       <CardContent className="p-4 space-y-4">
+        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
+          <ShieldCheck className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-muted-foreground">
+            <strong className="text-amber-600">Sample data.</strong> The organizations shown below are illustrative. Multi-tenant provisioning is not yet backed by a live data source; tenant boundary isolation is enforced by database Row-Level Security.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {filteredOrgs.map((org) => {
             const isSelected = org.id === selectedOrg;

@@ -24,7 +24,7 @@ export function AdminConfigurationCenter({ className }: { className?: string }) 
             <CardTitle className="text-base font-bold text-foreground">Global Platform Configuration Center</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Configure default currency, localization, automated email templates, and white-label branding parameters.
+            Configure default currency, localization, automated email templates, and white-label branding parameters. Values shown are current defaults; persistence requires a platform settings service.
           </CardDescription>
         </div>
 
@@ -35,6 +35,12 @@ export function AdminConfigurationCenter({ className }: { className?: string }) 
       </CardHeader>
 
       <CardContent className="p-4 space-y-4 text-xs">
+        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
+          <Settings className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-muted-foreground">
+            <strong className="text-amber-600">Configuration surface.</strong> These fields document the platform&apos;s configurable parameters. A backing settings store is not yet connected, so &quot;Save Changes&quot; confirms locally only.
+          </p>
+        </div>
         <Tabs defaultValue="localization">
           <TabsList className="mb-4">
             <TabsTrigger value="localization" className="text-xs font-bold gap-1.5">
