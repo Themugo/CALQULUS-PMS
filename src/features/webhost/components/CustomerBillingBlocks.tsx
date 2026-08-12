@@ -8,17 +8,21 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Badge } from '@/shared/components/ui/badge';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useAuth } from '@/features/auth/AuthContext';
-import { DollarSign, Plus, Pencil, Tag, Shield, Ban } from 'lucide-react';
+import { DollarSign, Plus, Pencil, Tag, Shield, Ban, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
+import { format, isBefore } from 'date-fns';
+import { cn } from '@/shared/lib/utils';
 
 interface CustomerBillingBlock {
   id: string;
   customer_id: string;
   customer_type: 'manager' | 'landlord' | 'agency';
+  agency_id: string | null;
   price_per_unit: number | null;
   unit_count_locked: boolean;
   registration_fee_waived: boolean;
@@ -35,6 +39,8 @@ interface CustomerBillingBlock {
   approved_by: string | null;
   approved_at: string | null;
   created_at: string;
+  updated_at: string;
+  updated_by: string | null;
 }
 
 interface CustomerOption {
@@ -51,6 +57,8 @@ const CustomerBillingBlocks = () => {
   const { logActivity } = useActivityLog();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBlock, setEditingBlock] = useState<CustomerBillingBlock | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CustomerBillingBlock | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const canManage = isPlatformOwner || isPlatformBusiness;
 
@@ -72,7 +80,7 @@ const CustomerBillingBlocks = () => {
     custom_block_notes: '',
   });
 
-  const { data: blocks, isLoading } = useQuery({
+  const { data: blocks, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['customer-billing-blocks'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -84,6 +92,48 @@ const CustomerBillingBlocks = () => {
     },
     enabled: canManage,
   });
+
+  // Standard tier price map (tier_key → price_per_unit) — REAL, read-only.
+  // Used to derive STANDARD PRICE → CUSTOM PRICE → DIFFERENCE (§3, §5).
+  const { data: tierPriceMap = {} } = useQuery<Record<string, number>>({
+    queryKey: ['tier-price-per-unit'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('subscription_tiers').select('tier_key, price_per_unit');
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      for (const r of (data || []) as { tier_key: string; price_per_unit: number | null }[]) {
+        if (r.price_per_unit != null) map[r.tier_key] = Number(r.price_per_unit);
+      }
+      return map;
+    },
+    enabled: canManage,
+  });
+
+  // Manager → subscription_tier map (REAL) so we can resolve a manager customer's
+  // standard tier price. No new pricing engine — a read of existing data.
+  const { data: managerTierMap = {} } = useQuery<Record<string, string>>({
+    queryKey: ['manager-tier-map'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('manager_profiles').select('manager_user_id, subscription_tier');
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const r of (data || []) as { manager_user_id: string; subscription_tier: string }[]) {
+        map[r.manager_user_id] = r.subscription_tier;
+      }
+      return map;
+    },
+    enabled: canManage,
+  });
+
+  // Resolve standard price for a block's customer (managers only — others have no
+  // subscription tier, so standard price is honestly "—").
+  const getStandardPrice = (b: CustomerBillingBlock): number | null => {
+    if (b.customer_type !== 'manager') return null;
+    const tierKey = managerTierMap[b.customer_id];
+    if (!tierKey) return null;
+    const price = tierPriceMap[tierKey];
+    return price != null ? price : null;
+  };
 
   const { data: customers } = useQuery({
     queryKey: ['customer-options'],
@@ -118,6 +168,7 @@ const CustomerBillingBlocks = () => {
       custom_block_notes: '',
     });
     setEditingBlock(null);
+    setValidationError(null);
   };
 
   const openEdit = (block: CustomerBillingBlock) => {
@@ -139,27 +190,41 @@ const CustomerBillingBlocks = () => {
       custom_block_notes: block.custom_block_notes || '',
     });
     setEditingBlock(block);
+    setValidationError(null);
     setIsDialogOpen(true);
   };
 
   const saveBlock = useMutation({
     mutationFn: async () => {
       if (!form.customer_id) throw new Error('Select a customer');
+      const pricePerUnit = form.price_per_unit ? parseFloat(form.price_per_unit) : null;
+      if (pricePerUnit != null && (isNaN(pricePerUnit) || pricePerUnit < 0)) throw new Error('Price per unit must be a non-negative number');
+      const regFee = parseFloat(form.registration_fee_amount);
+      if (isNaN(regFee) || regFee < 0) throw new Error('Registration fee must be a non-negative number');
+      const discPct = parseFloat(form.monthly_discount_pct);
+      if (isNaN(discPct) || discPct < 0 || discPct > 100) throw new Error('Discount % must be between 0 and 100');
+      const discFlat = parseFloat(form.monthly_discount_flat);
+      if (isNaN(discFlat) || discFlat < 0) throw new Error('Flat discount must be a non-negative number');
+      const blockPrice = form.custom_block_price ? parseFloat(form.custom_block_price) : null;
+      if (blockPrice != null && (isNaN(blockPrice) || blockPrice < 0)) throw new Error('Block price must be a non-negative number');
+      const blockUnits = form.custom_block_units ? parseInt(form.custom_block_units) : null;
+      if (blockUnits != null && (isNaN(blockUnits) || blockUnits < 0)) throw new Error('Block units must be a non-negative integer');
+
       const payload = {
         customer_id: form.customer_id,
         customer_type: form.customer_type,
-        price_per_unit: form.price_per_unit ? parseFloat(form.price_per_unit) : null,
+        price_per_unit: pricePerUnit,
         unit_count_locked: form.unit_count_locked,
         registration_fee_waived: form.registration_fee_waived,
-        registration_fee_amount: parseFloat(form.registration_fee_amount) || 0,
-        monthly_discount_pct: parseFloat(form.monthly_discount_pct) || 0,
-        monthly_discount_flat: parseFloat(form.monthly_discount_flat) || 0,
+        registration_fee_amount: regFee,
+        monthly_discount_pct: discPct,
+        monthly_discount_flat: discFlat,
         discount_label: form.discount_label || null,
         discount_expires_at: form.discount_expires_at || null,
         zero_registration: form.zero_registration,
         custom_block_name: form.custom_block_name || null,
-        custom_block_price: form.custom_block_price ? parseFloat(form.custom_block_price) : null,
-        custom_block_units: form.custom_block_units ? parseInt(form.custom_block_units) : null,
+        custom_block_price: blockPrice,
+        custom_block_units: blockUnits,
         custom_block_notes: form.custom_block_notes || null,
         approved_by: user?.id,
         approved_at: new Date().toISOString(),
@@ -181,7 +246,10 @@ const CustomerBillingBlocks = () => {
       setIsDialogOpen(false);
       resetForm();
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => {
+      setValidationError(err.message);
+      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+    },
   });
 
   const deleteBlock = useMutation({
@@ -192,6 +260,7 @@ const CustomerBillingBlocks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer-billing-blocks'] });
       toast({ title: 'Billing block removed' });
+      setDeleteTarget(null);
     },
     onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
   });
@@ -201,24 +270,58 @@ const CustomerBillingBlocks = () => {
     return c ? (c.full_name || c.email) : customerId.slice(0, 8) + '...';
   };
 
+  const fmtKES = (n: number) => n.toLocaleString('en-KE', { minimumFractionDigits: 0 });
+
+  // Read-only derivation of discount lifecycle from discount_expires_at.
+  // No automatic expiration logic is created — this only labels the existing date.
+  type DiscountStatus = 'none' | 'active' | 'expiring' | 'expired';
+  const getDiscountStatus = (b: CustomerBillingBlock): DiscountStatus => {
+    if (!b.discount_expires_at) return 'none';
+    const expiry = new Date(b.discount_expires_at);
+    const now = new Date();
+    if (isBefore(expiry, now)) return 'expired';
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    if (expiry.getTime() - now.getTime() <= sevenDays) return 'expiring';
+    return 'active';
+  };
+
+  const refresh = () => {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ['tier-price-per-unit'] });
+    queryClient.invalidateQueries({ queryKey: ['manager-tier-map'] });
+    queryClient.invalidateQueries({ queryKey: ['customer-options'] });
+  };
+
+  // STANDARD → CUSTOM → DIFFERENCE preview for the form (managers only).
+  const formStandardPrice = (): number | null => {
+    if (form.customer_type !== 'manager' || !form.customer_id) return null;
+    const tierKey = managerTierMap[form.customer_id];
+    if (!tierKey) return null;
+    return tierPriceMap[tierKey] ?? null;
+  };
+
   return (
-    <Card>
+    <div className="space-y-5">
+      <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-500" />
-              Customer Billing Blocks
+              <DollarSign className="h-5 w-5 text-amber-400" />
+              Custom Pricing & Commercial Exceptions Console
             </CardTitle>
             <CardDescription>
-              Per-unit pricing overrides, waivers, discounts, and custom negotiated blocks per customer.
-              Only owner and business-level admins can manage billing blocks.
+              Per-unit pricing overrides, waivers, discounts, and custom negotiated blocks per customer. Only owner and business-level admins can manage billing blocks.
             </CardDescription>
           </div>
           {canManage && (
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs">
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
+              </Button>
             <Dialog open={isDialogOpen} onOpenChange={v => { setIsDialogOpen(v); if (!v) resetForm(); }}>
               <DialogTrigger asChild>
-                <Button onClick={resetForm}><Plus className="h-4 w-4 mr-2" />New Billing Block</Button>
+                <Button size="sm" onClick={resetForm} className="bg-amber-400 hover:bg-amber-500 text-slate-900 h-9 rounded-xl text-xs"><Plus className="h-3.5 w-3.5 mr-1.5" />New Billing Block</Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
@@ -226,6 +329,40 @@ const CustomerBillingBlocks = () => {
                   <DialogDescription>Configure custom pricing for a customer.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                  {validationError && (
+                    <div className="flex items-start gap-2 p-2.5 rounded-lg border border-red-500/30 bg-red-500/5">
+                      <AlertTriangle className="h-3.5 w-3.5 text-red-400 shrink-0 mt-0.5" />
+                      <p className="text-xs text-red-200">{validationError}</p>
+                    </div>
+                  )}
+                  {/* STANDARD → CUSTOM → DIFFERENCE preview (managers only, read-only derivation) */}
+                  {form.customer_type === 'manager' && form.customer_id && (() => {
+                    const std = formStandardPrice();
+                    const custom = form.price_per_unit ? parseFloat(form.price_per_unit) : null;
+                    if (std == null && custom == null) return null;
+                    const diff = (std != null && custom != null) ? custom - std : null;
+                    return (
+                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-300 mb-1.5">Pricing impact</p>
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div>
+                            <p className="text-[10px] text-slate-400">Standard</p>
+                            <p className="text-xs font-semibold text-white">{std != null ? `KES ${fmtKES(std)}` : '—'}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-slate-400">Custom</p>
+                            <p className="text-xs font-semibold text-white">{custom != null ? `KES ${fmtKES(custom)}` : 'Tier default'}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-slate-400">Difference</p>
+                            <p className={cn('text-xs font-semibold', diff == null ? 'text-slate-400' : diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
+                              {diff != null ? `${diff < 0 ? '−' : diff > 0 ? '+' : ''}KES ${fmtKES(Math.abs(diff))}` : '—'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <div className="space-y-2">
                     <Label>Customer</Label>
                     <Select
@@ -332,81 +469,152 @@ const CustomerBillingBlocks = () => {
                       <Input value={form.custom_block_notes} onChange={e => setForm(f => ({ ...f, custom_block_notes: e.target.value }))} placeholder="Internal notes about this negotiation" />
                     </div>
                   </div>
-                  <Button className="w-full" onClick={() => saveBlock.mutate()} disabled={saveBlock.isPending || !form.customer_id}>
-                    {saveBlock.isPending ? 'Saving...' : editingBlock ? 'Update Block' : 'Create Block'}
-                  </Button>
+                  <DialogFooter className="pt-2">
+                    <Button variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>Cancel</Button>
+                    <Button onClick={() => saveBlock.mutate()} disabled={saveBlock.isPending || !form.customer_id} className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+                      {saveBlock.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                      {saveBlock.isPending ? 'Saving...' : editingBlock ? 'Update Block' : 'Create Block'}
+                    </Button>
+                  </DialogFooter>
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
           )}
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" /></div>
+          <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
         ) : !canManage ? (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>Only owner and business-level admins can manage billing blocks.</p>
           </div>
+        ) : isError ? (
+          <div className="p-8 text-center rounded-xl border border-red-500/30 bg-red-500/5">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
+            <p className="text-sm font-semibold text-red-300">Unable to load custom pricing.</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
+            <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+            </Button>
+          </div>
         ) : !blocks || blocks.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Tag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No custom billing blocks configured. Create one to override default tier pricing for a customer.</p>
+          <div className="text-center py-10 text-muted-foreground">
+            <Tag className="h-10 w-10 mx-auto mb-3 opacity-30" />
+            <p className="text-sm">No custom pricing configured.</p>
+            <p className="text-xs text-slate-500 mt-1">Create a billing block to override default tier pricing for a customer.</p>
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Customer</TableHead>
+                <TableHead>Account</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Unit Price</TableHead>
+                <TableHead>Standard</TableHead>
+                <TableHead>Custom</TableHead>
+                <TableHead>Diff</TableHead>
                 <TableHead>Discount</TableHead>
                 <TableHead>Reg. Fee</TableHead>
-                <TableHead>Custom Block</TableHead>
+                <TableHead>Expiry</TableHead>
+                <TableHead>Updated</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {blocks.map(block => (
+              {blocks.map(block => {
+                const std = getStandardPrice(block);
+                const custom = block.price_per_unit;
+                const diff = (std != null && custom != null) ? custom - std : null;
+                const dStatus = getDiscountStatus(block);
+                return (
                 <TableRow key={block.id}>
-                  <TableCell className="font-medium">{getCustomerName(block.customer_id)}</TableCell>
-                  <TableCell><Badge variant="secondary">{block.customer_type}</Badge></TableCell>
                   <TableCell>
-                    {block.price_per_unit ? `KES ${block.price_per_unit}/unit` : <span className="text-muted-foreground">Tier default</span>}
+                    <p className="font-medium text-white text-sm">{getCustomerName(block.customer_id)}</p>
+                    {block.custom_block_name && <p className="text-[10px] text-slate-500">{block.custom_block_name}</p>}
+                  </TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px] border-slate-600 text-slate-300 capitalize">{block.customer_type}</Badge></TableCell>
+                  <TableCell>
+                    <p className="text-xs text-slate-300">{std != null ? `KES ${fmtKES(std)}` : <span className="text-slate-500">—</span>}</p>
+                    <p className="text-[10px] text-slate-500">/unit</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-xs font-semibold text-white">{custom != null ? `KES ${fmtKES(custom)}` : <span className="text-slate-400">Tier default</span>}</p>
+                    <p className="text-[10px] text-slate-500">/unit</p>
+                  </TableCell>
+                  <TableCell>
+                    {diff != null ? (
+                      <span className={cn('text-xs font-semibold', diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
+                        {diff < 0 ? '−' : diff > 0 ? '+' : ''}KES {fmtKES(Math.abs(diff))}
+                      </span>
+                    ) : <span className="text-slate-500 text-xs">—</span>}
                   </TableCell>
                   <TableCell>
                     {block.monthly_discount_pct > 0 || block.monthly_discount_flat > 0 ? (
-                      <Badge className="bg-green-100 text-green-800">
+                      <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/30 text-[10px]">
                         {block.monthly_discount_pct > 0 && `${block.monthly_discount_pct}%`}
                         {block.monthly_discount_pct > 0 && block.monthly_discount_flat > 0 && ' + '}
-                        {block.monthly_discount_flat > 0 && `KES ${block.monthly_discount_flat}`}
+                        {block.monthly_discount_flat > 0 && `KES ${fmtKES(block.monthly_discount_flat)}`}
                       </Badge>
-                    ) : '-'}
+                    ) : <span className="text-slate-500 text-xs">—</span>}
+                    {dStatus !== 'none' && (
+                      <Badge variant="outline" className={cn('text-[9px] ml-1', dStatus === 'active' ? 'border-emerald-500/30 text-emerald-300' : dStatus === 'expiring' ? 'border-amber-500/30 text-amber-300' : 'border-red-500/30 text-red-300')}>
+                        {dStatus === 'active' ? 'Active' : dStatus === 'expiring' ? 'Expiring' : 'Expired'}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell>
                     {block.registration_fee_waived || block.zero_registration ? (
-                      <Badge className="bg-orange-100 text-orange-800">Waived</Badge>
-                    ) : `KES ${block.registration_fee_amount}`}
+                      <Badge className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-[10px]">Waived</Badge>
+                    ) : <span className="text-xs text-slate-200">KES {fmtKES(block.registration_fee_amount)}</span>}
                   </TableCell>
                   <TableCell>
-                    {block.custom_block_name ? (
-                      <span className="text-sm">{block.custom_block_name} ({block.custom_block_units} units @ KES {block.custom_block_price})</span>
-                    ) : '-'}
+                    {block.discount_expires_at ? (
+                      <span className={cn('text-xs', dStatus === 'expired' ? 'text-red-300' : dStatus === 'expiring' ? 'text-amber-300' : 'text-slate-300')}>
+                        {format(new Date(block.discount_expires_at), 'dd MMM yyyy')}
+                      </span>
+                    ) : <span className="text-slate-500 text-xs">—</span>}
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-xs text-slate-300">{block.updated_at ? format(new Date(block.updated_at), 'dd MMM yyyy') : '—'}</p>
+                    {block.approved_at && <p className="text-[10px] text-slate-500">approved {format(new Date(block.approved_at), 'dd MMM')}</p>}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(block)}><Pencil className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteBlock.mutate(block.id)}><Ban className="h-4 w-4" /></Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
+          </div>
         )}
       </CardContent>
     </Card>
+
+      {/* Delete confirmation (destructive, billing-impacting) */}
+      <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-400" />Remove custom pricing?</DialogTitle>
+            <DialogDescription>This will remove the custom billing block for {deleteTarget ? getCustomerName(deleteTarget.customer_id) : ''}.</DialogDescription>
+          </DialogHeader>
+          <p className="text-xs text-slate-400">The customer will revert to standard tier pricing. This cannot be undone.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => deleteTarget && deleteBlock.mutate(deleteTarget.id)} disabled={deleteBlock.isPending}>
+              {deleteBlock.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {deleteBlock.isPending ? 'Removing…' : 'Remove'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
