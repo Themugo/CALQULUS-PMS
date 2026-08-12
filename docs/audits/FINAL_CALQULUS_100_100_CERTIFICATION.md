@@ -56,6 +56,60 @@ Prior ad-hoc audits claimed "98–100/100" while a large fraction of described f
 
 ---
 
+## 2.3 Verification Coverage Map (Phase 13 brief)
+
+Traceability from the Phase 13 brief's verification areas to the concrete evidence:
+
+### SECURITY
+| Verify | Evidence |
+|---|---|
+| No credentials in source | gitleaks committed-tree clean; single committed anon JWT remediated to env-only (`scripts/test-demo-auth.mjs`); `.gitleaks.toml` allowlists cover verified non-secrets only |
+| No authentication bypass | Dev-access bypass is inert in production builds (active only under `import.meta.env.DEV` or explicit `VITE_ENABLE_DEV_ACCESS=true`); auth regression suite (`test/regression/auth-regression.test.ts`) |
+| No unauthorized RPC execution | `audit:prod` — 85 edge functions, 0 missing `config.toml`; RLS enforcement structural check 127/127 tables |
+| No cross-tenant access | `test/isolation/multi-tenant-rls-certification.test.ts` (cross-manager, cross-tenant), `tenant-separation.test.ts`, `agency-isolation.test.ts`, `landlord-access.test.ts` (55 tests) |
+| No unsafe storage access | Storage isolation covered in `test/isolation` suites; `audit:prod` verifies bucket policy posture |
+
+### DATA (role isolation)
+| Verify | Evidence |
+|---|---|
+| Tenant isolation | `test/isolation/tenant-separation.test.ts`; RLS scoping per `tenant_id` (Phase 10 E2E: tenant login scoped to single `tenant_id`) |
+| Manager isolation | `test/isolation/multi-tenant-rls-certification.test.ts` §1 Cross-Manager Isolation |
+| Landlord isolation | `test/isolation/landlord-access.test.ts` |
+| Agency isolation | `test/isolation/agency-isolation.test.ts` |
+| Submanager isolation | `test/isolation/multi-tenant-rls-certification.test.ts` §3 Submanager & Property Assignment Isolation |
+
+### FINANCE
+| Verify | Evidence |
+|---|---|
+| Payments / invoices / allocations / receipts / refunds / reversals / reconciliation | `test/financial-integrity` suite — 42 tests across 5 files (atomic `process_payment_atomic`, invoice allocations, refunds, reconciliation); Phase 10 E2E certified real payment/receipt/invoice transactions against the live backend |
+
+### PRODUCT
+| Verify | Evidence |
+|---|---|
+| No fabricated production metrics | `docs/audits/PHASE_8_PRODUCT_TRUTH_AUDIT.md` — every dashboard classified LIVE vs static; only live RPC/table-backed data rendered |
+| No fake live dashboards | Same Phase 8 audit (per-dashboard backend mapping) |
+| No misleading buttons | Phase 8 UI-integrity pass; Phase 11 consolidation removed stub/unwired actions |
+| No broken workflows | Phase 10 E2E certification: 33 real-backend workflows (auth, property, unit, onboarding, lease, invoice, payment, receipt, maintenance, contract, reports, tenant portal) all PASSED |
+
+### RELIABILITY
+| Verify | Evidence |
+|---|---|
+| Loading / empty / error UI states | Structurally verified: dashboards render guarded loading/empty/error branches (Phase 8 confirmed no fabricated data — empty states render only real data absence); auth flows surface sanitized errors via toast (unit-tested in `test/regression/auth-regression.test.ts`) |
+| Retry | Idempotent retry verified: M-Pesa callback retries (`test/financial-integrity/phase-7-financial-certification.test.ts`), Stripe event dedup for retried webhooks (`test/stripeIdempotency.test.ts`), API-contract timeout/retry (`test/api-contracts/mpesa-api-contracts.test.ts`) |
+| Offline | PWA structural support: service worker generated in build (243 precache entries, `dist/sw.js`); offline behavior of the SPA shell is structural, not load-tested — see §6 |
+| Failed mutation | Mutation error paths unit-tested (idempotency/dedup tests assert safe behavior on failure); E2E covers error surfacing on auth |
+
+### DEPLOYMENT
+| Verify | Evidence |
+|---|---|
+| Reproducible build | `npm run build` deterministic pass (~5.5 s); `package-lock.json` clean after audit fix; env-guarded CI placeholders |
+| Clean environment configuration | `audit:prod` PASS: 0 missing edge-function `config.toml` entries; 2 frontend + 33 Supabase secrets documented |
+| Passing CI | `npm run verify` (lint → typecheck → test:all → build → `npm audit` → `audit:prod`) PASS with exit 0; `ci.yml` gate equivalent |
+| Passing E2E | Production-preview Playwright chromium: 20 passed / 0 failed / 112 credential-skipped |
+| Successful production audit | `audit:prod` PASS (127/127 RLS, 129 policy sets, 85 functions) |
+
+---
+
 ## 3. Issues Fixed This Phase
 
 ### 3.1 Dependency vulnerabilities → 0
@@ -136,6 +190,7 @@ Remediation (WCAG AA, both light and dark modes):
 5. **Accessibility measured on auth screens only.** Lighthouse could not reach authenticated dashboards without production credentials; dashboards were not a11y-audited in this session.
 6. **19 pre-existing ESLint `exhaustive-deps` warnings** — unchanged from Phase 0; matches baseline.
 7. **Full-history secret scan finds 4 items** — all in historical commits of `scripts/test-demo-auth.mjs`; the working tree is remediated. Rewriting git history to purge them is a maintainer decision.
+8. **Reliability UI states are structurally verified, not systematically load-tested.** Loading/empty/error rendering is guarded and Phase 8-verified (no fabricated data); retry and failed-mutation paths are idempotency-tested at the API layer; PWA offline support is structural (SW precache). A dedicated reliability-state test suite (e.g., axe-enabled state-matrix tests, real offline-mode tests) does not exist and is recommended.
 
 ---
 
@@ -148,7 +203,9 @@ Remediation (WCAG AA, both light and dark modes):
 
 ---
 
-## 8. Change Set (Phase 13, ready for commit)
+## 8. Change Set (Phase 13, committed)
+
+Committed in `d42601b` (`fix(security): final production certification - dependency, secret, E2E and a11y hardening`), pushed to `main`; working tree clean. This report was subsequently expanded with §2.3 Verification Coverage Map to trace the Phase 13 brief's verification areas (committed as `d42601b` + follow-up).
 
 - **Modified:** `.gitleaks.toml`, `package-lock.json`, `scripts/test-demo-auth.mjs`
 - **Accessibility:** `src/index.css`, `src/features/auth/pages/{Auth,TenantAuth,TenantLogin,LandlordAuth,LandlordPortalAuth,AgencyAuth,WebhostAuth,TenantSelfRegister,ActivateAccount}.tsx`, `src/features/auth/components/ForgotPasswordDialog.tsx`
