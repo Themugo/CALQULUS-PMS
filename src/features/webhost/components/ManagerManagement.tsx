@@ -3,13 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
+import { cn } from '@/shared/lib/utils';
+import { onActivateKey } from '@/shared/lib/a11y';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -81,8 +82,10 @@ const ManagerManagement: React.FC = () => {
   const [expandedId,   setExpandedId]   = useState<string | null>(null);
   const [addOpen,      setAddOpen]      = useState(false);
   const [newMgr,       setNewMgr]       = useState({ email: '', password: '', fullName: '' });
+  const [search,       setSearch]       = useState('');
+  const [activeFilter, setActiveFilter] = useState<'pending' | 'active' | 'suspended' | 'rejected'>('pending');
 
-  const { data: managers = [], isLoading, refetch } = useQuery({
+  const { data: managers = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['webhost-managers-rich'],
     queryFn: async () => {
       const { data: roles } = await supabase
@@ -116,10 +119,18 @@ const ManagerManagement: React.FC = () => {
     },
   });
 
-  const pending   = managers.filter(m => m.approval_status === 'pending');
-  const active    = managers.filter(m => m.approval_status === 'approved');
-  const suspended = managers.filter(m => m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment');
-  const rejected  = managers.filter(m => m.approval_status === 'rejected');
+  // Client-side search across already-fetched manager records (name + email).
+  const searchQ = search.trim().toLowerCase();
+  const visibleManagers = searchQ
+    ? managers.filter(m => (m.full_name?.toLowerCase().includes(searchQ) ?? false) || m.email.toLowerCase().includes(searchQ))
+    : managers;
+
+  const pending   = visibleManagers.filter(m => m.approval_status === 'pending');
+  const active    = visibleManagers.filter(m => m.approval_status === 'approved');
+  const suspended = visibleManagers.filter(m => m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment');
+  const rejected  = visibleManagers.filter(m => m.approval_status === 'rejected');
+
+  const filteredList = activeFilter === 'pending' ? pending : activeFilter === 'active' ? active : activeFilter === 'suspended' ? suspended : rejected;
 
   const executeAction = useMutation({
     mutationFn: async () => {
@@ -280,7 +291,47 @@ const ManagerManagement: React.FC = () => {
             </div>
           </div>
           {expanded && (
-            <div className="mt-3 pt-3 border-t border-slate-800">
+            <div className="mt-3 pt-3 border-t border-slate-800 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" />Email</span>
+                  <span className="text-slate-200 font-medium truncate text-right">{m.email}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground">Created</span>
+                  <span className="text-slate-200 font-medium">{format(new Date(m.created_at), 'dd MMM yyyy')}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" />Agency</span>
+                  <span className="text-slate-200 font-medium truncate text-right">{m.agency_name ?? '—'}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" />Tier</span>
+                  <span className="text-slate-200 font-medium capitalize text-right">{m.subscription_tier ?? '—'}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" />Properties</span>
+                  <strong className="font-['Outfit'] text-slate-100 font-bold">{m.property_count}</strong>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Home className="h-3.5 w-3.5" />Units</span>
+                  <strong className="font-['Outfit'] text-slate-100 font-bold">{m.unit_count}</strong>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Activity className="h-3.5 w-3.5" />Last active</span>
+                  <span className="text-slate-200 font-medium">{m.last_active_at ? format(new Date(m.last_active_at), 'dd MMM yyyy HH:mm') : '—'}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground">Status</span>
+                  <span className="text-slate-200 font-medium capitalize">{m.approval_status.replace(/_/g, ' ')}</span>
+                </div>
+              </div>
+              {(m.rejection_reason || m.suspension_reason) && (
+                <p className="text-xs text-red-400 flex items-start gap-1.5 bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                  <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                  <span><strong className="block mb-0.5">{m.suspension_reason ? 'Suspension reason' : 'Rejection reason'}</strong>{m.rejection_reason ?? m.suspension_reason}</span>
+                </p>
+              )}
               <StatusHistory managerId={m.user_id} />
             </div>
           )}
@@ -312,64 +363,129 @@ const ManagerManagement: React.FC = () => {
     );
   };
 
-  const TabList = ({ managers: list }: { managers: Manager[] }) => (
-    <div className="space-y-3 mt-4">
-      {isLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 w-full bg-card/80" />) :
-       list.length === 0 ? <div className="py-10 text-center text-muted-foreground/70"><Users className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">None</p></div> :
-       list.map(m => <ManagerCard key={m.user_id} m={m} />)}
-    </div>
-  );
+  const EMPTY_COPY: Record<string, string> = {
+    pending: 'No pending manager accounts.',
+    active: 'No active manager accounts.',
+    suspended: 'No suspended manager accounts.',
+    rejected: 'No rejected manager accounts.',
+  };
+
+  const FilterList = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-3 mt-4">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 w-full bg-card/80" />)}
+        </div>
+      );
+    }
+    if (isError) {
+      return (
+        <div className="mt-4 p-6 rounded-2xl border border-red-500/30 bg-red-500/5 text-center">
+          <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
+          <p className="text-sm font-semibold text-red-300">Failed to load managers</p>
+          <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'You may not have permission to view this data.'}</p>
+          <Button variant="outline" size="sm" onClick={() => refetch()} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+          </Button>
+        </div>
+      );
+    }
+    if (filteredList.length === 0) {
+      const copy = searchQ
+        ? `No managers match "${search.trim()}" in ${activeFilter}.`
+        : EMPTY_COPY[activeFilter];
+      return (
+        <div className="mt-4 py-12 text-center">
+          <Users className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+          <p className="text-sm text-muted-foreground">{copy}</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-3 mt-4">
+        {filteredList.map(m => <ManagerCard key={m.user_id} m={m} />)}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      {/* Header: title, search, refresh, add */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <Users className="h-5 w-5 text-amber-400" />
-            Manager Account Management
+            Manager Account Control Center
           </h2>
           <p className="text-slate-400 text-xs mt-1">
-            <strong className="font-['Outfit'] text-slate-200 font-bold">{managers.length}</strong> total · <strong className="font-['Outfit'] text-amber-400 font-bold">{pending.length}</strong> pending · <strong className="font-['Outfit'] text-emerald-400 font-bold">{active.length}</strong> active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}
+            Approve, suspend, reinstate, and tier manager accounts. All actions are audit-logged.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl font-medium text-xs" onClick={() => refetch()}><RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh</Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative flex-1 lg:w-64">
+            <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name or email..."
+              className="pl-8 h-9 rounded-xl bg-slate-950/60 border-slate-700 text-slate-200 placeholder:text-slate-500 text-xs"
+              aria-label="Search managers by name or email"
+            />
+          </div>
+          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl font-medium text-xs" onClick={() => refetch()} aria-label="Refresh manager list"><RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh</Button>
           <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold h-9 rounded-xl text-xs" onClick={() => setAddOpen(true)}><UserPlus className="h-3.5 w-3.5 mr-1.5" />Add Manager</Button>
         </div>
+      </div>
+
+      {/* Clickable status summary — acts as the filter (clicking sets the active list) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {([
+          { key: 'total',    label: 'Total',     count: managers.length,   icon: Users,      active: false, cls: 'border-slate-700 bg-slate-900/60 text-slate-300' },
+          { key: 'pending',   label: 'Pending',   count: pending.length,   icon: Clock,      active: activeFilter === 'pending',   cls: 'border-amber-400/40 bg-amber-400/10 text-amber-300' },
+          { key: 'active',    label: 'Active',    count: active.length,    icon: CheckCircle, active: activeFilter === 'active',    cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
+          { key: 'suspended', label: 'Suspended', count: suspended.length, icon: Ban,        active: activeFilter === 'suspended', cls: 'border-orange-500/40 bg-orange-500/10 text-orange-300' },
+          { key: 'rejected',  label: 'Rejected',  count: rejected.length,  icon: UserX,      active: activeFilter === 'rejected',  cls: 'border-red-500/40 bg-red-500/10 text-red-300' },
+        ] as const).map(({ key, label, count, icon: Icon, active, cls }) => {
+          const isTotal = key === 'total';
+          const handleClick = () => { if (!isTotal) setActiveFilter(key as typeof activeFilter); };
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={handleClick}
+              onKeyDown={onActivateKey(handleClick)}
+              role={isTotal ? 'status' : 'button'}
+              tabIndex={isTotal ? -1 : 0}
+              aria-pressed={isTotal ? undefined : active}
+              aria-label={isTotal ? `${count} total managers` : `Filter ${label}: ${count} managers`}
+              className={cn(
+                'flex items-center justify-between gap-2 p-3 rounded-xl border text-left transition-all',
+                cls,
+                !isTotal && 'hover:brightness-110 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50',
+                active && 'ring-2 ring-amber-400/60',
+              )}
+            >
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">{label}</span>
+                <strong className="font-['Outfit'] text-xl font-bold text-white">{count}</strong>
+              </div>
+              <Icon className={cn('h-5 w-5 shrink-0', isTotal && 'opacity-60')} />
+            </button>
+          );
+        })}
       </div>
 
       {pending.length > 0 && (
         <div className="flex items-center gap-2.5 p-3.5 rounded-xl border border-amber-400/40 bg-amber-400/10 text-amber-300 shadow-lg backdrop-blur-md">
           <Clock className="h-4 w-4 shrink-0 text-amber-400" />
           <span className="text-xs font-semibold">
-            <strong className="font-['Outfit'] text-amber-300 text-sm font-bold mr-1">{pending.length}</strong> 
+            <strong className="font-['Outfit'] text-amber-300 text-sm font-bold mr-1">{pending.length}</strong>
             manager{pending.length > 1 ? 's' : ''} awaiting approval and credential verification
           </span>
         </div>
       )}
 
-      <Tabs defaultValue="pending">
-        <TabsList className="bg-slate-900/80 border border-slate-800 p-1 rounded-xl flex-wrap h-auto gap-1">
-          {[
-            ['pending', `Pending (${pending.length})`], 
-            ['active', `Active (${active.length})`], 
-            ['suspended', `Suspended (${suspended.length})`], 
-            ['rejected', `Rejected (${rejected.length})`]
-          ].map(([v, l]) => (
-            <TabsTrigger 
-              key={v} 
-              value={v} 
-              className="text-slate-400 data-[state=active]:bg-amber-400 data-[state=active]:text-slate-950 font-bold text-xs rounded-lg transition-all"
-            >
-              {l}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <TabsContent value="pending"><TabList managers={pending} /></TabsContent>
-        <TabsContent value="active"><TabList managers={active} /></TabsContent>
-        <TabsContent value="suspended"><TabList managers={suspended} /></TabsContent>
-        <TabsContent value="rejected"><TabList managers={rejected} /></TabsContent>
-      </Tabs>
+      <FilterList />
 
       {/* Action dialog */}
       <Dialog open={!!actionDialog} onOpenChange={open => !open && setActionDialog(null)}>
