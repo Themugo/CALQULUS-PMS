@@ -77,7 +77,7 @@ const WebhostDashboard = () => {
           <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
           <div className="flex gap-1.5">
             {[0,1,2].map(i => (
-              <div key={i} className="w-2 h-2 rounded-full bg-amber-400/60 animate-pulse-soft"
+              <div key={i} className="w-2 h-2 rounded-full bg-primary/70 animate-pulse-soft"
                 style={{ animationDelay: `${i * 0.2}s` }} />
             ))}
           </div>
@@ -102,45 +102,48 @@ const WebhostDashboard = () => {
     switch (myPermissions.admin_level) {
       case 'super_admin':
         return (
-          <Badge className="bg-amber-400/15 text-amber-400 border border-amber-400/30 ml-2 gap-1">
+          <Badge className="bg-primary/15 text-primary border border-primary/30 ml-2 gap-1">
             <Crown className="h-3 w-3" />Super Admin
           </Badge>
         );
       case 'admin':
         return (
-          <Badge className="bg-[hsl(214_73%_48%/0.15)] text-[hsl(214_73%_60%)] border border-[hsl(214_73%_48%/0.3)] ml-2 gap-1">
+          <Badge className="bg-primary/15 text-primary border border-primary/30 ml-2 gap-1">
             <Shield className="h-3 w-3" />Admin
           </Badge>
         );
       case 'limited_admin':
-        return <Badge variant="outline" className="ml-2 text-white/50 border-white/20">Limited</Badge>;
+        return <Badge variant="outline" className="ml-2 text-slate-400 border-slate-700">Limited</Badge>;
       default:
         return null;
     }
   };
 
-  const tabCls = "data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-md data-[state=active]:shadow-amber-500/20 text-slate-300 hover:text-white transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
+  // Executive tab style: clean navy chrome, single CALQULUS accent for the
+  // active state. Error Logs keeps its semantic red. All logic (badges,
+  // counts, conditional tabs) is preserved below.
+  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
-      {/* Top gold accent line */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-amber-500/10 via-amber-400 to-amber-500/10" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-primary selection:text-white">
+      {/* Top accent hairline */}
+      <div className="h-px w-full bg-primary/30" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-amber-500/15 bg-slate-950/85 backdrop-blur-xl shadow-2xl">
+      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="hidden sm:block min-w-0">
-              <p className="font-heading text-sm font-bold text-gradient leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-amber-400/70 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
+              <p className="font-heading text-sm font-bold text-slate-100 leading-none">CALQULUS PMS</p>
+              <p className="text-[10px] text-slate-500 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/25 shadow-inner">
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
               <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
             </div>
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
               <div className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -163,9 +166,9 @@ const WebhostDashboard = () => {
       {/* Main */}
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!myPermissions ? (
-          <div className="rounded-2xl border border-amber-400/20 bg-slate-900/60 backdrop-blur-md p-10 text-center shadow-2xl">
-            <div className="h-16 w-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-amber-400" />
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-10 text-center">
+            <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Permissions Pending</h3>
             <p className="text-slate-400 text-sm max-w-md mx-auto">
@@ -176,19 +179,19 @@ const WebhostDashboard = () => {
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-              <TabsList className="bg-slate-900/90 border border-slate-800 h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl shadow-xl backdrop-blur-md">
+              <TabsList className="bg-slate-900/90 border border-slate-800 h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl">
                 <TabsTrigger value="overview" className={tabCls}>
                   <Home className="h-3.5 w-3.5 mr-1.5" />Overview
                 </TabsTrigger>
                 <TabsTrigger value="admin-suite" className={tabCls}>
-                  <Crown className="h-3.5 w-3.5 mr-1.5 text-amber-400" />Admin Platform
+                  <Crown className="h-3.5 w-3.5 mr-1.5" />Admin Platform
                 </TabsTrigger>
                 {canViewManagers && (
                   <TabsTrigger value="managers" className={tabCls}>
                     <Users className="h-3.5 w-3.5 mr-1.5" />
                     Managers
                     {(pendingCounts?.pendingManagers ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-400 text-slate-950 font-extrabold shadow-sm">
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-extrabold shadow-sm">
                         {pendingCounts?.pendingManagers}
                       </span>
                     )}
@@ -239,7 +242,7 @@ const WebhostDashboard = () => {
                   </TabsTrigger>
                 )}
                 <TabsTrigger value="error-logs"
-                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-bold text-slate-300 hover:text-red-400 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
+                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-semibold text-slate-400 hover:text-red-400 hover:bg-slate-800/60 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
                   <Bug className="h-3.5 w-3.5 mr-1.5" />Error Logs
                 </TabsTrigger>
               </TabsList>

@@ -82,14 +82,14 @@ export function Layout({
 
         {/* Workspace Page Header (Title, Subtitle, & Primary Actions) */}
         {(title || headerActions) && (
-          <div className="border-b border-border/60 bg-card/40 px-4 md:px-6 lg:px-8 py-3.5">
+          <div className="border-b border-border/60 bg-background px-4 md:px-6 lg:px-8 py-5">
             <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-0.5">
-                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
+              <div className="min-w-0 space-y-1">
+                <h1 className="page-title text-foreground truncate">
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                  <p className="supporting-text">
                     {subtitle}
                   </p>
                 )}

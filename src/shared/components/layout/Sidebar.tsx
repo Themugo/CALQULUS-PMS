@@ -214,8 +214,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Top Accent Stripe */}
-        <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary flex-shrink-0" />
+        {/* Top Accent Stripe — single calm hairline */}
+        <div className="h-px w-full bg-sidebar-primary/40 flex-shrink-0" />
 
         {/* Workspace Brand Header */}
         <div
@@ -272,9 +272,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           {/* Pinned / Favorites Group */}
           {!collapsed && favorites.length > 0 && (
             <div className="space-y-0.5 pb-2 border-b border-sidebar-border/40">
-              <div className="px-3 py-1 text-[10px] font-bold text-sidebar-muted uppercase tracking-wider flex items-center justify-between">
+              <div className="px-3 py-1 text-[10px] font-semibold text-sidebar-muted uppercase tracking-wider flex items-center justify-between">
                 <span>PINNED MODULES</span>
-                <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
               </div>
               {favorites.map((fav) => {
                 const active = isActive(fav.href);
@@ -290,7 +289,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                         : "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground border-l-2 border-transparent"
                     )}
                   >
-                    <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                    <Star className="h-3.5 w-3.5 text-sidebar-muted shrink-0 group-data-[state=active]:text-sidebar-primary" />
                     <span className="flex-1 truncate">{fav.name}</span>
                   </Link>
                 );
@@ -302,7 +301,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           {navGroups.map((group, groupIdx) => (
             <div key={groupIdx} className="space-y-0.5">
               {!collapsed && group.title && (
-                <div className="px-3 py-1 text-[10px] font-bold text-sidebar-muted uppercase tracking-wider">
+                <div className="px-3 py-1 text-[10px] font-semibold text-sidebar-muted uppercase tracking-wider">
                   {group.title}
                 </div>
               )}

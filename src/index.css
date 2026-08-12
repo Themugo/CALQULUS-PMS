@@ -349,18 +349,21 @@
 }
 
 .sidebar-gradient {
-  background-color: #111827 !important;
+  background-color: #0F172A !important;
 }
 
+/* Calm single-accent brand gradient (navy → CALQULUS blue). Replaces the
+   former gold→blue rainbow to reduce visual noise while preserving identity. */
 @utility text-gradient {
-  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #304FFE 100%);
+  background: linear-gradient(135deg, #E2E8F0 0%, #93C5FD 55%, #2563EB 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
 }
 
+/* Restrained executive card elevation — subtle, near-flat. */
 @utility card-shadow {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 1px -1px rgb(15 23 42 / 0.03);
 }
 
 @utility btn-brand {
@@ -440,10 +443,56 @@
   .prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 600; margin-top: 1.25em; margin-bottom: 0.5em; }
   .prose ul, .prose ol { padding-left: 1.25em; margin-top: 0.5em; margin-bottom: 0.5em; }
   .prose li { margin-top: 0.25em; margin-bottom: 0.25em; }
-  .prose a { color: #304FFE; text-decoration: underline; }
+  .prose a { color: #2563EB; text-decoration: underline; }
   .prose strong { font-weight: 600; }
   .prose code { font-size: 0.875em; background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 4px; }
-  .prose blockquote { border-left: 3px solid #304FFE; padding-left: 1em; color: hsl(var(--muted-foreground)); }
+  .prose blockquote { border-left: 3px solid #2563EB; padding-left: 1em; color: hsl(var(--muted-foreground)); }
   .prose img { max-width: 100%; border-radius: var(--radius); }
   .dark .prose { color: hsl(var(--foreground)); }
+
+  /* ── Executive typography hierarchy ────────────────────────────────
+     Strong, deliberate scale so page titles dominate, section titles are
+     medium/strong, supporting text recedes, and metrics stand out. */
+  .page-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  @media (min-width: 768px) {
+    .page-title { font-size: 1.75rem; }
+  }
+  .section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .supporting-text {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: hsl(var(--muted-foreground));
+  }
+  .metric-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .meta-text {
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+  }
+  /* Light cool-gray secondary surface for grouped panels. */
+  .surface-subtle {
+    background-color: hsl(210 40% 97%);
+  }
+  .dark .surface-subtle {
+    background-color: hsl(215 20% 18%);
+  }
 }
