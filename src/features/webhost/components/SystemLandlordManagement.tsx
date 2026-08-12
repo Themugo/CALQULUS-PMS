@@ -4,30 +4,50 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Input } from '@/shared/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import {
   Home, Search, CheckCircle, Clock, XCircle,
-  Banknote, Building, Info, AlertTriangle
+  Banknote, Building, Info, AlertTriangle, RefreshCw,
+  ChevronDown, ChevronUp, Users, Unlink, Loader2,
 } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
+import { onActivateKey } from '@/shared/lib/a11y';
 
 // System landlords are landlords whose property_landlords.manager_id IS NULL
 // These landlords are NOT under any manager/agency — they fall under webhost oversight.
 // Managed landlords (manager_id IS NOT NULL) are NEVER shown here.
 
-interface SystemLandlord {
+interface SystemLandlordLink {
   id: string;
   landlord_user_id: string;
   property_id: string;
   property_name: string;
   property_address: string;
+  property_units: number;
+  property_occupied: number;
+  property_status: string;
   revenue_share_pct: number;
   assigned_at: string;
-  profile: { full_name: string | null; email: string; phone: string | null } | null;
+}
+
+interface LandlordProfile {
+  full_name: string | null;
+  email: string;
+  phone: string | null;
+  created_at: string | null;
+}
+
+interface LandlordGroup {
+  landlord_user_id: string;
+  profile: LandlordProfile | null;
+  links: SystemLandlordLink[];
 }
 
 interface PayoutRequest {
@@ -59,13 +79,16 @@ const SystemLandlordManagement: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [activeTab, setActiveTab] = useState<'landlords' | 'payouts'>('landlords');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [payoutDialog, setPayoutDialog] = useState<{ id: string; status: string; label: string } | null>(null);
 
   // ── Fetch system landlords (manager_id IS NULL only) ─────────────
-  const { data: landlords = [], isLoading } = useQuery({
+  const { data: landlordGroups = [], isLoading, isError, error, refetch } = useQuery<LandlordGroup[]>({
     queryKey: ['system-landlords'],
     queryFn: async () => {
-      // CRITICAL: Only fetch where manager_id IS NULL
+      // CRITICAL: Only fetch where manager_id IS NULL (webhost oversight scope)
       const { data: links, error } = await supabase
         .from('property_landlords')
         .select('id, landlord_user_id, property_id, revenue_share_pct, assigned_at')
@@ -78,28 +101,47 @@ const SystemLandlordManagement: React.FC = () => {
       const userIds = (links as { landlord_user_id: string }[]).map(l => l.landlord_user_id);
 
       const [propertiesRes, profilesRes] = await Promise.all([
-        supabase.from('properties').select('id, name, address').in('id', propIds),
-        supabase.from('profiles').select('id, full_name, email, phone').in('id', userIds),
+        supabase.from('properties').select('id, name, address, units, occupied, status').in('id', propIds),
+        supabase.from('profiles').select('id, full_name, email, phone, created_at').in('id', userIds),
       ]);
 
-      const propMap = new Map((propertiesRes.data || []).map((p: { id: string; name: string; address: string }) => [p.id, p]));
-      const profileMap = new Map((profilesRes.data || []).map((p: { id: string; full_name: string | null; email: string; phone: string | null }) => [p.id, p]));
+      const propMap = new Map((propertiesRes.data || []).map((p: { id: string; name: string; address: string; units: number; occupied: number; status: string }) => [p.id, p]));
+      const profileMap = new Map((profilesRes.data || []).map((p: { id: string; full_name: string | null; email: string; phone: string | null; created_at: string | null }) => [p.id, p]));
 
-      return (links as { id: string; landlord_user_id: string; property_id: string; revenue_share_pct: number; assigned_at: string }[]).map(link => ({
-        id: link.id,
-        landlord_user_id: link.landlord_user_id,
-        property_id: link.property_id,
-        property_name: propMap.get(link.property_id)?.name ?? 'Unknown property',
-        property_address: propMap.get(link.property_id)?.address ?? '',
-        revenue_share_pct: link.revenue_share_pct,
-        assigned_at: link.assigned_at,
-        profile: profileMap.get(link.landlord_user_id) ?? null,
-      })) as SystemLandlord[];
+      const linkRows = (links as { id: string; landlord_user_id: string; property_id: string; revenue_share_pct: number; assigned_at: string }[]).map(link => {
+        const prop = propMap.get(link.property_id);
+        return {
+          id: link.id,
+          landlord_user_id: link.landlord_user_id,
+          property_id: link.property_id,
+          property_name: prop?.name ?? 'Unknown property',
+          property_address: prop?.address ?? '',
+          property_units: prop?.units ?? 0,
+          property_occupied: prop?.occupied ?? 0,
+          property_status: prop?.status ?? 'unknown',
+          revenue_share_pct: link.revenue_share_pct,
+          assigned_at: link.assigned_at,
+        } as SystemLandlordLink;
+      });
+
+      // Group by landlord
+      const groupMap = new Map<string, LandlordGroup>();
+      for (const link of linkRows) {
+        if (!groupMap.has(link.landlord_user_id)) {
+          groupMap.set(link.landlord_user_id, {
+            landlord_user_id: link.landlord_user_id,
+            profile: profileMap.get(link.landlord_user_id) ?? null,
+            links: [],
+          });
+        }
+        groupMap.get(link.landlord_user_id)!.links.push(link);
+      }
+      return Array.from(groupMap.values());
     },
   });
 
   // ── Fetch payout requests routed to webhost ───────────────────────
-  const { data: payouts = [], isLoading: payoutsLoading } = useQuery({
+  const { data: payouts = [], isLoading: payoutsLoading, isError: payoutsError, refetch: refetchPayouts } = useQuery({
     queryKey: ['webhost-payout-requests'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -144,125 +186,243 @@ const SystemLandlordManagement: React.FC = () => {
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['webhost-payout-requests'] });
       toast({ title: `Payout ${vars.status}` });
+      setPayoutDialog(null);
     },
     onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
   });
 
   const pendingPayouts = payouts.filter(p => p.status === 'pending').length;
 
-  const filteredLandlords = landlords.filter(l => {
-    const q = search.toLowerCase();
-    return !q
-      || l.profile?.email?.toLowerCase().includes(q)
-      || l.profile?.full_name?.toLowerCase().includes(q)
-      || l.property_name.toLowerCase().includes(q);
+  // ── Real derived totals (system-landlord scope only) ─────────────
+  const totalLandlords = landlordGroups.length;
+  const totalLinks = landlordGroups.reduce((s, g) => s + g.links.length, 0);
+  const landlordHasActive = (g: LandlordGroup) => g.links.some(l => l.property_status === 'active');
+  const withActiveCount = landlordGroups.filter(landlordHasActive).length;
+  const withInactiveCount = landlordGroups.filter(g => !landlordHasActive(g)).length;
+
+  // ── Search + filter (client-side over fetched data) ──────────────
+  const searchQ = search.trim().toLowerCase();
+  const filteredLandlords = landlordGroups.filter(g => {
+    if (statusFilter === 'active' && !landlordHasActive(g)) return false;
+    if (statusFilter === 'inactive' && landlordHasActive(g)) return false;
+    if (!searchQ) return true;
+    return (
+      (g.profile?.email?.toLowerCase().includes(searchQ) ?? false) ||
+      (g.profile?.full_name?.toLowerCase().includes(searchQ) ?? false) ||
+      g.links.some(l => l.property_name.toLowerCase().includes(searchQ))
+    );
   });
 
+  const refresh = () => { refetch(); refetchPayouts(); };
+
+  const summaryCards = [
+    { key: 'total', label: 'Total Landlords', count: totalLandlords, icon: Users, cls: 'border-slate-700 bg-slate-900/60 text-slate-300' },
+    { key: 'active', label: 'With Active Property', count: withActiveCount, icon: CheckCircle, cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
+    { key: 'inactive', label: 'With Inactive Property', count: withInactiveCount, icon: Clock, cls: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
+    { key: 'links', label: 'Properties Linked', count: totalLinks, icon: Building, cls: 'border-sky-500/40 bg-sky-500/10 text-sky-300' },
+  ] as const;
+
   return (
-    <div className="space-y-6">
-      {/* Context banner */}
-      <Card className="border-amber-200 bg-amber-50/50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-amber-900">Unlinked landlords only</p>
-              <p className="text-xs text-amber-800 mt-0.5">
-                You can only see unlinked landlords whose properties are not linked to any manager or agency.
-                Landlords under a manager are managed exclusively by that manager — you have no visibility into them.
-              </p>
-            </div>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+        <div>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Home className="h-5 w-5 text-amber-400" />
+            Landlord Account &amp; Portfolio Oversight Console
+          </h2>
+          <p className="text-slate-400 text-xs mt-1">
+            System landlords under platform oversight and their payout requests. Managed landlords are visible only to their manager.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative flex-1 lg:w-56">
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search name, email, property..."
+              className="pl-8 h-9 rounded-xl bg-slate-950/60 border-slate-700 text-slate-200 placeholder:text-slate-500 text-xs"
+              aria-label="Search landlords"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh landlords">
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
+          </Button>
+        </div>
+      </div>
+
+      {/* Scope banner — preserves the hard access-rule explanation */}
+      <div className="flex items-start gap-3 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+        <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-200/90">
+          <strong className="text-amber-300">System landlords only.</strong> This view shows landlords whose properties are not linked to any manager or agency (property_landlords.manager_id IS NULL). Landlords under a manager are managed exclusively by that manager and are not visible here.
+        </p>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {summaryCards.map(({ key, label, count, icon: Icon, cls }) => (
+          <div key={key} className={cn('flex items-center justify-between gap-2 p-3 rounded-xl border text-left', cls)}>
+            <div className="min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">{label}</span>
+              <strong className="font-['Outfit'] text-xl font-bold text-white">{count}</strong>
+            </div>
+            <Icon className="h-5 w-5 shrink-0 opacity-80" />
+          </div>
+        ))}
+      </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border">
+      <div className="flex gap-2 border-b border-slate-800">
         {[
-          { key: 'landlords', label: `Unlinked Landlords (${landlords.length})` },
+          { key: 'landlords', label: `Landlord Registry (${totalLandlords})` },
           { key: 'payouts', label: `Payout Requests${pendingPayouts > 0 ? ` (${pendingPayouts} pending)` : ''}` },
         ].map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as 'landlords' | 'payouts')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={cn(
+              'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
               activeTab === tab.key
-                ? 'border-amber-400 text-amber-600'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
+                ? 'border-amber-400 text-amber-300'
+                : 'border-transparent text-slate-400 hover:text-slate-200',
+            )}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* ── Landlords list ── */}
+      {/* ── Landlord registry ── */}
       {activeTab === 'landlords' && (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <CardTitle className="text-base">Unlinked landlords</CardTitle>
-                <CardDescription>Property owners with no manager assigned</CardDescription>
-              </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search landlords..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="pl-9 w-52"
-                />
-              </div>
+        <Card className="border-slate-800">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-800/50">
+              <p className="text-xs text-slate-400">Click a landlord to inspect their portfolio and property relationships.</p>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+                <SelectTrigger className="h-8 w-40 text-xs bg-slate-950/60 border-slate-700 text-slate-200" aria-label="Filter by property status">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs">All Landlords</SelectItem>
+                  <SelectItem value="active" className="text-xs">With Active Property</SelectItem>
+                  <SelectItem value="inactive" className="text-xs">Inactive Only</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </CardHeader>
-          <CardContent>
+
             {isLoading ? (
-              <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+              <div className="p-4 space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+            ) : isError ? (
+              <div className="p-8 text-center">
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
+                <p className="text-sm font-semibold text-red-300">Unable to load landlords.</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
+                <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+                </Button>
+              </div>
             ) : filteredLandlords.length === 0 ? (
               <div className="py-12 text-center text-muted-foreground">
                 <Home className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">{search ? 'No landlords match your search' : 'No system landlords yet'}</p>
-                <p className="text-xs mt-1 opacity-70">Landlords appear here when they are not linked to any manager</p>
+                <p className="text-sm">{totalLandlords === 0 ? 'No landlords registered.' : (searchQ || statusFilter !== 'all') ? 'No landlords match the current filters.' : 'No landlords registered.'}</p>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Landlord</TableHead>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Revenue share</TableHead>
-                    <TableHead>Since</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLandlords.map(l => (
-                    <TableRow key={l.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-sm">{l.profile?.full_name || 'Landlord'}</p>
-                          <p className="text-xs text-muted-foreground">{l.profile?.email}</p>
-                          {l.profile?.phone && <p className="text-xs text-muted-foreground">{l.profile.phone}</p>}
+              <div className="divide-y divide-slate-800">
+                <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+                  <div className="col-span-4">Landlord</div>
+                  <div className="col-span-2 text-center">Properties</div>
+                  <div className="col-span-2 text-center">Units</div>
+                  <div className="col-span-2 text-center">Portfolio</div>
+                  <div className="col-span-2 text-right">Since</div>
+                </div>
+                {filteredLandlords.map(g => {
+                  const expanded = expandedId === g.landlord_user_id;
+                  const propCount = g.links.length;
+                  const unitCount = g.links.reduce((s, l) => s + l.property_units, 0);
+                  const hasActive = landlordHasActive(g);
+                  const since = g.links.map(l => l.assigned_at).sort()[0];
+                  return (
+                    <div key={g.landlord_user_id}>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedId(expanded ? null : g.landlord_user_id)}
+                        onKeyDown={onActivateKey(() => setExpandedId(expanded ? null : g.landlord_user_id))}
+                        aria-expanded={expanded}
+                        aria-label={`View landlord ${g.profile?.full_name ?? g.profile?.email ?? 'landlord'}`}
+                        className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-800/40 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:ring-inset"
+                      >
+                        <div className="md:col-span-4 min-w-0 flex items-center gap-2">
+                          <Home className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-sm text-white truncate font-medium">{g.profile?.full_name || 'Landlord'}</p>
+                            <p className="text-xs text-slate-400 truncate">{g.profile?.email ?? '—'}</p>
+                          </div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">{l.property_name}</p>
-                          <p className="text-xs text-muted-foreground">{l.property_address}</p>
+                        <div className="md:col-span-2 md:text-center flex items-center gap-1 md:justify-center">
+                          <Building className="h-3 w-3 text-slate-500 md:hidden" />
+                          <span className="text-xs text-slate-200">{propCount}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
-                          {l.revenue_share_pct}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(l.assigned_at), 'dd/MM/yy')}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        <div className="md:col-span-2 md:text-center text-xs text-slate-200">{unitCount}</div>
+                        <div className="md:col-span-2 md:text-center flex items-center gap-1.5 md:justify-center">
+                          <Badge variant="outline" className={cn('text-[10px]', hasActive ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30')}>
+                            {hasActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </div>
+                        <div className="md:col-span-2 md:text-right flex items-center justify-between md:justify-end gap-1 text-xs text-slate-400">
+                          <span>{since ? format(new Date(since), 'dd MMM yyyy') : '—'}</span>
+                          {expanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                        </div>
+                      </button>
+                      {expanded && (
+                        <div className="px-4 py-4 bg-slate-900/40 border-t border-slate-800/50 space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-xs">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-slate-500">Email</span>
+                              <span className="text-slate-200 truncate">{g.profile?.email ?? '—'}</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-slate-500">Phone</span>
+                              <span className="text-slate-200">{g.profile?.phone ?? '—'}</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-slate-500">Account created</span>
+                              <span className="text-slate-200">{g.profile?.created_at ? format(new Date(g.profile.created_at), 'dd MMM yyyy') : '—'}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Properties (Landlord -&gt; Property -&gt; Manager)</p>
+                            <div className="space-y-1.5">
+                              {g.links.map(l => {
+                                const occPct = l.property_units > 0 ? Math.round((l.property_occupied / l.property_units) * 100) : 0;
+                                const incomplete = l.property_name === 'Unknown property';
+                                return (
+                                  <div key={l.id} className={cn('flex items-center gap-2 p-2 rounded-lg border text-xs', incomplete ? 'border-red-500/30 bg-red-500/5' : 'border-slate-700/50 bg-slate-950/40')}>
+                                    <Building className={cn('h-3.5 w-3.5 shrink-0', incomplete ? 'text-red-400' : 'text-amber-500')} />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-slate-200 truncate">{l.property_name}</p>
+                                      <p className="text-[10px] text-slate-500 truncate">{l.property_address || '—'} · {l.property_units} units · {occPct}% occupied</p>
+                                    </div>
+                                    <Badge variant="outline" className="text-[9px] capitalize border-slate-600 text-slate-300">{l.property_status}</Badge>
+                                    <Badge variant="outline" className="text-[9px] border-amber-500/30 text-amber-300 bg-amber-500/10">{l.revenue_share_pct}%</Badge>
+                                    {incomplete && (
+                                      <span className="text-[9px] text-red-400 flex items-center gap-1 shrink-0"><AlertTriangle className="h-3 w-3" />Missing</span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-2 flex items-center gap-1">
+                              <Unlink className="h-3 w-3" />No manager assigned — these properties fall under platform oversight.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </CardContent>
         </Card>
@@ -270,18 +430,26 @@ const SystemLandlordManagement: React.FC = () => {
 
       {/* ── Payout requests ── */}
       {activeTab === 'payouts' && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Payout requests from system landlords</CardTitle>
-            <CardDescription>Review and approve revenue payout requests</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-slate-800">
+          <CardContent className="p-0">
+            <div className="px-4 py-3 border-b border-slate-800/50">
+              <p className="text-sm font-semibold text-white">Payout requests from system landlords</p>
+              <p className="text-xs text-slate-400 mt-0.5">Review and approve revenue payout requests. State changes require confirmation.</p>
+            </div>
             {payoutsLoading ? (
-              <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+              <div className="p-4 space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+            ) : payoutsError ? (
+              <div className="p-8 text-center">
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
+                <p className="text-sm font-semibold text-red-300">Unable to load payout requests.</p>
+                <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10 mt-3">
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+                </Button>
+              </div>
             ) : payouts.length === 0 ? (
               <div className="py-12 text-center text-muted-foreground">
                 <Banknote className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">No payout requests routed to you yet</p>
+                <p className="text-sm">No payout requests routed to you yet.</p>
               </div>
             ) : (
               <Table>
@@ -307,7 +475,7 @@ const SystemLandlordManagement: React.FC = () => {
                       </TableCell>
                       <TableCell className="font-semibold">{fmt(p.amount)}</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${STATUS_STYLES[p.status]}`}>
+                        <span className={cn('inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border', STATUS_STYLES[p.status])}>
                           {p.status === 'paid' && <CheckCircle className="h-3 w-3" />}
                           {p.status === 'pending' && <Clock className="h-3 w-3" />}
                           {p.status === 'rejected' && <XCircle className="h-3 w-3" />}
@@ -318,27 +486,12 @@ const SystemLandlordManagement: React.FC = () => {
                         <div className="flex gap-1">
                           {p.status === 'pending' && (
                             <>
-                              <Button size="sm" variant="outline"
-                                className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
-                                onClick={() => updatePayout.mutate({ id: p.id, status: 'approved' })}
-                                disabled={updatePayout.isPending}>
-                                Approve
-                              </Button>
-                              <Button size="sm" variant="ghost"
-                                className="h-7 text-xs text-destructive hover:bg-destructive/10"
-                                onClick={() => updatePayout.mutate({ id: p.id, status: 'rejected' })}
-                                disabled={updatePayout.isPending}>
-                                Reject
-                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50" onClick={() => setPayoutDialog({ id: p.id, status: 'approved', label: 'Approve this payout request?' })}>Approve</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive hover:bg-destructive/10" onClick={() => setPayoutDialog({ id: p.id, status: 'rejected', label: 'Reject this payout request?' })}>Reject</Button>
                             </>
                           )}
                           {p.status === 'approved' && (
-                            <Button size="sm" variant="outline"
-                              className="h-7 text-xs border-[hsl(214_73%_48%/0.35)] text-[hsl(214_73%_35%)] hover:bg-[hsl(214_73%_48%/0.06)]"
-                              onClick={() => updatePayout.mutate({ id: p.id, status: 'paid' })}
-                              disabled={updatePayout.isPending}>
-                              Mark Paid
-                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs border-[hsl(214_73%_48%/0.35)] text-[hsl(214_73%_35%)] hover:bg-[hsl(214_73%_48%/0.06)]" onClick={() => setPayoutDialog({ id: p.id, status: 'paid', label: 'Mark this payout as paid?' })}>Mark Paid</Button>
                           )}
                         </div>
                       </TableCell>
@@ -350,6 +503,29 @@ const SystemLandlordManagement: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Payout confirmation dialog */}
+      <Dialog open={!!payoutDialog} onOpenChange={open => !open && setPayoutDialog(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm payout action</DialogTitle>
+            <DialogDescription>{payoutDialog?.label}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayoutDialog(null)}>Cancel</Button>
+            <Button
+              onClick={() => payoutDialog && updatePayout.mutate({ id: payoutDialog.id, status: payoutDialog.status })}
+              disabled={updatePayout.isPending}
+              className={cn(
+                payoutDialog?.status === 'rejected' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground',
+              )}
+            >
+              {updatePayout.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {payoutDialog?.status === 'approved' ? 'Approve' : payoutDialog?.status === 'rejected' ? 'Reject' : 'Mark Paid'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
