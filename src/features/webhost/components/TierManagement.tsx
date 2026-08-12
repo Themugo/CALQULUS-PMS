@@ -6,20 +6,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { Textarea } from '@/shared/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Separator } from '@/shared/components/ui/separator';
 import { Switch } from '@/shared/components/ui/switch';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import {
   Building2, Briefcase, Cog, Layers, Map, Check, X, Save,
-  Zap, Star, Crown, Info, ArrowRight, RefreshCw, ChevronDown, ChevronUp
+  Zap, Star, Crown, Info, ArrowRight, RefreshCw, ChevronDown, ChevronUp,
+  AlertTriangle, Users, Pencil, Trash2, Power, Banknote, ScrollText, FileSignature, Loader2
 } from 'lucide-react';
 import {
   PROPERTY_CATEGORIES, CATEGORIES_BY_GROUP, GROUP_LABELS, GROUP_COLORS,
   TIER_NAMES, TIER_BADGE_COLORS, getCategoryGroup
 } from '@/shared/constants/propertyTypes';
 import { onActivateKey } from "@/shared/lib/a11y";
+import { cn } from '@/shared/lib/utils';
 
 const TIER_ICONS: Record<string, React.ElementType> = {
   lite: Zap, pro: Star, enterprise: Crown,
@@ -42,10 +47,15 @@ const TIERS = ['lite', 'pro', 'enterprise'] as const;
 type TierRow = {
   id: string;
   tier_key: string;
-  name?: string;
+  name: string;
+  description?: string | null;
   price_per_property?: number | null;
-  display_order?: number;
+  price_flat?: number | null;
+  max_properties?: number;
+  max_units?: number;
   features?: unknown;
+  is_active?: boolean;
+  display_order?: number;
   created_at?: string;
 };
 
@@ -78,13 +88,28 @@ const TierManagement: React.FC = () => {
   const [editedLimits, setEditedLimits] = useState<Record<string, Record<string, { max: string; mult: string }>>>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({ residential: true });
 
-  // Fetch all tier data
-  const { data: tiers = [], isLoading: tiersLoading } = useQuery({
+  // Fetch all tier data (REAL — subscription_tiers table)
+  const { data: tiers = [], isLoading: tiersLoading, isError: tiersError, error: tiersErr, refetch: refetchTiers } = useQuery({
     queryKey: ['tier-management-tiers'],
     queryFn: async () => {
-      const { data } = await (supabase.from('subscription_tiers')
+      const { data, error } = await (supabase.from('subscription_tiers')
         .select('*').order('display_order'));
+      if (error) throw error;
       return (data || []) as TierRow[];
+    },
+  });
+
+  // REAL subscriber counts — managers assigned to each tier (manager_profiles.subscription_tier)
+  const { data: subscriberCounts = {}, isLoading: subsLoading } = useQuery<Record<string, number>>({
+    queryKey: ['tier-subscriber-counts'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('manager_profiles').select('subscription_tier');
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of (data || []) as { subscription_tier: string }[]) {
+        counts[row.subscription_tier] = (counts[row.subscription_tier] ?? 0) + 1;
+      }
+      return counts;
     },
   });
 
@@ -165,6 +190,90 @@ const TierManagement: React.FC = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['property-categories-webhost'] }),
   });
 
+  // ── Tier-row actions (REAL columns on subscription_tiers) ──
+  const [editDialog, setEditDialog] = useState<TierRow | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '', description: '', price_per_property: '', max_properties: '', max_units: '',
+    features: '', is_active: true,
+  });
+  const [confirmDialog, setConfirmDialog] = useState<{ kind: 'deactivate' | 'delete'; tier: TierRow } | null>(null);
+
+  const openEdit = (tier: TierRow) => {
+    const features = parseFeatures(tier.features);
+    setEditForm({
+      name: tier.name ?? '',
+      description: tier.description ?? '',
+      price_per_property: String(tier.price_per_property ?? 0),
+      max_properties: String(tier.max_properties ?? 0),
+      max_units: String(tier.max_units ?? 0),
+      features: features.join('\n'),
+      is_active: tier.is_active ?? true,
+    });
+    setEditDialog(tier);
+  };
+
+  // Update tier row — writes only real columns (name, description, price_per_property,
+  // max_properties, max_units, features, is_active). No schema change.
+  const updateTier = useMutation({
+    mutationFn: async () => {
+      if (!editDialog) return;
+      const name = editForm.name.trim();
+      if (!name) throw new Error('Tier name is required');
+      const price = parseFloat(editForm.price_per_property);
+      if (isNaN(price) || price < 0) throw new Error('Price must be a non-negative number');
+      const maxP = parseInt(editForm.max_properties) || 0;
+      const maxU = parseInt(editForm.max_units) || 0;
+      const featuresArr = editForm.features.split('\n').map(f => f.trim()).filter(Boolean);
+      const { error } = await supabase.from('subscription_tiers').update({
+        name,
+        description: editForm.description.trim() || null,
+        price_per_property: price,
+        max_properties: maxP,
+        max_units: maxU,
+        features: featuresArr,
+        is_active: editForm.is_active,
+      }).eq('id', editDialog.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: 'Tier updated' });
+      queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
+      setEditDialog(null);
+    },
+    onError: (e: Error) => toast({ title: 'Failed to update tier', description: e.message, variant: 'destructive' }),
+  });
+
+  // Activate / deactivate a tier — toggles is_active. Warns (via confirmDialog) when
+  // deactivating a tier that has active subscribers (REAL subscriber-impact check).
+  const toggleTierActive = useMutation({
+    mutationFn: async ({ tier, activate }: { tier: TierRow; activate: boolean }) => {
+      const { error } = await supabase.from('subscription_tiers')
+        .update({ is_active: activate }).eq('id', tier.id);
+      if (error) throw error;
+    },
+    onSuccess: (_, vars) => {
+      toast({ title: vars.activate ? 'Tier activated' : 'Tier deactivated' });
+      queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
+      setConfirmDialog(null);
+    },
+    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+  });
+
+  // Delete a tier. Blocked when the tier has subscribers (do not silently orphan
+  // subscription assignments). The backend table supports delete; we add a safety gate.
+  const deleteTier = useMutation({
+    mutationFn: async (tier: TierRow) => {
+      const { error } = await supabase.from('subscription_tiers').delete().eq('id', tier.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: 'Tier deleted' });
+      queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
+      setConfirmDialog(null);
+    },
+    onError: (e: Error) => toast({ title: 'Failed to delete', description: e.message, variant: 'destructive' }),
+  });
+
   const getEditedLimit = (group: string, field: 'max' | 'mult') => {
     return editedLimits[activeTier]?.[group]?.[field]
       ?? (field === 'max' ? String(currentLimits[group]?.max_properties ?? 0) : String(currentLimits[group]?.price_multiplier ?? 1.0));
@@ -179,50 +288,174 @@ const TierManagement: React.FC = () => {
 
   const hasUnsavedChanges = Object.keys(editedLimits[activeTier] ?? {}).length > 0;
 
+  const refresh = () => {
+    refetchTiers();
+    queryClient.invalidateQueries({ queryKey: ['tier-management-limits'] });
+    queryClient.invalidateQueries({ queryKey: ['tier-subscriber-counts'] });
+    queryClient.invalidateQueries({ queryKey: ['property-categories-webhost'] });
+  };
+
+  const fmtKES = (n: number) => n.toLocaleString('en-KE');
+
   if (tiersLoading || limitsLoading) return <div className="space-y-4">{[...Array(3)].map((_,i) => <Skeleton key={i} className="h-32 w-full bg-slate-800/40"/>)}</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      {/* Control-center header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
         <div>
-          <h2 className="text-lg font-semibold text-white">Subscription tiers</h2>
-          <p className="text-muted-foreground text-sm">Configure what each tier unlocks and how much each property type costs</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Layers className="h-5 w-5 text-amber-400" />
+            Subscription Tier Management Console
+          </h2>
+          <p className="text-slate-400 text-xs mt-1">
+            Configure subscription plans, pricing, limits, and tier status. Changes apply to the subscription_tiers configuration.
+          </p>
         </div>
-        <Button size="sm" variant="outline" className="border-amber-400/30 text-amber-400/70 gap-1.5"
-          onClick={() => queryClient.invalidateQueries()}>
-          <RefreshCw className="h-3.5 w-3.5"/>Refresh
+        <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh tiers">
+          <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
         </Button>
       </div>
 
-      {/* Tier overview cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {TIERS.map(tier => {
-          const data = tiers.find(t => t.tier_key === tier);
-          const Icon = TIER_ICONS[tier];
-          const features = parseFeatures(data?.features);
-          const isActive = activeTier === tier;
+      {/* Billing-relationship navigation — connects the commercial controls without duplicating them */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {[
+          { label: 'Billing', desc: 'Monitors actual billing activity', icon: Banknote, current: false },
+          { label: 'Tiers', desc: 'Define subscription plans', icon: Layers, current: true },
+          { label: 'Billing Rules', desc: 'Define billing behaviour', icon: ScrollText, current: false },
+          { label: 'Custom Pricing', desc: 'Account-specific pricing', icon: FileSignature, current: false },
+        ].map(({ label, desc, icon: Icon, current }) => (
+          <div key={label} className={cn('flex items-center gap-2 p-2.5 rounded-lg border text-left', current ? 'border-amber-400/40 bg-amber-400/10' : 'border-slate-800 bg-slate-900/40 opacity-70')}>
+            <Icon className={cn('h-4 w-4 shrink-0', current ? 'text-amber-300' : 'text-slate-400')} />
+            <div className="min-w-0">
+              <p className={cn('text-xs font-semibold truncate', current ? 'text-amber-200' : 'text-slate-300')}>{label}{current && ' (here)'}</p>
+              <p className="text-[10px] text-slate-500 truncate">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tier registry — REAL subscription_tiers rows, dynamically read */}
+      {tiersError ? (
+        <div className="p-8 text-center rounded-2xl border border-red-500/30 bg-red-500/5">
+          <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
+          <p className="text-sm font-semibold text-red-300">Unable to load tiers.</p>
+          <p className="text-xs text-muted-foreground mt-1 mb-3">{(tiersErr as Error)?.message ?? 'Try again.'}</p>
+          <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+          </Button>
+        </div>
+      ) : tiers.length === 0 ? (
+        <div className="p-10 text-center rounded-2xl border border-slate-800 bg-slate-900/40">
+          <Layers className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+          <p className="text-sm text-muted-foreground">No subscription tiers configured.</p>
+          <p className="text-xs text-slate-500 mt-1">Tiers will appear here once defined in subscription_tiers.</p>
+        </div>
+      ) : (
+        <Card className="border-slate-800">
+          <CardContent className="p-0">
+            <div className="px-4 py-3 border-b border-slate-800/50">
+              <p className="text-sm font-semibold text-white">Tier registry</p>
+              <p className="text-xs text-slate-400 mt-0.5">Name, price, status, limits, features, and subscriber impact. Pricing is per property / month.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800/50 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+                    <th className="text-left px-4 py-2.5">Tier</th>
+                    <th className="text-left px-4 py-2.5">Price</th>
+                    <th className="text-center px-4 py-2.5">Limits</th>
+                    <th className="text-center px-4 py-2.5">Subscribers</th>
+                    <th className="text-center px-4 py-2.5">Status</th>
+                    <th className="text-right px-4 py-2.5">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {tiers.map(tier => {
+                    const Icon = TIER_ICONS[tier.tier_key] ?? Layers;
+                    const features = parseFeatures(tier.features);
+                    const subs = subscriberCounts[tier.tier_key] ?? 0;
+                    const isActive = tier.is_active ?? true;
+                    return (
+                      <tr key={tier.id} className="hover:bg-slate-800/30">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-700/40 shrink-0">
+                              <Icon className="h-4 w-4 text-amber-500" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-white truncate">{tier.name || TIER_NAMES[tier.tier_key] || tier.tier_key}</p>
+                              <p className="text-xs text-slate-400 truncate max-w-xs">{tier.description || TIER_DESCRIPTIONS[tier.tier_key] || '—'}</p>
+                              {features.length > 0 && (
+                                <p className="text-[10px] text-slate-500 mt-0.5 truncate max-w-xs">{features.slice(0, 3).join(' · ')}{features.length > 3 ? ` +${features.length - 3}` : ''}</p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-white">KES {fmtKES(tier.price_per_property ?? 0)}</p>
+                          <p className="text-[10px] text-slate-500">/ property / month</p>
+                          {tier.price_flat ? <p className="text-[10px] text-slate-500">+ flat KES {fmtKES(tier.price_flat)}</p> : null}
+                        </td>
+                        <td className="px-4 py-3 text-center text-xs text-slate-200">
+                          <p>{tier.max_properties ?? 0} props</p>
+                          <p className="text-[10px] text-slate-500">{tier.max_units ?? 0} units</p>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {subsLoading ? (
+                            <Skeleton className="h-5 w-8 mx-auto" />
+                          ) : (
+                            <span className={cn('inline-flex items-center gap-1 text-xs font-medium', subs > 0 ? 'text-emerald-300' : 'text-slate-400')}>
+                              <Users className="h-3 w-3" />{subs}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge variant="outline" className={cn('text-[10px]', isActive ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-slate-500/10 text-slate-400 border-slate-500/30')}>
+                            {isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(tier)} aria-label={`Edit ${tier.name}`} title="Edit">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            {isActive ? (
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-amber-300 hover:bg-amber-500/10" onClick={() => setConfirmDialog({ kind: 'deactivate', tier })} aria-label={`Deactivate ${tier.name}`} title="Deactivate">
+                                <Power className="h-3.5 w-3.5" />
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-emerald-300 hover:bg-emerald-500/10" onClick={() => toggleTierActive.mutate({ tier, activate: true })} aria-label={`Activate ${tier.name}`} title="Activate">
+                                <Power className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setConfirmDialog({ kind: 'delete', tier })} aria-label={`Delete ${tier.name}`} title="Delete">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Tier selector for limits configuration */}
+      <div className="flex flex-wrap gap-2">
+        {tiers.map(tier => {
+          const Icon = TIER_ICONS[tier.tier_key] ?? Layers;
+          const isActive = activeTier === tier.tier_key;
           return (
-            <button key={tier} type="button" onClick={() => setActiveTier(tier)}
-              className={`rounded-2xl border-2 p-4 text-left transition-all ${isActive ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-slate-900/40 hover:border-slate-500'}`}>
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-amber-400/15' : 'bg-slate-700/40'}`}>
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-amber-500' : 'text-muted-foreground'}`}/>
-                </div>
-                <div>
-                  <p className="font-semibold text-white text-sm">{TIER_NAMES[tier]}</p>
-                  <p className="text-xs text-muted-foreground">KES {data?.price_per_property ?? '—'}/prop/mo</p>
-                </div>
-                {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-amber-400"/>}
-              </div>
-              <p className="text-xs text-muted-foreground mb-2">{TIER_DESCRIPTIONS[tier]}</p>
-              <div className="space-y-0.5">
-                {features.slice(0, 3).map((f, i) => (
-                  <div key={i} className="flex items-center gap-1 text-xs text-foreground/90">
-                    <Check className="h-3 w-3 text-green-400 shrink-0"/>
-                    <span className="truncate">{f}</span>
-                  </div>
-                ))}
-                {features.length > 3 && <p className="text-xs text-muted-foreground/70">+{features.length-3} more</p>}
+            <button key={tier.id} type="button" onClick={() => setActiveTier(tier.tier_key as 'lite' | 'pro' | 'enterprise')}
+              className={cn('rounded-xl border-2 px-3 py-2 text-left transition-all flex items-center gap-2', isActive ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-slate-900/40 hover:border-slate-500')}>
+              <Icon className={cn('h-4 w-4', isActive ? 'text-amber-500' : 'text-muted-foreground')} />
+              <div>
+                <p className="font-semibold text-white text-sm">{tier.name || TIER_NAMES[tier.tier_key]}</p>
+                <p className="text-xs text-muted-foreground">KES {tier.price_per_property ?? '—'}/prop/mo</p>
               </div>
             </button>
           );
@@ -383,6 +616,101 @@ const TierManagement: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Tier edit dialog — edits REAL columns on subscription_tiers */}
+      <Dialog open={!!editDialog} onOpenChange={open => !open && setEditDialog(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit tier{editDialog ? ` — ${editDialog.name || editDialog.tier_key}` : ''}</DialogTitle>
+            <DialogDescription>Update plan name, pricing, limits, features, and status. Pricing is per property / month.</DialogDescription>
+          </DialogHeader>
+          {editDialog && (
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Name</Label>
+                <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+              </div>
+              <div>
+                <Label className="text-xs">Description</Label>
+                <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-xs">Price / prop / mo (KES)</Label>
+                  <Input type="number" min="0" value={editForm.price_per_property} onChange={e => setEditForm(f => ({ ...f, price_per_property: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                </div>
+                <div>
+                  <Label className="text-xs">Max properties</Label>
+                  <Input type="number" min="0" value={editForm.max_properties} onChange={e => setEditForm(f => ({ ...f, max_properties: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                </div>
+                <div>
+                  <Label className="text-xs">Max units</Label>
+                  <Input type="number" min="0" value={editForm.max_units} onChange={e => setEditForm(f => ({ ...f, max_units: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs">Features (one per line)</Label>
+                <Textarea value={editForm.features} onChange={e => setEditForm(f => ({ ...f, features: e.target.value }))} rows={3} placeholder="e.g. Residential properties only" className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border border-slate-700 p-3">
+                <div>
+                  <Label className="text-xs text-white">Active</Label>
+                  <p className="text-[10px] text-slate-400">Inactive tiers are unavailable for new subscriptions.</p>
+                </div>
+                <Switch checked={editForm.is_active} onCheckedChange={v => setEditForm(f => ({ ...f, is_active: v }))} className="data-[state=checked]:bg-amber-400" />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(null)}>Cancel</Button>
+            <Button onClick={() => updateTier.mutate()} disabled={updateTier.isPending} className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+              {updateTier.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation dialog for destructive actions (deactivate / delete) */}
+      <Dialog open={!!confirmDialog} onOpenChange={open => !open && setConfirmDialog(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-400" />
+              {confirmDialog?.kind === 'delete' ? 'Delete tier' : 'Deactivate tier'}
+            </DialogTitle>
+            <DialogDescription>
+              {confirmDialog && `"${confirmDialog.tier.name || confirmDialog.tier.tier_key}"`}
+            </DialogDescription>
+          </DialogHeader>
+          {confirmDialog && (subscriberCounts[confirmDialog.tier.tier_key] ?? 0) > 0 && (
+            <div className="flex items-start gap-2 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5">
+              <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-200">
+                <strong className="text-amber-300">{subscriberCounts[confirmDialog.tier.tier_key]}</strong> manager{subscriberCounts[confirmDialog.tier.tier_key] !== 1 ? 's' : ''} currently use this tier.
+                {confirmDialog.kind === 'delete'
+                  ? ' Deleting it would orphan those subscription assignments — deletion is blocked.'
+                  : ' Deactivating will prevent new subscriptions but existing assignments remain.'}
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDialog(null)}>Cancel</Button>
+            {confirmDialog?.kind === 'delete' ? (
+              (subscriberCounts[confirmDialog.tier.tier_key] ?? 0) > 0 ? (
+                <Button disabled className="bg-red-600/40 text-red-200/70 cursor-not-allowed">Cannot delete — subscribers exist</Button>
+              ) : (
+                <Button onClick={() => deleteTier.mutate(confirmDialog.tier)} disabled={deleteTier.isPending} className="bg-red-600 hover:bg-red-700 text-white">
+                  {deleteTier.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Delete permanently
+                </Button>
+              )
+            ) : (
+              <Button onClick={() => toggleTierActive.mutate({ tier: confirmDialog.tier, activate: false })} disabled={toggleTierActive.isPending} className="bg-amber-500 hover:bg-amber-600 text-slate-900">
+                {toggleTierActive.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Deactivate
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
