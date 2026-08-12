@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import {
   LayoutDashboard, Building2, ShieldCheck, Sliders, CreditCard,
-  ShieldAlert, Activity, Webhook, Settings, LifeBuoy, Search, Sparkles, Smartphone, Globe,
+  ShieldAlert, Activity, Webhook, Settings, LifeBuoy, Search, Smartphone, Globe,
+  Crown, Palette, Rocket, Layers, Bot, Gauge, ChevronRight,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Input } from "@/shared/components/ui/input";
@@ -24,11 +25,96 @@ import { PropTechEcosystemHub } from "@/shared/components/ecosystem/PropTechEcos
 import { PropertyOsSuite } from "@/shared/components/propertyos/PropertyOsSuite";
 import { CommercialLaunchSuite } from "@/shared/components/commercial/CommercialLaunchSuite";
 import PlatformAdminManagement from "@/features/webhost/components/PlatformAdminManagement";
-import { Crown } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-const tabCls =
-  "gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground";
+/* ── Admin Platform navigation hierarchy ──────────────────────────────
+   Existing modules preserved 1:1; only the visual grouping/labeling is
+   reorganized into a professional platform-control hierarchy. */
+
+type NavItem = {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+  iconClass?: string;
+};
+
+type NavGroup = {
+  id: string;
+  title: string;
+  /** semantic accent for the section heading dot + label */
+  accent: string;
+  /** visually separate product capabilities from primary admin functions */
+  productGroup?: boolean;
+  items: NavItem[];
+};
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: "platform-control",
+    title: "Platform Control",
+    accent: "bg-gold",
+    items: [
+      { value: "platform-admins", label: "Platform Admins", icon: Crown, iconClass: "text-gold" },
+      { value: "rbac", label: "RBAC & Permissions", icon: ShieldCheck },
+      { value: "flags", label: "Feature Flags", icon: Sliders },
+      { value: "config", label: "Configuration", icon: Settings },
+      { value: "branding", label: "Branding & Theme", icon: Palette },
+    ],
+  },
+  {
+    id: "security-operations",
+    title: "Security & Operations",
+    accent: "bg-purple",
+    items: [
+      { value: "security", label: "Security & Audit", icon: ShieldAlert, iconClass: "text-destructive" },
+      { value: "monitoring", label: "Telemetry & Health", icon: Activity },
+      { value: "integrations", label: "Integrations & APIs", icon: Webhook },
+      { value: "support", label: "Support Ops", icon: LifeBuoy },
+    ],
+  },
+  {
+    id: "commercial",
+    title: "Commercial",
+    accent: "bg-teal",
+    items: [
+      { value: "licenses", label: "Licenses & Billing", icon: CreditCard },
+      { value: "commercial-launch", label: "Commercial Launch", icon: Rocket, iconClass: "text-success" },
+    ],
+  },
+  {
+    id: "product-ecosystem",
+    title: "Product Ecosystem",
+    accent: "bg-primary",
+    productGroup: true,
+    items: [
+      { value: "property-os", label: "Property OS", icon: Layers, iconClass: "text-primary" },
+      { value: "proptech-ecosystem", label: "PropTech Ecosystem", icon: Globe, iconClass: "text-success" },
+      { value: "ai-copilot", label: "AI Copilot", icon: Bot, iconClass: "text-purple" },
+      { value: "native-mobile", label: "Native Mobile", icon: Smartphone, iconClass: "text-success" },
+      { value: "ops-excellence", label: "Ops Excellence", icon: Gauge, iconClass: "text-primary" },
+    ],
+  },
+];
+
+/** Landing overview + tenant management — primary administrative entries that
+ *  sit above the grouped sections. Both preserve their existing routes. */
+const TOP_ITEMS: NavItem[] = [
+  { value: "overview", label: "Overview", icon: LayoutDashboard },
+  { value: "tenants", label: "Organizations & Tenants", icon: Building2 },
+];
+
+const ALL_ITEMS: NavItem[] = [...TOP_ITEMS, ...NAV_GROUPS.flatMap((g) => g.items)];
+
+const sideItemCls =
+  "group/trigger w-full justify-start gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-secondary-foreground " +
+  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm " +
+  "hover:bg-secondary-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 " +
+  "focus-visible:ring-offset-background transition-colors";
+
+const mobileItemCls =
+  "shrink-0 gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-secondary-foreground " +
+  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm " +
+  "hover:bg-secondary-background transition-colors";
 
 export function EnterpriseAdminPlatform({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -63,74 +149,75 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
         </div>
       </div>
 
-      {/* Main Workspace Tabs — grouped into enterprise control-plane sections */}
+      {/* Main Workspace — grouped platform-control hierarchy */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <div className="border-b pb-2 overflow-x-auto">
+        {/* Desktop: vertical grouped sidebar (sticky). Mobile: compact scrollable strip. */}
+        <nav className="lg:hidden -mx-1 overflow-x-auto pb-1">
           <TabsList className="flex h-auto gap-1 bg-transparent p-0">
-            {/* A. Platform Health */}
-            <TabsTrigger value="overview" className={tabCls}>
-              <LayoutDashboard className="h-3.5 w-3.5" /> Platform Health
-            </TabsTrigger>
-            <TabsTrigger value="monitoring" className={tabCls}>
-              <Activity className="h-3.5 w-3.5" /> Telemetry &amp; Health
-            </TabsTrigger>
-            {/* B. Organizations */}
-            <TabsTrigger value="tenants" className={tabCls}>
-              <Building2 className="h-3.5 w-3.5" /> Organizations &amp; Tenants
-            </TabsTrigger>
-            {/* C. Security & Audit */}
-            <TabsTrigger value="security" className={tabCls}>
-              <ShieldAlert className="h-3.5 w-3.5" /> Security &amp; Audit
-            </TabsTrigger>
-            {/* D. RBAC / Permissions */}
-            <TabsTrigger value="rbac" className={tabCls}>
-              <ShieldCheck className="h-3.5 w-3.5" /> RBAC &amp; Permissions
-            </TabsTrigger>
-            <TabsTrigger value="flags" className={tabCls}>
-              <Sliders className="h-3.5 w-3.5" /> Feature Flags
-            </TabsTrigger>
-            {/* E. Commercial / Licensing */}
-            <TabsTrigger value="licenses" className={tabCls}>
-              <CreditCard className="h-3.5 w-3.5" /> Licenses &amp; Billing
-            </TabsTrigger>
-            {/* F. Infrastructure / Integrations */}
-            <TabsTrigger value="integrations" className={tabCls}>
-              <Webhook className="h-3.5 w-3.5" /> Integrations &amp; APIs
-            </TabsTrigger>
-            {/* G. Configuration */}
-            <TabsTrigger value="config" className={tabCls}>
-              <Settings className="h-3.5 w-3.5" /> Configuration
-            </TabsTrigger>
-            {/* Extended platform modules (preserved) */}
-            <TabsTrigger value="platform-admins" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-white">
-              <Crown className="h-3.5 w-3.5 text-warning" /> Platform Admins
-            </TabsTrigger>
-            <TabsTrigger value="branding" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5" /> Branding &amp; Theme
-            </TabsTrigger>
-            <TabsTrigger value="support" className={tabCls}>
-              <LifeBuoy className="h-3.5 w-3.5" /> Support Ops
-            </TabsTrigger>
-            <TabsTrigger value="commercial-launch" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-success" /> Commercial Launch
-            </TabsTrigger>
-            <TabsTrigger value="property-os" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-warning" /> Property OS
-            </TabsTrigger>
-            <TabsTrigger value="proptech-ecosystem" className={tabCls}>
-              <Globe className="h-3.5 w-3.5 text-success" /> PropTech Ecosystem
-            </TabsTrigger>
-            <TabsTrigger value="ai-copilot" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-warning" /> AI Copilot
-            </TabsTrigger>
-            <TabsTrigger value="native-mobile" className={tabCls}>
-              <Smartphone className="h-3.5 w-3.5 text-success" /> Native Mobile
-            </TabsTrigger>
-            <TabsTrigger value="ops-excellence" className={tabCls}>
-              <Activity className="h-3.5 w-3.5 text-primary" /> Ops Excellence
-            </TabsTrigger>
+            {ALL_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <TabsTrigger key={item.value} value={item.value} className={mobileItemCls}>
+                  <Icon className={cn("h-3.5 w-3.5 shrink-0", item.iconClass)} />
+                  {item.label}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
-        </div>
+        </nav>
+
+        <div className="flex flex-col lg:flex-row gap-4">
+          <aside className="hidden lg:block lg:w-72 shrink-0">
+            <div className="enterprise-card p-2 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+              {/* Primary landing entries */}
+              <TabsList className="flex flex-col h-auto gap-0.5 bg-transparent p-0" aria-label="Overview">
+                {TOP_ITEMS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <TabsTrigger key={item.value} value={item.value} className={sideItemCls}>
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+
+              {NAV_GROUPS.map((group, idx) => (
+                <div
+                  key={group.id}
+                  className={cn(
+                    "mt-2 pt-2",
+                    idx === 0 && "border-t border-border",
+                    group.productGroup && "mt-3 pt-3 border-t-2 border-border",
+                  )}
+                >
+                  <div className="flex items-center gap-2 px-3 pb-1.5">
+                    <span className={cn("h-1.5 w-1.5 rounded-full", group.accent)} />
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {group.title}
+                    </span>
+                  </div>
+                  <TabsList
+                    className="flex flex-col h-auto gap-0.5 bg-transparent p-0"
+                    aria-label={group.title}
+                  >
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <TabsTrigger key={item.value} value={item.value} className={sideItemCls}>
+                          <Icon className={cn("h-4 w-4 shrink-0", item.iconClass)} />
+                          <span className="truncate">{item.label}</span>
+                          <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-40 group-data-[state=active]/trigger:opacity-100 group-data-[state=active]/trigger:translate-x-0.5 transition-all shrink-0" />
+                        </TabsTrigger>
+                      );
+                    })}
+                  </TabsList>
+                </div>
+              ))}
+            </div>
+          </aside>
+
+          <div className="flex-1 min-w-0">
 
         {/* A. Platform Health — real connectivity + edge reachability + org + audit snapshot */}
         <TabsContent value="overview" className="m-0 space-y-4">
@@ -215,6 +302,8 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
         <TabsContent value="ops-excellence" className="m-0">
           <OperationalExcellenceHub />
         </TabsContent>
+          </div>
+        </div>
       </Tabs>
     </div>
   );
