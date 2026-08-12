@@ -304,7 +304,7 @@ const PrivacyComplianceCenter = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Privacy Compliance Center</h2>
+          <h2 className="text-2xl font-bold text-foreground">Privacy Compliance Center</h2>
           <p className="text-amber-400/70 text-sm mt-1">Manage privacy compliance and data subject rights</p>
         </div>
         <div className="flex gap-2">
@@ -330,52 +330,52 @@ const PrivacyComplianceCenter = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckSquare className="h-4 w-4 text-amber-500" />
               Total Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalConsents}</div>
+            <div className="text-3xl font-bold text-foreground">{totalConsents}</div>
             <div className="text-sm text-amber-400/70">All consent records</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Active Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeConsents}</div>
+            <div className="text-3xl font-bold text-foreground">{activeConsents}</div>
             <div className="text-sm text-amber-400/70">Currently granted</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <User className="h-4 w-4 text-amber-500" />
               Pending Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingRequests}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingRequests}</div>
             <div className="text-sm text-amber-400/70">Awaiting action</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-amber-500" />
               Active Breaches
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeBreaches}</div>
+            <div className="text-3xl font-bold text-foreground">{activeBreaches}</div>
             <div className="text-sm text-amber-400/70">Under investigation</div>
           </CardContent>
         </Card>
@@ -413,7 +413,7 @@ const PrivacyComplianceCenter = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Scale className="h-5 w-5 text-amber-500" />
                   Data Subject Rights
                 </CardTitle>
@@ -423,28 +423,28 @@ const PrivacyComplianceCenter = () => {
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
                       <Eye className="h-4 w-4 text-amber-500" />
-                      <span className="text-white text-sm">Right to Access</span>
+                      <span className="text-foreground text-sm">Right to Access</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
                       <Ban className="h-4 w-4 text-amber-500" />
-                      <span className="text-white text-sm">Right to Deletion</span>
+                      <span className="text-foreground text-sm">Right to Deletion</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-amber-500" />
-                      <span className="text-white text-sm">Right to Correction</span>
+                      <span className="text-foreground text-sm">Right to Correction</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div className="flex items-center gap-2">
                       <Download className="h-4 w-4 text-amber-500" />
-                      <span className="text-white text-sm">Right to Portability</span>
+                      <span className="text-foreground text-sm">Right to Portability</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
@@ -454,7 +454,7 @@ const PrivacyComplianceCenter = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Shield className="h-5 w-5 text-amber-500" />
                   Compliance Status
                 </CardTitle>
@@ -462,19 +462,19 @@ const PrivacyComplianceCenter = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">GDPR Compliance</span>
+                    <span className="text-foreground text-sm">GDPR Compliance</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">Data Protection Act</span>
+                    <span className="text-foreground text-sm">Data Protection Act</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">Cookie Policy</span>
+                    <span className="text-foreground text-sm">Cookie Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">Privacy Policy</span>
+                    <span className="text-foreground text-sm">Privacy Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Current</Badge>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ const PrivacyComplianceCenter = () => {
         <TabsContent value="consents">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Consent Records</CardTitle>
+              <CardTitle className="text-foreground">Consent Records</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage user consent records and status
               </CardDescription>
@@ -498,7 +498,7 @@ const PrivacyComplianceCenter = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium capitalize">{consent.consentType.replace('_', ' ')}</span>
+                          <span className="text-foreground font-medium capitalize">{consent.consentType.replace('_', ' ')}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{consent.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {consent.userId}
@@ -537,7 +537,7 @@ const PrivacyComplianceCenter = () => {
         <TabsContent value="requests">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Data Subject Requests</CardTitle>
+              <CardTitle className="text-foreground">Data Subject Requests</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage GDPR data subject rights requests
               </CardDescription>
@@ -551,13 +551,13 @@ const PrivacyComplianceCenter = () => {
                     placeholder="Search requests..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedRequestType}
                   onChange={(e) => setSelectedRequestType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="access">Access</option>
@@ -574,7 +574,7 @@ const PrivacyComplianceCenter = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{request.userEmail}</span>
+                          <span className="text-foreground font-medium">{request.userEmail}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{request.id}</span>
                           {getRequestTypeBadge(request.type)}
                         </div>
@@ -611,7 +611,7 @@ const PrivacyComplianceCenter = () => {
         <TabsContent value="policy">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Privacy Policy</CardTitle>
+              <CardTitle className="text-foreground">Privacy Policy</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage privacy policy versions and reviews
               </CardDescription>
@@ -623,7 +623,7 @@ const PrivacyComplianceCenter = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">Privacy Policy v{policy.version}</span>
+                          <span className="text-foreground font-medium">Privacy Policy v{policy.version}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{policy.id}</span>
                         </div>
                         {getStatusBadge(policy.status)}
@@ -659,7 +659,7 @@ const PrivacyComplianceCenter = () => {
         <TabsContent value="breaches">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Data Breaches</CardTitle>
+              <CardTitle className="text-foreground">Data Breaches</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track and manage data breach incidents
               </CardDescription>
@@ -671,7 +671,7 @@ const PrivacyComplianceCenter = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{breach.type}</span>
+                          <span className="text-foreground font-medium">{breach.type}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{breach.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -712,7 +712,7 @@ const PrivacyComplianceCenter = () => {
         <TabsContent value="cookies">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Cookie Consents</CardTitle>
+              <CardTitle className="text-foreground">Cookie Consents</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage cookie consent categories and settings
               </CardDescription>
@@ -724,7 +724,7 @@ const PrivacyComplianceCenter = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{consent.name}</span>
+                          <span className="text-foreground font-medium">{consent.name}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {consent.category}
                           </Badge>

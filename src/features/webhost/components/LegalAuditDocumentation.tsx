@@ -384,7 +384,7 @@ const LegalAuditDocumentation = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Legal Audit Documentation</h2>
+          <h2 className="text-2xl font-bold text-foreground">Legal Audit Documentation</h2>
           <p className="text-amber-400/70 text-sm mt-1">Manage legal requirements, documents, and audit trails</p>
         </div>
         <div className="flex gap-2">
@@ -410,52 +410,52 @@ const LegalAuditDocumentation = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Scale className="h-4 w-4 text-amber-500" />
               Legal Requirements
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalRequirements}</div>
+            <div className="text-3xl font-bold text-foreground">{totalRequirements}</div>
             <div className="text-sm text-amber-400/70">Total requirements</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Compliant
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{compliantRequirements}</div>
+            <div className="text-3xl font-bold text-foreground">{compliantRequirements}</div>
             <div className="text-sm text-amber-400/70">Meeting requirements</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Clock className="h-4 w-4 text-amber-500" />
               Pending Review
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingReview}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingReview}</div>
             <div className="text-sm text-amber-400/70">Need attention</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Briefcase className="h-4 w-4 text-amber-500" />
               Active Agreements
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeAgreements}</div>
+            <div className="text-3xl font-bold text-foreground">{activeAgreements}</div>
             <div className="text-sm text-amber-400/70">Third-party contracts</div>
           </CardContent>
         </Card>
@@ -493,7 +493,7 @@ const LegalAuditDocumentation = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-500" />
                   Upcoming Reminders
                 </CardTitle>
@@ -503,7 +503,7 @@ const LegalAuditDocumentation = () => {
                   {documentReminders.slice(0, 3).map((reminder) => (
                     <div key={reminder.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                       <div>
-                        <span className="text-white text-sm">{reminder.documentName}</span>
+                        <span className="text-foreground text-sm">{reminder.documentName}</span>
                         <div className="text-amber-400/70 text-xs">{reminder.reminderType} - {reminder.dueDate.toLocaleDateString()}</div>
                       </div>
                       {getStatusBadge(reminder.status)}
@@ -515,7 +515,7 @@ const LegalAuditDocumentation = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Building className="h-5 w-5 text-amber-500" />
                   Jurisdiction Coverage
                 </CardTitle>
@@ -523,15 +523,15 @@ const LegalAuditDocumentation = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">Kenya</span>
+                    <span className="text-foreground text-sm">Kenya</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">European Union</span>
+                    <span className="text-foreground text-sm">European Union</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <span className="text-white text-sm">United States</span>
+                    <span className="text-foreground text-sm">United States</span>
                     <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Partial</Badge>
                   </div>
                 </div>
@@ -543,7 +543,7 @@ const LegalAuditDocumentation = () => {
         <TabsContent value="requirements">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Legal Requirements</CardTitle>
+              <CardTitle className="text-foreground">Legal Requirements</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage and monitor legal compliance requirements
               </CardDescription>
@@ -557,13 +557,13 @@ const LegalAuditDocumentation = () => {
                     placeholder="Search requirements..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="data_protection">Data Protection</option>
@@ -582,7 +582,7 @@ const LegalAuditDocumentation = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{requirement.name}</span>
+                          <span className="text-foreground font-medium">{requirement.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{requirement.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {requirement.category.replace('_', ' ')}
@@ -619,7 +619,7 @@ const LegalAuditDocumentation = () => {
         <TabsContent value="documents">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Legal Documents</CardTitle>
+              <CardTitle className="text-foreground">Legal Documents</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage legal documents and certificates
               </CardDescription>
@@ -631,7 +631,7 @@ const LegalAuditDocumentation = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{document.name}</span>
+                          <span className="text-foreground font-medium">{document.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{document.id}</span>
                           {getDocumentTypeBadge(document.type)}
                         </div>
@@ -678,7 +678,7 @@ const LegalAuditDocumentation = () => {
         <TabsContent value="audit-trail">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Audit Trail</CardTitle>
+              <CardTitle className="text-foreground">Audit Trail</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track all legal compliance activities
               </CardDescription>
@@ -690,7 +690,7 @@ const LegalAuditDocumentation = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{trail.action}</span>
+                          <span className="text-foreground font-medium">{trail.action}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{trail.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {trail.entityType}
@@ -726,7 +726,7 @@ const LegalAuditDocumentation = () => {
         <TabsContent value="agreements">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Third-Party Agreements</CardTitle>
+              <CardTitle className="text-foreground">Third-Party Agreements</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage vendor and partner agreements
               </CardDescription>
@@ -738,7 +738,7 @@ const LegalAuditDocumentation = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{agreement.name}</span>
+                          <span className="text-foreground font-medium">{agreement.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{agreement.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {agreement.type.replace('_', ' ')}
@@ -783,7 +783,7 @@ const LegalAuditDocumentation = () => {
         <TabsContent value="legal-holds">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Legal Holds</CardTitle>
+              <CardTitle className="text-foreground">Legal Holds</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage legal holds on documents and data
               </CardDescription>
@@ -795,7 +795,7 @@ const LegalAuditDocumentation = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{hold.name}</span>
+                          <span className="text-foreground font-medium">{hold.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{hold.id}</span>
                         </div>
                         {getStatusBadge(hold.status)}

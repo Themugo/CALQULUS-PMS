@@ -31,7 +31,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 };
 
 const TIER_BADGE: Record<string, string> = {
-  starter:      'bg-slate-800 text-slate-300 border-slate-700 font-semibold',
+  starter:      'bg-muted text-slate-300 border-border font-semibold',
   growth:       'bg-sky-500/15 text-sky-300 border-sky-500/30 font-semibold',
   professional: 'bg-purple-500/15 text-purple-300 border-purple-500/30 font-semibold',
   enterprise:   'bg-amber-400/15 text-amber-300 border-amber-400/30 font-bold',
@@ -249,25 +249,25 @@ const ManagerManagement: React.FC = () => {
     return (
       <Card className={`border rounded-2xl backdrop-blur-md shadow-xl transition-all ${
         m.approval_status === 'pending' 
-          ? 'border-amber-400/50 bg-slate-900/90 shadow-amber-500/5' 
+          ? 'border-amber-400/50 bg-muted shadow-amber-500/5' 
           : m.approval_status.startsWith('suspend') 
-          ? 'border-orange-500/50 bg-slate-900/90 shadow-orange-500/5' 
-          : 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
+          ? 'border-orange-500/50 bg-muted shadow-orange-500/5' 
+          : 'border-border bg-muted hover:border-border'
       }`}>
         <CardContent className="p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                <p className="font-bold text-base text-white">{m.full_name || 'Unnamed Manager'}</p>
+                <p className="font-bold text-base text-foreground">{m.full_name || 'Unnamed Manager'}</p>
                 <Badge variant="outline" className={`text-[11px] ${cfg.color}`}><Icon className="h-3 w-3 mr-1" />{cfg.label}</Badge>
                 {m.subscription_tier && <Badge variant="outline" className={`text-[11px] capitalize ${TIER_BADGE[m.subscription_tier] ?? ''}`}>{m.subscription_tier}</Badge>}
               </div>
               <p className="text-xs text-amber-400/90 flex items-center gap-1 font-medium"><Mail className="h-3.5 w-3.5 text-amber-400" />{m.email}</p>
-              {m.agency_name && <p className="text-xs text-slate-300 mt-1 flex items-center gap-1"><Building2 className="h-3.5 w-3.5 text-slate-400" />{m.agency_name}</p>}
-              <div className="flex gap-4 mt-2 text-xs text-slate-400 items-center">
-                <span className="flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/50"><Building2 className="h-3.5 w-3.5 text-sky-400" /> <strong className="font-['Outfit'] text-slate-100 font-bold">{m.property_count}</strong> props</span>
-                <span className="flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/50"><Home className="h-3.5 w-3.5 text-amber-400" /> <strong className="font-['Outfit'] text-slate-100 font-bold">{m.unit_count}</strong> units</span>
-                {m.last_active_at && <span className="flex items-center gap-1.5 text-slate-400"><Activity className="h-3.5 w-3.5 text-emerald-400" />{format(new Date(m.last_active_at), 'dd MMM')}</span>}
+              {m.agency_name && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Building2 className="h-3.5 w-3.5 text-muted-foreground" />{m.agency_name}</p>}
+              <div className="flex gap-4 mt-2 text-xs text-muted-foreground items-center">
+                <span className="flex items-center gap-1.5 bg-muted/80 px-2 py-0.5 rounded-md border border-border"><Building2 className="h-3.5 w-3.5 text-sky-400" /> <strong className="font-['Outfit'] text-foreground font-bold">{m.property_count}</strong> props</span>
+                <span className="flex items-center gap-1.5 bg-muted/80 px-2 py-0.5 rounded-md border border-border"><Home className="h-3.5 w-3.5 text-amber-400" /> <strong className="font-['Outfit'] text-foreground font-bold">{m.unit_count}</strong> units</span>
+                {m.last_active_at && <span className="flex items-center gap-1.5 text-muted-foreground"><Activity className="h-3.5 w-3.5 text-emerald-400" />{format(new Date(m.last_active_at), 'dd MMM')}</span>}
               </div>
               {(m.rejection_reason || m.suspension_reason) && (
                 <p className="text-xs text-red-400 mt-2 flex items-start gap-1.5 bg-red-500/10 p-2 rounded-lg border border-red-500/20"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />{m.rejection_reason ?? m.suspension_reason}</p>
@@ -279,51 +279,51 @@ const ManagerManagement: React.FC = () => {
                 <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'reject', manager: m }); setActionReason(''); }}><UserX className="h-3.5 w-3.5 mr-1" />Reject</Button>
               </>)}
               {m.approval_status === 'approved' && (<>
-                <Button size="sm" variant="outline" className="border-slate-700 text-amber-300 hover:bg-slate-800 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
+                <Button size="sm" variant="outline" className="border-border text-amber-300 hover:bg-muted h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
                 <Button size="sm" variant="outline" className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'suspend', manager: m }); setActionReason(''); }}><Ban className="h-3.5 w-3.5 mr-1" />Suspend</Button>
               </>)}
               {(m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment' || m.approval_status === 'rejected') && (
                 <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white h-8 text-xs font-bold rounded-lg" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
               )}
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
                 {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
             </div>
           </div>
           {expanded && (
-            <div className="mt-3 pt-3 border-t border-slate-800 space-y-3">
+            <div className="mt-3 pt-3 border-t border-border space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" />Email</span>
-                  <span className="text-slate-200 font-medium truncate text-right">{m.email}</span>
+                  <span className="text-foreground font-medium truncate text-right">{m.email}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground">Created</span>
-                  <span className="text-slate-200 font-medium">{format(new Date(m.created_at), 'dd MMM yyyy')}</span>
+                  <span className="text-foreground font-medium">{format(new Date(m.created_at), 'dd MMM yyyy')}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" />Agency</span>
-                  <span className="text-slate-200 font-medium truncate text-right">{m.agency_name ?? '—'}</span>
+                  <span className="text-foreground font-medium truncate text-right">{m.agency_name ?? '—'}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" />Tier</span>
-                  <span className="text-slate-200 font-medium capitalize text-right">{m.subscription_tier ?? '—'}</span>
+                  <span className="text-foreground font-medium capitalize text-right">{m.subscription_tier ?? '—'}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" />Properties</span>
-                  <strong className="font-['Outfit'] text-slate-100 font-bold">{m.property_count}</strong>
+                  <strong className="font-['Outfit'] text-foreground font-bold">{m.property_count}</strong>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><Home className="h-3.5 w-3.5" />Units</span>
-                  <strong className="font-['Outfit'] text-slate-100 font-bold">{m.unit_count}</strong>
+                  <strong className="font-['Outfit'] text-foreground font-bold">{m.unit_count}</strong>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground flex items-center gap-1.5"><Activity className="h-3.5 w-3.5" />Last active</span>
-                  <span className="text-slate-200 font-medium">{m.last_active_at ? format(new Date(m.last_active_at), 'dd MMM yyyy HH:mm') : '—'}</span>
+                  <span className="text-foreground font-medium">{m.last_active_at ? format(new Date(m.last_active_at), 'dd MMM yyyy HH:mm') : '—'}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted-foreground">Status</span>
-                  <span className="text-slate-200 font-medium capitalize">{m.approval_status.replace(/_/g, ' ')}</span>
+                  <span className="text-foreground font-medium capitalize">{m.approval_status.replace(/_/g, ' ')}</span>
                 </div>
               </div>
               {(m.rejection_reason || m.suspension_reason) && (
@@ -355,7 +355,7 @@ const ManagerManagement: React.FC = () => {
         {logs.map((l: StatusLogEntry) => (
           <div key={l.id} className="text-xs flex items-start gap-2 text-muted-foreground">
             <span className="shrink-0">{format(new Date(l.created_at), 'dd MMM HH:mm')}</span>
-            <span className="font-medium text-white capitalize">{l.old_status ?? '—'} → {l.new_status}</span>
+            <span className="font-medium text-foreground capitalize">{l.old_status ?? '—'} → {l.new_status}</span>
             {l.reason && <span>· {l.reason}</span>}
           </div>
         ))}
@@ -411,28 +411,28 @@ const ManagerManagement: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* Header: title, search, refresh, add */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Users className="h-5 w-5 text-amber-400" />
             Manager Account Control Center
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             Approve, suspend, reinstate, and tier manager accounts. All actions are audit-logged.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 lg:w-64">
-            <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name or email..."
-              className="pl-8 h-9 rounded-xl bg-slate-950/60 border-slate-700 text-slate-200 placeholder:text-slate-500 text-xs"
+              className="pl-8 h-9 rounded-xl bg-muted border-border text-foreground placeholder:text-muted-foreground text-xs"
               aria-label="Search managers by name or email"
             />
           </div>
-          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl font-medium text-xs" onClick={() => refetch()} aria-label="Refresh manager list"><RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh</Button>
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl font-medium text-xs" onClick={() => refetch()} aria-label="Refresh manager list"><RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh</Button>
           <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold h-9 rounded-xl text-xs" onClick={() => setAddOpen(true)}><UserPlus className="h-3.5 w-3.5 mr-1.5" />Add Manager</Button>
         </div>
       </div>
@@ -440,7 +440,7 @@ const ManagerManagement: React.FC = () => {
       {/* Clickable status summary — acts as the filter (clicking sets the active list) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {([
-          { key: 'total',    label: 'Total',     count: managers.length,   icon: Users,      active: false, cls: 'border-slate-700 bg-slate-900/60 text-slate-300' },
+          { key: 'total',    label: 'Total',     count: managers.length,   icon: Users,      active: false, cls: 'border-border bg-muted text-slate-300' },
           { key: 'pending',   label: 'Pending',   count: pending.length,   icon: Clock,      active: activeFilter === 'pending',   cls: 'border-amber-400/40 bg-amber-400/10 text-amber-300' },
           { key: 'active',    label: 'Active',    count: active.length,    icon: CheckCircle, active: activeFilter === 'active',    cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
           { key: 'suspended', label: 'Suspended', count: suspended.length, icon: Ban,        active: activeFilter === 'suspended', cls: 'border-orange-500/40 bg-orange-500/10 text-orange-300' },
@@ -461,13 +461,13 @@ const ManagerManagement: React.FC = () => {
               className={cn(
                 'flex items-center justify-between gap-2 p-3 rounded-xl border text-left transition-all',
                 cls,
-                !isTotal && 'hover:brightness-110 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50',
+                !isTotal && 'hover:brightness-110 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30',
                 active && 'ring-2 ring-amber-400/60',
               )}
             >
               <div className="min-w-0">
                 <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">{label}</span>
-                <strong className="font-['Outfit'] text-xl font-bold text-white">{count}</strong>
+                <strong className="font-['Outfit'] text-xl font-bold text-foreground">{count}</strong>
               </div>
               <Icon className={cn('h-5 w-5 shrink-0', isTotal && 'opacity-60')} />
             </button>

@@ -357,7 +357,7 @@ const WorkflowOrchestration = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Workflow Orchestration</h2>
+          <h2 className="text-2xl font-bold text-foreground">Workflow Orchestration</h2>
           <p className="text-amber-400/70 text-sm mt-1">Automate and manage business processes</p>
         </div>
         <div className="flex gap-2">
@@ -384,52 +384,52 @@ const WorkflowOrchestration = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Workflow className="h-4 w-4 text-amber-500" />
               Total Templates
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalTemplates}</div>
+            <div className="text-3xl font-bold text-foreground">{totalTemplates}</div>
             <div className="text-sm text-amber-400/70">Workflow templates</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Running Workflows
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{runningWorkflows}</div>
+            <div className="text-3xl font-bold text-foreground">{runningWorkflows}</div>
             <div className="text-sm text-amber-400/70">In progress</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-500" />
               Active Automations
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeAutomations}</div>
+            <div className="text-3xl font-bold text-foreground">{activeAutomations}</div>
             <div className="text-sm text-amber-400/70">Automated processes</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Completed Today
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{completedToday}</div>
+            <div className="text-3xl font-bold text-foreground">{completedToday}</div>
             <div className="text-sm text-amber-400/70">Workflows finished</div>
           </CardContent>
         </Card>
@@ -459,7 +459,7 @@ const WorkflowOrchestration = () => {
         <TabsContent value="templates">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Workflow Templates</CardTitle>
+              <CardTitle className="text-foreground">Workflow Templates</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Reusable workflow templates for common processes
               </CardDescription>
@@ -473,13 +473,13 @@ const WorkflowOrchestration = () => {
                     placeholder="Search templates..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="onboarding">Onboarding</option>
@@ -497,7 +497,7 @@ const WorkflowOrchestration = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">{template.name}</span>
+                          <span className="text-foreground font-medium">{template.name}</span>
                           {getCategoryBadge(template.category)}
                         </div>
                         {getStatusBadge(template.status)}
@@ -538,7 +538,7 @@ const WorkflowOrchestration = () => {
         <TabsContent value="instances">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Workflow Instances</CardTitle>
+              <CardTitle className="text-foreground">Workflow Instances</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Active and completed workflow instances
               </CardDescription>
@@ -550,7 +550,7 @@ const WorkflowOrchestration = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{instance.templateName}</span>
+                          <span className="text-foreground font-medium">{instance.templateName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{instance.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {instance.entityType}
@@ -606,7 +606,7 @@ const WorkflowOrchestration = () => {
         <TabsContent value="steps">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Workflow Steps</CardTitle>
+              <CardTitle className="text-foreground">Workflow Steps</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Detailed view of workflow execution steps
               </CardDescription>
@@ -623,13 +623,13 @@ const WorkflowOrchestration = () => {
                         'bg-gray-600'
                       }`}>
                         {step.status === 'completed' ? (
-                          <CheckCircle className="h-4 w-4 text-white" />
+                          <CheckCircle className="h-4 w-4 text-foreground" />
                         ) : step.status === 'in_progress' ? (
-                          <Activity className="h-4 w-4 text-white" />
+                          <Activity className="h-4 w-4 text-foreground" />
                         ) : step.status === 'failed' ? (
-                          <AlertTriangle className="h-4 w-4 text-white" />
+                          <AlertTriangle className="h-4 w-4 text-foreground" />
                         ) : (
-                          <Circle className="h-4 w-4 text-white" />
+                          <Circle className="h-4 w-4 text-foreground" />
                         )}
                       </div>
                       {idx < workflowSteps.length - 1 && (
@@ -639,7 +639,7 @@ const WorkflowOrchestration = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{step.name}</span>
+                          <span className="text-foreground font-medium">{step.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">Step {step.stepNumber}</span>
                           {getTypeBadge(step.type)}
                         </div>
@@ -687,7 +687,7 @@ const WorkflowOrchestration = () => {
         <TabsContent value="automations">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Workflow Automations</CardTitle>
+              <CardTitle className="text-foreground">Workflow Automations</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Automated triggers and actions
               </CardDescription>
@@ -699,7 +699,7 @@ const WorkflowOrchestration = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{automation.name}</span>
+                          <span className="text-foreground font-medium">{automation.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{automation.id}</span>
                         </div>
                         <div className="flex items-center gap-2">

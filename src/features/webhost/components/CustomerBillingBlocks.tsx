@@ -322,7 +322,7 @@ const CustomerBillingBlocks = () => {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {canView && (
-              <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs">
+              <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
               </Button>
             )}
@@ -354,15 +354,15 @@ const CustomerBillingBlocks = () => {
                         <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-300 mb-1.5">Pricing impact</p>
                         <div className="grid grid-cols-3 gap-2 text-center">
                           <div>
-                            <p className="text-[10px] text-slate-400">Standard</p>
-                            <p className="text-xs font-semibold text-white">{std != null ? `KES ${fmtKES(std)}` : '—'}</p>
+                            <p className="text-[10px] text-muted-foreground">Standard</p>
+                            <p className="text-xs font-semibold text-foreground">{std != null ? `KES ${fmtKES(std)}` : '—'}</p>
                           </div>
                           <div>
-                            <p className="text-[10px] text-slate-400">Custom</p>
-                            <p className="text-xs font-semibold text-white">{custom != null ? `KES ${fmtKES(custom)}` : 'Tier default'}</p>
+                            <p className="text-[10px] text-muted-foreground">Custom</p>
+                            <p className="text-xs font-semibold text-foreground">{custom != null ? `KES ${fmtKES(custom)}` : 'Tier default'}</p>
                           </div>
                           <div>
-                            <p className="text-[10px] text-slate-400">Difference</p>
+                            <p className="text-[10px] text-muted-foreground">Difference</p>
                             <p className={cn('text-xs font-semibold', diff == null ? 'text-slate-400' : diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
                               {diff != null ? `${diff < 0 ? '−' : diff > 0 ? '+' : ''}KES ${fmtKES(Math.abs(diff))}` : '—'}
                             </p>
@@ -512,7 +512,7 @@ const CustomerBillingBlocks = () => {
           <div className="text-center py-10 text-muted-foreground">
             <Tag className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p className="text-sm">No custom pricing configured.</p>
-            <p className="text-xs text-slate-500 mt-1">{canManage ? 'Create a billing block to override default tier pricing for a customer.' : 'Only owner and business-level admins can create billing blocks.'}</p>
+            <p className="text-xs text-muted-foreground mt-1">{canManage ? 'Create a billing block to override default tier pricing for a customer.' : 'Only owner and business-level admins can create billing blocks.'}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -540,24 +540,24 @@ const CustomerBillingBlocks = () => {
                 return (
                 <TableRow key={block.id}>
                   <TableCell>
-                    <p className="font-medium text-white text-sm">{getCustomerName(block.customer_id)}</p>
-                    {block.custom_block_name && <p className="text-[10px] text-slate-500">{block.custom_block_name}</p>}
+                    <p className="font-medium text-foreground text-sm">{getCustomerName(block.customer_id)}</p>
+                    {block.custom_block_name && <p className="text-[10px] text-muted-foreground">{block.custom_block_name}</p>}
                   </TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px] border-slate-600 text-slate-300 capitalize">{block.customer_type}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px] border-slate-600 text-muted-foreground capitalize">{block.customer_type}</Badge></TableCell>
                   <TableCell>
-                    <p className="text-xs text-slate-300">{std != null ? `KES ${fmtKES(std)}` : <span className="text-slate-500">—</span>}</p>
-                    <p className="text-[10px] text-slate-500">/unit</p>
+                    <p className="text-xs text-muted-foreground">{std != null ? `KES ${fmtKES(std)}` : <span className="text-muted-foreground">—</span>}</p>
+                    <p className="text-[10px] text-muted-foreground">/unit</p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-xs font-semibold text-white">{custom != null ? `KES ${fmtKES(custom)}` : <span className="text-slate-400">Tier default</span>}</p>
-                    <p className="text-[10px] text-slate-500">/unit</p>
+                    <p className="text-xs font-semibold text-foreground">{custom != null ? `KES ${fmtKES(custom)}` : <span className="text-muted-foreground">Tier default</span>}</p>
+                    <p className="text-[10px] text-muted-foreground">/unit</p>
                   </TableCell>
                   <TableCell>
                     {diff != null ? (
                       <span className={cn('text-xs font-semibold', diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
                         {diff < 0 ? '−' : diff > 0 ? '+' : ''}KES {fmtKES(Math.abs(diff))}
                       </span>
-                    ) : <span className="text-slate-500 text-xs">—</span>}
+                    ) : <span className="text-muted-foreground text-xs">—</span>}
                   </TableCell>
                   <TableCell>
                     {block.monthly_discount_pct > 0 || block.monthly_discount_flat > 0 ? (
@@ -566,7 +566,7 @@ const CustomerBillingBlocks = () => {
                         {block.monthly_discount_pct > 0 && block.monthly_discount_flat > 0 && ' + '}
                         {block.monthly_discount_flat > 0 && `KES ${fmtKES(block.monthly_discount_flat)}`}
                       </Badge>
-                    ) : <span className="text-slate-500 text-xs">—</span>}
+                    ) : <span className="text-muted-foreground text-xs">—</span>}
                     {dStatus !== 'none' && (
                       <Badge variant="outline" className={cn('text-[9px] ml-1', dStatus === 'active' ? 'border-emerald-500/30 text-emerald-300' : dStatus === 'expiring' ? 'border-amber-500/30 text-amber-300' : 'border-red-500/30 text-red-300')}>
                         {dStatus === 'active' ? 'Active' : dStatus === 'expiring' ? 'Expiring' : 'Expired'}
@@ -576,28 +576,28 @@ const CustomerBillingBlocks = () => {
                   <TableCell>
                     {block.registration_fee_waived || block.zero_registration ? (
                       <Badge className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-[10px]">Waived</Badge>
-                    ) : <span className="text-xs text-slate-200">KES {fmtKES(block.registration_fee_amount)}</span>}
+                    ) : <span className="text-xs text-foreground">KES {fmtKES(block.registration_fee_amount)}</span>}
                   </TableCell>
                   <TableCell>
                     {block.discount_expires_at ? (
                       <span className={cn('text-xs', dStatus === 'expired' ? 'text-red-300' : dStatus === 'expiring' ? 'text-amber-300' : 'text-slate-300')}>
                         {format(new Date(block.discount_expires_at), 'dd MMM yyyy')}
                       </span>
-                    ) : <span className="text-slate-500 text-xs">—</span>}
+                    ) : <span className="text-muted-foreground text-xs">—</span>}
                   </TableCell>
                   <TableCell>
-                    <p className="text-xs text-slate-300">{block.updated_at ? format(new Date(block.updated_at), 'dd MMM yyyy') : '—'}</p>
-                    {block.approved_at && <p className="text-[10px] text-slate-500">approved {format(new Date(block.approved_at), 'dd MMM')}</p>}
+                    <p className="text-xs text-muted-foreground">{block.updated_at ? format(new Date(block.updated_at), 'dd MMM yyyy') : '—'}</p>
+                    {block.approved_at && <p className="text-[10px] text-muted-foreground">approved {format(new Date(block.approved_at), 'dd MMM')}</p>}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       {canManage ? (
                         <>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
                           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
                         </>
                       ) : (
-                        <span className="text-[10px] text-slate-500 pr-2">Read-only</span>
+                        <span className="text-[10px] text-muted-foreground pr-2">Read-only</span>
                       )}
                     </div>
                   </TableCell>
@@ -618,7 +618,7 @@ const CustomerBillingBlocks = () => {
             <DialogTitle className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-400" />Remove custom pricing?</DialogTitle>
             <DialogDescription>This will remove the custom billing block for {deleteTarget ? getCustomerName(deleteTarget.customer_id) : ''}.</DialogDescription>
           </DialogHeader>
-          <p className="text-xs text-slate-400">The customer will revert to standard tier pricing. This cannot be undone.</p>
+          <p className="text-xs text-muted-foreground">The customer will revert to standard tier pricing. This cannot be undone.</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
             <Button variant="destructive" onClick={() => deleteTarget && deleteBlock.mutate(deleteTarget.id)} disabled={deleteBlock.isPending}>

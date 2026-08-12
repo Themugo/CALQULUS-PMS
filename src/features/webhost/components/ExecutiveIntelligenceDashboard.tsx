@@ -268,7 +268,7 @@ const ExecutiveIntelligenceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Executive Intelligence Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Executive Intelligence Dashboard</h2>
           <p className="text-amber-400/70 text-sm mt-1">AI-powered insights and strategic analytics</p>
         </div>
         <div className="flex gap-2">
@@ -295,52 +295,52 @@ const ExecutiveIntelligenceDashboard = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Active Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeAlerts}</div>
+            <div className="text-3xl font-bold text-foreground">{activeAlerts}</div>
             <div className="text-sm text-amber-400/70">Requiring attention</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Critical Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{criticalAlerts}</div>
+            <div className="text-3xl font-bold text-foreground">{criticalAlerts}</div>
             <div className="text-sm text-amber-400/70">High priority</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Target className="h-4 w-4 text-amber-500" />
               Actionable Insights
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{actionableInsights}</div>
+            <div className="text-3xl font-bold text-foreground">{actionableInsights}</div>
             <div className="text-sm text-amber-400/70">Ready to act</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-amber-500" />
               KPIs On Track
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{kpis.filter(k => k.status === 'on_track').length}</div>
+            <div className="text-3xl font-bold text-foreground">{kpis.filter(k => k.status === 'on_track').length}</div>
             <div className="text-sm text-amber-400/70">of {kpis.length} total</div>
           </CardContent>
         </Card>
@@ -370,7 +370,7 @@ const ExecutiveIntelligenceDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-amber-500" />
                   Top Opportunities
                 </CardTitle>
@@ -380,7 +380,7 @@ const ExecutiveIntelligenceDashboard = () => {
                   {insights.filter(i => i.type === 'opportunity').slice(0, 3).map((insight) => (
                     <div key={insight.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{insight.title}</span>
+                        <span className="text-foreground text-sm font-medium">{insight.title}</span>
                         {getSeverityBadge(insight.impact)}
                       </div>
                       <p className="text-amber-400/70 text-xs mb-2">{insight.description}</p>
@@ -395,7 +395,7 @@ const ExecutiveIntelligenceDashboard = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Top Risks
                 </CardTitle>
@@ -405,7 +405,7 @@ const ExecutiveIntelligenceDashboard = () => {
                   {insights.filter(i => i.type === 'risk').slice(0, 3).map((insight) => (
                     <div key={insight.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{insight.title}</span>
+                        <span className="text-foreground text-sm font-medium">{insight.title}</span>
                         {getSeverityBadge(insight.impact)}
                       </div>
                       <p className="text-amber-400/70 text-xs mb-2">{insight.description}</p>
@@ -423,7 +423,7 @@ const ExecutiveIntelligenceDashboard = () => {
         <TabsContent value="kpis">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Key Performance Indicators</CardTitle>
+              <CardTitle className="text-foreground">Key Performance Indicators</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track strategic and operational metrics
               </CardDescription>
@@ -434,7 +434,7 @@ const ExecutiveIntelligenceDashboard = () => {
                   <div key={kpi.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <span className="text-white font-medium">{kpi.name}</span>
+                        <span className="text-foreground font-medium">{kpi.name}</span>
                         <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                           {kpi.category}
                         </Badge>
@@ -448,7 +448,7 @@ const ExecutiveIntelligenceDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-4 mb-2">
-                      <span className="text-2xl font-bold text-white">
+                      <span className="text-2xl font-bold text-foreground">
                         {kpi.category === 'financial' ? `KES ${kpi.value.toLocaleString()}` : kpi.value}
                       </span>
                       <span className="text-amber-400/70 text-sm">Target: {kpi.category === 'financial' ? `KES ${kpi.target.toLocaleString()}` : kpi.target}</span>
@@ -464,7 +464,7 @@ const ExecutiveIntelligenceDashboard = () => {
         <TabsContent value="alerts">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Alerts & Notifications</CardTitle>
+              <CardTitle className="text-foreground">Alerts & Notifications</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Monitor critical issues and warnings
               </CardDescription>
@@ -475,7 +475,7 @@ const ExecutiveIntelligenceDashboard = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="financial">Financial</option>
@@ -491,7 +491,7 @@ const ExecutiveIntelligenceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{alert.title}</span>
+                          <span className="text-foreground font-medium">{alert.title}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {alert.category}
                           </Badge>
@@ -530,7 +530,7 @@ const ExecutiveIntelligenceDashboard = () => {
         <TabsContent value="insights">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">AI-Powered Insights</CardTitle>
+              <CardTitle className="text-foreground">AI-Powered Insights</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Data-driven recommendations and opportunities
               </CardDescription>
@@ -542,7 +542,7 @@ const ExecutiveIntelligenceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{insight.title}</span>
+                          <span className="text-foreground font-medium">{insight.title}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {insight.category}
                           </Badge>

@@ -163,17 +163,17 @@ const LandlordInvitationAccept: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-950 via-slate-900 to-amber-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-950 via-card to-amber-950 p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Property info */}
-        <Card className="border-amber-700/30 bg-slate-900/80 text-white">
+        <Card className="border-amber-700/30 bg-muted text-foreground">
           <CardContent className="py-6 text-center">
             <div className="h-12 w-12 mx-auto rounded-xl bg-amber-600/20 flex items-center justify-center mb-3">
               <Building2 className="h-6 w-6 text-amber-400" />
             </div>
             <h2 className="font-semibold text-lg">{property?.name}</h2>
             <p className="text-amber-300/70 text-sm">{property?.address}</p>
-            <p className="text-white/60 text-xs mt-2">You have been invited as a landlord</p>
+            <p className="text-muted-foreground text-xs mt-2">You have been invited as a landlord</p>
           </CardContent>
         </Card>
 

@@ -91,7 +91,7 @@ const ActivityLog: React.FC = () => {
   return (
     <Card className="bg-card border-border/60">
       <CardHeader className="pb-4">
-        <CardTitle className="text-white flex items-center gap-2">
+        <CardTitle className="text-foreground flex items-center gap-2">
           <Activity className="h-5 w-5 text-amber-500" />
           Platform Activity Log
         </CardTitle>
@@ -108,11 +108,11 @@ const ActivityLog: React.FC = () => {
               placeholder="Search actions, emails, labels…"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-9 bg-card border-border/60 text-white placeholder:text-muted-foreground/70"
+              className="pl-9 bg-card border-border/60 text-foreground placeholder:text-muted-foreground/70"
             />
           </div>
           <Select value={entityFilter} onValueChange={setEntityFilter}>
-            <SelectTrigger className="w-40 bg-card border-border/60 text-white">
+            <SelectTrigger className="w-40 bg-card border-border/60 text-foreground">
               <SelectValue placeholder="Entity type" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ const ActivityLog: React.FC = () => {
             </SelectContent>
           </Select>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-36 bg-card border-border/60 text-white">
+            <SelectTrigger className="w-36 bg-card border-border/60 text-foreground">
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>

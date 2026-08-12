@@ -377,7 +377,7 @@ const WebhostManagement = () => {
     <Card className="bg-card border-amber-400/15">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Shield className="h-5 w-5 text-amber-500" />
             Webhost Accounts
           </CardTitle>
@@ -393,9 +393,9 @@ const WebhostManagement = () => {
                 Add Webhost
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="bg-muted border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-white">Create New Webhost</DialogTitle>
+                <DialogTitle className="text-foreground">Create New Webhost</DialogTitle>
                 <DialogDescription className="text-amber-400/70">
                   Create a new webhost account and assign permissions
                 </DialogDescription>
@@ -409,7 +409,7 @@ const WebhostManagement = () => {
                       value={newWebhost.fullName}
                       onChange={(e) => setNewWebhost({ ...newWebhost, fullName: e.target.value })}
                       required
-                      className="bg-slate-700 border-amber-400/20 text-white"
+                      className="bg-muted border-amber-400/20 text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
@@ -420,7 +420,7 @@ const WebhostManagement = () => {
                       value={newWebhost.email}
                       onChange={(e) => setNewWebhost({ ...newWebhost, email: e.target.value })}
                       required
-                      className="bg-slate-700 border-amber-400/20 text-white"
+                      className="bg-muted border-amber-400/20 text-foreground"
                     />
                   </div>
                 </div>
@@ -433,12 +433,12 @@ const WebhostManagement = () => {
                     onChange={(e) => setNewWebhost({ ...newWebhost, password: e.target.value })}
                     required
                     minLength={8}
-                    className="bg-slate-700 border-amber-400/20 text-white"
+                    className="bg-muted border-amber-400/20 text-foreground"
                   />
                 </div>
 
                 <div className="border-t border-amber-400/30/30 pt-4">
-                  <h4 className="text-white font-medium mb-4">Admin Permissions</h4>
+                  <h4 className="text-foreground font-medium mb-4">Admin Permissions</h4>
                   <AdminPermissionsEditor
                     permissions={newPermissions}
                     onChange={setNewPermissions}
@@ -461,7 +461,7 @@ const WebhostManagement = () => {
         {isLoading ? (
           <div className="animate-pulse space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="h-12 bg-slate-700 rounded"></div>
+              <div key={i} className="h-12 bg-muted rounded"></div>
             ))}
           </div>
         ) : webhosts && webhosts.length > 0 ? (
@@ -478,7 +478,7 @@ const WebhostManagement = () => {
             <TableBody>
               {webhosts.map((webhost) => (
                 <TableRow key={webhost.id} className="border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)]">
-                  <TableCell className="text-white font-medium">
+                  <TableCell className="text-foreground font-medium">
                     <div className="flex items-center gap-2">
                       {webhost.permissions?.admin_level === 'super_admin' ? (
                         <Crown className="h-4 w-4 text-yellow-400" />
@@ -555,9 +555,9 @@ const WebhostManagement = () => {
 
       {/* Edit Permissions Dialog */}
       <Dialog open={isPermissionsDialogOpen} onOpenChange={setIsPermissionsDialogOpen}>
-        <DialogContent className="bg-slate-800 border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-muted border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Permissions</DialogTitle>
+            <DialogTitle className="text-foreground">Edit Permissions</DialogTitle>
             <DialogDescription className="text-amber-400/70">
               Update permissions for {selectedWebhost?.full_name || selectedWebhost?.email}
             </DialogDescription>
@@ -605,15 +605,15 @@ const WebhostManagement = () => {
 
       {/* Transfer Super Admin Confirmation Dialog */}
       <AlertDialog open={isTransferDialogOpen} onOpenChange={setIsTransferDialogOpen}>
-        <AlertDialogContent className="bg-slate-800 border-amber-400/15">
+        <AlertDialogContent className="bg-muted border-amber-400/15">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white flex items-center gap-2">
+            <AlertDialogTitle className="text-foreground flex items-center gap-2">
               <Crown className="h-5 w-5 text-yellow-400" />
               Transfer Super Admin Rights
             </AlertDialogTitle>
             <AlertDialogDescription className="text-amber-400/70">
               Are you sure you want to transfer Super Admin rights to{' '}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-foreground">
                 {transferTarget?.full_name || transferTarget?.email}
               </span>
               ?

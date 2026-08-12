@@ -304,7 +304,7 @@ const TenantAuth = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -312,12 +312,12 @@ const TenantAuth = () => {
   // Show verification confirmation screen
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
-        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
+        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="h-16 w-16 rounded-full bg-amber-400 flex items-center justify-center shadow-lg shadow-accent/25">
-                <Mail className="h-8 w-8 text-white" />
+              <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-accent/25">
+                <Mail className="h-8 w-8 text-foreground" />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">Check Your Email</CardTitle>
@@ -358,12 +358,12 @@ const TenantAuth = () => {
   // If no invitation token, show registration options
   if (!invitationToken && !isLoadingInvitation && !isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
-        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
+        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-16 w-16 rounded-full bg-warning flex items-center justify-center shadow-lg shadow-warning/25">
-                <Mail className="h-8 w-8 text-white" />
+                <Mail className="h-8 w-8 text-foreground" />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">Tenant Registration</CardTitle>
@@ -399,7 +399,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm mb-3">Already have an account?</p>
               <Link to="/tenant/login">
-                <Button variant="outline" className="w-full border-amber-400/40 text-amber-600 hover:bg-amber-400/8">
+                <Button variant="outline" className="w-full border-primary/20 text-amber-600 hover:bg-primary/10">
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
@@ -414,8 +414,8 @@ const TenantAuth = () => {
   // If self-registration mode, show self-registration form
   if (isSelfRegistration) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4">
-        <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4">
+        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <img src={calqulusLogo} alt="CALQULUS PMS" className="h-16 w-auto" />
@@ -492,7 +492,7 @@ const TenantAuth = () => {
               
               <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                 ) : (
                   'Create Account'
                 )}
@@ -516,8 +516,8 @@ const TenantAuth = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-amber-400/8 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''}`}>
-      <Card className="w-full max-w-md border-amber-400/15 bg-card/95 backdrop-blur-sm shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/20 via-background to-primary/10 px-4 py-4 ${isMobile ? 'items-start pt-8' : ''}`}>
+      <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm max-h-[calc(100vh-2rem)] overflow-y-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <img 
@@ -531,12 +531,12 @@ const TenantAuth = () => {
             {invitation ? `Welcome, ${invitation.tenant_name}! Complete your registration.` : 'Sign up to access your rental portal'}
           </CardDescription>
           {invitation && (
-            <div className="mt-3 p-3 bg-amber-400/10 rounded-lg border border-amber-400/15 space-y-2">
+            <div className="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
               <p className="text-xs text-amber-600 font-medium">
                 Property: {invitation.property_name}{invitation.unit ? ` - Unit ${invitation.unit}` : ''}
               </p>
               {landlordContact && (
-                <div className="pt-2 border-t border-amber-400/15">
+                <div className="pt-2 border-t border-primary/20">
                   <p className="text-xs text-muted-foreground mb-1">Your Landlord/Manager:</p>
                   <p className="text-sm font-medium text-foreground">{landlordContact.full_name || 'Property Manager'}</p>
                   <div className="flex flex-wrap gap-2 mt-1">

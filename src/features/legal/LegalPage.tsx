@@ -19,12 +19,12 @@ const LegalPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>(defaultTab);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-10">
+      <div className="border-b border-border bg-muted backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/tenant/login">
-            <Button variant="ghost" size="sm" className="gap-2 text-slate-400">
+            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
               <ChevronLeft className="h-4 w-4" />Back
             </Button>
           </Link>
@@ -32,7 +32,7 @@ const LegalPage: React.FC = () => {
             <button
               onClick={() => setTab('privacy')}
               className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'privacy' ? 'bg-amber-400 text-white' : 'text-slate-400 hover:text-white'
+                tab === 'privacy' ? 'bg-amber-400 text-foreground' : 'text-slate-400 hover:text-foreground'
               }`}
             >
               <Shield className="h-3.5 w-3.5" />Privacy Policy
@@ -40,13 +40,13 @@ const LegalPage: React.FC = () => {
             <button
               onClick={() => setTab('terms')}
               className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'terms' ? 'bg-amber-400 text-white' : 'text-slate-400 hover:text-white'
+                tab === 'terms' ? 'bg-amber-400 text-foreground' : 'text-slate-400 hover:text-foreground'
               }`}
             >
               <FileText className="h-3.5 w-3.5" />Terms of Service
             </button>
           </div>
-          <div className="text-xs text-slate-500">Updated {LAST_UPDATED}</div>
+          <div className="text-xs text-muted-foreground">Updated {LAST_UPDATED}</div>
         </div>
       </div>
 
@@ -61,8 +61,8 @@ const LegalPage: React.FC = () => {
 const PrivacyPolicy: React.FC = () => (
   <article className="space-y-8 text-sm leading-7">
     <div>
-      <h1 className="text-2xl font-bold text-white mb-2">Privacy Policy</h1>
-      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Applies to CALQULUS PMS platform and mobile app</p>
+      <h1 className="text-2xl font-bold text-foreground mb-2">Privacy Policy</h1>
+      <p className="text-muted-foreground">Last updated: {LAST_UPDATED} · Applies to CALQULUS PMS platform and mobile app</p>
     </div>
 
     <Section title="1. Who we are">
@@ -71,12 +71,12 @@ const PrivacyPolicy: React.FC = () => (
     </Section>
 
     <Section title="2. What data we collect">
-      <p><strong className="text-white">Account data:</strong> name, email address, phone number, and password hash when you register.</p>
-      <p><strong className="text-white">Tenancy data:</strong> property address, unit number, lease dates, rent amount, deposit amount.</p>
-      <p><strong className="text-white">Financial data:</strong> invoice amounts, payment dates, M-Pesa transaction codes, bank references. We do not store M-Pesa PINs or full card numbers.</p>
-      <p><strong className="text-white">Property condition photos:</strong> timestamped images you upload of your rental unit. These are stored securely and only accessible by you and your property manager.</p>
-      <p><strong className="text-white">Communications:</strong> messages between tenants and managers sent through the platform.</p>
-      <p><strong className="text-white">Usage data:</strong> login times, pages visited, device type. We do not sell this data.</p>
+      <p><strong className="text-foreground">Account data:</strong> name, email address, phone number, and password hash when you register.</p>
+      <p><strong className="text-foreground">Tenancy data:</strong> property address, unit number, lease dates, rent amount, deposit amount.</p>
+      <p><strong className="text-foreground">Financial data:</strong> invoice amounts, payment dates, M-Pesa transaction codes, bank references. We do not store M-Pesa PINs or full card numbers.</p>
+      <p><strong className="text-foreground">Property condition photos:</strong> timestamped images you upload of your rental unit. These are stored securely and only accessible by you and your property manager.</p>
+      <p><strong className="text-foreground">Communications:</strong> messages between tenants and managers sent through the platform.</p>
+      <p><strong className="text-foreground">Usage data:</strong> login times, pages visited, device type. We do not sell this data.</p>
     </Section>
 
     <Section title="3. How we use your data">
@@ -88,25 +88,25 @@ const PrivacyPolicy: React.FC = () => (
         <li>To comply with legal obligations in Kenya</li>
         <li>To improve the platform (aggregated, anonymised usage analytics only)</li>
       </ul>
-      <p className="mt-2 text-slate-400">We do not use your data for advertising. We do not sell your data to third parties.</p>
+      <p className="mt-2 text-muted-foreground">We do not use your data for advertising. We do not sell your data to third parties.</p>
     </Section>
 
     <Section title="4. Who we share data with">
-      <p><strong className="text-white">Safaricom (M-Pesa):</strong> phone number and payment amount when processing STK push payments.</p>
-      <p><strong className="text-white">Resend (email):</strong> your email address and invoice details when sending notifications.</p>
-      <p><strong className="text-white">Africa's Talking (SMS):</strong> your phone number and message content when sending SMS alerts.</p>
-      <p><strong className="text-white">Supabase (database):</strong> all platform data is stored on Supabase infrastructure (AWS us-east-1).</p>
-      <p><strong className="text-white">Your property manager:</strong> your contact details, payment history, and tenancy information are visible to the manager who manages your property.</p>
-      <p><strong className="text-white">Landlords:</strong> landlords linked to a property can see property-level financial summaries but <em>cannot see individual tenant names, contact details, or personal information</em>.</p>
+      <p><strong className="text-foreground">Safaricom (M-Pesa):</strong> phone number and payment amount when processing STK push payments.</p>
+      <p><strong className="text-foreground">Resend (email):</strong> your email address and invoice details when sending notifications.</p>
+      <p><strong className="text-foreground">Africa's Talking (SMS):</strong> your phone number and message content when sending SMS alerts.</p>
+      <p><strong className="text-foreground">Supabase (database):</strong> all platform data is stored on Supabase infrastructure (AWS us-east-1).</p>
+      <p><strong className="text-foreground">Your property manager:</strong> your contact details, payment history, and tenancy information are visible to the manager who manages your property.</p>
+      <p><strong className="text-foreground">Landlords:</strong> landlords linked to a property can see property-level financial summaries but <em>cannot see individual tenant names, contact details, or personal information</em>.</p>
     </Section>
 
     <Section title="5. Your rights under the Kenya Data Protection Act 2019">
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong className="text-white">Access:</strong> request a copy of all personal data we hold about you</li>
-        <li><strong className="text-white">Correction:</strong> request correction of inaccurate data</li>
-        <li><strong className="text-white">Deletion:</strong> request deletion of your account and data (subject to legal retention requirements)</li>
-        <li><strong className="text-white">Objection:</strong> object to processing of your data for certain purposes</li>
-        <li><strong className="text-white">Portability:</strong> receive your data in a machine-readable format</li>
+        <li><strong className="text-foreground">Access:</strong> request a copy of all personal data we hold about you</li>
+        <li><strong className="text-foreground">Correction:</strong> request correction of inaccurate data</li>
+        <li><strong className="text-foreground">Deletion:</strong> request deletion of your account and data (subject to legal retention requirements)</li>
+        <li><strong className="text-foreground">Objection:</strong> object to processing of your data for certain purposes</li>
+        <li><strong className="text-foreground">Portability:</strong> receive your data in a machine-readable format</li>
       </ul>
       <p className="mt-2">To exercise these rights, email <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a>. We will respond within 21 days.</p>
     </Section>
@@ -129,8 +129,8 @@ const PrivacyPolicy: React.FC = () => (
 const TermsOfService: React.FC = () => (
   <article className="space-y-8 text-sm leading-7">
     <div>
-      <h1 className="text-2xl font-bold text-white mb-2">Terms of Service</h1>
-      <p className="text-slate-400">Last updated: {LAST_UPDATED} · Governing law: {COUNTRY}</p>
+      <h1 className="text-2xl font-bold text-foreground mb-2">Terms of Service</h1>
+      <p className="text-muted-foreground">Last updated: {LAST_UPDATED} · Governing law: {COUNTRY}</p>
     </div>
 
     <Section title="1. Acceptance">
@@ -154,10 +154,10 @@ const TermsOfService: React.FC = () => (
     <Section title="4. Tenant protections">
       <p>The following features exist specifically to protect tenants:</p>
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong className="text-white">Self-initiated payments only:</strong> M-Pesa STK push requests can only be initiated by the tenant — managers cannot push payment requests to your phone without your consent.</li>
-        <li><strong className="text-white">Condition photos:</strong> timestamped move-in photos create immutable evidence for deposit disputes.</li>
-        <li><strong className="text-white">Payment diary:</strong> tenants can log cash payments independently of the manager's records.</li>
-        <li><strong className="text-white">Data isolation:</strong> landlords linked to properties cannot see your personal contact information.</li>
+        <li><strong className="text-foreground">Self-initiated payments only:</strong> M-Pesa STK push requests can only be initiated by the tenant — managers cannot push payment requests to your phone without your consent.</li>
+        <li><strong className="text-foreground">Condition photos:</strong> timestamped move-in photos create immutable evidence for deposit disputes.</li>
+        <li><strong className="text-foreground">Payment diary:</strong> tenants can log cash payments independently of the manager's records.</li>
+        <li><strong className="text-foreground">Data isolation:</strong> landlords linked to properties cannot see your personal contact information.</li>
       </ul>
     </Section>
 
@@ -194,8 +194,8 @@ const TermsOfService: React.FC = () => (
 // ── Helpers ────────────────────────────────────────────────────────────────
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section>
-    <h2 className="text-base font-semibold text-white mb-3 pb-1 border-b border-slate-800">{title}</h2>
-    <div className="space-y-2 text-slate-300">{children}</div>
+    <h2 className="text-base font-semibold text-foreground mb-3 pb-1 border-b border-border">{title}</h2>
+    <div className="space-y-2 text-muted-foreground">{children}</div>
   </section>
 );
 

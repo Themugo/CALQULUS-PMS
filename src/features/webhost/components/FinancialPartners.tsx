@@ -343,7 +343,7 @@ const FinancialPartners = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Financial Partners</h2>
+          <h2 className="text-2xl font-bold text-foreground">Financial Partners</h2>
           <p className="text-amber-400/70 text-sm mt-1">Connect with banks and financial institutions for loans and payment processing</p>
         </div>
         <div className="flex gap-2">
@@ -370,52 +370,52 @@ const FinancialPartners = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Building2 className="h-4 w-4 text-amber-500" />
               Total Partners
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalPartners}</div>
+            <div className="text-3xl font-bold text-foreground">{totalPartners}</div>
             <div className="text-sm text-amber-400/70">Financial institutions</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Active Loans
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeLoans}</div>
+            <div className="text-3xl font-bold text-foreground">{activeLoans}</div>
             <div className="text-sm text-amber-400/70">Currently active</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Clock className="h-4 w-4 text-amber-500" />
               Pending Applications
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingApplications}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingApplications}</div>
             <div className="text-sm text-amber-400/70">Awaiting review</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-amber-500" />
               Total Volume
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">KES {(totalLoanVolume / 1000000).toFixed(1)}M</div>
+            <div className="text-3xl font-bold text-foreground">KES {(totalLoanVolume / 1000000).toFixed(1)}M</div>
             <div className="text-sm text-amber-400/70">Loan portfolio</div>
           </CardContent>
         </Card>
@@ -445,7 +445,7 @@ const FinancialPartners = () => {
         <TabsContent value="partners">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Financial Partners Directory</CardTitle>
+              <CardTitle className="text-foreground">Financial Partners Directory</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Browse and connect with financial institutions
               </CardDescription>
@@ -459,13 +459,13 @@ const FinancialPartners = () => {
                     placeholder="Search partners..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="bank">Bank</option>
@@ -482,7 +482,7 @@ const FinancialPartners = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">{partner.name}</span>
+                          <span className="text-foreground font-medium">{partner.name}</span>
                           {partner.verified && (
                             <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Verified</Badge>
                           )}
@@ -491,7 +491,7 @@ const FinancialPartners = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-white font-medium">{partner.rating}</span>
+                        <span className="text-foreground font-medium">{partner.rating}</span>
                         <span className="text-amber-400/70 text-sm">({partner.reviewCount})</span>
                       </div>
                     </div>
@@ -539,7 +539,7 @@ const FinancialPartners = () => {
         <TabsContent value="loans">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Loan Applications</CardTitle>
+              <CardTitle className="text-foreground">Loan Applications</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage loan applications and track status
               </CardDescription>
@@ -551,7 +551,7 @@ const FinancialPartners = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{application.partnerName}</span>
+                          <span className="text-foreground font-medium">{application.partnerName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{application.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -608,7 +608,7 @@ const FinancialPartners = () => {
         <TabsContent value="payments">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Payment Processing</CardTitle>
+              <CardTitle className="text-foreground">Payment Processing</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage payment processing partners
               </CardDescription>
@@ -620,7 +620,7 @@ const FinancialPartners = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{processing.partnerName}</span>
+                          <span className="text-foreground font-medium">{processing.partnerName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{processing.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {processing.type.replace('_', ' ')}
@@ -678,7 +678,7 @@ const FinancialPartners = () => {
         <TabsContent value="performance">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Partner Performance</CardTitle>
+              <CardTitle className="text-foreground">Partner Performance</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track financial partner performance metrics
               </CardDescription>
@@ -688,29 +688,29 @@ const FinancialPartners = () => {
                 {partnerPerformance.map((perf) => (
                   <div key={perf.partnerId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{perf.partnerName}</span>
+                      <span className="text-foreground font-medium">{perf.partnerName}</span>
                       <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         KES {(perf.totalVolume / 1000000).toFixed(1)}M volume
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.approvalRate}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.approvalRate}%</div>
                         <div className="text-xs text-amber-400/70">Approval Rate</div>
                         <Progress value={perf.approvalRate} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.averageInterestRate}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.averageInterestRate}%</div>
                         <div className="text-xs text-amber-400/70">Avg Interest</div>
                         <Progress value={perf.averageInterestRate * 5} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.customerSatisfaction}/5</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.customerSatisfaction}/5</div>
                         <div className="text-xs text-amber-400/70">Satisfaction</div>
                         <Progress value={(perf.customerSatisfaction / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.defaultRate}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.defaultRate}%</div>
                         <div className="text-xs text-amber-400/70">Default Rate</div>
                         <Progress value={perf.defaultRate * 10} className="h-2 mt-1" />
                       </div>

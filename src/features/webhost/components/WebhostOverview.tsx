@@ -66,7 +66,7 @@ const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = 
   const { data: health = 'unknown', isLoading } = usePlatformHealth();
   const copy = HEALTH_COPY[health];
   return (
-    <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl">
+    <Card className="bg-muted border border-border shadow-sm backdrop-blur-md rounded-2xl">
       <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="h-10 w-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0">
@@ -75,7 +75,7 @@ const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = 
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               {isLoading ? (
-                <Skeleton className="h-3 w-32 bg-slate-800/60" />
+                <Skeleton className="h-3 w-32 bg-muted/80" />
               ) : (
                 <span className="flex items-center gap-1.5">
                   <span className={`h-2 w-2 rounded-full ${copy.dot} ${health === 'healthy' ? 'animate-pulse' : ''}`} aria-hidden />
@@ -83,11 +83,11 @@ const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = 
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-tight">{copy.sub}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{copy.sub}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold uppercase tracking-wider">
+          <Badge variant="outline" className="text-[10px] border-border bg-muted text-muted-foreground font-bold uppercase tracking-wider">
             Platform Administration
           </Badge>
           {onNavigateTab && (
@@ -95,7 +95,7 @@ const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = 
               variant="ghost"
               size="sm"
               onClick={() => onNavigateTab('security')}
-              className="h-7 text-xs text-slate-300 hover:text-amber-400 hover:bg-amber-400/10 px-2 font-medium"
+              className="h-7 text-xs text-muted-foreground hover:text-amber-400 hover:bg-amber-400/10 px-2 font-medium"
             >
               Security <ArrowRight className="h-3 w-3 ml-1" />
             </Button>
@@ -125,8 +125,8 @@ const CustomRevenueTooltip = ({ active, payload }: { active?: boolean; payload?:
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-slate-900/95 border border-amber-500/30 rounded-xl p-3 shadow-2xl backdrop-blur-md text-slate-100">
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{data.monthFull}</p>
+      <div className="bg-muted border border-amber-500/30 rounded-xl p-3 shadow-sm backdrop-blur-md text-foreground">
+        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{data.monthFull}</p>
         <p className="text-base font-black text-amber-400 mt-1">
           {fmt(data.revenue)}
         </p>
@@ -176,15 +176,15 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
   const hasBillingData = total6Mo > 0;
 
   return (
-    <Card className="bg-slate-900/80 border border-slate-800 shadow-md backdrop-blur-md rounded-xl overflow-hidden">
-      <CardHeader className="pb-3 pt-5 px-5 border-b border-slate-800">
+    <Card className="bg-muted border border-border shadow-md backdrop-blur-md rounded-xl overflow-hidden">
+      <CardHeader className="pb-3 pt-5 px-5 border-b border-border">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
               <BarChart3 className="h-4 w-4 text-amber-400" />
               Platform Revenue Trend — Last 6 Months
             </CardTitle>
-            <CardDescription className="text-xs text-slate-400">Subscription billing collected across registered property managers</CardDescription>
+            <CardDescription className="text-xs text-muted-foreground">Subscription billing collected across registered property managers</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-[10px] border-amber-400/40 text-amber-300 bg-amber-400/10 font-bold">
@@ -205,14 +205,14 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
       </CardHeader>
       <CardContent className="px-4 sm:px-5 pt-5 pb-4">
         {isLoading ? (
-          <Skeleton className="h-48 w-full bg-slate-800/50 rounded-xl" />
+          <Skeleton className="h-48 w-full bg-muted/80 rounded-xl" />
         ) : !hasBillingData ? (
           <div className="h-48 w-full flex flex-col items-center justify-center text-center px-4">
-            <div className="h-12 w-12 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-center mb-3">
-              <BarChart3 className="h-6 w-6 text-slate-500" />
+            <div className="h-12 w-12 rounded-2xl bg-muted/80 border border-border flex items-center justify-center mb-3">
+              <BarChart3 className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-sm font-semibold text-slate-300">No billing activity recorded in the last 6 months</p>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm">
+            <p className="text-sm font-semibold text-muted-foreground">No billing activity recorded in the last 6 months</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
               Paid manager invoices will appear here once subscription billing begins.
             </p>
           </div>
@@ -255,8 +255,8 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex justify-between items-center text-[11px] text-slate-400 pt-3 border-t border-slate-800">
-              <span>Total 6-Month Billing: <strong className="text-white font-bold ml-1">{fmt(total6Mo)}</strong></span>
+            <div className="flex justify-between items-center text-[11px] text-muted-foreground pt-3 border-t border-border">
+              <span>Total 6-Month Billing: <strong className="text-foreground font-bold ml-1">{fmt(total6Mo)}</strong></span>
               <span className="text-amber-400/90 font-medium flex items-center gap-1">
                 <Zap className="h-3 w-3 text-amber-400" /> Interactive Recharts Engine
               </span>
@@ -306,7 +306,7 @@ const CardShell: React.FC<CardShellProps> = ({ accent, onClick, title, icon: Ico
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick(); } }}
-      className={`border-l-4 ${accents.bar} border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl ${accents.hover} transition-all ${onClick ? 'cursor-pointer group' : ''} backdrop-blur-md rounded-2xl`}
+      className={`border-l-4 ${accents.bar} border-y border-r border-border bg-muted hover:shadow-sm ${accents.hover} transition-all ${onClick ? 'cursor-pointer group' : ''} backdrop-blur-md rounded-2xl`}
     >
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2.5">
@@ -445,26 +445,26 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           }
         >
           {isLoading ? (
-            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-muted/80 rounded" />)}</div>
           ) : hasAttention ? (
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Managers</span>
+                <span className="text-muted-foreground font-medium">Pending Managers</span>
                 <span className="font-bold text-amber-400 flex items-center gap-1">
                   {pendingManagers}
                   {pendingManagers > 0 && <ChevronRight className="h-3 w-3" />}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Overdue Invoices</span>
+                <span className="text-muted-foreground font-medium">Overdue Invoices</span>
                 <span className="font-bold text-red-400 flex items-center gap-1">
                   {overdueInvoices}
                   {overdueInvoices > 0 && <ChevronRight className="h-3 w-3" />}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Payouts</span>
-                <span className="font-bold text-slate-100">{pendingPayouts}</span>
+                <span className="text-muted-foreground font-medium">Pending Payouts</span>
+                <span className="font-bold text-foreground">{pendingPayouts}</span>
               </div>
             </div>
           ) : (
@@ -480,30 +480,30 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           onClick={() => onNavigateTab?.('billing')}
           badge={hasBillingHistory
             ? { label: `${momUp ? '+' : ''}${momChange}% MoM`, cls: `border-amber-400/30 ${momUp ? 'text-emerald-300 bg-emerald-500/10' : 'text-red-300 bg-red-500/10'}` }
-            : { label: 'No activity', cls: 'border-slate-600 text-slate-300 bg-slate-700/30' }
+            : { label: 'No activity', cls: 'border-slate-600 text-slate-300 bg-muted/80' }
           }
         >
           {isLoading ? (
-            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-muted/80 rounded" />)}</div>
           ) : hasBillingHistory || revenueMTD > 0 ? (
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Revenue MTD</span>
+                <span className="text-muted-foreground font-medium">Revenue MTD</span>
                 <span className="font-bold text-emerald-400">{fmt(revenueMTD)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Last Month</span>
-                <span className="font-semibold text-slate-200">{fmt(revenueLM)}</span>
+                <span className="text-muted-foreground font-medium">Last Month</span>
+                <span className="font-semibold text-foreground">{fmt(revenueLM)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Invoices</span>
+                <span className="text-muted-foreground font-medium">Pending Invoices</span>
                 <span className="font-semibold text-amber-400">{pendingInvoices}</span>
               </div>
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-slate-300">No billing activity yet</p>
-              <p className="text-[11px] text-slate-500 leading-tight">
+              <p className="text-xs font-medium text-muted-foreground">No billing activity yet</p>
+              <p className="text-[11px] text-muted-foreground leading-tight">
                 Paid manager invoices will populate revenue figures once subscription billing begins.
               </p>
             </div>
@@ -519,20 +519,20 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           badge={{ label: 'Active scope', cls: 'border-sky-400/30 text-sky-300 bg-sky-500/10' }}
         >
           {isLoading ? (
-            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-muted/80 rounded" />)}</div>
           ) : (
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Managers</span>
-                <span className="font-bold text-slate-100">{totalManagers} <span className="text-slate-500 font-normal">({approvedManagers} approved)</span></span>
+                <span className="text-muted-foreground font-medium">Managers</span>
+                <span className="font-bold text-foreground">{totalManagers} <span className="text-muted-foreground font-normal">({approvedManagers} approved)</span></span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Properties</span>
-                <span className="font-bold text-slate-100">{totalProperties}</span>
+                <span className="text-muted-foreground font-medium">Properties</span>
+                <span className="font-bold text-foreground">{totalProperties}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">System Landlords</span>
-                <span className="font-bold text-slate-100">{systemLandlords}</span>
+                <span className="text-muted-foreground font-medium">System Landlords</span>
+                <span className="font-bold text-foreground">{systemLandlords}</span>
               </div>
             </div>
           )}
@@ -547,19 +547,19 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           badge={{ label: 'Enforced', cls: 'border-purple-400/30 text-purple-300 bg-purple-500/10' }}
         >
           {isLoading ? (
-            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-muted/80 rounded" />)}</div>
           ) : (
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Webhost Admins</span>
-                <span className="font-bold text-slate-100">{totalWebhosts}</span>
+                <span className="text-muted-foreground font-medium">Webhost Admins</span>
+                <span className="font-bold text-foreground">{totalWebhosts}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Tenant Access</span>
+                <span className="text-muted-foreground font-medium">Tenant Access</span>
                 <span className="font-bold text-emerald-400">Blocked (Firewall)</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Isolation</span>
+                <span className="text-muted-foreground font-medium">Isolation</span>
                 <span className="font-bold text-emerald-400">RLS Enforced</span>
               </div>
             </div>
@@ -574,28 +574,28 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           <PlatformRevenueTrend onNavigateTab={onNavigateTab} />
 
           {/* ── 6. Recent Properties Audit ── */}
-          <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-slate-800">
+          <Card className="bg-muted border border-border shadow-sm backdrop-blur-md rounded-2xl overflow-hidden">
+            <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-border">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+                  <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
                     <Activity className="h-4 w-4 text-amber-400" />
                     Recent Properties Audit Trail
                   </CardTitle>
-                  <CardDescription className="text-xs text-slate-400">
+                  <CardDescription className="text-xs text-muted-foreground">
                     Latest properties registered across manager accounts
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative min-w-[200px]">
-                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
                     <Input
                       type="text"
                       placeholder="Search properties..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       aria-label="Search recent properties"
-                      className="h-8 pl-8 text-xs bg-slate-950/60 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-amber-400/50 rounded-lg"
+                      className="h-8 pl-8 text-xs bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-amber-400/50 rounded-lg"
                     />
                   </div>
                   <Button
@@ -603,7 +603,7 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                     size="sm"
                     onClick={() => queryClient.invalidateQueries()}
                     aria-label="Refresh data"
-                    className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                   </Button>
@@ -613,15 +613,15 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
             <CardContent className="p-4">
               {isLoadingProperties ? (
                 <div className="space-y-2">
-                  {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full bg-slate-800/60 rounded-xl" />)}
+                  {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full bg-muted/80 rounded-xl" />)}
                 </div>
               ) : filteredProperties.length === 0 ? (
                 <div className="py-10 text-center">
-                  <Building className="h-9 w-9 mx-auto text-slate-600 mb-2" />
-                  <p className="text-sm font-medium text-slate-300">
+                  <Building className="h-9 w-9 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium text-muted-foreground">
                     {searchQuery ? 'No matching properties found' : 'No properties on record yet'}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {searchQuery ? 'Try a different search term.' : 'Newly registered properties will appear here.'}
                   </p>
                 </div>
@@ -637,20 +637,20 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('properties'); } }}
-                        className="flex items-start justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-3 hover:bg-slate-800/60 hover:border-amber-400/40 transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+                        className="flex items-start justify-between gap-3 rounded-xl border border-border bg-muted p-3 hover:bg-muted/80 hover:border-amber-400/40 transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-primary/30"
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-slate-100 truncate group-hover:text-amber-400 transition-colors">{prop.name}</p>
-                          <p className="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
+                          <p className="text-xs font-bold text-foreground truncate group-hover:text-amber-400 transition-colors">{prop.name}</p>
+                          <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
                             {prop.address || 'No location specified'}
                           </p>
                           <div className="flex items-center gap-2 mt-1.5">
-                            <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-bold ${hasManager ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/10' : 'border-slate-600 text-slate-400 bg-slate-700/30'}`}>
+                            <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-bold ${hasManager ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/10' : 'border-slate-600 text-slate-400 bg-muted/80'}`}>
                               {hasManager ? 'Linked' : 'Unlinked'}
                             </Badge>
                             {registeredAt && (
-                              <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" /> {registeredAt}
                               </span>
                             )}
@@ -660,7 +660,7 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                           <p className="text-[11px] font-semibold text-amber-400 truncate">
                             {prop.manager_profile?.full_name || (hasManager ? 'Manager' : '—')}
                           </p>
-                          <p className="text-[10px] text-slate-400 truncate">
+                          <p className="text-[10px] text-muted-foreground truncate">
                             {prop.manager_profile?.email || (hasManager ? '—' : 'No manager')}
                           </p>
                         </div>
@@ -676,13 +676,13 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
         {/* Right Column (4 cols): Command Desk & Privacy Policy */}
         <div className="lg:col-span-4 space-y-5">
           {/* ── 7. Platform Command Desk ── */}
-          <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl overflow-hidden">
-            <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-slate-800">
-              <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+          <Card className="bg-muted border border-border shadow-sm backdrop-blur-md rounded-2xl overflow-hidden">
+            <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border">
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
                 <Zap className="h-4 w-4 text-amber-400" />
                 Platform Command Desk
               </CardTitle>
-              <CardDescription className="text-xs text-slate-400">Quick shortcuts to admin modules</CardDescription>
+              <CardDescription className="text-xs text-muted-foreground">Quick shortcuts to admin modules</CardDescription>
             </CardHeader>
             <CardContent className="p-3">
               <div className="space-y-1.5">
@@ -700,14 +700,14 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                       key={item.tab}
                       type="button"
                       onClick={() => onNavigateTab?.(item.tab)}
-                      className={`w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 ${item.hoverBorder} flex items-center justify-between text-xs transition-all text-left group focus:outline-none focus:ring-2 focus:ring-amber-400/40`}
+                      className={`w-full p-2.5 rounded-xl border border-border bg-muted hover:bg-muted/80 ${item.hoverBorder} flex items-center justify-between text-xs transition-all text-left group focus:outline-none focus:ring-2 focus:ring-primary/30`}
                     >
                       <span className={`font-semibold text-slate-200 flex items-center gap-2 ${item.hoverText}`}>
                         <Icon className={`h-3.5 w-3.5 ${item.iconColor}`} />
                         {item.label}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">{item.meta}</Badge>
+                        <Badge variant="outline" className="text-[10px] border-border bg-muted text-muted-foreground font-bold">{item.meta}</Badge>
                         <ChevronRight className={`h-3 w-3 text-slate-500 ${item.hoverText}`} />
                       </div>
                     </button>
@@ -723,7 +723,7 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('security'); } }}
-            className="border-amber-400/30 bg-amber-400/5 hover:bg-amber-400/10 transition-all cursor-pointer group rounded-2xl backdrop-blur-md shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+            className="border-amber-400/30 bg-amber-400/5 hover:bg-amber-400/10 transition-all cursor-pointer group rounded-2xl backdrop-blur-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             <CardContent className="p-4 flex items-start gap-3">
               <div className="h-9 w-9 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -734,7 +734,7 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                   <span>Tenant Data Isolation Policy</span>
                   <ChevronRight className="h-3.5 w-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </p>
-                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed font-normal">
+                <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-normal">
                   Webhost administrators operate at the platform administration level only. By architecture and Row-Level Security policy, tenant identities, rent payment records, and lease details are completely isolated from Webhost views.
                 </p>
                 <p className="text-[10px] text-amber-300/70 font-semibold mt-2 uppercase tracking-wider">

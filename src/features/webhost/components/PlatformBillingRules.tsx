@@ -181,18 +181,18 @@ export default function PlatformBillingRules() {
   return (
     <div className="space-y-5">
       {/* Control-center header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <ScrollText className="h-5 w-5 text-amber-400" />
             Billing Rule Configuration Console
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Defines the intended billing model per client type and tier. {rules && rules.length > 0 && <span className="text-slate-300">{activeCount} active · {rules.length - activeCount} inactive</span>}
+          <p className="text-muted-foreground text-xs mt-1">
+            Defines the intended billing model per client type and tier. {rules && rules.length > 0 && <span className="text-muted-foreground">{activeCount} active · {rules.length - activeCount} inactive</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={() => refetch()} aria-label="Refresh rules">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={() => refetch()} aria-label="Refresh rules">
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
           </Button>
           <Button size="sm" className="gap-1.5 bg-amber-400 hover:bg-amber-500 text-slate-900 h-9 rounded-xl text-xs" onClick={openNew}>
@@ -221,18 +221,18 @@ export default function PlatformBillingRules() {
           </Button>
         </div>
       ) : !rules || rules.length === 0 ? (
-        <div className="p-10 text-center rounded-2xl border border-slate-800 bg-slate-900/40">
+        <div className="p-10 text-center rounded-2xl border border-border bg-muted">
           <ScrollText className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground">No billing rules configured.</p>
-          <p className="text-xs text-slate-500 mt-1">Create a rule to define the billing model per client type.</p>
+          <p className="text-xs text-muted-foreground mt-1">Create a rule to define the billing model per client type.</p>
         </div>
       ) : (
-        <Card className="border-slate-800">
+        <Card className="border-border">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800/50 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+                  <tr className="border-b border-border text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-muted">
                     <th className="text-left px-4 py-2.5">Rule</th>
                     <th className="text-left px-4 py-2.5">Type</th>
                     <th className="text-left px-4 py-2.5">Amount / Rate</th>
@@ -244,25 +244,25 @@ export default function PlatformBillingRules() {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {rules.map((rule) => (
-                    <tr key={rule.id} className={cn('hover:bg-slate-800/30', !rule.is_active && 'opacity-60')}>
+                    <tr key={rule.id} className={cn('hover:bg-muted/80', !rule.is_active && 'opacity-60')}>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-white">{rule.rule_name}</p>
-                        {rule.notes && <p className="text-xs text-slate-400 truncate max-w-xs italic">{rule.notes}</p>}
-                        {rule.registration_fee > 0 && <p className="text-[10px] text-slate-500">{fmt(Number(rule.registration_fee))} reg. fee</p>}
-                        {rule.free_trial_days > 0 && <p className="text-[10px] text-slate-500">{rule.free_trial_days}-day trial</p>}
+                        <p className="font-medium text-foreground">{rule.rule_name}</p>
+                        {rule.notes && <p className="text-xs text-muted-foreground truncate max-w-xs italic">{rule.notes}</p>}
+                        {rule.registration_fee > 0 && <p className="text-[10px] text-muted-foreground">{fmt(Number(rule.registration_fee))} reg. fee</p>}
+                        {rule.free_trial_days > 0 && <p className="text-[10px] text-muted-foreground">{rule.free_trial_days}-day trial</p>}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant="outline" className="text-[10px] border-slate-600 text-slate-300 capitalize">{rule.client_type}</Badge>
-                        <p className="text-[10px] text-slate-500 mt-1">{BILLING_MODELS.find((m) => m.value === rule.billing_model)?.label ?? rule.billing_model}</p>
+                        <Badge variant="outline" className="text-[10px] border-slate-600 text-muted-foreground capitalize">{rule.client_type}</Badge>
+                        <p className="text-[10px] text-muted-foreground mt-1">{BILLING_MODELS.find((m) => m.value === rule.billing_model)?.label ?? rule.billing_model}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-white text-xs">{describeRate(rule)}</p>
+                        <p className="font-semibold text-foreground text-xs">{describeRate(rule)}</p>
                       </td>
                       <td className="px-4 py-3">
                         {rule.applies_to_tier ? (
                           <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-300 bg-amber-500/10 capitalize">{rule.applies_to_tier}</Badge>
                         ) : (
-                          <span className="text-xs text-slate-400">All {rule.client_type}s</span>
+                          <span className="text-xs text-muted-foreground">All {rule.client_type}s</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -271,12 +271,12 @@ export default function PlatformBillingRules() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-xs text-slate-300">{rule.created_at ? format(new Date(rule.created_at), 'dd MMM yyyy') : '—'}</p>
-                        <p className="text-[10px] text-slate-500">updated n/a</p>
+                        <p className="text-xs text-muted-foreground">{rule.created_at ? format(new Date(rule.created_at), 'dd MMM yyyy') : '—'}</p>
+                        <p className="text-[10px] text-muted-foreground">updated n/a</p>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(rule)} aria-label={`Edit ${rule.rule_name}`} title="Edit">
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={() => openEdit(rule)} aria-label={`Edit ${rule.rule_name}`} title="Edit">
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                           {rule.is_active ? (
@@ -318,13 +318,13 @@ export default function PlatformBillingRules() {
             )}
             <div>
               <Label className="text-xs">Rule name</Label>
-              <Input value={form.rule_name} onChange={(e) => setForm((p) => ({ ...p, rule_name: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" placeholder="e.g. Manager — Growth tier" />
+              <Input value={form.rule_name} onChange={(e) => setForm((p) => ({ ...p, rule_name: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" placeholder="e.g. Manager — Growth tier" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Client type</Label>
                 <Select value={form.client_type} onValueChange={(v) => setForm((p) => ({ ...p, client_type: v }))}>
-                  <SelectTrigger className="mt-1 bg-slate-950/60 border-slate-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="mt-1 bg-muted border-border text-foreground"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {CLIENT_TYPES.map((t) => <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>)}
                   </SelectContent>
@@ -333,7 +333,7 @@ export default function PlatformBillingRules() {
               <div>
                 <Label className="text-xs">Billing model</Label>
                 <Select value={form.billing_model} onValueChange={(v) => setForm((p) => ({ ...p, billing_model: v }))}>
-                  <SelectTrigger className="mt-1 bg-slate-950/60 border-slate-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="mt-1 bg-muted border-border text-foreground"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {BILLING_MODELS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
                   </SelectContent>
@@ -343,33 +343,33 @@ export default function PlatformBillingRules() {
             {form.billing_model === 'commission' ? (
               <div>
                 <Label className="text-xs">Rate (% of rent collected, 0–100)</Label>
-                <Input type="number" min="0" max="100" step="0.1" value={form.rate_pct} onChange={(e) => setForm((p) => ({ ...p, rate_pct: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input type="number" min="0" max="100" step="0.1" value={form.rate_pct} onChange={(e) => setForm((p) => ({ ...p, rate_pct: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
             ) : form.billing_model !== 'free' && form.billing_model !== 'tiered' && (
               <div>
                 <Label className="text-xs">Rate amount (KES)</Label>
-                <Input type="number" min="0" value={form.rate_amount} onChange={(e) => setForm((p) => ({ ...p, rate_amount: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input type="number" min="0" value={form.rate_amount} onChange={(e) => setForm((p) => ({ ...p, rate_amount: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
             )}
             {form.billing_model === 'tiered' && (
               <div>
                 <Label className="text-xs">Applies to tier</Label>
-                <Input placeholder="e.g. starter, growth, enterprise" value={form.applies_to_tier} onChange={(e) => setForm((p) => ({ ...p, applies_to_tier: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input placeholder="e.g. starter, growth, enterprise" value={form.applies_to_tier} onChange={(e) => setForm((p) => ({ ...p, applies_to_tier: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Registration fee (KES)</Label>
-                <Input type="number" min="0" value={form.registration_fee} onChange={(e) => setForm((p) => ({ ...p, registration_fee: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input type="number" min="0" value={form.registration_fee} onChange={(e) => setForm((p) => ({ ...p, registration_fee: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
               <div>
                 <Label className="text-xs">Free trial (days)</Label>
-                <Input type="number" min="0" value={form.free_trial_days} onChange={(e) => setForm((p) => ({ ...p, free_trial_days: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input type="number" min="0" value={form.free_trial_days} onChange={(e) => setForm((p) => ({ ...p, free_trial_days: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
             </div>
             <div>
               <Label className="text-xs">Notes</Label>
-              <Textarea value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} rows={2} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+              <Textarea value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} rows={2} className="mt-1 bg-muted border-border text-foreground" />
             </div>
           </div>
           <DialogFooter>

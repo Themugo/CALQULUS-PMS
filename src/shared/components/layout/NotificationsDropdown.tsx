@@ -49,10 +49,10 @@ const TYPE_ICON: Record<string, { icon: LucideIcon; bg: string }> = {
   maintenance: { icon: Wrench,         bg: "bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_45%)] dark:bg-[hsl(214_73%_25%/0.3)] dark:text-[hsl(214_73%_65%)]" },
   notice:      { icon: FileText,       bg: "bg-[hsl(218_58%_38%/0.12)] text-[hsl(218_58%_38%)] dark:bg-[hsl(218_58%_25%/0.3)] dark:text-[hsl(218_58%_65%)]" },
   alert:       { icon: AlertTriangle,  bg: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400" },
-  reminder:    { icon: Clock,          bg: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
+  reminder:    { icon: Clock,          bg: "bg-slate-100 text-slate-600 dark:bg-muted dark:text-slate-400" },
   broadcast:   { icon: MessageSquare,  bg: "bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_36%)] dark:bg-[hsl(38_52%_25%/0.3)] dark:text-[hsl(38_52%_60%)]" },
   tenant:      { icon: UserPlus,       bg: "bg-teal-100 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400" },
-  info:        { icon: Bell,           bg: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
+  info:        { icon: Bell,           bg: "bg-slate-100 text-slate-600 dark:bg-muted dark:text-slate-400" },
 };
 
 const PRIORITY_RING: Record<string, string> = {
@@ -219,7 +219,7 @@ export function NotificationsDropdown() {
             : <Bell className="h-4 w-4" />
           }
           {unread > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-white flex items-center justify-center leading-none">
+            <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-foreground flex items-center justify-center leading-none">
               {unread > 9 ? "9+" : unread}
             </span>
           )}

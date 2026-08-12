@@ -195,7 +195,7 @@ const BillingAnalytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-amber-400/70">Total Revenue</p>
-                <p className="text-2xl font-bold text-white">KES {totals.paid.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">KES {totals.paid.toLocaleString()}</p>
               </div>
               <div className={`flex items-center gap-1 text-sm ${trend.isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                 {trend.isPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
@@ -213,7 +213,7 @@ const BillingAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Registrations</p>
-                <p className="text-2xl font-bold text-white">{totals.registrations}</p>
+                <p className="text-2xl font-bold text-foreground">{totals.registrations}</p>
               </div>
             </div>
           </CardContent>
@@ -227,7 +227,7 @@ const BillingAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Subscriptions</p>
-                <p className="text-2xl font-bold text-white">{totals.subscriptions}</p>
+                <p className="text-2xl font-bold text-foreground">{totals.subscriptions}</p>
               </div>
             </div>
           </CardContent>
@@ -241,7 +241,7 @@ const BillingAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Pending</p>
-                <p className="text-2xl font-bold text-white">KES {totals.pending.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">KES {totals.pending.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -255,7 +255,7 @@ const BillingAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Avg Commission</p>
-                <p className="text-2xl font-bold text-white">{totals.avgCommission.toFixed(2)}%</p>
+                <p className="text-2xl font-bold text-foreground">{totals.avgCommission.toFixed(2)}%</p>
               </div>
             </div>
           </CardContent>
@@ -267,7 +267,7 @@ const BillingAnalytics = () => {
         {/* Revenue Trend Chart */}
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-amber-500" />
               Revenue Trend
             </CardTitle>
@@ -322,7 +322,7 @@ const BillingAnalytics = () => {
         {/* Revenue Distribution */}
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-amber-500" />
               Revenue Distribution
             </CardTitle>
@@ -371,7 +371,7 @@ const BillingAnalytics = () => {
       {/* Manager Breakdown */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Users className="h-5 w-5 text-amber-500" />
             Manager Revenue Breakdown
           </CardTitle>
@@ -417,7 +417,7 @@ const BillingAnalytics = () => {
       {/* Monthly Net Collection Trend */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Calendar className="h-5 w-5 text-amber-500" />
             Net Collection vs Commission
           </CardTitle>

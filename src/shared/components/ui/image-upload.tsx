@@ -281,7 +281,7 @@ export function ImageUpload({
                   <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
                 </div>
                 {enableCrop && (
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-muted opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button
                       type="button"
                       variant="secondary"

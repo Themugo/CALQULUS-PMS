@@ -342,7 +342,7 @@ export default function WebhookDeadLetterPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Payload</div>
-                <pre className="rounded-md bg-slate-900 text-foreground p-3 text-xs overflow-auto max-h-64">
+                <pre className="rounded-md bg-card text-foreground p-3 text-xs overflow-auto max-h-64">
                   {renderPayload(viewingRow.payload)}
                 </pre>
               </div>

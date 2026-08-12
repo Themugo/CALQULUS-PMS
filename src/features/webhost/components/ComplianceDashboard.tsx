@@ -200,7 +200,7 @@ const ComplianceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Compliance Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Compliance Dashboard</h2>
           <p className="text-amber-400/70 text-sm mt-1">Monitor and manage compliance across all frameworks</p>
         </div>
         <div className="flex gap-2">
@@ -227,7 +227,7 @@ const ComplianceDashboard = () => {
       {/* Overall Score Card */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-amber-500" />
             Overall Compliance Score
           </CardTitle>
@@ -236,7 +236,7 @@ const ComplianceDashboard = () => {
           <div className="flex items-center gap-8">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-5xl font-bold text-white">{overallScore}%</div>
+                <div className="text-5xl font-bold text-foreground">{overallScore}%</div>
                 <div>
                   <Badge className="bg-green-100 text-green-800 border-green-300">
                     <CheckCircle className="h-3 w-3 mr-1" />
@@ -251,23 +251,23 @@ const ComplianceDashboard = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{complianceScores.length}</div>
+                <div className="text-2xl font-bold text-foreground">{complianceScores.length}</div>
                 <div className="text-amber-400/70 text-sm">Frameworks</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {complianceScores.filter(s => s.status === 'compliant').length}
                 </div>
                 <div className="text-amber-400/70 text-sm">Compliant</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {complianceScores.filter(s => s.status === 'partial').length}
                 </div>
                 <div className="text-amber-400/70 text-sm">Partial</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {complianceScores.filter(s => s.status === 'non-compliant').length}
                 </div>
                 <div className="text-amber-400/70 text-sm">Non-Compliant</div>
@@ -280,7 +280,7 @@ const ComplianceDashboard = () => {
       {/* Framework Scores */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white">Framework Compliance Scores</CardTitle>
+          <CardTitle className="text-foreground">Framework Compliance Scores</CardTitle>
           <CardDescription className="text-amber-400/70">
             Compliance status across all frameworks
           </CardDescription>
@@ -291,7 +291,7 @@ const ComplianceDashboard = () => {
               <div key={score.framework} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">{score.framework}</span>
+                    <span className="text-foreground font-medium">{score.framework}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-amber-400/70 text-sm">
                         {score.controlsImplemented}/{score.totalControls} controls
@@ -304,7 +304,7 @@ const ComplianceDashboard = () => {
                     <span className="text-amber-400/70 text-sm">
                       Last assessed: {score.lastAssessed.toLocaleDateString()}
                     </span>
-                    <span className="text-white font-semibold">{score.score}%</span>
+                    <span className="text-foreground font-semibold">{score.score}%</span>
                   </div>
                 </div>
               </div>
@@ -340,7 +340,7 @@ const ComplianceDashboard = () => {
         <TabsContent value="controls">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Controls Overview</CardTitle>
+              <CardTitle className="text-foreground">Controls Overview</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage and monitor compliance controls
               </CardDescription>
@@ -352,7 +352,7 @@ const ComplianceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{control.name}</span>
+                          <span className="text-foreground font-medium">{control.name}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {control.category}
                           </Badge>
@@ -377,7 +377,7 @@ const ComplianceDashboard = () => {
         <TabsContent value="incidents">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Security Incidents</CardTitle>
+              <CardTitle className="text-foreground">Security Incidents</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track and manage security incidents
               </CardDescription>
@@ -389,7 +389,7 @@ const ComplianceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{incident.type}</span>
+                          <span className="text-foreground font-medium">{incident.type}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{incident.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ const ComplianceDashboard = () => {
         <TabsContent value="data-retention">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <Database className="h-5 w-5 text-amber-500" />
                 Data Retention Policies
               </CardTitle>
@@ -429,7 +429,7 @@ const ComplianceDashboard = () => {
               <div className="space-y-4">
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">Personal Data</span>
+                    <span className="text-foreground font-medium">Personal Data</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                   <div className="text-sm text-amber-400/70">
@@ -441,7 +441,7 @@ const ComplianceDashboard = () => {
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">Financial Data</span>
+                    <span className="text-foreground font-medium">Financial Data</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                   <div className="text-sm text-amber-400/70">
@@ -453,7 +453,7 @@ const ComplianceDashboard = () => {
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">Operational Logs</span>
+                    <span className="text-foreground font-medium">Operational Logs</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
                   <div className="text-sm text-amber-400/70">
@@ -471,7 +471,7 @@ const ComplianceDashboard = () => {
         <TabsContent value="privacy">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <Lock className="h-5 w-5 text-amber-500" />
                 Privacy Compliance
               </CardTitle>
@@ -484,33 +484,33 @@ const ComplianceDashboard = () => {
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
                     <Scale className="h-4 w-4 text-amber-500" />
-                    <span className="text-white font-medium">Data Subject Requests</span>
+                    <span className="text-foreground font-medium">Data Subject Requests</span>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">12</div>
+                  <div className="text-2xl font-bold text-foreground mb-1">12</div>
                   <div className="text-sm text-amber-400/70">Pending: 3 | Completed: 9</div>
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
                     <FileText className="h-4 w-4 text-amber-500" />
-                    <span className="text-white font-medium">Consent Records</span>
+                    <span className="text-foreground font-medium">Consent Records</span>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">1,245</div>
+                  <div className="text-2xl font-bold text-foreground mb-1">1,245</div>
                   <div className="text-sm text-amber-400/70">Active consents</div>
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertCircle className="h-4 w-4 text-amber-500" />
-                    <span className="text-white font-medium">Data Breaches</span>
+                    <span className="text-foreground font-medium">Data Breaches</span>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">0</div>
+                  <div className="text-2xl font-bold text-foreground mb-1">0</div>
                   <div className="text-sm text-amber-400/70">No breaches in last 12 months</div>
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                   <div className="flex items-center gap-2 mb-2">
                     <Info className="h-4 w-4 text-amber-500" />
-                    <span className="text-white font-medium">Privacy Impact Assessments</span>
+                    <span className="text-foreground font-medium">Privacy Impact Assessments</span>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">8</div>
+                  <div className="text-2xl font-bold text-foreground mb-1">8</div>
                   <div className="text-sm text-amber-400/70">Completed assessments</div>
                 </div>
               </div>

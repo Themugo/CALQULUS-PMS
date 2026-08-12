@@ -120,14 +120,14 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
                 <Users className="h-5 w-5 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
-                <CardTitle className="text-white text-lg">{billingConfig.registration.name}</CardTitle>
+                <CardTitle className="text-foreground text-lg">{billingConfig.registration.name}</CardTitle>
                 <CardDescription className="text-[hsl(214_73%_65%)]">{billingConfig.registration.description}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-white">KES {billingConfig.registration.amount.toLocaleString()}</span>
+              <span className="text-3xl font-bold text-foreground">KES {billingConfig.registration.amount.toLocaleString()}</span>
               <span className="text-[hsl(214_73%_65%)]">one-time</span>
             </div>
             <div className="mt-3 text-xs text-[hsl(214_73%_65%)] space-y-1">
@@ -144,14 +144,14 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
                 <Percent className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <CardTitle className="text-white text-lg">{billingConfig.subscription.name}</CardTitle>
+                <CardTitle className="text-foreground text-lg">{billingConfig.subscription.name}</CardTitle>
                 <CardDescription className="text-amber-400/70">{billingConfig.subscription.description}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-white">{(billingConfig.subscription.rate * 100).toFixed(1)}%</span>
+              <span className="text-3xl font-bold text-foreground">{(billingConfig.subscription.rate * 100).toFixed(1)}%</span>
               <span className="text-amber-400/70">of net collection / month</span>
             </div>
             <div className="mt-3 text-xs text-amber-400/70 space-y-1">
@@ -172,7 +172,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Total Billed</p>
-                <p className="text-2xl font-bold text-white">KES {stats.totalBilled.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">KES {stats.totalBilled.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -186,7 +186,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Total Collected</p>
-                <p className="text-2xl font-bold text-white">KES {stats.totalPaid.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">KES {stats.totalPaid.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -200,7 +200,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Pending</p>
-                <p className="text-2xl font-bold text-white">{stats.pending}</p>
+                <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
               </div>
             </div>
           </CardContent>
@@ -214,7 +214,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Pending Amount</p>
-                <p className="text-2xl font-bold text-white">KES {stats.pendingAmount.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">KES {stats.pendingAmount.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -228,7 +228,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               </div>
               <div>
                 <p className="text-sm text-amber-400/70">Collection Rate</p>
-                <p className="text-2xl font-bold text-white">{stats.collectionRate.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-foreground">{stats.collectionRate.toFixed(1)}%</p>
               </div>
             </div>
           </CardContent>
@@ -239,7 +239,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
       {hasPaymentDetails && (
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2">
               <Info className="h-5 w-5 text-amber-500" />
               Configured Payment Details
             </CardTitle>
@@ -250,10 +250,10 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               {paymentSettings?.bank_name && (
-                <div className="p-4 bg-slate-700/50 rounded-lg flex items-start gap-3">
+                <div className="p-4 bg-muted/80 rounded-lg flex items-start gap-3">
                   <Building className="h-5 w-5 text-[hsl(214_73%_58%)] mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-white">{paymentSettings.bank_name}</p>
+                    <p className="text-sm font-medium text-foreground">{paymentSettings.bank_name}</p>
                     <p className="text-xs text-amber-400/70">{paymentSettings.bank_account_name}</p>
                     <p className="text-xs text-amber-400/70 font-mono">{paymentSettings.bank_account_number}</p>
                   </div>
@@ -261,10 +261,10 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
               )}
               
               {(paymentSettings?.mpesa_paybill_number || paymentSettings?.mpesa_till_number || paymentSettings?.mpesa_phone_number) && (
-                <div className="p-4 bg-slate-700/50 rounded-lg flex items-start gap-3">
+                <div className="p-4 bg-muted/80 rounded-lg flex items-start gap-3">
                   <Smartphone className="h-5 w-5 text-green-400 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-white">M-Pesa</p>
+                    <p className="text-sm font-medium text-foreground">M-Pesa</p>
                     {paymentSettings?.mpesa_paybill_number && (
                       <p className="text-xs text-amber-400/70">Paybill: {paymentSettings.mpesa_paybill_number}</p>
                     )}
@@ -300,7 +300,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
       {managers && managers.length > 0 && (
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2">
               <Users className="h-5 w-5 text-amber-500" />
               Manager Summary
             </CardTitle>
@@ -310,19 +310,19 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="p-4 bg-slate-700/50 rounded-lg">
+              <div className="p-4 bg-muted/80 rounded-lg">
                 <p className="text-sm text-amber-400/70">Total Managers</p>
-                <p className="text-2xl font-bold text-white">{managers.length}</p>
+                <p className="text-2xl font-bold text-foreground">{managers.length}</p>
               </div>
-              <div className="p-4 bg-slate-700/50 rounded-lg">
+              <div className="p-4 bg-muted/80 rounded-lg">
                 <p className="text-sm text-amber-400/70">With Registration Invoice</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-2xl font-bold text-foreground">
                   {managers.filter(m => m.has_registration_invoice).length}
                 </p>
               </div>
-              <div className="p-4 bg-slate-700/50 rounded-lg">
+              <div className="p-4 bg-muted/80 rounded-lg">
                 <p className="text-sm text-amber-400/70">Total Net Collection</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-2xl font-bold text-foreground">
                   KES {managers.reduce((sum, m) => sum + m.net_collection, 0).toLocaleString()}
                 </p>
               </div>

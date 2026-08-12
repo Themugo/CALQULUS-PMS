@@ -354,7 +354,7 @@ const UtilityProviders = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Utility Providers</h2>
+          <h2 className="text-2xl font-bold text-foreground">Utility Providers</h2>
           <p className="text-amber-400/70 text-sm mt-1">Connect with utility providers for essential services</p>
         </div>
         <div className="flex gap-2">
@@ -381,52 +381,52 @@ const UtilityProviders = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-500" />
               Total Providers
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalProviders}</div>
+            <div className="text-3xl font-bold text-foreground">{totalProviders}</div>
             <div className="text-sm text-amber-400/70">Utility companies</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Active Connections
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeConnections}</div>
+            <div className="text-3xl font-bold text-foreground">{activeConnections}</div>
             <div className="text-sm text-amber-400/70">Currently connected</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Clock className="h-4 w-4 text-amber-500" />
               Pending Bills
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingBills}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingBills}</div>
             <div className="text-sm text-amber-400/70">Awaiting payment</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-amber-500" />
               Monthly Cost
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">KES {totalMonthlyCost.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-foreground">KES {totalMonthlyCost.toLocaleString()}</div>
             <div className="text-sm text-amber-400/70">Total utilities</div>
           </CardContent>
         </Card>
@@ -456,7 +456,7 @@ const UtilityProviders = () => {
         <TabsContent value="providers">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Utility Providers Directory</CardTitle>
+              <CardTitle className="text-foreground">Utility Providers Directory</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Browse and connect with utility service providers
               </CardDescription>
@@ -470,13 +470,13 @@ const UtilityProviders = () => {
                     placeholder="Search providers..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="electricity">Electricity</option>
@@ -494,7 +494,7 @@ const UtilityProviders = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">{provider.name}</span>
+                          <span className="text-foreground font-medium">{provider.name}</span>
                           {provider.verified && (
                             <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Verified</Badge>
                           )}
@@ -503,7 +503,7 @@ const UtilityProviders = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-white font-medium">{provider.rating}</span>
+                        <span className="text-foreground font-medium">{provider.rating}</span>
                         <span className="text-amber-400/70 text-sm">({provider.reviewCount})</span>
                       </div>
                     </div>
@@ -551,7 +551,7 @@ const UtilityProviders = () => {
         <TabsContent value="connections">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Utility Connections</CardTitle>
+              <CardTitle className="text-foreground">Utility Connections</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage utility service connections
               </CardDescription>
@@ -563,7 +563,7 @@ const UtilityProviders = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{connection.providerName}</span>
+                          <span className="text-foreground font-medium">{connection.providerName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{connection.id}</span>
                           {getTypeBadge(connection.utilityType)}
                         </div>
@@ -619,7 +619,7 @@ const UtilityProviders = () => {
         <TabsContent value="billing">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Utility Billing</CardTitle>
+              <CardTitle className="text-foreground">Utility Billing</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track and manage utility bills
               </CardDescription>
@@ -631,7 +631,7 @@ const UtilityProviders = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{bill.providerName}</span>
+                          <span className="text-foreground font-medium">{bill.providerName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{bill.id}</span>
                           {getTypeBadge(bill.utilityType)}
                         </div>
@@ -685,7 +685,7 @@ const UtilityProviders = () => {
         <TabsContent value="performance">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Provider Performance</CardTitle>
+              <CardTitle className="text-foreground">Provider Performance</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track utility provider performance metrics
               </CardDescription>
@@ -695,29 +695,29 @@ const UtilityProviders = () => {
                 {providerPerformance.map((perf) => (
                   <div key={perf.providerId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{perf.providerName}</span>
+                      <span className="text-foreground font-medium">{perf.providerName}</span>
                       <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         {perf.totalConnections} connections
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.reliability}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.reliability}%</div>
                         <div className="text-xs text-amber-400/70">Reliability</div>
                         <Progress value={perf.reliability} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.customerSatisfaction}/5</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.customerSatisfaction}/5</div>
                         <div className="text-xs text-amber-400/70">Satisfaction</div>
                         <Progress value={(perf.customerSatisfaction / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.outageRate}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.outageRate}%</div>
                         <div className="text-xs text-amber-400/70">Outage Rate</div>
                         <Progress value={perf.outageRate * 10} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.resolutionTime}</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.resolutionTime}</div>
                         <div className="text-xs text-amber-400/70">Resolution Time</div>
                       </div>
                     </div>

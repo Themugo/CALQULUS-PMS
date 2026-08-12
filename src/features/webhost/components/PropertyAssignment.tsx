@@ -118,7 +118,7 @@ const PropertyAssignment: React.FC = () => {
   const fmt = (n: number) => new Intl.NumberFormat('en-KE').format(n);
 
   const summaryCards = [
-    { key: 'all',       label: 'Total Properties', count: total,             icon: Building,   active: view === 'all' && statusFilter === 'all' && managerFilter === 'all', cls: 'border-slate-700 bg-slate-900/60 text-slate-300' },
+    { key: 'all',       label: 'Total Properties', count: total,             icon: Building,   active: view === 'all' && statusFilter === 'all' && managerFilter === 'all', cls: 'border-border bg-muted text-slate-300' },
     { key: 'active',    label: 'Active',           count: activeCount,       icon: CheckCircle2, active: false, cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
     { key: 'unlinked',  label: 'Unlinked',         count: unlinkedCount,     icon: Unlink,     active: view === 'unlinked', cls: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
     { key: 'managers',  label: 'By Manager',       count: distinctManagerCount, icon: Users,    active: false, cls: 'border-sky-500/40 bg-sky-500/10 text-sky-300' },
@@ -132,28 +132,28 @@ const PropertyAssignment: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Building className="h-5 w-5 text-amber-400" />
             Platform Property Oversight Console
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             Read-only platform view of all properties, their manager relationships, and unlinked exceptions. Reassignment is a manager action.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 lg:w-56">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search name, address, manager..."
-              className="pl-8 h-9 rounded-xl bg-slate-950/60 border-slate-700 text-slate-200 placeholder:text-slate-500 text-xs"
+              className="pl-8 h-9 rounded-xl bg-muted border-border text-foreground placeholder:text-muted-foreground text-xs"
               aria-label="Search properties"
             />
           </div>
-          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh properties">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh properties">
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
           </Button>
         </div>
@@ -177,13 +177,13 @@ const PropertyAssignment: React.FC = () => {
               className={cn(
                 'flex items-center justify-between gap-2 p-3 rounded-xl border text-left transition-all',
                 cls,
-                clickable && 'hover:brightness-110 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50',
+                clickable && 'hover:brightness-110 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30',
                 active && 'ring-2 ring-amber-400/60',
               )}
             >
               <div className="min-w-0">
                 <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">{label}</span>
-                <strong className="font-['Outfit'] text-xl font-bold text-white">{count}</strong>
+                <strong className="font-['Outfit'] text-xl font-bold text-foreground">{count}</strong>
               </div>
               <Icon className="h-5 w-5 shrink-0 opacity-80" />
             </button>
@@ -194,7 +194,7 @@ const PropertyAssignment: React.FC = () => {
       {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-          <SelectTrigger className="h-8 w-36 text-xs bg-slate-950/60 border-slate-700 text-slate-200" aria-label="Filter by property status">
+          <SelectTrigger className="h-8 w-36 text-xs bg-muted border-border text-foreground" aria-label="Filter by property status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -206,7 +206,7 @@ const PropertyAssignment: React.FC = () => {
           </SelectContent>
         </Select>
         <Select value={managerFilter} onValueChange={setManagerFilter}>
-          <SelectTrigger className="h-8 w-48 text-xs bg-slate-950/60 border-slate-700 text-slate-200" aria-label="Filter by manager">
+          <SelectTrigger className="h-8 w-48 text-xs bg-muted border-border text-foreground" aria-label="Filter by manager">
             <SelectValue placeholder="Manager" />
           </SelectTrigger>
           <SelectContent>
@@ -217,7 +217,7 @@ const PropertyAssignment: React.FC = () => {
           </SelectContent>
         </Select>
         {(view !== 'all' || statusFilter !== 'all' || managerFilter !== 'all' || searchQ) && (
-          <Button variant="ghost" size="sm" className="h-8 text-xs text-slate-400 hover:text-white" onClick={() => { setView('all'); setStatusFilter('all'); setManagerFilter('all'); setSearch(''); }}>
+          <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground hover:text-foreground" onClick={() => { setView('all'); setStatusFilter('all'); setManagerFilter('all'); setSearch(''); }}>
             Clear filters
           </Button>
         )}
@@ -237,11 +237,11 @@ const PropertyAssignment: React.FC = () => {
       )}
 
       {/* List */}
-      <Card className="bg-card border-slate-800">
+      <Card className="bg-card border-border">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-4 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full bg-slate-700/50" />)}
+              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full bg-muted/80" />)}
             </div>
           ) : isError ? (
             <div className="p-8 text-center">
@@ -268,7 +268,7 @@ const PropertyAssignment: React.FC = () => {
           ) : (
             <div className="divide-y divide-slate-800">
               {/* Table header (desktop) */}
-              <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+              <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-muted">
                 <div className="col-span-4">Property</div>
                 <div className="col-span-3">Manager</div>
                 <div className="col-span-2 text-center">Units</div>
@@ -287,13 +287,13 @@ const PropertyAssignment: React.FC = () => {
                       onKeyDown={onActivateKey(() => setExpandedId(expanded ? null : p.id))}
                       aria-expanded={expanded}
                       aria-label={`View property ${p.name}`}
-                      className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-800/40 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:ring-inset"
+                      className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-muted/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-inset"
                     >
                       <div className="md:col-span-4 min-w-0 flex items-center gap-2">
                         <Building className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm text-white truncate font-medium">{p.name}</p>
-                          <p className="text-xs text-slate-400 flex items-center gap-1 truncate">
+                          <p className="text-sm text-foreground truncate font-medium">{p.name}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
                             <MapPin className="h-3 w-3 shrink-0" />{p.address || '—'}
                           </p>
                         </div>
@@ -305,14 +305,14 @@ const PropertyAssignment: React.FC = () => {
                           </Badge>
                         ) : (
                           <div className="min-w-0">
-                            <p className="text-xs text-slate-200 truncate">{p.manager_name ?? 'Unknown'}</p>
-                            <p className="text-[10px] text-slate-500 truncate">{p.manager_email ?? '—'}</p>
+                            <p className="text-xs text-foreground truncate">{p.manager_name ?? 'Unknown'}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{p.manager_email ?? '—'}</p>
                           </div>
                         )}
                       </div>
                       <div className="md:col-span-2 md:text-center flex items-center gap-1 md:justify-center">
-                        <Home className="h-3 w-3 text-slate-500 md:hidden" />
-                        <span className="text-xs text-slate-200">{p.units ?? 0}</span>
+                        <Home className="h-3 w-3 text-muted-foreground md:hidden" />
+                        <span className="text-xs text-foreground">{p.units ?? 0}</span>
                       </div>
                       <div className="md:col-span-2 md:text-center flex items-center gap-1.5 md:justify-center">
                         <Badge variant="outline" className={cn('text-[10px]', occupancyColor(p.occupied ?? 0, p.units ?? 0))}>
@@ -320,39 +320,39 @@ const PropertyAssignment: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="md:col-span-1 md:text-right flex items-center justify-between md:justify-end gap-1">
-                        <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_BADGE[p.status ?? 'active'] ?? 'border-slate-700 text-slate-300')}>
+                        <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_BADGE[p.status ?? 'active'] ?? 'border-border text-slate-300')}>
                           {p.status ?? 'active'}
                         </Badge>
-                        {expanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                        {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                       </div>
                     </button>
                     {expanded && (
-                      <div className="px-4 py-3 bg-slate-900/40 border-t border-slate-800/50 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-xs">
+                      <div className="px-4 py-3 bg-muted border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-xs">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500">Property type</span>
-                          <span className="text-slate-200 capitalize">{p.property_type ?? '—'}</span>
+                          <span className="text-muted-foreground">Property type</span>
+                          <span className="text-foreground capitalize">{p.property_type ?? '—'}</span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500">Created</span>
-                          <span className="text-slate-200">{p.created_at ? format(new Date(p.created_at), 'dd MMM yyyy') : '—'}</span>
+                          <span className="text-muted-foreground">Created</span>
+                          <span className="text-foreground">{p.created_at ? format(new Date(p.created_at), 'dd MMM yyyy') : '—'}</span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500">Revenue (recorded)</span>
-                          <span className="text-slate-200">KES {fmt(p.revenue ?? 0)}</span>
+                          <span className="text-muted-foreground">Revenue (recorded)</span>
+                          <span className="text-foreground">KES {fmt(p.revenue ?? 0)}</span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500 flex items-center gap-1"><LinkIcon className="h-3 w-3" />Manager link</span>
+                          <span className="text-muted-foreground flex items-center gap-1"><LinkIcon className="h-3 w-3" />Manager link</span>
                           <span className={cn('font-medium', isUnlinked ? 'text-amber-300' : 'text-emerald-300')}>
                             {isUnlinked ? 'No manager' : 'Assigned'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500">Agency</span>
-                          <span className="text-slate-200 truncate">{p.agency_name ?? '—'}</span>
+                          <span className="text-muted-foreground">Agency</span>
+                          <span className="text-foreground truncate">{p.agency_name ?? '—'}</span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-500">Manager email</span>
-                          <span className="text-slate-200 truncate">{p.manager_email ?? '—'}</span>
+                          <span className="text-muted-foreground">Manager email</span>
+                          <span className="text-foreground truncate">{p.manager_email ?? '—'}</span>
                         </div>
                         {isUnlinked && (
                           <p className="sm:col-span-2 lg:col-span-3 text-amber-300 flex items-start gap-1.5 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">

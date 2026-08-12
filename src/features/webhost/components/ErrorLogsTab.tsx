@@ -141,7 +141,7 @@ export default function ErrorLogsTab() {
         <CardHeader>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Bug className="h-5 w-5 text-red-400" />
                 Production Error & Incident Console
               </CardTitle>
@@ -159,7 +159,7 @@ export default function ErrorLogsTab() {
             </div>
           </div>
           {dataUpdatedAt ? (
-            <p className="text-[10px] text-slate-500 mt-1">Last updated {format(new Date(dataUpdatedAt), 'dd MMM yyyy HH:mm:ss')}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Last updated {format(new Date(dataUpdatedAt), 'dd MMM yyyy HH:mm:ss')}</p>
           ) : null}
         </CardHeader>
       </Card>
@@ -186,10 +186,10 @@ export default function ErrorLogsTab() {
         </Card>
         <Card className="border-slate-500/20 bg-card">
           <CardContent className="p-4 flex items-center gap-3">
-            <Activity className="h-8 w-8 text-slate-400" />
+            <Activity className="h-8 w-8 text-muted-foreground" />
             <div>
-              <div className="text-2xl font-bold text-white">{logs.length}</div>
-              <div className="text-sm text-slate-400">Total events (last 100)</div>
+              <div className="text-2xl font-bold text-foreground">{logs.length}</div>
+              <div className="text-sm text-muted-foreground">Total events (last 100)</div>
             </div>
           </CardContent>
         </Card>
@@ -198,7 +198,7 @@ export default function ErrorLogsTab() {
       {/* Registry */}
       <Card className="border-red-500/15 bg-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <ShieldAlert className="h-5 w-5 text-red-400" />
             Error Registry
           </CardTitle>
@@ -208,16 +208,16 @@ export default function ErrorLogsTab() {
           {/* Filters */}
           <div className="grid gap-3 md:grid-cols-4 mt-3">
             <div className="relative md:col-span-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search message, source, actor…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="pl-10 bg-slate-700/50 border-red-500/20"
+                className="pl-10 bg-muted/80 border-red-500/20"
               />
             </div>
             <Select value={typeFilter} onValueChange={v => setTypeFilter(v as TypeFilter)}>
-              <SelectTrigger className="bg-slate-700/50 border-red-500/20"><SelectValue placeholder="Type" /></SelectTrigger>
+              <SelectTrigger className="bg-muted/80 border-red-500/20"><SelectValue placeholder="Type" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="error">Errors</SelectItem>
@@ -225,7 +225,7 @@ export default function ErrorLogsTab() {
               </SelectContent>
             </Select>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="bg-slate-700/50 border-red-500/20"><SelectValue placeholder="Source" /></SelectTrigger>
+              <SelectTrigger className="bg-muted/80 border-red-500/20"><SelectValue placeholder="Source" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All sources</SelectItem>
                 {sources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -234,15 +234,15 @@ export default function ErrorLogsTab() {
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">From</span>
-              <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 bg-slate-700/50 border-red-500/20" />
+              <span className="text-xs text-muted-foreground">From</span>
+              <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 bg-muted/80 border-red-500/20" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">To</span>
-              <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 bg-slate-700/50 border-red-500/20" />
+              <span className="text-xs text-muted-foreground">To</span>
+              <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 bg-muted/80 border-red-500/20" />
             </div>
             {(search || typeFilter !== 'all' || sourceFilter !== 'all' || from || to) && (
-              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setTypeFilter('all'); setSourceFilter('all'); setFrom(''); setTo(''); }} className="text-slate-400 hover:text-white">
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setTypeFilter('all'); setSourceFilter('all'); setFrom(''); setTo(''); }} className="text-muted-foreground hover:text-foreground">
                 Clear filters
               </Button>
             )}
@@ -255,16 +255,16 @@ export default function ErrorLogsTab() {
             <div className="p-8 text-center">
               <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
               <p className="text-sm font-semibold text-red-300">Unable to load error logs.</p>
-              <p className="text-xs text-slate-400 mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
+              <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
               <Button variant="outline" size="sm" onClick={() => refetch()} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
               </Button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-10 text-center text-slate-400">
+            <div className="p-10 text-center text-muted-foreground">
               <Bug className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">{logs.length === 0 ? 'No application errors recorded.' : 'No errors match the current filters.'}</p>
-              <p className="text-xs text-slate-500 mt-1">{logs.length === 0 ? 'Application errors and warnings will appear here as they occur.' : 'Adjust filters to see more results.'}</p>
+              <p className="text-xs text-muted-foreground mt-1">{logs.length === 0 ? 'Application errors and warnings will appear here as they occur.' : 'Adjust filters to see more results.'}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -291,16 +291,16 @@ export default function ErrorLogsTab() {
                           </Badge>
                         </td>
                         <td className="py-2.5 px-4">
-                          <p className="font-medium text-white max-w-[320px] truncate" title={l.entity_label ?? m.message ?? ''}>
+                          <p className="font-medium text-foreground max-w-[320px] truncate" title={l.entity_label ?? m.message ?? ''}>
                             {l.entity_label || m.message || 'No message'}
                           </p>
-                          <p className="text-xs text-slate-500 font-mono">{stripPrefix(l.action)}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{stripPrefix(l.action)}</p>
                         </td>
-                        <td className="py-2.5 px-4 text-slate-300">{m.context ?? '—'}</td>
-                        <td className="py-2.5 px-4 text-slate-400 text-xs truncate max-w-[160px]" title={l.actor_email ?? ''}>{l.actor_email ?? 'system'}</td>
-                        <td className="py-2.5 px-4 text-xs text-slate-400 whitespace-nowrap">{format(new Date(l.created_at), 'dd MMM HH:mm:ss')}</td>
+                        <td className="py-2.5 px-4 text-muted-foreground">{m.context ?? '—'}</td>
+                        <td className="py-2.5 px-4 text-muted-foreground text-xs truncate max-w-[160px]" title={l.actor_email ?? ''}>{l.actor_email ?? 'system'}</td>
+                        <td className="py-2.5 px-4 text-xs text-muted-foreground whitespace-nowrap">{format(new Date(l.created_at), 'dd MMM HH:mm:ss')}</td>
                         <td className="py-2.5 px-4 text-right">
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
                         </td>
@@ -312,7 +312,7 @@ export default function ErrorLogsTab() {
             </div>
           )}
           {filtered.length > 0 && (
-            <p className="p-4 text-xs text-slate-500 border-t border-red-500/5">
+            <p className="p-4 text-xs text-muted-foreground border-t border-red-500/5">
               Showing {filtered.length} of {logs.length} records{logs.length === 100 ? ' (limited to last 100)' : ''}
             </p>
           )}
@@ -321,9 +321,9 @@ export default function ErrorLogsTab() {
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
-        <DialogContent className="max-w-2xl bg-slate-900 border-red-500/15">
+        <DialogContent className="max-w-2xl bg-card border-red-500/15">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
+            <DialogTitle className="flex items-center gap-2 text-foreground">
               <ChevronRight className="h-4 w-4 text-red-400" />
               Error Detail
             </DialogTitle>
@@ -334,41 +334,41 @@ export default function ErrorLogsTab() {
                 <Badge className={selected.action.startsWith('error:') ? 'bg-red-500/15 text-red-300 border border-red-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}>
                   {selected.action.startsWith('error:') ? 'error' : 'warning'}
                 </Badge>
-                <span className="font-mono text-xs text-slate-400">{stripPrefix(selected.action)}</span>
+                <span className="font-mono text-xs text-muted-foreground">{stripPrefix(selected.action)}</span>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-red-400/70">Message</p>
-                  <p className="text-sm text-white break-words">{selected.entity_label || metaOf(selected).message || 'No message'}</p>
+                  <p className="text-sm text-foreground break-words">{selected.entity_label || metaOf(selected).message || 'No message'}</p>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-red-400/70">Source / module</p>
-                  <p className="text-sm text-white">{metaOf(selected).context ?? '—'}</p>
+                  <p className="text-sm text-foreground">{metaOf(selected).context ?? '—'}</p>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-red-400/70">Timestamp</p>
-                  <p className="text-sm text-white">{format(new Date(selected.created_at), "dd MMM yyyy HH:mm:ss")}</p>
+                  <p className="text-sm text-foreground">{format(new Date(selected.created_at), "dd MMM yyyy HH:mm:ss")}</p>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-red-400/70">Actor</p>
-                  <p className="text-sm text-white">{selected.actor_email ?? 'system'}{selected.actor_role ? ` (${selected.actor_role})` : ''}</p>
+                  <p className="text-sm text-foreground">{selected.actor_email ?? 'system'}{selected.actor_role ? ` (${selected.actor_role})` : ''}</p>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-red-400/70">Reference ID</p>
-                  <p className="text-xs text-slate-400 font-mono">{selected.id}</p>
+                  <p className="text-xs text-muted-foreground font-mono">{selected.id}</p>
                 </div>
                 {metaOf(selected).url && (
                   <div>
                     <p className="text-[10px] uppercase tracking-wide text-red-400/70">URL / path</p>
-                    <p className="text-xs text-slate-400 font-mono break-all">{metaOf(selected).url}</p>
+                    <p className="text-xs text-muted-foreground font-mono break-all">{metaOf(selected).url}</p>
                   </div>
                 )}
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-wide text-red-400/70 mb-1">Context / metadata</p>
-                <pre className="bg-slate-950/60 p-3 rounded-md text-xs overflow-x-auto border border-red-500/10 text-slate-300">{safeMetaString(selected)}</pre>
+                <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto border border-red-500/10 text-muted-foreground">{safeMetaString(selected)}</pre>
               </div>
-              <p className="text-[10px] text-slate-500 flex items-center gap-1">
+              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <ShieldAlert className="h-3 w-3" />
                 Audit records are append-only. No resolution lifecycle or status is stored — this is a diagnostic view, not an incident tracker.
               </p>

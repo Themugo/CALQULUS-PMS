@@ -154,9 +154,9 @@ const WebhostPaymentSettings: React.FC = () => {
       <Card className="bg-card border-amber-400/15">
         <CardContent className="pt-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-700 rounded w-1/3"></div>
-            <div className="h-20 bg-slate-700 rounded"></div>
-            <div className="h-20 bg-slate-700 rounded"></div>
+            <div className="h-8 bg-muted rounded w-1/3"></div>
+            <div className="h-20 bg-muted rounded"></div>
+            <div className="h-20 bg-muted rounded"></div>
           </div>
         </CardContent>
       </Card>
@@ -173,7 +173,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Percent className="h-5 w-5 text-amber-500" />
             </div>
             <div>
-              <CardTitle className="text-white">Billing Structure</CardTitle>
+              <CardTitle className="text-foreground">Billing Structure</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Configure registration fee and subscription rates
               </CardDescription>
@@ -195,7 +195,7 @@ const WebhostPaymentSettings: React.FC = () => {
                 type="number"
                 value={formData.registration_fee || ''}
                 onChange={(e) => handleChange('registration_fee', parseFloat(e.target.value) || 0)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="3000"
               />
               <p className="text-xs text-muted-foreground">One-time fee for new manager registration</p>
@@ -208,7 +208,7 @@ const WebhostPaymentSettings: React.FC = () => {
                 step="0.001"
                 value={formData.subscription_rate ? formData.subscription_rate * 100 : ''}
                 onChange={(e) => handleChange('subscription_rate', (parseFloat(e.target.value) || 0) / 100)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="1"
               />
               <p className="text-xs text-muted-foreground">Fallback rate — overridden by tier pricing below</p>
@@ -231,7 +231,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Building className="h-5 w-5 text-[hsl(214_73%_58%)]" />
             </div>
             <div>
-              <CardTitle className="text-white">Bank Account Details</CardTitle>
+              <CardTitle className="text-foreground">Bank Account Details</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Bank details shown to managers for payment
               </CardDescription>
@@ -245,7 +245,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.bank_name || ''}
                 onChange={(e) => handleChange('bank_name', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., Equity Bank"
               />
             </div>
@@ -255,7 +255,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.bank_account_name || ''}
                 onChange={(e) => handleChange('bank_account_name', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., CALQULUS PMS Ltd"
               />
             </div>
@@ -265,7 +265,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.bank_account_number || ''}
                 onChange={(e) => handleChange('bank_account_number', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., 1234567890"
               />
             </div>
@@ -275,7 +275,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.bank_branch || ''}
                 onChange={(e) => handleChange('bank_branch', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., Westlands"
               />
             </div>
@@ -285,7 +285,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.bank_swift_code || ''}
                 onChange={(e) => handleChange('bank_swift_code', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., EABORAIX"
               />
             </div>
@@ -301,7 +301,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Smartphone className="h-5 w-5 text-green-400" />
             </div>
             <div>
-              <CardTitle className="text-white">M-Pesa Payment Details</CardTitle>
+              <CardTitle className="text-foreground">M-Pesa Payment Details</CardTitle>
               <CardDescription className="text-amber-400/70">
                 M-Pesa details shown to managers for payment
               </CardDescription>
@@ -315,7 +315,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.mpesa_paybill_number || ''}
                 onChange={(e) => handleChange('mpesa_paybill_number', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., 123456"
               />
             </div>
@@ -325,7 +325,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.mpesa_paybill_account || ''}
                 onChange={(e) => handleChange('mpesa_paybill_account', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., Account name or number"
               />
             </div>
@@ -335,7 +335,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.mpesa_till_number || ''}
                 onChange={(e) => handleChange('mpesa_till_number', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., 654321"
               />
             </div>
@@ -345,7 +345,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <Input
                 value={formData.mpesa_phone_number || ''}
                 onChange={(e) => handleChange('mpesa_phone_number', e.target.value)}
-                className="bg-slate-700/50 border-border text-white"
+                className="bg-muted/80 border-border text-foreground"
                 placeholder="e.g., 0712345678"
               />
             </div>
@@ -361,7 +361,7 @@ const WebhostPaymentSettings: React.FC = () => {
               <CreditCard className="h-5 w-5 text-amber-400" />
             </div>
             <div>
-              <CardTitle className="text-white">Payment Instructions</CardTitle>
+              <CardTitle className="text-foreground">Payment Instructions</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Custom instructions shown to managers when paying invoices
               </CardDescription>
@@ -372,7 +372,7 @@ const WebhostPaymentSettings: React.FC = () => {
           <Textarea
             value={formData.payment_instructions || ''}
             onChange={(e) => handleChange('payment_instructions', e.target.value)}
-            className="bg-slate-700/50 border-border text-white min-h-[100px]"
+            className="bg-muted/80 border-border text-foreground min-h-[100px]"
             placeholder="Please make payment to the bank account or M-Pesa details provided above. Include your invoice number as the reference."
           />
         </CardContent>
@@ -462,10 +462,10 @@ const TierPricingEditor: React.FC = () => {
     onError: () => toast({ title: 'Failed to update tiers', variant: 'destructive' }),
   });
 
-  if (isLoading) return <div className="h-20 bg-slate-700/30 rounded-lg animate-pulse" />;
+  if (isLoading) return <div className="h-20 bg-muted/80 rounded-lg animate-pulse" />;
 
   return (
-    <div className="rounded-xl border border-amber-400/12 bg-slate-900/40 overflow-hidden">
+    <div className="rounded-xl border border-amber-400/12 bg-muted overflow-hidden">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-amber-400/12">
@@ -479,7 +479,7 @@ const TierPricingEditor: React.FC = () => {
           {tiers.map((tier: SubscriptionTier, i: number) => (
             <tr key={tier.id} className={i < tiers.length - 1 ? 'border-b border-[hsl(218_58%_24%/0.2)]' : ''}>
               <td className="py-2 px-3">
-                <span className="text-white font-medium capitalize">{TIER_LABELS[tier.tier_key] ?? tier.tier_key}</span>
+                <span className="text-foreground font-medium capitalize">{TIER_LABELS[tier.tier_key] ?? tier.tier_key}</span>
               </td>
               <td className="py-2 px-3 text-center text-muted-foreground text-xs">
                 {tier.max_properties >= 999 ? '∞' : tier.max_properties}
@@ -492,7 +492,7 @@ const TierPricingEditor: React.FC = () => {
                   type="number"
                   value={prices[tier.tier_key] ?? ''}
                   onChange={e => setPrices(p => ({ ...p, [tier.tier_key]: e.target.value }))}
-                  className="bg-slate-700/50 border-border text-white text-right h-8 text-sm w-28 ml-auto"
+                  className="bg-muted/80 border-border text-foreground text-right h-8 text-sm w-28 ml-auto"
                 />
               </td>
             </tr>

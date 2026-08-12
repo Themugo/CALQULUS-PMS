@@ -285,7 +285,7 @@ const FraudDetectionAlerts = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Fraud Detection Alerts</h2>
+          <h2 className="text-2xl font-bold text-foreground">Fraud Detection Alerts</h2>
           <p className="text-amber-400/70 text-sm mt-1">AI-powered fraud detection and risk monitoring</p>
         </div>
         <div className="flex gap-2">
@@ -312,52 +312,52 @@ const FraudDetectionAlerts = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Active Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeAlerts}</div>
+            <div className="text-3xl font-bold text-foreground">{activeAlerts}</div>
             <div className="text-sm text-amber-400/70">Requiring attention</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-amber-500" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{criticalAlerts}</div>
+            <div className="text-3xl font-bold text-foreground">{criticalAlerts}</div>
             <div className="text-sm text-amber-400/70">High priority</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Resolved This Month
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{resolvedThisMonth}</div>
+            <div className="text-3xl font-bold text-foreground">{resolvedThisMonth}</div>
             <div className="text-sm text-amber-400/70">Cases closed</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Shield className="h-4 w-4 text-amber-500" />
               Fraud Rate
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">0.12%</div>
+            <div className="text-3xl font-bold text-foreground">0.12%</div>
             <div className="text-sm text-amber-400/70">of transactions</div>
           </CardContent>
         </Card>
@@ -387,7 +387,7 @@ const FraudDetectionAlerts = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Recent Critical Alerts
                 </CardTitle>
@@ -397,7 +397,7 @@ const FraudDetectionAlerts = () => {
                   {fraudAlerts.filter(a => a.severity === 'critical' && a.status !== 'resolved').slice(0, 3).map((alert) => (
                     <div key={alert.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{alert.title}</span>
+                        <span className="text-foreground text-sm font-medium">{alert.title}</span>
                         {getSeverityBadge(alert.severity)}
                       </div>
                       <p className="text-amber-400/70 text-xs mb-2">{alert.description}</p>
@@ -413,7 +413,7 @@ const FraudDetectionAlerts = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Activity className="h-5 w-5 text-amber-500" />
                   Active Suspicious Patterns
                 </CardTitle>
@@ -423,7 +423,7 @@ const FraudDetectionAlerts = () => {
                   {suspiciousPatterns.filter(p => p.status === 'active').slice(0, 3).map((pattern) => (
                     <div key={pattern.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{pattern.pattern}</span>
+                        <span className="text-foreground text-sm font-medium">{pattern.pattern}</span>
                         {getSeverityBadge(pattern.severity)}
                       </div>
                       <p className="text-amber-400/70 text-xs mb-2">{pattern.description}</p>
@@ -442,7 +442,7 @@ const FraudDetectionAlerts = () => {
         <TabsContent value="alerts">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Fraud Alerts</CardTitle>
+              <CardTitle className="text-foreground">Fraud Alerts</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Monitor and investigate suspicious activities
               </CardDescription>
@@ -456,13 +456,13 @@ const FraudDetectionAlerts = () => {
                     placeholder="Search alerts..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="payment">Payment</option>
@@ -475,7 +475,7 @@ const FraudDetectionAlerts = () => {
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Severities</option>
                   <option value="critical">Critical</option>
@@ -492,7 +492,7 @@ const FraudDetectionAlerts = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{alert.title}</span>
+                          <span className="text-foreground font-medium">{alert.title}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{alert.id}</span>
                           {getTypeBadge(alert.type)}
                         </div>
@@ -551,7 +551,7 @@ const FraudDetectionAlerts = () => {
         <TabsContent value="patterns">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Suspicious Patterns</CardTitle>
+              <CardTitle className="text-foreground">Suspicious Patterns</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Monitor recurring fraudulent behavior patterns
               </CardDescription>
@@ -563,7 +563,7 @@ const FraudDetectionAlerts = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{pattern.pattern}</span>
+                          <span className="text-foreground font-medium">{pattern.pattern}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{pattern.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -603,7 +603,7 @@ const FraudDetectionAlerts = () => {
         <TabsContent value="statistics">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Fraud Statistics</CardTitle>
+              <CardTitle className="text-foreground">Fraud Statistics</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Fraud detection metrics by category
               </CardDescription>
@@ -613,7 +613,7 @@ const FraudDetectionAlerts = () => {
                 {fraudStatistics.map((stat) => (
                   <div key={stat.category} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{stat.category}</span>
+                      <span className="text-foreground font-medium">{stat.category}</span>
                       <div className="flex items-center gap-2">
                         {getTrendIcon(stat.trend)}
                         <span className="text-amber-400/70 text-sm capitalize">{stat.trend}</span>
@@ -621,7 +621,7 @@ const FraudDetectionAlerts = () => {
                     </div>
                     <div className="grid grid-cols-6 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">{stat.total}</div>
+                        <div className="text-2xl font-bold text-foreground">{stat.total}</div>
                         <div className="text-xs text-amber-400/70">Total</div>
                       </div>
                       <div>

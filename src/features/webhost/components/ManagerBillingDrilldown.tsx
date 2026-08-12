@@ -136,7 +136,7 @@ const ManagerBillingDrilldown: React.FC = () => {
           { label: 'Total collected',         value: fmt(managers.reduce((s, m) => s + m.total_paid,   0)), color: 'text-green-400' },
           { label: 'Outstanding',             value: fmt(managers.reduce((s, m) => s + m.outstanding,  0)), color: 'text-amber-400' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-slate-900/40 p-3">
+          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-muted p-3">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
             <p className={`text-lg font-bold ${k.color}`}>{k.value}</p>
           </div>
@@ -148,12 +148,12 @@ const ManagerBillingDrilldown: React.FC = () => {
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search by name, email, agency…"
-          className="pl-9 bg-card border-border/60 text-white" />
+          className="pl-9 bg-card border-border/60 text-foreground" />
       </div>
 
       {/* Manager rows */}
       {isLoading ? (
-        <div className="space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-14 w-full bg-slate-800/40"/>)}</div>
+        <div className="space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-14 w-full bg-muted/80"/>)}</div>
       ) : (
         <div className="space-y-1.5">
           {filtered.map(m => (
@@ -168,7 +168,7 @@ const ManagerBillingDrilldown: React.FC = () => {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-white">{m.full_name ?? m.email}</p>
+                    <p className="text-sm font-medium text-foreground">{m.full_name ?? m.email}</p>
                     {m.subscription_tier && (
                       <Badge variant="outline" className="text-xs capitalize border-amber-400/20 text-amber-400/70">{m.subscription_tier}</Badge>
                     )}
@@ -181,7 +181,7 @@ const ManagerBillingDrilldown: React.FC = () => {
                 <div className="flex items-center gap-4 shrink-0 text-xs">
                   <div className="text-center hidden sm:block">
                     <p className="text-muted-foreground">Properties</p>
-                    <p className="font-medium text-white">{m.property_count}</p>
+                    <p className="font-medium text-foreground">{m.property_count}</p>
                   </div>
                   <div className="text-center hidden sm:block">
                     <p className="text-muted-foreground">Outstanding</p>
@@ -270,11 +270,11 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
     },
   });
 
-  if (isLoading) return <div className="p-3"><Skeleton className="h-20 w-full bg-slate-700/30" /></div>;
+  if (isLoading) return <div className="p-3"><Skeleton className="h-20 w-full bg-muted/80" /></div>;
   if (!invoices.length) return <p className="p-3 text-xs text-muted-foreground/70">No invoices yet.</p>;
 
   return (
-    <div className="border-t border-[hsl(218_58%_24%/0.2)] bg-slate-950/30 px-3 pb-3 pt-2">
+    <div className="border-t border-[hsl(218_58%_24%/0.2)] bg-muted px-3 pb-3 pt-2">
       <Table>
         <TableHeader>
           <TableRow className="border-[hsl(218_58%_24%/0.2)] hover:bg-transparent">
@@ -288,7 +288,7 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
             <TableRow key={inv.id} className="border-[hsl(218_58%_24%/0.1)] hover:bg-[hsl(218_58%_16%/0.05)]">
               <TableCell className="font-mono text-xs text-foreground/90 py-1.5">{inv.invoice_number}</TableCell>
               <TableCell className="text-xs text-muted-foreground py-1.5 capitalize">{inv.invoice_type?.replace(/_/g, ' ')}</TableCell>
-              <TableCell className="text-sm font-medium text-white py-1.5">{fmt(Number(inv.amount))}</TableCell>
+              <TableCell className="text-sm font-medium text-foreground py-1.5">{fmt(Number(inv.amount))}</TableCell>
               <TableCell className="text-xs text-muted-foreground py-1.5">{format(new Date(inv.due_date), 'dd/MM/yy')}</TableCell>
               <TableCell className="text-xs text-muted-foreground py-1.5">{inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : '—'}</TableCell>
               <TableCell className="py-1.5">

@@ -191,7 +191,7 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
               <Badge variant="outline" className="absolute bottom-1.5 left-1.5 text-[10px] px-1.5 py-0 bg-background/80">
                 {PHOTO_TYPES.find((t) => t.value === photo.photo_type)?.label ?? photo.photo_type}
               </Badge>
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-muted opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 {!photo.is_cover && (
                   <Button
                     size="icon" variant="secondary" className="h-7 w-7"

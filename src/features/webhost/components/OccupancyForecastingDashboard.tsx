@@ -345,7 +345,7 @@ const OccupancyForecastingDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Occupancy Forecasting Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Occupancy Forecasting Dashboard</h2>
           <p className="text-amber-400/70 text-sm mt-1">AI-powered occupancy prediction and market intelligence</p>
         </div>
         <div className="flex gap-2">
@@ -372,52 +372,52 @@ const OccupancyForecastingDashboard = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Building className="h-4 w-4 text-amber-500" />
               Total Properties
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalProperties}</div>
+            <div className="text-3xl font-bold text-foreground">{totalProperties}</div>
             <div className="text-sm text-amber-400/70">Tracked properties</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Current Occupancy
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{averageOccupancy.toFixed(1)}%</div>
+            <div className="text-3xl font-bold text-foreground">{averageOccupancy.toFixed(1)}%</div>
             <div className="text-sm text-amber-400/70">Average across portfolio</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-amber-500" />
               Forecasted Occupancy
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{forecastedOccupancy.toFixed(1)}%</div>
+            <div className="text-3xl font-bold text-foreground">{forecastedOccupancy.toFixed(1)}%</div>
             <div className="text-sm text-amber-400/70">3-month forecast</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-amber-500" />
               Expiring Leases
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{expiringLeases}</div>
+            <div className="text-3xl font-bold text-foreground">{expiringLeases}</div>
             <div className="text-sm text-amber-400/70">Within 30 days</div>
           </CardContent>
         </Card>
@@ -451,7 +451,7 @@ const OccupancyForecastingDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-amber-500" />
                   Top Performing Properties
                 </CardTitle>
@@ -461,7 +461,7 @@ const OccupancyForecastingDashboard = () => {
                   {occupancyForecasts.filter(f => f.changeType === 'increase').slice(0, 3).map((forecast) => (
                     <div key={forecast.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{forecast.propertyName}</span>
+                        <span className="text-foreground text-sm font-medium">{forecast.propertyName}</span>
                         {getTypeBadge(forecast.propertyType)}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-amber-400/70 mb-2">
@@ -480,7 +480,7 @@ const OccupancyForecastingDashboard = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Properties at Risk
                 </CardTitle>
@@ -490,7 +490,7 @@ const OccupancyForecastingDashboard = () => {
                   {occupancyForecasts.filter(f => f.changeType === 'decrease').slice(0, 3).map((forecast) => (
                     <div key={forecast.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{forecast.propertyName}</span>
+                        <span className="text-foreground text-sm font-medium">{forecast.propertyName}</span>
                         {getTypeBadge(forecast.propertyType)}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-amber-400/70 mb-2">
@@ -512,7 +512,7 @@ const OccupancyForecastingDashboard = () => {
         <TabsContent value="forecasts">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Occupancy Forecasts</CardTitle>
+              <CardTitle className="text-foreground">Occupancy Forecasts</CardTitle>
               <CardDescription className="text-amber-400/70">
                 AI-powered occupancy predictions by property
               </CardDescription>
@@ -526,13 +526,13 @@ const OccupancyForecastingDashboard = () => {
                     placeholder="Search properties..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="apartment">Apartment</option>
@@ -543,7 +543,7 @@ const OccupancyForecastingDashboard = () => {
                 <select
                   value={selectedTimeframe}
                   onChange={(e) => setSelectedTimeframe(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Timeframes</option>
                   <option value="3 months">3 Months</option>
@@ -559,7 +559,7 @@ const OccupancyForecastingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{forecast.propertyName}</span>
+                          <span className="text-foreground font-medium">{forecast.propertyName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{forecast.id}</span>
                           {getTypeBadge(forecast.propertyType)}
                         </div>
@@ -626,7 +626,7 @@ const OccupancyForecastingDashboard = () => {
         <TabsContent value="seasonal">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Seasonal Patterns</CardTitle>
+              <CardTitle className="text-foreground">Seasonal Patterns</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Historical seasonal occupancy trends
               </CardDescription>
@@ -636,7 +636,7 @@ const OccupancyForecastingDashboard = () => {
                 {seasonalPatterns.map((pattern) => (
                   <div key={pattern.id} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{pattern.season}</span>
+                      <span className="text-foreground font-medium">{pattern.season}</span>
                       <div className="flex items-center gap-2">
                         {getStatusBadge(pattern.trend)}
                         <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
@@ -646,7 +646,7 @@ const OccupancyForecastingDashboard = () => {
                     </div>
                     <div className="flex items-center gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">{pattern.averageOccupancy}%</div>
+                        <div className="text-2xl font-bold text-foreground">{pattern.averageOccupancy}%</div>
                         <div className="text-xs text-amber-400/70">Average Occupancy</div>
                       </div>
                     </div>
@@ -670,7 +670,7 @@ const OccupancyForecastingDashboard = () => {
         <TabsContent value="leases">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Lease Expirations</CardTitle>
+              <CardTitle className="text-foreground">Lease Expirations</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Upcoming lease expirations and renewal predictions
               </CardDescription>
@@ -682,7 +682,7 @@ const OccupancyForecastingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{lease.tenantName}</span>
+                          <span className="text-foreground font-medium">{lease.tenantName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{lease.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -732,7 +732,7 @@ const OccupancyForecastingDashboard = () => {
         <TabsContent value="insights">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Market Insights</CardTitle>
+              <CardTitle className="text-foreground">Market Insights</CardTitle>
               <CardDescription className="text-amber-400/70">
                 AI-powered market intelligence and recommendations
               </CardDescription>
@@ -744,7 +744,7 @@ const OccupancyForecastingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{insight.title}</span>
+                          <span className="text-foreground font-medium">{insight.title}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {insight.category}
                           </Badge>

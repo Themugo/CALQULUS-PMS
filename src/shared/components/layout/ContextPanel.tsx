@@ -22,7 +22,7 @@ export function ContextPanel({ open, onClose, title = "Workspace Context", child
     <>
       {/* Drawer Overlay for Mobile/Tablet */}
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden transition-opacity"
+        className="fixed inset-0 z-40 bg-muted backdrop-blur-xs lg:hidden transition-opacity"
         onClick={onClose}
       />
 

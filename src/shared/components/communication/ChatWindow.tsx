@@ -168,7 +168,7 @@ export function ChatWindow({ conversationName = "Sarah Wanjiku", conversationRol
               {msg.attachments && msg.attachments.length > 0 && (
                 <div className="pt-2 space-y-1.5 border-t border-current/10">
                   {msg.attachments.map((att, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-black/5 dark:bg-white/5 text-[11px]">
+                    <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-muted dark:bg-white/5 text-[11px]">
                       {att.type === "image" ? <Image className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
                       <span className="font-semibold truncate">{att.name}</span>
                       <span className="text-[9px] opacity-70 ml-auto">{att.size}</span>

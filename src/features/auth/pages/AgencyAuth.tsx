@@ -53,7 +53,7 @@ const AgencyAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0A1628] text-white hero-gradient">
+    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         {/* Grid overlay */}
@@ -65,44 +65,44 @@ const AgencyAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-amber-400 font-semibold tracking-[0.25em] uppercase mt-1">Agency Portal</p>
+              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Agency Portal</p>
             </div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 mb-6 self-start">
-              <Handshake className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs text-amber-300 font-semibold">Property Agency Access</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
+              <Handshake className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs text-primary font-semibold">Property Agency Access</span>
             </div>
 
             <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-white">Manage portfolios.</span>
+              <span className="text-foreground">Manage portfolios.</span>
               <br />
               <span className="text-gradient">Serve landlords.</span>
               <br />
-              <span className="text-white/85">Grow your agency.</span>
+              <span className="text-muted-foreground">Grow your agency.</span>
             </h1>
-            <p className="text-white/80 text-lg leading-relaxed max-w-md mb-12">
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               The complete platform for property agencies managing estates on behalf of landlords across East Africa.
             </p>
 
             <div className="space-y-4">
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-4 group">
-                  <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-amber-400" />
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-white/90 text-sm font-medium">{f.text}</p>
+                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-white/60 text-xs">calqulus.site</p>
+          <div className="flex items-center gap-6 pt-8 border-t border-border">
+            <p className="text-muted-foreground text-xs">calqulus.site</p>
             <div className="flex gap-3">
-              <Link to="/landlord" className="text-white/60 hover:text-amber-300 text-xs transition-colors">Manager login</Link>
-              <Link to="/webhost/login" className="text-white/60 hover:text-amber-300 text-xs transition-colors">Admin login</Link>
+              <Link to="/landlord" className="text-muted-foreground hover:text-primary text-xs transition-colors">Manager login</Link>
+              <Link to="/webhost/login" className="text-muted-foreground hover:text-primary text-xs transition-colors">Admin login</Link>
             </div>
           </div>
         </div>
@@ -116,31 +116,31 @@ const AgencyAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
           </div>
 
-          <div className="rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/30 bg-amber-400/10 mb-4">
-                <Handshake className="h-3 w-3 text-amber-400" />
-                <span className="text-[11px] text-amber-300 font-semibold tracking-wider uppercase">Agency Portal</span>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
+                <Handshake className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Agency Portal</span>
               </div>
-              <h2 className="font-heading text-2xl font-bold text-white mb-1">Welcome back</h2>
-              <p className="text-white/70 text-sm">Sign in to your agency account</p>
+              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
+              <p className="text-muted-foreground text-sm">Sign in to your agency account</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-white/90 text-sm font-medium">Email address</Label>
+                <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
                 <Input
                   id="email" type="email" placeholder="agent@agency.com"
                   value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
                 />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-white/90 text-sm font-medium">Password</Label>
+                  <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
                   <ForgotPasswordDialog
                     trigger={
-                      <button type="button" className="text-amber-300 hover:text-amber-200 text-xs font-semibold">
+                      <button type="button" className="text-primary hover:text-amber-200 text-xs font-semibold">
                         Forgot password?
                       </button>
                     }
@@ -150,10 +150,10 @@ const AgencyAuth = () => {
                   <Input
                     id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
                     value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11 pr-11"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -172,10 +172,10 @@ const AgencyAuth = () => {
             </form>
 
             {/* Info notice */}
-            <div className="mt-5 p-3 rounded-xl border border-amber-400/15 bg-amber-400/5">
+            <div className="mt-5 p-3 rounded-xl border border-primary/20 bg-primary/10">
               <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-amber-400/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-white/50 leading-relaxed">
+                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   This portal is for property agencies. Manage properties on behalf of landlords,
                   collect rent, and track commissions.
                 </p>

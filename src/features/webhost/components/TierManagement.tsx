@@ -297,22 +297,22 @@ const TierManagement: React.FC = () => {
 
   const fmtKES = (n: number) => n.toLocaleString('en-KE');
 
-  if (tiersLoading || limitsLoading) return <div className="space-y-4">{[...Array(3)].map((_,i) => <Skeleton key={i} className="h-32 w-full bg-slate-800/40"/>)}</div>;
+  if (tiersLoading || limitsLoading) return <div className="space-y-4">{[...Array(3)].map((_,i) => <Skeleton key={i} className="h-32 w-full bg-muted/80"/>)}</div>;
 
   return (
     <div className="space-y-5">
       {/* Control-center header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Layers className="h-5 w-5 text-amber-400" />
             Subscription Tier Management Console
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             Configure subscription plans, pricing, limits, and tier status. Changes apply to the subscription_tiers configuration.
           </p>
         </div>
-        <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh tiers">
+        <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh tiers">
           <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
         </Button>
       </div>
@@ -325,11 +325,11 @@ const TierManagement: React.FC = () => {
           { label: 'Billing Rules', desc: 'Define billing behaviour', icon: ScrollText, current: false },
           { label: 'Custom Pricing', desc: 'Account-specific pricing', icon: FileSignature, current: false },
         ].map(({ label, desc, icon: Icon, current }) => (
-          <div key={label} className={cn('flex items-center gap-2 p-2.5 rounded-lg border text-left', current ? 'border-amber-400/40 bg-amber-400/10' : 'border-slate-800 bg-slate-900/40 opacity-70')}>
+          <div key={label} className={cn('flex items-center gap-2 p-2.5 rounded-lg border text-left', current ? 'border-amber-400/40 bg-amber-400/10' : 'border-border bg-muted opacity-70')}>
             <Icon className={cn('h-4 w-4 shrink-0', current ? 'text-amber-300' : 'text-slate-400')} />
             <div className="min-w-0">
               <p className={cn('text-xs font-semibold truncate', current ? 'text-amber-200' : 'text-slate-300')}>{label}{current && ' (here)'}</p>
-              <p className="text-[10px] text-slate-500 truncate">{desc}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{desc}</p>
             </div>
           </div>
         ))}
@@ -346,22 +346,22 @@ const TierManagement: React.FC = () => {
           </Button>
         </div>
       ) : tiers.length === 0 ? (
-        <div className="p-10 text-center rounded-2xl border border-slate-800 bg-slate-900/40">
+        <div className="p-10 text-center rounded-2xl border border-border bg-muted">
           <Layers className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground">No subscription tiers configured.</p>
-          <p className="text-xs text-slate-500 mt-1">Tiers will appear here once defined in subscription_tiers.</p>
+          <p className="text-xs text-muted-foreground mt-1">Tiers will appear here once defined in subscription_tiers.</p>
         </div>
       ) : (
-        <Card className="border-slate-800">
+        <Card className="border-border">
           <CardContent className="p-0">
-            <div className="px-4 py-3 border-b border-slate-800/50">
-              <p className="text-sm font-semibold text-white">Tier registry</p>
-              <p className="text-xs text-slate-400 mt-0.5">Name, price, status, limits, features, and subscriber impact. Pricing is per property / month.</p>
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-sm font-semibold text-foreground">Tier registry</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Name, price, status, limits, features, and subscriber impact. Pricing is per property / month.</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800/50 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+                  <tr className="border-b border-border text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-muted">
                     <th className="text-left px-4 py-2.5">Tier</th>
                     <th className="text-left px-4 py-2.5">Price</th>
                     <th className="text-center px-4 py-2.5">Limits</th>
@@ -377,29 +377,29 @@ const TierManagement: React.FC = () => {
                     const subs = subscriberCounts[tier.tier_key] ?? 0;
                     const isActive = tier.is_active ?? true;
                     return (
-                      <tr key={tier.id} className="hover:bg-slate-800/30">
+                      <tr key={tier.id} className="hover:bg-muted/80">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-700/40 shrink-0">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-muted/80 shrink-0">
                               <Icon className="h-4 w-4 text-amber-500" />
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-white truncate">{tier.name || TIER_NAMES[tier.tier_key] || tier.tier_key}</p>
-                              <p className="text-xs text-slate-400 truncate max-w-xs">{tier.description || TIER_DESCRIPTIONS[tier.tier_key] || '—'}</p>
+                              <p className="font-semibold text-foreground truncate">{tier.name || TIER_NAMES[tier.tier_key] || tier.tier_key}</p>
+                              <p className="text-xs text-muted-foreground truncate max-w-xs">{tier.description || TIER_DESCRIPTIONS[tier.tier_key] || '—'}</p>
                               {features.length > 0 && (
-                                <p className="text-[10px] text-slate-500 mt-0.5 truncate max-w-xs">{features.slice(0, 3).join(' · ')}{features.length > 3 ? ` +${features.length - 3}` : ''}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5 truncate max-w-xs">{features.slice(0, 3).join(' · ')}{features.length > 3 ? ` +${features.length - 3}` : ''}</p>
                               )}
                             </div>
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-white">KES {fmtKES(tier.price_per_property ?? 0)}</p>
-                          <p className="text-[10px] text-slate-500">/ property / month</p>
-                          {tier.price_flat ? <p className="text-[10px] text-slate-500">+ flat KES {fmtKES(tier.price_flat)}</p> : null}
+                          <p className="font-semibold text-foreground">KES {fmtKES(tier.price_per_property ?? 0)}</p>
+                          <p className="text-[10px] text-muted-foreground">/ property / month</p>
+                          {tier.price_flat ? <p className="text-[10px] text-muted-foreground">+ flat KES {fmtKES(tier.price_flat)}</p> : null}
                         </td>
-                        <td className="px-4 py-3 text-center text-xs text-slate-200">
+                        <td className="px-4 py-3 text-center text-xs text-foreground">
                           <p>{tier.max_properties ?? 0} props</p>
-                          <p className="text-[10px] text-slate-500">{tier.max_units ?? 0} units</p>
+                          <p className="text-[10px] text-muted-foreground">{tier.max_units ?? 0} units</p>
                         </td>
                         <td className="px-4 py-3 text-center">
                           {subsLoading ? (
@@ -417,7 +417,7 @@ const TierManagement: React.FC = () => {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-1">
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(tier)} aria-label={`Edit ${tier.name}`} title="Edit">
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={() => openEdit(tier)} aria-label={`Edit ${tier.name}`} title="Edit">
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             {isActive ? (
@@ -451,10 +451,10 @@ const TierManagement: React.FC = () => {
           const isActive = activeTier === tier.tier_key;
           return (
             <button key={tier.id} type="button" onClick={() => setActiveTier(tier.tier_key as 'lite' | 'pro' | 'enterprise')}
-              className={cn('rounded-xl border-2 px-3 py-2 text-left transition-all flex items-center gap-2', isActive ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-slate-900/40 hover:border-slate-500')}>
+              className={cn('rounded-xl border-2 px-3 py-2 text-left transition-all flex items-center gap-2', isActive ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-muted hover:border-slate-500')}>
               <Icon className={cn('h-4 w-4', isActive ? 'text-amber-500' : 'text-muted-foreground')} />
               <div>
-                <p className="font-semibold text-white text-sm">{tier.name || TIER_NAMES[tier.tier_key]}</p>
+                <p className="font-semibold text-foreground text-sm">{tier.name || TIER_NAMES[tier.tier_key]}</p>
                 <p className="text-xs text-muted-foreground">KES {tier.price_per_property ?? '—'}/prop/mo</p>
               </div>
             </button>
@@ -468,7 +468,7 @@ const TierManagement: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {React.createElement(TIER_ICONS[activeTier], { className: 'h-5 w-5 text-amber-500' })}
-              <CardTitle className="text-white">{TIER_NAMES[activeTier]} — property type limits</CardTitle>
+              <CardTitle className="text-foreground">{TIER_NAMES[activeTier]} — property type limits</CardTitle>
             </div>
             {hasUnsavedChanges && (
               <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900 gap-1.5"
@@ -494,7 +494,7 @@ const TierManagement: React.FC = () => {
                 <div
                   role="button"
                   tabIndex={0}
-                  className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isAllowed ? 'bg-muted/30 hover:bg-amber-400/6' : 'bg-slate-900/20 hover:bg-muted/20'}`}
+                  className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isAllowed ? 'bg-muted/30 hover:bg-amber-400/6' : 'bg-muted hover:bg-muted/20'}`}
                   onClick={() => setExpandedGroups(p => ({ ...p, [group]: !isExpanded }))}
                   onKeyDown={onActivateKey(() => setExpandedGroups(p => ({ ...p, [group]: !isExpanded })))}
                 >
@@ -522,7 +522,7 @@ const TierManagement: React.FC = () => {
 
                 {/* Expanded: per-category details + limit editing */}
                 {isExpanded && (
-                  <div className="p-3 border-t border-border/30 bg-slate-950/20">
+                  <div className="p-3 border-t border-border/30 bg-muted">
                     {/* Limit controls */}
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div>
@@ -531,7 +531,7 @@ const TierManagement: React.FC = () => {
                           type="number" min="0" max="999"
                           value={getEditedLimit(group, 'max')}
                           onChange={e => setEditedLimit(group, 'max', e.target.value)}
-                          className="mt-1 bg-card border-border/60 text-white h-8 text-sm"
+                          className="mt-1 bg-card border-border/60 text-foreground h-8 text-sm"
                         />
                       </div>
                       <div>
@@ -540,7 +540,7 @@ const TierManagement: React.FC = () => {
                           type="number" min="0" max="5" step="0.1"
                           value={getEditedLimit(group, 'mult')}
                           onChange={e => setEditedLimit(group, 'mult', e.target.value)}
-                          className="mt-1 bg-card border-border/60 text-white h-8 text-sm"
+                          className="mt-1 bg-card border-border/60 text-foreground h-8 text-sm"
                         />
                       </div>
                     </div>
@@ -553,13 +553,13 @@ const TierManagement: React.FC = () => {
                         const mult = dbCat?.billing_multiplier ?? cat.billingMultiplier;
                         const reqTier = dbCat?.requires_tier ?? cat.requiresTier;
                         return (
-                          <div key={cat.key} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/40 border border-border/20">
+                          <div key={cat.key} className="flex items-center justify-between p-2 rounded-lg bg-muted border border-border/20">
                             <div className="flex items-center gap-2 min-w-0">
                               <div className="h-6 w-6 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: `${cat.color}33` }}>
                                 <span className="text-xs">📋</span>
                               </div>
                               <div className="min-w-0">
-                                <p className="text-xs font-medium text-white truncate">{cat.name}</p>
+                                <p className="text-xs font-medium text-foreground truncate">{cat.name}</p>
                                 <p className="text-xs text-muted-foreground/70 truncate">{cat.description}</p>
                               </div>
                             </div>
@@ -576,14 +576,14 @@ const TierManagement: React.FC = () => {
                                       saveCategoryMultiplier.mutate({ key: cat.key, multiplier: val });
                                     }
                                   }}
-                                  className="w-14 h-6 bg-slate-800 border-border text-white text-xs text-center p-1"
+                                  className="w-14 h-6 bg-muted border-border text-foreground text-xs text-center p-1"
                                 />
                               </div>
                               {/* Requires tier */}
                               <select
                                 value={reqTier}
                                 onChange={e => setRequiresTier.mutate({ key: cat.key, tier: e.target.value })}
-                                className="text-xs bg-slate-800 border border-border text-foreground/90 rounded px-1 py-0.5 h-6"
+                                className="text-xs bg-muted border border-border text-foreground/90 rounded px-1 py-0.5 h-6"
                               >
                                 <option value="lite">Lite+</option>
                                 <option value="pro">Pro+</option>
@@ -628,34 +628,34 @@ const TierManagement: React.FC = () => {
             <div className="space-y-3">
               <div>
                 <Label className="text-xs">Name</Label>
-                <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
               </div>
               <div>
                 <Label className="text-xs">Description</Label>
-                <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 bg-muted border-border text-foreground" />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <Label className="text-xs">Price / prop / mo (KES)</Label>
-                  <Input type="number" min="0" value={editForm.price_per_property} onChange={e => setEditForm(f => ({ ...f, price_per_property: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                  <Input type="number" min="0" value={editForm.price_per_property} onChange={e => setEditForm(f => ({ ...f, price_per_property: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
                 </div>
                 <div>
                   <Label className="text-xs">Max properties</Label>
-                  <Input type="number" min="0" value={editForm.max_properties} onChange={e => setEditForm(f => ({ ...f, max_properties: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                  <Input type="number" min="0" value={editForm.max_properties} onChange={e => setEditForm(f => ({ ...f, max_properties: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
                 </div>
                 <div>
                   <Label className="text-xs">Max units</Label>
-                  <Input type="number" min="0" value={editForm.max_units} onChange={e => setEditForm(f => ({ ...f, max_units: e.target.value }))} className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                  <Input type="number" min="0" value={editForm.max_units} onChange={e => setEditForm(f => ({ ...f, max_units: e.target.value }))} className="mt-1 bg-muted border-border text-foreground" />
                 </div>
               </div>
               <div>
                 <Label className="text-xs">Features (one per line)</Label>
-                <Textarea value={editForm.features} onChange={e => setEditForm(f => ({ ...f, features: e.target.value }))} rows={3} placeholder="e.g. Residential properties only" className="mt-1 bg-slate-950/60 border-slate-700 text-white" />
+                <Textarea value={editForm.features} onChange={e => setEditForm(f => ({ ...f, features: e.target.value }))} rows={3} placeholder="e.g. Residential properties only" className="mt-1 bg-muted border-border text-foreground" />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-slate-700 p-3">
+              <div className="flex items-center justify-between rounded-lg border border-border p-3">
                 <div>
-                  <Label className="text-xs text-white">Active</Label>
-                  <p className="text-[10px] text-slate-400">Inactive tiers are unavailable for new subscriptions.</p>
+                  <Label className="text-xs text-foreground">Active</Label>
+                  <p className="text-[10px] text-muted-foreground">Inactive tiers are unavailable for new subscriptions.</p>
                 </div>
                 <Switch checked={editForm.is_active} onCheckedChange={v => setEditForm(f => ({ ...f, is_active: v }))} className="data-[state=checked]:bg-amber-400" />
               </div>

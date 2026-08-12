@@ -277,19 +277,19 @@ export function EnterpriseDataTable<T>({
   return (
     <div className={`space-y-4 w-full ${className}`}>
       {/* Header & Toolbars */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-white dark:bg-card p-4 rounded-xl border border-slate-200 dark:border-border shadow-xs">
         {/* Title / Search */}
         <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {(title || description) && (
             <div className="mr-2">
-              {title && <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-base leading-tight">{title}</h3>}
-              {description && <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>}
+              {title && <h3 className="font-semibold text-slate-900 dark:text-foreground text-base leading-tight">{title}</h3>}
+              {description && <p className="text-xs text-muted-foreground dark:text-muted-foreground">{description}</p>}
             </div>
           )}
 
           {/* Quick Search */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
               value={searchTerm}
@@ -297,12 +297,12 @@ export function EnterpriseDataTable<T>({
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-9 pr-8 h-9 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700"
+              className="pl-9 pr-8 h-9 text-xs sm:text-sm bg-slate-50 dark:bg-muted/80 border-slate-200 dark:border-border"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -322,7 +322,7 @@ export function EnterpriseDataTable<T>({
               title="Refresh Data"
               className="h-9 w-9 p-0"
             >
-              <RefreshCw className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+              <RefreshCw className="h-4 w-4 text-muted-foreground dark:text-muted-foreground" />
             </Button>
           )}
 
@@ -333,7 +333,7 @@ export function EnterpriseDataTable<T>({
             onClick={handleExportCSV}
             className="h-9 gap-1.5 text-xs font-medium"
           >
-            <Download className="h-3.5 w-3.5 text-slate-500" />
+            <Download className="h-3.5 w-3.5 text-muted-foreground" />
             Export
           </Button>
 
@@ -341,7 +341,7 @@ export function EnterpriseDataTable<T>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-9 gap-1 text-xs">
-                <SlidersHorizontal className="h-3.5 w-3.5 text-slate-500" />
+                <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
                 Density
               </Button>
             </DropdownMenuTrigger>
@@ -367,7 +367,7 @@ export function EnterpriseDataTable<T>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs">
-                <Columns className="h-3.5 w-3.5 text-slate-500" />
+                <Columns className="h-3.5 w-3.5 text-muted-foreground" />
                 Columns
               </Button>
             </DropdownMenuTrigger>
@@ -408,7 +408,7 @@ export function EnterpriseDataTable<T>({
             <Badge variant="default" className="font-semibold rounded-full px-2.5">
               {selectedIds.size} selected
             </Badge>
-            <span className="text-xs text-slate-600 dark:text-slate-300">
+            <span className="text-xs text-muted-foreground dark:text-muted-foreground">
               Items checked across active dataset
             </span>
           </div>
@@ -431,7 +431,7 @@ export function EnterpriseDataTable<T>({
               size="sm"
               variant="ghost"
               onClick={() => setSelectedIds(new Set())}
-              className="h-8 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+              className="h-8 text-xs text-muted-foreground hover:text-slate-800 dark:hover:text-foreground"
             >
               Clear Selection
             </Button>
@@ -440,11 +440,11 @@ export function EnterpriseDataTable<T>({
       )}
 
       {/* Table Container */}
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-xs">
         <div className="overflow-x-auto max-h-[70vh]">
           <table className="w-full text-left border-collapse">
             {/* Sticky Header */}
-            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 backdrop-blur-xs border-b border-slate-200 dark:border-slate-800 shadow-2xs">
+            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-muted/80 backdrop-blur-xs border-b border-slate-200 dark:border-border shadow-2xs">
               <tr>
                 {enableSelection && (
                   <th className="w-10 px-4 py-3 text-center">
@@ -468,14 +468,14 @@ export function EnterpriseDataTable<T>({
                     <th
                       key={col.id}
                       className={`px-4 py-3 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider select-none ${alignClass} ${
-                        col.sortable !== false ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50' : ''
+                        col.sortable !== false ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-muted/80' : ''
                       } ${col.headerClassName || ''}`}
                       onClick={() => col.sortable !== false && handleSort(col.id)}
                     >
                       <div className={`inline-flex items-center gap-1.5 ${col.align === 'right' ? 'justify-end' : col.align === 'center' ? 'justify-center' : 'justify-start'}`}>
                         <span>{col.header}</span>
                         {col.sortable !== false && (
-                          <span className="text-slate-400">
+                          <span className="text-muted-foreground">
                             {isSorted ? (
                               sortDirection === 'asc' ? (
                                 <ChevronUp className="h-3.5 w-3.5 text-primary" />
@@ -495,18 +495,18 @@ export function EnterpriseDataTable<T>({
             </thead>
 
             {/* Table Body */}
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-card">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, rIdx) => (
                   <tr key={rIdx} className="animate-pulse">
                     {enableSelection && (
                       <td className="px-4 py-3">
-                        <div className="h-4 w-4 bg-slate-200 dark:bg-slate-800 rounded" />
+                        <div className="h-4 w-4 bg-slate-200 dark:bg-muted rounded" />
                       </td>
                     )}
                     {visibleColumns.map((c) => (
                       <td key={c.id} className="px-4 py-3">
-                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
+                        <div className="h-4 bg-slate-200 dark:bg-muted rounded w-3/4" />
                       </td>
                     ))}
                   </tr>
@@ -515,13 +515,13 @@ export function EnterpriseDataTable<T>({
                 <tr>
                   <td
                     colSpan={visibleColumns.length + (enableSelection ? 1 : 0)}
-                    className="py-12 text-center text-slate-500 dark:text-slate-400"
+                    className="py-12 text-center text-muted-foreground dark:text-muted-foreground"
                   >
                     {emptyState || (
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <Search className="h-8 w-8 text-slate-300 dark:text-slate-600 stroke-[1.5]" />
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">No matching records found</p>
-                        <p className="text-xs text-slate-400">Try adjusting your filters or search query.</p>
+                        <Search className="h-8 w-8 text-muted-foreground dark:text-muted-foreground stroke-[1.5]" />
+                        <p className="text-sm font-medium text-slate-700 dark:text-muted-foreground">No matching records found</p>
+                        <p className="text-xs text-muted-foreground">Try adjusting your filters or search query.</p>
                       </div>
                     )}
                   </td>
@@ -534,7 +534,7 @@ export function EnterpriseDataTable<T>({
                   return (
                     <tr
                       key={rowId}
-                      className={`transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40 ${
+                      className={`transition-colors hover:bg-slate-50/80 dark:hover:bg-muted/80 ${
                         isSelected ? 'bg-primary/5 dark:bg-primary/10' : ''
                       }`}
                     >
@@ -575,18 +575,18 @@ export function EnterpriseDataTable<T>({
         </div>
 
         {/* Footer & Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 px-4 py-3">
-          <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-border bg-slate-50/50 dark:bg-muted/80 px-4 py-3">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground dark:text-muted-foreground">
             <span>
               Showing{' '}
-              <strong className="font-semibold text-slate-700 dark:text-slate-200">
+              <strong className="font-semibold text-slate-700 dark:text-foreground">
                 {sortedData.length === 0 ? 0 : (validCurrentPage - 1) * pageSize + 1}
               </strong>{' '}
               to{' '}
-              <strong className="font-semibold text-slate-700 dark:text-slate-200">
+              <strong className="font-semibold text-slate-700 dark:text-foreground">
                 {Math.min(validCurrentPage * pageSize, sortedData.length)}
               </strong>{' '}
-              of <strong className="font-semibold text-slate-700 dark:text-slate-200">{sortedData.length}</strong> entries
+              of <strong className="font-semibold text-slate-700 dark:text-foreground">{sortedData.length}</strong> entries
               {filteredData.length < data.length && ` (filtered from ${data.length} total)`}
             </span>
 
@@ -599,7 +599,7 @@ export function EnterpriseDataTable<T>({
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="h-7 w-[70px] text-xs border-slate-200 dark:border-slate-700">
+                <SelectTrigger className="h-7 w-[70px] text-xs border-slate-200 dark:border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -625,7 +625,7 @@ export function EnterpriseDataTable<T>({
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <span className="text-xs text-slate-600 dark:text-slate-300 px-2 font-medium">
+            <span className="text-xs text-muted-foreground dark:text-muted-foreground px-2 font-medium">
               Page {validCurrentPage} of {totalPages}
             </span>
 

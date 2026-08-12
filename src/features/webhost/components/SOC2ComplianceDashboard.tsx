@@ -246,7 +246,7 @@ const SOC2ComplianceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">SOC2 Type II Compliance</h2>
+          <h2 className="text-2xl font-bold text-foreground">SOC2 Type II Compliance</h2>
           <p className="text-amber-400/70 text-sm mt-1">Manage SOC2 compliance controls and evidence</p>
         </div>
         <div className="flex gap-2">
@@ -271,7 +271,7 @@ const SOC2ComplianceDashboard = () => {
       {/* Overall Score Card */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-amber-500" />
             SOC2 Compliance Score
           </CardTitle>
@@ -280,7 +280,7 @@ const SOC2ComplianceDashboard = () => {
           <div className="flex items-center gap-8">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-5xl font-bold text-white">{overallScore}%</div>
+                <div className="text-5xl font-bold text-foreground">{overallScore}%</div>
                 <div>
                   <Badge className="bg-green-100 text-green-800 border-green-300">
                     <CheckCircle className="h-3 w-3 mr-1" />
@@ -296,7 +296,7 @@ const SOC2ComplianceDashboard = () => {
             <div className="grid grid-cols-5 gap-4">
               {Object.entries(categoryScores).map(([category, score]) => (
                 <div key={category} className="text-center">
-                  <div className="text-2xl font-bold text-white">{Math.round(score)}%</div>
+                  <div className="text-2xl font-bold text-foreground">{Math.round(score)}%</div>
                   <div className={`text-xs capitalize ${getCategoryColor(category)}`}>
                     {category.replace('_', ' ')}
                   </div>
@@ -331,7 +331,7 @@ const SOC2ComplianceDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Activity className="h-5 w-5 text-amber-500" />
                   Control Status Summary
                 </CardTitle>
@@ -341,28 +341,28 @@ const SOC2ComplianceDashboard = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-amber-400/70">Implemented</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-slate-700 rounded-full h-2">
+                      <div className="w-32 bg-muted rounded-full h-2">
                         <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'implemented').length / controls.length) * 100}%` }} />
                       </div>
-                      <span className="text-white">{controls.filter(c => c.status === 'implemented').length}</span>
+                      <span className="text-foreground">{controls.filter(c => c.status === 'implemented').length}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-amber-400/70">Partial</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-slate-700 rounded-full h-2">
+                      <div className="w-32 bg-muted rounded-full h-2">
                         <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
                       </div>
-                      <span className="text-white">{controls.filter(c => c.status === 'partial').length}</span>
+                      <span className="text-foreground">{controls.filter(c => c.status === 'partial').length}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-amber-400/70">Not Implemented</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-slate-700 rounded-full h-2">
+                      <div className="w-32 bg-muted rounded-full h-2">
                         <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'not-implemented').length / controls.length) * 100}%` }} />
                       </div>
-                      <span className="text-white">{controls.filter(c => c.status === 'not-implemented').length}</span>
+                      <span className="text-foreground">{controls.filter(c => c.status === 'not-implemented').length}</span>
                     </div>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ const SOC2ComplianceDashboard = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-amber-500" />
                   Upcoming Assessments
                 </CardTitle>
@@ -385,7 +385,7 @@ const SOC2ComplianceDashboard = () => {
                     .map(control => (
                       <div key={control.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
                         <div>
-                          <span className="text-white text-sm">{control.name}</span>
+                          <span className="text-foreground text-sm">{control.name}</span>
                           <div className="text-amber-400/70 text-xs">{control.nextAssessed.toLocaleDateString()}</div>
                         </div>
                         {getStatusBadge(control.status)}
@@ -400,7 +400,7 @@ const SOC2ComplianceDashboard = () => {
         <TabsContent value="controls">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">SOC2 Controls</CardTitle>
+              <CardTitle className="text-foreground">SOC2 Controls</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage and monitor SOC2 compliance controls
               </CardDescription>
@@ -414,13 +414,13 @@ const SOC2ComplianceDashboard = () => {
                     placeholder="Search controls..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="security">Security</option>
@@ -438,7 +438,7 @@ const SOC2ComplianceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{control.name}</span>
+                          <span className="text-foreground font-medium">{control.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{control.id}</span>
                           <Badge variant="outline" className={`ml-2 border-amber-400/30 ${getCategoryColor(control.category)}`}>
                             {control.category.replace('_', ' ')}
@@ -475,7 +475,7 @@ const SOC2ComplianceDashboard = () => {
         <TabsContent value="evidence">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Evidence Repository</CardTitle>
+              <CardTitle className="text-foreground">Evidence Repository</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage evidence for SOC2 compliance controls
               </CardDescription>
@@ -487,7 +487,7 @@ const SOC2ComplianceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{item.description}</span>
+                          <span className="text-foreground font-medium">{item.description}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {item.controlId}
                           </Badge>
@@ -521,7 +521,7 @@ const SOC2ComplianceDashboard = () => {
         <TabsContent value="incidents">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Security Incidents</CardTitle>
+              <CardTitle className="text-foreground">Security Incidents</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track and manage security incidents affecting SOC2 compliance
               </CardDescription>
@@ -533,7 +533,7 @@ const SOC2ComplianceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{incident.type}</span>
+                          <span className="text-foreground font-medium">{incident.type}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{incident.id}</span>
                         </div>
                         <div className="flex items-center gap-2">

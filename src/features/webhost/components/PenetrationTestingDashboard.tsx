@@ -315,7 +315,7 @@ const PenetrationTestingDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Penetration Testing Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Penetration Testing Dashboard</h2>
           <p className="text-amber-400/70 text-sm mt-1">Manage security testing and vulnerability remediation</p>
         </div>
         <div className="flex gap-2">
@@ -341,52 +341,52 @@ const PenetrationTestingDashboard = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Bug className="h-4 w-4 text-amber-500" />
               Total Findings
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalFindings}</div>
+            <div className="text-3xl font-bold text-foreground">{totalFindings}</div>
             <div className="text-sm text-amber-400/70">All vulnerabilities</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-amber-500" />
               Open Findings
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{openFindings}</div>
+            <div className="text-3xl font-bold text-foreground">{openFindings}</div>
             <div className="text-sm text-amber-400/70">Awaiting remediation</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{criticalFindings}</div>
+            <div className="text-3xl font-bold text-foreground">{criticalFindings}</div>
             <div className="text-sm text-amber-400/70">High priority</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Resolved
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{resolvedFindings}</div>
+            <div className="text-3xl font-bold text-foreground">{resolvedFindings}</div>
             <div className="text-sm text-amber-400/70">Fixed vulnerabilities</div>
           </CardContent>
         </Card>
@@ -395,7 +395,7 @@ const PenetrationTestingDashboard = () => {
       {/* Severity Distribution */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-amber-500" />
             Severity Distribution
           </CardTitle>
@@ -404,31 +404,31 @@ const PenetrationTestingDashboard = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-32 text-amber-400/70 text-sm">Critical</div>
-              <div className="flex-1 bg-slate-700 rounded-full h-3">
+              <div className="flex-1 bg-muted rounded-full h-3">
                 <div className="bg-red-600 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'critical').length / totalFindings) * 100}%` }} />
               </div>
-              <div className="w-8 text-white text-sm">{vulnerabilityFindings.filter(f => f.severity === 'critical').length}</div>
+              <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'critical').length}</div>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-32 text-amber-400/70 text-sm">High</div>
-              <div className="flex-1 bg-slate-700 rounded-full h-3">
+              <div className="flex-1 bg-muted rounded-full h-3">
                 <div className="bg-orange-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'high').length / totalFindings) * 100}%` }} />
               </div>
-              <div className="w-8 text-white text-sm">{vulnerabilityFindings.filter(f => f.severity === 'high').length}</div>
+              <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'high').length}</div>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-32 text-amber-400/70 text-sm">Medium</div>
-              <div className="flex-1 bg-slate-700 rounded-full h-3">
+              <div className="flex-1 bg-muted rounded-full h-3">
                 <div className="bg-yellow-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'medium').length / totalFindings) * 100}%` }} />
               </div>
-              <div className="w-8 text-white text-sm">{vulnerabilityFindings.filter(f => f.severity === 'medium').length}</div>
+              <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'medium').length}</div>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-32 text-amber-400/70 text-sm">Low</div>
-              <div className="flex-1 bg-slate-700 rounded-full h-3">
+              <div className="flex-1 bg-muted rounded-full h-3">
                 <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'low').length / totalFindings) * 100}%` }} />
               </div>
-              <div className="w-8 text-white text-sm">{vulnerabilityFindings.filter(f => f.severity === 'low').length}</div>
+              <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'low').length}</div>
             </div>
           </div>
         </CardContent>
@@ -462,7 +462,7 @@ const PenetrationTestingDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Activity className="h-5 w-5 text-amber-500" />
                   Recent Tests
                 </CardTitle>
@@ -472,7 +472,7 @@ const PenetrationTestingDashboard = () => {
                   {penetrationTests.slice(0, 3).map((test) => (
                     <div key={test.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                       <div>
-                        <span className="text-white text-sm">{test.name}</span>
+                        <span className="text-foreground text-sm">{test.name}</span>
                         <div className="text-amber-400/70 text-xs">{test.type.replace('_', ' ')} - {test.findingsCount} findings</div>
                       </div>
                       {getStatusBadge(test.status)}
@@ -484,7 +484,7 @@ const PenetrationTestingDashboard = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Target className="h-5 w-5 text-amber-500" />
                   Critical Remediations
                 </CardTitle>
@@ -497,7 +497,7 @@ const PenetrationTestingDashboard = () => {
                     .map((plan) => (
                       <div key={plan.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                         <div>
-                          <span className="text-white text-sm">{plan.action}</span>
+                          <span className="text-foreground text-sm">{plan.action}</span>
                           <div className="text-amber-400/70 text-xs">Due: {plan.dueDate.toLocaleDateString()}</div>
                         </div>
                         {getStatusBadge(plan.status)}
@@ -512,7 +512,7 @@ const PenetrationTestingDashboard = () => {
         <TabsContent value="tests">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Penetration Tests</CardTitle>
+              <CardTitle className="text-foreground">Penetration Tests</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage scheduled and completed penetration tests
               </CardDescription>
@@ -524,7 +524,7 @@ const PenetrationTestingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{test.name}</span>
+                          <span className="text-foreground font-medium">{test.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{test.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {test.type.replace('_', ' ')}
@@ -573,7 +573,7 @@ const PenetrationTestingDashboard = () => {
         <TabsContent value="findings">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Vulnerability Findings</CardTitle>
+              <CardTitle className="text-foreground">Vulnerability Findings</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track and manage security vulnerabilities
               </CardDescription>
@@ -587,13 +587,13 @@ const PenetrationTestingDashboard = () => {
                     placeholder="Search findings..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Severities</option>
                   <option value="critical">Critical</option>
@@ -611,7 +611,7 @@ const PenetrationTestingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{finding.title}</span>
+                          <span className="text-foreground font-medium">{finding.title}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{finding.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {finding.category.replace('_', ' ')}
@@ -659,7 +659,7 @@ const PenetrationTestingDashboard = () => {
         <TabsContent value="scans">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Vulnerability Scans</CardTitle>
+              <CardTitle className="text-foreground">Vulnerability Scans</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage automated and manual vulnerability scans
               </CardDescription>
@@ -671,7 +671,7 @@ const PenetrationTestingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{scan.name}</span>
+                          <span className="text-foreground font-medium">{scan.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{scan.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {scan.type}
@@ -717,7 +717,7 @@ const PenetrationTestingDashboard = () => {
         <TabsContent value="remediation">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Remediation Plans</CardTitle>
+              <CardTitle className="text-foreground">Remediation Plans</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track vulnerability remediation progress
               </CardDescription>
@@ -729,7 +729,7 @@ const PenetrationTestingDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{plan.action}</span>
+                          <span className="text-foreground font-medium">{plan.action}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{plan.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {plan.findingId}

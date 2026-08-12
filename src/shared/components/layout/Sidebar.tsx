@@ -214,8 +214,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Top Accent Stripe — single calm hairline */}
-        <div className="h-px w-full bg-sidebar-primary/40 flex-shrink-0" />
+        {/* Top Accent Stripe — CALQULUS blue */}
+        <div className="h-0.5 w-full bg-sidebar-primary flex-shrink-0" />
 
         {/* Workspace Brand Header */}
         <div
@@ -285,11 +285,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     className={cn(
                       "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
                       active
-                        ? "bg-sidebar-primary/15 text-sidebar-foreground font-semibold border-l-2 border-sidebar-primary"
-                        : "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground border-l-2 border-transparent"
+                        ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
+                        : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-2 border-transparent"
                     )}
                   >
-                    <Star className="h-3.5 w-3.5 text-sidebar-muted shrink-0 group-data-[state=active]:text-sidebar-primary" />
+                    <Star className={cn("h-3.5 w-3.5 shrink-0", active ? "text-primary" : "text-sidebar-muted group-hover:text-sidebar-foreground")} />
                     <span className="flex-1 truncate">{fav.name}</span>
                   </Link>
                 );
@@ -317,8 +317,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                       "group relative flex items-center gap-3 rounded-md text-xs font-medium transition-all duration-150 touch-manipulation",
                       collapsed ? "justify-center p-2.5" : "px-3 py-2",
                       active
-                        ? "bg-sidebar-primary/15 text-sidebar-foreground font-semibold border-l-2 border-sidebar-primary"
-                        : "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground border-l-2 border-transparent"
+                        ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
+                        : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-2 border-transparent"
                     )}
                     title={collapsed ? item.name : undefined}
                   >
@@ -326,7 +326,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                       className={cn(
                         "h-4 w-4 flex-shrink-0 transition-colors",
                         active
-                          ? "text-sidebar-primary"
+                          ? "text-primary"
                           : "text-sidebar-muted group-hover:text-sidebar-foreground"
                       )}
                     />

@@ -293,7 +293,7 @@ const TenantLTVAnalytics = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Tenant LTV Analytics</h2>
+          <h2 className="text-2xl font-bold text-foreground">Tenant LTV Analytics</h2>
           <p className="text-amber-400/70 text-sm mt-1">Customer lifetime value and retention intelligence</p>
         </div>
         <div className="flex gap-2">
@@ -320,52 +320,52 @@ const TenantLTVAnalytics = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Users className="h-4 w-4 text-amber-500" />
               Total Tenants
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalTenants}</div>
+            <div className="text-3xl font-bold text-foreground">{totalTenants}</div>
             <div className="text-sm text-amber-400/70">Active tenants</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-amber-500" />
               Total LTV
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">KES {totalLTV.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-foreground">KES {totalLTV.toLocaleString()}</div>
             <div className="text-sm text-amber-400/70">Lifetime value</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Heart className="h-4 w-4 text-amber-500" />
               Avg Retention
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{averageRetention.toFixed(1)}%</div>
+            <div className="text-3xl font-bold text-foreground">{averageRetention.toFixed(1)}%</div>
             <div className="text-sm text-amber-400/70">Retention probability</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               High Risk
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{highRiskTenants}</div>
+            <div className="text-3xl font-bold text-foreground">{highRiskTenants}</div>
             <div className="text-sm text-amber-400/70">Churn risk</div>
           </CardContent>
         </Card>
@@ -399,7 +399,7 @@ const TenantLTVAnalytics = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Award className="h-5 w-5 text-amber-500" />
                   High Value Tenants
                 </CardTitle>
@@ -409,7 +409,7 @@ const TenantLTVAnalytics = () => {
                   {tenantLTVs.filter(t => t.ltv > 500000).slice(0, 3).map((tenant) => (
                     <div key={tenant.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{tenant.name}</span>
+                        <span className="text-foreground text-sm font-medium">{tenant.name}</span>
                         <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Star className="h-3 w-3 mr-1" />High Value</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-amber-400/70 mb-2">
@@ -428,7 +428,7 @@ const TenantLTVAnalytics = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   At-Risk Tenants
                 </CardTitle>
@@ -438,7 +438,7 @@ const TenantLTVAnalytics = () => {
                   {tenantLTVs.filter(t => t.churnRisk === 'high' || t.churnRisk === 'critical').slice(0, 3).map((tenant) => (
                     <div key={tenant.id} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{tenant.name}</span>
+                        <span className="text-foreground text-sm font-medium">{tenant.name}</span>
                         {getStatusBadge(tenant.churnRisk)}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-amber-400/70 mb-2">
@@ -460,7 +460,7 @@ const TenantLTVAnalytics = () => {
         <TabsContent value="tenants">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Tenant LTV Analysis</CardTitle>
+              <CardTitle className="text-foreground">Tenant LTV Analysis</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Detailed lifetime value and retention metrics
               </CardDescription>
@@ -474,13 +474,13 @@ const TenantLTVAnalytics = () => {
                     placeholder="Search tenants..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedRisk}
                   onChange={(e) => setSelectedRisk(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Risks</option>
                   <option value="low">Low</option>
@@ -491,7 +491,7 @@ const TenantLTVAnalytics = () => {
                 <select
                   value={selectedPayment}
                   onChange={(e) => setSelectedPayment(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Payment History</option>
                   <option value="excellent">Excellent</option>
@@ -508,7 +508,7 @@ const TenantLTVAnalytics = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{tenant.name}</span>
+                          <span className="text-foreground font-medium">{tenant.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{tenant.id}</span>
                           {tenant.ltv > 500000 && (
                             <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 ml-2"><Star className="h-3 w-3 mr-1" />High Value</Badge>
@@ -578,7 +578,7 @@ const TenantLTVAnalytics = () => {
         <TabsContent value="segments">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Tenant Segments</CardTitle>
+              <CardTitle className="text-foreground">Tenant Segments</CardTitle>
               <CardDescription className="text-amber-400/70">
                 LTV-based tenant segmentation analysis
               </CardDescription>
@@ -588,26 +588,26 @@ const TenantLTVAnalytics = () => {
                 {ltvSegments.map((segment) => (
                   <div key={segment.name} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{segment.name}</span>
+                      <span className="text-foreground font-medium">{segment.name}</span>
                       <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         {segment.count} tenants
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">KES {segment.averageLTV.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-foreground">KES {segment.averageLTV.toLocaleString()}</div>
                         <div className="text-xs text-amber-400/70">Avg LTV</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{segment.averageTenure} mo</div>
+                        <div className="text-2xl font-bold text-foreground">{segment.averageTenure} mo</div>
                         <div className="text-xs text-amber-400/70">Avg Tenure</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">KES {segment.totalRevenue.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-foreground">KES {segment.totalRevenue.toLocaleString()}</div>
                         <div className="text-xs text-amber-400/70">Monthly Revenue</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{segment.count}</div>
+                        <div className="text-2xl font-bold text-foreground">{segment.count}</div>
                         <div className="text-xs text-amber-400/70">Tenants</div>
                       </div>
                     </div>
@@ -629,7 +629,7 @@ const TenantLTVAnalytics = () => {
         <TabsContent value="strategies">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Retention Strategies</CardTitle>
+              <CardTitle className="text-foreground">Retention Strategies</CardTitle>
               <CardDescription className="text-amber-400/70">
                 AI-powered retention recommendations
               </CardDescription>
@@ -641,7 +641,7 @@ const TenantLTVAnalytics = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{strategy.tenantName}</span>
+                          <span className="text-foreground font-medium">{strategy.tenantName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{strategy.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -678,7 +678,7 @@ const TenantLTVAnalytics = () => {
         <TabsContent value="churn">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Churn Predictions</CardTitle>
+              <CardTitle className="text-foreground">Churn Predictions</CardTitle>
               <CardDescription className="text-amber-400/70">
                 AI-powered churn risk analysis
               </CardDescription>
@@ -690,7 +690,7 @@ const TenantLTVAnalytics = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{prediction.tenantName}</span>
+                          <span className="text-foreground font-medium">{prediction.tenantName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{prediction.id}</span>
                         </div>
                         <Badge className="bg-red-600 text-white border-red-700">

@@ -52,7 +52,7 @@ const LandlordPortalAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0A1628] text-white hero-gradient">
+    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         <AuthGridOverlay />
@@ -62,44 +62,44 @@ const LandlordPortalAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-amber-400/60 font-semibold tracking-[0.25em] uppercase mt-1">Landlord Portal</p>
+              <p className="text-[11px] text-primary/70 font-semibold tracking-[0.25em] uppercase mt-1">Landlord Portal</p>
             </div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-400/25 bg-amber-400/8 mb-6 self-start">
-              <Home className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs text-amber-300 font-medium">Property Owner Access</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
+              <Home className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs text-primary font-medium">Property Owner Access</span>
             </div>
 
             <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-white">Your portfolio.</span>
+              <span className="text-foreground">Your portfolio.</span>
               <br />
               <span className="text-gradient">Your returns.</span>
               <br />
-              <span className="text-white/70">Full visibility.</span>
+              <span className="text-muted-foreground">Full visibility.</span>
             </h1>
-            <p className="text-white/50 text-lg leading-relaxed max-w-md mb-12">
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               Track revenue, occupancy and statements for all your properties managed through CALQULUS PMS.
             </p>
 
             <div className="space-y-4">
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-amber-400" />
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-white/70 text-sm font-medium">{f.text}</p>
+                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-white/30 text-xs">calqulus.site</p>
+          <div className="flex items-center gap-6 pt-8 border-t border-border">
+            <p className="text-muted-foreground text-xs">calqulus.site</p>
             <div className="flex gap-3">
-              <Link to="/landlord" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Manager login</Link>
-              <Link to="/tenant/login" className="text-white/30 hover:text-amber-400/70 text-xs transition-colors">Tenant portal</Link>
+              <Link to="/landlord" className="text-muted-foreground hover:text-primary/70 text-xs transition-colors">Manager login</Link>
+              <Link to="/tenant/login" className="text-muted-foreground hover:text-primary/70 text-xs transition-colors">Tenant portal</Link>
             </div>
           </div>
         </div>
@@ -112,31 +112,31 @@ const LandlordPortalAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          <div className="rounded-2xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-8 shadow-sm">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/25 bg-amber-400/8 mb-4">
-                <Home className="h-3 w-3 text-amber-400" />
-                <span className="text-[11px] text-amber-300 font-semibold tracking-wider uppercase">Landlord Portal</span>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
+                <Home className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Landlord Portal</span>
               </div>
-              <h2 className="font-heading text-2xl font-bold text-white mb-1">Welcome back</h2>
-              <p className="text-white/50 text-sm">Sign in to view your property portfolio</p>
+              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
+              <p className="text-muted-foreground text-sm">Sign in to view your property portfolio</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-white/80 text-sm font-medium">Email address</Label>
+                <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
                 <Input
                   id="email" type="email" placeholder="owner@example.com"
                   value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary/20 focus:ring-primary/20 h-11"
                 />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-white/80 text-sm font-medium">Password</Label>
+                  <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
                   <ForgotPasswordDialog
                     trigger={
-                      <button type="button" className="text-amber-400/80 hover:text-amber-400 text-xs font-medium">
+                      <button type="button" className="text-primary/70 hover:text-primary text-xs font-medium">
                         Forgot password?
                       </button>
                     }
@@ -146,10 +146,10 @@ const LandlordPortalAuth = () => {
                   <Input
                     id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
                     value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20 h-11 pr-11"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary/20 focus:ring-primary/20 h-11 pr-11"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -168,10 +168,10 @@ const LandlordPortalAuth = () => {
             </form>
 
             {/* Info notice */}
-            <div className="mt-5 p-3.5 rounded-xl border border-amber-400/15 bg-amber-400/5">
+            <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
               <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-amber-400/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-white/50 leading-relaxed">
+                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   This portal is for property owners. Your property manager will invite you by email.
                   If you haven't received an invitation, contact your property manager.
                 </p>

@@ -95,17 +95,17 @@ const PendingApproval = () => {
           </div>
         </div>
 
-        <Card className="w-full border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-2xl">
+        <Card className="w-full border-border bg-muted backdrop-blur-xl shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
                 <Clock className={`h-8 w-8 ${isSuspended ? 'text-orange-500' : isRejected ? 'text-red-500' : 'text-amber-500'}`} />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-white">
+            <CardTitle className="text-2xl font-bold text-foreground">
               {isSuspended ? (isNonPaymentSuspension ? 'Account Suspended — Payment Required' : 'Account Suspended') : isRejected ? 'Account Not Approved' : 'Account Pending Approval'}
             </CardTitle>
-            <CardDescription className="text-white/50 mt-2">
+            <CardDescription className="text-muted-foreground mt-2">
               {isSuspended
                 ? 'Your account has been temporarily suspended by the platform administrator'
                 : isRejected
@@ -120,18 +120,18 @@ const PendingApproval = () => {
                 <div>
                   {isNonPaymentSuspension ? (
                     <>
-                      <p className="text-white/80 text-sm mb-3">
+                      <p className="text-muted-foreground text-sm mb-3">
                         Your account has been suspended due to an outstanding platform invoice.
                         Pay the outstanding balance to restore access immediately.
                       </p>
                       {suspensionReason && (
                         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-left mb-3">
-                          <p className="text-xs text-red-400 font-medium mb-1">Details:</p>
+                          <p className="text-xs text-red-600 font-medium mb-1">Details:</p>
                           <p className="text-sm text-red-200">{suspensionReason}</p>
                         </div>
                       )}
                       <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
-                        <p className="text-xs text-amber-400 font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
+                        <p className="text-xs text-primary font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
                         <ol className="text-sm text-amber-200 space-y-1">
                           <li>1. Pay your outstanding invoice via the Platform Billing page</li>
                           <li>2. Once payment is confirmed, your account will be reinstated automatically</li>
@@ -141,7 +141,7 @@ const PendingApproval = () => {
                     </>
                   ) : (
                     <>
-                      <p className="text-white/80 text-sm mb-3">
+                      <p className="text-muted-foreground text-sm mb-3">
                         Access to your account has been suspended. Please contact the platform administrator to resolve this.
                       </p>
                       {suspensionReason && (
@@ -155,19 +155,19 @@ const PendingApproval = () => {
                 </div>
               ) : isRejected ? (
                 <div>
-                  <p className="text-white/80 text-sm mb-3">
+                  <p className="text-muted-foreground text-sm mb-3">
                     Unfortunately, your account application was not approved.
                     If you believe this was a mistake, please contact our support team for assistance.
                   </p>
                   {rejectionReason && (
                     <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-left">
-                      <p className="text-xs text-red-400 font-medium mb-1">Reason given:</p>
+                      <p className="text-xs text-red-600 font-medium mb-1">Reason given:</p>
                       <p className="text-sm text-red-200">{rejectionReason}</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-white/80 text-sm mb-4">
+                <p className="text-muted-foreground text-sm mb-4">
                   Thank you for registering as a property manager!
                   Your account is currently under review by our team.
                   You will receive access once your account has been approved.
@@ -175,13 +175,13 @@ const PendingApproval = () => {
               )}
               
               {user?.email && (
-                <div className="flex items-center justify-center gap-2 text-amber-400/70 text-sm bg-amber-400/8 py-3 px-4 rounded-lg border border-amber-400/20 mb-4">
+                <div className="flex items-center justify-center gap-2 text-primary/70 text-sm bg-primary/10 py-3 px-4 rounded-lg border border-primary/20 mb-4">
                   <Mail className="h-4 w-4" />
                   {user.email}
                 </div>
               )}
 
-              <p className="text-white/40 text-xs">
+              <p className="text-muted-foreground text-xs">
                 {isRejected 
                   ? 'Contact support@calqulus.site for more information.'
                   : 'This usually takes 24-48 hours. If you have any questions, please contact support.'
@@ -192,13 +192,13 @@ const PendingApproval = () => {
             <div className="flex flex-col gap-3">
               {!isRejected && (
                 <>
-                  <div className="text-center text-xs text-white/40">
+                  <div className="text-center text-xs text-muted-foreground">
                     Auto-checking in {countdown}s…
                   </div>
                   <Button
                     onClick={handleRefresh}
                     variant="outline"
-                    className="w-full border-white/15 text-white/70 hover:bg-white/8"
+                    className="w-full border-border text-muted-foreground hover:bg-muted"
                     disabled={isRefreshing}
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -210,7 +210,7 @@ const PendingApproval = () => {
               <Button
                 onClick={signOut}
                 variant="ghost"
-                className="w-full text-white/40 hover:text-white hover:bg-white/8"
+                className="w-full text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out

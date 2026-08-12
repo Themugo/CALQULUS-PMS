@@ -485,7 +485,7 @@ const TenantPortal = () => {
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-400/20">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
+              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
             </div>
             <div>
               <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS PMS</h1>
@@ -938,7 +938,7 @@ const TenantPortal = () => {
                     size="lg"
                     className={`gap-2 h-12 px-6 text-base font-semibold shadow-lg rounded-xl transition-all duration-200 ${
                       isOverdue ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700'
-                    } text-white`}
+                    } text-foreground`}
                     onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
                   >
                     <Smartphone className="h-5 w-5" />
@@ -947,12 +947,12 @@ const TenantPortal = () => {
                 </div>
               </div>
               {leaseProgress && (
-                <div className="mt-3 pt-3 border-t border-white/40">
+                <div className="mt-3 pt-3 border-t border-border">
                   <div className="flex justify-between text-xs text-muted-foreground mb-1">
                     <span>{Math.round(leaseProgress.pct)}% of lease elapsed</span>
                     <span>{leaseProgress.daysLeft} days remaining</span>
                   </div>
-                  <div className="h-1.5 bg-black/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div className={`h-full rounded-full transition-all duration-500 ${
                       isOverdue ? 'bg-red-400' : 'bg-amber-400'
                     }`} style={{ width: `${leaseProgress.pct}%` }} />

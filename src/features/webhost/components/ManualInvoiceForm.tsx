@@ -209,12 +209,12 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
       <div className="space-y-2">
         <Label className="text-amber-100/80">Select Manager</Label>
         <Select value={selectedManager} onValueChange={setSelectedManager}>
-          <SelectTrigger className="bg-slate-700 border-amber-400/20 text-white">
+          <SelectTrigger className="bg-muted border-amber-400/20 text-foreground">
             <SelectValue placeholder="Choose a manager" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-700 border-amber-400/20">
+          <SelectContent className="bg-muted border-amber-400/20">
             {filteredManagers.map((manager) => (
-              <SelectItem key={manager.user_id} value={manager.user_id} className="text-white">
+              <SelectItem key={manager.user_id} value={manager.user_id} className="text-foreground">
                 <div className="flex items-center gap-2">
                   <span>{manager.full_name || manager.email}</span>
                   {invoiceType === 'subscription' && (
@@ -233,7 +233,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
       <div className="border border-amber-400/20 rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-700/50 border-amber-400/30/30 hover:bg-muted/50">
+            <TableRow className="bg-muted/80 border-amber-400/30/30 hover:bg-muted/50">
               <TableHead className="text-amber-400/70 font-semibold">Description</TableHead>
               <TableHead className="text-amber-400/70 font-semibold w-20 text-center">Qty</TableHead>
               <TableHead className="text-amber-400/70 font-semibold w-28 text-right">Rate (KES)</TableHead>
@@ -247,7 +247,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             {invoiceType !== 'custom' ? (
               // Auto-calculated row for registration/subscription
               <TableRow className="border-amber-400/30/30">
-                <TableCell className="text-white">
+                <TableCell className="text-foreground">
                   {invoiceType === 'registration' 
                     ? billingConfig.registration.name
                     : `${billingConfig.subscription.name} (${(billingConfig.subscription.rate * 100).toFixed(1)}%)`
@@ -260,7 +260,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                     : (selectedManagerData?.net_collection || 0).toLocaleString()
                   }
                 </TableCell>
-                <TableCell className="text-right text-white font-semibold">
+                <TableCell className="text-right text-foreground font-semibold">
                   {autoCalculatedAmount.toLocaleString()}
                 </TableCell>
               </TableRow>
@@ -273,7 +273,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       value={item.description}
                       onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
                       placeholder="Enter description"
-                      className="bg-slate-700/50 border-amber-400/30/30 text-white h-9"
+                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9"
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -282,7 +282,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateLineItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
-                      className="bg-slate-700/50 border-amber-400/30/30 text-white h-9 text-center"
+                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9 text-center"
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -292,11 +292,11 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       step="0.01"
                       value={item.rate}
                       onChange={(e) => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
-                      className="bg-slate-700/50 border-amber-400/30/30 text-white h-9 text-right"
+                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9 text-right"
                     />
                   </TableCell>
                   <TableCell className="p-1 text-right">
-                    <div className="bg-slate-700/50 border border-amber-400/30/30 rounded-md px-3 py-1.5 text-white font-semibold">
+                    <div className="bg-muted/80 border border-amber-400/30/30 rounded-md px-3 py-1.5 text-foreground font-semibold">
                       {item.amount.toLocaleString()}
                     </div>
                   </TableCell>
@@ -339,7 +339,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
               <TableCell colSpan={invoiceType === 'custom' ? 3 : 3} className="text-right text-amber-100/80 font-semibold">
                 Total:
               </TableCell>
-              <TableCell className="text-right text-white font-bold text-lg" colSpan={invoiceType === 'custom' ? 2 : 1}>
+              <TableCell className="text-right text-foreground font-bold text-lg" colSpan={invoiceType === 'custom' ? 2 : 1}>
                 KES {totalAmount.toLocaleString()}
               </TableCell>
             </TableRow>
@@ -352,14 +352,14 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
         <div className="space-y-2">
           <Label className="text-amber-100/80">Due In</Label>
           <Select value={dueInDays} onValueChange={setDueInDays}>
-            <SelectTrigger className="bg-slate-700 border-amber-400/20 text-white">
+            <SelectTrigger className="bg-muted border-amber-400/20 text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-700 border-amber-400/20">
-              <SelectItem value="7" className="text-white">7 days</SelectItem>
-              <SelectItem value="14" className="text-white">14 days</SelectItem>
-              <SelectItem value="30" className="text-white">30 days</SelectItem>
-              <SelectItem value="60" className="text-white">60 days</SelectItem>
+            <SelectContent className="bg-muted border-amber-400/20">
+              <SelectItem value="7" className="text-foreground">7 days</SelectItem>
+              <SelectItem value="14" className="text-foreground">14 days</SelectItem>
+              <SelectItem value="30" className="text-foreground">30 days</SelectItem>
+              <SelectItem value="60" className="text-foreground">60 days</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-amber-500">
@@ -372,7 +372,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Additional notes..."
-            className="bg-slate-700 border-amber-400/20 text-white h-[76px] resize-none"
+            className="bg-muted border-amber-400/20 text-foreground h-[76px] resize-none"
           />
         </div>
       </div>

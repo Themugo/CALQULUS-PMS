@@ -572,7 +572,7 @@ const WebhostContracts = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-white">Commercial Contract Management Console</h2>
+          <h2 className="text-2xl font-bold text-foreground">Commercial Contract Management Console</h2>
           <p className="text-amber-400/70">Manage service agreements with managers — contracts, documents, status, and commercial relationships.</p>
         </div>
         <Button
@@ -592,7 +592,7 @@ const WebhostContracts = () => {
             <FileText className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.total}</div>
           </CardContent>
         </Card>
         <Card className="bg-card border-amber-400/15">
@@ -656,11 +656,11 @@ const WebhostContracts = () => {
                     placeholder="Search contracts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-slate-700/50 border-amber-400/20"
+                    className="pl-10 bg-muted/80 border-amber-400/20"
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -674,7 +674,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={managerFilter} onValueChange={setManagerFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue placeholder="Manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -687,7 +687,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -700,7 +700,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={expiryFilter} onValueChange={setExpiryFilter}>
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue placeholder="Expiry" />
                   </SelectTrigger>
                   <SelectContent>
@@ -766,7 +766,7 @@ const WebhostContracts = () => {
                       const expiryAttn = getExpiryAttention(contract);
                       return (
                       <TableRow key={contract.id} className="border-amber-400/12">
-                        <TableCell className="font-medium text-white">
+                        <TableCell className="font-medium text-foreground">
                           <div className="flex items-center gap-2">
                             <span className="truncate max-w-[180px]">{contract.title}</span>
                             {expiryAttn === "expired" && <AlertTriangle className="h-3.5 w-3.5 text-red-400 shrink-0" />}
@@ -775,7 +775,7 @@ const WebhostContracts = () => {
                         </TableCell>
                         <TableCell className="text-amber-400/70">
                           <div className="flex flex-col">
-                            <span className="text-white">{contract.manager_name || "Unknown"}</span>
+                            <span className="text-foreground">{contract.manager_name || "Unknown"}</span>
                             <span className="text-xs text-amber-500">{contract.manager_email}</span>
                           </div>
                         </TableCell>
@@ -785,7 +785,7 @@ const WebhostContracts = () => {
                         <TableCell>{getStatusBadge(contract.status)}</TableCell>
                         <TableCell className="text-amber-400/70">
                           {contract.valid_from && contract.valid_until ? (
-                            <span className={`text-xs ${expiryAttn === "expired" ? "text-red-400" : expiryAttn === "expiring" ? "text-amber-400" : "text-white"}`}>
+                            <span className={`text-xs ${expiryAttn === "expired" ? "text-red-400" : expiryAttn === "expiring" ? "text-amber-400" : "text-foreground"}`}>
                               {format(new Date(contract.valid_from), "dd/MM/yy")} -{" "}
                               {format(new Date(contract.valid_until), "dd/MM/yy")}
                             </span>
@@ -831,7 +831,7 @@ const WebhostContracts = () => {
                                     setSelectedContract(contract);
                                     setApproveDialogOpen(true);
                                   }}
-                                  className="h-8 w-8 text-emerald-400 hover:text-white hover:bg-emerald-600/20"
+                                  className="h-8 w-8 text-emerald-400 hover:text-foreground hover:bg-emerald-600/20"
                                 >
                                   <CheckCircle className="h-4 w-4" />
                                 </Button>
@@ -843,7 +843,7 @@ const WebhostContracts = () => {
                                     setSelectedContract(contract);
                                     setRejectDialogOpen(true);
                                   }}
-                                  className="h-8 w-8 text-red-400 hover:text-white hover:bg-red-600/20"
+                                  className="h-8 w-8 text-red-400 hover:text-foreground hover:bg-red-600/20"
                                 >
                                   <XCircle className="h-4 w-4" />
                                 </Button>
@@ -858,7 +858,7 @@ const WebhostContracts = () => {
                                   setSelectedContract(contract);
                                   setRetakeDialogOpen(true);
                                 }}
-                                className="h-8 w-8 text-amber-400 hover:text-white hover:bg-amber-600/20"
+                                className="h-8 w-8 text-amber-400 hover:text-foreground hover:bg-amber-600/20"
                               >
                                 <RotateCcw className="h-4 w-4" />
                               </Button>
@@ -879,7 +879,7 @@ const WebhostContracts = () => {
         <TabsContent value="by-manager" className="space-y-4">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <Users className="h-5 w-5 text-amber-500" />
                 Manager Contract Sections
               </CardTitle>
@@ -898,13 +898,13 @@ const WebhostContracts = () => {
                   const managerContracts = contracts.filter(c => c.manager_user_id === manager.id);
                   return (
                     <div key={manager.id} className="border border-amber-400/30/30 rounded-lg overflow-hidden">
-                      <div className="bg-slate-700/50 px-4 py-3 flex items-center justify-between">
+                      <div className="bg-muted/80 px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-[hsl(218_58%_40%/0.2)] flex items-center justify-center">
                             <Building className="h-5 w-5 text-amber-500" />
                           </div>
                           <div>
-                            <p className="text-white font-medium">{manager.full_name || "Unnamed Manager"}</p>
+                            <p className="text-foreground font-medium">{manager.full_name || "Unnamed Manager"}</p>
                             <p className="text-sm text-amber-500">{manager.email}</p>
                           </div>
                         </div>
@@ -933,10 +933,10 @@ const WebhostContracts = () => {
                         ) : (
                           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                             {managerContracts.map((contract) => (
-                              <Card key={contract.id} className="bg-slate-700/30 border-amber-400/30/20">
+                              <Card key={contract.id} className="bg-muted/80 border-amber-400/30/20">
                                 <CardContent className="p-4">
                                   <div className="flex items-start justify-between mb-2">
-                                    <h4 className="text-white font-medium text-sm truncate flex-1">{contract.title}</h4>
+                                    <h4 className="text-foreground font-medium text-sm truncate flex-1">{contract.title}</h4>
                                     {getStatusBadge(contract.status)}
                                   </div>
                                   <p className="text-xs text-amber-500 mb-3 capitalize">
@@ -990,9 +990,9 @@ const WebhostContracts = () => {
           setParsedContent(null);
         }
       }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-slate-900 border-amber-400/15">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-card border-amber-400/15">
           <DialogHeader>
-            <DialogTitle className="text-white">{selectedContract?.title}</DialogTitle>
+            <DialogTitle className="text-foreground">{selectedContract?.title}</DialogTitle>
             <DialogDescription className="text-amber-400/70">
               Contract for {selectedContract?.manager_name || selectedContract?.manager_email}
             </DialogDescription>
@@ -1001,26 +1001,26 @@ const WebhostContracts = () => {
             <div className="space-y-4 p-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Status</p>
+                  <p className="text-sm font-medium text-foreground">Status</p>
                   {selectedContract && getStatusBadge(selectedContract.status)}
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Contract Type</p>
-                  <p className="text-white capitalize font-normal">
+                  <p className="text-sm font-medium text-foreground">Contract Type</p>
+                  <p className="text-foreground capitalize font-normal">
                     {selectedContract?.contract_type?.replace(/_/g, " ") || "Service Agreement"}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Valid From</p>
-                  <p className="text-white font-normal">
+                  <p className="text-sm font-medium text-foreground">Valid From</p>
+                  <p className="text-foreground font-normal">
                     {selectedContract?.valid_from 
                       ? format(new Date(selectedContract.valid_from), "dd/MM/yy")
                       : "Not set"}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Valid Until</p>
-                  <p className="text-white font-normal">
+                  <p className="text-sm font-medium text-foreground">Valid Until</p>
+                  <p className="text-foreground font-normal">
                     {selectedContract?.valid_until 
                       ? format(new Date(selectedContract.valid_until), "dd/MM/yy")
                       : "Not set"}
@@ -1030,8 +1030,8 @@ const WebhostContracts = () => {
 
               {selectedContract?.description && (
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Description</p>
-                  <p className="text-white font-normal">{selectedContract.description}</p>
+                  <p className="text-sm font-medium text-foreground">Description</p>
+                  <p className="text-foreground font-normal">{selectedContract.description}</p>
                 </div>
               )}
 
@@ -1042,17 +1042,17 @@ const WebhostContracts = () => {
                   <div className="flex flex-wrap items-center gap-2 text-xs">
                     <span className="px-2 py-1 rounded-md bg-amber-400/10 text-amber-200 border border-amber-400/20">Contract</span>
                     <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-white border border-slate-600">
+                    <span className="px-2 py-1 rounded-md bg-muted/80 text-foreground border border-slate-600">
                       {selectedContract.manager_name || selectedContract.manager_email}
                     </span>
                     <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-white border border-slate-600 capitalize">
+                    <span className="px-2 py-1 rounded-md bg-muted/80 text-foreground border border-slate-600 capitalize">
                       {managerTiers[selectedContract.manager_user_id] ? `${managerTiers[selectedContract.manager_user_id]} tier` : "No tier"}
                     </span>
                     <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600">Custom pricing</span>
+                    <span className="px-2 py-1 rounded-md bg-muted/80 text-muted-foreground border border-slate-600">Custom pricing</span>
                     <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600">Billing</span>
+                    <span className="px-2 py-1 rounded-md bg-muted/80 text-muted-foreground border border-slate-600">Billing</span>
                   </div>
                   <p className="text-[10px] text-amber-500/50 mt-2">Tier, custom pricing, and billing are managed in their respective admin modules.</p>
                 </div>
@@ -1063,15 +1063,15 @@ const WebhostContracts = () => {
                 <div className="grid gap-3 md:grid-cols-3 p-3 rounded-lg bg-card/80 border border-amber-400/15">
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Created</p>
-                    <p className="text-xs text-white">{format(new Date(selectedContract.created_at), "dd MMM yyyy")}</p>
+                    <p className="text-xs text-foreground">{format(new Date(selectedContract.created_at), "dd MMM yyyy")}</p>
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Last updated</p>
-                    <p className="text-xs text-white">{format(new Date(selectedContract.updated_at), "dd MMM yyyy")}</p>
+                    <p className="text-xs text-foreground">{format(new Date(selectedContract.updated_at), "dd MMM yyyy")}</p>
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Reviewed / Signed</p>
-                    <p className="text-xs text-white">
+                    <p className="text-xs text-foreground">
                       {selectedContract.signed_at
                         ? `Signed ${format(new Date(selectedContract.signed_at), "dd MMM yyyy")}`
                         : selectedContract.reviewed_at
@@ -1084,10 +1084,10 @@ const WebhostContracts = () => {
 
               {selectedContract?.review_notes && (
                 <div className="space-y-1 p-3 rounded-lg bg-card/80 border border-amber-400/30/30">
-                  <p className="text-sm font-medium text-white">Review Notes</p>
-                  <p className="text-white font-normal">{selectedContract.review_notes}</p>
+                  <p className="text-sm font-medium text-foreground">Review Notes</p>
+                  <p className="text-foreground font-normal">{selectedContract.review_notes}</p>
                   {selectedContract.reviewed_at && (
-                    <p className="text-xs text-white/70 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Reviewed on {format(new Date(selectedContract.reviewed_at), "dd/MM/yy")}
                     </p>
                   )}
@@ -1096,16 +1096,16 @@ const WebhostContracts = () => {
 
               {/* AI Parsed Content Section */}
               {(parsedContent || selectedContract?.parsed_content) && (
-                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-[hsl(218_58%_16%/0.3)] to-slate-800/50 border border-amber-400/20">
+                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-[hsl(218_58%_16%/0.3)] to-muted/80 border border-amber-400/20">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-white" />
-                    <p className="text-sm font-medium text-white">AI Extracted Terms</p>
+                    <Sparkles className="h-5 w-5 text-foreground" />
+                    <p className="text-sm font-medium text-foreground">AI Extracted Terms</p>
                   </div>
                   <div className="grid gap-3 md:grid-cols-2">
                     {Object.entries(parsedContent || selectedContract?.parsed_content || {}).map(([key, value]) => (
                       <div key={key} className="space-y-1">
-                        <p className="text-xs font-medium text-white/80 capitalize">{key.replace(/_/g, " ")}</p>
-                        <p className="text-sm text-white font-normal">
+                        <p className="text-xs font-medium text-muted-foreground capitalize">{key.replace(/_/g, " ")}</p>
+                        <p className="text-sm text-foreground font-normal">
                           {typeof value === "object" && value !== null
                             ? JSON.stringify(value, null, 2)
                             : String(value) || "Not found"}
@@ -1121,7 +1121,7 @@ const WebhostContracts = () => {
                   {selectedContract.uploaded_contract_url.endsWith(".pdf") ? (
                     <div className="p-6 text-center bg-card/80">
                       <FileText className="h-12 w-12 mx-auto mb-3 text-amber-500" />
-                      <p className="text-white mb-3">PDF Document</p>
+                      <p className="text-foreground mb-3">PDF Document</p>
                       <Button
                         onClick={() => handleDownloadContract(selectedContract)}
                         className="bg-amber-400 hover:bg-amber-500 text-slate-900"
@@ -1202,9 +1202,9 @@ const WebhostContracts = () => {
 
       {/* Approve Dialog */}
       <AlertDialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
-        <AlertDialogContent className="bg-slate-900 border-amber-400/15">
+        <AlertDialogContent className="bg-card border-amber-400/15">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Approve Contract</AlertDialogTitle>
+            <AlertDialogTitle className="text-foreground">Approve Contract</AlertDialogTitle>
             <AlertDialogDescription className="text-amber-400/70">
               Are you sure you want to approve this contract? You can optionally add review notes.
             </AlertDialogDescription>
@@ -1215,7 +1215,7 @@ const WebhostContracts = () => {
               value={reviewNotes}
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add any notes about this approval..."
-              className="mt-2 bg-slate-700/50 border-amber-400/20"
+              className="mt-2 bg-muted/80 border-amber-400/20"
             />
           </div>
           <AlertDialogFooter>
@@ -1232,9 +1232,9 @@ const WebhostContracts = () => {
 
       {/* Reject Dialog */}
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="bg-slate-900 border-amber-400/15">
+        <DialogContent className="bg-card border-amber-400/15">
           <DialogHeader>
-            <DialogTitle className="text-white">Reject Contract</DialogTitle>
+            <DialogTitle className="text-foreground">Reject Contract</DialogTitle>
             <DialogDescription className="text-amber-400/70">
               Please provide a reason for rejecting this contract.
             </DialogDescription>
@@ -1245,7 +1245,7 @@ const WebhostContracts = () => {
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Explain why this contract is being rejected..."
-              className="mt-2 bg-slate-700/50 border-amber-400/20 min-h-[100px]"
+              className="mt-2 bg-muted/80 border-amber-400/20 min-h-[100px]"
             />
           </div>
           <DialogFooter>
@@ -1265,9 +1265,9 @@ const WebhostContracts = () => {
 
       {/* Retake Confirmation Dialog (commercially significant reset) */}
       <AlertDialog open={retakeDialogOpen} onOpenChange={setRetakeDialogOpen}>
-        <AlertDialogContent className="bg-slate-900 border-amber-400/15">
+        <AlertDialogContent className="bg-card border-amber-400/15">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white flex items-center gap-2">
+            <AlertDialogTitle className="text-foreground flex items-center gap-2">
               <RotateCcw className="h-4 w-4 text-amber-400" />
               Reset Contract for Re-upload
             </AlertDialogTitle>
@@ -1302,9 +1302,9 @@ const WebhostContracts = () => {
           setSelectedFile(null);
         }
       }}>
-        <DialogContent className="max-w-2xl bg-slate-900 border-amber-400/15">
+        <DialogContent className="max-w-2xl bg-card border-amber-400/15">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-foreground flex items-center gap-2">
               <FileUp className="h-5 w-5 text-amber-500" />
               Upload Contract for Manager
             </DialogTitle>
@@ -1321,7 +1321,7 @@ const WebhostContracts = () => {
                   value={uploadForm.manager_user_id} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, manager_user_id: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue placeholder="Choose a manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1342,7 +1342,7 @@ const WebhostContracts = () => {
                   value={uploadForm.contract_type} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, contract_type: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1362,7 +1362,7 @@ const WebhostContracts = () => {
                 value={uploadForm.title}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Property Management Service Agreement 2024"
-                className="bg-slate-700/50 border-amber-400/20"
+                className="bg-muted/80 border-amber-400/20"
               />
             </div>
 
@@ -1372,7 +1372,7 @@ const WebhostContracts = () => {
                 value={uploadForm.description}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Brief description of the contract terms..."
-                className="bg-slate-700/50 border-amber-400/20 min-h-[60px]"
+                className="bg-muted/80 border-amber-400/20 min-h-[60px]"
               />
             </div>
 
@@ -1383,7 +1383,7 @@ const WebhostContracts = () => {
                   type="date"
                   value={uploadForm.valid_from}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_from: e.target.value }))}
-                  className="bg-slate-700/50 border-amber-400/20"
+                  className="bg-muted/80 border-amber-400/20"
                 />
               </div>
               <div className="space-y-2">
@@ -1392,7 +1392,7 @@ const WebhostContracts = () => {
                   type="date"
                   value={uploadForm.valid_until}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_until: e.target.value }))}
-                  className="bg-slate-700/50 border-amber-400/20"
+                  className="bg-muted/80 border-amber-400/20"
                 />
               </div>
             </div>
@@ -1426,7 +1426,7 @@ const WebhostContracts = () => {
                   <div className="flex items-center justify-center gap-3">
                     <FileText className="h-6 w-6 text-amber-500" />
                     <div className="text-left">
-                      <p className="text-white font-medium text-sm">{selectedFile.name}</p>
+                      <p className="text-foreground font-medium text-sm">{selectedFile.name}</p>
                       <p className="text-amber-500 text-xs">
                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>

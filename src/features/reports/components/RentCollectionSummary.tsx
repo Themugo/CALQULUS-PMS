@@ -776,7 +776,7 @@ export const RentCollectionSummary: React.FC = () => {
                 <code className="bg-muted px-1 rounded">&lt;SERVICE_ROLE_KEY&gt;</code> from your project's
                 API settings. Requires the <strong>pg_cron</strong> and <strong>pg_net</strong> extensions (Supabase Pro).
               </p>
-              <pre className="text-[10px] bg-slate-900 text-slate-100 rounded p-3 overflow-x-auto whitespace-pre-wrap">
+              <pre className="text-[10px] bg-card text-foreground rounded p-3 overflow-x-auto whitespace-pre-wrap">
 {`SELECT cron.schedule(
   'monthly-rent-collection-report',
   '0 7 1 * *',  -- 07:00 EAT on 1st of each month

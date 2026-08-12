@@ -113,48 +113,48 @@ const WebhostDashboard = () => {
           </Badge>
         );
       case 'limited_admin':
-        return <Badge variant="outline" className="ml-2 text-slate-400 border-slate-700">Limited</Badge>;
+        return <Badge variant="outline" className="ml-2 text-muted-foreground border-border">Limited</Badge>;
       default:
         return null;
     }
   };
 
-  // Executive tab style: clean navy chrome, single CALQULUS accent for the
+  // Executive tab style: light chrome, single CALQULUS blue accent for the
   // active state. Error Logs keeps its semantic red. All logic (badges,
   // counts, conditional tabs) is preserved below.
-  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
+  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
       {/* Top accent hairline */}
-      <div className="h-px w-full bg-primary/30" />
+      <div className="h-0.5 w-full bg-primary" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="hidden sm:block min-w-0">
-              <p className="font-heading text-sm font-bold text-slate-100 leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-slate-500 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
+              <p className="font-heading text-sm font-bold text-foreground leading-none">CALQULUS PMS</p>
+              <p className="text-[10px] text-muted-foreground tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SYSTEM OPERATIONAL</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
-              <div className="h-2 w-2 rounded-full bg-emerald-400" />
-              <span className="text-xs font-medium text-slate-200 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="text-xs font-medium text-foreground truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
               {getLevelBadge()}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="border border-slate-800 text-slate-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all"
+              className="border border-border text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -166,12 +166,12 @@ const WebhostDashboard = () => {
       {/* Main */}
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!myPermissions ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-10 text-center">
+          <div className="rounded-2xl border border-border bg-card p-10 text-center card-shadow">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Permissions Pending</h3>
-            <p className="text-slate-400 text-sm max-w-md mx-auto">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Permissions Pending</h3>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">
               Your webhost account is active but permissions haven't been assigned yet.
               A super admin needs to configure your access level.
             </p>
@@ -179,7 +179,7 @@ const WebhostDashboard = () => {
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-              <TabsList className="bg-slate-900/90 border border-slate-800 h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl">
+              <TabsList className="bg-muted border border-border h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl">
                 <TabsTrigger value="overview" className={tabCls}>
                   <Home className="h-3.5 w-3.5 mr-1.5" />Overview
                 </TabsTrigger>
@@ -191,7 +191,7 @@ const WebhostDashboard = () => {
                     <Users className="h-3.5 w-3.5 mr-1.5" />
                     Managers
                     {(pendingCounts?.pendingManagers ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-extrabold shadow-sm">
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-white font-extrabold shadow-sm">
                         {pendingCounts?.pendingManagers}
                       </span>
                     )}
@@ -242,7 +242,7 @@ const WebhostDashboard = () => {
                   </TabsTrigger>
                 )}
                 <TabsTrigger value="error-logs"
-                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-semibold text-slate-400 hover:text-red-400 hover:bg-slate-800/60 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
+                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-semibold text-muted-foreground hover:text-red-600 hover:bg-red-50 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
                   <Bug className="h-3.5 w-3.5 mr-1.5" />Error Logs
                 </TabsTrigger>
               </TabsList>

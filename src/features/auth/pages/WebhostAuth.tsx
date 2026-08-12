@@ -66,7 +66,7 @@ const WebhostAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0A1628] text-white hero-gradient">
+    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         <AuthGridOverlay />
@@ -76,39 +76,39 @@ const WebhostAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-amber-400 font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
+              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
             </div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/40 bg-red-500/15 mb-6 self-start">
-              <Shield className="h-3.5 w-3.5 text-red-400" />
-              <span className="text-xs text-red-300 font-semibold">Restricted Access — Authorized Personnel Only</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-500/30 bg-red-500/15 mb-6 self-start">
+              <Shield className="h-3.5 w-3.5 text-red-600" />
+              <span className="text-xs text-red-600 font-semibold">Restricted Access — Authorized Personnel Only</span>
             </div>
 
             <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-white">Control the</span>
+              <span className="text-foreground">Control the</span>
               <br />
               <span className="text-gradient">entire platform.</span>
             </h1>
-            <p className="text-white/80 text-lg leading-relaxed max-w-md mb-12">
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               Super-admin access for platform-wide management, billing enforcement, security, and compliance.
             </p>
 
             <div className="space-y-4">
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <div className="h-9 w-9 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-amber-400" />
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-white/90 text-sm font-medium">{f.text}</p>
+                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/10">
-            <p className="text-white/60 text-xs">calqulus.site · Internal use only</p>
+          <div className="pt-8 border-t border-border">
+            <p className="text-muted-foreground text-xs">calqulus.site · Internal use only</p>
           </div>
         </div>
       </div>
@@ -120,35 +120,35 @@ const WebhostAuth = () => {
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
           </div>
 
-          <div className="rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-amber-400/30 bg-amber-400/10 mb-4">
-                <Globe className="h-3 w-3 text-amber-400" />
-                <span className="text-[11px] text-amber-300 font-semibold tracking-wider uppercase">Webhost Portal</span>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
+                <Globe className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Webhost Portal</span>
               </div>
-              <h2 className="font-heading text-2xl font-bold text-white mb-1">Administrator login</h2>
-              <p className="text-white/70 text-sm">Authorized access only</p>
+              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Administrator login</h2>
+              <p className="text-muted-foreground text-sm">Authorized access only</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-white/90 text-sm font-medium">Email address</Label>
+                <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
                 <Input
                   id="email" type="email" placeholder="admin@calqulus.site"
                   value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-white/90 text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
                 <div className="relative">
                   <Input
                     id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
                     value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-slate-950/60 border-white/20 text-white placeholder:text-white/50 focus:border-amber-400 focus:ring-amber-400/20 h-11 pr-11"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -169,28 +169,28 @@ const WebhostAuth = () => {
             </form>
 
             {/* Security notice */}
-            <div className="mt-5 p-3.5 rounded-xl border border-amber-400/15 bg-amber-400/5">
+            <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
               <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-amber-400/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-white/50 leading-relaxed">
+                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   This portal is for authorized administrators only. All access is logged and audited.
                 </p>
               </div>
             </div>
 
             {/* Bootstrap notice */}
-            <div className="mt-3 p-3 rounded-xl border border-white/8 bg-white/4">
-              <p className="text-xs text-white/35 text-center leading-relaxed">
+            <div className="mt-3 p-3 rounded-xl border border-border bg-muted">
+              <p className="text-xs text-muted-foreground text-center leading-relaxed">
                 First time? Run the{' '}
-                <code className="text-amber-400/60 bg-amber-400/10 px-1 rounded">bootstrap-webhost</code>
+                <code className="text-primary/70 bg-primary/10 px-1 rounded">bootstrap-webhost</code>
                 {' '}edge function to create the admin account.
               </p>
             </div>
 
             {!isRecommendedWebhostHost() && (
-              <div className="mt-3 p-3 rounded-xl border border-amber-400/15 bg-amber-400/6">
-                <p className="text-xs text-amber-400/60 text-center">
-                  Tip: use an <code className="bg-amber-400/10 px-1 rounded">admin.</code> subdomain for production access.
+              <div className="mt-3 p-3 rounded-xl border border-primary/20 bg-primary/10">
+                <p className="text-xs text-primary/70 text-center">
+                  Tip: use an <code className="bg-primary/10 px-1 rounded">admin.</code> subdomain for production access.
                 </p>
               </div>
             )}

@@ -172,7 +172,7 @@ const ActivateAccount = () => {
     <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 rounded-full bg-amber-400/10">
+          <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
             <ShieldCheck className="h-8 w-8 text-amber-500" />
           </div>
           <CardTitle>Activate Your Account</CardTitle>

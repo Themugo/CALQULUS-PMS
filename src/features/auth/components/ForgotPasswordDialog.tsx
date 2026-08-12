@@ -60,7 +60,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
         : ''}>
         <DialogHeader>
           <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-xl bg-amber-400/15 border border-amber-400/25 flex items-center justify-center shadow-sm">
+            <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm">
               {emailSent
                 ? <CheckCircle className="h-6 w-6 text-emerald-400" />
                 : <Mail className="h-6 w-6 text-amber-400" />

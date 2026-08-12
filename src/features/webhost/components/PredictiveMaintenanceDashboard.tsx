@@ -341,7 +341,7 @@ const PredictiveMaintenanceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Predictive Maintenance Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Predictive Maintenance Dashboard</h2>
           <p className="text-amber-400/70 text-sm mt-1">AI-powered equipment health and maintenance forecasting</p>
         </div>
         <div className="flex gap-2">
@@ -368,52 +368,52 @@ const PredictiveMaintenanceDashboard = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Wrench className="h-4 w-4 text-amber-500" />
               Total Equipment
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalEquipment}</div>
+            <div className="text-3xl font-bold text-foreground">{totalEquipment}</div>
             <div className="text-sm text-amber-400/70">Tracked assets</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{criticalEquipment}</div>
+            <div className="text-3xl font-bold text-foreground">{criticalEquipment}</div>
             <div className="text-sm text-amber-400/70">Need attention</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Calendar className="h-4 w-4 text-amber-500" />
               Upcoming Maintenance
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{upcomingMaintenance}</div>
+            <div className="text-3xl font-bold text-foreground">{upcomingMaintenance}</div>
             <div className="text-sm text-amber-400/70">Scheduled</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-amber-500" />
               Predicted Savings
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">KES {predictedSavings.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-foreground">KES {predictedSavings.toLocaleString()}</div>
             <div className="text-sm text-amber-400/70">This quarter</div>
           </CardContent>
         </Card>
@@ -447,7 +447,7 @@ const PredictiveMaintenanceDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Critical Equipment
                 </CardTitle>
@@ -459,7 +459,7 @@ const PredictiveMaintenanceDashboard = () => {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(eq.type)}
-                          <span className="text-white text-sm font-medium">{eq.name}</span>
+                          <span className="text-foreground text-sm font-medium">{eq.name}</span>
                         </div>
                         {getStatusBadge(eq.condition)}
                       </div>
@@ -480,7 +480,7 @@ const PredictiveMaintenanceDashboard = () => {
 
             <Card className="bg-card border-amber-400/15">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-amber-500" />
                   Cost Savings Forecast
                 </CardTitle>
@@ -490,7 +490,7 @@ const PredictiveMaintenanceDashboard = () => {
                   {costForecasts.slice(0, 4).map((forecast) => (
                     <div key={forecast.period} className="p-3 bg-muted/30 rounded">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white text-sm font-medium">{forecast.period}</span>
+                        <span className="text-foreground text-sm font-medium">{forecast.period}</span>
                         <Badge variant="outline" className="text-amber-400/70 border-amber-400/30 capitalize">
                           {forecast.category}
                         </Badge>
@@ -515,7 +515,7 @@ const PredictiveMaintenanceDashboard = () => {
         <TabsContent value="equipment">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Equipment Inventory</CardTitle>
+              <CardTitle className="text-foreground">Equipment Inventory</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Monitor equipment health and condition
               </CardDescription>
@@ -529,13 +529,13 @@ const PredictiveMaintenanceDashboard = () => {
                     placeholder="Search equipment..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="hvac">HVAC</option>
@@ -547,7 +547,7 @@ const PredictiveMaintenanceDashboard = () => {
                 <select
                   value={selectedCondition}
                   onChange={(e) => setSelectedCondition(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Conditions</option>
                   <option value="excellent">Excellent</option>
@@ -566,7 +566,7 @@ const PredictiveMaintenanceDashboard = () => {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(eq.type)}
-                          <span className="text-white font-medium">{eq.name}</span>
+                          <span className="text-foreground font-medium">{eq.name}</span>
                           <span className="text-amber-400/70 text-sm">{eq.id}</span>
                           {getTypeBadge(eq.type)}
                         </div>
@@ -621,7 +621,7 @@ const PredictiveMaintenanceDashboard = () => {
         <TabsContent value="predictions">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Maintenance Predictions</CardTitle>
+              <CardTitle className="text-foreground">Maintenance Predictions</CardTitle>
               <CardDescription className="text-amber-400/70">
                 AI-powered failure predictions and recommendations
               </CardDescription>
@@ -633,7 +633,7 @@ const PredictiveMaintenanceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{prediction.equipmentName}</span>
+                          <span className="text-foreground font-medium">{prediction.equipmentName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{prediction.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -673,7 +673,7 @@ const PredictiveMaintenanceDashboard = () => {
         <TabsContent value="schedule">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Maintenance Schedule</CardTitle>
+              <CardTitle className="text-foreground">Maintenance Schedule</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Upcoming preventive and predictive maintenance
               </CardDescription>
@@ -685,7 +685,7 @@ const PredictiveMaintenanceDashboard = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{schedule.equipmentName}</span>
+                          <span className="text-foreground font-medium">{schedule.equipmentName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{schedule.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {schedule.type}
@@ -728,7 +728,7 @@ const PredictiveMaintenanceDashboard = () => {
         <TabsContent value="costs">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Cost Forecast</CardTitle>
+              <CardTitle className="text-foreground">Cost Forecast</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Predictive maintenance cost analysis and savings
               </CardDescription>
@@ -738,19 +738,19 @@ const PredictiveMaintenanceDashboard = () => {
                 {costForecasts.map((forecast) => (
                   <div key={forecast.period} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{forecast.period}</span>
+                      <span className="text-foreground font-medium">{forecast.period}</span>
                       <Badge variant="outline" className="text-amber-400/70 border-amber-400/30 capitalize">
                         {forecast.category}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">KES {forecast.predictedCost.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-foreground">KES {forecast.predictedCost.toLocaleString()}</div>
                         <div className="text-xs text-amber-400/70">Predicted Cost</div>
                       </div>
                       {forecast.actualCost && (
                         <div>
-                          <div className="text-2xl font-bold text-white">KES {forecast.actualCost.toLocaleString()}</div>
+                          <div className="text-2xl font-bold text-foreground">KES {forecast.actualCost.toLocaleString()}</div>
                           <div className="text-xs text-amber-400/70">Actual Cost</div>
                         </div>
                       )}

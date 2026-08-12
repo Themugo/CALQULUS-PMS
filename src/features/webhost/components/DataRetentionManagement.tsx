@@ -327,7 +327,7 @@ const DataRetentionManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Data Retention Management</h2>
+          <h2 className="text-2xl font-bold text-foreground">Data Retention Management</h2>
           <p className="text-amber-400/70 text-sm mt-1">Manage data retention policies and disposal</p>
         </div>
         <div className="flex gap-2">
@@ -353,52 +353,52 @@ const DataRetentionManagement = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Database className="h-4 w-4 text-amber-500" />
               Total Records
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalRecords}</div>
+            <div className="text-3xl font-bold text-foreground">{totalRecords}</div>
             <div className="text-sm text-amber-400/70">All data records</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Active Records
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeRecords}</div>
+            <div className="text-3xl font-bold text-foreground">{activeRecords}</div>
             <div className="text-sm text-amber-400/70">Within retention period</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Clock className="h-4 w-4 text-amber-500" />
               Pending Disposal
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingDisposal}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingDisposal}</div>
             <div className="text-sm text-amber-400/70">Awaiting disposal</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Trash2 className="h-4 w-4 text-amber-500" />
               Disposed Records
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{disposedRecords}</div>
+            <div className="text-3xl font-bold text-foreground">{disposedRecords}</div>
             <div className="text-sm text-amber-400/70">Successfully disposed</div>
           </CardContent>
         </Card>
@@ -428,7 +428,7 @@ const DataRetentionManagement = () => {
         <TabsContent value="policies">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Retention Policies</CardTitle>
+              <CardTitle className="text-foreground">Retention Policies</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage data retention policies and schedules
               </CardDescription>
@@ -442,13 +442,13 @@ const DataRetentionManagement = () => {
                     placeholder="Search policies..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedDataType}
                   onChange={(e) => setSelectedDataType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Data Types</option>
                   <option value="personal">Personal</option>
@@ -467,7 +467,7 @@ const DataRetentionManagement = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{policy.name}</span>
+                          <span className="text-foreground font-medium">{policy.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{policy.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
                             {policy.dataType}
@@ -513,7 +513,7 @@ const DataRetentionManagement = () => {
         <TabsContent value="records">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Data Records</CardTitle>
+              <CardTitle className="text-foreground">Data Records</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Monitor data records and retention status
               </CardDescription>
@@ -525,7 +525,7 @@ const DataRetentionManagement = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{record.type}</span>
+                          <span className="text-foreground font-medium">{record.type}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{record.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {record.category}
@@ -578,7 +578,7 @@ const DataRetentionManagement = () => {
         <TabsContent value="legal-holds">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Legal Holds</CardTitle>
+              <CardTitle className="text-foreground">Legal Holds</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage legal holds that override retention policies
               </CardDescription>
@@ -590,7 +590,7 @@ const DataRetentionManagement = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{hold.name}</span>
+                          <span className="text-foreground font-medium">{hold.name}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{hold.id}</span>
                         </div>
                         {getStatusBadge(hold.status)}
@@ -638,7 +638,7 @@ const DataRetentionManagement = () => {
         <TabsContent value="disposal">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Disposal Log</CardTitle>
+              <CardTitle className="text-foreground">Disposal Log</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track data disposal activities and verification
               </CardDescription>
@@ -650,7 +650,7 @@ const DataRetentionManagement = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">Disposal Record</span>
+                          <span className="text-foreground font-medium">Disposal Record</span>
                           <span className="text-amber-400/70 text-sm ml-2">{record.id}</span>
                           <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
                             {record.recordId}

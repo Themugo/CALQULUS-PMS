@@ -290,7 +290,7 @@ export default function NotificationFailuresPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Original payload</div>
-                <pre className="rounded-md bg-slate-900 text-slate-100 p-3 text-xs overflow-auto max-h-64">
+                <pre className="rounded-md bg-card text-foreground p-3 text-xs overflow-auto max-h-64">
                   {renderPayload(viewingRow.payload)}
                 </pre>
               </div>

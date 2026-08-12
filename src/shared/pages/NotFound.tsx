@@ -71,11 +71,11 @@ const NotFound = () => {
         </div>
 
         {/* Message */}
-        <h1 className="font-heading text-2xl font-bold text-white mb-3">Page not found</h1>
-        <p className="text-white/50 text-sm mb-2 leading-relaxed">
+        <h1 className="font-heading text-2xl font-bold text-foreground mb-3">Page not found</h1>
+        <p className="text-muted-foreground text-sm mb-2 leading-relaxed">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-border mb-8">
           <code className="text-amber-400/70 text-xs font-mono">{location.pathname}</code>
         </div>
 
@@ -83,7 +83,7 @@ const NotFound = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             variant="outline"
-            className="border-white/15 text-white/70 hover:bg-white/8 hover:text-white gap-2"
+            className="border-border text-muted-foreground hover:bg-white/8 hover:text-foreground gap-2"
             onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
             Go back
@@ -97,7 +97,7 @@ const NotFound = () => {
         </div>
 
         {/* Footer */}
-        <p className="mt-12 text-white/20 text-xs">
+        <p className="mt-12 text-muted-foreground text-xs">
           calqulus.site · If this keeps happening, contact your administrator.
         </p>
       </div>

@@ -143,7 +143,7 @@ const WebhostAccountSecurity: React.FC = () => {
         <CardHeader>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <ShieldCheck className="h-5 w-5 text-amber-400" />
                 Security & Access Control Center
               </CardTitle>
@@ -166,8 +166,8 @@ const WebhostAccountSecurity: React.FC = () => {
             {user ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
           </CardHeader>
           <CardContent>
-            <p className="text-lg font-semibold text-white">{user ? 'Authenticated' : 'No session'}</p>
-            <p className="text-xs text-slate-400 mt-1 truncate">{user?.email ?? '—'}</p>
+            <p className="text-lg font-semibold text-foreground">{user ? 'Authenticated' : 'No session'}</p>
+            <p className="text-xs text-muted-foreground mt-1 truncate">{user?.email ?? '—'}</p>
           </CardContent>
         </Card>
 
@@ -181,8 +181,8 @@ const WebhostAccountSecurity: React.FC = () => {
               <Skeleton className="h-6 w-24" />
             ) : (
               <>
-                <p className="text-lg font-semibold text-white">{mfaEnrolled ? 'Enrolled' : 'Not enrolled'}</p>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-lg font-semibold text-foreground">{mfaEnrolled ? 'Enrolled' : 'Not enrolled'}</p>
+                <p className="text-xs text-muted-foreground mt-1">
                   {(mfaFactors ?? []).length} factor(s) registered
                 </p>
               </>
@@ -196,8 +196,8 @@ const WebhostAccountSecurity: React.FC = () => {
             <Shield className="h-4 w-4 text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <p className="text-lg font-semibold text-white">None recorded</p>
-            <p className="text-xs text-slate-400 mt-1">No active security threats recorded.</p>
+            <p className="text-lg font-semibold text-foreground">None recorded</p>
+            <p className="text-xs text-muted-foreground mt-1">No active security threats recorded.</p>
           </CardContent>
         </Card>
       </div>
@@ -205,7 +205,7 @@ const WebhostAccountSecurity: React.FC = () => {
       {/* ── 2. Admin access (platform_admins) ── */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <UserCog className="h-5 w-5 text-amber-400" />
             Admin Access
           </CardTitle>
@@ -234,7 +234,7 @@ const WebhostAccountSecurity: React.FC = () => {
             <div className="text-center py-10 text-muted-foreground">
               <UserCog className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No platform admin accounts available.</p>
-              <p className="text-xs text-slate-500 mt-1">Admin accounts are seeded in the platform_admins table.</p>
+              <p className="text-xs text-muted-foreground mt-1">Admin accounts are seeded in the platform_admins table.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -256,8 +256,8 @@ const WebhostAccountSecurity: React.FC = () => {
                     return (
                       <tr key={a.id} className="border-b border-amber-400/5">
                         <td className="py-2.5 pr-4">
-                          <p className="font-medium text-white">{a.display_name}</p>
-                          <p className="text-xs text-slate-400">{a.email}</p>
+                          <p className="font-medium text-foreground">{a.display_name}</p>
+                          <p className="text-xs text-muted-foreground">{a.email}</p>
                         </td>
                         <td className="py-2.5 pr-4">
                           <Badge variant="outline" className={cn('gap-1', cfg.tone)}>
@@ -274,12 +274,12 @@ const WebhostAccountSecurity: React.FC = () => {
                             <Badge className="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Active</Badge>
                           )}
                           {a.suspended && a.suspended_at && (
-                            <p className="text-[10px] text-slate-500 mt-1">{format(new Date(a.suspended_at), 'dd MMM yyyy')}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">{format(new Date(a.suspended_at), 'dd MMM yyyy')}</p>
                           )}
                         </td>
-                        <td className="py-2.5 pr-4 text-slate-500">—</td>
-                        <td className="py-2.5 pr-4 text-slate-500">—</td>
-                        <td className="py-2.5 pr-4 text-xs text-slate-400">
+                        <td className="py-2.5 pr-4 text-muted-foreground">—</td>
+                        <td className="py-2.5 pr-4 text-muted-foreground">—</td>
+                        <td className="py-2.5 pr-4 text-xs text-muted-foreground">
                           {format(new Date(a.created_at), 'dd MMM yyyy')}
                         </td>
                       </tr>
@@ -296,7 +296,7 @@ const WebhostAccountSecurity: React.FC = () => {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <Lock className="h-5 w-5 text-amber-400" />
               Authentication Security
             </CardTitle>
@@ -304,11 +304,11 @@ const WebhostAccountSecurity: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">Session</span>
+              <span className="text-sm text-muted-foreground">Session</span>
               <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">JWT (Supabase Auth)</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">MFA for this account</span>
+              <span className="text-sm text-muted-foreground">MFA for this account</span>
               {mfaLoading ? (
                 <Skeleton className="h-5 w-20" />
               ) : mfaEnrolled ? (
@@ -318,10 +318,10 @@ const WebhostAccountSecurity: React.FC = () => {
               )}
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">Login protection</span>
-              <Badge variant="outline" className="border-slate-500/40 text-slate-300">Supabase built-in</Badge>
+              <span className="text-sm text-muted-foreground">Login protection</span>
+              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Supabase built-in</Badge>
             </div>
-            <p className="text-[10px] text-slate-500 pt-1 border-t border-amber-400/10">
+            <p className="text-[10px] text-muted-foreground pt-1 border-t border-amber-400/10">
               Authentication architecture and session security are managed by Supabase Auth. No secrets are exposed here.
             </p>
           </CardContent>
@@ -329,7 +329,7 @@ const WebhostAccountSecurity: React.FC = () => {
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <ShieldAlert className="h-5 w-5 text-amber-400" />
               Security Configuration
             </CardTitle>
@@ -337,18 +337,18 @@ const WebhostAccountSecurity: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">MFA policy</span>
-              <Badge variant="outline" className="border-slate-500/40 text-slate-300">Available (per-account)</Badge>
+              <span className="text-sm text-muted-foreground">MFA policy</span>
+              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Available (per-account)</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">Account suspension</span>
-              <Badge variant="outline" className="border-slate-500/40 text-slate-300">Owner / Business</Badge>
+              <span className="text-sm text-muted-foreground">Account suspension</span>
+              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Owner / Business</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">RLS / tenant isolation</span>
+              <span className="text-sm text-muted-foreground">RLS / tenant isolation</span>
               <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">Enforced (backend)</Badge>
             </div>
-            <p className="text-[10px] text-slate-500 pt-1 border-t border-amber-400/10">
+            <p className="text-[10px] text-muted-foreground pt-1 border-t border-amber-400/10">
               Security decisions remain server-side. Backend authorization (RLS + Supabase Auth) is the source of truth.
             </p>
           </CardContent>
@@ -359,7 +359,7 @@ const WebhostAccountSecurity: React.FC = () => {
       {canManage && admins && admins.length > 0 && (
         <Card className="bg-card border-amber-400/15">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <KeyRound className="h-5 w-5 text-amber-400" />
               RBAC & Permissions
             </CardTitle>
@@ -385,14 +385,14 @@ const WebhostAccountSecurity: React.FC = () => {
                 <tbody>
                   {admins.map(a => (
                     <tr key={a.id} className="border-b border-amber-400/5">
-                      <td className="py-2 pr-4 text-white">{a.display_name}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_billing ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_managers ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_properties ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_landlords ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_view_activity_logs ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_platform_settings ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_create_admins ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-slate-600">—</span>}</td>
+                      <td className="py-2 pr-4 text-foreground">{a.display_name}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_billing ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_managers ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_properties ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_landlords ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_view_activity_logs ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_platform_settings ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_create_admins ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -405,7 +405,7 @@ const WebhostAccountSecurity: React.FC = () => {
       {/* ── Credential rotation (existing functionality preserved) ── */}
       <Card className="bg-card border-amber-400/15">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <KeyRound className="h-5 w-5 text-amber-400" />
             Credential Rotation
           </CardTitle>
@@ -417,11 +417,11 @@ const WebhostAccountSecurity: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>New password</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 bg-slate-700/50 border-amber-400/20" autoComplete="new-password" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 bg-muted/80 border-amber-400/20" autoComplete="new-password" />
             </div>
             <div>
               <Label>Confirm password</Label>
-              <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="mt-1 bg-slate-700/50 border-amber-400/20" autoComplete="new-password" />
+              <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="mt-1 bg-muted/80 border-amber-400/20" autoComplete="new-password" />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -434,7 +434,7 @@ const WebhostAccountSecurity: React.FC = () => {
               {sending ? 'Sending…' : 'Email reset link'}
             </Button>
           </div>
-          <p className="text-[10px] text-slate-500 flex items-center gap-1">
+          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
             <Activity className="h-3 w-3" />
             Password changes are recorded in the existing audit system (activity_logs).
           </p>

@@ -335,7 +335,7 @@ const ContractorMarketplace = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Contractor Marketplace</h2>
+          <h2 className="text-2xl font-bold text-foreground">Contractor Marketplace</h2>
           <p className="text-amber-400/70 text-sm mt-1">Connect with verified contractors for maintenance and repairs</p>
         </div>
         <div className="flex gap-2">
@@ -362,52 +362,52 @@ const ContractorMarketplace = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Wrench className="h-4 w-4 text-amber-500" />
               Total Contractors
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{totalContractors}</div>
+            <div className="text-3xl font-bold text-foreground">{totalContractors}</div>
             <div className="text-sm text-amber-400/70">Registered contractors</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-amber-500" />
               Available
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{availableContractors}</div>
+            <div className="text-3xl font-bold text-foreground">{availableContractors}</div>
             <div className="text-sm text-amber-400/70">Ready for work</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
               Active Work Orders
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{activeWorkOrders}</div>
+            <div className="text-3xl font-bold text-foreground">{activeWorkOrders}</div>
             <div className="text-sm text-amber-400/70">In progress</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-amber-400/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm flex items-center gap-2">
+            <CardTitle className="text-foreground text-sm flex items-center gap-2">
               <FileText className="h-4 w-4 text-amber-500" />
               Pending Bids
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">{pendingBids}</div>
+            <div className="text-3xl font-bold text-foreground">{pendingBids}</div>
             <div className="text-sm text-amber-400/70">Awaiting review</div>
           </CardContent>
         </Card>
@@ -437,7 +437,7 @@ const ContractorMarketplace = () => {
         <TabsContent value="contractors">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Contractor Directory</CardTitle>
+              <CardTitle className="text-foreground">Contractor Directory</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Browse and connect with verified contractors
               </CardDescription>
@@ -451,13 +451,13 @@ const ContractorMarketplace = () => {
                     placeholder="Search contractors..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-white placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Specialties</option>
                   <option value="plumbing">Plumbing</option>
@@ -469,7 +469,7 @@ const ContractorMarketplace = () => {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-white rounded-md px-3 py-2"
+                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Availability</option>
                   <option value="available">Available</option>
@@ -485,7 +485,7 @@ const ContractorMarketplace = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">{contractor.name}</span>
+                          <span className="text-foreground font-medium">{contractor.name}</span>
                           {contractor.verified && (
                             <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Verified</Badge>
                           )}
@@ -497,7 +497,7 @@ const ContractorMarketplace = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-white font-medium">{contractor.rating}</span>
+                        <span className="text-foreground font-medium">{contractor.rating}</span>
                         <span className="text-amber-400/70 text-sm">({contractor.reviewCount})</span>
                       </div>
                     </div>
@@ -542,7 +542,7 @@ const ContractorMarketplace = () => {
         <TabsContent value="workorders">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Work Orders</CardTitle>
+              <CardTitle className="text-foreground">Work Orders</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Manage maintenance and repair work orders
               </CardDescription>
@@ -554,7 +554,7 @@ const ContractorMarketplace = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{workOrder.description}</span>
+                          <span className="text-foreground font-medium">{workOrder.description}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{workOrder.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -614,7 +614,7 @@ const ContractorMarketplace = () => {
         <TabsContent value="bids">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Contractor Bids</CardTitle>
+              <CardTitle className="text-foreground">Contractor Bids</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Review and manage contractor bids for work orders
               </CardDescription>
@@ -626,7 +626,7 @@ const ContractorMarketplace = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <span className="text-white font-medium">{bid.contractorName}</span>
+                          <span className="text-foreground font-medium">{bid.contractorName}</span>
                           <span className="text-amber-400/70 text-sm ml-2">{bid.id}</span>
                           <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
@@ -675,7 +675,7 @@ const ContractorMarketplace = () => {
         <TabsContent value="performance">
           <Card className="bg-card border-amber-400/15">
             <CardHeader>
-              <CardTitle className="text-white">Contractor Performance</CardTitle>
+              <CardTitle className="text-foreground">Contractor Performance</CardTitle>
               <CardDescription className="text-amber-400/70">
                 Track contractor performance metrics
               </CardDescription>
@@ -685,29 +685,29 @@ const ContractorMarketplace = () => {
                 {contractorPerformance.map((perf) => (
                   <div key={perf.contractorId} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-white font-medium">{perf.contractorName}</span>
+                      <span className="text-foreground font-medium">{perf.contractorName}</span>
                       <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
                         {perf.totalJobs} jobs completed
                       </Badge>
                     </div>
                     <div className="grid grid-cols-4 gap-4 mb-3">
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.onTimeCompletion}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.onTimeCompletion}%</div>
                         <div className="text-xs text-amber-400/70">On-Time Completion</div>
                         <Progress value={perf.onTimeCompletion} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.qualityScore}/5</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.qualityScore}/5</div>
                         <div className="text-xs text-amber-400/70">Quality Score</div>
                         <Progress value={(perf.qualityScore / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.communicationScore}/5</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.communicationScore}/5</div>
                         <div className="text-xs text-amber-400/70">Communication</div>
                         <Progress value={(perf.communicationScore / 5) * 100} className="h-2 mt-1" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-white">{perf.repeatClientRate}%</div>
+                        <div className="text-2xl font-bold text-foreground">{perf.repeatClientRate}%</div>
                         <div className="text-xs text-amber-400/70">Repeat Clients</div>
                         <Progress value={perf.repeatClientRate} className="h-2 mt-1" />
                       </div>

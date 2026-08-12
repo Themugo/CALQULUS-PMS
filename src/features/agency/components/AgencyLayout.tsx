@@ -44,7 +44,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
+        <div className="fixed inset-0 z-40 bg-muted backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)} />
       )}
 
@@ -67,7 +67,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
               <p className="text-[9px] text-amber-400/50 font-semibold tracking-[0.2em] uppercase mt-0.5">Agency Portal</p>
             </div>
           </div>
-          <button className="lg:hidden text-white/40 hover:text-white/70 transition-colors p-1"
+          <button className="lg:hidden text-muted-foreground hover:text-muted-foreground transition-colors p-1"
             onClick={() => setSidebarOpen(false)}>
             <X className="h-4 w-4" />
           </button>
@@ -87,11 +87,11 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
                   transition-all duration-200 border touch-manipulation
                   ${active
                     ? 'bg-gradient-to-r from-amber-400/15 to-transparent border-amber-400/25 text-amber-300'
-                    : 'text-white/50 hover:bg-white/5 hover:text-white/80 border-transparent'}
+                    : 'text-muted-foreground hover:bg-white/5 hover:text-muted-foreground border-transparent'}
                 `}
               >
                 <item.icon className={`h-4 w-4 flex-shrink-0 transition-colors
-                  ${active ? 'text-amber-400' : 'text-white/40 group-hover:text-amber-400/60'}`} />
+                  ${active ? 'text-amber-400' : 'text-muted-foreground group-hover:text-amber-400/60'}`} />
                 <span className="flex-1 truncate">{item.label}</span>
                 {active && <div className="w-1 h-4 rounded-full bg-amber-400 flex-shrink-0" />}
               </Link>
@@ -110,7 +110,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
           <button
             onClick={signOut}
             className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-              text-white/40 hover:bg-red-500/10 hover:text-red-400 border border-transparent
+              text-muted-foreground hover:bg-red-500/10 hover:text-red-400 border border-transparent
               hover:border-red-500/20 transition-all"
           >
             <LogOut className="h-4 w-4" />

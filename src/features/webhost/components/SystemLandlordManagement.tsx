@@ -216,7 +216,7 @@ const SystemLandlordManagement: React.FC = () => {
   const refresh = () => { refetch(); refetchPayouts(); };
 
   const summaryCards = [
-    { key: 'total', label: 'Total Landlords', count: totalLandlords, icon: Users, cls: 'border-slate-700 bg-slate-900/60 text-slate-300' },
+    { key: 'total', label: 'Total Landlords', count: totalLandlords, icon: Users, cls: 'border-border bg-muted text-slate-300' },
     { key: 'active', label: 'With Active Property', count: withActiveCount, icon: CheckCircle, cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
     { key: 'inactive', label: 'With Inactive Property', count: withInactiveCount, icon: Clock, cls: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
     { key: 'links', label: 'Properties Linked', count: totalLinks, icon: Building, cls: 'border-sky-500/40 bg-sky-500/10 text-sky-300' },
@@ -225,28 +225,28 @@ const SystemLandlordManagement: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Home className="h-5 w-5 text-amber-400" />
             Landlord Account &amp; Portfolio Oversight Console
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             System landlords under platform oversight and their payout requests. Managed landlords are visible only to their manager.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 lg:w-56">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search name, email, property..."
-              className="pl-8 h-9 rounded-xl bg-slate-950/60 border-slate-700 text-slate-200 placeholder:text-slate-500 text-xs"
+              className="pl-8 h-9 rounded-xl bg-muted border-border text-foreground placeholder:text-muted-foreground text-xs"
               aria-label="Search landlords"
             />
           </div>
-          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh landlords">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh landlords">
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
           </Button>
         </div>
@@ -266,7 +266,7 @@ const SystemLandlordManagement: React.FC = () => {
           <div key={key} className={cn('flex items-center justify-between gap-2 p-3 rounded-xl border text-left', cls)}>
             <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">{label}</span>
-              <strong className="font-['Outfit'] text-xl font-bold text-white">{count}</strong>
+              <strong className="font-['Outfit'] text-xl font-bold text-foreground">{count}</strong>
             </div>
             <Icon className="h-5 w-5 shrink-0 opacity-80" />
           </div>
@@ -274,7 +274,7 @@ const SystemLandlordManagement: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-800">
+      <div className="flex gap-2 border-b border-border">
         {[
           { key: 'landlords', label: `Landlord Registry (${totalLandlords})` },
           { key: 'payouts', label: `Payout Requests${pendingPayouts > 0 ? ` (${pendingPayouts} pending)` : ''}` },
@@ -296,12 +296,12 @@ const SystemLandlordManagement: React.FC = () => {
 
       {/* ── Landlord registry ── */}
       {activeTab === 'landlords' && (
-        <Card className="border-slate-800">
+        <Card className="border-border">
           <CardContent className="p-0">
-            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-800/50">
-              <p className="text-xs text-slate-400">Click a landlord to inspect their portfolio and property relationships.</p>
+            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-border">
+              <p className="text-xs text-muted-foreground">Click a landlord to inspect their portfolio and property relationships.</p>
               <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-                <SelectTrigger className="h-8 w-40 text-xs bg-slate-950/60 border-slate-700 text-slate-200" aria-label="Filter by property status">
+                <SelectTrigger className="h-8 w-40 text-xs bg-muted border-border text-foreground" aria-label="Filter by property status">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -330,7 +330,7 @@ const SystemLandlordManagement: React.FC = () => {
               </div>
             ) : (
               <div className="divide-y divide-slate-800">
-                <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-900/40">
+                <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-muted">
                   <div className="col-span-4">Landlord</div>
                   <div className="col-span-2 text-center">Properties</div>
                   <div className="col-span-2 text-center">Units</div>
@@ -351,60 +351,60 @@ const SystemLandlordManagement: React.FC = () => {
                         onKeyDown={onActivateKey(() => setExpandedId(expanded ? null : g.landlord_user_id))}
                         aria-expanded={expanded}
                         aria-label={`View landlord ${g.profile?.full_name ?? g.profile?.email ?? 'landlord'}`}
-                        className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-800/40 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:ring-inset"
+                        className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-muted/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-inset"
                       >
                         <div className="md:col-span-4 min-w-0 flex items-center gap-2">
                           <Home className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-sm text-white truncate font-medium">{g.profile?.full_name || 'Landlord'}</p>
-                            <p className="text-xs text-slate-400 truncate">{g.profile?.email ?? '—'}</p>
+                            <p className="text-sm text-foreground truncate font-medium">{g.profile?.full_name || 'Landlord'}</p>
+                            <p className="text-xs text-muted-foreground truncate">{g.profile?.email ?? '—'}</p>
                           </div>
                         </div>
                         <div className="md:col-span-2 md:text-center flex items-center gap-1 md:justify-center">
-                          <Building className="h-3 w-3 text-slate-500 md:hidden" />
-                          <span className="text-xs text-slate-200">{propCount}</span>
+                          <Building className="h-3 w-3 text-muted-foreground md:hidden" />
+                          <span className="text-xs text-foreground">{propCount}</span>
                         </div>
-                        <div className="md:col-span-2 md:text-center text-xs text-slate-200">{unitCount}</div>
+                        <div className="md:col-span-2 md:text-center text-xs text-foreground">{unitCount}</div>
                         <div className="md:col-span-2 md:text-center flex items-center gap-1.5 md:justify-center">
                           <Badge variant="outline" className={cn('text-[10px]', hasActive ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30')}>
                             {hasActive ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>
-                        <div className="md:col-span-2 md:text-right flex items-center justify-between md:justify-end gap-1 text-xs text-slate-400">
+                        <div className="md:col-span-2 md:text-right flex items-center justify-between md:justify-end gap-1 text-xs text-muted-foreground">
                           <span>{since ? format(new Date(since), 'dd MMM yyyy') : '—'}</span>
-                          {expanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                          {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                         </div>
                       </button>
                       {expanded && (
-                        <div className="px-4 py-4 bg-slate-900/40 border-t border-slate-800/50 space-y-3">
+                        <div className="px-4 py-4 bg-muted border-t border-border space-y-3">
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-xs">
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-slate-500">Email</span>
-                              <span className="text-slate-200 truncate">{g.profile?.email ?? '—'}</span>
+                              <span className="text-muted-foreground">Email</span>
+                              <span className="text-foreground truncate">{g.profile?.email ?? '—'}</span>
                             </div>
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-slate-500">Phone</span>
-                              <span className="text-slate-200">{g.profile?.phone ?? '—'}</span>
+                              <span className="text-muted-foreground">Phone</span>
+                              <span className="text-foreground">{g.profile?.phone ?? '—'}</span>
                             </div>
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-slate-500">Account created</span>
-                              <span className="text-slate-200">{g.profile?.created_at ? format(new Date(g.profile.created_at), 'dd MMM yyyy') : '—'}</span>
+                              <span className="text-muted-foreground">Account created</span>
+                              <span className="text-foreground">{g.profile?.created_at ? format(new Date(g.profile.created_at), 'dd MMM yyyy') : '—'}</span>
                             </div>
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Properties (Landlord -&gt; Property -&gt; Manager)</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-2">Properties (Landlord -&gt; Property -&gt; Manager)</p>
                             <div className="space-y-1.5">
                               {g.links.map(l => {
                                 const occPct = l.property_units > 0 ? Math.round((l.property_occupied / l.property_units) * 100) : 0;
                                 const incomplete = l.property_name === 'Unknown property';
                                 return (
-                                  <div key={l.id} className={cn('flex items-center gap-2 p-2 rounded-lg border text-xs', incomplete ? 'border-red-500/30 bg-red-500/5' : 'border-slate-700/50 bg-slate-950/40')}>
+                                  <div key={l.id} className={cn('flex items-center gap-2 p-2 rounded-lg border text-xs', incomplete ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted')}>
                                     <Building className={cn('h-3.5 w-3.5 shrink-0', incomplete ? 'text-red-400' : 'text-amber-500')} />
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-slate-200 truncate">{l.property_name}</p>
-                                      <p className="text-[10px] text-slate-500 truncate">{l.property_address || '—'} · {l.property_units} units · {occPct}% occupied</p>
+                                      <p className="text-foreground truncate">{l.property_name}</p>
+                                      <p className="text-[10px] text-muted-foreground truncate">{l.property_address || '—'} · {l.property_units} units · {occPct}% occupied</p>
                                     </div>
-                                    <Badge variant="outline" className="text-[9px] capitalize border-slate-600 text-slate-300">{l.property_status}</Badge>
+                                    <Badge variant="outline" className="text-[9px] capitalize border-slate-600 text-muted-foreground">{l.property_status}</Badge>
                                     <Badge variant="outline" className="text-[9px] border-amber-500/30 text-amber-300 bg-amber-500/10">{l.revenue_share_pct}%</Badge>
                                     {incomplete && (
                                       <span className="text-[9px] text-red-400 flex items-center gap-1 shrink-0"><AlertTriangle className="h-3 w-3" />Missing</span>
@@ -413,7 +413,7 @@ const SystemLandlordManagement: React.FC = () => {
                                 );
                               })}
                             </div>
-                            <p className="text-[10px] text-slate-500 mt-2 flex items-center gap-1">
+                            <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
                               <Unlink className="h-3 w-3" />No manager assigned — these properties fall under platform oversight.
                             </p>
                           </div>
@@ -430,11 +430,11 @@ const SystemLandlordManagement: React.FC = () => {
 
       {/* ── Payout requests ── */}
       {activeTab === 'payouts' && (
-        <Card className="border-slate-800">
+        <Card className="border-border">
           <CardContent className="p-0">
-            <div className="px-4 py-3 border-b border-slate-800/50">
-              <p className="text-sm font-semibold text-white">Payout requests from system landlords</p>
-              <p className="text-xs text-slate-400 mt-0.5">Review and approve revenue payout requests. State changes require confirmation.</p>
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-sm font-semibold text-foreground">Payout requests from system landlords</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Review and approve revenue payout requests. State changes require confirmation.</p>
             </div>
             {payoutsLoading ? (
               <div className="p-4 space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>

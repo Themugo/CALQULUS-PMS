@@ -163,20 +163,20 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white auth-gradient">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-white/30 border-t-white" />
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground auth-gradient">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-border border-t-white" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white auth-gradient relative overflow-hidden px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground auth-gradient relative overflow-hidden px-4">
       {/* Decorative elements */}
       <div className="absolute inset-0 noise-overlay" />
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-muted rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-muted rounded-full blur-3xl" />
 
-      <Card className="w-full max-w-md card-shadow border-white/10 relative animate-scale-in bg-white/95 backdrop-blur-xl">
+      <Card className="w-full max-w-md card-shadow border-border relative animate-scale-in bg-card">
         <CardHeader className="text-center pb-4">
           <div className="flex justify-center mb-4">
             <div className="relative">

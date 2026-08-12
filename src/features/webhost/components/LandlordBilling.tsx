@@ -139,7 +139,7 @@ const LandlordBilling: React.FC = () => {
           { label: 'Outstanding', value: fmt(totalPending), icon: AlertTriangle, color: 'text-amber-400' },
           { label: 'Collected', value: fmt(totalPaid), icon: CheckCircle, color: 'text-green-400' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-slate-900/40 p-3">
+          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-muted p-3">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">{k.label}</p>
               <k.icon className={`h-4 w-4 ${k.color}`} />
@@ -151,7 +151,7 @@ const LandlordBilling: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Landlord invoices</h3>
+        <h3 className="text-sm font-semibold text-foreground">Landlord invoices</h3>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" className="border-amber-400/30 text-amber-400/70 h-8 text-xs"
             onClick={() => queryClient.invalidateQueries({ queryKey: ['landlord-invoices-webhost'] })}>
@@ -168,7 +168,7 @@ const LandlordBilling: React.FC = () => {
       <Card className="bg-card border-amber-400/15">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-10 w-full bg-slate-700/40"/>)}</div>
+            <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-10 w-full bg-muted/80"/>)}</div>
           ) : invoices.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               <Building2 className="h-10 w-10 mx-auto mb-2 opacity-30" />
@@ -194,7 +194,7 @@ const LandlordBilling: React.FC = () => {
                         {inv.invoice_type?.replace(/_/g, ' ')}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm font-semibold text-white">{fmt(Number(inv.amount))}</TableCell>
+                    <TableCell className="text-sm font-semibold text-foreground">{fmt(Number(inv.amount))}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{format(new Date(inv.due_date), 'dd/MM/yy')}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`text-xs ${STATUS_STYLE[inv.status] ?? ''}`}>
