@@ -26,10 +26,10 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-amber-100 text-amber-800 border-amber-200',
+  pending:   'bg-warning/10 text-warning border-amber-200',
   paid:      'bg-green-100 text-green-800 border-green-200',
-  overdue:   'bg-red-100 text-red-800 border-red-200',
-  cancelled: 'bg-slate-100 text-muted-foreground/70 border-slate-200',
+  overdue:   'bg-destructive/15 text-destructive border-red-200',
+  cancelled: 'bg-secondary-background text-muted-foreground/70 border-border',
 };
 
 interface ManagerRow {
@@ -132,11 +132,11 @@ const ManagerBillingDrilldown: React.FC = () => {
       {/* Summary row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total billed (all time)', value: fmt(managers.reduce((s, m) => s + m.total_billed, 0)), color: 'text-amber-500' },
+          { label: 'Total billed (all time)', value: fmt(managers.reduce((s, m) => s + m.total_billed, 0)), color: 'text-warning' },
           { label: 'Total collected',         value: fmt(managers.reduce((s, m) => s + m.total_paid,   0)), color: 'text-green-400' },
-          { label: 'Outstanding',             value: fmt(managers.reduce((s, m) => s + m.outstanding,  0)), color: 'text-amber-400' },
+          { label: 'Outstanding',             value: fmt(managers.reduce((s, m) => s + m.outstanding,  0)), color: 'text-warning' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-muted p-3">
+          <div key={k.label} className="rounded-xl border border-warning/12 bg-secondary-background p-3">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
             <p className={`text-lg font-bold ${k.color}`}>{k.value}</p>
           </div>
@@ -153,11 +153,11 @@ const ManagerBillingDrilldown: React.FC = () => {
 
       {/* Manager rows */}
       {isLoading ? (
-        <div className="space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-14 w-full bg-muted/80"/>)}</div>
+        <div className="space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-14 w-full bg-secondary-background"/>)}</div>
       ) : (
         <div className="space-y-1.5">
           {filtered.map(m => (
-            <div key={m.user_id} className="rounded-xl border border-[hsl(218_58%_24%/0.2)] bg-muted/20 overflow-hidden">
+            <div key={m.user_id} className="rounded-xl border border-[hsl(218_58%_24%/0.2)] bg-secondary-background/50 overflow-hidden">
               {/* Manager row */}
               <div
                 role="button"
@@ -170,10 +170,10 @@ const ManagerBillingDrilldown: React.FC = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-foreground">{m.full_name ?? m.email}</p>
                     {m.subscription_tier && (
-                      <Badge variant="outline" className="text-xs capitalize border-amber-400/20 text-amber-400/70">{m.subscription_tier}</Badge>
+                      <Badge variant="outline" className="text-xs capitalize border-warning/20 text-warning/70">{m.subscription_tier}</Badge>
                     )}
                     {m.status === 'suspended_nonpayment' && (
-                      <Badge variant="outline" className="text-xs bg-red-100 text-red-800 border-red-200">Suspended — non-payment</Badge>
+                      <Badge variant="outline" className="text-xs bg-destructive/15 text-destructive border-red-200">Suspended — non-payment</Badge>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">{m.agency_name ?? m.email}</p>
@@ -185,13 +185,13 @@ const ManagerBillingDrilldown: React.FC = () => {
                   </div>
                   <div className="text-center hidden sm:block">
                     <p className="text-muted-foreground">Outstanding</p>
-                    <p className={`font-semibold ${m.outstanding > 0 ? 'text-amber-400' : 'text-green-400'}`}>{fmt(m.outstanding)}</p>
+                    <p className={`font-semibold ${m.outstanding > 0 ? 'text-warning' : 'text-green-400'}`}>{fmt(m.outstanding)}</p>
                   </div>
                   <div className="text-center hidden md:block">
                     <p className="text-muted-foreground">Collected</p>
                     <p className="font-medium text-green-400">{fmt(m.total_paid)}</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 text-xs text-amber-400/70 gap-1"
+                  <Button size="sm" variant="ghost" className="h-7 text-xs text-warning/70 gap-1"
                     onClick={e => { e.stopPropagation(); setNewInvoiceFor(m); setNewAmount(''); setNewDesc(''); }}>
                     <Plus className="h-3.5 w-3.5" />Invoice
                   </Button>
@@ -270,16 +270,16 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
     },
   });
 
-  if (isLoading) return <div className="p-3"><Skeleton className="h-20 w-full bg-muted/80" /></div>;
+  if (isLoading) return <div className="p-3"><Skeleton className="h-20 w-full bg-secondary-background" /></div>;
   if (!invoices.length) return <p className="p-3 text-xs text-muted-foreground/70">No invoices yet.</p>;
 
   return (
-    <div className="border-t border-[hsl(218_58%_24%/0.2)] bg-muted px-3 pb-3 pt-2">
+    <div className="border-t border-[hsl(218_58%_24%/0.2)] bg-secondary-background px-3 pb-3 pt-2">
       <Table>
         <TableHeader>
           <TableRow className="border-[hsl(218_58%_24%/0.2)] hover:bg-transparent">
             {['Invoice #', 'Type', 'Amount', 'Due', 'Paid', 'Status', ''].map(h => (
-              <TableHead key={h} className="text-amber-500 text-xs py-1">{h}</TableHead>
+              <TableHead key={h} className="text-warning text-xs py-1">{h}</TableHead>
             ))}
           </TableRow>
         </TableHeader>

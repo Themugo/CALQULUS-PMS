@@ -151,12 +151,12 @@ const WebhostPaymentSettings: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardContent className="pt-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-muted rounded w-1/3"></div>
-            <div className="h-20 bg-muted rounded"></div>
-            <div className="h-20 bg-muted rounded"></div>
+            <div className="h-8 bg-secondary-background rounded w-1/3"></div>
+            <div className="h-20 bg-secondary-background rounded"></div>
+            <div className="h-20 bg-secondary-background rounded"></div>
           </div>
         </CardContent>
       </Card>
@@ -166,15 +166,15 @@ const WebhostPaymentSettings: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Billing Structure */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
-              <Percent className="h-5 w-5 text-amber-500" />
+              <Percent className="h-5 w-5 text-warning" />
             </div>
             <div>
               <CardTitle className="text-foreground">Billing Structure</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Configure registration fee and subscription rates
               </CardDescription>
             </div>
@@ -190,25 +190,25 @@ const WebhostPaymentSettings: React.FC = () => {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Registration Fee (KES)</Label>
+              <Label className="text-warning/80">Registration Fee (KES)</Label>
               <Input
                 type="number"
                 value={formData.registration_fee || ''}
                 onChange={(e) => handleChange('registration_fee', parseFloat(e.target.value) || 0)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="3000"
               />
               <p className="text-xs text-muted-foreground">One-time fee for new manager registration</p>
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Default Subscription Rate (%)</Label>
+              <Label className="text-warning/80">Default Subscription Rate (%)</Label>
               <Input
                 type="number"
                 step="0.001"
                 value={formData.subscription_rate ? formData.subscription_rate * 100 : ''}
                 onChange={(e) => handleChange('subscription_rate', (parseFloat(e.target.value) || 0) / 100)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="1"
               />
               <p className="text-xs text-muted-foreground">Fallback rate — overridden by tier pricing below</p>
@@ -217,14 +217,14 @@ const WebhostPaymentSettings: React.FC = () => {
 
           {/* Tier pricing table */}
           <div className="mt-4">
-            <Label className="text-amber-100/80 block mb-3">Per-tier monthly pricing (KES per property)</Label>
+            <Label className="text-warning/80 block mb-3">Per-tier monthly pricing (KES per property)</Label>
             <TierPricingEditor />
           </div>
         </CardContent>
       </Card>
 
       {/* Bank Details */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
@@ -232,7 +232,7 @@ const WebhostPaymentSettings: React.FC = () => {
             </div>
             <div>
               <CardTitle className="text-foreground">Bank Account Details</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Bank details shown to managers for payment
               </CardDescription>
             </div>
@@ -241,51 +241,51 @@ const WebhostPaymentSettings: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Bank Name</Label>
+              <Label className="text-warning/80">Bank Name</Label>
               <Input
                 value={formData.bank_name || ''}
                 onChange={(e) => handleChange('bank_name', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., Equity Bank"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Account Name</Label>
+              <Label className="text-warning/80">Account Name</Label>
               <Input
                 value={formData.bank_account_name || ''}
                 onChange={(e) => handleChange('bank_account_name', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., CALQULUS PMS Ltd"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Account Number</Label>
+              <Label className="text-warning/80">Account Number</Label>
               <Input
                 value={formData.bank_account_number || ''}
                 onChange={(e) => handleChange('bank_account_number', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., 1234567890"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Branch</Label>
+              <Label className="text-warning/80">Branch</Label>
               <Input
                 value={formData.bank_branch || ''}
                 onChange={(e) => handleChange('bank_branch', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., Westlands"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">SWIFT Code (Optional)</Label>
+              <Label className="text-warning/80">SWIFT Code (Optional)</Label>
               <Input
                 value={formData.bank_swift_code || ''}
                 onChange={(e) => handleChange('bank_swift_code', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., EABORAIX"
               />
             </div>
@@ -294,7 +294,7 @@ const WebhostPaymentSettings: React.FC = () => {
       </Card>
 
       {/* M-Pesa Details */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-green-500/20 flex items-center justify-center">
@@ -302,7 +302,7 @@ const WebhostPaymentSettings: React.FC = () => {
             </div>
             <div>
               <CardTitle className="text-foreground">M-Pesa Payment Details</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 M-Pesa details shown to managers for payment
               </CardDescription>
             </div>
@@ -311,41 +311,41 @@ const WebhostPaymentSettings: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Paybill Number</Label>
+              <Label className="text-warning/80">Paybill Number</Label>
               <Input
                 value={formData.mpesa_paybill_number || ''}
                 onChange={(e) => handleChange('mpesa_paybill_number', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., 123456"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Paybill Account Number</Label>
+              <Label className="text-warning/80">Paybill Account Number</Label>
               <Input
                 value={formData.mpesa_paybill_account || ''}
                 onChange={(e) => handleChange('mpesa_paybill_account', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., Account name or number"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Till Number (Buy Goods)</Label>
+              <Label className="text-warning/80">Till Number (Buy Goods)</Label>
               <Input
                 value={formData.mpesa_till_number || ''}
                 onChange={(e) => handleChange('mpesa_till_number', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., 654321"
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Phone Number (Send Money)</Label>
+              <Label className="text-warning/80">Phone Number (Send Money)</Label>
               <Input
                 value={formData.mpesa_phone_number || ''}
                 onChange={(e) => handleChange('mpesa_phone_number', e.target.value)}
-                className="bg-muted/80 border-border text-foreground"
+                className="bg-secondary-background border-border text-foreground"
                 placeholder="e.g., 0712345678"
               />
             </div>
@@ -354,15 +354,15 @@ const WebhostPaymentSettings: React.FC = () => {
       </Card>
 
       {/* Payment Instructions */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <CreditCard className="h-5 w-5 text-amber-400" />
+            <div className="h-10 w-10 rounded-xl bg-warning/20 flex items-center justify-center">
+              <CreditCard className="h-5 w-5 text-warning" />
             </div>
             <div>
               <CardTitle className="text-foreground">Payment Instructions</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Custom instructions shown to managers when paying invoices
               </CardDescription>
             </div>
@@ -372,7 +372,7 @@ const WebhostPaymentSettings: React.FC = () => {
           <Textarea
             value={formData.payment_instructions || ''}
             onChange={(e) => handleChange('payment_instructions', e.target.value)}
-            className="bg-muted/80 border-border text-foreground min-h-[100px]"
+            className="bg-secondary-background border-border text-foreground min-h-[100px]"
             placeholder="Please make payment to the bank account or M-Pesa details provided above. Include your invoice number as the reference."
           />
         </CardContent>
@@ -383,7 +383,7 @@ const WebhostPaymentSettings: React.FC = () => {
         <Button
           type="submit"
           disabled={saveMutation.isPending}
-          className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+          className="bg-primary hover:bg-primary/90 text-white"
         >
           <Save className="h-4 w-4 mr-2" />
           {saveMutation.isPending ? 'Saving...' : 'Save Settings'}
@@ -462,17 +462,17 @@ const TierPricingEditor: React.FC = () => {
     onError: () => toast({ title: 'Failed to update tiers', variant: 'destructive' }),
   });
 
-  if (isLoading) return <div className="h-20 bg-muted/80 rounded-lg animate-pulse" />;
+  if (isLoading) return <div className="h-20 bg-secondary-background rounded-lg animate-pulse" />;
 
   return (
-    <div className="rounded-xl border border-amber-400/12 bg-muted overflow-hidden">
+    <div className="rounded-xl border border-warning/12 bg-secondary-background overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-amber-400/12">
-            <th className="text-left py-2 px-3 text-amber-400/70 font-medium text-xs">Tier</th>
-            <th className="text-center py-2 px-3 text-amber-400/70 font-medium text-xs">Max props</th>
-            <th className="text-center py-2 px-3 text-amber-400/70 font-medium text-xs">Max units</th>
-            <th className="text-right py-2 px-3 text-amber-400/70 font-medium text-xs">KES / prop / month</th>
+          <tr className="border-b border-warning/12">
+            <th className="text-left py-2 px-3 text-warning/70 font-medium text-xs">Tier</th>
+            <th className="text-center py-2 px-3 text-warning/70 font-medium text-xs">Max props</th>
+            <th className="text-center py-2 px-3 text-warning/70 font-medium text-xs">Max units</th>
+            <th className="text-right py-2 px-3 text-warning/70 font-medium text-xs">KES / prop / month</th>
           </tr>
         </thead>
         <tbody>
@@ -492,16 +492,16 @@ const TierPricingEditor: React.FC = () => {
                   type="number"
                   value={prices[tier.tier_key] ?? ''}
                   onChange={e => setPrices(p => ({ ...p, [tier.tier_key]: e.target.value }))}
-                  className="bg-muted/80 border-border text-foreground text-right h-8 text-sm w-28 ml-auto"
+                  className="bg-secondary-background border-border text-foreground text-right h-8 text-sm w-28 ml-auto"
                 />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="p-3 border-t border-amber-400/12 flex justify-end">
+      <div className="p-3 border-t border-warning/12 flex justify-end">
         <Button size="sm" onClick={() => saveTiers.mutate()} disabled={saveTiers.isPending}
-          className="bg-amber-400 hover:bg-amber-500 text-slate-900 gap-1.5">
+          className="bg-primary hover:bg-primary/90 text-white gap-1.5">
           <Save className="h-3.5 w-3.5" />
           {saveTiers.isPending ? 'Saving…' : 'Save tier pricing'}
         </Button>

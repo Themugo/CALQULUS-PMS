@@ -282,7 +282,7 @@ const ISO27001ComplianceDashboard = () => {
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'not-implemented':
       case 'open':
-        return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -291,9 +291,9 @@ const ISO27001ComplianceDashboard = () => {
   const getRiskBadge = (level: string) => {
     switch (level) {
       case 'high':
-        return <Badge className="bg-red-600 text-white border-red-700">{level}</Badge>;
+        return <Badge className="bg-destructive text-white border-red-700">{level}</Badge>;
       case 'medium':
-        return <Badge className="bg-orange-500 text-white border-orange-600">{level}</Badge>;
+        return <Badge className="bg-warning text-white border-warning">{level}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{level}</Badge>;
       default:
@@ -304,9 +304,9 @@ const ISO27001ComplianceDashboard = () => {
   const getClassificationBadge = (classification: string) => {
     switch (classification) {
       case 'restricted':
-        return <Badge className="bg-red-100 text-red-800 border-red-300">{classification}</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-red-300">{classification}</Badge>;
       case 'confidential':
-        return <Badge className="bg-orange-100 text-orange-800 border-orange-300">{classification}</Badge>;
+        return <Badge className="bg-warning/10 text-warning border-orange-300">{classification}</Badge>;
       case 'internal':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">{classification}</Badge>;
       case 'public':
@@ -342,20 +342,20 @@ const ISO27001ComplianceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">ISO 27001 Compliance</h2>
-          <p className="text-amber-400/70 text-sm mt-1">Manage ISO 27001 ISMS compliance and risk management</p>
+          <p className="text-warning/70 text-sm mt-1">Manage ISO 27001 ISMS compliance and risk management</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
+            className="border-warning/30 text-warning/80 hover:bg-warning/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Evidence
@@ -364,10 +364,10 @@ const ISO27001ComplianceDashboard = () => {
       </div>
 
       {/* Overall Score Card */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <CardTitle className="text-foreground flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-amber-500" />
+            <ShieldCheck className="h-5 w-5 text-warning" />
             ISO 27001 Compliance Score
           </CardTitle>
         </CardHeader>
@@ -384,7 +384,7 @@ const ISO27001ComplianceDashboard = () => {
                 </div>
               </div>
               <Progress value={overallScore} className="h-3" />
-              <p className="text-amber-400/70 text-sm mt-2">
+              <p className="text-warning/70 text-sm mt-2">
                 {controls.filter(c => c.status === 'implemented').length} of {controls.length} controls implemented
               </p>
             </div>
@@ -392,7 +392,7 @@ const ISO27001ComplianceDashboard = () => {
               {Object.entries(categoryScores).slice(0, 5).map(([category, score]) => (
                 <div key={category} className="text-center">
                   <div className="text-2xl font-bold text-foreground">{Math.round(score)}%</div>
-                  <div className="text-xs text-amber-400/70 capitalize">
+                  <div className="text-xs text-warning/70 capitalize">
                     {category.replace('_', ' ').substring(0, 10)}...
                   </div>
                 </div>
@@ -403,38 +403,38 @@ const ISO27001ComplianceDashboard = () => {
       </Card>
 
       {/* Risk Summary Card */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <CardTitle className="text-foreground flex items-center gap-2">
-            <Risk className="h-5 w-5 text-amber-500" />
+            <Risk className="h-5 w-5 text-warning" />
             Risk Overview
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+            <div className="p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="h-4 w-4 text-amber-500" />
+                <Target className="h-4 w-4 text-warning" />
                 <span className="text-foreground font-medium">Total Risks</span>
               </div>
               <div className="text-3xl font-bold text-foreground">{risks.length}</div>
-              <div className="text-sm text-amber-400/70">Active risks identified</div>
+              <div className="text-sm text-warning/70">Active risks identified</div>
             </div>
-            <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+            <div className="p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
               <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="h-4 w-4 text-amber-500" />
+                <AlertCircle className="h-4 w-4 text-warning" />
                 <span className="text-foreground font-medium">Average Risk Score</span>
               </div>
               <div className="text-3xl font-bold text-foreground">{averageRiskScore}</div>
-              <div className="text-sm text-amber-400/70">Out of 25 maximum</div>
+              <div className="text-sm text-warning/70">Out of 25 maximum</div>
             </div>
-            <div className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+            <div className="p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
               <div className="flex items-center gap-2 mb-2">
-                <Shield className="h-4 w-4 text-amber-500" />
+                <Shield className="h-4 w-4 text-warning" />
                 <span className="text-foreground font-medium">Mitigated Risks</span>
               </div>
               <div className="text-3xl font-bold text-foreground">{risks.filter(r => r.status === 'mitigated').length}</div>
-              <div className="text-sm text-amber-400/70">Successfully mitigated</div>
+              <div className="text-sm text-warning/70">Successfully mitigated</div>
             </div>
           </div>
         </CardContent>
@@ -442,19 +442,19 @@ const ISO27001ComplianceDashboard = () => {
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+        <TabsList className="bg-card/80 border border-warning/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="controls" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <FileText className="h-4 w-4 mr-2" />
             Controls
           </TabsTrigger>
-          <TabsTrigger value="risks" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="risks" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Risk className="h-4 w-4 mr-2" />
             Risks
           </TabsTrigger>
-          <TabsTrigger value="assets" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="assets" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Target className="h-4 w-4 mr-2" />
             Assets
           </TabsTrigger>
@@ -462,38 +462,38 @@ const ISO27001ComplianceDashboard = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-amber-500" />
+                  <Activity className="h-5 w-5 text-warning" />
                   Control Status Summary
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-amber-400/70">Implemented</span>
+                    <span className="text-warning/70">Implemented</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-muted rounded-full h-2">
+                      <div className="w-32 bg-secondary-background rounded-full h-2">
                         <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'implemented').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'implemented').length}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-amber-400/70">Partial</span>
+                    <span className="text-warning/70">Partial</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-muted rounded-full h-2">
+                      <div className="w-32 bg-secondary-background rounded-full h-2">
                         <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'partial').length}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-amber-400/70">Not Implemented</span>
+                    <span className="text-warning/70">Not Implemented</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-32 bg-muted rounded-full h-2">
-                        <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'not-implemented').length / controls.length) * 100}%` }} />
+                      <div className="w-32 bg-secondary-background rounded-full h-2">
+                        <div className="bg-destructive/100 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'not-implemented').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'not-implemented').length}</span>
                     </div>
@@ -502,10 +502,10 @@ const ISO27001ComplianceDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-amber-500" />
+                  <TrendingUp className="h-5 w-5 text-warning" />
                   High-Risk Controls
                 </CardTitle>
               </CardHeader>
@@ -515,10 +515,10 @@ const ISO27001ComplianceDashboard = () => {
                     .filter(c => c.riskLevel === 'high' && c.status !== 'implemented')
                     .slice(0, 4)
                     .map(control => (
-                      <div key={control.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
+                      <div key={control.id} className="flex items-center justify-between p-2 bg-secondary-background/60 rounded">
                         <div>
                           <span className="text-foreground text-sm">{control.name}</span>
-                          <div className="text-amber-400/70 text-xs">{control.clause}</div>
+                          <div className="text-warning/70 text-xs">{control.clause}</div>
                         </div>
                         {getStatusBadge(control.status)}
                       </div>
@@ -530,10 +530,10 @@ const ISO27001ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="controls">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">ISO 27001 Controls</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage and monitor ISO 27001 Annex A controls
               </CardDescription>
             </CardHeader>
@@ -541,18 +541,18 @@ const ISO27001ComplianceDashboard = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
                   <Input
                     placeholder="Search controls..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-secondary-background/60 border-warning/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
+                  className="bg-secondary-background/60 border border-warning/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Categories</option>
                   <option value="access_control">Access Control</option>
@@ -571,13 +571,13 @@ const ISO27001ComplianceDashboard = () => {
               {/* Controls List */}
               <div className="space-y-4">
                 {filteredControls.map((control) => (
-                  <div key={control.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={control.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{control.name}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{control.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
+                          <span className="text-warning/70 text-sm ml-2">{control.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30">
                             {control.clause}
                           </Badge>
                         </div>
@@ -586,8 +586,8 @@ const ISO27001ComplianceDashboard = () => {
                           {getStatusBadge(control.status)}
                         </div>
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{control.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <p className="text-warning/70 text-sm mb-2">{control.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {control.responsible}
@@ -602,7 +602,7 @@ const ISO27001ComplianceDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -613,39 +613,39 @@ const ISO27001ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="risks">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Risk Register</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage and monitor information security risks
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {risks.map((risk) => (
-                  <div key={risk.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={risk.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{risk.name}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{risk.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
+                          <span className="text-warning/70 text-sm ml-2">{risk.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30">
                             {risk.category}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25">
+                          <Badge className="bg-warning/15 text-warning border-warning/25">
                             Score: {risk.riskScore}
                           </Badge>
                           {getStatusBadge(risk.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span>Likelihood: {risk.likelihood}/5</span>
                         <span>Impact: {risk.impact}/5</span>
                         <span>Treatment: {risk.treatment}</span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {risk.owner}
@@ -656,7 +656,7 @@ const ISO27001ComplianceDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -667,34 +667,34 @@ const ISO27001ComplianceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="assets">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Asset Inventory</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage information security assets
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {assets.map((asset) => (
-                  <div key={asset.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={asset.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{asset.name}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{asset.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
+                          <span className="text-warning/70 text-sm ml-2">{asset.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30 capitalize">
                             {asset.type}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
                           {getClassificationBadge(asset.classification)}
-                          <Badge variant="outline" className="text-amber-400/70 border-amber-400/30">
+                          <Badge variant="outline" className="text-warning/70 border-warning/30">
                             {asset.value}
                           </Badge>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {asset.owner}
@@ -705,7 +705,7 @@ const ISO27001ComplianceDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>

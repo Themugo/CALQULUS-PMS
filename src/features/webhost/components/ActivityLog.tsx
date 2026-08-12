@@ -38,9 +38,9 @@ const ENTITY_ICONS: Record<string, React.ElementType> = {
 
 const ROLE_BADGE: Record<string, string> = {
   manager:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  submanager: 'bg-slate-100 text-slate-700 border-slate-200',
+  submanager: 'bg-secondary-background text-secondary-foreground border-border',
   webhost:    'bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_32%)] border-[hsl(38_52%_42%/0.25)]',
-  landlord:   'bg-amber-100 text-amber-800 border-amber-200',
+  landlord:   'bg-warning/10 text-warning border-amber-200',
   system:     'bg-green-100 text-green-700 border-green-200',
 };
 
@@ -48,12 +48,12 @@ const ACTION_COLOR = (action: string): string => {
   const a = action.toLowerCase();
   if (a.includes('create') || a.includes('add') || a.includes('invite')) return 'bg-green-100 text-green-800';
   if (a.includes('update') || a.includes('edit') || a.includes('change')) return 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)]';
-  if (a.includes('delete') || a.includes('remove') || a.includes('archive')) return 'bg-red-100 text-red-800';
-  if (a.includes('approve') || a.includes('complete')) return 'bg-emerald-100 text-emerald-800';
-  if (a.includes('reject') || a.includes('deny') || a.includes('fail')) return 'bg-orange-100 text-orange-800';
-  if (a.includes('sign') || a.includes('contract')) return 'bg-amber-400/15 text-amber-700';
+  if (a.includes('delete') || a.includes('remove') || a.includes('archive')) return 'bg-destructive/15 text-destructive';
+  if (a.includes('approve') || a.includes('complete')) return 'bg-success/15 text-success';
+  if (a.includes('reject') || a.includes('deny') || a.includes('fail')) return 'bg-warning/10 text-warning';
+  if (a.includes('sign') || a.includes('contract')) return 'bg-warning/15 text-warning';
   if (a.includes('pay') || a.includes('invoice')) return 'bg-[hsl(195_60%_42%/0.12)] text-[hsl(195_60%_28%)]';
-  return 'bg-slate-100 text-slate-700';
+  return 'bg-secondary-background text-secondary-foreground';
 };
 
 const ActivityLog: React.FC = () => {
@@ -92,7 +92,7 @@ const ActivityLog: React.FC = () => {
     <Card className="bg-card border-border/60">
       <CardHeader className="pb-4">
         <CardTitle className="text-foreground flex items-center gap-2">
-          <Activity className="h-5 w-5 text-amber-500" />
+          <Activity className="h-5 w-5 text-warning" />
           Platform Activity Log
         </CardTitle>
         <CardDescription className="text-muted-foreground">
@@ -160,13 +160,13 @@ const ActivityLog: React.FC = () => {
                 {filtered.map(entry => {
                   const Icon = ENTITY_ICONS[entry.entity_type || ''] ?? Activity;
                   return (
-                    <TableRow key={entry.id} className="border-border/30 hover:bg-muted/20">
+                    <TableRow key={entry.id} className="border-border/30 hover:bg-secondary-background/50">
                       <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
                         {format(new Date(entry.created_at), 'dd MMM HH:mm')}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={`text-xs capitalize ${ROLE_BADGE[entry.actor_role] ?? 'bg-slate-100'}`}>
+                          <Badge variant="outline" className={`text-xs capitalize ${ROLE_BADGE[entry.actor_role] ?? 'bg-secondary-background'}`}>
                             {entry.actor_role}
                           </Badge>
                           <span className="text-foreground/90 text-xs truncate max-w-32">{entry.actor_email ?? '—'}</span>

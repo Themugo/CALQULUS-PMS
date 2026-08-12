@@ -265,9 +265,9 @@ const PenetrationTestingDashboard = () => {
       case 'open':
         return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'failed':
-        return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'accepted':
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-300">{status}</Badge>;
+        return <Badge className="bg-secondary-background text-gray-800 border-gray-300">{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -276,15 +276,15 @@ const PenetrationTestingDashboard = () => {
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return <Badge className="bg-red-600 text-white border-red-700">{severity}</Badge>;
+        return <Badge className="bg-destructive text-white border-red-700">{severity}</Badge>;
       case 'high':
-        return <Badge className="bg-orange-500 text-white border-orange-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
       case 'info':
-        return <Badge className="bg-gray-500 text-white border-gray-600">{severity}</Badge>;
+        return <Badge className="bg-secondary-foreground text-white border-gray-600">{severity}</Badge>;
       default:
         return <Badge variant="outline">{severity}</Badge>;
     }
@@ -293,9 +293,9 @@ const PenetrationTestingDashboard = () => {
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case 'critical':
-        return <Badge className="bg-red-600 text-white border-red-700">{priority}</Badge>;
+        return <Badge className="bg-destructive text-white border-red-700">{priority}</Badge>;
       case 'high':
-        return <Badge className="bg-orange-500 text-white border-orange-600">{priority}</Badge>;
+        return <Badge className="bg-warning text-white border-warning">{priority}</Badge>;
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{priority}</Badge>;
       case 'low':
@@ -316,20 +316,20 @@ const PenetrationTestingDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Penetration Testing Dashboard</h2>
-          <p className="text-amber-400/70 text-sm mt-1">Manage security testing and vulnerability remediation</p>
+          <p className="text-warning/70 text-sm mt-1">Manage security testing and vulnerability remediation</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
+            className="border-warning/30 text-warning/80 hover:bg-warning/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Schedule Test
@@ -339,93 +339,93 @@ const PenetrationTestingDashboard = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <Bug className="h-4 w-4 text-amber-500" />
+              <Bug className="h-4 w-4 text-warning" />
               Total Findings
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{totalFindings}</div>
-            <div className="text-sm text-amber-400/70">All vulnerabilities</div>
+            <div className="text-sm text-warning/70">All vulnerabilities</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               Open Findings
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{openFindings}</div>
-            <div className="text-sm text-amber-400/70">Awaiting remediation</div>
+            <div className="text-sm text-warning/70">Awaiting remediation</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{criticalFindings}</div>
-            <div className="text-sm text-amber-400/70">High priority</div>
+            <div className="text-sm text-warning/70">High priority</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-amber-500" />
+              <CheckCircle className="h-4 w-4 text-warning" />
               Resolved
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{resolvedFindings}</div>
-            <div className="text-sm text-amber-400/70">Fixed vulnerabilities</div>
+            <div className="text-sm text-warning/70">Fixed vulnerabilities</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Severity Distribution */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <CardTitle className="text-foreground flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-amber-500" />
+            <TrendingUp className="h-5 w-5 text-warning" />
             Severity Distribution
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-32 text-amber-400/70 text-sm">Critical</div>
-              <div className="flex-1 bg-muted rounded-full h-3">
-                <div className="bg-red-600 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'critical').length / totalFindings) * 100}%` }} />
+              <div className="w-32 text-warning/70 text-sm">Critical</div>
+              <div className="flex-1 bg-secondary-background rounded-full h-3">
+                <div className="bg-destructive h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'critical').length / totalFindings) * 100}%` }} />
               </div>
               <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'critical').length}</div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-32 text-amber-400/70 text-sm">High</div>
-              <div className="flex-1 bg-muted rounded-full h-3">
-                <div className="bg-orange-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'high').length / totalFindings) * 100}%` }} />
+              <div className="w-32 text-warning/70 text-sm">High</div>
+              <div className="flex-1 bg-secondary-background rounded-full h-3">
+                <div className="bg-warning h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'high').length / totalFindings) * 100}%` }} />
               </div>
               <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'high').length}</div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-32 text-amber-400/70 text-sm">Medium</div>
-              <div className="flex-1 bg-muted rounded-full h-3">
+              <div className="w-32 text-warning/70 text-sm">Medium</div>
+              <div className="flex-1 bg-secondary-background rounded-full h-3">
                 <div className="bg-yellow-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'medium').length / totalFindings) * 100}%` }} />
               </div>
               <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'medium').length}</div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-32 text-amber-400/70 text-sm">Low</div>
-              <div className="flex-1 bg-muted rounded-full h-3">
+              <div className="w-32 text-warning/70 text-sm">Low</div>
+              <div className="flex-1 bg-secondary-background rounded-full h-3">
                 <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'low').length / totalFindings) * 100}%` }} />
               </div>
               <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'low').length}</div>
@@ -436,23 +436,23 @@ const PenetrationTestingDashboard = () => {
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+        <TabsList className="bg-card/80 border border-warning/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="tests" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="tests" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Bug className="h-4 w-4 mr-2" />
             Penetration Tests
           </TabsTrigger>
-          <TabsTrigger value="findings" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="findings" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Vulnerabilities
           </TabsTrigger>
-          <TabsTrigger value="scans" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="scans" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Activity className="h-4 w-4 mr-2" />
             Scans
           </TabsTrigger>
-          <TabsTrigger value="remediation" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="remediation" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Zap className="h-4 w-4 mr-2" />
             Remediation
           </TabsTrigger>
@@ -460,20 +460,20 @@ const PenetrationTestingDashboard = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-amber-500" />
+                  <Activity className="h-5 w-5 text-warning" />
                   Recent Tests
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {penetrationTests.slice(0, 3).map((test) => (
-                    <div key={test.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                    <div key={test.id} className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                       <div>
                         <span className="text-foreground text-sm">{test.name}</span>
-                        <div className="text-amber-400/70 text-xs">{test.type.replace('_', ' ')} - {test.findingsCount} findings</div>
+                        <div className="text-warning/70 text-xs">{test.type.replace('_', ' ')} - {test.findingsCount} findings</div>
                       </div>
                       {getStatusBadge(test.status)}
                     </div>
@@ -482,10 +482,10 @@ const PenetrationTestingDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Target className="h-5 w-5 text-amber-500" />
+                  <Target className="h-5 w-5 text-warning" />
                   Critical Remediations
                 </CardTitle>
               </CardHeader>
@@ -495,10 +495,10 @@ const PenetrationTestingDashboard = () => {
                     .filter(p => p.priority === 'critical' && p.status !== 'completed')
                     .slice(0, 3)
                     .map((plan) => (
-                      <div key={plan.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                      <div key={plan.id} className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                         <div>
                           <span className="text-foreground text-sm">{plan.action}</span>
-                          <div className="text-amber-400/70 text-xs">Due: {plan.dueDate.toLocaleDateString()}</div>
+                          <div className="text-warning/70 text-xs">Due: {plan.dueDate.toLocaleDateString()}</div>
                         </div>
                         {getStatusBadge(plan.status)}
                       </div>
@@ -510,30 +510,30 @@ const PenetrationTestingDashboard = () => {
         </TabsContent>
 
         <TabsContent value="tests">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Penetration Tests</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage scheduled and completed penetration tests
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {penetrationTests.map((test) => (
-                  <div key={test.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={test.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{test.name}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{test.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
+                          <span className="text-warning/70 text-sm ml-2">{test.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30 capitalize">
                             {test.type.replace('_', ' ')}
                           </Badge>
                         </div>
                         {getStatusBadge(test.status)}
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{test.scope}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <p className="text-warning/70 text-sm mb-2">{test.scope}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Shield className="h-3 w-3" />
                           {test.methodology}
@@ -543,7 +543,7 @@ const PenetrationTestingDashboard = () => {
                           {test.performedBy}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Scheduled: {test.scheduledDate.toLocaleDateString()}
@@ -560,7 +560,7 @@ const PenetrationTestingDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -571,10 +571,10 @@ const PenetrationTestingDashboard = () => {
         </TabsContent>
 
         <TabsContent value="findings">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Vulnerability Findings</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Track and manage security vulnerabilities
               </CardDescription>
             </CardHeader>
@@ -582,18 +582,18 @@ const PenetrationTestingDashboard = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
                   <Input
                     placeholder="Search findings..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-secondary-background/60 border-warning/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
+                  className="bg-secondary-background/60 border border-warning/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Severities</option>
                   <option value="critical">Critical</option>
@@ -607,13 +607,13 @@ const PenetrationTestingDashboard = () => {
               {/* Findings List */}
               <div className="space-y-4">
                 {filteredFindings.map((finding) => (
-                  <div key={finding.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={finding.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{finding.title}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{finding.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
+                          <span className="text-warning/70 text-sm ml-2">{finding.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30 capitalize">
                             {finding.category.replace('_', ' ')}
                           </Badge>
                         </div>
@@ -622,8 +622,8 @@ const PenetrationTestingDashboard = () => {
                           {getStatusBadge(finding.status)}
                         </div>
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{finding.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <p className="text-warning/70 text-sm mb-2">{finding.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />
                           Impact: {finding.impact}
@@ -633,7 +633,7 @@ const PenetrationTestingDashboard = () => {
                           Assigned: {finding.assignedTo}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Discovered: {finding.discoveredDate.toLocaleDateString()}
@@ -646,7 +646,7 @@ const PenetrationTestingDashboard = () => {
                         )}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -657,29 +657,29 @@ const PenetrationTestingDashboard = () => {
         </TabsContent>
 
         <TabsContent value="scans">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Vulnerability Scans</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage automated and manual vulnerability scans
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {vulnerabilityScans.map((scan) => (
-                  <div key={scan.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={scan.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{scan.name}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{scan.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
+                          <span className="text-warning/70 text-sm ml-2">{scan.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30 capitalize">
                             {scan.type}
                           </Badge>
                         </div>
                         {getStatusBadge(scan.status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Target className="h-3 w-3" />
                           {scan.target}
@@ -689,7 +689,7 @@ const PenetrationTestingDashboard = () => {
                           {scan.configuration}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Scheduled: {scan.scheduledDate.toLocaleDateString()}
@@ -704,7 +704,7 @@ const PenetrationTestingDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -715,23 +715,23 @@ const PenetrationTestingDashboard = () => {
         </TabsContent>
 
         <TabsContent value="remediation">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Remediation Plans</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Track vulnerability remediation progress
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {remediationPlans.map((plan) => (
-                  <div key={plan.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={plan.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{plan.action}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{plan.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
+                          <span className="text-warning/70 text-sm ml-2">{plan.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30">
                             {plan.findingId}
                           </Badge>
                         </div>
@@ -740,7 +740,7 @@ const PenetrationTestingDashboard = () => {
                           {getStatusBadge(plan.status)}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Assigned: {plan.assignedTo}
@@ -751,7 +751,7 @@ const PenetrationTestingDashboard = () => {
                         </span>
                       </div>
                       {plan.completedDate && (
-                        <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                        <div className="flex items-center gap-4 text-sm text-warning/70">
                           <span className="flex items-center gap-1">
                             <CheckCircle className="h-3 w-3" />
                             Completed: {plan.completedDate.toLocaleDateString()}
@@ -760,7 +760,7 @@ const PenetrationTestingDashboard = () => {
                       )}
                     </div>
                     {plan.status !== 'completed' && (
-                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                      <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                         Update Status
                       </Button>
                     )}

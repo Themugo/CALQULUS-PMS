@@ -356,14 +356,14 @@ const WebhostManagement = () => {
         );
       case 'admin':
         return (
-          <Badge className="bg-amber-400/12 text-amber-600 border-amber-400/20">
+          <Badge className="bg-warning/12 text-warning border-warning/20">
             <Shield className="h-3 w-3 mr-1" />
             Admin
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-slate-600/20 text-muted-foreground border-border/30">
+          <Badge className="bg-secondary-foreground/20 text-muted-foreground border-border/30">
             <User className="h-3 w-3 mr-1" />
             Limited
           </Badge>
@@ -374,58 +374,58 @@ const WebhostManagement = () => {
   const canCreateWebhosts = isSuperAdmin || myPermissions?.can_create_webhosts;
 
   return (
-    <Card className="bg-card border-amber-400/15">
+    <Card className="bg-card border-warning/15">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-foreground flex items-center gap-2">
-            <Shield className="h-5 w-5 text-amber-500" />
+            <Shield className="h-5 w-5 text-warning" />
             Webhost Accounts
           </CardTitle>
-          <CardDescription className="text-amber-400/70">
+          <CardDescription className="text-warning/70">
             Create and manage admin webhost accounts with different permission levels
           </CardDescription>
         </div>
         {canCreateWebhosts && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+              <Button className="bg-primary hover:bg-primary/90 text-white">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add Webhost
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-muted border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="bg-card border-warning/15 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-foreground">Create New Webhost</DialogTitle>
-                <DialogDescription className="text-amber-400/70">
+                <DialogDescription className="text-warning/70">
                   Create a new webhost account and assign permissions
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateWebhost} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName" className="text-amber-100/80">Full Name</Label>
+                    <Label htmlFor="fullName" className="text-warning/80">Full Name</Label>
                     <Input
                       id="fullName"
                       value={newWebhost.fullName}
                       onChange={(e) => setNewWebhost({ ...newWebhost, fullName: e.target.value })}
                       required
-                      className="bg-muted border-amber-400/20 text-foreground"
+                      className="bg-card border-warning/20 text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-amber-100/80">Email</Label>
+                    <Label htmlFor="email" className="text-warning/80">Email</Label>
                     <Input
                       id="email"
                       type="email"
                       value={newWebhost.email}
                       onChange={(e) => setNewWebhost({ ...newWebhost, email: e.target.value })}
                       required
-                      className="bg-muted border-amber-400/20 text-foreground"
+                      className="bg-card border-warning/20 text-foreground"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-amber-100/80">Password</Label>
+                  <Label htmlFor="password" className="text-warning/80">Password</Label>
                   <Input
                     id="password"
                     type="password"
@@ -433,11 +433,11 @@ const WebhostManagement = () => {
                     onChange={(e) => setNewWebhost({ ...newWebhost, password: e.target.value })}
                     required
                     minLength={8}
-                    className="bg-muted border-amber-400/20 text-foreground"
+                    className="bg-card border-warning/20 text-foreground"
                   />
                 </div>
 
-                <div className="border-t border-amber-400/30/30 pt-4">
+                <div className="border-t border-warning/30/30 pt-4">
                   <h4 className="text-foreground font-medium mb-4">Admin Permissions</h4>
                   <AdminPermissionsEditor
                     permissions={newPermissions}
@@ -447,7 +447,7 @@ const WebhostManagement = () => {
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-400 hover:bg-amber-500 text-slate-900"
+                  className="w-full bg-primary hover:bg-primary/90 text-white"
                   disabled={createWebhost.isPending}
                 >
                   {createWebhost.isPending ? 'Creating...' : 'Create Webhost Account'}
@@ -461,34 +461,34 @@ const WebhostManagement = () => {
         {isLoading ? (
           <div className="animate-pulse space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="h-12 bg-muted rounded"></div>
+              <div key={i} className="h-12 bg-secondary-background rounded"></div>
             ))}
           </div>
         ) : webhosts && webhosts.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="border-amber-400/12 hover:bg-transparent">
-                <TableHead className="text-amber-400/70">Name</TableHead>
-                <TableHead className="text-amber-400/70">Email</TableHead>
-                <TableHead className="text-amber-400/70">Level</TableHead>
-                <TableHead className="text-amber-400/70">Created</TableHead>
-                <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
+              <TableRow className="border-warning/12 hover:bg-transparent">
+                <TableHead className="text-warning/70">Name</TableHead>
+                <TableHead className="text-warning/70">Email</TableHead>
+                <TableHead className="text-warning/70">Level</TableHead>
+                <TableHead className="text-warning/70">Created</TableHead>
+                <TableHead className="text-warning/70 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {webhosts.map((webhost) => (
-                <TableRow key={webhost.id} className="border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)]">
+                <TableRow key={webhost.id} className="border-warning/12 hover:bg-[hsl(218_58%_16%/0.2)]">
                   <TableCell className="text-foreground font-medium">
                     <div className="flex items-center gap-2">
                       {webhost.permissions?.admin_level === 'super_admin' ? (
                         <Crown className="h-4 w-4 text-yellow-400" />
                       ) : (
-                        <Shield className="h-4 w-4 text-amber-500" />
+                        <Shield className="h-4 w-4 text-warning" />
                       )}
                       {webhost.full_name || 'N/A'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-amber-100/80">
+                  <TableCell className="text-warning/80">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       {webhost.email}
@@ -497,7 +497,7 @@ const WebhostManagement = () => {
                   <TableCell>
                     {getLevelBadge(webhost.permissions?.admin_level)}
                   </TableCell>
-                  <TableCell className="text-amber-400/70">
+                  <TableCell className="text-warning/70">
                     {format(new Date(webhost.created_at), 'dd/MM/yy')}
                   </TableCell>
                   <TableCell className="text-right">
@@ -518,7 +518,7 @@ const WebhostManagement = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEditPermissions(webhost)}
-                          className="text-amber-500 hover:text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.2)]"
+                          className="text-warning hover:text-warning/70 hover:bg-[hsl(218_58%_16%/0.2)]"
                           title="Edit permissions"
                         >
                           <Settings className="h-4 w-4" />
@@ -529,7 +529,7 @@ const WebhostManagement = () => {
                         size="sm"
                         onClick={() => deleteWebhost.mutate(webhost.id)}
                         disabled={deleteWebhost.isPending || webhosts.length === 1 || webhost.permissions?.admin_level === 'super_admin'}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-900/20 disabled:opacity-50"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 disabled:opacity-50"
                         title={
                           webhosts.length === 1 
                             ? "Cannot delete the last webhost" 
@@ -547,7 +547,7 @@ const WebhostManagement = () => {
             </TableBody>
           </Table>
         ) : (
-          <div className="text-center py-8 text-amber-400/70">
+          <div className="text-center py-8 text-warning/70">
             No webhost accounts found.
           </div>
         )}
@@ -555,10 +555,10 @@ const WebhostManagement = () => {
 
       {/* Edit Permissions Dialog */}
       <Dialog open={isPermissionsDialogOpen} onOpenChange={setIsPermissionsDialogOpen}>
-        <DialogContent className="bg-muted border-amber-400/15 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-card border-warning/15 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">Edit Permissions</DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Update permissions for {selectedWebhost?.full_name || selectedWebhost?.email}
             </DialogDescription>
           </DialogHeader>
@@ -586,13 +586,13 @@ const WebhostManagement = () => {
                 <Button
                   variant="outline"
                   onClick={() => setIsPermissionsDialogOpen(false)}
-                  className="flex-1 border-amber-400/30 text-amber-400/70"
+                  className="flex-1 border-warning/30 text-warning/70"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSavePermissions}
-                  className="flex-1 bg-amber-400 hover:bg-amber-500 text-slate-900"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white"
                   disabled={updatePermissions.isPending}
                 >
                   {updatePermissions.isPending ? 'Saving...' : 'Save Permissions'}
@@ -605,20 +605,20 @@ const WebhostManagement = () => {
 
       {/* Transfer Super Admin Confirmation Dialog */}
       <AlertDialog open={isTransferDialogOpen} onOpenChange={setIsTransferDialogOpen}>
-        <AlertDialogContent className="bg-muted border-amber-400/15">
+        <AlertDialogContent className="bg-card border-warning/15">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground flex items-center gap-2">
               <Crown className="h-5 w-5 text-yellow-400" />
               Transfer Super Admin Rights
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-amber-400/70">
+            <AlertDialogDescription className="text-warning/70">
               Are you sure you want to transfer Super Admin rights to{' '}
               <span className="font-semibold text-foreground">
                 {transferTarget?.full_name || transferTarget?.email}
               </span>
               ?
-              <div className="mt-4 p-3 rounded-lg bg-amber-900/30 border border-amber-700/50">
-                <p className="text-amber-300 text-sm">
+              <div className="mt-4 p-3 rounded-lg bg-warning/20 border border-warning/40">
+                <p className="text-warning text-sm">
                   ⚠️ <strong>Warning:</strong> This action will demote you to Admin level. 
                   You will lose the ability to create webhosts and transfer super admin rights.
                   This action cannot be undone by you.
@@ -627,7 +627,7 @@ const WebhostManagement = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+            <AlertDialogCancel className="border-warning/30 text-warning/80 hover:bg-warning/8">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

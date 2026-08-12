@@ -74,19 +74,19 @@ const PropertyTypeAnalytics: React.FC = () => {
   const totalOccupied = properties.reduce((s, p) => s + (p.occupied ?? 0), 0);
   const occupancyRate = totalUnits > 0 ? Math.round((totalOccupied / totalUnits) * 100) : 0;
 
-  if (isLoading) return <Skeleton className="h-64 w-full bg-muted/80" />;
+  if (isLoading) return <Skeleton className="h-64 w-full bg-secondary-background" />;
 
   return (
     <div className="space-y-4">
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total properties',    value: String(totalProperties),    color: 'text-amber-500' },
+          { label: 'Total properties',    value: String(totalProperties),    color: 'text-warning' },
           { label: 'Total units',         value: String(totalUnits),         color: 'text-[hsl(214_73%_58%)]' },
           { label: 'Occupied units',      value: String(totalOccupied),      color: 'text-green-400' },
-          { label: 'Platform occupancy',  value: `${occupancyRate}%`,         color: occupancyRate >= 75 ? 'text-green-400' : 'text-amber-400' },
+          { label: 'Platform occupancy',  value: `${occupancyRate}%`,         color: occupancyRate >= 75 ? 'text-green-400' : 'text-warning' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-muted p-3">
+          <div key={k.label} className="rounded-xl border border-warning/12 bg-secondary-background p-3">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
             <p className={`text-xl font-bold ${k.color}`}>{k.value}</p>
           </div>
@@ -95,10 +95,10 @@ const PropertyTypeAnalytics: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Pie: by group */}
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-foreground flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-amber-500"/>
+              <Building2 className="h-4 w-4 text-warning"/>
               Properties by category group
             </CardTitle>
           </CardHeader>
@@ -142,10 +142,10 @@ const PropertyTypeAnalytics: React.FC = () => {
         </Card>
 
         {/* Bar: top categories */}
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-foreground flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-amber-500"/>
+              <TrendingUp className="h-4 w-4 text-warning"/>
               Top property types
             </CardTitle>
           </CardHeader>
@@ -173,7 +173,7 @@ const PropertyTypeAnalytics: React.FC = () => {
       </div>
 
       {/* Table: group breakdown */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-foreground">Category group breakdown</CardTitle>
           <CardDescription className="text-muted-foreground">Platform-wide property distribution and occupancy</CardDescription>
@@ -183,11 +183,11 @@ const PropertyTypeAnalytics: React.FC = () => {
             {Object.entries(byGroup).sort((a, b) => b[1].count - a[1].count).map(([group, stats]) => {
               const occ = stats.units > 0 ? Math.round((stats.occupied / stats.units) * 100) : 0;
               return (
-                <div key={group} className="flex items-center gap-3 p-2.5 rounded-lg bg-muted border border-[hsl(218_58%_24%/0.2)]">
+                <div key={group} className="flex items-center gap-3 p-2.5 rounded-lg bg-card border border-[hsl(218_58%_24%/0.2)]">
                   <Badge variant="outline" className={`text-xs shrink-0 ${GROUP_COLORS[group]}`}>
                     {GROUP_LABELS[group]}
                   </Badge>
-                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-secondary-background rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{
                       width: `${totalProperties > 0 ? (stats.count / totalProperties) * 100 : 0}%`,
                       backgroundColor: GROUP_CHART_COLORS[group],
@@ -196,7 +196,7 @@ const PropertyTypeAnalytics: React.FC = () => {
                   <div className="flex gap-4 text-xs text-muted-foreground shrink-0">
                     <span className="text-foreground font-medium">{stats.count}</span>
                     <span>{stats.units} units</span>
-                    <span className={occ >= 75 ? 'text-green-400' : 'text-amber-400'}>{occ}%</span>
+                    <span className={occ >= 75 ? 'text-green-400' : 'text-warning'}>{occ}%</span>
                   </div>
                 </div>
               );

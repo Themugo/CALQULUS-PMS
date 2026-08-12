@@ -192,10 +192,10 @@ const ManagerBilling = () => {
   return (
     <div className="space-y-5">
       {/* Control-center header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 enterprise-card p-4 sm:p-5">
         <div>
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Banknote className="h-5 w-5 text-amber-400" />
+            <Banknote className="h-5 w-5 text-warning" />
             Platform Billing &amp; Revenue Control Center
           </h2>
           <p className="text-muted-foreground text-xs mt-1">
@@ -203,7 +203,7 @@ const ManagerBilling = () => {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={handleRefresh} aria-label="Refresh billing data">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-secondary-background hover:text-foreground h-9 rounded-xl text-xs" onClick={handleRefresh} aria-label="Refresh billing data">
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
           </Button>
         </div>
@@ -218,10 +218,10 @@ const ManagerBilling = () => {
           { label: 'Custom Pricing', desc: 'Per-unit overrides', icon: FileSignature, current: false },
           { label: 'Contracts', desc: 'Service agreements', icon: FileText, current: false },
         ].map(({ label, desc, icon: Icon, current }) => (
-          <div key={label} className={cn('flex items-center gap-2 p-2.5 rounded-lg border text-left', current ? 'border-amber-400/40 bg-amber-400/10' : 'border-border bg-muted opacity-70')}>
-            <Icon className={cn('h-4 w-4 shrink-0', current ? 'text-amber-300' : 'text-slate-400')} />
+          <div key={label} className={cn('flex items-center gap-2 p-2.5 rounded-lg border text-left', current ? 'border-warning/40 bg-warning/10' : 'border-border bg-secondary-background opacity-70')}>
+            <Icon className={cn('h-4 w-4 shrink-0', current ? 'text-warning' : 'text-secondary-foreground')} />
             <div className="min-w-0">
-              <p className={cn('text-xs font-semibold truncate', current ? 'text-amber-200' : 'text-slate-300')}>{label}{current && ' (here)'}</p>
+              <p className={cn('text-xs font-semibold truncate', current ? 'text-warning' : 'text-secondary-foreground')}>{label}{current && ' (here)'}</p>
               <p className="text-[10px] text-muted-foreground truncate">{desc}</p>
             </div>
           </div>
@@ -231,22 +231,22 @@ const ManagerBilling = () => {
       {/* KPI strip — real data derived from existing invoices query */}
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-24 rounded-xl bg-muted border border-border animate-pulse" />)}
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-24 rounded-xl bg-card border border-border animate-pulse" />)}
         </div>
       ) : !hasActivity ? (
-        <div className="p-10 text-center rounded-2xl border border-border bg-muted">
+        <div className="p-10 text-center rounded-2xl border border-border bg-secondary-background">
           <Banknote className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground">No billing activity recorded.</p>
           <p className="text-xs text-muted-foreground mt-1">Invoices and revenue will appear here once managers are billed.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300">
+          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-success/40 bg-success/10 text-success">
             <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">Revenue MTD</span>
               <strong className="font-['Outfit'] text-xl font-bold text-foreground">KES {billing.fmtKES(billing.revenueMTD)}</strong>
               {billing.hasHistory ? (
-                <span className={cn('text-[10px] flex items-center gap-0.5 mt-0.5', billing.isPositive ? 'text-emerald-300' : 'text-red-300')}>
+                <span className={cn('text-[10px] flex items-center gap-0.5 mt-0.5', billing.isPositive ? 'text-success' : 'text-destructive')}>
                   {billing.isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {Math.abs(billing.momChange).toFixed(1)}% vs last month
                 </span>
@@ -257,7 +257,7 @@ const ManagerBilling = () => {
             <TrendingUp className="h-5 w-5 shrink-0 opacity-80" />
           </div>
 
-          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-border bg-muted text-muted-foreground">
+          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-border bg-secondary-background text-muted-foreground">
             <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">Outstanding</span>
               <strong className="font-['Outfit'] text-xl font-bold text-foreground">KES {billing.fmtKES(billing.outstanding)}</strong>
@@ -266,7 +266,7 @@ const ManagerBilling = () => {
             <Clock className="h-5 w-5 shrink-0 opacity-80" />
           </div>
 
-          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-sky-500/40 bg-sky-500/10 text-sky-300">
+          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-primary/40 bg-primary/10 text-primary">
             <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">Paid Invoices</span>
               <strong className="font-['Outfit'] text-xl font-bold text-foreground">{billing.paidCount}</strong>
@@ -275,7 +275,7 @@ const ManagerBilling = () => {
             <CheckCircle className="h-5 w-5 shrink-0 opacity-80" />
           </div>
 
-          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300">
+          <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-warning/40 bg-warning/10 text-warning">
             <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wide opacity-80 block">Collection Rate</span>
               <strong className="font-['Outfit'] text-xl font-bold text-foreground">{billing.collectionRate.toFixed(1)}%</strong>
@@ -288,61 +288,61 @@ const ManagerBilling = () => {
 
       {/* Payment-issues surfacing — real overdue invoices only */}
       {hasActivity && billing.overdueCount > 0 && (
-        <div className="flex items-center gap-2.5 p-3.5 rounded-xl border border-red-500/30 bg-red-500/5">
-          <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
-          <span className="text-xs text-red-200">
-            <strong className="text-red-300">{billing.overdueCount}</strong> overdue invoice{billing.overdueCount > 1 ? 's' : ''} require attention. Review under Invoices.
+        <div className="flex items-center gap-2.5 p-3.5 rounded-xl border border-destructive/30 bg-destructive/5">
+          <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+          <span className="text-xs text-destructive">
+            <strong className="text-destructive">{billing.overdueCount}</strong> overdue invoice{billing.overdueCount > 1 ? 's' : ''} require attention. Review under Invoices.
           </span>
         </div>
       )}
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-card/80 border border-amber-400/12">
+        <TabsList className="bg-card/80 border border-warning/12">
           <TabsTrigger 
             value="overview" 
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <LayoutDashboard className="h-4 w-4 mr-2" />
             Overview
           </TabsTrigger>
           <TabsTrigger 
             value="invoices" 
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <FileText className="h-4 w-4 mr-2" />
             Invoices
           </TabsTrigger>
           <TabsTrigger 
             value="receipts" 
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <Receipt className="h-4 w-4 mr-2" />
             Receipts
           </TabsTrigger>
           <TabsTrigger 
             value="analytics" 
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <TrendingUp className="h-4 w-4 mr-2" />
             Analytics
           </TabsTrigger>
           <TabsTrigger 
             value="settings" 
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </TabsTrigger>
           <TabsTrigger 
             value="landlords"
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <Building2 className="h-4 w-4 mr-2" />
             Landlords
           </TabsTrigger>
           <TabsTrigger 
             value="per-manager"
-            className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70"
           >
             <Users className="h-4 w-4 mr-2" />
             Per Manager

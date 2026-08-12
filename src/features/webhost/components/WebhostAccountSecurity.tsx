@@ -127,9 +127,9 @@ const WebhostAccountSecurity: React.FC = () => {
   };
 
   const adminTypeConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; tone: string }> = {
-    owner: { label: 'Owner', icon: Crown, tone: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-    business: { label: 'Business', icon: UserCog, tone: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30' },
-    admin: { label: 'Admin', icon: Shield, tone: 'bg-slate-500/15 text-slate-300 border-slate-500/30' },
+    owner: { label: 'Owner', icon: Crown, tone: 'bg-warning/15 text-warning border-warning/30' },
+    business: { label: 'Business', icon: UserCog, tone: 'bg-info/15 text-indigo-300 border-info/30' },
+    admin: { label: 'Admin', icon: Shield, tone: 'bg-secondary-foreground/15 text-secondary-foreground border-border/30' },
   };
 
   const refreshAll = () => {
@@ -139,19 +139,19 @@ const WebhostAccountSecurity: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <Card className="border-amber-400/15">
+      <Card className="border-warning/15">
         <CardHeader>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2 text-foreground">
-                <ShieldCheck className="h-5 w-5 text-amber-400" />
+                <ShieldCheck className="h-5 w-5 text-warning" />
                 Security & Access Control Center
               </CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Authentication health, admin access, RBAC, and security configuration. Read-only where enforced by backend authorization.
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={refreshAll} className="border-amber-400/20 text-amber-300 hover:bg-amber-400/10">
+            <Button variant="outline" size="sm" onClick={refreshAll} className="border-warning/20 text-warning hover:bg-warning/10">
               <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
             </Button>
           </div>
@@ -160,10 +160,10 @@ const WebhostAccountSecurity: React.FC = () => {
 
       {/* ── 1. Security overview ── */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Authentication</CardTitle>
-            {user ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
+            <CardTitle className="text-sm font-medium text-warning/70">Authentication</CardTitle>
+            {user ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
           </CardHeader>
           <CardContent>
             <p className="text-lg font-semibold text-foreground">{user ? 'Authenticated' : 'No session'}</p>
@@ -171,10 +171,10 @@ const WebhostAccountSecurity: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">MFA (this account)</CardTitle>
-            <Fingerprint className={cn('h-4 w-4', mfaEnrolled ? 'text-emerald-400' : 'text-amber-400')} />
+            <CardTitle className="text-sm font-medium text-warning/70">MFA (this account)</CardTitle>
+            <Fingerprint className={cn('h-4 w-4', mfaEnrolled ? 'text-success' : 'text-warning')} />
           </CardHeader>
           <CardContent>
             {mfaLoading ? (
@@ -190,10 +190,10 @@ const WebhostAccountSecurity: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Active threats</CardTitle>
-            <Shield className="h-4 w-4 text-emerald-400" />
+            <CardTitle className="text-sm font-medium text-warning/70">Active threats</CardTitle>
+            <Shield className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <p className="text-lg font-semibold text-foreground">None recorded</p>
@@ -203,30 +203,30 @@ const WebhostAccountSecurity: React.FC = () => {
       </div>
 
       {/* ── 2. Admin access (platform_admins) ── */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-foreground">
-            <UserCog className="h-5 w-5 text-amber-400" />
+            <UserCog className="h-5 w-5 text-warning" />
             Admin Access
           </CardTitle>
-          <CardDescription className="text-amber-400/70">
+          <CardDescription className="text-warning/70">
             Platform admin accounts, roles, and account status. MFA status per-account is not cross-readable (RLS-protected, own-only).
           </CardDescription>
         </CardHeader>
         <CardContent>
           {!canManage ? (
-            <div className="text-center py-8 text-amber-400/70">
+            <div className="text-center py-8 text-warning/70">
               <Lock className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p className="text-sm">Only owner and business-level admins can view the admin account directory.</p>
             </div>
           ) : adminsLoading ? (
             <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
           ) : adminsError ? (
-            <div className="p-6 text-center rounded-xl border border-red-500/30 bg-red-500/5">
-              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
-              <p className="text-sm font-semibold text-red-300">Unable to load admin accounts.</p>
+            <div className="p-6 text-center rounded-xl border border-destructive/30 bg-destructive/5">
+              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+              <p className="text-sm font-semibold text-destructive">Unable to load admin accounts.</p>
               <p className="text-xs text-muted-foreground mt-1 mb-3">{(adminsErr as Error)?.message ?? 'Try again.'}</p>
-              <Button variant="outline" size="sm" onClick={() => refetchAdmins()} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+              <Button variant="outline" size="sm" onClick={() => refetchAdmins()} className="border-destructive/40 text-destructive hover:bg-destructive/10">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
               </Button>
             </div>
@@ -240,7 +240,7 @@ const WebhostAccountSecurity: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-amber-400/10 text-left text-amber-400/70">
+                  <tr className="border-b border-warning/10 text-left text-warning/70">
                     <th className="py-2 pr-4 font-medium">Account</th>
                     <th className="py-2 pr-4 font-medium">Role</th>
                     <th className="py-2 pr-4 font-medium">Account status</th>
@@ -254,7 +254,7 @@ const WebhostAccountSecurity: React.FC = () => {
                     const cfg = adminTypeConfig[a.admin_type] ?? adminTypeConfig.admin;
                     const RoleIcon = cfg.icon;
                     return (
-                      <tr key={a.id} className="border-b border-amber-400/5">
+                      <tr key={a.id} className="border-b border-warning/5">
                         <td className="py-2.5 pr-4">
                           <p className="font-medium text-foreground">{a.display_name}</p>
                           <p className="text-xs text-muted-foreground">{a.email}</p>
@@ -267,11 +267,11 @@ const WebhostAccountSecurity: React.FC = () => {
                         </td>
                         <td className="py-2.5 pr-4">
                           {a.is_immutable ? (
-                            <Badge className="bg-blue-500/15 text-blue-300 border border-blue-500/30">Immutable</Badge>
+                            <Badge className="bg-blue-500/15 text-primary border border-blue-500/30">Immutable</Badge>
                           ) : a.suspended ? (
-                            <Badge className="bg-red-500/15 text-red-300 border border-red-500/30">Suspended</Badge>
+                            <Badge className="bg-destructive/15 text-destructive border border-destructive/30">Suspended</Badge>
                           ) : (
-                            <Badge className="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Active</Badge>
+                            <Badge className="bg-success/15 text-success border border-success/30">Active</Badge>
                           )}
                           {a.suspended && a.suspended_at && (
                             <p className="text-[10px] text-muted-foreground mt-1">{format(new Date(a.suspended_at), 'dd MMM yyyy')}</p>
@@ -294,61 +294,61 @@ const WebhostAccountSecurity: React.FC = () => {
 
       {/* ── 3 & 7. Authentication security + configuration ── */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
-              <Lock className="h-5 w-5 text-amber-400" />
+              <Lock className="h-5 w-5 text-warning" />
               Authentication Security
             </CardTitle>
-            <CardDescription className="text-amber-400/70">Existing authentication controls (read-only metadata).</CardDescription>
+            <CardDescription className="text-warning/70">Existing authentication controls (read-only metadata).</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Session</span>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">JWT (Supabase Auth)</Badge>
+              <Badge variant="outline" className="border-success/30 text-success">JWT (Supabase Auth)</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">MFA for this account</span>
               {mfaLoading ? (
                 <Skeleton className="h-5 w-20" />
               ) : mfaEnrolled ? (
-                <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">Configured</Badge>
+                <Badge variant="outline" className="border-success/30 text-success">Configured</Badge>
               ) : (
-                <Badge variant="outline" className="border-amber-500/30 text-amber-300">Not configured</Badge>
+                <Badge variant="outline" className="border-warning/30 text-warning">Not configured</Badge>
               )}
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Login protection</span>
-              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Supabase built-in</Badge>
+              <Badge variant="outline" className="border-border/40 text-muted-foreground">Supabase built-in</Badge>
             </div>
-            <p className="text-[10px] text-muted-foreground pt-1 border-t border-amber-400/10">
+            <p className="text-[10px] text-muted-foreground pt-1 border-t border-warning/10">
               Authentication architecture and session security are managed by Supabase Auth. No secrets are exposed here.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
-              <ShieldAlert className="h-5 w-5 text-amber-400" />
+              <ShieldAlert className="h-5 w-5 text-warning" />
               Security Configuration
             </CardTitle>
-            <CardDescription className="text-amber-400/70">Only settings already supported by the system are shown.</CardDescription>
+            <CardDescription className="text-warning/70">Only settings already supported by the system are shown.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">MFA policy</span>
-              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Available (per-account)</Badge>
+              <Badge variant="outline" className="border-border/40 text-muted-foreground">Available (per-account)</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Account suspension</span>
-              <Badge variant="outline" className="border-slate-500/40 text-muted-foreground">Owner / Business</Badge>
+              <Badge variant="outline" className="border-border/40 text-muted-foreground">Owner / Business</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">RLS / tenant isolation</span>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">Enforced (backend)</Badge>
+              <Badge variant="outline" className="border-success/30 text-success">Enforced (backend)</Badge>
             </div>
-            <p className="text-[10px] text-muted-foreground pt-1 border-t border-amber-400/10">
+            <p className="text-[10px] text-muted-foreground pt-1 border-t border-warning/10">
               Security decisions remain server-side. Backend authorization (RLS + Supabase Auth) is the source of truth.
             </p>
           </CardContent>
@@ -357,13 +357,13 @@ const WebhostAccountSecurity: React.FC = () => {
 
       {/* ── 5. RBAC & permissions (read-only view from platform_admins flags) ── */}
       {canManage && admins && admins.length > 0 && (
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
-              <KeyRound className="h-5 w-5 text-amber-400" />
+              <KeyRound className="h-5 w-5 text-warning" />
               RBAC & Permissions
             </CardTitle>
-            <CardDescription className="text-amber-400/70">
+            <CardDescription className="text-warning/70">
               Relationship of admin → role → permissions. Read-only. Permission changes are enforced by backend authorization.
             </CardDescription>
           </CardHeader>
@@ -371,7 +371,7 @@ const WebhostAccountSecurity: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-amber-400/10 text-left text-amber-400/70">
+                  <tr className="border-b border-warning/10 text-left text-warning/70">
                     <th className="py-2 pr-4 font-medium">Admin</th>
                     <th className="py-2 pr-3 font-medium text-center">Billing</th>
                     <th className="py-2 pr-3 font-medium text-center">Managers</th>
@@ -384,15 +384,15 @@ const WebhostAccountSecurity: React.FC = () => {
                 </thead>
                 <tbody>
                   {admins.map(a => (
-                    <tr key={a.id} className="border-b border-amber-400/5">
+                    <tr key={a.id} className="border-b border-warning/5">
                       <td className="py-2 pr-4 text-foreground">{a.display_name}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_billing ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_managers ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_properties ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_landlords ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_view_activity_logs ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_manage_platform_settings ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="py-2 pr-3 text-center">{a.can_create_admins ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_billing ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_managers ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_properties ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_landlords ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_view_activity_logs ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_manage_platform_settings ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="py-2 pr-3 text-center">{a.can_create_admins ? <CheckCircle2 className="h-3.5 w-3.5 text-success inline" /> : <span className="text-muted-foreground">—</span>}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -403,13 +403,13 @@ const WebhostAccountSecurity: React.FC = () => {
       )}
 
       {/* ── Credential rotation (existing functionality preserved) ── */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-foreground">
-            <KeyRound className="h-5 w-5 text-amber-400" />
+            <KeyRound className="h-5 w-5 text-warning" />
             Credential Rotation
           </CardTitle>
-          <CardDescription className="text-amber-400/70">
+          <CardDescription className="text-warning/70">
             Rotate your own webhost password, or send yourself a secure reset link for handover to client admins.
           </CardDescription>
         </CardHeader>
@@ -417,19 +417,19 @@ const WebhostAccountSecurity: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>New password</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 bg-muted/80 border-amber-400/20" autoComplete="new-password" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 bg-secondary-background border-warning/20" autoComplete="new-password" />
             </div>
             <div>
               <Label>Confirm password</Label>
-              <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="mt-1 bg-muted/80 border-amber-400/20" autoComplete="new-password" />
+              <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="mt-1 bg-secondary-background border-warning/20" autoComplete="new-password" />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={updatePassword} disabled={saving} className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+            <Button onClick={updatePassword} disabled={saving} className="bg-primary hover:bg-primary/90 text-white">
               {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               {saving ? 'Updating…' : 'Update password'}
             </Button>
-            <Button variant="outline" onClick={sendResetEmail} disabled={sending} className="border-amber-400/20 text-amber-300 hover:bg-amber-400/10">
+            <Button variant="outline" onClick={sendResetEmail} disabled={sending} className="border-warning/20 text-warning hover:bg-warning/10">
               {sending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Mail className="h-4 w-4 mr-2" />}
               {sending ? 'Sending…' : 'Email reset link'}
             </Button>

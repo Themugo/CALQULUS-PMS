@@ -98,12 +98,12 @@ interface Manager {
 }
 
 const statusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
-  pending: { label: "Pending Review", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
-  approved: { label: "Approved", styles: "bg-emerald-600 text-white border-emerald-700", icon: CheckCircle },
-  rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
+  pending: { label: "Pending Review", styles: "bg-warning text-white border-warning", icon: Clock },
+  approved: { label: "Approved", styles: "bg-success text-white border-emerald-700", icon: CheckCircle },
+  rejected: { label: "Rejected", styles: "bg-destructive text-white border-red-700", icon: XCircle },
   signed: { label: "Signed", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: ShieldCheck },
-  expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
-  cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-border", icon: XCircle },
+  expired: { label: "Expired", styles: "bg-secondary-foreground text-white border-gray-700", icon: XCircle },
+  cancelled: { label: "Cancelled", styles: "bg-secondary-foreground text-white border-border", icon: XCircle },
 };
 
 const WebhostContracts = () => {
@@ -573,11 +573,11 @@ const WebhostContracts = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Commercial Contract Management Console</h2>
-          <p className="text-amber-400/70">Manage service agreements with managers — contracts, documents, status, and commercial relationships.</p>
+          <p className="text-warning/70">Manage service agreements with managers — contracts, documents, status, and commercial relationships.</p>
         </div>
         <Button
           onClick={() => setUploadDialogOpen(true)}
-          className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+          className="bg-primary hover:bg-primary/90 text-white"
         >
           <Upload className="h-4 w-4 mr-2" />
           Upload Contract
@@ -586,60 +586,60 @@ const WebhostContracts = () => {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-5">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Total</CardTitle>
-            <FileText className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-sm font-medium text-warning/70">Total</CardTitle>
+            <FileText className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{stats.total}</div>
           </CardContent>
         </Card>
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-amber-400" />
+            <CardTitle className="text-sm font-medium text-warning/70">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-400">{stats.pending}</div>
+            <div className="text-2xl font-bold text-warning">{stats.pending}</div>
           </CardContent>
         </Card>
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Approved</CardTitle>
-            <CheckCircle className="h-4 w-4 text-emerald-400" />
+            <CardTitle className="text-sm font-medium text-warning/70">Approved</CardTitle>
+            <CheckCircle className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-400">{stats.approved}</div>
+            <div className="text-2xl font-bold text-success">{stats.approved}</div>
           </CardContent>
         </Card>
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Signed</CardTitle>
+            <CardTitle className="text-sm font-medium text-warning/70">Signed</CardTitle>
             <ShieldCheck className="h-4 w-4 text-[hsl(214_73%_58%)]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-[hsl(214_73%_58%)]">{stats.signed}</div>
           </CardContent>
         </Card>
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-400/70">Rejected</CardTitle>
-            <XCircle className="h-4 w-4 text-red-400" />
+            <CardTitle className="text-sm font-medium text-warning/70">Rejected</CardTitle>
+            <XCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400">{stats.rejected}</div>
+            <div className="text-2xl font-bold text-destructive">{stats.rejected}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="all" className="space-y-4">
-        <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="all" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900">
+        <TabsList className="bg-card/80 border border-warning/12">
+          <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             All Contracts
           </TabsTrigger>
-          <TabsTrigger value="by-manager" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900">
+          <TabsTrigger value="by-manager" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             <Users className="h-4 w-4 mr-2" />
             By Manager
           </TabsTrigger>
@@ -647,20 +647,20 @@ const WebhostContracts = () => {
 
         <TabsContent value="all" className="space-y-4">
           {/* Filters */}
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardContent className="pt-4">
               <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-warning" />
                   <Input
                     placeholder="Search contracts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-muted/80 border-amber-400/20"
+                    className="pl-10 bg-secondary-background border-warning/20"
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -674,7 +674,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={managerFilter} onValueChange={setManagerFilter}>
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue placeholder="Manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -687,7 +687,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -700,7 +700,7 @@ const WebhostContracts = () => {
                   </SelectContent>
                 </Select>
                 <Select value={expiryFilter} onValueChange={setExpiryFilter}>
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue placeholder="Expiry" />
                   </SelectTrigger>
                   <SelectContent>
@@ -710,7 +710,7 @@ const WebhostContracts = () => {
                     <SelectItem value="expired">Expired</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={fetchData} className="border-amber-400/20">
+                <Button variant="outline" onClick={fetchData} className="border-warning/20">
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -719,35 +719,35 @@ const WebhostContracts = () => {
           </Card>
 
           {/* Contracts Table */}
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-amber-400/12 hover:bg-transparent">
-                    <TableHead className="text-amber-400/70">Title</TableHead>
-                    <TableHead className="text-amber-400/70">Manager</TableHead>
-                    <TableHead className="text-amber-400/70">Type</TableHead>
-                    <TableHead className="text-amber-400/70">Status</TableHead>
-                    <TableHead className="text-amber-400/70">Valid Period</TableHead>
-                    <TableHead className="text-amber-400/70">Updated</TableHead>
-                    <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
+                  <TableRow className="border-warning/12 hover:bg-transparent">
+                    <TableHead className="text-warning/70">Title</TableHead>
+                    <TableHead className="text-warning/70">Manager</TableHead>
+                    <TableHead className="text-warning/70">Type</TableHead>
+                    <TableHead className="text-warning/70">Status</TableHead>
+                    <TableHead className="text-warning/70">Valid Period</TableHead>
+                    <TableHead className="text-warning/70">Updated</TableHead>
+                    <TableHead className="text-warning/70 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8">
-                        <RefreshCw className="h-6 w-6 animate-spin mx-auto text-amber-500" />
+                        <RefreshCw className="h-6 w-6 animate-spin mx-auto text-warning" />
                       </TableCell>
                     </TableRow>
                   ) : fetchError ? (
                     <TableRow>
                       <TableCell colSpan={7} className="py-8">
                         <div className="flex flex-col items-center text-center">
-                          <AlertTriangle className="h-8 w-8 mb-2 text-red-400" />
-                          <p className="text-sm font-semibold text-red-300">Unable to load contracts.</p>
+                          <AlertTriangle className="h-8 w-8 mb-2 text-destructive" />
+                          <p className="text-sm font-semibold text-destructive">Unable to load contracts.</p>
                           <p className="text-xs text-muted-foreground mt-1 mb-3">{fetchError}</p>
-                          <Button variant="outline" size="sm" onClick={fetchData} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+                          <Button variant="outline" size="sm" onClick={fetchData} className="border-destructive/40 text-destructive hover:bg-destructive/10">
                             <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
                           </Button>
                         </div>
@@ -756,36 +756,36 @@ const WebhostContracts = () => {
                   ) : filteredContracts.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-10">
-                        <FileText className="h-10 w-10 mx-auto mb-2 text-amber-500/30" />
-                        <p className="text-sm text-amber-400/70">No contracts configured.</p>
-                        <p className="text-xs text-amber-500/50 mt-1">Upload a contract to get started.</p>
+                        <FileText className="h-10 w-10 mx-auto mb-2 text-warning/30" />
+                        <p className="text-sm text-warning/70">No contracts configured.</p>
+                        <p className="text-xs text-warning/50 mt-1">Upload a contract to get started.</p>
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredContracts.map((contract) => {
                       const expiryAttn = getExpiryAttention(contract);
                       return (
-                      <TableRow key={contract.id} className="border-amber-400/12">
+                      <TableRow key={contract.id} className="border-warning/12">
                         <TableCell className="font-medium text-foreground">
                           <div className="flex items-center gap-2">
                             <span className="truncate max-w-[180px]">{contract.title}</span>
-                            {expiryAttn === "expired" && <AlertTriangle className="h-3.5 w-3.5 text-red-400 shrink-0" />}
-                            {expiryAttn === "expiring" && <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
+                            {expiryAttn === "expired" && <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0" />}
+                            {expiryAttn === "expiring" && <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0" />}
                           </div>
                         </TableCell>
-                        <TableCell className="text-amber-400/70">
+                        <TableCell className="text-warning/70">
                           <div className="flex flex-col">
                             <span className="text-foreground">{contract.manager_name || "Unknown"}</span>
-                            <span className="text-xs text-amber-500">{contract.manager_email}</span>
+                            <span className="text-xs text-warning">{contract.manager_email}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-amber-400/70 capitalize">
+                        <TableCell className="text-warning/70 capitalize">
                           {contract.contract_type?.replace(/_/g, " ") || "Service Agreement"}
                         </TableCell>
                         <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                        <TableCell className="text-amber-400/70">
+                        <TableCell className="text-warning/70">
                           {contract.valid_from && contract.valid_until ? (
-                            <span className={`text-xs ${expiryAttn === "expired" ? "text-red-400" : expiryAttn === "expiring" ? "text-amber-400" : "text-foreground"}`}>
+                            <span className={`text-xs ${expiryAttn === "expired" ? "text-destructive" : expiryAttn === "expiring" ? "text-warning" : "text-foreground"}`}>
                               {format(new Date(contract.valid_from), "dd/MM/yy")} -{" "}
                               {format(new Date(contract.valid_until), "dd/MM/yy")}
                             </span>
@@ -793,7 +793,7 @@ const WebhostContracts = () => {
                             <span className="text-[hsl(218_58%_50%)]">Not set</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-amber-400/70 text-xs">
+                        <TableCell className="text-warning/70 text-xs">
                           {format(new Date(contract.updated_at), "dd/MM/yy")}
                         </TableCell>
                         <TableCell className="text-right">
@@ -806,7 +806,7 @@ const WebhostContracts = () => {
                                 setSelectedContract(contract);
                                 setPreviewDialogOpen(true);
                               }}
-                              className="h-8 w-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
+                              className="h-8 w-8 text-warning hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -816,7 +816,7 @@ const WebhostContracts = () => {
                                 size="icon"
                                 aria-label="Download contract"
                                 onClick={() => handleDownloadContract(contract)}
-                                className="h-8 w-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
+                                className="h-8 w-8 text-warning hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -831,7 +831,7 @@ const WebhostContracts = () => {
                                     setSelectedContract(contract);
                                     setApproveDialogOpen(true);
                                   }}
-                                  className="h-8 w-8 text-emerald-400 hover:text-foreground hover:bg-emerald-600/20"
+                                  className="h-8 w-8 text-success hover:text-foreground hover:bg-success/20"
                                 >
                                   <CheckCircle className="h-4 w-4" />
                                 </Button>
@@ -843,7 +843,7 @@ const WebhostContracts = () => {
                                     setSelectedContract(contract);
                                     setRejectDialogOpen(true);
                                   }}
-                                  className="h-8 w-8 text-red-400 hover:text-foreground hover:bg-red-600/20"
+                                  className="h-8 w-8 text-destructive hover:text-foreground hover:bg-destructive/20"
                                 >
                                   <XCircle className="h-4 w-4" />
                                 </Button>
@@ -858,7 +858,7 @@ const WebhostContracts = () => {
                                   setSelectedContract(contract);
                                   setRetakeDialogOpen(true);
                                 }}
-                                className="h-8 w-8 text-amber-400 hover:text-foreground hover:bg-amber-600/20"
+                                className="h-8 w-8 text-warning hover:text-foreground hover:bg-warning/20"
                               >
                                 <RotateCcw className="h-4 w-4" />
                               </Button>
@@ -877,19 +877,19 @@ const WebhostContracts = () => {
 
         {/* By Manager Tab - Independent contracts per manager */}
         <TabsContent value="by-manager" className="space-y-4">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground flex items-center gap-2">
-                <Users className="h-5 w-5 text-amber-500" />
+                <Users className="h-5 w-5 text-warning" />
                 Manager Contract Sections
               </CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 View and upload contracts organized by each manager. Each manager has their own independent contract section.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {managers.length === 0 ? (
-                <div className="text-center py-8 text-amber-500">
+                <div className="text-center py-8 text-warning">
                   <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>No managers found</p>
                 </div>
@@ -897,25 +897,25 @@ const WebhostContracts = () => {
                 managers.map((manager) => {
                   const managerContracts = contracts.filter(c => c.manager_user_id === manager.id);
                   return (
-                    <div key={manager.id} className="border border-amber-400/30/30 rounded-lg overflow-hidden">
-                      <div className="bg-muted/80 px-4 py-3 flex items-center justify-between">
+                    <div key={manager.id} className="border border-warning/30/30 rounded-lg overflow-hidden">
+                      <div className="bg-secondary-background px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-[hsl(218_58%_40%/0.2)] flex items-center justify-center">
-                            <Building className="h-5 w-5 text-amber-500" />
+                            <Building className="h-5 w-5 text-warning" />
                           </div>
                           <div>
                             <p className="text-foreground font-medium">{manager.full_name || "Unnamed Manager"}</p>
-                            <p className="text-sm text-amber-500">{manager.email}</p>
+                            <p className="text-sm text-warning">{manager.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className="bg-[hsl(218_58%_40%/0.2)] text-amber-400/70 border-amber-400/20">
+                          <Badge className="bg-[hsl(218_58%_40%/0.2)] text-warning/70 border-warning/20">
                             {managerContracts.length} contract(s)
                           </Badge>
                           <div className="relative">
                             <Button
                               size="sm"
-                              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+                              className="bg-primary hover:bg-primary/90 text-white"
                               onClick={() => {
                                 setUploadForm(prev => ({ ...prev, manager_user_id: manager.id }));
                                 setUploadDialogOpen(true);
@@ -929,17 +929,17 @@ const WebhostContracts = () => {
                       </div>
                       <div className="p-4">
                         {managerContracts.length === 0 ? (
-                          <p className="text-center text-amber-500 py-4">No contracts for this manager yet</p>
+                          <p className="text-center text-warning py-4">No contracts for this manager yet</p>
                         ) : (
                           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                             {managerContracts.map((contract) => (
-                              <Card key={contract.id} className="bg-muted/80 border-amber-400/30/20">
+                              <Card key={contract.id} className="bg-secondary-background border-warning/30/20">
                                 <CardContent className="p-4">
                                   <div className="flex items-start justify-between mb-2">
                                     <h4 className="text-foreground font-medium text-sm truncate flex-1">{contract.title}</h4>
                                     {getStatusBadge(contract.status)}
                                   </div>
-                                  <p className="text-xs text-amber-500 mb-3 capitalize">
+                                  <p className="text-xs text-warning mb-3 capitalize">
                                     {contract.contract_type?.replace(/_/g, " ") || "Service Agreement"}
                                   </p>
                                   <div className="flex gap-2">
@@ -950,7 +950,7 @@ const WebhostContracts = () => {
                                         setSelectedContract(contract);
                                         setPreviewDialogOpen(true);
                                       }}
-                                      className="h-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
+                                      className="h-8 text-warning hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                                     >
                                       <Eye className="h-3 w-3 mr-1" />
                                       View
@@ -960,7 +960,7 @@ const WebhostContracts = () => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleDownloadContract(contract)}
-                                        className="h-8 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
+                                        className="h-8 text-warning hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                                       >
                                         <Download className="h-3 w-3 mr-1" />
                                         Download
@@ -990,10 +990,10 @@ const WebhostContracts = () => {
           setParsedContent(null);
         }
       }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-card border-amber-400/15">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden bg-card border-warning/15">
           <DialogHeader>
             <DialogTitle className="text-foreground">{selectedContract?.title}</DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Contract for {selectedContract?.manager_name || selectedContract?.manager_email}
             </DialogDescription>
           </DialogHeader>
@@ -1037,40 +1037,40 @@ const WebhostContracts = () => {
 
               {/* Commercial relationship context strip (read-only — context only, does not replace Tiers/Billing/Custom Pricing modules) */}
               {selectedContract && (
-                <div className="p-3 rounded-lg border border-amber-400/20 bg-amber-400/5">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-400/80 mb-2">Commercial relationship</p>
+                <div className="p-3 rounded-lg border border-warning/20 bg-warning/5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-warning/80 mb-2">Commercial relationship</p>
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="px-2 py-1 rounded-md bg-amber-400/10 text-amber-200 border border-amber-400/20">Contract</span>
-                    <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-muted/80 text-foreground border border-slate-600">
+                    <span className="px-2 py-1 rounded-md bg-warning/10 text-warning border border-warning/20">Contract</span>
+                    <span className="text-warning/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-secondary-background text-foreground border border-border">
                       {selectedContract.manager_name || selectedContract.manager_email}
                     </span>
-                    <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-muted/80 text-foreground border border-slate-600 capitalize">
+                    <span className="text-warning/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-secondary-background text-foreground border border-border capitalize">
                       {managerTiers[selectedContract.manager_user_id] ? `${managerTiers[selectedContract.manager_user_id]} tier` : "No tier"}
                     </span>
-                    <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-muted/80 text-muted-foreground border border-slate-600">Custom pricing</span>
-                    <span className="text-amber-500/50">→</span>
-                    <span className="px-2 py-1 rounded-md bg-muted/80 text-muted-foreground border border-slate-600">Billing</span>
+                    <span className="text-warning/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-secondary-background text-muted-foreground border border-border">Custom pricing</span>
+                    <span className="text-warning/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-secondary-background text-muted-foreground border border-border">Billing</span>
                   </div>
-                  <p className="text-[10px] text-amber-500/50 mt-2">Tier, custom pricing, and billing are managed in their respective admin modules.</p>
+                  <p className="text-[10px] text-warning/50 mt-2">Tier, custom pricing, and billing are managed in their respective admin modules.</p>
                 </div>
               )}
 
               {/* Audit trail (existing fields — read-only) */}
               {selectedContract && (selectedContract.reviewed_at || selectedContract.updated_at || selectedContract.signed_at) && (
-                <div className="grid gap-3 md:grid-cols-3 p-3 rounded-lg bg-card/80 border border-amber-400/15">
+                <div className="grid gap-3 md:grid-cols-3 p-3 rounded-lg bg-card/80 border border-warning/15">
                   <div className="space-y-0.5">
-                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Created</p>
+                    <p className="text-[10px] uppercase tracking-wide text-warning/70">Created</p>
                     <p className="text-xs text-foreground">{format(new Date(selectedContract.created_at), "dd MMM yyyy")}</p>
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Last updated</p>
+                    <p className="text-[10px] uppercase tracking-wide text-warning/70">Last updated</p>
                     <p className="text-xs text-foreground">{format(new Date(selectedContract.updated_at), "dd MMM yyyy")}</p>
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Reviewed / Signed</p>
+                    <p className="text-[10px] uppercase tracking-wide text-warning/70">Reviewed / Signed</p>
                     <p className="text-xs text-foreground">
                       {selectedContract.signed_at
                         ? `Signed ${format(new Date(selectedContract.signed_at), "dd MMM yyyy")}`
@@ -1083,7 +1083,7 @@ const WebhostContracts = () => {
               )}
 
               {selectedContract?.review_notes && (
-                <div className="space-y-1 p-3 rounded-lg bg-card/80 border border-amber-400/30/30">
+                <div className="space-y-1 p-3 rounded-lg bg-card/80 border border-warning/30/30">
                   <p className="text-sm font-medium text-foreground">Review Notes</p>
                   <p className="text-foreground font-normal">{selectedContract.review_notes}</p>
                   {selectedContract.reviewed_at && (
@@ -1096,7 +1096,7 @@ const WebhostContracts = () => {
 
               {/* AI Parsed Content Section */}
               {(parsedContent || selectedContract?.parsed_content) && (
-                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-[hsl(218_58%_16%/0.3)] to-muted/80 border border-amber-400/20">
+                <div className="space-y-3 p-4 rounded-lg bg-gradient-to-br from-[hsl(218_58%_16%/0.3)] to-muted/80 border border-warning/20">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-foreground" />
                     <p className="text-sm font-medium text-foreground">AI Extracted Terms</p>
@@ -1117,14 +1117,14 @@ const WebhostContracts = () => {
               )}
 
               {selectedContract?.uploaded_contract_url && (
-                <div className="border border-amber-400/30/30 rounded-lg overflow-hidden">
+                <div className="border border-warning/30/30 rounded-lg overflow-hidden">
                   {selectedContract.uploaded_contract_url.endsWith(".pdf") ? (
                     <div className="p-6 text-center bg-card/80">
-                      <FileText className="h-12 w-12 mx-auto mb-3 text-amber-500" />
+                      <FileText className="h-12 w-12 mx-auto mb-3 text-warning" />
                       <p className="text-foreground mb-3">PDF Document</p>
                       <Button
                         onClick={() => handleDownloadContract(selectedContract)}
-                        className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+                        className="bg-primary hover:bg-primary/90 text-white"
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Open PDF
@@ -1149,7 +1149,7 @@ const WebhostContracts = () => {
                     setPreviewDialogOpen(false);
                     setApproveDialogOpen(true);
                   }}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="bg-success hover:bg-success/90"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Approve
@@ -1172,7 +1172,7 @@ const WebhostContracts = () => {
                   variant="outline"
                   onClick={handleParseContract}
                   disabled={isParsing}
-                  className="border-amber-400/25 text-amber-500 hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
+                  className="border-warning/25 text-warning hover:text-white hover:bg-[hsl(218_58%_40%/0.2)]"
                 >
                   {isParsing ? (
                     <>
@@ -1189,7 +1189,7 @@ const WebhostContracts = () => {
                 <Button
                   variant="outline"
                   onClick={() => handleDownloadContract(selectedContract)}
-                  className="border-amber-400/20"
+                  className="border-warning/20"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download
@@ -1202,27 +1202,27 @@ const WebhostContracts = () => {
 
       {/* Approve Dialog */}
       <AlertDialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
-        <AlertDialogContent className="bg-card border-amber-400/15">
+        <AlertDialogContent className="bg-card border-warning/15">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Approve Contract</AlertDialogTitle>
-            <AlertDialogDescription className="text-amber-400/70">
+            <AlertDialogDescription className="text-warning/70">
               Are you sure you want to approve this contract? You can optionally add review notes.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
-            <Label className="text-amber-400/70">Review Notes (Optional)</Label>
+            <Label className="text-warning/70">Review Notes (Optional)</Label>
             <Textarea
               value={reviewNotes}
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add any notes about this approval..."
-              className="mt-2 bg-muted/80 border-amber-400/20"
+              className="mt-2 bg-secondary-background border-warning/20"
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-amber-400/20">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-warning/20">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApproveContract}
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-success hover:bg-success/90"
             >
               Approve
             </AlertDialogAction>
@@ -1232,24 +1232,24 @@ const WebhostContracts = () => {
 
       {/* Reject Dialog */}
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="bg-card border-amber-400/15">
+        <DialogContent className="bg-card border-warning/15">
           <DialogHeader>
             <DialogTitle className="text-foreground">Reject Contract</DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Please provide a reason for rejecting this contract.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label className="text-amber-400/70">Rejection Reason *</Label>
+            <Label className="text-warning/70">Rejection Reason *</Label>
             <Textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Explain why this contract is being rejected..."
-              className="mt-2 bg-muted/80 border-amber-400/20 min-h-[100px]"
+              className="mt-2 bg-secondary-background border-warning/20 min-h-[100px]"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-amber-400/20">
+            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-warning/20">
               Cancel
             </Button>
             <Button
@@ -1265,21 +1265,21 @@ const WebhostContracts = () => {
 
       {/* Retake Confirmation Dialog (commercially significant reset) */}
       <AlertDialog open={retakeDialogOpen} onOpenChange={setRetakeDialogOpen}>
-        <AlertDialogContent className="bg-card border-amber-400/15">
+        <AlertDialogContent className="bg-card border-warning/15">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground flex items-center gap-2">
-              <RotateCcw className="h-4 w-4 text-amber-400" />
+              <RotateCcw className="h-4 w-4 text-warning" />
               Reset Contract for Re-upload
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-amber-400/70">
+            <AlertDialogDescription className="text-warning/70">
               This will reset {selectedContract?.title ? `"${selectedContract.title}"` : "this contract"} back to pending review, clearing the reviewer, review date, and review notes. The contract document remains stored.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-amber-400/20">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-warning/20">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => selectedContract && handleRetakeContract(selectedContract)}
-              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               Reset Contract
             </AlertDialogAction>
@@ -1302,13 +1302,13 @@ const WebhostContracts = () => {
           setSelectedFile(null);
         }
       }}>
-        <DialogContent className="max-w-2xl bg-card border-amber-400/15">
+        <DialogContent className="max-w-2xl bg-card border-warning/15">
           <DialogHeader>
             <DialogTitle className="text-foreground flex items-center gap-2">
-              <FileUp className="h-5 w-5 text-amber-500" />
+              <FileUp className="h-5 w-5 text-warning" />
               Upload Contract for Manager
             </DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Upload a contract document for the selected manager. Supported formats: PDF, JPEG, PNG, WebP (max 10MB)
             </DialogDescription>
           </DialogHeader>
@@ -1316,12 +1316,12 @@ const WebhostContracts = () => {
           <div className="space-y-4 py-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-amber-400/70">Select Manager *</Label>
+                <Label className="text-warning/70">Select Manager *</Label>
                 <Select 
                   value={uploadForm.manager_user_id} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, manager_user_id: value }))}
                 >
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue placeholder="Choose a manager" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1337,12 +1337,12 @@ const WebhostContracts = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-400/70">Contract Type</Label>
+                <Label className="text-warning/70">Contract Type</Label>
                 <Select 
                   value={uploadForm.contract_type} 
                   onValueChange={(value) => setUploadForm(prev => ({ ...prev, contract_type: value }))}
                 >
-                  <SelectTrigger className="bg-muted/80 border-amber-400/20">
+                  <SelectTrigger className="bg-secondary-background border-warning/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1357,53 +1357,53 @@ const WebhostContracts = () => {
             </div>
             
             <div className="space-y-2">
-              <Label className="text-amber-400/70">Contract Title *</Label>
+              <Label className="text-warning/70">Contract Title *</Label>
               <Input
                 value={uploadForm.title}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Property Management Service Agreement 2024"
-                className="bg-muted/80 border-amber-400/20"
+                className="bg-secondary-background border-warning/20"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-amber-400/70">Description</Label>
+              <Label className="text-warning/70">Description</Label>
               <Textarea
                 value={uploadForm.description}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Brief description of the contract terms..."
-                className="bg-muted/80 border-amber-400/20 min-h-[60px]"
+                className="bg-secondary-background border-warning/20 min-h-[60px]"
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-amber-400/70">Valid From</Label>
+                <Label className="text-warning/70">Valid From</Label>
                 <Input
                   type="date"
                   value={uploadForm.valid_from}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_from: e.target.value }))}
-                  className="bg-muted/80 border-amber-400/20"
+                  className="bg-secondary-background border-warning/20"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-amber-400/70">Valid Until</Label>
+                <Label className="text-warning/70">Valid Until</Label>
                 <Input
                   type="date"
                   value={uploadForm.valid_until}
                   onChange={(e) => setUploadForm(prev => ({ ...prev, valid_until: e.target.value }))}
-                  className="bg-muted/80 border-amber-400/20"
+                  className="bg-secondary-background border-warning/20"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-amber-400/70">Contract Document *</Label>
+              <Label className="text-warning/70">Contract Document *</Label>
               <div 
                 className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer
                   ${selectedFile 
-                    ? "border-amber-400/50 bg-[hsl(218_58%_50%/0.1)]" 
-                    : "border-amber-400/20 hover:border-amber-400/50/50 hover:bg-muted/30"
+                    ? "border-warning/50 bg-[hsl(218_58%_50%/0.1)]" 
+                    : "border-warning/20 hover:border-warning/50/50 hover:bg-secondary-background/60"
                   }`}
                 role="button"
                 tabIndex={0}
@@ -1424,10 +1424,10 @@ const WebhostContracts = () => {
                 />
                 {selectedFile ? (
                   <div className="flex items-center justify-center gap-3">
-                    <FileText className="h-6 w-6 text-amber-500" />
+                    <FileText className="h-6 w-6 text-warning" />
                     <div className="text-left">
                       <p className="text-foreground font-medium text-sm">{selectedFile.name}</p>
-                      <p className="text-amber-500 text-xs">
+                      <p className="text-warning text-xs">
                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
@@ -1439,13 +1439,13 @@ const WebhostContracts = () => {
                         e.stopPropagation();
                         setSelectedFile(null);
                       }}
-                      className="text-red-400 hover:text-red-300"
+                      className="text-destructive hover:text-destructive"
                     >
                       Remove
                     </Button>
                   </div>
                 ) : (
-                  <div className="text-amber-500">
+                  <div className="text-warning">
                     <Upload className="h-8 w-8 mx-auto mb-2" />
                     <p className="font-medium text-sm">Click to upload</p>
                     <p className="text-xs text-[hsl(218_58%_50%)]">PDF, JPEG, PNG, WebP (max 10MB)</p>
@@ -1459,14 +1459,14 @@ const WebhostContracts = () => {
             <Button
               variant="outline"
               onClick={() => setUploadDialogOpen(false)}
-              className="border-amber-400/20"
+              className="border-warning/20"
             >
               Cancel
             </Button>
             <Button
               onClick={handleUploadContract}
               disabled={uploadingFile || !uploadForm.manager_user_id || !uploadForm.title || !selectedFile}
-              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               {uploadingFile ? (
                 <>
