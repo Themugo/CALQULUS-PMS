@@ -112,16 +112,21 @@ const WebhostContracts = () => {
   
   const [contracts, setContracts] = useState<ManagerContract[]>([]);
   const [managers, setManagers] = useState<Manager[]>([]);
+  const [managerTiers, setManagerTiers] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [managerFilter, setManagerFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [expiryFilter, setExpiryFilter] = useState("all");
   
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [retakeDialogOpen, setRetakeDialogOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<ManagerContract | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
@@ -142,42 +147,78 @@ const WebhostContracts = () => {
 
   const fetchData = async () => {
     setIsLoading(true);
-    
-    const [contractsRes, managersRes] = await Promise.all([
-      supabase
-        .from("manager_contracts")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "manager")
-        .eq("approval_status", "approved"),
-    ]);
+    setFetchError(null);
 
-    if (contractsRes.data) {
-      setContracts(contractsRes.data as ManagerContract[]);
-    }
+    try {
+      const [contractsRes, managersRes] = await Promise.all([
+        supabase
+          .from("manager_contracts")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "manager")
+          .eq("approval_status", "approved"),
+      ]);
 
-    // Fetch manager profiles
-    if (managersRes.data && managersRes.data.length > 0) {
-      const userIds = managersRes.data.map(m => m.user_id);
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", userIds);
-      
-      if (profiles) {
-        setManagers(profiles);
+      if (contractsRes.error) throw contractsRes.error;
+      if (contractsRes.data) {
+        setContracts(contractsRes.data as ManagerContract[]);
       }
+
+      // Fetch manager profiles
+      let managerProfiles: Manager[] = [];
+      if (managersRes.data && managersRes.data.length > 0) {
+        const userIds = managersRes.data.map(m => m.user_id);
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, email, full_name")
+          .in("id", userIds);
+
+        if (profilesError) throw profilesError;
+        if (profiles) {
+          managerProfiles = profiles as Manager[];
+          setManagers(managerProfiles);
+        }
+
+        // Fetch subscription tier per manager (REAL, read-only — for tier relationship context)
+        const { data: tiers } = await supabase
+          .from("manager_profiles")
+          .select("manager_user_id, subscription_tier")
+          .in("manager_user_id", userIds);
+        if (tiers) {
+          const tierMap: Record<string, string> = {};
+          for (const t of tiers as { manager_user_id: string; subscription_tier: string }[]) {
+            tierMap[t.manager_user_id] = t.subscription_tier;
+          }
+          setManagerTiers(tierMap);
+        }
+      } else {
+        setManagers([]);
+        setManagerTiers({});
+      }
+    } catch (error: unknown) {
+      setFetchError(error instanceof Error ? error.message : "Failed to load contracts.");
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Read-only derivation of expiry attention from valid_until. No auto-renewal logic.
+  const getExpiryAttention = (contract: ManagerContract): "none" | "active" | "expiring" | "expired" => {
+    if (!contract.valid_until) return "none";
+    const expiry = new Date(contract.valid_until);
+    const now = new Date();
+    if (expiry < now) return "expired";
+    const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+    if (expiry.getTime() - now.getTime() <= thirtyDays) return "expiring";
+    return "active";
+  };
 
   const getFilteredContracts = () => {
     let filtered = contracts;
@@ -188,6 +229,14 @@ const WebhostContracts = () => {
     
     if (managerFilter !== "all") {
       filtered = filtered.filter((c) => c.manager_user_id === managerFilter);
+    }
+
+    if (typeFilter !== "all") {
+      filtered = filtered.filter((c) => (c.contract_type || "service_agreement") === typeFilter);
+    }
+
+    if (expiryFilter !== "all") {
+      filtered = filtered.filter((c) => getExpiryAttention(c) === expiryFilter);
     }
     
     if (searchQuery) {
@@ -439,6 +488,8 @@ const WebhostContracts = () => {
     }
 
     toast({ title: "Contract Reset", description: "The contract has been reset for re-upload." });
+    setRetakeDialogOpen(false);
+    setSelectedContract(null);
     fetchData();
   };
 
@@ -519,10 +570,10 @@ const WebhostContracts = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-white">Manager Contracts</h2>
-          <p className="text-amber-400/70">Manage service agreements with landlords/property managers</p>
+          <h2 className="text-2xl font-bold text-white">Commercial Contract Management Console</h2>
+          <p className="text-amber-400/70">Manage service agreements with managers — contracts, documents, status, and commercial relationships.</p>
         </div>
         <Button
           onClick={() => setUploadDialogOpen(true)}
@@ -598,7 +649,7 @@ const WebhostContracts = () => {
           {/* Filters */}
           <Card className="bg-card border-amber-400/15">
             <CardContent className="pt-4">
-              <div className="grid gap-4 md:grid-cols-4">
+              <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500" />
                   <Input
@@ -619,6 +670,7 @@ const WebhostContracts = () => {
                     <SelectItem value="signed">Signed</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
                     <SelectItem value="expired">Expired</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={managerFilter} onValueChange={setManagerFilter}>
@@ -632,6 +684,30 @@ const WebhostContracts = () => {
                         {manager.full_name || manager.email}
                       </SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="service_agreement">Service Agreement</SelectItem>
+                    <SelectItem value="management_contract">Management Contract</SelectItem>
+                    <SelectItem value="partnership_agreement">Partnership Agreement</SelectItem>
+                    <SelectItem value="nda">NDA</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={expiryFilter} onValueChange={setExpiryFilter}>
+                  <SelectTrigger className="bg-slate-700/50 border-amber-400/20">
+                    <SelectValue placeholder="Expiry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Expiry</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="expiring">Expiring ≤30d</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button variant="outline" onClick={fetchData} className="border-amber-400/20">
@@ -653,7 +729,7 @@ const WebhostContracts = () => {
                     <TableHead className="text-amber-400/70">Type</TableHead>
                     <TableHead className="text-amber-400/70">Status</TableHead>
                     <TableHead className="text-amber-400/70">Valid Period</TableHead>
-                    <TableHead className="text-amber-400/70">Created</TableHead>
+                    <TableHead className="text-amber-400/70">Updated</TableHead>
                     <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -664,16 +740,39 @@ const WebhostContracts = () => {
                         <RefreshCw className="h-6 w-6 animate-spin mx-auto text-amber-500" />
                       </TableCell>
                     </TableRow>
+                  ) : fetchError ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="py-8">
+                        <div className="flex flex-col items-center text-center">
+                          <AlertTriangle className="h-8 w-8 mb-2 text-red-400" />
+                          <p className="text-sm font-semibold text-red-300">Unable to load contracts.</p>
+                          <p className="text-xs text-muted-foreground mt-1 mb-3">{fetchError}</p>
+                          <Button variant="outline" size="sm" onClick={fetchData} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+                            <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   ) : filteredContracts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-amber-400/70">
-                        No contracts found
+                      <TableCell colSpan={7} className="text-center py-10">
+                        <FileText className="h-10 w-10 mx-auto mb-2 text-amber-500/30" />
+                        <p className="text-sm text-amber-400/70">No contracts configured.</p>
+                        <p className="text-xs text-amber-500/50 mt-1">Upload a contract to get started.</p>
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredContracts.map((contract) => (
+                    filteredContracts.map((contract) => {
+                      const expiryAttn = getExpiryAttention(contract);
+                      return (
                       <TableRow key={contract.id} className="border-amber-400/12">
-                        <TableCell className="font-medium text-white">{contract.title}</TableCell>
+                        <TableCell className="font-medium text-white">
+                          <div className="flex items-center gap-2">
+                            <span className="truncate max-w-[180px]">{contract.title}</span>
+                            {expiryAttn === "expired" && <AlertTriangle className="h-3.5 w-3.5 text-red-400 shrink-0" />}
+                            {expiryAttn === "expiring" && <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-amber-400/70">
                           <div className="flex flex-col">
                             <span className="text-white">{contract.manager_name || "Unknown"}</span>
@@ -686,7 +785,7 @@ const WebhostContracts = () => {
                         <TableCell>{getStatusBadge(contract.status)}</TableCell>
                         <TableCell className="text-amber-400/70">
                           {contract.valid_from && contract.valid_until ? (
-                            <span className="text-xs">
+                            <span className={`text-xs ${expiryAttn === "expired" ? "text-red-400" : expiryAttn === "expiring" ? "text-amber-400" : "text-white"}`}>
                               {format(new Date(contract.valid_from), "dd/MM/yy")} -{" "}
                               {format(new Date(contract.valid_until), "dd/MM/yy")}
                             </span>
@@ -694,8 +793,8 @@ const WebhostContracts = () => {
                             <span className="text-[hsl(218_58%_50%)]">Not set</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-amber-400/70">
-                          {format(new Date(contract.created_at), "dd/MM/yy")}
+                        <TableCell className="text-amber-400/70 text-xs">
+                          {format(new Date(contract.updated_at), "dd/MM/yy")}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -755,7 +854,10 @@ const WebhostContracts = () => {
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Retake contract"
-                                onClick={() => handleRetakeContract(contract)}
+                                onClick={() => {
+                                  setSelectedContract(contract);
+                                  setRetakeDialogOpen(true);
+                                }}
                                 className="h-8 w-8 text-amber-400 hover:text-white hover:bg-amber-600/20"
                               >
                                 <RotateCcw className="h-4 w-4" />
@@ -764,7 +866,8 @@ const WebhostContracts = () => {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
@@ -929,6 +1032,53 @@ const WebhostContracts = () => {
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-white">Description</p>
                   <p className="text-white font-normal">{selectedContract.description}</p>
+                </div>
+              )}
+
+              {/* Commercial relationship context strip (read-only — context only, does not replace Tiers/Billing/Custom Pricing modules) */}
+              {selectedContract && (
+                <div className="p-3 rounded-lg border border-amber-400/20 bg-amber-400/5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-400/80 mb-2">Commercial relationship</p>
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="px-2 py-1 rounded-md bg-amber-400/10 text-amber-200 border border-amber-400/20">Contract</span>
+                    <span className="text-amber-500/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-white border border-slate-600">
+                      {selectedContract.manager_name || selectedContract.manager_email}
+                    </span>
+                    <span className="text-amber-500/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-white border border-slate-600 capitalize">
+                      {managerTiers[selectedContract.manager_user_id] ? `${managerTiers[selectedContract.manager_user_id]} tier` : "No tier"}
+                    </span>
+                    <span className="text-amber-500/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600">Custom pricing</span>
+                    <span className="text-amber-500/50">→</span>
+                    <span className="px-2 py-1 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600">Billing</span>
+                  </div>
+                  <p className="text-[10px] text-amber-500/50 mt-2">Tier, custom pricing, and billing are managed in their respective admin modules.</p>
+                </div>
+              )}
+
+              {/* Audit trail (existing fields — read-only) */}
+              {selectedContract && (selectedContract.reviewed_at || selectedContract.updated_at || selectedContract.signed_at) && (
+                <div className="grid gap-3 md:grid-cols-3 p-3 rounded-lg bg-card/80 border border-amber-400/15">
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Created</p>
+                    <p className="text-xs text-white">{format(new Date(selectedContract.created_at), "dd MMM yyyy")}</p>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Last updated</p>
+                    <p className="text-xs text-white">{format(new Date(selectedContract.updated_at), "dd MMM yyyy")}</p>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] uppercase tracking-wide text-amber-400/70">Reviewed / Signed</p>
+                    <p className="text-xs text-white">
+                      {selectedContract.signed_at
+                        ? `Signed ${format(new Date(selectedContract.signed_at), "dd MMM yyyy")}`
+                        : selectedContract.reviewed_at
+                        ? `Reviewed ${format(new Date(selectedContract.reviewed_at), "dd MMM yyyy")}`
+                        : "—"}
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -1112,6 +1262,30 @@ const WebhostContracts = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Retake Confirmation Dialog (commercially significant reset) */}
+      <AlertDialog open={retakeDialogOpen} onOpenChange={setRetakeDialogOpen}>
+        <AlertDialogContent className="bg-slate-900 border-amber-400/15">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white flex items-center gap-2">
+              <RotateCcw className="h-4 w-4 text-amber-400" />
+              Reset Contract for Re-upload
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-amber-400/70">
+              This will reset {selectedContract?.title ? `"${selectedContract.title}"` : "this contract"} back to pending review, clearing the reviewer, review date, and review notes. The contract document remains stored.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-amber-400/20">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedContract && handleRetakeContract(selectedContract)}
+              className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+            >
+              Reset Contract
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Upload Contract Dialog */}
       <Dialog open={uploadDialogOpen} onOpenChange={(open) => {
