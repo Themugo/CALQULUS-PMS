@@ -52,7 +52,7 @@ interface CustomerOption {
 
 const CustomerBillingBlocks = () => {
   const { toast } = useToast();
-  const { isPlatformOwner, isPlatformBusiness, user } = useAuth();
+  const { isPlatformOwner, isPlatformBusiness, isSuperAdmin, hasWebhostPermission, user } = useAuth();
   const queryClient = useQueryClient();
   const { logActivity } = useActivityLog();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,7 +60,13 @@ const CustomerBillingBlocks = () => {
   const [deleteTarget, setDeleteTarget] = useState<CustomerBillingBlock | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  // Write access — matches the RLS policy `webhost_manage_billing_blocks`
+  // (platform_admins admin_type IN ('owner','business'), not suspended).
   const canManage = isPlatformOwner || isPlatformBusiness;
+  // Read access — matches the tab visibility gate in WebhostDashboard
+  // (`isSuperAdmin || canViewBilling`). Super admins / billing viewers can see
+  // the read-only registry; only owner/business can create/edit/delete.
+  const canView = isSuperAdmin || hasWebhostPermission('can_manage_billing') || canManage;
 
   const [form, setForm] = useState({
     customer_id: '',
@@ -90,7 +96,7 @@ const CustomerBillingBlocks = () => {
       if (error) throw error;
       return data as CustomerBillingBlock[];
     },
-    enabled: canManage,
+    enabled: canView,
   });
 
   // Standard tier price map (tier_key → price_per_unit) — REAL, read-only.
@@ -106,7 +112,7 @@ const CustomerBillingBlocks = () => {
       }
       return map;
     },
-    enabled: canManage,
+    enabled: canView,
   });
 
   // Manager → subscription_tier map (REAL) so we can resolve a manager customer's
@@ -122,7 +128,7 @@ const CustomerBillingBlocks = () => {
       }
       return map;
     },
-    enabled: canManage,
+    enabled: canView,
   });
 
   // Resolve standard price for a block's customer (managers only — others have no
@@ -153,7 +159,7 @@ const CustomerBillingBlocks = () => {
       }
       return results;
     },
-    enabled: canManage,
+    enabled: canView,
     staleTime: 60000,
   });
 
@@ -311,14 +317,16 @@ const CustomerBillingBlocks = () => {
               Custom Pricing & Commercial Exceptions Console
             </CardTitle>
             <CardDescription>
-              Per-unit pricing overrides, waivers, discounts, and custom negotiated blocks per customer. Only owner and business-level admins can manage billing blocks.
+              Per-unit pricing overrides, waivers, discounts, and custom negotiated blocks per customer. {canManage ? 'Only owner and business-level admins can manage billing blocks.' : 'You have read-only access — only owner and business-level admins can create or edit billing blocks.'}
             </CardDescription>
           </div>
-          {canManage && (
-            <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
+            {canView && (
               <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl text-xs">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
               </Button>
+            )}
+            {canManage && (
             <Dialog open={isDialogOpen} onOpenChange={v => { setIsDialogOpen(v); if (!v) resetForm(); }}>
               <DialogTrigger asChild>
                 <Button size="sm" onClick={resetForm} className="bg-amber-400 hover:bg-amber-500 text-slate-900 h-9 rounded-xl text-xs"><Plus className="h-3.5 w-3.5 mr-1.5" />New Billing Block</Button>
@@ -479,18 +487,18 @@ const CustomerBillingBlocks = () => {
                 </div>
               </DialogContent>
             </Dialog>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
-        ) : !canManage ? (
+        {!canView ? (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Only owner and business-level admins can manage billing blocks.</p>
+            <p>You do not have access to view custom pricing.</p>
           </div>
+        ) : isLoading ? (
+          <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
         ) : isError ? (
           <div className="p-8 text-center rounded-xl border border-red-500/30 bg-red-500/5">
             <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
@@ -504,7 +512,7 @@ const CustomerBillingBlocks = () => {
           <div className="text-center py-10 text-muted-foreground">
             <Tag className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p className="text-sm">No custom pricing configured.</p>
-            <p className="text-xs text-slate-500 mt-1">Create a billing block to override default tier pricing for a customer.</p>
+            <p className="text-xs text-slate-500 mt-1">{canManage ? 'Create a billing block to override default tier pricing for a customer.' : 'Only owner and business-level admins can create billing blocks.'}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -583,8 +591,14 @@ const CustomerBillingBlocks = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
+                      {canManage ? (
+                        <>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-300 hover:bg-slate-700/50" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
+                        </>
+                      ) : (
+                        <span className="text-[10px] text-slate-500 pr-2">Read-only</span>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
