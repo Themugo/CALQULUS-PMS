@@ -12,6 +12,7 @@ paths = [
   '''FULL_SYSTEM_AUDIT.*\.md''',
   '''API_DOCUMENTATION\.md''',
   '''supabase/functions/seed-demo-data/index\.ts''',
+  '''scripts/test-demo-auth\.mjs''',
 ]
 
 [[allowlists]]

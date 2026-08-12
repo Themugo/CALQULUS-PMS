@@ -22,18 +22,18 @@ import {
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  pending:              { label: 'Pending',    color: 'bg-amber-100 text-amber-800 border-amber-200',   icon: Clock },
-  approved:             { label: 'Active',     color: 'bg-green-100 text-green-800 border-green-200',   icon: CheckCircle },
-  rejected:             { label: 'Rejected',   color: 'bg-red-100 text-red-800 border-red-200',         icon: UserX },
-  suspended:            { label: 'Suspended',  color: 'bg-orange-100 text-orange-800 border-orange-200',icon: Ban },
-  suspended_nonpayment: { label: 'Suspended — non-payment', color: 'bg-red-100 text-red-800 border-red-200', icon: Ban },
+  pending:              { label: 'Pending Approval', color: 'bg-amber-400/15 text-amber-300 border-amber-400/30 font-bold', icon: Clock },
+  approved:             { label: 'Active',           color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-bold', icon: CheckCircle },
+  rejected:             { label: 'Rejected',         color: 'bg-red-500/15 text-red-300 border-red-500/30 font-bold', icon: UserX },
+  suspended:            { label: 'Suspended',        color: 'bg-orange-500/15 text-orange-300 border-orange-500/30 font-bold', icon: Ban },
+  suspended_nonpayment: { label: 'Non-Payment Suspended', color: 'bg-red-500/15 text-red-300 border-red-500/30 font-bold', icon: Ban },
 };
 
 const TIER_BADGE: Record<string, string> = {
-  starter:      'bg-slate-100 text-slate-700 border-slate-200',
-  growth:       'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  professional: 'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
-  enterprise:   'bg-amber-100 text-amber-800 border-amber-200',
+  starter:      'bg-slate-800 text-slate-300 border-slate-700 font-semibold',
+  growth:       'bg-sky-500/15 text-sky-300 border-sky-500/30 font-semibold',
+  professional: 'bg-purple-500/15 text-purple-300 border-purple-500/30 font-semibold',
+  enterprise:   'bg-amber-400/15 text-amber-300 border-amber-400/30 font-bold',
 };
 
 interface Manager {
@@ -236,45 +236,51 @@ const ManagerManagement: React.FC = () => {
     const Icon = cfg.icon;
     const expanded = expandedId === m.user_id;
     return (
-      <Card className={`border ${m.approval_status === 'pending' ? 'border-amber-400/50 bg-amber-900/10' : m.approval_status.startsWith('suspend') ? 'border-orange-400/50 bg-orange-900/10' : 'border-amber-400/12 bg-muted/20'}`}>
-        <CardContent className="p-4">
+      <Card className={`border rounded-2xl backdrop-blur-md shadow-xl transition-all ${
+        m.approval_status === 'pending' 
+          ? 'border-amber-400/50 bg-slate-900/90 shadow-amber-500/5' 
+          : m.approval_status.startsWith('suspend') 
+          ? 'border-orange-500/50 bg-slate-900/90 shadow-orange-500/5' 
+          : 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
+      }`}>
+        <CardContent className="p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <p className="font-semibold text-sm text-white">{m.full_name || 'Unnamed'}</p>
-                <Badge variant="outline" className={`text-xs ${cfg.color}`}><Icon className="h-3 w-3 mr-1" />{cfg.label}</Badge>
-                {m.subscription_tier && <Badge variant="outline" className={`text-xs capitalize ${TIER_BADGE[m.subscription_tier] ?? ''}`}>{m.subscription_tier}</Badge>}
+              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                <p className="font-bold text-base text-white">{m.full_name || 'Unnamed Manager'}</p>
+                <Badge variant="outline" className={`text-[11px] ${cfg.color}`}><Icon className="h-3 w-3 mr-1" />{cfg.label}</Badge>
+                {m.subscription_tier && <Badge variant="outline" className={`text-[11px] capitalize ${TIER_BADGE[m.subscription_tier] ?? ''}`}>{m.subscription_tier}</Badge>}
               </div>
-              <p className="text-xs text-amber-400/70 flex items-center gap-1"><Mail className="h-3 w-3" />{m.email}</p>
-              {m.agency_name && <p className="text-xs text-amber-400/70 mt-0.5 flex items-center gap-1"><Building2 className="h-3 w-3" />{m.agency_name}</p>}
-              <div className="flex gap-3 mt-1.5 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{m.property_count}</span>
-                <span className="flex items-center gap-1"><Home className="h-3 w-3" />{m.unit_count}</span>
-                {m.last_active_at && <span className="flex items-center gap-1"><Activity className="h-3 w-3" />{format(new Date(m.last_active_at), 'dd MMM')}</span>}
+              <p className="text-xs text-amber-400/90 flex items-center gap-1 font-medium"><Mail className="h-3.5 w-3.5 text-amber-400" />{m.email}</p>
+              {m.agency_name && <p className="text-xs text-slate-300 mt-1 flex items-center gap-1"><Building2 className="h-3.5 w-3.5 text-slate-400" />{m.agency_name}</p>}
+              <div className="flex gap-4 mt-2 text-xs text-slate-400 items-center">
+                <span className="flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/50"><Building2 className="h-3.5 w-3.5 text-sky-400" /> <strong className="font-['Outfit'] text-slate-100 font-bold">{m.property_count}</strong> props</span>
+                <span className="flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/50"><Home className="h-3.5 w-3.5 text-amber-400" /> <strong className="font-['Outfit'] text-slate-100 font-bold">{m.unit_count}</strong> units</span>
+                {m.last_active_at && <span className="flex items-center gap-1.5 text-slate-400"><Activity className="h-3.5 w-3.5 text-emerald-400" />{format(new Date(m.last_active_at), 'dd MMM')}</span>}
               </div>
               {(m.rejection_reason || m.suspension_reason) && (
-                <p className="text-xs text-red-400 mt-1 flex items-start gap-1"><AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" />{m.rejection_reason ?? m.suspension_reason}</p>
+                <p className="text-xs text-red-400 mt-2 flex items-start gap-1.5 bg-red-500/10 p-2 rounded-lg border border-red-500/20"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />{m.rejection_reason ?? m.suspension_reason}</p>
               )}
             </div>
-            <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+            <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
               {m.approval_status === 'pending' && (<>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs" onClick={() => { setActionDialog({ type: 'approve', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Approve</Button>
-                <Button size="sm" variant="outline" className="border-red-500 text-red-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'reject', manager: m }); setActionReason(''); }}><UserX className="h-3.5 w-3.5 mr-1" />Reject</Button>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white h-8 text-xs font-bold rounded-lg" onClick={() => { setActionDialog({ type: 'approve', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Approve</Button>
+                <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'reject', manager: m }); setActionReason(''); }}><UserX className="h-3.5 w-3.5 mr-1" />Reject</Button>
               </>)}
               {m.approval_status === 'approved' && (<>
-                <Button size="sm" variant="outline" className="border-[hsl(218_58%_40%)] text-amber-400/70 h-7 text-xs" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
-                <Button size="sm" variant="outline" className="border-orange-500 text-orange-400 h-7 text-xs" onClick={() => { setActionDialog({ type: 'suspend', manager: m }); setActionReason(''); }}><Ban className="h-3.5 w-3.5 mr-1" />Suspend</Button>
+                <Button size="sm" variant="outline" className="border-slate-700 text-amber-300 hover:bg-slate-800 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'set_tier', manager: m }); setActionTier(m.subscription_tier ?? 'starter'); }}><CreditCard className="h-3.5 w-3.5 mr-1" />Tier</Button>
+                <Button size="sm" variant="outline" className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10 h-8 text-xs font-semibold rounded-lg" onClick={() => { setActionDialog({ type: 'suspend', manager: m }); setActionReason(''); }}><Ban className="h-3.5 w-3.5 mr-1" />Suspend</Button>
               </>)}
               {(m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment' || m.approval_status === 'rejected') && (
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white h-8 text-xs font-bold rounded-lg" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
               )}
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
-                {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
+                {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
             </div>
           </div>
           {expanded && (
-            <div className="mt-3 pt-3 border-t border-amber-400/12">
+            <div className="mt-3 pt-3 border-t border-slate-800">
               <StatusHistory managerId={m.user_id} />
             </div>
           )}
@@ -315,29 +321,48 @@ const ManagerManagement: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-xl">
         <div>
-          <h2 className="text-lg font-semibold text-white">Managers</h2>
-          <p className="text-muted-foreground text-sm">{managers.length} total · {pending.length} pending · {active.length} active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Users className="h-5 w-5 text-amber-400" />
+            Manager Account Management
+          </h2>
+          <p className="text-slate-400 text-xs mt-1">
+            <strong className="font-['Outfit'] text-slate-200 font-bold">{managers.length}</strong> total · <strong className="font-['Outfit'] text-amber-400 font-bold">{pending.length}</strong> pending · <strong className="font-['Outfit'] text-emerald-400 font-bold">{active.length}</strong> active{suspended.length > 0 ? ` · ${suspended.length} suspended` : ''}
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
-          <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900" onClick={() => setAddOpen(true)}><UserPlus className="h-4 w-4 mr-2" />Add Manager</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-9 rounded-xl font-medium text-xs" onClick={() => refetch()}><RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh</Button>
+          <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold h-9 rounded-xl text-xs" onClick={() => setAddOpen(true)}><UserPlus className="h-3.5 w-3.5 mr-1.5" />Add Manager</Button>
         </div>
       </div>
 
       {pending.length > 0 && (
-        <div className="flex items-center gap-2 p-3 rounded-lg border border-amber-400/50 bg-amber-900/20 text-amber-300">
-          <Clock className="h-4 w-4 shrink-0" />
-          <span className="text-sm font-medium">{pending.length} manager{pending.length > 1 ? 's' : ''} awaiting approval</span>
+        <div className="flex items-center gap-2.5 p-3.5 rounded-xl border border-amber-400/40 bg-amber-400/10 text-amber-300 shadow-lg backdrop-blur-md">
+          <Clock className="h-4 w-4 shrink-0 text-amber-400" />
+          <span className="text-xs font-semibold">
+            <strong className="font-['Outfit'] text-amber-300 text-sm font-bold mr-1">{pending.length}</strong> 
+            manager{pending.length > 1 ? 's' : ''} awaiting approval and credential verification
+          </span>
         </div>
       )}
 
       <Tabs defaultValue="pending">
-        <TabsList className="bg-card/80 border border-border/60 flex-wrap h-auto gap-1 p-1">
-          {[['pending', `Pending (${pending.length})`], ['active', `Active (${active.length})`], ['suspended', `Suspended (${suspended.length})`], ['rejected', `Rejected (${rejected.length})`]].map(([v, l]) => (
-            <TabsTrigger key={v} value={v} className="text-muted-foreground data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-xs">{l}</TabsTrigger>
+        <TabsList className="bg-slate-900/80 border border-slate-800 p-1 rounded-xl flex-wrap h-auto gap-1">
+          {[
+            ['pending', `Pending (${pending.length})`], 
+            ['active', `Active (${active.length})`], 
+            ['suspended', `Suspended (${suspended.length})`], 
+            ['rejected', `Rejected (${rejected.length})`]
+          ].map(([v, l]) => (
+            <TabsTrigger 
+              key={v} 
+              value={v} 
+              className="text-slate-400 data-[state=active]:bg-amber-400 data-[state=active]:text-slate-950 font-bold text-xs rounded-lg transition-all"
+            >
+              {l}
+            </TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="pending"><TabList managers={pending} /></TabsContent>

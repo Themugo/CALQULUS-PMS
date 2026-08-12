@@ -11,7 +11,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -24,7 +24,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -42,7 +42,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -59,7 +59,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -90,7 +90,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/contractors
@@ -113,7 +113,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/financial
@@ -126,7 +126,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/financial
@@ -153,7 +153,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/financial
@@ -170,7 +170,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/financial
@@ -189,7 +189,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/insurance
@@ -202,7 +202,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/insurance
@@ -228,7 +228,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/insurance
@@ -245,7 +245,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/insurance
@@ -275,7 +275,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/utilities
@@ -288,7 +288,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/utilities
@@ -314,7 +314,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/utilities
@@ -331,7 +331,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/utilities
@@ -350,7 +350,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/participants
@@ -363,7 +363,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/participants
@@ -390,7 +390,7 @@ test.describe("Marketplace Features E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to marketplace/participants

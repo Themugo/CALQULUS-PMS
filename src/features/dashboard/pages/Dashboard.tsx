@@ -16,7 +16,8 @@ import {
   Home, AlertCircle, Zap, Plus, UserPlus, Wrench,
   Droplets, FileSpreadsheet, ArrowRight, RefreshCw,
   CheckCircle2, Clock, Calendar, BarChart3, ShieldCheck,
-  DollarSign, Activity, CheckSquare, Sparkles, Filter
+  DollarSign, Activity, CheckSquare, Sparkles, Filter,
+  PieChart, AlertTriangle, Key, Layers
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -46,22 +47,34 @@ interface DashboardStats {
   expiringLeases: number;
   revenueMTD: number;
   revenueChange: number;
+  expectedRent: number;
+  collectedRent: number;
+  outstandingRent: number;
+  collectionRate: number;
   totalProperties: number;
   totalUnits: number;
   occupiedUnits: number;
+  vacantUnits: number;
   occupancyRate: number;
   pendingInvoices: number;
   overdueInvoices: number;
   arrearsTotal: number;
+  openMaintenanceCount: number;
+  urgentMaintenanceCount: number;
+  pendingDepositRefundsCount: number;
 }
 
 const quickActions = [
   { label: "Add Property", icon: Building2, href: "/properties", accent: "text-[hsl(214_73%_48%)]", bg: "bg-[hsl(214_73%_48%/0.08)] border-[hsl(214_73%_48%/0.2)]" },
+  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-indigo-500", bg: "bg-indigo-500/10 border-indigo-500/20" },
   { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-[hsl(38_52%_42%)]", bg: "bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]" },
   { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-amber-500", bg: "bg-amber-400/12 border-amber-400/25" },
-  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-[hsl(38_52%_42%)]", bg: "bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]" },
+  { label: "Payments", icon: DollarSign, href: "/payments", accent: "text-green-600", bg: "bg-green-500/10 border-green-500/20" },
+  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-orange-500", bg: "bg-orange-500/10 border-orange-500/20" },
   { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-[hsl(195_60%_42%)]", bg: "bg-[hsl(195_60%_42%/0.1)] border-[hsl(195_60%_42%/0.2)]" },
   { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-[hsl(218_58%_40%)]", bg: "bg-[hsl(218_58%_40%/0.1)] border-[hsl(218_58%_40%/0.2)]" },
+  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple-500", bg: "bg-purple-500/10 border-purple-500/20" },
 ];
 
 const Dashboard = () => {
@@ -89,37 +102,83 @@ const Dashboard = () => {
     if (!managerId || !userId) return;
     try {
       setLoading(true);
-      const [profileResult, tenantsResult, activeTenantsResult, inactiveTenantsResult,
-        newTenantsResult, activeLeasesResult, expiringLeasesResult, paidInvoicesResult,
-        prevMonthResult, pendingInvoicesResult, overdueInvoicesResult, overdueAmountResult,
-        propertiesResult] = await Promise.all([
+
+      const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+      const endOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
+      const firstOfPrevMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().split('T')[0];
+      const endOfPrevMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0];
+
+      const [
+        profileResult,
+        tenantsResult,
+        activeTenantsResult,
+        inactiveTenantsResult,
+        newTenantsResult,
+        activeLeasesResult,
+        expiringLeasesResult,
+        paidInvoicesResult,
+        prevMonthResult,
+        thisMonthInvoicesResult,
+        pendingInvoicesResult,
+        overdueInvoicesResult,
+        overdueAmountResult,
+        propertiesResult,
+        maintenanceResult,
+        urgentMaintenanceResult,
+        depositRefundsResult
+      ] = await Promise.all([
         supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle(),
         supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId),
         supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
         supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'inactive'),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId)
-          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).gte('created_at', firstOfThisMonth),
         supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
         supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active')
           .lte('end_date', new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]),
-        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid')
-          .gte('paid_date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]),
-        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid')
-          .gte('paid_date', new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().split('T')[0])
-          .lt('paid_date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]),
+        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfThisMonth),
+        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfPrevMonth).lte('paid_date', endOfPrevMonth),
+        supabase.from('invoices').select('amount, status').eq('manager_id', managerId).gte('due_date', firstOfThisMonth).lte('due_date', endOfThisMonth),
         supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
         supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'overdue'),
         supabase.from('invoices').select('balance_due').eq('manager_id', managerId).eq('status', 'overdue'),
-        supabase.from('properties').select('id, units:property_units(count), occupied:property_units(count)').eq('manager_id', managerId),
+        supabase.from('properties').select('id, units, occupied').eq('manager_id', managerId),
+        supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']),
+        supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).in('priority', ['high', 'urgent']),
+        supabase.from('deposit_refunds').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
       ]);
-      if (profileResult.data?.full_name) setUserName(profileResult.data.full_name.split(' ')[0]);
-      const revenueMTD = ((paidInvoicesResult.data as {amount:number}[]) ?? []).reduce((s,i) => s + Number(i.amount), 0);
-      const revenuePrev = ((prevMonthResult.data as {amount:number}[]) ?? []).reduce((s,i) => s + Number(i.amount), 0);
+
+      if (profileResult.data?.full_name) {
+        setUserName(profileResult.data.full_name.split(' ')[0]);
+      }
+
+      const revenueMTD = ((paidInvoicesResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
+      const revenuePrev = ((prevMonthResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
       const revenueChange = revenuePrev > 0 ? Math.round(((revenueMTD - revenuePrev) / revenuePrev) * 100) : 0;
-      const allProps = (propertiesResult.data as {id:string;units:{count:number}[];occupied:{count:number}[]}[]) ?? [];
-      const totalUnits = allProps.reduce((s,p) => s + (p.units?.[0]?.count ?? 0), 0);
-      const totalOccupied = allProps.reduce((s,p) => s + (p.occupied?.[0]?.count ?? 0), 0);
+
+      const thisMonthInvoices = (thisMonthInvoicesResult.data as { amount: number; status: string }[]) ?? [];
+      let expectedRent = thisMonthInvoices.reduce((s, i) => s + Number(i.amount || 0), 0);
+
+      // Fallback: if no invoices generated yet this month, query active leases sum
+      if (expectedRent === 0) {
+        const { data: activeLeaseRows } = await supabase
+          .from('leases')
+          .select('rent_amount')
+          .eq('manager_id', managerId)
+          .eq('status', 'active');
+        expectedRent = (activeLeaseRows || []).reduce((s, l) => s + Number(l.rent_amount || 0), 0);
+      }
+
+      const collectedRent = revenueMTD;
+      const collectionRate = expectedRent > 0 ? Math.min(100, Math.round((collectedRent / expectedRent) * 100)) : 0;
+
+      const allProps = (propertiesResult.data as { id: string; units: number; occupied: number }[]) ?? [];
+      const totalUnits = allProps.reduce((s, p) => s + (Number(p.units) || 0), 0);
+      const totalOccupied = allProps.reduce((s, p) => s + (Number(p.occupied) || 0), 0);
+      const vacantUnits = Math.max(0, totalUnits - totalOccupied);
       const occupancyRate = totalUnits > 0 ? Math.round((totalOccupied / totalUnits) * 100) : 0;
+
+      const arrearsTotal = ((overdueAmountResult.data as { balance_due: number }[]) ?? []).reduce((s, i) => s + Number(i.balance_due || 0), 0);
+
       setStats({
         totalTenants: tenantsResult.count || 0,
         activeTenants: activeTenantsResult.count || 0,
@@ -127,12 +186,23 @@ const Dashboard = () => {
         newTenantsThisMonth: newTenantsResult.count || 0,
         activeLeases: activeLeasesResult.count || 0,
         expiringLeases: expiringLeasesResult.count || 0,
-        revenueMTD, revenueChange,
+        revenueMTD,
+        revenueChange,
+        expectedRent,
+        collectedRent,
+        outstandingRent: arrearsTotal,
+        collectionRate,
         totalProperties: allProps.length,
-        totalUnits, occupiedUnits: totalOccupied, occupancyRate,
+        totalUnits,
+        occupiedUnits: totalOccupied,
+        vacantUnits,
+        occupancyRate,
         pendingInvoices: pendingInvoicesResult.count || 0,
         overdueInvoices: overdueInvoicesResult.count || 0,
-        arrearsTotal: ((overdueAmountResult.data as {balance_due:number}[]) ?? []).reduce((s,i) => s + Number(i.balance_due ?? 0), 0),
+        arrearsTotal,
+        openMaintenanceCount: maintenanceResult.count || 0,
+        urgentMaintenanceCount: urgentMaintenanceResult.count || 0,
+        pendingDepositRefundsCount: depositRefundsResult.count || 0,
       });
     } catch (err) {
       logError('Dashboard.fetchStats', err);
@@ -145,10 +215,12 @@ const Dashboard = () => {
   useEffect(() => {
     fetchStats();
     const channels = [
-      supabase.channel('dash-tenants').on('postgres_changes',{ event:'*',schema:'public',table:'tenants'},fetchStats).subscribe(),
-      supabase.channel('dash-leases').on('postgres_changes',{event:'*',schema:'public',table:'leases'},fetchStats).subscribe(),
-      supabase.channel('dash-invoices').on('postgres_changes',{event:'*',schema:'public',table:'invoices'},fetchStats).subscribe(),
-      supabase.channel('dash-properties').on('postgres_changes',{event:'*',schema:'public',table:'properties'},fetchStats).subscribe(),
+      supabase.channel('dash-tenants').on('postgres_changes', { event: '*', schema: 'public', table: 'tenants' }, fetchStats).subscribe(),
+      supabase.channel('dash-leases').on('postgres_changes', { event: '*', schema: 'public', table: 'leases' }, fetchStats).subscribe(),
+      supabase.channel('dash-invoices').on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, fetchStats).subscribe(),
+      supabase.channel('dash-properties').on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, fetchStats).subscribe(),
+      supabase.channel('dash-maint').on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_requests' }, fetchStats).subscribe(),
+      supabase.channel('dash-refunds').on('postgres_changes', { event: '*', schema: 'public', table: 'deposit_refunds' }, fetchStats).subscribe(),
     ];
     return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
   }, [fetchStats]);
@@ -221,41 +293,11 @@ const Dashboard = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Query for pending maintenance items (What requires attention)
-  const { data: pendingMaintenanceCount = 0 } = useQuery({
-    queryKey: ['dashboard-pending-maintenance', managerId],
-    queryFn: async () => {
-      if (!managerId) return 0;
-      const { count } = await supabase
-        .from('maintenance_requests')
-        .select('id', { count: 'exact', head: true })
-        .eq('manager_id', managerId)
-        .in('status', ['pending', 'open', 'in_progress']);
-      return count ?? 0;
-    },
-    enabled: !!managerId,
-  });
-
-  // Query for pending deposit refund requests (What needs approval)
-  const { data: pendingDepositRefundsCount = 0 } = useQuery({
-    queryKey: ['dashboard-pending-deposit-refunds-count', managerId],
-    queryFn: async () => {
-      if (!managerId) return 0;
-      const { count } = await supabase
-        .from('deposit_refunds')
-        .select('id', { count: 'exact', head: true })
-        .eq('manager_id', managerId)
-        .eq('status', 'pending');
-      return count ?? 0;
-    },
-    enabled: !!managerId,
-  });
-
   return (
     <Layout
       title={`${getGreeting()}, ${userName}`}
       subtitle={stats
-        ? `Executive Command Center · ${stats.activeTenants} Active Tenants · ${stats.totalProperties} Properties · ${stats.occupancyRate}% Occupancy`
+        ? `Operations Command Center · ${stats.totalProperties} Properties · ${stats.totalUnits} Units (${stats.occupancyRate}% Occupied) · ${stats.activeTenants} Active Tenants`
         : "Loading operational command center…"}
       headerActions={
         <div className="flex items-center gap-2">
@@ -293,7 +335,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── EXECUTIVE COMMAND MATRIX (ANSWERS 4 CORE QUESTIONS) ── */}
+      {/* ── EXECUTIVE COMMAND MATRIX (4 OPERATIONAL ANSWERS) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         {/* 1. What requires attention? */}
         <Card className="border-l-4 border-l-red-500 border-border/70 bg-card hover:shadow-md transition-all">
@@ -304,7 +346,7 @@ const Dashboard = () => {
                 What Requires Attention?
               </span>
               <Badge variant="outline" className="text-[10px] h-4 border-red-200 text-red-700 dark:text-red-400">
-                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0) + pendingMaintenanceCount} Issues
+                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0) + (stats?.openMaintenanceCount ?? 0)} Issues
               </Badge>
             </div>
             <div className="space-y-1">
@@ -315,15 +357,15 @@ const Dashboard = () => {
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Overdue Invoices:</span>
-                <span className="font-medium text-foreground">
-                  {loading ? "..." : `${stats?.overdueInvoices ?? 0} invoices`}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground truncate">Expiring Leases (30d):</span>
                 <span className="font-medium text-amber-600 dark:text-amber-400">
                   {loading ? "..." : `${stats?.expiringLeases ?? 0} leases`}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground truncate">Vacant Units:</span>
+                <span className="font-medium text-foreground">
+                  {loading ? "..." : `${stats?.vacantUnits ?? 0} units`}
                 </span>
               </div>
             </div>
@@ -333,7 +375,7 @@ const Dashboard = () => {
               onClick={() => navigate("/billing?filter=overdue")}
               className="mt-2 w-full h-7 text-[11px] justify-between text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 p-0 px-2"
             >
-              <span>Resolve Arrears</span>
+              <span>Resolve Arrears ({stats?.overdueInvoices ?? 0})</span>
               <ArrowRight className="h-3 w-3" />
             </Button>
           </CardContent>
@@ -348,20 +390,20 @@ const Dashboard = () => {
                 What Needs Approval?
               </span>
               <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
-                {pendingDepositRefundsCount} Pending
+                {(stats?.pendingDepositRefundsCount ?? 0) + (stats?.openMaintenanceCount ?? 0)} Pending
               </Badge>
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground truncate">Deposit Refunds:</span>
                 <span className="font-semibold text-foreground">
-                  {pendingDepositRefundsCount} pending
+                  {stats?.pendingDepositRefundsCount ?? 0} pending
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Maintenance Requests:</span>
+                <span className="text-muted-foreground truncate">Open Maintenance:</span>
                 <span className="font-medium text-foreground">
-                  {pendingMaintenanceCount} open
+                  {stats?.openMaintenanceCount ?? 0} requests
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -397,24 +439,21 @@ const Dashboard = () => {
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Revenue MTD:</span>
+                <span className="text-muted-foreground truncate">Collected Rent (MTD):</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   {loading ? "..." : formatCurrency(stats?.revenueMTD ?? 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Occupied Units:</span>
-                <span className="font-medium text-foreground">
-                  {loading ? "..." : `${stats?.occupiedUnits ?? 0} / ${stats?.totalUnits ?? 0}`}
+                <span className="text-muted-foreground truncate">Collection Rate:</span>
+                <span className="font-semibold text-foreground">
+                  {loading ? "..." : `${stats?.collectionRate ?? 0}%`}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Revenue Growth:</span>
-                <span className={cn(
-                  "font-semibold",
-                  (stats?.revenueChange ?? 0) >= 0 ? "text-emerald-600" : "text-red-500"
-                )}>
-                  {loading ? "..." : `${(stats?.revenueChange ?? 0) >= 0 ? "+" : ""}${stats?.revenueChange ?? 0}% MoM`}
+                <span className="text-muted-foreground truncate">Occupied / Total Units:</span>
+                <span className="font-medium text-foreground">
+                  {loading ? "..." : `${stats?.occupiedUnits ?? 0} / ${stats?.totalUnits ?? 0}`}
                 </span>
               </div>
             </div>
@@ -439,7 +478,7 @@ const Dashboard = () => {
                 What Happened Today?
               </span>
               <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
-                Live Log
+                Live Feed
               </Badge>
             </div>
             <div className="space-y-1">
@@ -475,38 +514,65 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* ── KPI GRID ── */}
+      {/* ── KPI GRID (PORTFOLIO & FINANCIAL METRICS) ── */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-5">
         {loading
-          ? Array.from({length:6}).map((_,i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
-          : stats && <>
-            <StatCard title="Properties" value={stats.totalProperties.toString()}
-              change={`${stats.totalUnits} units`} changeType="neutral" icon={Building2} iconColor="primary" />
-            <StatCard title="Tenants" value={stats.totalTenants.toString()}
-              change={`+${stats.newTenantsThisMonth} this month`}
-              changeType={stats.newTenantsThisMonth > 0 ? "positive" : "neutral"} icon={Users} iconColor="accent"
-              sparkData={tenantSparkData?.counts}
-              sparkLabels={tenantSparkData?.labels} />
-            <StatCard title="Occupancy" value={`${stats.occupancyRate}%`}
-              change={`${stats.occupiedUnits}/${stats.totalUnits} units`}
-              changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
-              icon={Home} iconColor="success" progressValue={stats.occupancyRate} />
-            <StatCard title="Revenue MTD" value={formatCurrency(stats.revenueMTD)}
-              change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
-              changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
-              icon={TrendingUp} iconColor="warning" />
-            <StatCard title="Active Leases" value={stats.activeLeases.toString()}
-              change={stats.expiringLeases > 0 ? `${stats.expiringLeases} expiring soon` : "All good"}
-              changeType={stats.expiringLeases > 0 ? "neutral" : "positive"} icon={FileText} iconColor="primary"
-              sparkData={leaseExpiryData?.counts}
-              sparkLabels={leaseExpiryData?.labels}
-              sparkUnit="lease"
-              sparkCaption="expiring next 4 weeks" />
-            <StatCard title="Invoices Due" value={(stats.pendingInvoices + stats.overdueInvoices).toString()}
-              change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue` : "All on time"}
-              changeType={stats.overdueInvoices > 0 ? "negative" : "positive"} icon={CreditCard} iconColor="accent" />
-          </>
-        }
+          ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
+          : stats && (
+            <>
+              <StatCard
+                title="Properties & Units"
+                value={`${stats.totalProperties} Props`}
+                change={`${stats.occupiedUnits}/${stats.totalUnits} Units Occupied`}
+                changeType="neutral"
+                icon={Building2}
+                iconColor="primary"
+              />
+              <StatCard
+                title="Tenants Roster"
+                value={stats.activeTenants.toString()}
+                change={`+${stats.newTenantsThisMonth} joined this month`}
+                changeType={stats.newTenantsThisMonth > 0 ? "positive" : "neutral"}
+                icon={Users}
+                iconColor="accent"
+                sparkData={tenantSparkData?.counts}
+                sparkLabels={tenantSparkData?.labels}
+              />
+              <StatCard
+                title="Portfolio Occupancy"
+                value={`${stats.occupancyRate}%`}
+                change={`${stats.vacantUnits} units vacant`}
+                changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
+                icon={Home}
+                iconColor="success"
+                progressValue={stats.occupancyRate}
+              />
+              <StatCard
+                title="Collected Rent"
+                value={formatCurrency(stats.revenueMTD)}
+                change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
+                changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
+                icon={TrendingUp}
+                iconColor="warning"
+              />
+              <StatCard
+                title="Collection Rate"
+                value={`${stats.collectionRate}%`}
+                change={`Expected: ${formatCurrency(stats.expectedRent)}`}
+                changeType={stats.collectionRate >= 90 ? "positive" : stats.collectionRate >= 75 ? "neutral" : "negative"}
+                icon={PieChart}
+                iconColor="success"
+              />
+              <StatCard
+                title="Outstanding Arrears"
+                value={formatCurrency(stats.arrearsTotal)}
+                change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue invoices` : "All invoices clear"}
+                changeType={stats.overdueInvoices > 0 ? "negative" : "positive"}
+                icon={AlertTriangle}
+                iconColor="accent"
+              />
+            </>
+          )}
       </div>
 
       {/* ── ARREARS URGENT ALERT BAR ── */}
@@ -519,13 +585,16 @@ const Dashboard = () => {
                 {formatCurrency(stats.arrearsTotal)} in outstanding arrears
               </p>
               <p className="text-xs text-red-600/70 dark:text-red-400/60 mt-0.5">
-                {stats.overdueInvoices} overdue invoice{stats.overdueInvoices !== 1 ? "s" : ""} need immediate collection follow-up
+                {stats.overdueInvoices} overdue invoice{stats.overdueInvoices !== 1 ? "s" : ""} require collection action
               </p>
             </div>
           </div>
-          <Button size="sm" variant="outline"
+          <Button
+            size="sm"
+            variant="outline"
             className="border-red-200 text-red-700 hover:bg-red-100 dark:border-red-800 dark:text-red-400 shrink-0"
-            onClick={() => navigate("/billing?filter=overdue")}>
+            onClick={() => navigate("/billing?filter=overdue")}
+          >
             View Overdue Invoices <ArrowRight className="h-3.5 w-3.5 ml-1" />
           </Button>
         </div>
@@ -534,11 +603,43 @@ const Dashboard = () => {
       {/* ── ARREARS HEAT MAP (IF OVERDUE EXIST) ── */}
       {!loading && stats && stats.overdueInvoices > 0 && <ArrearsHeatMap />}
 
+      {/* ── QUICK ACTIONS TOOLBAR ── */}
+      <Card className="mb-6 border-border/60">
+        <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+            <div className="h-6 w-6 rounded-md bg-amber-400/15 border border-amber-400/25 flex items-center justify-center flex-shrink-0">
+              <Zap className="h-3.5 w-3.5 text-amber-500" />
+            </div>
+            Quick Operations Toolbar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 sm:px-5 pb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2">
+            {quickActions.map((action) => (
+              <button
+                key={action.label}
+                onClick={() => navigate(action.href)}
+                className={cn(
+                  "group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border",
+                  "transition-all duration-200 touch-manipulation text-center",
+                  "hover:-translate-y-0.5 hover:shadow-sm active:scale-95",
+                  action.bg
+                )}
+              >
+                <div className="h-8 w-8 rounded-lg bg-background/90 border border-border/60 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+                  <action.icon className={cn("h-4 w-4", action.accent)} />
+                </div>
+                <p className="text-[11px] font-semibold text-foreground leading-tight">{action.label}</p>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* ── MAIN WORKSPACE SECTION (12-COLUMN RESPONSIVE LAYOUT) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
         {/* Left Column (8 cols): Analytics, Approvals & Operations */}
         <div className="lg:col-span-8 space-y-5">
-
           {/* 1. Financial & Occupancy Analytics Module */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex items-center justify-between mb-3">
@@ -558,10 +659,14 @@ const Dashboard = () => {
             </div>
 
             <TabsContent value="overview" className="mt-0">
-              <ErrorBoundary compact label="Revenue chart"><RevenueChart /></ErrorBoundary>
+              <ErrorBoundary compact label="Revenue chart">
+                <RevenueChart />
+              </ErrorBoundary>
             </TabsContent>
             <TabsContent value="occupancy" className="mt-0">
-              <ErrorBoundary compact label="Occupancy chart"><OccupancyChart /></ErrorBoundary>
+              <ErrorBoundary compact label="Occupancy chart">
+                <OccupancyChart />
+              </ErrorBoundary>
             </TabsContent>
           </Tabs>
 
@@ -579,12 +684,11 @@ const Dashboard = () => {
                   </CardDescription>
                 </div>
                 <Badge variant="secondary" className="text-xs">
-                  {pendingDepositRefundsCount} Pending Approvals
+                  {stats?.pendingDepositRefundsCount ?? 0} Pending Approvals
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="p-4 sm:p-5 space-y-4">
-              {/* Deposit Refunds component */}
+            <CardContent className="p-4 sm:p-5">
               <PendingDepositRefunds />
             </CardContent>
           </Card>
@@ -599,46 +703,10 @@ const Dashboard = () => {
           <ErrorBoundary compact label="Upcoming payments">
             <UpcomingPayments />
           </ErrorBoundary>
-
         </div>
 
-        {/* Right Column (4 cols): Quick Actions, Activity Feed & Calendar */}
+        {/* Right Column (4 cols): Live Activity Feed & Audit Log */}
         <div className="lg:col-span-4 space-y-5">
-
-          {/* Quick Actions Panel */}
-          <Card className="border-border/60">
-            <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
-                  Executive Actions
-                </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => navigate("/properties")} className="text-xs h-7 px-2">
-                  <Plus className="h-3 w-3 mr-1" />New
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-4">
-              <div className="grid grid-cols-2 gap-2">
-                {quickActions.map(a => (
-                  <button key={a.label} onClick={() => navigate(a.href)}
-                    className={cn(
-                      "group flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all duration-200",
-                      "hover:-translate-y-0.5 hover:shadow-sm active:scale-98 touch-manipulation text-left",
-                      a.bg
-                    )}>
-                    <div className="h-7 w-7 rounded-lg bg-background/90 border border-border/60 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-                      <a.icon className={cn("h-3.5 w-3.5", a.accent)} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground leading-snug">{a.label}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Activity Feed ("What happened today?") */}
           <Card className="border-border/60">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border/40">
@@ -668,7 +736,6 @@ const Dashboard = () => {
               <ManagerActivityLog compact limit={10} />
             </CardContent>
           </Card>
-
         </div>
       </div>
     </Layout>

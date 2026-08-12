@@ -11,7 +11,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -27,7 +27,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -48,7 +48,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -69,7 +69,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -92,7 +92,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -108,7 +108,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -128,7 +128,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -149,7 +149,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -172,7 +172,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -188,7 +188,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -208,7 +208,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -229,7 +229,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -252,7 +252,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -268,7 +268,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -288,7 +288,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -309,7 +309,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -332,7 +332,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -348,7 +348,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -368,7 +368,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -389,7 +389,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -412,7 +412,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -428,7 +428,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -448,7 +448,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance
@@ -469,7 +469,7 @@ test.describe("Compliance Features E2E Tests", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance

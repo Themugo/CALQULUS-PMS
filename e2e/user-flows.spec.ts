@@ -19,7 +19,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to properties
@@ -46,7 +46,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to tenants
@@ -72,7 +72,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to leases
@@ -101,7 +101,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to reports
@@ -119,7 +119,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       
       // Navigate to maintenance
@@ -149,7 +149,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to lease
@@ -167,7 +167,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to payments
@@ -193,7 +193,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to maintenance
@@ -219,7 +219,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to payments
@@ -235,7 +235,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       
       // Navigate to profile
@@ -255,7 +255,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/landlord/login");
       await page.fill("input[type='email']", LANDLORD_EMAIL);
       await page.fill("input[type='password']", LANDLORD_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/landlord\/dashboard/, { timeout: 15000 });
       
       // Verify revenue dashboard is visible
@@ -268,7 +268,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/landlord/login");
       await page.fill("input[type='email']", LANDLORD_EMAIL);
       await page.fill("input[type='password']", LANDLORD_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/landlord\/dashboard/, { timeout: 15000 });
       
       // Navigate to properties
@@ -281,7 +281,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/landlord/login");
       await page.fill("input[type='email']", LANDLORD_EMAIL);
       await page.fill("input[type='password']", LANDLORD_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/landlord\/dashboard/, { timeout: 15000 });
       
       // Navigate to payouts
@@ -308,7 +308,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/agency/login");
       await page.fill("input[type='email']", AGENCY_EMAIL);
       await page.fill("input[type='password']", AGENCY_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/agency/, { timeout: 15000 });
       
       // Verify dashboard is visible
@@ -322,7 +322,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/agency/login");
       await page.fill("input[type='email']", AGENCY_EMAIL);
       await page.fill("input[type='password']", AGENCY_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/agency/, { timeout: 15000 });
       
       // Navigate to landlords
@@ -335,7 +335,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/agency/login");
       await page.fill("input[type='email']", AGENCY_EMAIL);
       await page.fill("input[type='password']", AGENCY_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/agency/, { timeout: 15000 });
       
       // Navigate to commission
@@ -350,7 +350,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Verify overview is visible
@@ -362,7 +362,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to managers
@@ -375,7 +375,7 @@ test.describe("Major User Flows", () => {
       await page.goto("/webhost/login");
       await page.fill("input[type='email']", WEBHOST_EMAIL);
       await page.fill("input[type='password']", WEBHOST_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/webhost/, { timeout: 15000 });
       
       // Navigate to compliance

@@ -185,6 +185,9 @@ const AppRoutes = () => {
   // which portal's routes are shown.
   if (devAccessEnabled) {
     const path = location.pathname;
+    if (path === "/landing" || path === "/welcome") {
+      return <Routes>{publicRoutes.map(r => renderRoute(r))}</Routes>;
+    }
     const devRole =
       path.startsWith("/webhost") ? "webhost" :
       path.startsWith("/agency") ? "agency" :
@@ -273,7 +276,9 @@ const App = () => (
             </ErrorBoundary>
             {/* Route prefetcher for optimized data loading */}
             <RoutePrefetcher />
-            <AppRoutes />
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
             <DevPortalSwitcher />
           </AuthProvider>
         </BrowserRouter>

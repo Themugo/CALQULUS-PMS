@@ -219,8 +219,7 @@ const TenantSelfRegister = () => {
                     required minLength={8} placeholder="Min. 8 characters"
                     className="bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 h-10 pr-10" />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 p-2">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>

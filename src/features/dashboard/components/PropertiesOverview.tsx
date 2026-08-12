@@ -106,7 +106,7 @@ export function PropertiesOverview() {
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground flex items-center gap-2">
           <div className="rounded-lg bg-gradient-to-br from-amber-400/18 to-amber-400/8 p-2">
-            <Building2 className="h- w-4 sm:h-5 sm:w-5 text-amber-500" />
+            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
           </div>
           Properties
         </h3>
@@ -121,7 +121,7 @@ export function PropertiesOverview() {
       {properties.length === 0 ? (
         <div className="text-center py-8 sm:py-10">
           <div className="rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 p-4 sm:p-6 inline-block mb-3 sm:mb-4">
-            <Building2 className="h-2 w-12 sm:h-14 sm:w-14 text-muted-foreground/50" />
+            <Building2 className="h-12 w-12 sm:h-14 sm:w-14 text-muted-foreground/50" />
           </div>
           <p className="text-muted-foreground text-sm sm:text-base font-medium mb-3 sm:mb-4">No properties yet</p>
           <Link to="/properties">
@@ -152,7 +152,7 @@ export function PropertiesOverview() {
                       className="h-full w-full rounded-xl object-cover"
                     />
                   ) : (
-                    <Building2 className="h- w-6 sm:h-7 sm:w-7 text-amber-500" />
+                    <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-amber-500" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">

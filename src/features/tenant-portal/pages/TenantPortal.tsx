@@ -13,7 +13,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDate } from '@/shared/lib/dateFormat';
-import { Building2, FileText, CheckCircle, Clock, AlertCircle, LogOut, CreditCard, History, Smartphone, RefreshCw, Loader2, ScrollText, Upload, MessageSquare } from 'lucide-react';
+import { Building2, FileText, CheckCircle, Clock, AlertCircle, LogOut, CreditCard, History, Smartphone, RefreshCw, Loader2, ScrollText, Upload, MessageSquare, Wrench } from 'lucide-react';
 import { TenantContractsSection } from '@/features/tenants/components/TenantContractsSection';
 import TenantBalanceSummary from '@/features/tenant-portal/components/TenantBalanceSummary';
 import TenantPaymentDetails from '@/features/tenant-portal/components/TenantPaymentDetails';
@@ -105,6 +105,8 @@ const TenantPortal = () => {
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [receiptRefresh, setReceiptRefresh] = useState(0);
+  const [managerProfile, setManagerProfile] = useState<{ full_name: string | null; email: string | null; phone: string | null } | null>(null);
+  const [maintenanceSummary, setMaintenanceSummary] = useState<{ openCount: number; urgentCount: number; latestTitle: string | null }>({ openCount: 0, urgentCount: 0, latestTitle: null });
 
   // Fetch tenant info with offline support
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -219,6 +221,34 @@ const TenantPortal = () => {
     supabase.from('profiles').select('phone').eq('id', user.id).maybeSingle()
       .then(({ data }) => setTenantPhone(data?.phone ?? null));
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!tenantInfo?.manager_id) return;
+    supabase
+      .from('profiles')
+      .select('full_name, email, phone')
+      .eq('id', tenantInfo.manager_id)
+      .maybeSingle()
+      .then(({ data }) => setManagerProfile(data || null));
+  }, [tenantInfo?.manager_id]);
+
+  useEffect(() => {
+    if (!userRole?.tenant_id) return;
+    supabase
+      .from('maintenance_requests')
+      .select('id, title, status, priority')
+      .eq('tenant_id', userRole.tenant_id)
+      .then(({ data }) => {
+        const rows = data || [];
+        const openReqs = rows.filter(r => r.status === 'open' || r.status === 'in_progress');
+        const urgentReqs = openReqs.filter(r => r.priority === 'urgent' || r.priority === 'high');
+        setMaintenanceSummary({
+          openCount: openReqs.length,
+          urgentCount: urgentReqs.length,
+          latestTitle: rows[0]?.title || null,
+        });
+      });
+  }, [userRole?.tenant_id, receiptRefresh]);
 
   // Filter invoices based on statement_history_months setting
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -573,76 +603,130 @@ const TenantPortal = () => {
               </div>
             </div>
 
-            {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-              {/* 1. What requires attention? */}
+            {/* ── 6-EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
+              {/* 1. Where do I live? */}
+              <Card className="border-l-4 border-l-purple-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                      <Building2 className="h-3.5 w-3.5" />
+                      Where Do I Live?
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4 border-purple-300 text-purple-700 dark:text-purple-400">
+                      Unit {tenantInfo?.unit || '—'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Property:</span>
+                      <span className="font-bold text-foreground truncate max-w-[100px]" title={tenantInfo?.property || '—'}>{tenantInfo?.property || '—'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Manager:</span>
+                      <span className="font-semibold text-foreground truncate max-w-[100px]" title={managerProfile?.full_name || 'Property Manager'}>{managerProfile?.full_name || 'Property Manager'}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 2. What do I owe? */}
               <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
                 <CardContent className="p-3.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                       <AlertCircle className="h-3.5 w-3.5" />
-                      What Requires Attention?
+                      What Do I Owe?
                     </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
-                      {stats.overdueCount + stats.pendingCount} Due
+                    <Badge variant="outline" className={`text-[10px] h-4 ${stats.overdueCount > 0 ? 'border-red-300 text-red-600 bg-red-50' : 'border-amber-300 text-amber-700'}`}>
+                      {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : `${stats.pendingCount} Pending`}
                     </Badge>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Balance Due:</span>
-                      <span className="font-bold text-amber-600 dark:text-amber-400">{formatCurrency(stats.totalDue)}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Total Balance:</span>
+                      <span className={`font-bold ${stats.totalDue > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600'}`}>{formatCurrency(stats.totalDue)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Overdue Invoices:</span>
-                      <span className="font-semibold text-red-500">{stats.overdueCount} overdue</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Pending Bills:</span>
+                      <span className="font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* 2. What generates payments? */}
+              {/* 3. When is it due? */}
+              <Card className="border-l-4 border-l-rose-500 border-border/70 bg-card hover:shadow-md transition-all">
+                <CardContent className="p-3.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      When Is It Due?
+                    </span>
+                    <Badge variant="outline" className={`text-[10px] h-4 ${urgentInvoices[0]?.status === 'overdue' ? 'border-red-400 text-red-600 bg-red-50' : 'border-rose-300 text-rose-700'}`}>
+                      {urgentInvoices[0] ? (urgentInvoices[0].status === 'overdue' ? 'OVERDUE' : 'DUE SOON') : 'PAID'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Next Due Date:</span>
+                      <span className="font-bold text-foreground">{urgentInvoices[0] ? formatDate(urgentInvoices[0].due_date) : 'All paid'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Status:</span>
+                      <span className={`font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-red-500' : 'text-emerald-600'}`}>
+                        {urgentInvoices[0] ? (urgentInvoices[0].status === 'overdue' ? 'Overdue' : 'Upcoming') : 'All clear'}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 4. What have I paid? */}
               <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
                 <CardContent className="p-3.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                       <CreditCard className="h-3.5 w-3.5" />
-                      Paid This Year
+                      What Have I Paid?
                     </span>
                     <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
-                      YTD Payments
+                      YTD Paid
                     </Badge>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Total Paid:</span>
                       <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(stats.paidThisYear)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Recent Payments:</span>
-                      <span className="font-semibold text-foreground">{recentPayments.length} recorded</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Last Receipt:</span>
+                      <span className="font-semibold text-foreground truncate max-w-[100px]" title={recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}>
+                        {recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* 3. Lease Details */}
+              {/* 5. Is my lease active? */}
               <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
                 <CardContent className="p-3.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5" />
-                      Lease Overview
+                      Is My Lease Active?
                     </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
+                    <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400 capitalize">
                       {lease?.status || 'Active'}
                     </Badge>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Monthly Rent:</span>
-                      <span className="font-semibold text-foreground">{lease ? formatCurrency(lease.monthly_rent) : '—'}</span>
+                      <span className="font-bold text-foreground">{lease ? formatCurrency(lease.monthly_rent) : '—'}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Lease End:</span>
                       <span className="font-semibold text-foreground">{lease ? formatDate(lease.end_date) : '—'}</span>
                     </div>
@@ -650,30 +734,78 @@ const TenantPortal = () => {
                 </CardContent>
               </Card>
 
-              {/* 4. Unit Info */}
-              <Card className="border-l-4 border-l-purple-500 border-border/70 bg-card hover:shadow-md transition-all">
+              {/* 6. Attention & Repairs */}
+              <Card className="border-l-4 border-l-indigo-500 border-border/70 bg-card hover:shadow-md transition-all">
                 <CardContent className="p-3.5">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5" />
-                      Assigned Unit
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                      <Wrench className="h-3.5 w-3.5" />
+                      Attention & Repairs
                     </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-purple-300 text-purple-700 dark:text-purple-400">
-                      Unit {tenantInfo?.unit || '—'}
+                    <Badge variant="outline" className={`text-[10px] h-4 ${maintenanceSummary.openCount > 0 ? 'border-amber-300 text-amber-700 bg-amber-50' : 'border-indigo-300 text-indigo-700'}`}>
+                      {maintenanceSummary.openCount} Open
                     </Badge>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Property Name:</span>
-                      <span className="font-semibold text-foreground truncate">{tenantInfo?.property || '—'}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Open Repairs:</span>
+                      <span className="font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tenant Name:</span>
-                      <span className="font-semibold text-foreground truncate">{tenantInfo?.name || '—'}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Urgent Issues:</span>
+                      <span className={`font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                        {maintenanceSummary.urgentCount > 0 ? `${maintenanceSummary.urgentCount} urgent` : 'None'}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Quick Operations Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-card border border-border/60 rounded-2xl mb-6 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-foreground uppercase tracking-wider">Quick Actions:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm rounded-xl gap-1.5 text-xs h-8"
+                  onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
+                  disabled={urgentInvoices.length === 0}
+                >
+                  <Smartphone className="h-3.5 w-3.5" />
+                  Pay Rent
+                </Button>
+
+                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-amber-50 dark:hover:bg-amber-950/20" asChild>
+                  <Link to="/portal/maintenance">
+                    <Wrench className="h-3.5 w-3.5 text-amber-500" />
+                    Request Repair
+                  </Link>
+                </Button>
+
+                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-emerald-50 dark:hover:bg-emerald-950/20" asChild>
+                  <Link to="/portal/payments">
+                    <History className="h-3.5 w-3.5 text-emerald-600" />
+                    Payment History
+                  </Link>
+                </Button>
+
+                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-sky-50 dark:hover:bg-sky-950/20" asChild>
+                  <Link to="/portal/documents">
+                    <FileText className="h-3.5 w-3.5 text-sky-600" />
+                    Lease & Documents
+                  </Link>
+                </Button>
+
+                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-purple-50 dark:hover:bg-purple-950/20" asChild>
+                  <Link to="/portal/inbox">
+                    <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
+                    Contact Manager
+                  </Link>
+                </Button>
+              </div>
             </div>
 
         {/* Lease expiry warning — shown ≤60 days before expiry */}

@@ -272,8 +272,7 @@ const LandlordAuth = () => {
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
                   >
                     {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>

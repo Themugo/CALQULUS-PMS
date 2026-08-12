@@ -24,6 +24,8 @@ import { OperationalExcellenceHub } from "@/shared/components/ops/OperationalExc
 import { PropTechEcosystemHub } from "@/shared/components/ecosystem/PropTechEcosystemHub";
 import { PropertyOsSuite } from "@/shared/components/propertyos/PropertyOsSuite";
 import { CommercialLaunchSuite } from "@/shared/components/commercial/CommercialLaunchSuite";
+import PlatformAdminManagement from "@/features/webhost/components/PlatformAdminManagement";
+import { Crown } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 export function EnterpriseAdminPlatform({ className }: { className?: string }) {
@@ -68,6 +70,9 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
           <TabsList className="flex h-auto gap-1 bg-transparent p-0">
             <TabsTrigger value="overview" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <LayoutDashboard className="h-3.5 w-3.5" /> Platform Health
+            </TabsTrigger>
+            <TabsTrigger value="platform-admins" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-amber-400 data-[state=active]:text-slate-950">
+              <Crown className="h-3.5 w-3.5 text-amber-400" /> Platform Admins Hierarchy
             </TabsTrigger>
             <TabsTrigger value="commercial-launch" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Sparkles className="h-3.5 w-3.5 text-emerald-400" /> Commercial Launch & Growth
@@ -126,6 +131,10 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
             <MultiTenantManager />
             <SecurityAuditCenter />
           </div>
+        </TabsContent>
+
+        <TabsContent value="platform-admins" className="m-0">
+          <PlatformAdminManagement />
         </TabsContent>
 
         <TabsContent value="commercial-launch" className="m-0">

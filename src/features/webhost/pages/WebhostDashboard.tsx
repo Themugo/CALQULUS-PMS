@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { Navigate } from 'react-router-dom';
@@ -7,7 +8,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Globe, Users, Building, Home, LogOut, Shield,
-  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag,
+  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag, Activity, Sparkles,
 } from 'lucide-react';
 import ManagerManagement from '@/features/webhost/components/ManagerManagement';
 import PropertyAssignment from '@/features/webhost/components/PropertyAssignment';
@@ -34,6 +35,24 @@ const WebhostDashboard = () => {
     user, userRole, signOut, loading, isSuperAdmin,
     hasWebhostPermission, webhostPermissions,
   } = useAuth();
+
+  const [activeTab, setActiveTab] = React.useState('overview');
+
+  // Query pending action items for tab notification badges
+  const { data: pendingCounts } = useQuery({
+    queryKey: ['webhost-dashboard-pending-counts'],
+    queryFn: async () => {
+      const [pendingManagers, overdueInvoices] = await Promise.all([
+        supabase.from('manager_profiles').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('manager_invoices').select('id', { count: 'exact', head: true }).eq('status', 'overdue'),
+      ]);
+      return {
+        pendingManagers: pendingManagers.count ?? 0,
+        overdueInvoices: overdueInvoices.count ?? 0,
+      };
+    },
+    staleTime: 30000,
+  });
 
   React.useEffect(() => {
     if (!loading && user && userRole?.role === 'webhost' && !webhostPermissions) {
@@ -100,35 +119,39 @@ const WebhostDashboard = () => {
     }
   };
 
-  const tabCls = "data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 data-[state=active]:font-semibold text-white/50 hover:text-white/80 transition-colors text-xs sm:text-sm";
+  const tabCls = "data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-md data-[state=active]:shadow-amber-500/20 text-slate-300 hover:text-white transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
 
   return (
-    <div className="min-h-screen hero-gradient">
-      {/* Top gold accent */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+      {/* Top gold accent line */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-amber-500/10 via-amber-400 to-amber-500/10" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-amber-400/10 bg-card/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-amber-500/15 bg-slate-950/85 backdrop-blur-xl shadow-2xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="hidden sm:block min-w-0">
               <p className="font-heading text-sm font-bold text-gradient leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-amber-400/50 tracking-widest font-medium">PLATFORM ADMINISTRATION</p>
+              <p className="text-[10px] text-amber-400/70 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-soft" />
-              <span className="text-xs text-white/60 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/25 shadow-inner">
+              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+            </div>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
+              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="text-xs font-medium text-slate-200 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
               {getLevelBadge()}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="border border-white/10 text-white/50 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all"
+              className="border border-slate-800 text-slate-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -140,21 +163,20 @@ const WebhostDashboard = () => {
       {/* Main */}
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!myPermissions ? (
-          <div className="rounded-2xl border border-amber-400/20 bg-white/5 backdrop-blur-sm p-10 text-center">
+          <div className="rounded-2xl border border-amber-400/20 bg-slate-900/60 backdrop-blur-md p-10 text-center shadow-2xl">
             <div className="h-16 w-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mx-auto mb-4">
               <Shield className="h-8 w-8 text-amber-400" />
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Permissions Pending</h3>
-            <p className="text-white/40 text-sm max-w-md mx-auto">
+            <p className="text-slate-400 text-sm max-w-md mx-auto">
               Your webhost account is active but permissions haven't been assigned yet.
               A super admin needs to configure your access level.
-              If you're the first webhost, refresh this page to be automatically promoted.
             </p>
           </div>
         ) : (
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-              <TabsList className="bg-white/5 border border-white/10 h-auto p-1 gap-1 flex-nowrap inline-flex min-w-max">
+              <TabsList className="bg-slate-900/90 border border-slate-800 h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl shadow-xl backdrop-blur-md">
                 <TabsTrigger value="overview" className={tabCls}>
                   <Home className="h-3.5 w-3.5 mr-1.5" />Overview
                 </TabsTrigger>
@@ -163,7 +185,13 @@ const WebhostDashboard = () => {
                 </TabsTrigger>
                 {canViewManagers && (
                   <TabsTrigger value="managers" className={tabCls}>
-                    <Users className="h-3.5 w-3.5 mr-1.5" />Managers
+                    <Users className="h-3.5 w-3.5 mr-1.5" />
+                    Managers
+                    {(pendingCounts?.pendingManagers ?? 0) > 0 && (
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-400 text-slate-950 font-extrabold shadow-sm">
+                        {pendingCounts?.pendingManagers}
+                      </span>
+                    )}
                   </TabsTrigger>
                 )}
                 {canViewProperties && (
@@ -178,7 +206,13 @@ const WebhostDashboard = () => {
                 )}
                 {canViewBilling && (
                   <TabsTrigger value="billing" className={tabCls}>
-                    <Receipt className="h-3.5 w-3.5 mr-1.5" />Billing
+                    <Receipt className="h-3.5 w-3.5 mr-1.5" />
+                    Billing
+                    {(pendingCounts?.overdueInvoices ?? 0) > 0 && (
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-red-500 text-white font-extrabold shadow-sm">
+                        {pendingCounts?.overdueInvoices}
+                      </span>
+                    )}
                   </TabsTrigger>
                 )}
                 {(isSuperAdmin || canViewBilling) && (
@@ -205,13 +239,15 @@ const WebhostDashboard = () => {
                   </TabsTrigger>
                 )}
                 <TabsTrigger value="error-logs"
-                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-semibold text-white/50 hover:text-red-400 text-xs sm:text-sm transition-colors">
+                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-bold text-slate-300 hover:text-red-400 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
                   <Bug className="h-3.5 w-3.5 mr-1.5" />Error Logs
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value="overview"><WebhostOverview /></TabsContent>
+            <TabsContent value="overview">
+              <WebhostOverview onNavigateTab={setActiveTab} />
+            </TabsContent>
             <TabsContent value="admin-suite"><EnterpriseAdminPlatform /></TabsContent>
             {canViewManagers && <TabsContent value="managers"><ManagerManagement /></TabsContent>}
             {canViewProperties && <TabsContent value="properties"><PropertyAssignment /></TabsContent>}

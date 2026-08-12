@@ -58,7 +58,7 @@ test.describe("CALQULUS RMS E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", "invalid@example.com");
       await page.fill("input[type='password']", "wrongpassword");
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page.locator("text=Invalid login credentials")).toBeVisible({ timeout: 15000 });
     });
 
@@ -67,7 +67,7 @@ test.describe("CALQULUS RMS E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       await expect(page.locator("text=Dashboard")).toBeVisible({ timeout: 10000 });
     });
@@ -77,7 +77,7 @@ test.describe("CALQULUS RMS E2E Tests", () => {
       await page.goto("/auth");
       await page.fill("input[type='email']", MANAGER_EMAIL);
       await page.fill("input[type='password']", MANAGER_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL("/", { timeout: 15000 });
       await expect(page.locator("text=Properties").or(page.locator("text=Tenants"))).toBeVisible({ timeout: 10000 });
     });
@@ -87,7 +87,7 @@ test.describe("CALQULUS RMS E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       await expect(page.locator("text=Dashboard").or(page.locator("text=Home"))).toBeVisible({ timeout: 10000 });
     });
@@ -97,7 +97,7 @@ test.describe("CALQULUS RMS E2E Tests", () => {
       await page.goto("/tenant/login");
       await page.fill("input[type='email']", TENANT_EMAIL);
       await page.fill("input[type='password']", TENANT_PASSWORD);
-      await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await page.click("button:has-text('Sign In')");
       await expect(page).toHaveURL(/\/portal/, { timeout: 15000 });
       await page.goto("/portal/payments");
       await expect(page.locator("text=Payment").or(page.locator("text=Billing"))).toBeVisible({ timeout: 10000 });

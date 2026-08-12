@@ -27,6 +27,7 @@ import BankIntegrationSettings from "@/features/payments/components/BankIntegrat
 import UnmatchedBankTransactions from "@/features/payments/components/UnmatchedBankTransactions";
 import { DateSettings } from "@/features/settings/components/DateSettings";
 import { CacheManagementSettings } from "@/features/settings/components/CacheManagementSettings";
+import { PushNotificationSettings } from "@/features/settings/components/PushNotificationSettings";
 import { cn } from "@/shared/lib/utils";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 
@@ -66,13 +67,6 @@ const Settings = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [notificationLoading, setNotificationLoading] = useState(true);
-  const [notificationSaving, setNotificationSaving] = useState(false);
-  const [notificationSettings, setNotificationSettings] = useState({
-    notifyEmail: true,
-    notifySms: true,
-    notifyWhatsapp: false,
-  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -231,31 +225,6 @@ const Settings = () => {
     }
   };
 
-  const handleSaveNotifications = async () => {
-    if (!user) return;
-    setNotificationSaving(true);
-    try {
-      const { error } = await (supabase
-        .from("manager_notification_settings" as never)
-        .upsert({
-          manager_user_id: user.id,
-          notify_email: notificationSettings.notifyEmail,
-          notify_sms: notificationSettings.notifySms,
-          notify_whatsapp: notificationSettings.notifyWhatsapp,
-        }, { onConflict: "manager_user_id" }) as unknown as { error: unknown });
-      if (error) throw error;
-      toast({ title: "Notifications Saved", description: "Your notification preferences have been updated." });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save notification preferences.",
-        variant: "destructive",
-      });
-    } finally {
-      setNotificationSaving(false);
-    }
-  };
-
   const getInitials = (name: string) => {
     if (!name) return "U";
     const parts = name.split(" ");
@@ -332,65 +301,7 @@ const Settings = () => {
       case "password":
         return <PasswordChange />;
       case "notifications":
-        return (
-          <Card className="card-shadow animate-fade-in">
-            <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
-              <CardTitle className="font-heading text-base sm:text-lg">Notifications</CardTitle>
-              <CardDescription className="text-xs sm:text-sm">Configure how you receive alerts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 p-4 sm:p-6 pt-2 sm:pt-2">
-              {notificationLoading ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-start sm:items-center justify-between gap-3">
-                    <div className="space-y-0.5 flex-1">
-                      <Label className="text-sm font-medium">Email Notifications</Label>
-                      <p className="text-xs sm:text-sm text-muted-foreground">Receive email updates about payments, leases, and account events</p>
-                    </div>
-                    <Switch
-                      checked={notificationSettings.notifyEmail}
-                      onCheckedChange={(checked) => setNotificationSettings((prev) => ({ ...prev, notifyEmail: checked }))}
-                      className="flex-shrink-0"
-                    />
-                  </div>
-                  <Separator />
-                  <div className="flex items-start sm:items-center justify-between gap-3">
-                    <div className="space-y-0.5 flex-1">
-                      <Label className="text-sm font-medium">SMS Notifications</Label>
-                      <p className="text-xs sm:text-sm text-muted-foreground">Send tenant-facing reminders and payment notices by SMS when configured</p>
-                    </div>
-                    <Switch
-                      checked={notificationSettings.notifySms}
-                      onCheckedChange={(checked) => setNotificationSettings((prev) => ({ ...prev, notifySms: checked }))}
-                      className="flex-shrink-0"
-                    />
-                  </div>
-                  <Separator />
-                  <div className="flex items-start sm:items-center justify-between gap-3">
-                    <div className="space-y-0.5 flex-1">
-                      <Label className="text-sm font-medium">WhatsApp Notifications</Label>
-                      <p className="text-xs sm:text-sm text-muted-foreground">Enable WhatsApp delivery where provider credentials are configured</p>
-                    </div>
-                    <Switch
-                      checked={notificationSettings.notifyWhatsapp}
-                      onCheckedChange={(checked) => setNotificationSettings((prev) => ({ ...prev, notifyWhatsapp: checked }))}
-                      className="flex-shrink-0"
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleSaveNotifications} disabled={notificationSaving} size="sm">
-                      {notificationSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Save Notifications
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        );
+        return <PushNotificationSettings />;
       case "payments":
         return (
           <div className="space-y-6">

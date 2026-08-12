@@ -24,9 +24,9 @@ const ADMIN_TYPE_LABELS: Record<PlatformAdminType, string> = {
 };
 
 const ADMIN_TYPE_BADGES: Record<PlatformAdminType, React.ReactNode> = {
-  owner: <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Crown className="h-3 w-3 mr-1" />Owner</Badge>,
-  business: <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Shield className="h-3 w-3 mr-1" />Business</Badge>,
-  admin: <Badge variant="outline" className="border-[hsl(214_73%_48%/0.3)] text-[hsl(218_58%_32%)]"><User className="h-3 w-3 mr-1" />Admin</Badge>,
+  owner: <Badge className="bg-amber-400/15 text-amber-300 border-amber-400/30 font-extrabold shadow-sm"><Crown className="h-3 w-3 mr-1 text-amber-400" />Owner (Immutable)</Badge>,
+  business: <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-bold"><Shield className="h-3 w-3 mr-1 text-emerald-400" />Business</Badge>,
+  admin: <Badge variant="outline" className="border-slate-700 text-slate-300 font-medium"><User className="h-3 w-3 mr-1 text-slate-400" />Admin</Badge>,
 };
 
 const SUSPENSION_RULES = {
@@ -201,18 +201,18 @@ const PlatformAdminManagement = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+    <Card className="bg-slate-900/80 border-slate-800 text-slate-100 shadow-xl backdrop-blur-md">
+      <CardHeader className="border-b border-slate-800/80 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
+              <Crown className="h-5 w-5 text-amber-400" />
               Platform Admin Hierarchy
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-400 text-xs sm:text-sm mt-1">
               Manage owner, business, and admin accounts with suspension rules.
               {canCreateOwner && (
-                <span className="block mt-1 text-xs text-muted-foreground">
+                <span className="block mt-1 text-xs text-amber-400/80 font-medium">
                   Owner is immutable — cannot be suspended or deleted. Business can be suspended by Owner only.
                   Admin can be suspended by Owner or Business.
                 </span>
@@ -222,59 +222,59 @@ const PlatformAdminManagement = () => {
           {canManage && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold hover:from-amber-300 hover:to-amber-400 shadow-md">
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Add Admin
+                  Add Platform Admin
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-slate-900 border-slate-800 text-slate-100">
                 <DialogHeader>
-                  <DialogTitle>Create Platform Admin</DialogTitle>
-                  <DialogDescription>
+                  <DialogTitle className="text-white text-lg font-bold">Create Platform Admin</DialogTitle>
+                  <DialogDescription className="text-slate-400 text-xs">
                     {canCreateOwner ? 'You can create owner, business, or admin accounts.' : 'You can create admin accounts only.'}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
+                <div className="space-y-4 py-3">
                   <div className="space-y-2">
-                    <Label>Admin Type</Label>
+                    <Label className="text-xs font-semibold text-slate-300">Admin Type</Label>
                     <Select
                       value={newAdmin.adminType}
                       onValueChange={(v: PlatformAdminType) => setNewAdmin(prev => ({ ...prev, adminType: v }))}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        {canCreateOwner && <SelectItem value="owner">Owner (immutable)</SelectItem>}
+                      <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                        {canCreateOwner && <SelectItem value="owner">Owner (Immutable)</SelectItem>}
                         <SelectItem value="business">Business</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Display Name</Label>
-                    <Input value={newAdmin.displayName} onChange={e => setNewAdmin(prev => ({ ...prev, displayName: e.target.value }))} />
+                    <Label className="text-xs font-semibold text-slate-300">Display Name</Label>
+                    <Input className="bg-slate-950 border-slate-800 text-white" value={newAdmin.displayName} onChange={e => setNewAdmin(prev => ({ ...prev, displayName: e.target.value }))} placeholder="e.g. Mugo James" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input type="email" value={newAdmin.email} onChange={e => setNewAdmin(prev => ({ ...prev, email: e.target.value }))} />
+                    <Label className="text-xs font-semibold text-slate-300">Email Address</Label>
+                    <Input className="bg-slate-950 border-slate-800 text-white" type="email" value={newAdmin.email} onChange={e => setNewAdmin(prev => ({ ...prev, email: e.target.value }))} placeholder="admin@calqulus.site" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Password</Label>
-                    <Input type="password" value={newAdmin.password} onChange={e => setNewAdmin(prev => ({ ...prev, password: e.target.value }))} />
+                    <Label className="text-xs font-semibold text-slate-300">Initial Password</Label>
+                    <Input className="bg-slate-950 border-slate-800 text-white" type="password" value={newAdmin.password} onChange={e => setNewAdmin(prev => ({ ...prev, password: e.target.value }))} placeholder="••••••••" />
                   </div>
                   {newAdmin.adminType === 'owner' && (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800 flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                      <span>Owner accounts are immutable and cannot be suspended or deleted. Only one owner should exist.</span>
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-300 flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-400" />
+                      <span>Owner accounts are immutable and cannot be suspended or deleted. Only one primary owner should exist.</span>
                     </div>
                   )}
                   <Button
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold hover:from-amber-300 hover:to-amber-400"
                     onClick={() => createAdmin.mutate()}
                     disabled={createAdmin.isPending || !newAdmin.email || !newAdmin.password || !newAdmin.displayName}
                   >
-                    {createAdmin.isPending ? 'Creating...' : 'Create Admin'}
+                    {createAdmin.isPending ? 'Creating Admin...' : 'Create Admin Account'}
                   </Button>
                 </div>
               </DialogContent>
@@ -282,58 +282,59 @@ const PlatformAdminManagement = () => {
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0 sm:p-6">
         {isLoading ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
           </div>
         ) : !canManage ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Shield className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Only platform owners and business admins can manage the admin hierarchy.</p>
+          <div className="text-center py-12 text-slate-400">
+            <Shield className="h-10 w-10 mx-auto mb-2 opacity-40 text-amber-400" />
+            <p className="text-sm">Only platform owners and business admins can manage the admin hierarchy.</p>
           </div>
         ) : !admins || admins.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No platform admins configured yet.</p>
+          <div className="text-center py-12 text-slate-400">
+            <User className="h-10 w-10 mx-auto mb-2 opacity-40 text-amber-400" />
+            <p className="text-sm">No platform admins configured yet.</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {admins.map(admin => (
-                <TableRow key={admin.id} className={admin.suspended ? 'opacity-60' : ''}>
-                  <TableCell>{ADMIN_TYPE_BADGES[admin.admin_type]}</TableCell>
-                  <TableCell className="font-medium">{admin.display_name}</TableCell>
-                  <TableCell>{admin.email}</TableCell>
-                  <TableCell>
-                    {admin.suspended ? (
-                      <Badge variant="destructive" className="flex items-center gap-1 w-fit">
-                        <Ban className="h-3 w-3" /> Suspended
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="flex items-center gap-1 w-fit bg-green-100 text-green-800 border-green-300">
-                        <CheckCircle className="h-3 w-3" /> Active
-                      </Badge>
-                    )}
-                    {admin.is_immutable && (
-                      <Badge variant="outline" className="ml-1 border-yellow-300 text-yellow-700">
-                        <Crown className="h-3 w-3 mr-1" />Immutable
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {'created_at' in admin ? format(new Date((admin as any).created_at), 'MMM d, yyyy') : '-'}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-950/60 border-b border-slate-800">
+                <TableRow className="hover:bg-transparent border-slate-800">
+                  <TableHead className="text-slate-400 font-bold text-xs uppercase tracking-wider">Type</TableHead>
+                  <TableHead className="text-slate-400 font-bold text-xs uppercase tracking-wider">Name</TableHead>
+                  <TableHead className="text-slate-400 font-bold text-xs uppercase tracking-wider">Email</TableHead>
+                  <TableHead className="text-slate-400 font-bold text-xs uppercase tracking-wider">Status</TableHead>
+                  <TableHead className="text-slate-400 font-bold text-xs uppercase tracking-wider">Created</TableHead>
+                  <TableHead className="text-right text-slate-400 font-bold text-xs uppercase tracking-wider">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {admins.map(admin => (
+                  <TableRow key={admin.id} className={`border-slate-800/60 hover:bg-slate-800/40 transition-colors ${admin.suspended ? 'opacity-50' : ''}`}>
+                    <TableCell>{ADMIN_TYPE_BADGES[admin.admin_type]}</TableCell>
+                    <TableCell className="font-semibold text-slate-100">{admin.display_name}</TableCell>
+                    <TableCell className="text-slate-300 text-sm font-mono">{admin.email}</TableCell>
+                    <TableCell>
+                      {admin.suspended ? (
+                        <Badge variant="destructive" className="flex items-center gap-1 w-fit bg-red-500/20 text-red-300 border-red-500/30">
+                          <Ban className="h-3 w-3" /> Suspended
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="flex items-center gap-1 w-fit bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-semibold">
+                          <CheckCircle className="h-3 w-3" /> Active
+                        </Badge>
+                      )}
+                      {admin.is_immutable && (
+                        <Badge variant="outline" className="ml-1.5 border-amber-400/40 text-amber-300 bg-amber-400/10">
+                          <Crown className="h-3 w-3 mr-1 text-amber-400" />Immutable
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-slate-400 text-xs">
+                      {'created_at' in admin ? format(new Date((admin as any).created_at), 'MMM d, yyyy') : '-'}
+                    </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       {canSuspend(admin) && (
@@ -369,6 +370,7 @@ const PlatformAdminManagement = () => {
               ))}
             </TableBody>
           </Table>
+        </div>
         )}
       </CardContent>
 

@@ -335,7 +335,7 @@ const TenantAuth = () => {
                 Didn't receive the email? Check your spam folder or{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
-                  className="text-amber-700 dark:text-amber-500 hover:underline"
+                  className="text-amber-600 hover:underline"
                 >
                   try again
                 </button>
@@ -344,7 +344,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm">
                 Already verified?{' '}
-                <Link to="/tenant/login" className="text-amber-700 dark:text-amber-500 hover:underline">
+                <Link to="/tenant/login" className="text-amber-600 hover:underline">
                   Sign in here
                 </Link>
               </p>
@@ -399,7 +399,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm mb-3">Already have an account?</p>
               <Link to="/tenant/login">
-                <Button variant="outline" className="w-full border-amber-400/40 text-amber-700 dark:text-amber-500 hover:bg-amber-400/8">
+                <Button variant="outline" className="w-full border-amber-400/40 text-amber-600 hover:bg-amber-400/8">
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
@@ -532,7 +532,7 @@ const TenantAuth = () => {
           </CardDescription>
           {invitation && (
             <div className="mt-3 p-3 bg-amber-400/10 rounded-lg border border-amber-400/15 space-y-2">
-              <p className="text-xs text-amber-700 dark:text-amber-500 font-medium">
+              <p className="text-xs text-amber-600 font-medium">
                 Property: {invitation.property_name}{invitation.unit ? ` - Unit ${invitation.unit}` : ''}
               </p>
               {landlordContact && (
@@ -543,7 +543,7 @@ const TenantAuth = () => {
                     {landlordContact.email && (
                       <a 
                         href={`mailto:${landlordContact.email}`}
-                        className="text-xs text-amber-700 dark:text-amber-500 hover:underline flex items-center gap-1"
+                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
                       >
                         <Mail className="h-3 w-3" />
                         {landlordContact.email}
@@ -552,7 +552,7 @@ const TenantAuth = () => {
                     {landlordContact.phone && (
                       <a 
                         href={`tel:${landlordContact.phone}`}
-                        className="text-xs text-amber-700 dark:text-amber-500 hover:underline flex items-center gap-1"
+                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
                       >
                         📞 {landlordContact.phone}
                       </a>
@@ -657,7 +657,7 @@ const TenantAuth = () => {
           <div className="text-center w-full">
             <p className="text-muted-foreground text-sm">
               Already have an account?{' '}
-              <Link to="/tenant/login" className="text-amber-700 dark:text-amber-500 hover:underline font-medium">
+              <Link to="/tenant/login" className="text-amber-600 hover:underline font-medium">
                 Sign In
               </Link>
             </p>

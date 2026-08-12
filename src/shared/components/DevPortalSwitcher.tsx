@@ -21,7 +21,8 @@ import {
   FileText,
   PieChart,
   Settings,
-  Layers
+  Layers,
+  Globe2
 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -85,6 +86,7 @@ const PRESET_ACCOUNTS: AccountPreset[] = [
 ];
 
 const DIRECT_LINKS = [
+  { label: 'Landing Page', path: '/landing', icon: Globe2 },
   { label: 'Manager Overview', path: '/', icon: Building2 },
   { label: 'Water Billing', path: '/water-billing', icon: Droplet },
   { label: 'Tenant Invites', path: '/invites', icon: Mail },
