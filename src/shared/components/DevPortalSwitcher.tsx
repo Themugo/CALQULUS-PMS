@@ -156,6 +156,9 @@ export function DevPortalSwitcher() {
         >
           <Zap className="h-4 w-4 text-amber-400 animate-pulse group-hover:scale-110 transition-transform" />
           <span>Dev Bypass & Account Switcher</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-[9px] font-extrabold uppercase tracking-wider text-amber-300">
+            Dev Only
+          </span>
           {userRole && (
             <span className="px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-[10px] uppercase font-bold text-amber-300">
               {userRole.role}
@@ -165,6 +168,13 @@ export function DevPortalSwitcher() {
         </button>
       ) : (
         <div className="w-80 sm:w-96 rounded-2xl bg-slate-900/95 border border-amber-400/30 text-white shadow-2xl backdrop-blur-2xl p-4 transition-all">
+          {/* Development-only banner */}
+          <div className="flex items-center gap-2 mb-3 rounded-lg bg-amber-400/10 border border-amber-400/30 px-2.5 py-1.5">
+            <Zap className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 leading-tight">
+              Development Only — not shown in production
+            </p>
+          </div>
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-amber-400" />
@@ -173,6 +183,7 @@ export function DevPortalSwitcher() {
             <button
               onClick={() => setIsOpen(false)}
               className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10"
+              aria-label="Close dev switcher"
             >
               <ChevronDown className="h-4 w-4" />
             </button>

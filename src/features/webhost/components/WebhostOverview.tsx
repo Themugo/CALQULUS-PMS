@@ -9,11 +9,14 @@ import { Input } from '@/shared/components/ui/input';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { formatDistanceToNow } from 'date-fns';
+import { checkHealth } from '@/shared/lib/observability';
 import {
-  Users, Building, Receipt, TrendingUp, Shield,
+  Users, Building, TrendingUp,
   CheckCircle, Clock, DollarSign, Home, Search,
-  AlertCircle, BarChart3, Crown, ArrowRight, Zap, RefreshCw,
-  ShieldCheck, Activity, Layers, ScrollText, Tag, Bug, ChevronRight
+  AlertCircle, BarChart3, ArrowRight, Zap, RefreshCw,
+  ShieldCheck, Activity, Layers, ScrollText, Tag, ChevronRight,
+  ServerCog, MapPin,
 } from 'lucide-react';
 
 type ManagerInvoiceRow = { amount: number | null };
@@ -27,46 +30,89 @@ interface WebhostOverviewProps {
   onNavigateTab?: (tab: string) => void;
 }
 
-interface WebhostStatCardProps {
-  label: string;
-  value: string | number;
-  icon: React.ComponentType<{ className?: string }>;
-  sub?: string;
-  color?: string;
-  loading?: boolean;
-  badge?: { label: string; variant: 'default' | 'destructive' | 'secondary' | 'outline' };
-  accent?: string;
-  onClick?: () => void;
+type HealthState = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
+
+// Real, lightweight platform health probe. Reuses the existing checkHealth()
+// helper from the observability stack — no invented metrics. Aggregates the
+// component statuses into a single honest value.
+function usePlatformHealth() {
+  return useQuery<HealthState>({
+    queryKey: ['webhost-overview-health'],
+    queryFn: async () => {
+      try {
+        const checks = await checkHealth();
+        if (!checks.length) return 'unknown';
+        if (checks.some(c => c.status === 'unhealthy')) return 'unhealthy';
+        if (checks.some(c => c.status === 'degraded')) return 'degraded';
+        return 'healthy';
+      } catch {
+        return 'unknown';
+      }
+    },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
 }
 
-function WebhostStatCard({ label, value, icon: Icon, sub, color = 'text-slate-100', loading, badge, accent, onClick }: WebhostStatCardProps) {
+const HEALTH_COPY: Record<HealthState, { label: string; dot: string; text: string; sub: string }> = {
+  healthy: { label: 'System Operational', dot: 'bg-emerald-400', text: 'text-emerald-400', sub: 'Platform services responding normally' },
+  degraded: { label: 'System Degraded', dot: 'bg-amber-400', text: 'text-amber-400', sub: 'Some platform services are responding slowly' },
+  unhealthy: { label: 'System Issue', dot: 'bg-red-500', text: 'text-red-400', sub: 'A platform service is unreachable — investigate' },
+  unknown: { label: 'System Status', dot: 'bg-slate-500', text: 'text-slate-300', sub: 'Health probe unavailable' },
+};
+
+// ── Platform status band ─────────────────────────────────────────────
+const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = ({ onNavigateTab }) => {
+  const { data: health = 'unknown', isLoading } = usePlatformHealth();
+  const copy = HEALTH_COPY[health];
   return (
-    <Card 
-      onClick={onClick}
-      className={`bg-slate-900/80 border border-slate-800/80 hover:border-amber-400/40 transition-all duration-200 hover:-translate-y-0.5 shadow-xl backdrop-blur-md rounded-2xl ${onClick ? 'cursor-pointer group' : ''} ${accent ? accent : ''}`}
-    >
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2.5">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 leading-tight group-hover:text-amber-400 transition-colors">{label}</p>
-          <div className="h-8 w-8 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400/20 group-hover:scale-105 transition-all">
-            <Icon className="h-4 w-4 text-amber-400" />
+    <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl">
+      <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-10 w-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0">
+            <ServerCog className="h-5 w-5 text-amber-400" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              {isLoading ? (
+                <Skeleton className="h-3 w-32 bg-slate-800/60" />
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <span className={`h-2 w-2 rounded-full ${copy.dot} ${health === 'healthy' ? 'animate-pulse' : ''}`} aria-hidden />
+                  <span className={`text-sm font-bold ${copy.text}`}>{copy.label}</span>
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-0.5 leading-tight">{copy.sub}</p>
           </div>
         </div>
-        {loading ? (
-          <Skeleton className="h-8 w-24 bg-slate-800/60" />
-        ) : (
-          <div className="flex items-end gap-2">
-            <p className={`font-['Outfit'] text-2xl font-extrabold tracking-tight leading-none ${color}`}>{value}</p>
-            {badge && (
-              <Badge variant={badge.variant} className="text-[10px] h-4 px-1.5 mb-0.5 shrink-0 font-bold">{badge.label}</Badge>
-            )}
-          </div>
-        )}
-        {sub && !loading && <p className="text-xs font-medium text-slate-400 mt-2 leading-tight">{sub}</p>}
+        <div className="flex items-center gap-2 shrink-0">
+          <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold uppercase tracking-wider">
+            Platform Administration
+          </Badge>
+          {onNavigateTab && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onNavigateTab('security')}
+              className="h-7 text-xs text-slate-300 hover:text-amber-400 hover:bg-amber-400/10 px-2 font-medium"
+            >
+              Security <ArrowRight className="h-3 w-3 ml-1" />
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
-}
+};
+
+// ── Empty state for zero-value attention items ───────────────────────
+const HealthyEmpty: React.FC<{ message: string; icon: React.ComponentType<{ className?: string }> }> = ({ message, icon: Icon }) => (
+  <div className="flex items-center gap-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15 px-2.5 py-1.5">
+    <CheckCircle className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+    <span className="text-[11px] font-medium text-emerald-300/90">{message}</span>
+  </div>
+);
 
 interface RevenueTrendPoint {
   month: string;
@@ -75,9 +121,9 @@ interface RevenueTrendPoint {
   rawMonth: string;
 }
 
-const CustomRevenueTooltip = ({ active, payload }: any) => {
+const CustomRevenueTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: RevenueTrendPoint }> }) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload as RevenueTrendPoint;
+    const data = payload[0].payload;
     return (
       <div className="bg-slate-900/95 border border-amber-500/30 rounded-xl p-3 shadow-2xl backdrop-blur-md text-slate-100">
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{data.monthFull}</p>
@@ -110,11 +156,11 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
           .eq('status', 'paid').gte('paid_date', start).lt('paid_date', end.toISOString().slice(0, 10));
         const rows = (data as ManagerInvoiceRow[] | null) || [];
         const revenue = rows.reduce((s, i) => s + Number(i.amount), 0);
-        
+
         const dateObj = new Date(`${m}-01T00:00:00`);
         const monthShort = dateObj.toLocaleDateString('en-US', { month: 'short' });
         const monthFull = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        
+
         return {
           month: monthShort,
           monthFull,
@@ -127,6 +173,7 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
 
   const total6Mo = trend.reduce((sum, t) => sum + t.revenue, 0);
   const avgMonthly = Math.round(total6Mo / 6);
+  const hasBillingData = total6Mo > 0;
 
   return (
     <Card className="bg-slate-900/80 border border-slate-800 shadow-md backdrop-blur-md rounded-xl overflow-hidden">
@@ -144,9 +191,9 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
               Avg: {fmt(avgMonthly)}/mo
             </Badge>
             {onNavigateTab && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onNavigateTab('billing')}
                 className="h-7 text-xs text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 px-2 font-medium"
               >
@@ -159,6 +206,16 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
       <CardContent className="px-4 sm:px-5 pt-5 pb-4">
         {isLoading ? (
           <Skeleton className="h-48 w-full bg-slate-800/50 rounded-xl" />
+        ) : !hasBillingData ? (
+          <div className="h-48 w-full flex flex-col items-center justify-center text-center px-4">
+            <div className="h-12 w-12 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-center mb-3">
+              <BarChart3 className="h-6 w-6 text-slate-500" />
+            </div>
+            <p className="text-sm font-semibold text-slate-300">No billing activity recorded in the last 6 months</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm">
+              Paid manager invoices will appear here once subscription billing begins.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             <div className="h-48 w-full pt-1">
@@ -211,11 +268,67 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
   );
 };
 
+type OverviewStats = {
+  totalManagers: number;
+  pendingManagers: number;
+  approvedManagers: number;
+  rejectedManagers: number;
+  totalProperties: number;
+  totalWebhosts: number;
+  revenueMTD: number;
+  revenueLM: number;
+  revenueChange: number;
+  pendingManagerInvoices: number;
+  overdueManagerInvoices: number;
+  systemLandlords: number;
+  pendingPayouts: number;
+};
+
+interface CardShellProps {
+  accent: 'amber' | 'emerald' | 'sky' | 'purple';
+  onClick?: () => void;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: { label: string; cls: string };
+  children: React.ReactNode;
+}
+
+const CardShell: React.FC<CardShellProps> = ({ accent, onClick, title, icon: Icon, badge, children }) => {
+  const accents = {
+    amber: { bar: 'border-l-amber-500', text: 'text-amber-400', hover: 'hover:border-amber-400/50', glow: 'group-hover:text-amber-300' },
+    emerald: { bar: 'border-l-emerald-500', text: 'text-emerald-400', hover: 'hover:border-emerald-400/50', glow: 'group-hover:text-emerald-300' },
+    sky: { bar: 'border-l-sky-500', text: 'text-sky-400', hover: 'hover:border-sky-400/50', glow: 'group-hover:text-sky-300' },
+    purple: { bar: 'border-l-purple-500', text: 'text-purple-400', hover: 'hover:border-purple-400/50', glow: 'group-hover:text-purple-300' },
+  }[accent];
+  return (
+    <Card
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick(); } }}
+      className={`border-l-4 ${accents.bar} border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl ${accents.hover} transition-all ${onClick ? 'cursor-pointer group' : ''} backdrop-blur-md rounded-2xl`}
+    >
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className={`text-[11px] font-bold uppercase tracking-wider ${accents.text} flex items-center gap-1.5 ${accents.glow}`}>
+            <Icon className="h-3.5 w-3.5" />
+            {title}
+          </span>
+          {badge && (
+            <Badge variant="outline" className={`text-[10px] h-5 px-2 ${badge.cls} font-bold`}>{badge.label}</Badge>
+          )}
+        </div>
+        {children}
+      </CardContent>
+    </Card>
+  );
+};
+
 const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading } = useQuery<OverviewStats>({
     queryKey: ['webhost-overview-stats-v2'],
     queryFn: async () => {
       const now = new Date();
@@ -289,205 +402,178 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
     );
   });
 
+  // ── derived values (no new queries, no invented data) ───────────────
+  const s = stats ?? ({} as Partial<OverviewStats>);
+  const pendingManagers = s.pendingManagers ?? 0;
+  const overdueInvoices = s.overdueManagerInvoices ?? 0;
+  const pendingPayouts = s.pendingPayouts ?? 0;
+  const attentionCount = pendingManagers + overdueInvoices + pendingPayouts;
+  const hasAttention = attentionCount > 0;
+
+  const revenueMTD = s.revenueMTD ?? 0;
+  const revenueLM = s.revenueLM ?? 0;
+  const pendingInvoices = s.pendingManagerInvoices ?? 0;
+  // Only show MoM growth when there is meaningful historical data (last
+  // month revenue > 0). Otherwise an honest "no billing activity yet"
+  // state — never a misleading "+0% MoM".
+  const hasBillingHistory = revenueLM > 0;
+  const momChange = s.revenueChange ?? 0;
+  const momUp = momChange >= 0;
+
+  const totalManagers = s.totalManagers ?? 0;
+  const approvedManagers = s.approvedManagers ?? 0;
+  const totalProperties = s.totalProperties ?? 0;
+  const systemLandlords = s.systemLandlords ?? 0;
+  const totalWebhosts = s.totalWebhosts ?? 0;
+
   return (
     <div className="space-y-6">
-      {/* ── EXECUTIVE ANSWERS BAR ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {/* What requires attention? */}
-        <Card 
-          onClick={() => onNavigateTab?.((stats?.pendingManagers ?? 0) > 0 ? 'managers' : 'billing')}
-          className="border-l-4 border-l-amber-500 border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl hover:border-amber-400/50 transition-all cursor-pointer group backdrop-blur-md rounded-2xl"
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 group-hover:text-amber-300">
-                <AlertCircle className="h-3.5 w-3.5" />
-                Attention Required
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-amber-400/30 text-amber-300 bg-amber-400/10 font-bold">
-                {(stats?.pendingManagers ?? 0) + (stats?.overdueManagerInvoices ?? 0)} Items
-              </Badge>
-            </div>
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Managers:</span>
-                <span className="font-['Outfit'] font-bold text-amber-400 flex items-center gap-1">
-                  {stats?.pendingManagers ?? 0}
-                  {(stats?.pendingManagers ?? 0) > 0 && <ChevronRight className="h-3 w-3" />}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Overdue Invoices:</span>
-                <span className="font-['Outfit'] font-bold text-red-400 flex items-center gap-1">
-                  {stats?.overdueManagerInvoices ?? 0}
-                  {(stats?.overdueManagerInvoices ?? 0) > 0 && <ChevronRight className="h-3 w-3" />}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Payouts:</span>
-                <span className="font-['Outfit'] font-bold text-slate-100">{stats?.pendingPayouts ?? 0}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* ── 1. PLATFORM STATUS ── */}
+      <PlatformStatusBand onNavigateTab={onNavigateTab} />
 
-        {/* What generates revenue? */}
-        <Card 
+      {/* ── 2/3/4. EXECUTIVE ANSWERS (Attention · Billing · Roster · Privacy) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Attention Required */}
+        <CardShell
+          accent="amber"
+          title="Attention Required"
+          icon={AlertCircle}
+          onClick={() => onNavigateTab?.(pendingManagers > 0 ? 'managers' : overdueInvoices > 0 ? 'billing' : 'billing')}
+          badge={hasAttention
+            ? { label: `${attentionCount} item${attentionCount === 1 ? '' : 's'}`, cls: 'border-amber-400/30 text-amber-300 bg-amber-400/10' }
+            : { label: 'All clear', cls: 'border-emerald-400/30 text-emerald-300 bg-emerald-500/10' }
+          }
+        >
+          {isLoading ? (
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+          ) : hasAttention ? (
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Pending Managers</span>
+                <span className="font-bold text-amber-400 flex items-center gap-1">
+                  {pendingManagers}
+                  {pendingManagers > 0 && <ChevronRight className="h-3 w-3" />}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Overdue Invoices</span>
+                <span className="font-bold text-red-400 flex items-center gap-1">
+                  {overdueInvoices}
+                  {overdueInvoices > 0 && <ChevronRight className="h-3 w-3" />}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Pending Payouts</span>
+                <span className="font-bold text-slate-100">{pendingPayouts}</span>
+              </div>
+            </div>
+          ) : (
+            <HealthyEmpty message="No outstanding approvals, overdue invoices, or payouts" icon={CheckCircle} />
+          )}
+        </CardShell>
+
+        {/* Platform Billing */}
+        <CardShell
+          accent="emerald"
+          title="Platform Billing"
+          icon={DollarSign}
           onClick={() => onNavigateTab?.('billing')}
-          className="border-l-4 border-l-emerald-500 border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl hover:border-emerald-400/50 transition-all cursor-pointer group backdrop-blur-md rounded-2xl"
+          badge={hasBillingHistory
+            ? { label: `${momUp ? '+' : ''}${momChange}% MoM`, cls: `border-amber-400/30 ${momUp ? 'text-emerald-300 bg-emerald-500/10' : 'text-red-300 bg-red-500/10'}` }
+            : { label: 'No activity', cls: 'border-slate-600 text-slate-300 bg-slate-700/30' }
+          }
         >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 group-hover:text-emerald-300">
-                <DollarSign className="h-3.5 w-3.5" />
-                Platform Billing
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-emerald-400/30 text-emerald-300 bg-emerald-500/10 font-bold">
-                +{stats?.revenueChange ?? 0}% MoM
-              </Badge>
-            </div>
-            <div className="space-y-1.5 text-xs">
+          {isLoading ? (
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+          ) : hasBillingHistory || revenueMTD > 0 ? (
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Revenue MTD:</span>
-                <span className="font-['Outfit'] font-bold text-emerald-400">{fmt(stats?.revenueMTD ?? 0)}</span>
+                <span className="text-slate-400 font-medium">Revenue MTD</span>
+                <span className="font-bold text-emerald-400">{fmt(revenueMTD)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Last Month:</span>
-                <span className="font-['Outfit'] font-semibold text-slate-200">{fmt(stats?.revenueLM ?? 0)}</span>
+                <span className="text-slate-400 font-medium">Last Month</span>
+                <span className="font-semibold text-slate-200">{fmt(revenueLM)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Pending Invoices:</span>
-                <span className="font-['Outfit'] font-semibold text-amber-400">{stats?.pendingManagerInvoices ?? 0}</span>
+                <span className="text-slate-400 font-medium">Pending Invoices</span>
+                <span className="font-semibold text-amber-400">{pendingInvoices}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-slate-300">No billing activity yet</p>
+              <p className="text-[11px] text-slate-500 leading-tight">
+                Paid manager invoices will populate revenue figures once subscription billing begins.
+              </p>
+            </div>
+          )}
+        </CardShell>
 
-        {/* Platform Scope */}
-        <Card 
+        {/* Platform Roster */}
+        <CardShell
+          accent="sky"
+          title="Platform Roster"
+          icon={Building}
           onClick={() => onNavigateTab?.('managers')}
-          className="border-l-4 border-l-sky-500 border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl hover:border-sky-400/50 transition-all cursor-pointer group backdrop-blur-md rounded-2xl"
+          badge={{ label: 'Active scope', cls: 'border-sky-400/30 text-sky-300 bg-sky-500/10' }}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5 group-hover:text-sky-300">
-                <Building className="h-3.5 w-3.5" />
-                Platform Roster
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-sky-400/30 text-sky-300 bg-sky-500/10 font-bold">
-                Active Scope
-              </Badge>
-            </div>
-            <div className="space-y-1.5 text-xs">
+          {isLoading ? (
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+          ) : (
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Total Managers:</span>
-                <span className="font-['Outfit'] font-bold text-slate-100">{stats?.totalManagers ?? 0}</span>
+                <span className="text-slate-400 font-medium">Managers</span>
+                <span className="font-bold text-slate-100">{totalManagers} <span className="text-slate-500 font-normal">({approvedManagers} approved)</span></span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Total Properties:</span>
-                <span className="font-['Outfit'] font-bold text-slate-100">{stats?.totalProperties ?? 0}</span>
+                <span className="text-slate-400 font-medium">Properties</span>
+                <span className="font-bold text-slate-100">{totalProperties}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">System Landlords:</span>
-                <span className="font-['Outfit'] font-bold text-slate-100">{stats?.systemLandlords ?? 0}</span>
+                <span className="text-slate-400 font-medium">System Landlords</span>
+                <span className="font-bold text-slate-100">{systemLandlords}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </CardShell>
 
-        {/* Security & Firewall */}
-        <Card 
+        {/* Tenant Data Privacy */}
+        <CardShell
+          accent="purple"
+          title="Tenant Data Privacy"
+          icon={ShieldCheck}
           onClick={() => onNavigateTab?.('security')}
-          className="border-l-4 border-l-purple-500 border-y border-r border-slate-800 bg-slate-900/80 hover:shadow-2xl hover:border-purple-400/50 transition-all cursor-pointer group backdrop-blur-md rounded-2xl"
+          badge={{ label: 'Enforced', cls: 'border-purple-400/30 text-purple-300 bg-purple-500/10' }}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5 group-hover:text-purple-300">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                Tenant Data Privacy
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-purple-400/30 text-purple-300 bg-purple-500/10 font-bold">
-                Enforced
-              </Badge>
-            </div>
-            <div className="space-y-1.5 text-xs">
+          {isLoading ? (
+            <div className="space-y-2">{[0,1,2].map(i => <Skeleton key={i} className="h-4 w-full bg-slate-800/60 rounded" />)}</div>
+          ) : (
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Webhost Admins:</span>
-                <span className="font-['Outfit'] font-bold text-slate-100">{stats?.totalWebhosts ?? 0}</span>
+                <span className="text-slate-400 font-medium">Webhost Admins</span>
+                <span className="font-bold text-slate-100">{totalWebhosts}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Tenant Access:</span>
+                <span className="text-slate-400 font-medium">Tenant Access</span>
                 <span className="font-bold text-emerald-400">Blocked (Firewall)</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">System Status:</span>
-                <span className="font-bold text-emerald-400">Operational</span>
+                <span className="text-slate-400 font-medium">Isolation</span>
+                <span className="font-bold text-emerald-400">RLS Enforced</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </CardShell>
       </div>
 
-      {/* ── KPI GRID ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <WebhostStatCard 
-          label="Revenue MTD" 
-          value={isLoading ? '—' : fmt(stats?.revenueMTD ?? 0)}
-          icon={TrendingUp} 
-          color="text-emerald-400" 
-          loading={isLoading}
-          sub={stats ? `LM: ${fmt(stats.revenueLM)}` : undefined} 
-          onClick={() => onNavigateTab?.('billing')}
-        />
-        <WebhostStatCard 
-          label="Total Managers" 
-          value={stats?.totalManagers ?? 0}
-          icon={Users} 
-          loading={isLoading} 
-          color="text-amber-400" 
-          onClick={() => onNavigateTab?.('managers')}
-        />
-        <WebhostStatCard 
-          label="Pending Approval" 
-          value={stats?.pendingManagers ?? 0}
-          icon={Clock} 
-          loading={isLoading} 
-          color={stats?.pendingManagers ? 'text-amber-400' : undefined}
-          badge={stats?.pendingManagers ? { label: 'Action Needed', variant: 'secondary' } : undefined} 
-          onClick={() => onNavigateTab?.('managers')}
-        />
-        <WebhostStatCard 
-          label="Overdue Invoices" 
-          value={stats?.overdueManagerInvoices ?? 0}
-          icon={AlertCircle} 
-          loading={isLoading} 
-          color={stats?.overdueManagerInvoices ? 'text-red-400' : undefined}
-          badge={stats?.overdueManagerInvoices ? { label: 'Overdue', variant: 'destructive' } : undefined} 
-          onClick={() => onNavigateTab?.('billing')}
-        />
-        <WebhostStatCard 
-          label="Total Properties" 
-          value={stats?.totalProperties ?? 0}
-          icon={Building} 
-          loading={isLoading} 
-          onClick={() => onNavigateTab?.('properties')}
-        />
-        <WebhostStatCard 
-          label="System Landlords" 
-          value={stats?.systemLandlords ?? 0}
-          icon={Home} 
-          loading={isLoading} 
-          sub="Unlinked" 
-          onClick={() => onNavigateTab?.('unlinked-landlords')}
-        />
-      </div>
-
-      {/* ── MAIN WORKSPACE MATRIX ── */}
+      {/* ── 5/6. MAIN WORKSPACE MATRIX ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column (8 cols): Charts & Properties Audit */}
+        {/* Left Column (8 cols): Revenue Trend & Properties Audit */}
         <div className="lg:col-span-8 space-y-5">
           <PlatformRevenueTrend onNavigateTab={onNavigateTab} />
 
+          {/* ── 6. Recent Properties Audit ── */}
           <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl overflow-hidden">
             <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-slate-800">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -503,15 +589,22 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                 <div className="flex items-center gap-2">
                   <div className="relative min-w-[200px]">
                     <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                    <Input 
-                      type="text" 
-                      placeholder="Search properties..." 
+                    <Input
+                      type="text"
+                      placeholder="Search properties..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Search recent properties"
                       className="h-8 pl-8 text-xs bg-slate-950/60 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-amber-400/50 rounded-lg"
                     />
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => queryClient.invalidateQueries()} className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => queryClient.invalidateQueries()}
+                    aria-label="Refresh data"
+                    className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
+                  >
                     <RefreshCw className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -520,45 +613,69 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
             <CardContent className="p-4">
               {isLoadingProperties ? (
                 <div className="space-y-2">
-                  {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-12 w-full bg-slate-800/60 rounded-xl" />)}
+                  {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full bg-slate-800/60 rounded-xl" />)}
                 </div>
               ) : filteredProperties.length === 0 ? (
-                <div className="py-8 text-center">
-                  <Building className="h-8 w-8 mx-auto text-slate-600 mb-2" />
-                  <p className="text-sm text-slate-400">
+                <div className="py-10 text-center">
+                  <Building className="h-9 w-9 mx-auto text-slate-600 mb-2" />
+                  <p className="text-sm font-medium text-slate-300">
                     {searchQuery ? 'No matching properties found' : 'No properties on record yet'}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {searchQuery ? 'Try a different search term.' : 'Newly registered properties will appear here.'}
                   </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {(filteredProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map(prop => (
-                    <div 
-                      key={prop.id} 
-                      onClick={() => onNavigateTab?.('properties')}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-3 hover:bg-slate-800/60 hover:border-amber-400/40 transition-all cursor-pointer group"
-                    >
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-100 truncate group-hover:text-amber-400 transition-colors">{prop.name}</p>
-                        <p className="text-[11px] text-slate-400 truncate">{prop.address || 'No address specified'}</p>
+                  {(filteredProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map(prop => {
+                    const hasManager = !!prop.manager_profile;
+                    const registeredAt = prop.created_at ? formatDistanceToNow(new Date(prop.created_at), { addSuffix: true }) : '';
+                    return (
+                      <div
+                        key={prop.id}
+                        onClick={() => onNavigateTab?.('properties')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('properties'); } }}
+                        className="flex items-start justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/50 p-3 hover:bg-slate-800/60 hover:border-amber-400/40 transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-slate-100 truncate group-hover:text-amber-400 transition-colors">{prop.name}</p>
+                          <p className="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
+                            {prop.address || 'No location specified'}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-bold ${hasManager ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/10' : 'border-slate-600 text-slate-400 bg-slate-700/30'}`}>
+                              {hasManager ? 'Linked' : 'Unlinked'}
+                            </Badge>
+                            {registeredAt && (
+                              <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                                <Clock className="h-2.5 w-2.5" /> {registeredAt}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0 max-w-[130px]">
+                          <p className="text-[11px] font-semibold text-amber-400 truncate">
+                            {prop.manager_profile?.full_name || (hasManager ? 'Manager' : '—')}
+                          </p>
+                          <p className="text-[10px] text-slate-400 truncate">
+                            {prop.manager_profile?.email || (hasManager ? '—' : 'No manager')}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-[11px] font-semibold text-amber-400 truncate max-w-[140px]">
-                          {prop.manager_profile?.full_name || 'Manager'}
-                        </p>
-                        <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
-                          {prop.manager_profile?.email || '—'}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column (4 cols): Quick Admin Desk & Security Policy */}
+        {/* Right Column (4 cols): Command Desk & Privacy Policy */}
         <div className="lg:col-span-4 space-y-5">
+          {/* ── 7. Platform Command Desk ── */}
           <Card className="bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md rounded-2xl overflow-hidden">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-slate-800">
               <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
@@ -569,113 +686,59 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
             </CardHeader>
             <CardContent className="p-3">
               <div className="space-y-1.5">
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('managers')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-amber-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-amber-400">
-                    <Users className="h-3.5 w-3.5 text-amber-400" />
-                    Manager Accounts
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">{stats?.approvedManagers ?? 0} Approved</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-amber-400 transition-colors" />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('tiers')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-sky-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-sky-400">
-                    <Layers className="h-3.5 w-3.5 text-sky-400" />
-                    Subscription Tiers
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">Configured</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-sky-400 transition-colors" />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('billing-rules')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-emerald-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-emerald-400">
-                    <ScrollText className="h-3.5 w-3.5 text-emerald-400" />
-                    Platform Billing Rules
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">Active</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-emerald-400 transition-colors" />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('custom-pricing')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-purple-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-purple-400">
-                    <Tag className="h-3.5 w-3.5 text-purple-400" />
-                    Custom Pricing Blocks
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">Manage</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-purple-400 transition-colors" />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('unlinked-landlords')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-amber-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-amber-400">
-                    <Home className="h-3.5 w-3.5 text-amber-400" />
-                    System Landlords
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">{stats?.systemLandlords ?? 0} Unlinked</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-amber-400 transition-colors" />
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab?.('security')}
-                  className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 hover:border-red-400/40 flex items-center justify-between text-xs transition-all text-left group"
-                >
-                  <span className="font-semibold text-slate-200 flex items-center gap-2 group-hover:text-red-400">
-                    <ShieldCheck className="h-3.5 w-3.5 text-red-400" />
-                    Security & Audit Logs
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant="outline" className="text-[10px] border-red-500/30 text-red-400 bg-red-500/10 font-bold">Protected</Badge>
-                    <ChevronRight className="h-3 w-3 text-slate-500 group-hover:text-red-400 transition-colors" />
-                  </div>
-                </button>
+                {([
+                  { tab: 'managers', icon: Users, iconColor: 'text-amber-400', hoverText: 'group-hover:text-amber-400', hoverBorder: 'hover:border-amber-400/40', label: 'Manager Accounts', meta: `${approvedManagers} approved` },
+                  { tab: 'tiers', icon: Layers, iconColor: 'text-sky-400', hoverText: 'group-hover:text-sky-400', hoverBorder: 'hover:border-sky-400/40', label: 'Subscription Tiers', meta: 'Configured' },
+                  { tab: 'billing-rules', icon: ScrollText, iconColor: 'text-emerald-400', hoverText: 'group-hover:text-emerald-400', hoverBorder: 'hover:border-emerald-400/40', label: 'Platform Billing Rules', meta: 'Active' },
+                  { tab: 'custom-pricing', icon: Tag, iconColor: 'text-purple-400', hoverText: 'group-hover:text-purple-400', hoverBorder: 'hover:border-purple-400/40', label: 'Custom Pricing Blocks', meta: 'Manage' },
+                  { tab: 'unlinked-landlords', icon: Home, iconColor: 'text-amber-400', hoverText: 'group-hover:text-amber-400', hoverBorder: 'hover:border-amber-400/40', label: 'System Landlords', meta: `${systemLandlords} unlinked` },
+                  { tab: 'security', icon: ShieldCheck, iconColor: 'text-red-400', hoverText: 'group-hover:text-red-400', hoverBorder: 'hover:border-red-400/40', label: 'Security & Audit Logs', meta: 'Protected' },
+                ] as const).map(item => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.tab}
+                      type="button"
+                      onClick={() => onNavigateTab?.(item.tab)}
+                      className={`w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 ${item.hoverBorder} flex items-center justify-between text-xs transition-all text-left group focus:outline-none focus:ring-2 focus:ring-amber-400/40`}
+                    >
+                      <span className={`font-semibold text-slate-200 flex items-center gap-2 ${item.hoverText}`}>
+                        <Icon className={`h-3.5 w-3.5 ${item.iconColor}`} />
+                        {item.label}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="text-[10px] border-slate-700 bg-slate-800 text-slate-300 font-bold">{item.meta}</Badge>
+                        <ChevronRight className={`h-3 w-3 text-slate-500 ${item.hoverText}`} />
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
 
-          {/* Privacy Firewall Policy */}
-          <Card 
+          {/* ── 8. Tenant Data Privacy notice ── */}
+          <Card
             onClick={() => onNavigateTab?.('security')}
-            className="border-amber-400/30 bg-amber-400/5 hover:bg-amber-400/10 transition-all cursor-pointer group rounded-2xl backdrop-blur-md shadow-xl"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('security'); } }}
+            className="border-amber-400/30 bg-amber-400/5 hover:bg-amber-400/10 transition-all cursor-pointer group rounded-2xl backdrop-blur-md shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-400/40"
           >
             <CardContent className="p-4 flex items-start gap-3">
-              <ShieldCheck className="h-5 w-5 text-amber-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-              <div>
-                <p className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
-                  Tenant Data Isolation Policy
-                  <ChevronRight className="h-3.5 w-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+              <div className="h-9 w-9 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <ShieldCheck className="h-5 w-5 text-amber-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between gap-2">
+                  <span>Tenant Data Isolation Policy</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </p>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed font-normal">
-                  Webhost administrators operate at the platform level only. By architecture and security policy, tenant identities, rent payment records, and lease details are completely isolated from Webhost views.
+                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed font-normal">
+                  Webhost administrators operate at the platform administration level only. By architecture and Row-Level Security policy, tenant identities, rent payment records, and lease details are completely isolated from Webhost views.
+                </p>
+                <p className="text-[10px] text-amber-300/70 font-semibold mt-2 uppercase tracking-wider">
+                  Platform-level access · No tenant PII
                 </p>
               </div>
             </CardContent>
