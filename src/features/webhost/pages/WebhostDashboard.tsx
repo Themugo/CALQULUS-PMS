@@ -8,7 +8,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Globe, Users, Building, Home, LogOut, Shield,
-  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag, Activity, Sparkles,
+  Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag,
 } from 'lucide-react';
 import ManagerManagement from '@/features/webhost/components/ManagerManagement';
 import PropertyAssignment from '@/features/webhost/components/PropertyAssignment';
@@ -72,7 +72,7 @@ const WebhostDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center hero-gradient">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
           <div className="flex gap-1.5">
@@ -113,48 +113,47 @@ const WebhostDashboard = () => {
           </Badge>
         );
       case 'limited_admin':
-        return <Badge variant="outline" className="ml-2 text-muted-foreground border-border">Limited</Badge>;
+        return <Badge variant="outline" className="ml-2 text-secondary-foreground border-border">Limited</Badge>;
       default:
         return null;
     }
   };
 
-  // Executive tab style: light chrome, single CALQULUS blue accent for the
-  // active state. Error Logs keeps its semantic red. All logic (badges,
-  // counts, conditional tabs) is preserved below.
-  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
+  // Executive nav pill style: clean light-blue surface, single CALQULUS blue
+  // accent for the active state. Error Logs keeps its semantic red. All logic
+  // (badges, counts, conditional tabs) is preserved below.
+  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-secondary-foreground hover:text-primary hover:bg-soft-blue transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
-      {/* Top accent hairline */}
-      <div className="h-0.5 w-full bg-primary" />
-
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+      {/* Premium executive header — navy gradient (#071A3A → #0B1F45) */}
+      <header className="sticky top-0 z-50 navy-executive-gradient border-b border-navy-deep/60 shadow-sm">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
+            <div className="h-9 w-9 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-7 w-auto object-contain" />
+            </div>
             <div className="hidden sm:block min-w-0">
-              <p className="font-heading text-sm font-bold text-foreground leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-muted-foreground tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
+              <p className="font-heading text-base font-bold text-white leading-none">CALQULUS PMS</p>
+              <p className="text-[10px] text-blue-200/80 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
+              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] font-semibold text-blue-50 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="text-xs font-medium text-foreground truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
+              <div className="h-2 w-2 rounded-full bg-blue-300" />
+              <span className="text-xs font-medium text-blue-50 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
               {getLevelBadge()}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="border border-border text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
+              className="border border-white/25 text-blue-50 hover:bg-white/10 hover:text-white hover:border-white/40 transition-all"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -166,12 +165,12 @@ const WebhostDashboard = () => {
       {/* Main */}
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!myPermissions ? (
-          <div className="rounded-2xl border border-border bg-card p-10 text-center card-shadow">
+          <div className="enterprise-card p-10 text-center">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Permissions Pending</h3>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto">
+            <h3 className="section-title text-center mb-2">Permissions Pending</h3>
+            <p className="supporting-text text-center max-w-md mx-auto">
               Your webhost account is active but permissions haven't been assigned yet.
               A super admin needs to configure your access level.
             </p>
@@ -179,9 +178,9 @@ const WebhostDashboard = () => {
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-              <TabsList className="bg-muted border border-border h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl">
+              <TabsList className="bg-card border border-border h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl shadow-sm">
                 <TabsTrigger value="overview" className={tabCls}>
-                  <Home className="h-3.5 w-3.5 mr-1.5" />Overview
+                  <Globe className="h-3.5 w-3.5 mr-1.5" />Overview
                 </TabsTrigger>
                 <TabsTrigger value="admin-suite" className={tabCls}>
                   <Crown className="h-3.5 w-3.5 mr-1.5" />Admin Platform
@@ -191,7 +190,7 @@ const WebhostDashboard = () => {
                     <Users className="h-3.5 w-3.5 mr-1.5" />
                     Managers
                     {(pendingCounts?.pendingManagers ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-white font-extrabold shadow-sm">
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-warning text-white font-extrabold shadow-sm">
                         {pendingCounts?.pendingManagers}
                       </span>
                     )}
@@ -212,7 +211,7 @@ const WebhostDashboard = () => {
                     <Receipt className="h-3.5 w-3.5 mr-1.5" />
                     Billing
                     {(pendingCounts?.overdueInvoices ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-red-500 text-white font-extrabold shadow-sm">
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-destructive text-white font-extrabold shadow-sm">
                         {pendingCounts?.overdueInvoices}
                       </span>
                     )}
@@ -242,7 +241,7 @@ const WebhostDashboard = () => {
                   </TabsTrigger>
                 )}
                 <TabsTrigger value="error-logs"
-                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:font-semibold text-muted-foreground hover:text-red-600 hover:bg-red-50 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
+                  className="data-[state=active]:bg-destructive data-[state=active]:text-white data-[state=active]:font-semibold text-secondary-foreground hover:text-destructive hover:bg-destructive/10 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
                   <Bug className="h-3.5 w-3.5 mr-1.5" />Error Logs
                 </TabsTrigger>
               </TabsList>
@@ -274,8 +273,8 @@ const WebhostDashboard = () => {
         )}
       </main>
 
-      {/* Bottom gold accent */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/30 to-transparent" />
+      {/* Bottom accent hairline — restrained blue */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
     </div>
   );
 };

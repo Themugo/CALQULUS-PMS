@@ -71,16 +71,16 @@ type SourceFilter = "all" | "mpesa" | "bank" | "stripe";
 type StatusFilter = "pending" | "all" | "resolved" | "ignored";
 
 const sourceMeta: Record<DeadLetterRow["source"], { label: string; icon: typeof Smartphone; tone: string }> = {
-  mpesa:  { label: "M-Pesa", icon: Smartphone,  tone: "bg-emerald-100 text-emerald-800 border-emerald-200" },
+  mpesa:  { label: "M-Pesa", icon: Smartphone,  tone: "bg-success/15 text-success border-emerald-200" },
   bank:   { label: "Bank",   icon: Banknote,    tone: "bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]" },
   stripe: { label: "Stripe", icon: CreditCard,  tone: "bg-[hsl(218_58%_38%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_38%/0.25)]" },
 };
 
 const statusMeta: Record<DeadLetterRow["status"], { label: string; tone: string }> = {
-  pending:  { label: "Pending",  tone: "bg-red-100 text-red-800 border-red-200" },
-  replayed: { label: "Replayed", tone: "bg-amber-100 text-amber-800 border-amber-200" },
+  pending:  { label: "Pending",  tone: "bg-destructive/15 text-destructive border-red-200" },
+  replayed: { label: "Replayed", tone: "bg-warning/10 text-warning border-amber-200" },
   resolved: { label: "Resolved", tone: "bg-green-100 text-green-800 border-green-200" },
-  ignored:  { label: "Ignored",  tone: "bg-slate-100 text-slate-700 border-slate-200" },
+  ignored:  { label: "Ignored",  tone: "bg-secondary-background text-secondary-foreground border-border" },
 };
 
 export default function WebhookDeadLetterPanel() {
@@ -180,9 +180,9 @@ export default function WebhookDeadLetterPanel() {
           return (
             <Card key={src} className={count > 0 ? "border-red-200" : ""}>
               <CardContent className="p-4 flex items-center gap-3">
-                <Icon className={`h-8 w-8 ${count > 0 ? "text-red-500" : "text-muted-foreground"}`} />
+                <Icon className={`h-8 w-8 ${count > 0 ? "text-destructive" : "text-muted-foreground"}`} />
                 <div>
-                  <div className={`text-2xl font-bold ${count > 0 ? "text-red-700" : "text-slate-700"}`}>
+                  <div className={`text-2xl font-bold ${count > 0 ? "text-destructive" : "text-secondary-foreground"}`}>
                     {count}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -200,7 +200,7 @@ export default function WebhookDeadLetterPanel() {
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               Webhook Dead-Letter Queue
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -302,7 +302,7 @@ export default function WebhookDeadLetterPanel() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               Dead-letter entry
             </DialogTitle>
             <DialogDescription>
@@ -335,7 +335,7 @@ export default function WebhookDeadLetterPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Error</div>
-                <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-900 whitespace-pre-wrap break-words">
+                <div className="rounded-md bg-destructive/10 border border-red-200 p-3 text-sm text-destructive whitespace-pre-wrap break-words">
                   {viewingRow.error ?? "(no error message)"}
                 </div>
               </div>

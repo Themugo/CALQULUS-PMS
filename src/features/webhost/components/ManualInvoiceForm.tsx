@@ -177,8 +177,8 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           type="button"
           variant={invoiceType === 'registration' ? 'default' : 'outline'}
           className={invoiceType === 'registration' 
-            ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
+            ? 'bg-primary hover:bg-primary/90 text-white' 
+            : 'border-warning/20 text-warning/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('registration')}
         >
           Registration
@@ -187,8 +187,8 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           type="button"
           variant={invoiceType === 'subscription' ? 'default' : 'outline'}
           className={invoiceType === 'subscription' 
-            ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
+            ? 'bg-primary hover:bg-primary/90 text-white' 
+            : 'border-warning/20 text-warning/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('subscription')}
         >
           Subscription
@@ -197,8 +197,8 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
           type="button"
           variant={invoiceType === 'custom' ? 'default' : 'outline'}
           className={invoiceType === 'custom' 
-            ? 'bg-amber-400 hover:bg-amber-500 text-slate-900' 
-            : 'border-amber-400/20 text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
+            ? 'bg-primary hover:bg-primary/90 text-white' 
+            : 'border-warning/20 text-warning/70 hover:bg-[hsl(218_58%_16%/0.3)]'}
           onClick={() => setInvoiceType('custom')}
         >
           Custom
@@ -207,18 +207,18 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
 
       {/* Manager Selection */}
       <div className="space-y-2">
-        <Label className="text-amber-100/80">Select Manager</Label>
+        <Label className="text-warning/80">Select Manager</Label>
         <Select value={selectedManager} onValueChange={setSelectedManager}>
-          <SelectTrigger className="bg-muted border-amber-400/20 text-foreground">
+          <SelectTrigger className="bg-card border-warning/20 text-foreground">
             <SelectValue placeholder="Choose a manager" />
           </SelectTrigger>
-          <SelectContent className="bg-muted border-amber-400/20">
+          <SelectContent className="bg-card border-warning/20">
             {filteredManagers.map((manager) => (
               <SelectItem key={manager.user_id} value={manager.user_id} className="text-foreground">
                 <div className="flex items-center gap-2">
                   <span>{manager.full_name || manager.email}</span>
                   {invoiceType === 'subscription' && (
-                    <Badge variant="outline" className="text-xs text-amber-400/70 border-[hsl(218_58%_40%)]">
+                    <Badge variant="outline" className="text-xs text-warning/70 border-[hsl(218_58%_40%)]">
                       KES {manager.net_collection.toLocaleString()}
                     </Badge>
                   )}
@@ -230,31 +230,31 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
       </div>
 
       {/* Line Items Table (for all types) */}
-      <div className="border border-amber-400/20 rounded-lg overflow-hidden">
+      <div className="border border-warning/20 rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/80 border-amber-400/30/30 hover:bg-muted/50">
-              <TableHead className="text-amber-400/70 font-semibold">Description</TableHead>
-              <TableHead className="text-amber-400/70 font-semibold w-20 text-center">Qty</TableHead>
-              <TableHead className="text-amber-400/70 font-semibold w-28 text-right">Rate (KES)</TableHead>
-              <TableHead className="text-amber-400/70 font-semibold w-28 text-right">Amount</TableHead>
+            <TableRow className="bg-secondary-background border-warning/30/30 hover:bg-secondary-background">
+              <TableHead className="text-warning/70 font-semibold">Description</TableHead>
+              <TableHead className="text-warning/70 font-semibold w-20 text-center">Qty</TableHead>
+              <TableHead className="text-warning/70 font-semibold w-28 text-right">Rate (KES)</TableHead>
+              <TableHead className="text-warning/70 font-semibold w-28 text-right">Amount</TableHead>
               {invoiceType === 'custom' && (
-                <TableHead className="text-amber-400/70 w-12"></TableHead>
+                <TableHead className="text-warning/70 w-12"></TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {invoiceType !== 'custom' ? (
               // Auto-calculated row for registration/subscription
-              <TableRow className="border-amber-400/30/30">
+              <TableRow className="border-warning/30/30">
                 <TableCell className="text-foreground">
                   {invoiceType === 'registration' 
                     ? billingConfig.registration.name
                     : `${billingConfig.subscription.name} (${(billingConfig.subscription.rate * 100).toFixed(1)}%)`
                   }
                 </TableCell>
-                <TableCell className="text-center text-amber-100/80">1</TableCell>
-                <TableCell className="text-right text-amber-100/80">
+                <TableCell className="text-center text-warning/80">1</TableCell>
+                <TableCell className="text-right text-warning/80">
                   {invoiceType === 'registration' 
                     ? billingConfig.registration.amount.toLocaleString()
                     : (selectedManagerData?.net_collection || 0).toLocaleString()
@@ -267,13 +267,13 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             ) : (
               // Editable line items for custom invoice
               lineItems.map((item) => (
-                <TableRow key={item.id} className="border-amber-400/30/30">
+                <TableRow key={item.id} className="border-warning/30/30">
                   <TableCell className="p-1">
                     <Input
                       value={item.description}
                       onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
                       placeholder="Enter description"
-                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9"
+                      className="bg-secondary-background border-warning/30/30 text-foreground h-9"
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -282,7 +282,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateLineItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
-                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9 text-center"
+                      className="bg-secondary-background border-warning/30/30 text-foreground h-9 text-center"
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -292,11 +292,11 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       step="0.01"
                       value={item.rate}
                       onChange={(e) => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
-                      className="bg-muted/80 border-amber-400/30/30 text-foreground h-9 text-right"
+                      className="bg-secondary-background border-warning/30/30 text-foreground h-9 text-right"
                     />
                   </TableCell>
                   <TableCell className="p-1 text-right">
-                    <div className="bg-muted/80 border border-amber-400/30/30 rounded-md px-3 py-1.5 text-foreground font-semibold">
+                    <div className="bg-secondary-background border border-warning/30/30 rounded-md px-3 py-1.5 text-foreground font-semibold">
                       {item.amount.toLocaleString()}
                     </div>
                   </TableCell>
@@ -305,7 +305,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-9 w-9 p-0"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 w-9 p-0"
                       onClick={() => removeLineItem(item.id)}
                       disabled={lineItems.length === 1}
                     >
@@ -318,13 +318,13 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             
             {/* Add Row Button (for custom) */}
             {invoiceType === 'custom' && (
-              <TableRow className="border-amber-400/30/30 hover:bg-transparent">
+              <TableRow className="border-warning/30/30 hover:bg-transparent">
                 <TableCell colSpan={5} className="p-1">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="w-full text-amber-500 hover:text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.2)] border border-dashed border-amber-400/20"
+                    className="w-full text-warning hover:text-warning/70 hover:bg-[hsl(218_58%_16%/0.2)] border border-dashed border-warning/20"
                     onClick={addLineItem}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -335,8 +335,8 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
             )}
 
             {/* Total Row */}
-            <TableRow className="bg-[hsl(218_58%_16%/0.3)] border-amber-400/30/30 hover:bg-[hsl(218_58%_16%/0.3)]">
-              <TableCell colSpan={invoiceType === 'custom' ? 3 : 3} className="text-right text-amber-100/80 font-semibold">
+            <TableRow className="bg-[hsl(218_58%_16%/0.3)] border-warning/30/30 hover:bg-[hsl(218_58%_16%/0.3)]">
+              <TableCell colSpan={invoiceType === 'custom' ? 3 : 3} className="text-right text-warning/80 font-semibold">
                 Total:
               </TableCell>
               <TableCell className="text-right text-foreground font-bold text-lg" colSpan={invoiceType === 'custom' ? 2 : 1}>
@@ -350,29 +350,29 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
       {/* Due Date & Notes Row */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-amber-100/80">Due In</Label>
+          <Label className="text-warning/80">Due In</Label>
           <Select value={dueInDays} onValueChange={setDueInDays}>
-            <SelectTrigger className="bg-muted border-amber-400/20 text-foreground">
+            <SelectTrigger className="bg-card border-warning/20 text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-amber-400/20">
+            <SelectContent className="bg-card border-warning/20">
               <SelectItem value="7" className="text-foreground">7 days</SelectItem>
               <SelectItem value="14" className="text-foreground">14 days</SelectItem>
               <SelectItem value="30" className="text-foreground">30 days</SelectItem>
               <SelectItem value="60" className="text-foreground">60 days</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-amber-500">
+          <p className="text-xs text-warning">
             Due: {format(addDays(new Date(), parseInt(dueInDays)), 'dd/MM/yy')}
           </p>
         </div>
         <div className="space-y-2">
-          <Label className="text-amber-100/80">Notes (optional)</Label>
+          <Label className="text-warning/80">Notes (optional)</Label>
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Additional notes..."
-            className="bg-muted border-amber-400/20 text-foreground h-[76px] resize-none"
+            className="bg-card border-warning/20 text-foreground h-[76px] resize-none"
           />
         </div>
       </div>
@@ -380,7 +380,7 @@ const ManualInvoiceForm: React.FC<ManualInvoiceFormProps> = ({
       {/* Submit Button */}
       <Button 
         type="submit" 
-        className="w-full bg-amber-400 hover:bg-amber-500 text-slate-900"
+        className="w-full bg-primary hover:bg-primary/90 text-white"
         disabled={isPending || !selectedManager || totalAmount <= 0}
       >
         <Calculator className="h-4 w-4 mr-2" />

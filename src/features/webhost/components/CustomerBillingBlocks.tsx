@@ -313,7 +313,7 @@ const CustomerBillingBlocks = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-amber-400" />
+              <DollarSign className="h-5 w-5 text-warning" />
               Custom Pricing & Commercial Exceptions Console
             </CardTitle>
             <CardDescription>
@@ -322,14 +322,14 @@ const CustomerBillingBlocks = () => {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {canView && (
-              <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs">
+              <Button variant="outline" size="sm" onClick={refresh} aria-label="Refresh" className="border-border text-muted-foreground hover:bg-secondary-background hover:text-foreground h-9 rounded-xl text-xs">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
               </Button>
             )}
             {canManage && (
             <Dialog open={isDialogOpen} onOpenChange={v => { setIsDialogOpen(v); if (!v) resetForm(); }}>
               <DialogTrigger asChild>
-                <Button size="sm" onClick={resetForm} className="bg-amber-400 hover:bg-amber-500 text-slate-900 h-9 rounded-xl text-xs"><Plus className="h-3.5 w-3.5 mr-1.5" />New Billing Block</Button>
+                <Button size="sm" onClick={resetForm} className="bg-primary hover:bg-primary/90 text-white h-9 rounded-xl text-xs"><Plus className="h-3.5 w-3.5 mr-1.5" />New Billing Block</Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
@@ -338,9 +338,9 @@ const CustomerBillingBlocks = () => {
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   {validationError && (
-                    <div className="flex items-start gap-2 p-2.5 rounded-lg border border-red-500/30 bg-red-500/5">
-                      <AlertTriangle className="h-3.5 w-3.5 text-red-400 shrink-0 mt-0.5" />
-                      <p className="text-xs text-red-200">{validationError}</p>
+                    <div className="flex items-start gap-2 p-2.5 rounded-lg border border-destructive/30 bg-destructive/5">
+                      <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
+                      <p className="text-xs text-destructive">{validationError}</p>
                     </div>
                   )}
                   {/* STANDARD → CUSTOM → DIFFERENCE preview (managers only, read-only derivation) */}
@@ -350,8 +350,8 @@ const CustomerBillingBlocks = () => {
                     if (std == null && custom == null) return null;
                     const diff = (std != null && custom != null) ? custom - std : null;
                     return (
-                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-300 mb-1.5">Pricing impact</p>
+                      <div className="rounded-lg border border-warning/30 bg-warning/5 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-warning mb-1.5">Pricing impact</p>
                         <div className="grid grid-cols-3 gap-2 text-center">
                           <div>
                             <p className="text-[10px] text-muted-foreground">Standard</p>
@@ -363,7 +363,7 @@ const CustomerBillingBlocks = () => {
                           </div>
                           <div>
                             <p className="text-[10px] text-muted-foreground">Difference</p>
-                            <p className={cn('text-xs font-semibold', diff == null ? 'text-slate-400' : diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
+                            <p className={cn('text-xs font-semibold', diff == null ? 'text-secondary-foreground' : diff < 0 ? 'text-success' : diff > 0 ? 'text-destructive' : 'text-secondary-foreground')}>
                               {diff != null ? `${diff < 0 ? '−' : diff > 0 ? '+' : ''}KES ${fmtKES(Math.abs(diff))}` : '—'}
                             </p>
                           </div>
@@ -479,7 +479,7 @@ const CustomerBillingBlocks = () => {
                   </div>
                   <DialogFooter className="pt-2">
                     <Button variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>Cancel</Button>
-                    <Button onClick={() => saveBlock.mutate()} disabled={saveBlock.isPending || !form.customer_id} className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+                    <Button onClick={() => saveBlock.mutate()} disabled={saveBlock.isPending || !form.customer_id} className="bg-primary hover:bg-primary/90 text-white">
                       {saveBlock.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                       {saveBlock.isPending ? 'Saving...' : editingBlock ? 'Update Block' : 'Create Block'}
                     </Button>
@@ -500,11 +500,11 @@ const CustomerBillingBlocks = () => {
         ) : isLoading ? (
           <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
         ) : isError ? (
-          <div className="p-8 text-center rounded-xl border border-red-500/30 bg-red-500/5">
-            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
-            <p className="text-sm font-semibold text-red-300">Unable to load custom pricing.</p>
+          <div className="p-8 text-center rounded-xl border border-destructive/30 bg-destructive/5">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+            <p className="text-sm font-semibold text-destructive">Unable to load custom pricing.</p>
             <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
-            <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+            <Button variant="outline" size="sm" onClick={refresh} className="border-destructive/40 text-destructive hover:bg-destructive/10">
               <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
             </Button>
           </div>
@@ -543,7 +543,7 @@ const CustomerBillingBlocks = () => {
                     <p className="font-medium text-foreground text-sm">{getCustomerName(block.customer_id)}</p>
                     {block.custom_block_name && <p className="text-[10px] text-muted-foreground">{block.custom_block_name}</p>}
                   </TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px] border-slate-600 text-muted-foreground capitalize">{block.customer_type}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px] border-border text-muted-foreground capitalize">{block.customer_type}</Badge></TableCell>
                   <TableCell>
                     <p className="text-xs text-muted-foreground">{std != null ? `KES ${fmtKES(std)}` : <span className="text-muted-foreground">—</span>}</p>
                     <p className="text-[10px] text-muted-foreground">/unit</p>
@@ -554,33 +554,33 @@ const CustomerBillingBlocks = () => {
                   </TableCell>
                   <TableCell>
                     {diff != null ? (
-                      <span className={cn('text-xs font-semibold', diff < 0 ? 'text-emerald-300' : diff > 0 ? 'text-red-300' : 'text-slate-300')}>
+                      <span className={cn('text-xs font-semibold', diff < 0 ? 'text-success' : diff > 0 ? 'text-destructive' : 'text-secondary-foreground')}>
                         {diff < 0 ? '−' : diff > 0 ? '+' : ''}KES {fmtKES(Math.abs(diff))}
                       </span>
                     ) : <span className="text-muted-foreground text-xs">—</span>}
                   </TableCell>
                   <TableCell>
                     {block.monthly_discount_pct > 0 || block.monthly_discount_flat > 0 ? (
-                      <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/30 text-[10px]">
+                      <Badge className="bg-success/10 text-success border-success/30 text-[10px]">
                         {block.monthly_discount_pct > 0 && `${block.monthly_discount_pct}%`}
                         {block.monthly_discount_pct > 0 && block.monthly_discount_flat > 0 && ' + '}
                         {block.monthly_discount_flat > 0 && `KES ${fmtKES(block.monthly_discount_flat)}`}
                       </Badge>
                     ) : <span className="text-muted-foreground text-xs">—</span>}
                     {dStatus !== 'none' && (
-                      <Badge variant="outline" className={cn('text-[9px] ml-1', dStatus === 'active' ? 'border-emerald-500/30 text-emerald-300' : dStatus === 'expiring' ? 'border-amber-500/30 text-amber-300' : 'border-red-500/30 text-red-300')}>
+                      <Badge variant="outline" className={cn('text-[9px] ml-1', dStatus === 'active' ? 'border-success/30 text-success' : dStatus === 'expiring' ? 'border-warning/30 text-warning' : 'border-destructive/30 text-destructive')}>
                         {dStatus === 'active' ? 'Active' : dStatus === 'expiring' ? 'Expiring' : 'Expired'}
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     {block.registration_fee_waived || block.zero_registration ? (
-                      <Badge className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-[10px]">Waived</Badge>
+                      <Badge className="bg-warning/10 text-warning border-warning/30 text-[10px]">Waived</Badge>
                     ) : <span className="text-xs text-foreground">KES {fmtKES(block.registration_fee_amount)}</span>}
                   </TableCell>
                   <TableCell>
                     {block.discount_expires_at ? (
-                      <span className={cn('text-xs', dStatus === 'expired' ? 'text-red-300' : dStatus === 'expiring' ? 'text-amber-300' : 'text-slate-300')}>
+                      <span className={cn('text-xs', dStatus === 'expired' ? 'text-destructive' : dStatus === 'expiring' ? 'text-warning' : 'text-secondary-foreground')}>
                         {format(new Date(block.discount_expires_at), 'dd MMM yyyy')}
                       </span>
                     ) : <span className="text-muted-foreground text-xs">—</span>}
@@ -593,8 +593,8 @@ const CustomerBillingBlocks = () => {
                     <div className="flex items-center justify-end gap-1">
                       {canManage ? (
                         <>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-300 hover:bg-red-500/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-secondary-background" onClick={() => openEdit(block)} aria-label="Edit block"><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:bg-destructive/10" onClick={() => setDeleteTarget(block)} aria-label="Delete block"><Ban className="h-3.5 w-3.5" /></Button>
                         </>
                       ) : (
                         <span className="text-[10px] text-muted-foreground pr-2">Read-only</span>
@@ -615,7 +615,7 @@ const CustomerBillingBlocks = () => {
       <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-400" />Remove custom pricing?</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Remove custom pricing?</DialogTitle>
             <DialogDescription>This will remove the custom billing block for {deleteTarget ? getCustomerName(deleteTarget.customer_id) : ''}.</DialogDescription>
           </DialogHeader>
           <p className="text-xs text-muted-foreground">The customer will revert to standard tier pricing. This cannot be undone.</p>

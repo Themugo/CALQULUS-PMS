@@ -37,27 +37,27 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4", className)}>
       {/* Enterprise Administration Header & Global Search */}
-      <div className="p-4 rounded-xl border border-border/80 bg-card shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <div className="enterprise-card p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-extrabold text-foreground tracking-tight">CALQULUS Enterprise Admin Console</h2>
+            <h2 className="section-title tracking-tight">CALQULUS Enterprise Admin Console</h2>
             <Badge variant="outline" className="text-[10px] font-bold bg-primary/10 text-primary border-primary/20">
               Platform Layer
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="supporting-text mt-1">
             Cross-tenant administration, role-based access control, telemetry, security audit, and commercial licensing.
           </p>
         </div>
 
         <div className="flex items-center gap-2 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-secondary-foreground" />
             <Input
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
               placeholder="Global admin search (orgs, users, logs)..."
-              className="pl-8 text-xs h-8 bg-background"
+              className="pl-8 text-xs h-8 bg-card"
             />
           </div>
         </div>
@@ -102,8 +102,8 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
               <Settings className="h-3.5 w-3.5" /> Configuration
             </TabsTrigger>
             {/* Extended platform modules (preserved) */}
-            <TabsTrigger value="platform-admins" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-amber-400 data-[state=active]:text-slate-950">
-              <Crown className="h-3.5 w-3.5 text-amber-400" /> Platform Admins
+            <TabsTrigger value="platform-admins" className="gap-1.5 text-xs font-bold py-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-white">
+              <Crown className="h-3.5 w-3.5 text-warning" /> Platform Admins
             </TabsTrigger>
             <TabsTrigger value="branding" className={tabCls}>
               <Sparkles className="h-3.5 w-3.5" /> Branding &amp; Theme
@@ -112,22 +112,22 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
               <LifeBuoy className="h-3.5 w-3.5" /> Support Ops
             </TabsTrigger>
             <TabsTrigger value="commercial-launch" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-emerald-400" /> Commercial Launch
+              <Sparkles className="h-3.5 w-3.5 text-success" /> Commercial Launch
             </TabsTrigger>
             <TabsTrigger value="property-os" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Property OS
+              <Sparkles className="h-3.5 w-3.5 text-warning" /> Property OS
             </TabsTrigger>
             <TabsTrigger value="proptech-ecosystem" className={tabCls}>
-              <Globe className="h-3.5 w-3.5 text-emerald-400" /> PropTech Ecosystem
+              <Globe className="h-3.5 w-3.5 text-success" /> PropTech Ecosystem
             </TabsTrigger>
             <TabsTrigger value="ai-copilot" className={tabCls}>
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" /> AI Copilot
+              <Sparkles className="h-3.5 w-3.5 text-warning" /> AI Copilot
             </TabsTrigger>
             <TabsTrigger value="native-mobile" className={tabCls}>
-              <Smartphone className="h-3.5 w-3.5 text-emerald-400" /> Native Mobile
+              <Smartphone className="h-3.5 w-3.5 text-success" /> Native Mobile
             </TabsTrigger>
             <TabsTrigger value="ops-excellence" className={tabCls}>
-              <Activity className="h-3.5 w-3.5 text-blue-400" /> Ops Excellence
+              <Activity className="h-3.5 w-3.5 text-primary" /> Ops Excellence
             </TabsTrigger>
           </TabsList>
         </div>

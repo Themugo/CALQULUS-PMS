@@ -137,24 +137,24 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-[hsl(218_58%_16%/0.5)] to-indigo-900/50 border-amber-400/12">
+        <Card className="bg-gradient-to-br from-[hsl(218_58%_16%/0.5)] to-indigo-900/50 border-warning/12">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
-                <Percent className="h-5 w-5 text-amber-500" />
+                <Percent className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <CardTitle className="text-foreground text-lg">{billingConfig.subscription.name}</CardTitle>
-                <CardDescription className="text-amber-400/70">{billingConfig.subscription.description}</CardDescription>
+                <CardDescription className="text-warning/70">{billingConfig.subscription.description}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-foreground">{(billingConfig.subscription.rate * 100).toFixed(1)}%</span>
-              <span className="text-amber-400/70">of net collection / month</span>
+              <span className="text-warning/70">of net collection / month</span>
             </div>
-            <div className="mt-3 text-xs text-amber-400/70 space-y-1">
+            <div className="mt-3 text-xs text-warning/70 space-y-1">
               <p>• Calculated from paid tenant invoices</p>
               <p>• Paid: {stats.subscriptionsPaid} / Pending: {stats.subscriptionsPending}</p>
             </div>
@@ -164,70 +164,70 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-5">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-amber-500" />
+                <DollarSign className="h-6 w-6 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-amber-400/70">Total Billed</p>
+                <p className="text-sm text-warning/70">Total Billed</p>
                 <p className="text-2xl font-bold text-foreground">KES {stats.totalBilled.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-emerald-400" />
+              <div className="h-12 w-12 rounded-xl bg-success/20 flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-success" />
               </div>
               <div>
-                <p className="text-sm text-amber-400/70">Total Collected</p>
+                <p className="text-sm text-warning/70">Total Collected</p>
                 <p className="text-2xl font-bold text-foreground">KES {stats.totalPaid.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-amber-400" />
+              <div className="h-12 w-12 rounded-xl bg-warning/20 flex items-center justify-center">
+                <Clock className="h-6 w-6 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-amber-400/70">Pending</p>
+                <p className="text-sm text-warning/70">Pending</p>
                 <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-[hsl(214_73%_48%/0.2)] flex items-center justify-center">
                 <Receipt className="h-6 w-6 text-[hsl(214_73%_58%)]" />
               </div>
               <div>
-                <p className="text-sm text-amber-400/70">Pending Amount</p>
+                <p className="text-sm text-warning/70">Pending Amount</p>
                 <p className="text-2xl font-bold text-foreground">KES {stats.pendingAmount.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-green-500/20 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-amber-400/70">Collection Rate</p>
+                <p className="text-sm text-warning/70">Collection Rate</p>
                 <p className="text-2xl font-bold text-foreground">{stats.collectionRate.toFixed(1)}%</p>
               </div>
             </div>
@@ -237,42 +237,42 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
 
       {/* Payment Details Summary */}
       {hasPaymentDetails && (
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader>
             <CardTitle className="text-foreground flex items-center gap-2">
-              <Info className="h-5 w-5 text-amber-500" />
+              <Info className="h-5 w-5 text-warning" />
               Configured Payment Details
             </CardTitle>
-            <CardDescription className="text-amber-400/70">
+            <CardDescription className="text-warning/70">
               These payment details are shown to managers when they view their invoices
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               {paymentSettings?.bank_name && (
-                <div className="p-4 bg-muted/80 rounded-lg flex items-start gap-3">
+                <div className="p-4 bg-secondary-background rounded-lg flex items-start gap-3">
                   <Building className="h-5 w-5 text-[hsl(214_73%_58%)] mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{paymentSettings.bank_name}</p>
-                    <p className="text-xs text-amber-400/70">{paymentSettings.bank_account_name}</p>
-                    <p className="text-xs text-amber-400/70 font-mono">{paymentSettings.bank_account_number}</p>
+                    <p className="text-xs text-warning/70">{paymentSettings.bank_account_name}</p>
+                    <p className="text-xs text-warning/70 font-mono">{paymentSettings.bank_account_number}</p>
                   </div>
                 </div>
               )}
               
               {(paymentSettings?.mpesa_paybill_number || paymentSettings?.mpesa_till_number || paymentSettings?.mpesa_phone_number) && (
-                <div className="p-4 bg-muted/80 rounded-lg flex items-start gap-3">
+                <div className="p-4 bg-secondary-background rounded-lg flex items-start gap-3">
                   <Smartphone className="h-5 w-5 text-green-400 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-foreground">M-Pesa</p>
                     {paymentSettings?.mpesa_paybill_number && (
-                      <p className="text-xs text-amber-400/70">Paybill: {paymentSettings.mpesa_paybill_number}</p>
+                      <p className="text-xs text-warning/70">Paybill: {paymentSettings.mpesa_paybill_number}</p>
                     )}
                     {paymentSettings?.mpesa_till_number && (
-                      <p className="text-xs text-amber-400/70">Till: {paymentSettings.mpesa_till_number}</p>
+                      <p className="text-xs text-warning/70">Till: {paymentSettings.mpesa_till_number}</p>
                     )}
                     {paymentSettings?.mpesa_phone_number && (
-                      <p className="text-xs text-amber-400/70">Phone: {paymentSettings.mpesa_phone_number}</p>
+                      <p className="text-xs text-warning/70">Phone: {paymentSettings.mpesa_phone_number}</p>
                     )}
                   </div>
                 </div>
@@ -283,13 +283,13 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
       )}
 
       {!hasPaymentDetails && (
-        <Card className="bg-amber-900/20 border-amber-600/30">
+        <Card className="bg-warning/15 border-warning/30">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Info className="h-5 w-5 text-amber-400" />
+              <Info className="h-5 w-5 text-warning" />
               <div>
-                <p className="text-amber-200 font-medium">Payment details not configured</p>
-                <p className="text-sm text-amber-300/70">Go to Settings tab to add bank and M-Pesa payment details for managers.</p>
+                <p className="text-warning font-medium">Payment details not configured</p>
+                <p className="text-sm text-warning">Go to Settings tab to add bank and M-Pesa payment details for managers.</p>
               </div>
             </div>
           </CardContent>
@@ -298,30 +298,30 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
 
       {/* Manager Summary */}
       {managers && managers.length > 0 && (
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader>
             <CardTitle className="text-foreground flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-warning" />
               Manager Summary
             </CardTitle>
-            <CardDescription className="text-amber-400/70">
+            <CardDescription className="text-warning/70">
               Quick overview of registered managers
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="p-4 bg-muted/80 rounded-lg">
-                <p className="text-sm text-amber-400/70">Total Managers</p>
+              <div className="p-4 bg-secondary-background rounded-lg">
+                <p className="text-sm text-warning/70">Total Managers</p>
                 <p className="text-2xl font-bold text-foreground">{managers.length}</p>
               </div>
-              <div className="p-4 bg-muted/80 rounded-lg">
-                <p className="text-sm text-amber-400/70">With Registration Invoice</p>
+              <div className="p-4 bg-secondary-background rounded-lg">
+                <p className="text-sm text-warning/70">With Registration Invoice</p>
                 <p className="text-2xl font-bold text-foreground">
                   {managers.filter(m => m.has_registration_invoice).length}
                 </p>
               </div>
-              <div className="p-4 bg-muted/80 rounded-lg">
-                <p className="text-sm text-amber-400/70">Total Net Collection</p>
+              <div className="p-4 bg-secondary-background rounded-lg">
+                <p className="text-sm text-warning/70">Total Net Collection</p>
                 <p className="text-2xl font-bold text-foreground">
                   KES {managers.reduce((sum, m) => sum + m.net_collection, 0).toLocaleString()}
                 </p>

@@ -71,7 +71,7 @@ const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   approved: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   paid: 'bg-green-100 text-green-800 border-green-200',
-  rejected: 'bg-red-100 text-red-800 border-red-200',
+  rejected: 'bg-destructive/15 text-destructive border-red-200',
 };
 
 const SystemLandlordManagement: React.FC = () => {
@@ -216,19 +216,19 @@ const SystemLandlordManagement: React.FC = () => {
   const refresh = () => { refetch(); refetchPayouts(); };
 
   const summaryCards = [
-    { key: 'total', label: 'Total Landlords', count: totalLandlords, icon: Users, cls: 'border-border bg-muted text-slate-300' },
-    { key: 'active', label: 'With Active Property', count: withActiveCount, icon: CheckCircle, cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
-    { key: 'inactive', label: 'With Inactive Property', count: withInactiveCount, icon: Clock, cls: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
-    { key: 'links', label: 'Properties Linked', count: totalLinks, icon: Building, cls: 'border-sky-500/40 bg-sky-500/10 text-sky-300' },
+    { key: 'total', label: 'Total Landlords', count: totalLandlords, icon: Users, cls: 'border-border bg-secondary-background text-secondary-foreground' },
+    { key: 'active', label: 'With Active Property', count: withActiveCount, icon: CheckCircle, cls: 'border-success/40 bg-success/10 text-success' },
+    { key: 'inactive', label: 'With Inactive Property', count: withInactiveCount, icon: Clock, cls: 'border-warning/40 bg-warning/10 text-warning' },
+    { key: 'links', label: 'Properties Linked', count: totalLinks, icon: Building, cls: 'border-primary/40 bg-primary/10 text-primary' },
   ] as const;
 
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-muted border border-border p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 enterprise-card p-4 sm:p-5">
         <div>
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Home className="h-5 w-5 text-amber-400" />
+            <Home className="h-5 w-5 text-warning" />
             Landlord Account &amp; Portfolio Oversight Console
           </h2>
           <p className="text-muted-foreground text-xs mt-1">
@@ -242,21 +242,21 @@ const SystemLandlordManagement: React.FC = () => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search name, email, property..."
-              className="pl-8 h-9 rounded-xl bg-muted border-border text-foreground placeholder:text-muted-foreground text-xs"
+              className="pl-8 h-9 rounded-xl bg-card border-border text-foreground placeholder:text-muted-foreground text-xs"
               aria-label="Search landlords"
             />
           </div>
-          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-muted hover:text-foreground h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh landlords">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-secondary-background hover:text-foreground h-9 rounded-xl text-xs" onClick={refresh} aria-label="Refresh landlords">
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />Refresh
           </Button>
         </div>
       </div>
 
       {/* Scope banner — preserves the hard access-rule explanation */}
-      <div className="flex items-start gap-3 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5">
-        <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-200/90">
-          <strong className="text-amber-300">System landlords only.</strong> This view shows landlords whose properties are not linked to any manager or agency (property_landlords.manager_id IS NULL). Landlords under a manager are managed exclusively by that manager and are not visible here.
+      <div className="flex items-start gap-3 p-3.5 rounded-xl border border-warning/30 bg-warning/5">
+        <Info className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+        <p className="text-xs text-warning/90">
+          <strong className="text-warning">System landlords only.</strong> This view shows landlords whose properties are not linked to any manager or agency (property_landlords.manager_id IS NULL). Landlords under a manager are managed exclusively by that manager and are not visible here.
         </p>
       </div>
 
@@ -285,8 +285,8 @@ const SystemLandlordManagement: React.FC = () => {
             className={cn(
               'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
               activeTab === tab.key
-                ? 'border-amber-400 text-amber-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200',
+                ? 'border-amber-400 text-warning'
+                : 'border-transparent text-secondary-foreground hover:text-foreground',
             )}
           >
             {tab.label}
@@ -301,7 +301,7 @@ const SystemLandlordManagement: React.FC = () => {
             <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-border">
               <p className="text-xs text-muted-foreground">Click a landlord to inspect their portfolio and property relationships.</p>
               <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-                <SelectTrigger className="h-8 w-40 text-xs bg-muted border-border text-foreground" aria-label="Filter by property status">
+                <SelectTrigger className="h-8 w-40 text-xs bg-card border-border text-foreground" aria-label="Filter by property status">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -316,10 +316,10 @@ const SystemLandlordManagement: React.FC = () => {
               <div className="p-4 space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
             ) : isError ? (
               <div className="p-8 text-center">
-                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
-                <p className="text-sm font-semibold text-red-300">Unable to load landlords.</p>
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+                <p className="text-sm font-semibold text-destructive">Unable to load landlords.</p>
                 <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
-                <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+                <Button variant="outline" size="sm" onClick={refresh} className="border-destructive/40 text-destructive hover:bg-destructive/10">
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
                 </Button>
               </div>
@@ -330,7 +330,7 @@ const SystemLandlordManagement: React.FC = () => {
               </div>
             ) : (
               <div className="divide-y divide-slate-800">
-                <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-muted">
+                <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-secondary-background">
                   <div className="col-span-4">Landlord</div>
                   <div className="col-span-2 text-center">Properties</div>
                   <div className="col-span-2 text-center">Units</div>
@@ -351,10 +351,10 @@ const SystemLandlordManagement: React.FC = () => {
                         onKeyDown={onActivateKey(() => setExpandedId(expanded ? null : g.landlord_user_id))}
                         aria-expanded={expanded}
                         aria-label={`View landlord ${g.profile?.full_name ?? g.profile?.email ?? 'landlord'}`}
-                        className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-muted/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-inset"
+                        className="w-full text-left grid grid-cols-1 md:grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-secondary-background transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-inset"
                       >
                         <div className="md:col-span-4 min-w-0 flex items-center gap-2">
-                          <Home className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                          <Home className="h-3.5 w-3.5 text-warning shrink-0" />
                           <div className="min-w-0">
                             <p className="text-sm text-foreground truncate font-medium">{g.profile?.full_name || 'Landlord'}</p>
                             <p className="text-xs text-muted-foreground truncate">{g.profile?.email ?? '—'}</p>
@@ -366,7 +366,7 @@ const SystemLandlordManagement: React.FC = () => {
                         </div>
                         <div className="md:col-span-2 md:text-center text-xs text-foreground">{unitCount}</div>
                         <div className="md:col-span-2 md:text-center flex items-center gap-1.5 md:justify-center">
-                          <Badge variant="outline" className={cn('text-[10px]', hasActive ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30')}>
+                          <Badge variant="outline" className={cn('text-[10px]', hasActive ? 'bg-success/10 text-success border-success/30' : 'bg-warning/10 text-warning border-warning/30')}>
                             {hasActive ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>
@@ -376,7 +376,7 @@ const SystemLandlordManagement: React.FC = () => {
                         </div>
                       </button>
                       {expanded && (
-                        <div className="px-4 py-4 bg-muted border-t border-border space-y-3">
+                        <div className="px-4 py-4 bg-card border-t border-border space-y-3">
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-xs">
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-muted-foreground">Email</span>
@@ -398,16 +398,16 @@ const SystemLandlordManagement: React.FC = () => {
                                 const occPct = l.property_units > 0 ? Math.round((l.property_occupied / l.property_units) * 100) : 0;
                                 const incomplete = l.property_name === 'Unknown property';
                                 return (
-                                  <div key={l.id} className={cn('flex items-center gap-2 p-2 rounded-lg border text-xs', incomplete ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted')}>
-                                    <Building className={cn('h-3.5 w-3.5 shrink-0', incomplete ? 'text-red-400' : 'text-amber-500')} />
+                                  <div key={l.id} className={cn('flex items-center gap-2 p-2 rounded-lg border text-xs', incomplete ? 'border-destructive/30 bg-destructive/5' : 'border-border bg-secondary-background')}>
+                                    <Building className={cn('h-3.5 w-3.5 shrink-0', incomplete ? 'text-destructive' : 'text-warning')} />
                                     <div className="flex-1 min-w-0">
                                       <p className="text-foreground truncate">{l.property_name}</p>
                                       <p className="text-[10px] text-muted-foreground truncate">{l.property_address || '—'} · {l.property_units} units · {occPct}% occupied</p>
                                     </div>
-                                    <Badge variant="outline" className="text-[9px] capitalize border-slate-600 text-muted-foreground">{l.property_status}</Badge>
-                                    <Badge variant="outline" className="text-[9px] border-amber-500/30 text-amber-300 bg-amber-500/10">{l.revenue_share_pct}%</Badge>
+                                    <Badge variant="outline" className="text-[9px] capitalize border-border text-muted-foreground">{l.property_status}</Badge>
+                                    <Badge variant="outline" className="text-[9px] border-warning/30 text-warning bg-warning/10">{l.revenue_share_pct}%</Badge>
                                     {incomplete && (
-                                      <span className="text-[9px] text-red-400 flex items-center gap-1 shrink-0"><AlertTriangle className="h-3 w-3" />Missing</span>
+                                      <span className="text-[9px] text-destructive flex items-center gap-1 shrink-0"><AlertTriangle className="h-3 w-3" />Missing</span>
                                     )}
                                   </div>
                                 );
@@ -440,9 +440,9 @@ const SystemLandlordManagement: React.FC = () => {
               <div className="p-4 space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
             ) : payoutsError ? (
               <div className="p-8 text-center">
-                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
-                <p className="text-sm font-semibold text-red-300">Unable to load payout requests.</p>
-                <Button variant="outline" size="sm" onClick={refresh} className="border-red-500/40 text-red-300 hover:bg-red-500/10 mt-3">
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+                <p className="text-sm font-semibold text-destructive">Unable to load payout requests.</p>
+                <Button variant="outline" size="sm" onClick={refresh} className="border-destructive/40 text-destructive hover:bg-destructive/10 mt-3">
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
                 </Button>
               </div>
@@ -517,7 +517,7 @@ const SystemLandlordManagement: React.FC = () => {
               onClick={() => payoutDialog && updatePayout.mutate({ id: payoutDialog.id, status: payoutDialog.status })}
               disabled={updatePayout.isPending}
               className={cn(
-                payoutDialog?.status === 'rejected' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground',
+                payoutDialog?.status === 'rejected' ? 'bg-destructive hover:bg-destructive/90 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground',
               )}
             >
               {updatePayout.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}

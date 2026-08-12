@@ -24,8 +24,8 @@ const ADMIN_TYPE_LABELS: Record<PlatformAdminType, string> = {
 };
 
 const ADMIN_TYPE_BADGES: Record<PlatformAdminType, React.ReactNode> = {
-  owner: <Badge className="bg-amber-400/15 text-amber-300 border-amber-400/30 font-extrabold shadow-sm"><Crown className="h-3 w-3 mr-1 text-amber-400" />Owner (Immutable)</Badge>,
-  business: <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-bold"><Shield className="h-3 w-3 mr-1 text-emerald-400" />Business</Badge>,
+  owner: <Badge className="bg-warning/15 text-warning border-warning/30 font-extrabold shadow-sm"><Crown className="h-3 w-3 mr-1 text-warning" />Owner (Immutable)</Badge>,
+  business: <Badge className="bg-success/15 text-success border-success/30 font-bold"><Shield className="h-3 w-3 mr-1 text-success" />Business</Badge>,
   admin: <Badge variant="outline" className="border-border text-muted-foreground font-medium"><User className="h-3 w-3 mr-1 text-muted-foreground" />Admin</Badge>,
 };
 
@@ -201,18 +201,18 @@ const PlatformAdminManagement = () => {
   });
 
   return (
-    <Card className="bg-muted border-border text-foreground shadow-sm backdrop-blur-md">
+    <Card className="bg-card border-border text-foreground shadow-sm">
       <CardHeader className="border-b border-border pb-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-foreground">
-              <Crown className="h-5 w-5 text-amber-400" />
+              <Crown className="h-5 w-5 text-warning" />
               Platform Admin Hierarchy
             </CardTitle>
             <CardDescription className="text-muted-foreground text-xs sm:text-sm mt-1">
               Manage owner, business, and admin accounts with suspension rules.
               {canCreateOwner && (
-                <span className="block mt-1 text-xs text-amber-400/80 font-medium">
+                <span className="block mt-1 text-xs text-warning/80 font-medium">
                   Owner is immutable — cannot be suspended or deleted. Business can be suspended by Owner only.
                   Admin can be suspended by Owner or Business.
                 </span>
@@ -222,7 +222,7 @@ const PlatformAdminManagement = () => {
           {canManage && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold hover:from-amber-300 hover:to-amber-400 shadow-md">
+                <Button className="bg-gradient-to-r from-warning to-warning text-slate-950 font-bold hover:from-warning hover:to-warning shadow-md">
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add Platform Admin
                 </Button>
@@ -264,13 +264,13 @@ const PlatformAdminManagement = () => {
                     <Input className="bg-background border-border text-foreground" type="password" value={newAdmin.password} onChange={e => setNewAdmin(prev => ({ ...prev, password: e.target.value }))} placeholder="••••••••" />
                   </div>
                   {newAdmin.adminType === 'owner' && (
-                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-300 flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-400" />
+                    <div className="bg-warning/10 border border-warning/30 rounded-xl p-3 text-xs text-warning flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-warning" />
                       <span>Owner accounts are immutable and cannot be suspended or deleted. Only one primary owner should exist.</span>
                     </div>
                   )}
                   <Button
-                    className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold hover:from-amber-300 hover:to-amber-400"
+                    className="w-full bg-gradient-to-r from-warning to-warning text-slate-950 font-bold hover:from-warning hover:to-warning"
                     onClick={() => createAdmin.mutate()}
                     disabled={createAdmin.isPending || !newAdmin.email || !newAdmin.password || !newAdmin.displayName}
                   >
@@ -289,18 +289,18 @@ const PlatformAdminManagement = () => {
           </div>
         ) : !canManage ? (
           <div className="text-center py-12 text-muted-foreground">
-            <Shield className="h-10 w-10 mx-auto mb-2 opacity-40 text-amber-400" />
+            <Shield className="h-10 w-10 mx-auto mb-2 opacity-40 text-warning" />
             <p className="text-sm">Only platform owners and business admins can manage the admin hierarchy.</p>
           </div>
         ) : !admins || admins.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            <User className="h-10 w-10 mx-auto mb-2 opacity-40 text-amber-400" />
+            <User className="h-10 w-10 mx-auto mb-2 opacity-40 text-warning" />
             <p className="text-sm">No platform admins configured yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-muted border-b border-border">
+              <TableHeader className="bg-card border-b border-border">
                 <TableRow className="hover:bg-transparent border-border">
                   <TableHead className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Type</TableHead>
                   <TableHead className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Name</TableHead>
@@ -312,23 +312,23 @@ const PlatformAdminManagement = () => {
               </TableHeader>
               <TableBody>
                 {admins.map(admin => (
-                  <TableRow key={admin.id} className={`border-border hover:bg-muted/80 transition-colors ${admin.suspended ? 'opacity-50' : ''}`}>
+                  <TableRow key={admin.id} className={`border-border hover:bg-secondary-background transition-colors ${admin.suspended ? 'opacity-50' : ''}`}>
                     <TableCell>{ADMIN_TYPE_BADGES[admin.admin_type]}</TableCell>
                     <TableCell className="font-semibold text-foreground">{admin.display_name}</TableCell>
                     <TableCell className="text-muted-foreground text-sm font-mono">{admin.email}</TableCell>
                     <TableCell>
                       {admin.suspended ? (
-                        <Badge variant="destructive" className="flex items-center gap-1 w-fit bg-red-500/20 text-red-300 border-red-500/30">
+                        <Badge variant="destructive" className="flex items-center gap-1 w-fit bg-destructive/20 text-destructive border-destructive/30">
                           <Ban className="h-3 w-3" /> Suspended
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="flex items-center gap-1 w-fit bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-semibold">
+                        <Badge variant="secondary" className="flex items-center gap-1 w-fit bg-success/15 text-success border-success/30 font-semibold">
                           <CheckCircle className="h-3 w-3" /> Active
                         </Badge>
                       )}
                       {admin.is_immutable && (
-                        <Badge variant="outline" className="ml-1.5 border-amber-400/40 text-amber-300 bg-amber-400/10">
-                          <Crown className="h-3 w-3 mr-1 text-amber-400" />Immutable
+                        <Badge variant="outline" className="ml-1.5 border-warning/40 text-warning bg-warning/10">
+                          <Crown className="h-3 w-3 mr-1 text-warning" />Immutable
                         </Badge>
                       )}
                     </TableCell>
@@ -354,7 +354,7 @@ const PlatformAdminManagement = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => {
                             if (confirm(`Remove ${admin.display_name} as platform admin?`)) {
                               deleteAdmin.mutate(admin);

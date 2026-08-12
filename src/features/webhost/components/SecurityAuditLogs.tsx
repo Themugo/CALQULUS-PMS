@@ -25,10 +25,10 @@ const webhostVisibleResourceTypes = ['contract', 'payment', 'invoice', 'mpesa_se
 const actionColors: Record<string, string> = {
   create: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   update: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] dark:bg-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_80%)]',
-  delete: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  view: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  export: 'bg-amber-400/15 text-amber-700 dark:bg-[hsl(218_58%_16%)] dark:text-amber-100/80',
-  download: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  delete: 'bg-destructive/15 text-destructive dark:bg-destructive dark:text-destructive',
+  view: 'bg-secondary-background text-foreground dark:bg-secondary-foreground dark:text-foreground',
+  export: 'bg-warning/15 text-warning dark:bg-[hsl(218_58%_16%)] dark:text-warning/80',
+  download: 'bg-warning/10 text-warning dark:bg-warning dark:text-orange-200',
 };
 
 export function SecurityAuditLogs() {
@@ -144,7 +144,7 @@ export function SecurityAuditLogs() {
           {webhostVisibleResourceTypes.map((type) => {
             const count = visibleLogs?.filter(l => l.entity_type === type).length || 0;
             return (
-              <div key={type} className="bg-muted/50 rounded-lg p-3 text-center">
+              <div key={type} className="bg-secondary-background rounded-lg p-3 text-center">
                 <div className="flex justify-center mb-1">
                   {resourceTypeIcons[type]}
                 </div>
@@ -191,7 +191,7 @@ export function SecurityAuditLogs() {
                       {log.actor_email || 'Unknown'}
                     </TableCell>
                     <TableCell>
-                      <Badge className={actionColors[log.action] || 'bg-gray-100'}>
+                      <Badge className={actionColors[log.action] || 'bg-secondary-background'}>
                         {log.action}
                       </Badge>
                     </TableCell>
@@ -265,7 +265,7 @@ export function SecurityAuditLogs() {
                               </div>
                               <div>
                                 <p className="text-muted-foreground mb-2">Details</p>
-                                <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto">
+                                <pre className="bg-secondary-background p-3 rounded-md text-xs overflow-x-auto">
                                   {JSON.stringify(selectedLog.metadata, null, 2)}
                                 </pre>
                               </div>

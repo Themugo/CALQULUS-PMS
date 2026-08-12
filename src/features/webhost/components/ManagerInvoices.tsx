@@ -533,13 +533,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     
     return (
       <Dialog open={paymentInfoDialogOpen} onOpenChange={setPaymentInfoDialogOpen}>
-        <DialogContent className="bg-muted border-amber-400/15 max-w-lg">
+        <DialogContent className="bg-card border-warning/15 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-foreground flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-amber-500" />
+              <CreditCard className="h-5 w-5 text-warning" />
               Payment Details
             </DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Use these details to make payment for your invoice
             </DialogDescription>
           </DialogHeader>
@@ -555,27 +555,27 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {hasBank && (
-              <div className="p-4 bg-muted/80 rounded-lg border border-border">
+              <div className="p-4 bg-secondary-background rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <Building className="h-5 w-5 text-[hsl(214_73%_58%)]" />
                   <h4 className="text-foreground font-semibold">Bank Transfer</h4>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-amber-400/70">Bank:</span>
+                    <span className="text-warning/70">Bank:</span>
                     <span className="text-foreground font-medium">{paymentSettings.bank_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-amber-400/70">Account Name:</span>
+                    <span className="text-warning/70">Account Name:</span>
                     <span className="text-foreground font-medium">{paymentSettings.bank_account_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-amber-400/70">Account Number:</span>
+                    <span className="text-warning/70">Account Number:</span>
                     <span className="text-foreground font-medium font-mono">{paymentSettings.bank_account_number}</span>
                   </div>
                   {paymentSettings.bank_branch && (
                     <div className="flex justify-between">
-                      <span className="text-amber-400/70">Branch:</span>
+                      <span className="text-warning/70">Branch:</span>
                       <span className="text-foreground font-medium">{paymentSettings.bank_branch}</span>
                     </div>
                   )}
@@ -584,7 +584,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {hasMpesa && (
-              <div className="p-4 bg-muted/80 rounded-lg border border-border">
+              <div className="p-4 bg-secondary-background rounded-lg border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <Smartphone className="h-5 w-5 text-green-400" />
                   <h4 className="text-foreground font-semibold">M-Pesa Payment</h4>
@@ -593,12 +593,12 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   {paymentSettings.mpesa_paybill_number && (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-amber-400/70">Paybill Number:</span>
+                        <span className="text-warning/70">Paybill Number:</span>
                         <span className="text-foreground font-medium font-mono">{paymentSettings.mpesa_paybill_number}</span>
                       </div>
                       {paymentSettings.mpesa_paybill_account && (
                         <div className="flex justify-between">
-                          <span className="text-amber-400/70">Account Number:</span>
+                          <span className="text-warning/70">Account Number:</span>
                           <span className="text-foreground font-medium">{paymentSettings.mpesa_paybill_account}</span>
                         </div>
                       )}
@@ -606,13 +606,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                   )}
                   {paymentSettings.mpesa_till_number && (
                     <div className="flex justify-between">
-                      <span className="text-amber-400/70">Till Number (Buy Goods):</span>
+                      <span className="text-warning/70">Till Number (Buy Goods):</span>
                       <span className="text-foreground font-medium font-mono">{paymentSettings.mpesa_till_number}</span>
                     </div>
                   )}
                   {paymentSettings.mpesa_phone_number && (
                     <div className="flex justify-between">
-                      <span className="text-amber-400/70">Phone (Send Money):</span>
+                      <span className="text-warning/70">Phone (Send Money):</span>
                       <span className="text-foreground font-medium font-mono">{paymentSettings.mpesa_phone_number}</span>
                     </div>
                   )}
@@ -621,13 +621,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             )}
             
             {selectedInvoice && (
-              <div className="p-3 bg-amber-400/6 rounded-lg border border-amber-400/15">
+              <div className="p-3 bg-warning/6 rounded-lg border border-warning/15">
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-400/70">Invoice Reference:</span>
+                  <span className="text-warning/70">Invoice Reference:</span>
                   <span className="text-foreground font-mono font-bold">{selectedInvoice.invoice_number}</span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-amber-400/70">Amount Due:</span>
+                  <span className="text-warning/70">Amount Due:</span>
                   <span className="text-foreground font-bold text-lg">KES {Number(selectedInvoice.amount).toLocaleString()}</span>
                 </div>
               </div>
@@ -717,14 +717,14 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     switch (status) {
       case 'pending':
         return (
-          <Badge className="bg-amber-600/20 text-amber-400 border-amber-600/30">
+          <Badge className="bg-warning/20 text-warning border-warning/30">
             <Clock className="h-3 w-3 mr-1" />
             Pending
           </Badge>
         );
       case 'overdue':
         return (
-          <Badge className="bg-red-600/20 text-red-400 border-red-600/30">
+          <Badge className="bg-destructive/20 text-destructive border-destructive/30">
             <AlertCircle className="h-3 w-3 mr-1" />
             Overdue
           </Badge>
@@ -744,7 +744,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       );
     }
     return (
-      <Badge className="bg-amber-400/12 text-amber-600 border-amber-400/20">
+      <Badge className="bg-warning/12 text-warning border-warning/20">
         <Percent className="h-3 w-3 mr-1" />
         Subscription
       </Badge>
@@ -765,7 +765,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Badge className="bg-[hsl(218_58%_40%)] text-white">
                   {selectedCount} selected
                 </Badge>
-                <span className="text-amber-100/80 text-sm">
+                <span className="text-warning/80 text-sm">
                   Total: KES {totalSelectedAmount.toLocaleString()}
                 </span>
               </div>
@@ -773,7 +773,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-[hsl(218_58%_40%)] text-amber-400/70 hover:bg-[hsl(218_58%_40%/0.2)]"
+                  className="border-[hsl(218_58%_40%)] text-warning/70 hover:bg-[hsl(218_58%_40%/0.2)]"
                   onClick={bulkSendReminders}
                   disabled={bulkActionLoading}
                 >
@@ -796,7 +796,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-emerald-600 text-emerald-300 hover:bg-emerald-600/20"
+                  className="border-emerald-600 text-success hover:bg-success/20"
                   onClick={bulkMarkAsPaid}
                   disabled={bulkActionLoading}
                 >
@@ -806,7 +806,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-red-600 text-red-300 hover:bg-red-600/20"
+                  className="border-red-600 text-destructive hover:bg-destructive/20"
                   onClick={bulkCancel}
                   disabled={bulkActionLoading}
                 >
@@ -816,7 +816,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-amber-500"
+                  className="text-warning"
                   onClick={() => setSelectedIds(new Set())}
                 >
                   Clear Selection
@@ -827,21 +827,21 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
         </Card>
       )}
 
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-foreground flex items-center gap-2">
-              <FileText className="h-5 w-5 text-amber-500" />
+              <FileText className="h-5 w-5 text-warning" />
               Pending Invoices
             </CardTitle>
-            <CardDescription className="text-amber-400/70">
+            <CardDescription className="text-warning/70">
               Outstanding invoices awaiting payment
             </CardDescription>
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button 
               variant="outline" 
-              className="border-[hsl(218_58%_40%)] text-amber-500 hover:bg-[hsl(218_58%_40%/0.2)]"
+              className="border-[hsl(218_58%_40%)] text-warning hover:bg-[hsl(218_58%_40%/0.2)]"
               onClick={handleGenerateInvoices}
               disabled={isGeneratingInvoices}
             >
@@ -850,7 +850,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             </Button>
             <Button
               variant="outline"
-              className="border-amber-600 text-amber-400 hover:bg-amber-600/20"
+              className="border-amber-600 text-warning hover:bg-warning/20"
               onClick={handleRunEscalation}
               disabled={isEscalating}
               title="Run overdue escalation — marks overdue, sends warnings, suspends at 30 days"
@@ -860,15 +860,15 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-amber-400 hover:bg-amber-500 text-slate-900">
+                <Button className="bg-primary hover:bg-primary/90 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Invoice
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-muted border-amber-400/15 max-w-2xl">
+              <DialogContent className="bg-card border-warning/15 max-w-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-foreground">Create Manager Invoice</DialogTitle>
-                  <DialogDescription className="text-amber-400/70">
+                  <DialogDescription className="text-warning/70">
                     Create a registration, subscription, or custom invoice with line items
                   </DialogDescription>
                 </DialogHeader>
@@ -886,34 +886,34 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
           {isLoading ? (
             <div className="animate-pulse space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-12 bg-muted rounded"></div>
+                <div key={i} className="h-12 bg-secondary-background rounded"></div>
               ))}
             </div>
           ) : pendingInvoices.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow className="border-amber-400/12 hover:bg-transparent">
-                  <TableHead className="text-amber-400/70 w-12">
+                <TableRow className="border-warning/12 hover:bg-transparent">
+                  <TableHead className="text-warning/70 w-12">
                     <Checkbox
                       checked={selectedIds.size === pendingInvoices.length && pendingInvoices.length > 0}
                       onCheckedChange={toggleAllSelection}
                       className="border-[hsl(218_58%_40%)] data-[state=checked]:bg-[hsl(218_58%_40%)]"
                     />
                   </TableHead>
-                  <TableHead className="text-amber-400/70">Invoice #</TableHead>
-                  <TableHead className="text-amber-400/70">Type</TableHead>
-                  <TableHead className="text-amber-400/70">Manager</TableHead>
-                  <TableHead className="text-amber-400/70">Amount</TableHead>
-                  <TableHead className="text-amber-400/70">Due Date</TableHead>
-                  <TableHead className="text-amber-400/70">Status</TableHead>
-                  <TableHead className="text-amber-400/70 text-right">Actions</TableHead>
+                  <TableHead className="text-warning/70">Invoice #</TableHead>
+                  <TableHead className="text-warning/70">Type</TableHead>
+                  <TableHead className="text-warning/70">Manager</TableHead>
+                  <TableHead className="text-warning/70">Amount</TableHead>
+                  <TableHead className="text-warning/70">Due Date</TableHead>
+                  <TableHead className="text-warning/70">Status</TableHead>
+                  <TableHead className="text-warning/70 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pendingInvoices.map((invoice) => (
                   <TableRow 
                     key={invoice.id} 
-                    className={`border-amber-400/12 hover:bg-[hsl(218_58%_16%/0.2)] ${selectedIds.has(invoice.id) ? 'bg-[hsl(218_58%_16%/0.3)]' : ''}`}
+                    className={`border-warning/12 hover:bg-[hsl(218_58%_16%/0.2)] ${selectedIds.has(invoice.id) ? 'bg-[hsl(218_58%_16%/0.3)]' : ''}`}
                   >
                     <TableCell>
                       <Checkbox
@@ -924,21 +924,21 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                     </TableCell>
                     <TableCell className="text-foreground font-mono">{invoice.invoice_number}</TableCell>
                     <TableCell>{getInvoiceTypeBadge(invoice.invoice_type || 'subscription')}</TableCell>
-                    <TableCell className="text-amber-100/80">{getManagerName(invoice.manager_user_id)}</TableCell>
+                    <TableCell className="text-warning/80">{getManagerName(invoice.manager_user_id)}</TableCell>
                     <TableCell className="text-foreground font-semibold">KES {Number(invoice.amount).toLocaleString()}</TableCell>
-                    <TableCell className="text-amber-400/70">{format(new Date(invoice.due_date), 'dd/MM/yy')}</TableCell>
+                    <TableCell className="text-warning/70">{format(new Date(invoice.due_date), 'dd/MM/yy')}</TableCell>
                     <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400/70">
+                          <Button variant="ghost" size="sm" className="text-warning hover:text-warning/70">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-muted border-amber-400/20">
+                        <DropdownMenuContent align="end" className="bg-card border-warning/20">
                           <DropdownMenuItem
                             onClick={() => sendReminder.mutate(invoice.id)}
-                            className="text-amber-400/70 hover:bg-[hsl(218_58%_16%/0.5)] cursor-pointer"
+                            className="text-warning/70 hover:bg-[hsl(218_58%_16%/0.5)] cursor-pointer"
                           >
                             <Send className="h-4 w-4 mr-2" />
                             Send Reminder
@@ -965,7 +965,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                               setSelectedInvoice(invoice);
                               setPaymentInfoDialogOpen(true);
                             }}
-                            className="text-amber-300 hover:bg-amber-900/50 cursor-pointer"
+                            className="text-warning hover:bg-warning/25 cursor-pointer"
                           >
                             <Info className="h-4 w-4 mr-2" />
                             View Payment Details
@@ -973,14 +973,14 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                           <DropdownMenuSeparator className="bg-[hsl(218_58%_32%/0.5)]" />
                           <DropdownMenuItem
                             onClick={() => markAsPaid.mutate(invoice.id)}
-                            className="text-emerald-300 hover:bg-emerald-900/50 cursor-pointer"
+                            className="text-success hover:bg-success/20 cursor-pointer"
                           >
                             <CheckCircle className="h-4 w-4 mr-2" />
                             Mark as Paid
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => cancelInvoice.mutate(invoice.id)}
-                            className="text-red-300 hover:bg-red-900/50 cursor-pointer"
+                            className="text-destructive hover:bg-destructive/20 cursor-pointer"
                           >
                             <XCircle className="h-4 w-4 mr-2" />
                             Cancel Invoice
@@ -993,7 +993,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-amber-500">
+            <div className="text-center py-8 text-warning">
               <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>No pending invoices</p>
             </div>
@@ -1003,35 +1003,35 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
 
       {/* M-Pesa Payment Dialog */}
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
-        <DialogContent className="bg-muted border-amber-400/15">
+        <DialogContent className="bg-card border-warning/15">
           <DialogHeader>
             <DialogTitle className="text-foreground">M-Pesa Payment</DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Enter your M-Pesa phone number to receive the STK push
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {selectedInvoice && (
-              <div className="p-4 bg-amber-400/6 rounded-lg border border-amber-400/15">
+              <div className="p-4 bg-warning/6 rounded-lg border border-warning/15">
                 <div className="flex justify-between text-sm">
-                  <span className="text-amber-400/70">Invoice:</span>
+                  <span className="text-warning/70">Invoice:</span>
                   <span className="text-foreground">{selectedInvoice.invoice_number}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-2">
-                  <span className="text-amber-400/70">Amount:</span>
+                  <span className="text-warning/70">Amount:</span>
                   <span className="text-foreground font-bold">KES {Number(selectedInvoice.amount).toLocaleString()}</span>
                 </div>
               </div>
             )}
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Phone Number</Label>
+              <Label className="text-warning/80">Phone Number</Label>
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="254712345678"
-                className="bg-muted border-amber-400/20 text-foreground"
+                className="bg-card border-warning/20 text-foreground"
               />
-              <p className="text-xs text-amber-500">Format: 254XXXXXXXXX</p>
+              <p className="text-xs text-warning">Format: 254XXXXXXXXX</p>
             </div>
             <Button
               onClick={handlePayWithMpesa}
@@ -1046,43 +1046,43 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
 
       {/* Bulk SMS Dialog */}
       <Dialog open={bulkSmsDialogOpen} onOpenChange={setBulkSmsDialogOpen}>
-        <DialogContent className="bg-muted border-amber-400/15">
+        <DialogContent className="bg-card border-warning/15">
           <DialogHeader>
             <DialogTitle className="text-foreground flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-green-400" />
               Send Bulk SMS
             </DialogTitle>
-            <DialogDescription className="text-amber-400/70">
+            <DialogDescription className="text-warning/70">
               Send SMS reminders to {selectedCount} selected invoice(s)
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="p-4 bg-amber-400/6 rounded-lg border border-amber-400/15">
-              <p className="text-sm text-amber-400/70 mb-2">Available placeholders:</p>
+            <div className="p-4 bg-warning/6 rounded-lg border border-warning/15">
+              <p className="text-sm text-warning/70 mb-2">Available placeholders:</p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{name}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{amount}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{invoices}'}</Badge>
-                <Badge variant="outline" className="text-amber-400/70 border-[hsl(218_58%_40%)]">{'{count}'}</Badge>
+                <Badge variant="outline" className="text-warning/70 border-[hsl(218_58%_40%)]">{'{name}'}</Badge>
+                <Badge variant="outline" className="text-warning/70 border-[hsl(218_58%_40%)]">{'{amount}'}</Badge>
+                <Badge variant="outline" className="text-warning/70 border-[hsl(218_58%_40%)]">{'{invoices}'}</Badge>
+                <Badge variant="outline" className="text-warning/70 border-[hsl(218_58%_40%)]">{'{count}'}</Badge>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-amber-100/80">Message</Label>
+              <Label className="text-warning/80">Message</Label>
               <Textarea
                 value={bulkSmsMessage}
                 onChange={(e) => setBulkSmsMessage(e.target.value)}
                 placeholder="Enter your SMS message..."
-                className="bg-muted border-amber-400/20 text-foreground min-h-[120px]"
+                className="bg-card border-warning/20 text-foreground min-h-[120px]"
                 maxLength={160}
               />
-              <p className="text-xs text-amber-500">{bulkSmsMessage.length}/160 characters</p>
+              <p className="text-xs text-warning">{bulkSmsMessage.length}/160 characters</p>
             </div>
           </div>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setBulkSmsDialogOpen(false)}
-              className="border-[hsl(218_58%_40%)] text-amber-400/70"
+              className="border-[hsl(218_58%_40%)] text-warning/70"
             >
               Cancel
             </Button>

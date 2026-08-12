@@ -137,23 +137,23 @@ export default function ErrorLogsTab() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <Card className="border-red-500/15 bg-card">
+      <Card className="border-destructive/15 bg-card">
         <CardHeader>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2 text-foreground">
-                <Bug className="h-5 w-5 text-red-400" />
+                <Bug className="h-5 w-5 text-destructive" />
                 Production Error & Incident Console
               </CardTitle>
-              <CardDescription className="text-red-400/70">
+              <CardDescription className="text-destructive/70">
                 Application errors and warnings recorded in the audit log (last 100). Auto-refreshes every 30 seconds.
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-red-500/20 text-red-300 hover:bg-red-500/10">
+              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-destructive/20 text-destructive hover:bg-destructive/10">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
               </Button>
-              <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0} className="border-red-500/20 text-red-300 hover:bg-red-500/10">
+              <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0} className="border-destructive/20 text-destructive hover:bg-destructive/10">
                 <Download className="h-3.5 w-3.5 mr-1.5" /> Export
               </Button>
             </div>
@@ -166,25 +166,25 @@ export default function ErrorLogsTab() {
 
       {/* Overview — real counts only */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="border-red-500/20 bg-red-500/5">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="p-4 flex items-center gap-3">
-            <Bug className="h-8 w-8 text-red-400" />
+            <Bug className="h-8 w-8 text-destructive" />
             <div>
-              <div className="text-2xl font-bold text-red-300">{errorCount}</div>
-              <div className="text-sm text-red-400/80">Errors (last 100)</div>
+              <div className="text-2xl font-bold text-destructive">{errorCount}</div>
+              <div className="text-sm text-destructive/80">Errors (last 100)</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-amber-500/20 bg-amber-500/5">
+        <Card className="border-warning/20 bg-warning/5">
           <CardContent className="p-4 flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8 text-amber-400" />
+            <AlertTriangle className="h-8 w-8 text-warning" />
             <div>
-              <div className="text-2xl font-bold text-amber-300">{warningCount}</div>
-              <div className="text-sm text-amber-400/80">Warnings (last 100)</div>
+              <div className="text-2xl font-bold text-warning">{warningCount}</div>
+              <div className="text-sm text-warning/80">Warnings (last 100)</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-500/20 bg-card">
+        <Card className="border-border/20 bg-card">
           <CardContent className="p-4 flex items-center gap-3">
             <Activity className="h-8 w-8 text-muted-foreground" />
             <div>
@@ -196,13 +196,13 @@ export default function ErrorLogsTab() {
       </div>
 
       {/* Registry */}
-      <Card className="border-red-500/15 bg-card">
+      <Card className="border-destructive/15 bg-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-foreground">
-            <ShieldAlert className="h-5 w-5 text-red-400" />
+            <ShieldAlert className="h-5 w-5 text-destructive" />
             Error Registry
           </CardTitle>
-          <CardDescription className="text-red-400/70">
+          <CardDescription className="text-destructive/70">
             Read-only audit records. Severity reflects the error/warning type only — no separate severity classification exists.
           </CardDescription>
           {/* Filters */}
@@ -213,11 +213,11 @@ export default function ErrorLogsTab() {
                 placeholder="Search message, source, actor…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="pl-10 bg-muted/80 border-red-500/20"
+                className="pl-10 bg-secondary-background border-destructive/20"
               />
             </div>
             <Select value={typeFilter} onValueChange={v => setTypeFilter(v as TypeFilter)}>
-              <SelectTrigger className="bg-muted/80 border-red-500/20"><SelectValue placeholder="Type" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary-background border-destructive/20"><SelectValue placeholder="Type" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="error">Errors</SelectItem>
@@ -225,7 +225,7 @@ export default function ErrorLogsTab() {
               </SelectContent>
             </Select>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="bg-muted/80 border-red-500/20"><SelectValue placeholder="Source" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary-background border-destructive/20"><SelectValue placeholder="Source" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All sources</SelectItem>
                 {sources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -235,11 +235,11 @@ export default function ErrorLogsTab() {
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">From</span>
-              <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 bg-muted/80 border-red-500/20" />
+              <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 bg-secondary-background border-destructive/20" />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">To</span>
-              <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 bg-muted/80 border-red-500/20" />
+              <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 bg-secondary-background border-destructive/20" />
             </div>
             {(search || typeFilter !== 'all' || sourceFilter !== 'all' || from || to) && (
               <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setTypeFilter('all'); setSourceFilter('all'); setFrom(''); setTo(''); }} className="text-muted-foreground hover:text-foreground">
@@ -253,10 +253,10 @@ export default function ErrorLogsTab() {
             <div className="space-y-2 p-4">{[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-14 w-full" />)}</div>
           ) : isError ? (
             <div className="p-8 text-center">
-              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-400" />
-              <p className="text-sm font-semibold text-red-300">Unable to load error logs.</p>
+              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+              <p className="text-sm font-semibold text-destructive">Unable to load error logs.</p>
               <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
-              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-red-500/40 text-red-300 hover:bg-red-500/10">
+              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-destructive/40 text-destructive hover:bg-destructive/10">
                 <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
               </Button>
             </div>
@@ -270,7 +270,7 @@ export default function ErrorLogsTab() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-red-500/10 text-left text-red-400/70">
+                  <tr className="border-b border-destructive/10 text-left text-destructive/70">
                     <th className="py-2 px-4 font-medium">Type</th>
                     <th className="py-2 px-4 font-medium">Message</th>
                     <th className="py-2 px-4 font-medium">Source</th>
@@ -284,9 +284,9 @@ export default function ErrorLogsTab() {
                     const isError = l.action.startsWith('error:');
                     const m = metaOf(l);
                     return (
-                      <tr key={l.id} className="border-b border-red-500/5 hover:bg-red-500/5 cursor-pointer" onClick={() => setSelected(l)}>
+                      <tr key={l.id} className="border-b border-destructive/5 hover:bg-destructive/5 cursor-pointer" onClick={() => setSelected(l)}>
                         <td className="py-2.5 px-4">
-                          <Badge className={isError ? 'bg-red-500/15 text-red-300 border border-red-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}>
+                          <Badge className={isError ? 'bg-destructive/15 text-destructive border border-destructive/30' : 'bg-warning/15 text-warning border border-warning/30'}>
                             {isError ? 'error' : 'warning'}
                           </Badge>
                         </td>
@@ -300,7 +300,7 @@ export default function ErrorLogsTab() {
                         <td className="py-2.5 px-4 text-muted-foreground text-xs truncate max-w-[160px]" title={l.actor_email ?? ''}>{l.actor_email ?? 'system'}</td>
                         <td className="py-2.5 px-4 text-xs text-muted-foreground whitespace-nowrap">{format(new Date(l.created_at), 'dd MMM HH:mm:ss')}</td>
                         <td className="py-2.5 px-4 text-right">
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted/80" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-secondary-background" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
                         </td>
@@ -312,7 +312,7 @@ export default function ErrorLogsTab() {
             </div>
           )}
           {filtered.length > 0 && (
-            <p className="p-4 text-xs text-muted-foreground border-t border-red-500/5">
+            <p className="p-4 text-xs text-muted-foreground border-t border-destructive/5">
               Showing {filtered.length} of {logs.length} records{logs.length === 100 ? ' (limited to last 100)' : ''}
             </p>
           )}
@@ -321,52 +321,52 @@ export default function ErrorLogsTab() {
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
-        <DialogContent className="max-w-2xl bg-card border-red-500/15">
+        <DialogContent className="max-w-2xl bg-card border-destructive/15">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-foreground">
-              <ChevronRight className="h-4 w-4 text-red-400" />
+              <ChevronRight className="h-4 w-4 text-destructive" />
               Error Detail
             </DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Badge className={selected.action.startsWith('error:') ? 'bg-red-500/15 text-red-300 border border-red-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}>
+                <Badge className={selected.action.startsWith('error:') ? 'bg-destructive/15 text-destructive border border-destructive/30' : 'bg-warning/15 text-warning border border-warning/30'}>
                   {selected.action.startsWith('error:') ? 'error' : 'warning'}
                 </Badge>
                 <span className="font-mono text-xs text-muted-foreground">{stripPrefix(selected.action)}</span>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-red-400/70">Message</p>
+                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Message</p>
                   <p className="text-sm text-foreground break-words">{selected.entity_label || metaOf(selected).message || 'No message'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-red-400/70">Source / module</p>
+                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Source / module</p>
                   <p className="text-sm text-foreground">{metaOf(selected).context ?? '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-red-400/70">Timestamp</p>
+                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Timestamp</p>
                   <p className="text-sm text-foreground">{format(new Date(selected.created_at), "dd MMM yyyy HH:mm:ss")}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-red-400/70">Actor</p>
+                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Actor</p>
                   <p className="text-sm text-foreground">{selected.actor_email ?? 'system'}{selected.actor_role ? ` (${selected.actor_role})` : ''}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-red-400/70">Reference ID</p>
+                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Reference ID</p>
                   <p className="text-xs text-muted-foreground font-mono">{selected.id}</p>
                 </div>
                 {metaOf(selected).url && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-red-400/70">URL / path</p>
+                    <p className="text-[10px] uppercase tracking-wide text-destructive/70">URL / path</p>
                     <p className="text-xs text-muted-foreground font-mono break-all">{metaOf(selected).url}</p>
                   </div>
                 )}
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-red-400/70 mb-1">Context / metadata</p>
-                <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto border border-red-500/10 text-muted-foreground">{safeMetaString(selected)}</pre>
+                <p className="text-[10px] uppercase tracking-wide text-destructive/70 mb-1">Context / metadata</p>
+                <pre className="bg-secondary-background p-3 rounded-md text-xs overflow-x-auto border border-destructive/10 text-muted-foreground">{safeMetaString(selected)}</pre>
               </div>
               <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <ShieldAlert className="h-3 w-3" />

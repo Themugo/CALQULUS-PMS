@@ -248,7 +248,7 @@ const PrivacyComplianceCenter = () => {
       case 'revoked':
       case 'rejected':
       case 'archived':
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-300">{status}</Badge>;
+        return <Badge className="bg-secondary-background text-gray-800 border-gray-300">{status}</Badge>;
       case 'pending':
       case 'detected':
       case 'in_progress':
@@ -256,7 +256,7 @@ const PrivacyComplianceCenter = () => {
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'expired':
       case 'critical':
-        return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -265,9 +265,9 @@ const PrivacyComplianceCenter = () => {
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return <Badge className="bg-red-600 text-white border-red-700">{severity}</Badge>;
+        return <Badge className="bg-destructive text-white border-red-700">{severity}</Badge>;
       case 'high':
-        return <Badge className="bg-orange-500 text-white border-orange-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
@@ -280,15 +280,15 @@ const PrivacyComplianceCenter = () => {
   const getRequestTypeBadge = (type: string) => {
     switch (type) {
       case 'access':
-        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><Eye className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-warning/70 border-warning/30"><Eye className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'deletion':
-        return <Badge variant="outline" className="text-red-300 border-red-700"><Ban className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-destructive border-red-700"><Ban className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'correction':
         return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'portability':
         return <Badge variant="outline" className="text-green-300 border-green-700"><Download className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'objection':
-        return <Badge variant="outline" className="text-orange-300 border-orange-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-warning border-orange-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -305,20 +305,20 @@ const PrivacyComplianceCenter = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Privacy Compliance Center</h2>
-          <p className="text-amber-400/70 text-sm mt-1">Manage privacy compliance and data subject rights</p>
+          <p className="text-warning/70 text-sm mt-1">Manage privacy compliance and data subject rights</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
+            className="border-warning/30 text-warning/80 hover:bg-warning/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
           <Button
             size="sm"
-            className="bg-amber-400 hover:bg-amber-500 text-slate-900"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             <Upload className="h-4 w-4 mr-2" />
             Update Policy
@@ -328,82 +328,82 @@ const PrivacyComplianceCenter = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <CheckSquare className="h-4 w-4 text-amber-500" />
+              <CheckSquare className="h-4 w-4 text-warning" />
               Total Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{totalConsents}</div>
-            <div className="text-sm text-amber-400/70">All consent records</div>
+            <div className="text-sm text-warning/70">All consent records</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-amber-500" />
+              <CheckCircle className="h-4 w-4 text-warning" />
               Active Consents
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{activeConsents}</div>
-            <div className="text-sm text-amber-400/70">Currently granted</div>
+            <div className="text-sm text-warning/70">Currently granted</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <User className="h-4 w-4 text-amber-500" />
+              <User className="h-4 w-4 text-warning" />
               Pending Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{pendingRequests}</div>
-            <div className="text-sm text-amber-400/70">Awaiting action</div>
+            <div className="text-sm text-warning/70">Awaiting action</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               Active Breaches
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{activeBreaches}</div>
-            <div className="text-sm text-amber-400/70">Under investigation</div>
+            <div className="text-sm text-warning/70">Under investigation</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+        <TabsList className="bg-card/80 border border-warning/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="consents" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="consents" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <CheckSquare className="h-4 w-4 mr-2" />
             Consents
           </TabsTrigger>
-          <TabsTrigger value="requests" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="requests" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <User className="h-4 w-4 mr-2" />
             Data Subject Requests
           </TabsTrigger>
-          <TabsTrigger value="policy" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="policy" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <FileText className="h-4 w-4 mr-2" />
             Privacy Policy
           </TabsTrigger>
-          <TabsTrigger value="breaches" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="breaches" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Data Breaches
           </TabsTrigger>
-          <TabsTrigger value="cookies" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="cookies" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Cookie className="h-4 w-4 mr-2" />
             Cookie Consents
           </TabsTrigger>
@@ -411,39 +411,39 @@ const PrivacyComplianceCenter = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Scale className="h-5 w-5 text-amber-500" />
+                  <Scale className="h-5 w-5 text-warning" />
                   Data Subject Rights
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <div className="flex items-center gap-2">
-                      <Eye className="h-4 w-4 text-amber-500" />
+                      <Eye className="h-4 w-4 text-warning" />
                       <span className="text-foreground text-sm">Right to Access</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <div className="flex items-center gap-2">
-                      <Ban className="h-4 w-4 text-amber-500" />
+                      <Ban className="h-4 w-4 text-warning" />
                       <span className="text-foreground text-sm">Right to Deletion</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-amber-500" />
+                      <FileText className="h-4 w-4 text-warning" />
                       <span className="text-foreground text-sm">Right to Correction</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <div className="flex items-center gap-2">
-                      <Download className="h-4 w-4 text-amber-500" />
+                      <Download className="h-4 w-4 text-warning" />
                       <span className="text-foreground text-sm">Right to Portability</span>
                     </div>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Enabled</Badge>
@@ -452,28 +452,28 @@ const PrivacyComplianceCenter = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-amber-500" />
+                  <Shield className="h-5 w-5 text-warning" />
                   Compliance Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <span className="text-foreground text-sm">GDPR Compliance</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <span className="text-foreground text-sm">Data Protection Act</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Compliant</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <span className="text-foreground text-sm">Cookie Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Active</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                  <div className="flex items-center justify-between p-3 bg-secondary-background/60 rounded">
                     <span className="text-foreground text-sm">Privacy Policy</span>
                     <Badge className="bg-green-100 text-green-800 border-green-300">Current</Badge>
                   </div>
@@ -484,30 +484,30 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="consents">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Consent Records</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage user consent records and status
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {consentRecords.map((consent) => (
-                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium capitalize">{consent.consentType.replace('_', ' ')}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{consent.id}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30">
+                          <span className="text-warning/70 text-sm ml-2">{consent.id}</span>
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30">
                             {consent.userId}
                           </Badge>
                         </div>
                         {getStatusBadge(consent.status)}
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{consent.purpose}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <p className="text-warning/70 text-sm mb-2">{consent.purpose}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Granted: {consent.grantedDate.toLocaleDateString()}
@@ -524,7 +524,7 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -535,10 +535,10 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="requests">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Data Subject Requests</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage GDPR data subject rights requests
               </CardDescription>
             </CardHeader>
@@ -546,18 +546,18 @@ const PrivacyComplianceCenter = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
                   <Input
                     placeholder="Search requests..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-secondary-background/60 border-warning/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedRequestType}
                   onChange={(e) => setSelectedRequestType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
+                  className="bg-secondary-background/60 border border-warning/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="access">Access</option>
@@ -570,18 +570,18 @@ const PrivacyComplianceCenter = () => {
 
               <div className="space-y-4">
                 {filteredRequests.map((request) => (
-                  <div key={request.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={request.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{request.userEmail}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{request.id}</span>
+                          <span className="text-warning/70 text-sm ml-2">{request.id}</span>
                           {getRequestTypeBadge(request.type)}
                         </div>
                         {getStatusBadge(request.status)}
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{request.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <p className="text-warning/70 text-sm mb-2">{request.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Assigned: {request.assignedTo}
@@ -598,7 +598,7 @@ const PrivacyComplianceCenter = () => {
                         )}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -609,26 +609,26 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="policy">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Privacy Policy</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage privacy policy versions and reviews
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {privacyPolicies.map((policy) => (
-                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={policy.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">Privacy Policy v{policy.version}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{policy.id}</span>
+                          <span className="text-warning/70 text-sm ml-2">{policy.id}</span>
                         </div>
                         {getStatusBadge(policy.status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Effective: {policy.effectiveDate.toLocaleDateString()}
@@ -639,13 +639,13 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                       {policy.changes.length > 0 && (
-                        <div className="text-sm text-amber-400/70">
+                        <div className="text-sm text-warning/70">
                           <span className="font-medium">Changes: </span>
                           {policy.changes.join(', ')}
                         </div>
                       )}
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       <Eye className="h-4 w-4 mr-2" />
                       View
                     </Button>
@@ -657,30 +657,30 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="breaches">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Data Breaches</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Track and manage data breach incidents
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {dataBreaches.map((breach) => (
-                  <div key={breach.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={breach.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{breach.type}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{breach.id}</span>
+                          <span className="text-warning/70 text-sm ml-2">{breach.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(breach.severity)}
                           {getStatusBadge(breach.status)}
                         </div>
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{breach.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <p className="text-warning/70 text-sm mb-2">{breach.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           Affected: {breach.affectedUsers} users
@@ -691,7 +691,7 @@ const PrivacyComplianceCenter = () => {
                         </span>
                       </div>
                       {breach.notifiedDate && (
-                        <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                        <div className="flex items-center gap-4 text-sm text-warning/70">
                           <span className="flex items-center gap-1">
                             <Mail className="h-3 w-3" />
                             Notified: {breach.notifiedDate.toLocaleDateString()}
@@ -699,7 +699,7 @@ const PrivacyComplianceCenter = () => {
                         </div>
                       )}
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       View Details
                     </Button>
                   </div>
@@ -710,36 +710,36 @@ const PrivacyComplianceCenter = () => {
         </TabsContent>
 
         <TabsContent value="cookies">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Cookie Consents</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Manage cookie consent categories and settings
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {cookieConsents.map((consent) => (
-                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={consent.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{consent.name}</span>
-                          <Badge variant="outline" className="ml-2 text-amber-400/70 border-amber-400/30 capitalize">
+                          <Badge variant="outline" className="ml-2 text-warning/70 border-warning/30 capitalize">
                             {consent.category}
                           </Badge>
                         </div>
                         {getStatusBadge(consent.status)}
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{consent.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <p className="text-warning/70 text-sm mb-2">{consent.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Consent Date: {consent.consentDate.toLocaleDateString()}
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                    <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                       Configure
                     </Button>
                   </div>

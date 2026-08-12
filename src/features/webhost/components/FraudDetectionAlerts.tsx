@@ -218,11 +218,11 @@ const FraudDetectionAlerts = () => {
       case 'detected':
         return <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.3)]"><Activity className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'confirmed':
-        return <Badge className="bg-red-100 text-red-800 border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-red-300"><AlertTriangle className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'monitoring':
-        return <Badge className="bg-amber-400/15 text-amber-700 border-amber-400/25"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-warning/15 text-warning border-warning/25"><Eye className="h-3 w-3 mr-1" />{status}</Badge>;
       case 'active':
-        return <Badge className="bg-orange-100 text-orange-800 border-orange-300"><AlertCircle className="h-3 w-3 mr-1" />{status}</Badge>;
+        return <Badge className="bg-warning/10 text-warning border-orange-300"><AlertCircle className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -231,9 +231,9 @@ const FraudDetectionAlerts = () => {
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return <Badge className="bg-red-600 text-white border-red-700">{severity}</Badge>;
+        return <Badge className="bg-destructive text-white border-red-700">{severity}</Badge>;
       case 'high':
-        return <Badge className="bg-orange-500 text-white border-orange-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
@@ -248,15 +248,15 @@ const FraudDetectionAlerts = () => {
       case 'payment':
         return <Badge variant="outline" className="text-green-300 border-green-700"><CreditCard className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'identity':
-        return <Badge variant="outline" className="text-amber-400/70 border-amber-400/30"><User className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-warning/70 border-warning/30"><User className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'rental':
         return <Badge variant="outline" className="text-[hsl(214_73%_65%)] border-[hsl(214_73%_40%)]"><Building className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'application':
         return <Badge variant="outline" className="text-yellow-300 border-yellow-700"><FileText className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'maintenance':
-        return <Badge variant="outline" className="text-orange-300 border-orange-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
+        return <Badge variant="outline" className="text-warning border-orange-700"><AlertTriangle className="h-3 w-3 mr-1" />{type}</Badge>;
       case 'data_anomaly':
-        return <Badge variant="outline" className="text-red-300 border-red-700"><Activity className="h-3 w-3 mr-1" />{type.replace('_', ' ')}</Badge>;
+        return <Badge variant="outline" className="text-destructive border-red-700"><Activity className="h-3 w-3 mr-1" />{type.replace('_', ' ')}</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -265,7 +265,7 @@ const FraudDetectionAlerts = () => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'increasing':
-        return <TrendingUp className="h-4 w-4 text-red-400" />;
+        return <TrendingUp className="h-4 w-4 text-destructive" />;
       case 'decreasing':
         return <TrendingUp className="h-4 w-4 text-green-400 rotate-180" />;
       case 'stable':
@@ -286,13 +286,13 @@ const FraudDetectionAlerts = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Fraud Detection Alerts</h2>
-          <p className="text-amber-400/70 text-sm mt-1">AI-powered fraud detection and risk monitoring</p>
+          <p className="text-warning/70 text-sm mt-1">AI-powered fraud detection and risk monitoring</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
+            className="border-warning/30 text-warning/80 hover:bg-warning/8"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -300,7 +300,7 @@ const FraudDetectionAlerts = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8"
+            className="border-warning/30 text-warning/80 hover:bg-warning/8"
           >
             <Download className="h-4 w-4 mr-2" />
             Export Report
@@ -310,74 +310,74 @@ const FraudDetectionAlerts = () => {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Active Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{activeAlerts}</div>
-            <div className="text-sm text-amber-400/70">Requiring attention</div>
+            <div className="text-sm text-warning/70">Requiring attention</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               Critical
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{criticalAlerts}</div>
-            <div className="text-sm text-amber-400/70">High priority</div>
+            <div className="text-sm text-warning/70">High priority</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-amber-500" />
+              <CheckCircle className="h-4 w-4 text-warning" />
               Resolved This Month
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{resolvedThisMonth}</div>
-            <div className="text-sm text-amber-400/70">Cases closed</div>
+            <div className="text-sm text-warning/70">Cases closed</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-amber-400/15">
+        <Card className="bg-card border-warning/15">
           <CardHeader className="pb-2">
             <CardTitle className="text-foreground text-sm flex items-center gap-2">
-              <Shield className="h-4 w-4 text-amber-500" />
+              <Shield className="h-4 w-4 text-warning" />
               Fraud Rate
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">0.12%</div>
-            <div className="text-sm text-amber-400/70">of transactions</div>
+            <div className="text-sm text-warning/70">of transactions</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs for detailed views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-card/80 border border-amber-400/12">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+        <TabsList className="bg-card/80 border border-warning/12">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="alerts" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Alerts
           </TabsTrigger>
-          <TabsTrigger value="patterns" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="patterns" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <Activity className="h-4 w-4 mr-2" />
             Patterns
           </TabsTrigger>
-          <TabsTrigger value="statistics" className="data-[state=active]:bg-amber-400 data-[state=active]:text-slate-900 text-amber-400/70">
+          <TabsTrigger value="statistics" className="data-[state=active]:bg-primary data-[state=active]:text-white text-warning/70">
             <TrendingUp className="h-4 w-4 mr-2" />
             Statistics
           </TabsTrigger>
@@ -385,23 +385,23 @@ const FraudDetectionAlerts = () => {
 
         <TabsContent value="overview">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <AlertTriangle className="h-5 w-5 text-warning" />
                   Recent Critical Alerts
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {fraudAlerts.filter(a => a.severity === 'critical' && a.status !== 'resolved').slice(0, 3).map((alert) => (
-                    <div key={alert.id} className="p-3 bg-muted/30 rounded">
+                    <div key={alert.id} className="p-3 bg-secondary-background/60 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-foreground text-sm font-medium">{alert.title}</span>
                         {getSeverityBadge(alert.severity)}
                       </div>
-                      <p className="text-amber-400/70 text-xs mb-2">{alert.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-amber-400/70">
+                      <p className="text-warning/70 text-xs mb-2">{alert.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-warning/70">
                         <span>Risk Score: {alert.riskScore}%</span>
                         {getStatusBadge(alert.status)}
                       </div>
@@ -411,23 +411,23 @@ const FraudDetectionAlerts = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-amber-400/15">
+            <Card className="bg-card border-warning/15">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-amber-500" />
+                  <Activity className="h-5 w-5 text-warning" />
                   Active Suspicious Patterns
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {suspiciousPatterns.filter(p => p.status === 'active').slice(0, 3).map((pattern) => (
-                    <div key={pattern.id} className="p-3 bg-muted/30 rounded">
+                    <div key={pattern.id} className="p-3 bg-secondary-background/60 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-foreground text-sm font-medium">{pattern.pattern}</span>
                         {getSeverityBadge(pattern.severity)}
                       </div>
-                      <p className="text-amber-400/70 text-xs mb-2">{pattern.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-amber-400/70">
+                      <p className="text-warning/70 text-xs mb-2">{pattern.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-warning/70">
                         <span>{pattern.frequency} occurrences</span>
                         <span>({pattern.timeframe})</span>
                       </div>
@@ -440,10 +440,10 @@ const FraudDetectionAlerts = () => {
         </TabsContent>
 
         <TabsContent value="alerts">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Fraud Alerts</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Monitor and investigate suspicious activities
               </CardDescription>
             </CardHeader>
@@ -451,18 +451,18 @@ const FraudDetectionAlerts = () => {
               {/* Search and Filter */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning" />
                   <Input
                     placeholder="Search alerts..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-muted/30 border-amber-400/12 text-foreground placeholder-[hsl(218_58%_60%)]"
+                    className="pl-10 bg-secondary-background/60 border-warning/12 text-foreground placeholder-[hsl(218_58%_60%)]"
                   />
                 </div>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
+                  className="bg-secondary-background/60 border border-warning/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Types</option>
                   <option value="payment">Payment</option>
@@ -475,7 +475,7 @@ const FraudDetectionAlerts = () => {
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="bg-muted/30 border border-amber-400/12 text-foreground rounded-md px-3 py-2"
+                  className="bg-secondary-background/60 border border-warning/12 text-foreground rounded-md px-3 py-2"
                 >
                   <option value="all">All Severities</option>
                   <option value="critical">Critical</option>
@@ -488,12 +488,12 @@ const FraudDetectionAlerts = () => {
               {/* Alerts List */}
               <div className="space-y-4">
                 {filteredAlerts.map((alert) => (
-                  <div key={alert.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={alert.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{alert.title}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{alert.id}</span>
+                          <span className="text-warning/70 text-sm ml-2">{alert.id}</span>
                           {getTypeBadge(alert.type)}
                         </div>
                         <div className="flex items-center gap-2">
@@ -501,8 +501,8 @@ const FraudDetectionAlerts = () => {
                           {getStatusBadge(alert.status)}
                         </div>
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{alert.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70 mb-2">
+                      <p className="text-warning/70 text-sm mb-2">{alert.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70 mb-2">
                         <span className="flex items-center gap-1">
                           <Shield className="h-3 w-3" />
                           Risk Score: {alert.riskScore}%
@@ -516,7 +516,7 @@ const FraudDetectionAlerts = () => {
                           {alert.affectedEntity}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           Detected: {alert.detectedDate.toLocaleString()}
@@ -531,11 +531,11 @@ const FraudDetectionAlerts = () => {
                     </div>
                     {alert.status !== 'resolved' && alert.status !== 'false_positive' && (
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                        <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                           <Eye className="h-4 w-4 mr-2" />
                           Investigate
                         </Button>
-                        <Button variant="outline" size="sm" className="border-red-700 text-red-300 hover:bg-red-900/50">
+                        <Button variant="outline" size="sm" className="border-red-700 text-destructive hover:bg-destructive/20">
                           <Ban className="h-4 w-4 mr-2" />
                           Mark False Positive
                         </Button>
@@ -549,30 +549,30 @@ const FraudDetectionAlerts = () => {
         </TabsContent>
 
         <TabsContent value="patterns">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Suspicious Patterns</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Monitor recurring fraudulent behavior patterns
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {suspiciousPatterns.map((pattern) => (
-                  <div key={pattern.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={pattern.id} className="flex items-center gap-4 p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <span className="text-foreground font-medium">{pattern.pattern}</span>
-                          <span className="text-amber-400/70 text-sm ml-2">{pattern.id}</span>
+                          <span className="text-warning/70 text-sm ml-2">{pattern.id}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {getSeverityBadge(pattern.severity)}
                           {getStatusBadge(pattern.status)}
                         </div>
                       </div>
-                      <p className="text-amber-400/70 text-sm mb-2">{pattern.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-amber-400/70">
+                      <p className="text-warning/70 text-sm mb-2">{pattern.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-warning/70">
                         <span className="flex items-center gap-1">
                           <Activity className="h-3 w-3" />
                           {pattern.frequency} occurrences
@@ -588,7 +588,7 @@ const FraudDetectionAlerts = () => {
                       </div>
                     </div>
                     {pattern.status === 'active' && (
-                      <Button variant="outline" size="sm" className="border-amber-400/30 text-amber-400/80 hover:bg-amber-400/8">
+                      <Button variant="outline" size="sm" className="border-warning/30 text-warning/80 hover:bg-warning/8">
                         <Eye className="h-4 w-4 mr-2" />
                         Monitor
                       </Button>
@@ -601,52 +601,52 @@ const FraudDetectionAlerts = () => {
         </TabsContent>
 
         <TabsContent value="statistics">
-          <Card className="bg-card border-amber-400/15">
+          <Card className="bg-card border-warning/15">
             <CardHeader>
               <CardTitle className="text-foreground">Fraud Statistics</CardTitle>
-              <CardDescription className="text-amber-400/70">
+              <CardDescription className="text-warning/70">
                 Fraud detection metrics by category
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {fraudStatistics.map((stat) => (
-                  <div key={stat.category} className="p-4 bg-muted/30 rounded-lg border border-amber-400/12">
+                  <div key={stat.category} className="p-4 bg-secondary-background/60 rounded-lg border border-warning/12">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-foreground font-medium">{stat.category}</span>
                       <div className="flex items-center gap-2">
                         {getTrendIcon(stat.trend)}
-                        <span className="text-amber-400/70 text-sm capitalize">{stat.trend}</span>
+                        <span className="text-warning/70 text-sm capitalize">{stat.trend}</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-6 gap-4 mb-3">
                       <div>
                         <div className="text-2xl font-bold text-foreground">{stat.total}</div>
-                        <div className="text-xs text-amber-400/70">Total</div>
+                        <div className="text-xs text-warning/70">Total</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-red-400">{stat.critical}</div>
-                        <div className="text-xs text-amber-400/70">Critical</div>
+                        <div className="text-2xl font-bold text-destructive">{stat.critical}</div>
+                        <div className="text-xs text-warning/70">Critical</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-orange-400">{stat.high}</div>
-                        <div className="text-xs text-amber-400/70">High</div>
+                        <div className="text-2xl font-bold text-warning">{stat.high}</div>
+                        <div className="text-xs text-warning/70">High</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-yellow-400">{stat.medium}</div>
-                        <div className="text-xs text-amber-400/70">Medium</div>
+                        <div className="text-xs text-warning/70">Medium</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-[hsl(214_73%_58%)]">{stat.low}</div>
-                        <div className="text-xs text-amber-400/70">Low</div>
+                        <div className="text-xs text-warning/70">Low</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-green-400">{stat.resolved}</div>
-                        <div className="text-xs text-amber-400/70">Resolved</div>
+                        <div className="text-xs text-warning/70">Resolved</div>
                       </div>
                     </div>
                     <Progress value={(stat.resolved / stat.total) * 100} className="h-2" />
-                    <div className="text-xs text-amber-400/70 mt-1">{((stat.resolved / stat.total) * 100).toFixed(1)}% resolved</div>
+                    <div className="text-xs text-warning/70 mt-1">{((stat.resolved / stat.total) * 100).toFixed(1)}% resolved</div>
                   </div>
                 ))}
               </div>

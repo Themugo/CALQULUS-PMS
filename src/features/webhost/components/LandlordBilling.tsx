@@ -24,10 +24,10 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-amber-100 text-amber-800 border-amber-200',
+  pending:   'bg-warning/10 text-warning border-amber-200',
   paid:      'bg-green-100 text-green-800 border-green-200',
-  overdue:   'bg-red-100 text-red-800 border-red-200',
-  cancelled: 'bg-slate-100 text-muted-foreground border-slate-200',
+  overdue:   'bg-destructive/15 text-destructive border-red-200',
+  cancelled: 'bg-secondary-background text-muted-foreground border-border',
   waived:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
 };
 
@@ -135,11 +135,11 @@ const LandlordBilling: React.FC = () => {
       {/* KPI row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total landlords', value: String(landlords.length), icon: User, color: 'text-amber-500' },
-          { label: 'Outstanding', value: fmt(totalPending), icon: AlertTriangle, color: 'text-amber-400' },
+          { label: 'Total landlords', value: String(landlords.length), icon: User, color: 'text-warning' },
+          { label: 'Outstanding', value: fmt(totalPending), icon: AlertTriangle, color: 'text-warning' },
           { label: 'Collected', value: fmt(totalPaid), icon: CheckCircle, color: 'text-green-400' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-amber-400/12 bg-muted p-3">
+          <div key={k.label} className="rounded-xl border border-warning/12 bg-secondary-background p-3">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">{k.label}</p>
               <k.icon className={`h-4 w-4 ${k.color}`} />
@@ -153,11 +153,11 @@ const LandlordBilling: React.FC = () => {
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-foreground">Landlord invoices</h3>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" className="border-amber-400/30 text-amber-400/70 h-8 text-xs"
+          <Button size="sm" variant="outline" className="border-warning/30 text-warning/70 h-8 text-xs"
             onClick={() => queryClient.invalidateQueries({ queryKey: ['landlord-invoices-webhost'] })}>
             <RefreshCw className="h-3.5 w-3.5 mr-1" />Refresh
           </Button>
-          <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-900 h-8 text-xs gap-1"
+          <Button size="sm" className="bg-primary hover:bg-primary/90 text-white h-8 text-xs gap-1"
             onClick={() => setCreateOpen(true)}>
             <Plus className="h-3.5 w-3.5" />New invoice
           </Button>
@@ -165,10 +165,10 @@ const LandlordBilling: React.FC = () => {
       </div>
 
       {/* Invoice table */}
-      <Card className="bg-card border-amber-400/15">
+      <Card className="bg-card border-warning/15">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-10 w-full bg-muted/80"/>)}</div>
+            <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-10 w-full bg-secondary-background"/>)}</div>
           ) : invoices.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               <Building2 className="h-10 w-10 mx-auto mb-2 opacity-30" />
@@ -178,9 +178,9 @@ const LandlordBilling: React.FC = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="border-amber-400/12 hover:bg-transparent">
+                <TableRow className="border-warning/12 hover:bg-transparent">
                   {['Invoice #', 'Landlord', 'Type', 'Amount', 'Due', 'Status', 'Actions'].map(h => (
-                    <TableHead key={h} className="text-amber-400/70 text-xs">{h}</TableHead>
+                    <TableHead key={h} className="text-warning/70 text-xs">{h}</TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
@@ -190,7 +190,7 @@ const LandlordBilling: React.FC = () => {
                     <TableCell className="font-mono text-xs text-foreground/90">{inv.invoice_number}</TableCell>
                     <TableCell className="text-xs text-foreground/90">{inv.landlord_user_id?.slice(0, 8)}…</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs capitalize border-amber-400/20 text-amber-400/70">
+                      <Badge variant="outline" className="text-xs capitalize border-warning/20 text-warning/70">
                         {inv.invoice_type?.replace(/_/g, ' ')}
                       </Badge>
                     </TableCell>
