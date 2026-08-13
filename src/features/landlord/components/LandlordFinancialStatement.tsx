@@ -124,10 +124,10 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-[hsl(214_73%_35%)]',  bg: 'bg-[hsl(214_73%_48%/0.08)]' },
-              { label: `Management fee (${mgmtFee}%)`, value: fmt(financials.management_fee), icon: TrendingDown, color: 'text-slate-600', bg: 'bg-slate-50' },
-              { label: 'Your net revenue',       value: fmt(financials.net_to_landlord),    icon: Banknote,    color: 'text-green-700', bg: 'bg-green-50' },
-              { label: 'Payout pending',         value: fmt(financials.payout_pending),     icon: DollarSign,  color: 'text-amber-700', bg: 'bg-amber-50' },
+              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-primary',  bg: 'bg-primary/10' },
+              { label: `Management fee (${mgmtFee}%)`, value: fmt(financials.management_fee), icon: TrendingDown, color: 'text-muted-foreground', bg: 'bg-muted/50' },
+              { label: 'Your net revenue',       value: fmt(financials.net_to_landlord),    icon: Banknote,    color: 'text-success', bg: 'bg-success/10' },
+              { label: 'Payout pending',         value: fmt(financials.payout_pending),     icon: DollarSign,  color: 'text-warning', bg: 'bg-warning/10' },
             ].map(s => (
               <Card key={s.label}>
                 <CardContent className="p-4">
@@ -157,11 +157,11 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
 
           {/* Arrears warning */}
           {Number(financials.arrears_total) > 0 && (
-            <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
-              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-xl border border-warning/30 bg-warning/10">
+              <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-amber-900">Outstanding arrears</p>
-                <p className="text-xs text-amber-700 mt-0.5">
+                <p className="text-sm font-semibold text-foreground">Outstanding arrears</p>
+                <p className="text-xs text-warning mt-0.5">
                   {fmt(financials.arrears_total)} in unpaid invoices across your property. Your manager is working to collect.
                 </p>
               </div>
@@ -192,7 +192,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                           <td className="py-2 font-medium">{u.unit_number}</td>
                           <td className="py-2">
                             <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              u.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'
+                              u.status === 'active' ? 'bg-success/15 text-success' : 'bg-muted text-muted-foreground'
                             }`}>
                               {u.status}
                             </span>
@@ -224,12 +224,12 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                   <span className="text-muted-foreground">
                     Management fee ({mgmtFee}% — {property?.manager_name ?? 'Manager'})
                   </span>
-                  <span className="text-slate-600">– {fmt(financials.management_fee)}</span>
+                  <span className="text-muted-foreground">– {fmt(financials.management_fee)}</span>
                 </div>
                 <div className="h-px bg-border" />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Net to you ({property?.revenue_share_pct}%)</span>
-                  <span className="text-xl font-bold text-green-700">{fmt(financials.net_to_landlord)}</span>
+                  <span className="text-xl font-bold text-success">{fmt(financials.net_to_landlord)}</span>
                 </div>
               </div>
             </CardContent>
@@ -250,7 +250,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={v => v >= 1000 ? `${v/1000}k` : String(v)} />
                 <Tooltip formatter={(v: number) => fmt(v)} />
-                <Bar dataKey="revenue" fill="#16a34a" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
