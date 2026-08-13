@@ -283,13 +283,13 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     to={fav.href}
                     onClick={handleNavClick}
                     className={cn(
-                      "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
+                      "group relative flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all duration-150",
                       active
                         ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
                         : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-2 border-transparent"
                     )}
                   >
-                    <Star className={cn("h-3.5 w-3.5 shrink-0", active ? "text-primary" : "text-sidebar-muted group-hover:text-sidebar-foreground")} />
+                    <Star className={cn("h-4 w-4 flex-shrink-0", active ? "text-primary" : "text-sidebar-muted group-hover:text-sidebar-foreground")} />
                     <span className="flex-1 truncate">{fav.name}</span>
                   </Link>
                 );
@@ -299,9 +299,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
           {/* Regular Groups */}
           {navGroups.map((group, groupIdx) => (
-            <div key={groupIdx} className="space-y-0.5">
+            <div key={groupIdx} className="space-y-0.5 pt-0.5">
               {!collapsed && group.title && (
-                <div className="px-3 py-1 text-[10px] font-semibold text-sidebar-muted uppercase tracking-wider">
+                <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold text-sidebar-muted uppercase tracking-wider">
                   {group.title}
                 </div>
               )}

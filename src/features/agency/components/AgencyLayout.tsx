@@ -82,17 +82,16 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={`
-                  group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                  transition-all duration-200 border touch-manipulation
+                  group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium
+                  transition-all duration-150 border-l-2 touch-manipulation
                   ${active
-                    ? 'bg-indigo/10 border-indigo/20 text-indigo'
+                    ? 'bg-indigo/10 border-indigo text-indigo font-semibold'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground border-transparent'}
                 `}
               >
                 <item.icon className={`h-4 w-4 flex-shrink-0 transition-colors
                   ${active ? 'text-indigo' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 <span className="flex-1 truncate">{item.label}</span>
-                {active && <div className="w-1 h-4 rounded-full bg-indigo flex-shrink-0" />}
               </Link>
             );
           })}
@@ -122,7 +121,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
       {/* Main content area */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Top header bar */}
-        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur-md shadow-xs h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-muted/50"

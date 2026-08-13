@@ -142,7 +142,7 @@ const AgencyDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -165,108 +165,108 @@ const AgencyDashboard = () => {
       {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {/* 1. What requires attention? */}
-        <Card className="border-l-4 border-l-destructive border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                <AlertCircle className="h-3.5 w-3.5" />
-                What Requires Attention?
+        <Card className="enterprise-card hover:shadow-md transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="status-badge status-danger">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                Requires Attention
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-destructive/30 text-destructive">
-                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0)} Issues
-              </Badge>
+              <span className="meta-text font-semibold">
+                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0)} issues
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Arrears Balance:</span>
-                <span className="font-semibold text-destructive">{fmt(stats?.arrearsTotal ?? 0)}</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Arrears balance</span>
+                <span className="supporting-text font-bold text-destructive">{fmt(stats?.arrearsTotal ?? 0)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Overdue Invoices:</span>
-                <span className="font-semibold text-foreground">{stats?.overdueInvoices ?? 0} overdue</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Overdue invoices</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.overdueInvoices ?? 0} overdue</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Expiring Leases:</span>
-                <span className="font-semibold text-warning">{stats?.expiringLeases ?? 0} expiring</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Expiring leases</span>
+                <span className="supporting-text font-semibold text-warning">{stats?.expiringLeases ?? 0} expiring</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 2. What generates revenue? */}
-        <Card className="border-l-4 border-l-success border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5" />
-                What Generates Revenue?
+        <Card className="enterprise-card hover:shadow-md transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="status-badge status-success">
+                <DollarSign className="h-3 w-3 shrink-0" />
+                Generates Revenue
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
+              <span className="meta-text font-semibold text-success">
                 +{stats?.revenueChange ?? 0}% MoM
-              </Badge>
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Revenue MTD:</span>
-                <span className="font-bold text-success">{fmt(stats?.revenueMTD ?? 0)}</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Revenue MTD</span>
+                <span className="supporting-text font-bold text-success">{fmt(stats?.revenueMTD ?? 0)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Occupancy Rate:</span>
-                <span className="font-semibold text-foreground">{stats?.occupancyRate ?? 0}% occupied</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Occupancy rate</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.occupancyRate ?? 0}% occupied</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Invoices Due:</span>
-                <span className="font-medium text-foreground">{stats?.invoicesDue ?? 0} total</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Invoices due</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.invoicesDue ?? 0} total</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 3. What needs approval? */}
-        <Card className="border-l-4 border-l-warning border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                <CheckSquare className="h-3.5 w-3.5" />
-                What Needs Approval?
+        <Card className="enterprise-card hover:shadow-md transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="status-badge status-warning">
+                <CheckSquare className="h-3 w-3 shrink-0" />
+                Needs Approval
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-warning/30 text-warning">
-                Agency Ops
-              </Badge>
+              <span className="meta-text font-semibold text-warning">
+                Agency ops
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Pending Invoices:</span>
-                <span className="font-semibold text-warning">{stats?.pendingInvoices ?? 0} pending</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Pending invoices</span>
+                <span className="supporting-text font-semibold text-warning">{stats?.pendingInvoices ?? 0} pending</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Lease Expiries:</span>
-                <span className="font-medium text-foreground">{stats?.expiringLeases ?? 0} for review</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Lease expiries</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.expiringLeases ?? 0} for review</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 4. Portfolio Scope */}
-        <Card className="border-l-4 border-l-indigo border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5" />
+        <Card className="enterprise-card hover:shadow-md transition-all">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="status-badge status-info">
+                <Building2 className="h-3 w-3 shrink-0" />
                 Agency Roster
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-indigo/30 text-indigo">
-                {stats?.totalProperties ?? 0} Properties
-              </Badge>
+              <span className="meta-text font-semibold">
+                {stats?.totalProperties ?? 0} properties
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Active Tenants:</span>
-                <span className="font-semibold text-foreground">{stats?.activeTenants ?? 0}</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Active tenants</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.activeTenants ?? 0}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Active Leases:</span>
-                <span className="font-semibold text-foreground">{stats?.activeLeases ?? 0}</span>
+              <div className="flex items-center justify-between">
+                <span className="supporting-text">Active leases</span>
+                <span className="supporting-text font-semibold text-foreground">{stats?.activeLeases ?? 0}</span>
               </div>
             </div>
           </CardContent>
@@ -276,18 +276,18 @@ const AgencyDashboard = () => {
       {/* KPI Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         {statCards.map(stat => (
-          <Card key={stat.label} className="bg-card border-border">
+          <Card key={stat.label} className="enterprise-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="meta-text uppercase tracking-widest">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
               {isLoading ? (
                 <Skeleton className="h-7 w-20 bg-muted/60" />
               ) : (
                 <>
-                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value ?? 0}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{stat.sub}</p>
+                  <p className={`metric-value text-xl ${stat.color}`}>{stat.value ?? 0}</p>
+                  <p className="meta-text mt-1">{stat.sub}</p>
                 </>
               )}
             </CardContent>
