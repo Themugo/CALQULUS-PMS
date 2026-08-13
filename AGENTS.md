@@ -17,7 +17,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 - `npm run dev` â€” dev server at `http://localhost:3000` (vite.config.ts server.port overrides Vite's 5173 default)
 - `npx tsc --noEmit` â€” TypeScript check
 - `npx eslint src` â€” ESLint
-- `npx vitest run` â€” 125 unit tests (12 files)
+- `npx vitest run` â€” 690 unit tests (38 files). Added `src/test/chartColors.test.ts` (14), `src/test/formatCurrency.test.ts` (21), `src/test/dateFormat.test.ts` (28) covering the previously-untested `@/shared/lib/{chartColors,formatCurrency,dateFormat}` pure utilities.
 - `npm audit` â€” 0 vulnerabilities
 - `npx playwright test` â€” 14 E2E tests (Chromium)
 
