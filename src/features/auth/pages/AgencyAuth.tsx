@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Handshake, Shield, Eye, EyeOff, ChevronRight, Building2, Users, CreditCard } from 'lucide-react';
+import { Handshake, Eye, EyeOff, ChevronRight, Building2, Users, CreditCard } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
-import { AuthLoadingScreen, AuthGridOverlay, AuthLegalFooterLinks, OtherPortalsGrid } from '@/features/auth/components/AuthHeroChrome';
+import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
 
-const features = [
+const features: PortalAuthFeature[] = [
   { icon: Building2,  text: 'Manage properties on behalf of landlords' },
   { icon: Users,      text: 'Full tenant operations & rent collection' },
   { icon: Handshake,  text: 'Revenue sharing with configurable splits' },
   { icon: CreditCard, text: 'Agency billing, statements & payouts' },
+];
+
+const otherPortals: PortalSwitchLink[] = [
+  { label: 'Manager', href: '/auth' },
+  { label: 'Landlord', href: '/landlord/login' },
+  { label: 'Tenant', href: '/tenant/login' },
 ];
 
 const AgencyAuth = () => {
@@ -53,149 +58,70 @@ const AgencyAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
-        {/* Grid overlay */}
-        <AuthGridOverlay />
-
-        <div className="relative z-10 flex flex-col h-full p-12">
-          {/* Logo */}
-          <div className="flex items-center gap-4 mb-16">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
-            <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Agency Portal</p>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
-              <Handshake className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs text-primary font-semibold">Property Agency Access</span>
-            </div>
-
-            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-foreground">Manage portfolios.</span>
-              <br />
-              <span className="text-gradient">Serve landlords.</span>
-              <br />
-              <span className="text-muted-foreground">Grow your agency.</span>
-            </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
-              The complete platform for property agencies managing estates on behalf of landlords across East Africa.
-            </p>
-
-            <div className="space-y-4">
-              {features.map((f, i) => (
-                <div key={i} className="flex items-center gap-4 group">
-                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 pt-8 border-t border-border">
-            <p className="text-muted-foreground text-xs">calqulus.site</p>
-            <div className="flex gap-3">
-              <Link to="/landlord" className="text-muted-foreground hover:text-primary text-xs transition-colors">Manager login</Link>
-              <Link to="/webhost/login" className="text-muted-foreground hover:text-primary text-xs transition-colors">Admin login</Link>
-            </div>
-          </div>
+    <PortalAuthShell
+      portalName="Agency Portal"
+      badgeLabel="Property Agency Access"
+      icon={Handshake}
+      tagline="Manage your agency portfolio and clients."
+      heroLines={[
+        { text: 'Manage portfolios.', tone: 'default' },
+        { text: 'Serve landlords.', tone: 'gradient' },
+        { text: 'Grow your agency.', tone: 'muted' },
+      ]}
+      heroDescription="The complete platform for property agencies managing estates on behalf of landlords across East Africa."
+      features={features}
+      otherPortals={otherPortals}
+      formSubtitle="Sign in to your agency account"
+      submitLabel="Sign in to Agency Portal"
+      notice="This portal is for property agencies. Manage properties on behalf of landlords, collect rent, and track commissions."
+    >
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+          <Input
+            id="email" type="email" placeholder="agent@agency.com"
+            value={email} onChange={e => setEmail(e.target.value)} required
+            className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
+          />
         </div>
-      </div>
-
-      {/* Right panel — auth form */}
-      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="lg:hidden flex justify-center mb-8">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
-                <Handshake className="h-3 w-3 text-primary" />
-                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Agency Portal</span>
-              </div>
-              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
-              <p className="text-muted-foreground text-sm">Sign in to your agency account</p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
-                <Input
-                  id="email" type="email" placeholder="agent@agency.com"
-                  value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
-                  <ForgotPasswordDialog
-                    trigger={
-                      <button type="button" className="text-primary hover:text-amber-200 text-xs font-semibold">
-                        Forgot password?
-                      </button>
-                    }
-                  />
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
-                    value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
-                  />
-                  <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
-                {isSubmitting ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
-                    Signing in…
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">Sign in to Agency Portal <ChevronRight className="h-4 w-4" /></span>
-                )}
-              </Button>
-            </form>
-
-            {/* Info notice */}
-            <div className="mt-5 p-3 rounded-xl border border-primary/20 bg-primary/10">
-              <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  This portal is for property agencies. Manage properties on behalf of landlords,
-                  collect rent, and track commissions.
-                </p>
-              </div>
-            </div>
-
-            {/* Other portals */}
-            <OtherPortalsGrid
-              portals={[
-                { label: 'Manager', href: '/landlord' },
-                { label: 'Landlord', href: '/landlord/login' },
-                { label: 'Admin', href: '/webhost/login' },
-              ]}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+            <ForgotPasswordDialog
+              trigger={
+                <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                  Forgot password?
+                </button>
+              }
             />
-
-            <AuthLegalFooterLinks />
+          </div>
+          <div className="relative">
+            <Input
+              id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
+              value={password} onChange={e => setPassword(e.target.value)} required
+              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
+            />
+            <button type="button" onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+
+        <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              Signing in…
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">Sign in to Agency Portal <ChevronRight className="h-4 w-4" /></span>
+          )}
+        </Button>
+      </form>
+    </PortalAuthShell>
   );
 };
 

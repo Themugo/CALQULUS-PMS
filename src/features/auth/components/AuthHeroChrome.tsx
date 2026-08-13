@@ -7,6 +7,148 @@ import { Link } from "react-router-dom";
  * each carried their own copy of this markup verbatim.
  */
 
+export interface PortalAuthFeature {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+}
+
+export interface PortalSwitchLink {
+  label: string;
+  href: string;
+}
+
+export interface PortalAuthShellProps {
+  /** Portal name, e.g. "Landlord Portal" */
+  portalName: string;
+  /** Short badge label, e.g. "Property Owner Access" */
+  badgeLabel: string;
+  /** Icon for the badge + hero */
+  icon: React.ComponentType<{ className?: string }>;
+  /** One-line portal identity, e.g. "Monitor your portfolio and property performance." */
+  tagline: string;
+  /** Hero headline lines (rendered top-to-bottom). */
+  heroLines: { text: string; tone: "default" | "gradient" | "muted" }[];
+  /** Hero supporting paragraph. */
+  heroDescription: string;
+  /** Feature list for the left hero panel. */
+  features: PortalAuthFeature[];
+  /** Other portal entry points to switch to (NO admin/webhost — keep dev/internal out of public UI). */
+  otherPortals: PortalSwitchLink[];
+  /** Right-panel form header subtitle, e.g. "Sign in to your agency account". */
+  formSubtitle: string;
+  /** Submit button label, e.g. "Sign in to Landlord Portal". */
+  submitLabel: string;
+  /** Optional notice shown below the form (portal guidance). */
+  notice?: string;
+  /** Form + any auxiliary controls rendered inside the right card. */
+  children: React.ReactNode;
+}
+
+/**
+ * Consistent two-panel portal login layout shared across the four public
+ * portals (Manager, Landlord, Agency, Tenant). Provides the same visual
+ * language — navy hero, CALQULUS blue primary actions, restrained gold
+ * accents, consistent spacing, fields, buttons and focus states — while
+ * letting each portal identify itself via portalName/tagline/icon.
+ */
+export function PortalAuthShell({
+  portalName,
+  badgeLabel,
+  icon: Icon,
+  tagline,
+  heroLines,
+  heroDescription,
+  features,
+  otherPortals,
+  formSubtitle,
+  submitLabel: _submitLabel,
+  notice,
+  children,
+}: PortalAuthShellProps) {
+  return (
+    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
+      {/* ── Left hero panel ── */}
+      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
+        <AuthGridOverlay />
+
+        <div className="relative z-10 flex flex-col h-full p-12">
+          <div className="flex items-center gap-4 mb-16">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <div>
+              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
+              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">{portalName}</p>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
+              <Icon className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs text-primary font-semibold">{badgeLabel}</span>
+            </div>
+
+            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
+              {heroLines.map((line, i) => (
+                <span key={i} className={`block ${line.tone === "gradient" ? "text-gradient" : line.tone === "muted" ? "text-muted-foreground" : "text-foreground"}`}>
+                  {line.text}
+                </span>
+              ))}
+            </h1>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">{heroDescription}</p>
+
+            <div className="space-y-4">
+              {features.map((f, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 pt-8 border-t border-border">
+            <p className="text-muted-foreground text-xs">calqulus.site</p>
+            <Link to="/" className="text-muted-foreground hover:text-primary text-xs transition-colors">Back to home</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right form panel ── */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex justify-center mb-8">
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+            <div className="mb-6">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
+                <Icon className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">{portalName}</span>
+              </div>
+              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
+              <p className="text-muted-foreground text-sm">{formSubtitle}</p>
+              <p className="text-muted-foreground/80 text-xs mt-1.5">{tagline}</p>
+            </div>
+
+            {children}
+
+            {notice && (
+              <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
+                <p className="text-xs text-muted-foreground leading-relaxed">{notice}</p>
+              </div>
+            )}
+
+            <OtherPortalsGrid portals={otherPortals} />
+            <AuthLegalFooterLinks />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Full-screen branded loading state shown while auth state is resolving. */
 export function AuthLoadingScreen() {
   return (

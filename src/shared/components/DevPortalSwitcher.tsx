@@ -100,11 +100,12 @@ const DIRECT_LINKS = [
 ];
 
 export function DevPortalSwitcher() {
+  const devEnabled = isDevAccessEnabled();
+
   // Auto-open once per browser session in open-access dev mode so the
   // account options are immediately visible — closing it stores the flag.
   const [isOpen, setIsOpen] = useState(() => {
-    if (!isDevAccessEnabled()) return false;
-    return sessionStorage.getItem('dev-switcher-seen') !== '1';
+    return devEnabled && sessionStorage.getItem('dev-switcher-seen') !== '1';
   });
   const [switching, setSwitching] = useState(false);
   const { user, userRole, signOut } = useAuth();
@@ -145,6 +146,9 @@ export function DevPortalSwitcher() {
     navigate(path);
     setIsOpen(false);
   };
+
+  // Development-only tool: never expose to normal users / production.
+  if (!devEnabled) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 font-sans">

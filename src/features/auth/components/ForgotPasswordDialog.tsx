@@ -7,6 +7,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/shared/components/ui/dialog';
 import { useToast } from '@/shared/hooks/use-toast';
+import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { Mail, CheckCircle, Lock } from 'lucide-react';
 
 interface ForgotPasswordDialogProps {
@@ -31,7 +32,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     const redirectUrl = `${window.location.origin}/reset-password?portal=${portal}`;
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
     if (error) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: 'Reset request failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
     } else {
       setEmailSent(true);
     }
