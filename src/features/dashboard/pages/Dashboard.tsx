@@ -63,16 +63,16 @@ interface DashboardStats {
 }
 
 const quickActions = [
-  { label: "Add Property", icon: Building2, href: "/properties", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
-  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
-  { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-[hsl(38_92%_40%)]", bg: "bg-[hsl(38_92%_40%/0.1)] border-[hsl(38_92%_40%/0.2)]" },
-  { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-[hsl(38_92%_40%)]", bg: "bg-[hsl(38_92%_40%/0.1)] border-[hsl(38_92%_40%/0.2)]" },
-  { label: "Record Payment", icon: DollarSign, href: "/payments", accent: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-[hsl(26_90%_45%)]", bg: "bg-[hsl(26_90%_45%/0.1)] border-[hsl(26_90%_45%/0.2)]" },
-  { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
-  { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-slate-500", bg: "bg-slate-500/10 border-slate-500/20" },
-  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple-600", bg: "bg-purple-500/10 border-purple-500/20" },
+  { label: "Add Property", icon: Building2, href: "/properties", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-success", bg: "bg-success/10 border-success/20" },
+  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
+  { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
+  { label: "Record Payment", icon: DollarSign, href: "/payments", accent: "text-success", bg: "bg-success/10 border-success/20" },
+  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
+  { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-muted-foreground", bg: "bg-muted border-border" },
+  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple", bg: "bg-purple/10 border-purple/20" },
 ];
 
 const Dashboard = () => {
@@ -328,9 +328,9 @@ const Dashboard = () => {
 
       {/* Demo banner */}
       {user?.email?.includes('@calqulusrms.com') && (
-        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/8 px-4 py-2.5 flex items-center gap-3">
-          <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse-soft flex-shrink-0" />
-          <span className="text-xs text-amber-700 dark:text-amber-300">
+        <div className="mb-4 rounded-xl border border-warning/30 bg-warning/10 px-4 py-2.5 flex items-center gap-3">
+          <div className="h-2 w-2 rounded-full bg-warning animate-pulse-soft flex-shrink-0" />
+          <span className="text-xs text-warning font-medium">
             <strong>Demo mode</strong> — browsing sample property data. Changes won't persist.
           </span>
         </div>
@@ -341,7 +341,7 @@ const Dashboard = () => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 relative z-10">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[hsl(38_92%_70%)]">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-warning">
                 CALQULUS PMS
               </span>
               <span className="h-3 w-px bg-white/20" />
@@ -375,13 +375,13 @@ const Dashboard = () => {
 
       {/* ── STATS ERROR / RETRY ── */}
       {statsError && !loading && (
-        <div className="mb-5 enterprise-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-red-200">
+        <div className="mb-5 enterprise-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-destructive/30">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center shrink-0">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
+            <div className="h-9 w-9 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
             </div>
             <div>
-              <p className="card-title-exec text-red-700">Couldn't load dashboard metrics</p>
+              <p className="card-title-exec text-destructive">Couldn't load dashboard metrics</p>
               <p className="supporting-text">A connection issue prevented loading your latest stats. Please retry.</p>
             </div>
           </div>
@@ -410,13 +410,13 @@ const Dashboard = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="supporting-text">Overdue arrears</span>
-              <span className="supporting-text font-bold text-red-600">
+              <span className="supporting-text font-bold text-destructive">
                 {loading ? <Skeleton className="h-4 w-16" /> : formatCurrency(stats?.arrearsTotal ?? 0)}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="supporting-text">Expiring leases (30d)</span>
-              <span className="supporting-text font-semibold text-amber-600">
+              <span className="supporting-text font-semibold text-warning">
                 {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.expiringLeases ?? 0} leases`}
               </span>
             </div>
@@ -431,7 +431,7 @@ const Dashboard = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/billing?filter=overdue")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-red-600 hover:bg-red-50"
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-destructive hover:bg-destructive/10"
           >
             <span>Resolve arrears ({stats?.overdueInvoices ?? 0})</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -473,7 +473,7 @@ const Dashboard = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/maintenance")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-amber-600 hover:bg-amber-50"
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-warning hover:bg-warning/10"
           >
             <span>Manage approvals</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -494,7 +494,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="supporting-text">Collected rent (MTD)</span>
-              <span className="supporting-text font-bold text-emerald-600">
+              <span className="supporting-text font-bold text-success">
                 {loading ? <Skeleton className="h-4 w-20" /> : formatCurrency(stats?.revenueMTD ?? 0)}
               </span>
             </div>
@@ -515,7 +515,7 @@ const Dashboard = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/reports")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-emerald-600 hover:bg-emerald-50"
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-success hover:bg-success/10"
           >
             <span>Financial reports</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -534,7 +534,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="supporting-text">New tenants MTD</span>
-              <span className="supporting-text font-semibold text-[hsl(220_87%_45%)]">
+              <span className="supporting-text font-semibold text-primary">
                 +{stats?.newTenantsThisMonth ?? 0} joined
               </span>
             </div>
@@ -555,7 +555,7 @@ const Dashboard = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/tenants")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-[hsl(220_87%_45%)] hover:bg-blue-50"
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-primary hover:bg-primary/10"
           >
             <span>View roster</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -633,14 +633,14 @@ const Dashboard = () => {
 
       {/* ── ARREARS URGENT ALERT BAR ── */}
       {!loading && stats && stats.arrearsTotal > 0 && (
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/20 px-4 py-3">
+        <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+              <p className="text-sm font-semibold text-destructive">
                 {formatCurrency(stats.arrearsTotal)} in outstanding arrears
               </p>
-              <p className="text-xs text-red-600/70 dark:text-red-400/60 mt-0.5">
+              <p className="supporting-text text-destructive/80 mt-0.5">
                 {stats.overdueInvoices} overdue invoice{stats.overdueInvoices !== 1 ? "s" : ""} require collection action
               </p>
             </div>
@@ -648,7 +648,7 @@ const Dashboard = () => {
           <Button
             size="sm"
             variant="outline"
-            className="border-red-200 text-red-700 hover:bg-red-100 dark:border-red-800 dark:text-red-400 shrink-0"
+            className="border-destructive/30 text-destructive hover:bg-destructive/10 shrink-0"
             onClick={() => navigate("/billing?filter=overdue")}
           >
             View Overdue Invoices <ArrowRight className="h-3.5 w-3.5 ml-1" />
@@ -663,8 +663,8 @@ const Dashboard = () => {
       <Card className="mb-6 enterprise-card">
         <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
           <CardTitle className="card-title-exec flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-[hsl(220_87%_51%/0.1)] border border-[hsl(220_87%_51%/0.2)] flex items-center justify-center flex-shrink-0">
-              <Zap className="h-3.5 w-3.5 text-[hsl(220_87%_51%)]" />
+            <div className="h-6 w-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+              <Zap className="h-3.5 w-3.5 text-primary" />
             </div>
             Quick Operations
           </CardTitle>
@@ -735,7 +735,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="card-title-exec flex items-center gap-2">
-                    <CheckSquare className="h-4 w-4 text-amber-600" />
+                    <CheckSquare className="h-4 w-4 text-warning" />
                     Approvals & Action Desk
                   </CardTitle>
                   <CardDescription className="supporting-text">
@@ -773,7 +773,7 @@ const Dashboard = () => {
           <Card className="enterprise-card">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border/40">
               <CardTitle className="card-title-exec flex items-center gap-2">
-                <Activity className="h-4 w-4 text-[hsl(220_87%_51%)]" />
+                <Activity className="h-4 w-4 text-primary" />
                 Live Activity Feed
               </CardTitle>
               <CardDescription className="supporting-text">System & tenant events log</CardDescription>
@@ -789,7 +789,7 @@ const Dashboard = () => {
           <Card className="enterprise-card">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border/40">
               <CardTitle className="card-title-exec flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <ShieldCheck className="h-4 w-4 text-success" />
                 Operational Audit Log
               </CardTitle>
               <CardDescription className="supporting-text">Manager system activities</CardDescription>

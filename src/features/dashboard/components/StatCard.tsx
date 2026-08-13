@@ -21,49 +21,49 @@ interface StatCardProps {
 
 const iconColorMap = {
   primary: {
-    bg: "bg-gradient-to-br from-[hsl(214_73%_48%/0.15)] to-[hsl(214_73%_48%/0.05)] border-[hsl(214_73%_48%/0.2)]",
-    icon: "text-[hsl(214_73%_48%)]",
-    glow: "shadow-[hsl(214_73%_48%/0.1)]",
-    progress: "bg-[hsl(214_73%_48%)]",
-    accentVia: "via-[hsl(214_73%_48%/0.6)]",
-    spark: "bg-[hsl(214_73%_48%)]",
-    sparkMuted: "bg-[hsl(214_73%_48%/0.25)]",
+    bg: "bg-gradient-to-br from-primary/15 to-primary/5 border-primary/20",
+    icon: "text-primary",
+    glow: "shadow-primary/10",
+    progress: "bg-primary",
+    accentVia: "via-primary/60",
+    spark: "bg-primary",
+    sparkMuted: "bg-primary/25",
   },
   accent: {
-    bg: "bg-gradient-to-br from-amber-400/15 to-amber-400/5 border-amber-400/25",
-    icon: "text-amber-500",
-    glow: "shadow-amber-400/15",
-    progress: "bg-amber-400",
-    accentVia: "via-amber-400/60",
-    spark: "bg-amber-400",
-    sparkMuted: "bg-amber-400/25",
+    bg: "bg-gradient-to-br from-warning/15 to-warning/5 border-warning/25",
+    icon: "text-warning",
+    glow: "shadow-warning/15",
+    progress: "bg-warning",
+    accentVia: "via-warning/60",
+    spark: "bg-warning",
+    sparkMuted: "bg-warning/25",
   },
   success: {
-    bg: "bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/20",
-    icon: "text-emerald-500",
-    glow: "shadow-emerald-500/10",
-    progress: "bg-emerald-500",
-    accentVia: "via-emerald-500/60",
-    spark: "bg-emerald-500",
-    sparkMuted: "bg-emerald-500/25",
+    bg: "bg-gradient-to-br from-success/15 to-success/5 border-success/20",
+    icon: "text-success",
+    glow: "shadow-success/10",
+    progress: "bg-success",
+    accentVia: "via-success/60",
+    spark: "bg-success",
+    sparkMuted: "bg-success/25",
   },
   warning: {
-    bg: "bg-gradient-to-br from-orange-500/15 to-orange-500/5 border-orange-500/20",
-    icon: "text-orange-500",
-    glow: "shadow-orange-500/10",
-    progress: "bg-orange-500",
-    accentVia: "via-orange-500/60",
-    spark: "bg-orange-500",
-    sparkMuted: "bg-orange-500/25",
+    bg: "bg-gradient-to-br from-warning/15 to-warning/5 border-warning/20",
+    icon: "text-warning",
+    glow: "shadow-warning/10",
+    progress: "bg-warning",
+    accentVia: "via-warning/60",
+    spark: "bg-warning",
+    sparkMuted: "bg-warning/25",
   },
   destructive: {
-    bg: "bg-gradient-to-br from-red-500/15 to-red-500/5 border-red-500/20",
-    icon: "text-red-500",
-    glow: "shadow-red-500/10",
-    progress: "bg-red-500",
-    accentVia: "via-red-500/60",
-    spark: "bg-red-500",
-    sparkMuted: "bg-red-500/25",
+    bg: "bg-gradient-to-br from-destructive/15 to-destructive/5 border-destructive/20",
+    icon: "text-destructive",
+    glow: "shadow-destructive/10",
+    progress: "bg-destructive",
+    accentVia: "via-destructive/60",
+    spark: "bg-destructive",
+    sparkMuted: "bg-destructive/25",
   },
 };
 
@@ -118,17 +118,17 @@ export function StatCard({
               <TrendIcon
                 className={cn(
                   "h-3 w-3 flex-shrink-0",
-                  changeType === "positive" && "text-emerald-600",
-                  changeType === "negative" && "text-red-600",
-                  changeType === "neutral" && "text-slate-400"
+                  changeType === "positive" && "text-success",
+                  changeType === "negative" && "text-destructive",
+                  changeType === "neutral" && "text-muted-foreground"
                 )}
               />
               <span
                 className={cn(
                   "supporting-text font-semibold",
-                  changeType === "positive" && "text-emerald-600",
-                  changeType === "negative" && "text-red-600",
-                  changeType === "neutral" && "text-slate-500"
+                  changeType === "positive" && "text-success",
+                  changeType === "negative" && "text-destructive",
+                  changeType === "neutral" && "text-muted-foreground"
                 )}
               >
                 {change}
