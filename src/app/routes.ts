@@ -60,6 +60,7 @@ const AgencyInvites = lazy(() => import("@/features/agency/pages/AgencyInvites")
 const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatements"));
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const MarketingWebsite = lazy(() => import("@/features/marketing/MarketingWebsite"));
+const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // Specialized Operational Command Center Dashboards
@@ -111,8 +112,8 @@ export const publicRoutes: RouteDef[] = [
   { path: "/webhost/*", redirect: "/webhost/login" },
   { path: "/agency", redirect: "/agency/login" },
   { path: "/agency/*", redirect: "/agency/login" },
-  { path: "/", redirect: "/landlord" },
-  { path: "*", redirect: "/landlord" },
+  { path: "/", element: PublicLandingPage },
+  { path: "*", redirect: "/" },
 ];
 
 // ── Admin domain routes (when not logged in on admin.* subdomain) ───
