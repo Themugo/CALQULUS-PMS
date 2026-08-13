@@ -94,10 +94,9 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5",
-        "shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
-        "active:scale-[0.98] animate-fade-in touch-manipulation",
-        "border-border/60 hover:border-amber-400/20"
+        "enterprise-card group relative overflow-hidden p-4 sm:p-5",
+        "transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
+        "active:scale-[0.98] animate-fade-in touch-manipulation"
       )}
     >
       {/* Colored top accent line on hover */}
@@ -112,28 +111,24 @@ export function StatCard({
 
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1.5 min-w-0 flex-1">
-          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest truncate">
-            {title}
-          </p>
-          <p className="font-heading text-2xl sm:text-3xl font-bold text-card-foreground tracking-tight truncate">
-            {value}
-          </p>
+          <p className="meta-text uppercase tracking-widest truncate">{title}</p>
+          <p className="metric-value truncate">{value}</p>
           {change && (
             <div className="flex items-center gap-1.5">
               <TrendIcon
                 className={cn(
                   "h-3 w-3 flex-shrink-0",
-                  changeType === "positive" && "text-emerald-500",
-                  changeType === "negative" && "text-red-500",
-                  changeType === "neutral" && "text-muted-foreground"
+                  changeType === "positive" && "text-emerald-600",
+                  changeType === "negative" && "text-red-600",
+                  changeType === "neutral" && "text-slate-400"
                 )}
               />
               <span
                 className={cn(
-                  "text-xs font-semibold",
-                  changeType === "positive" && "text-emerald-500",
-                  changeType === "negative" && "text-red-500",
-                  changeType === "neutral" && "text-muted-foreground"
+                  "supporting-text font-semibold",
+                  changeType === "positive" && "text-emerald-600",
+                  changeType === "negative" && "text-red-600",
+                  changeType === "neutral" && "text-slate-500"
                 )}
               >
                 {change}
@@ -187,7 +182,7 @@ export function StatCard({
                   />
                   {/* Tooltip on hover */}
                   {v > 0 && (
-                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-foreground bg-popover border border-border rounded px-1 py-0.5 opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-sm">
+                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 meta-text text-foreground bg-popover border border-border rounded px-1 py-0.5 opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-sm">
                       {v}
                     </span>
                   )}
@@ -195,7 +190,7 @@ export function StatCard({
               );
             })}
           </div>
-          <p className="text-[9px] text-muted-foreground/50 mt-1 text-right">{sparkCaption}</p>
+          <p className="meta-text mt-1 text-right">{sparkCaption}</p>
         </div>
       )}
 
