@@ -64,10 +64,10 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "security-operations",
     title: "Security & Operations",
-    accent: "bg-purple",
+    accent: "bg-primary",
     items: [
       { value: "security", label: "Security & Audit", icon: ShieldAlert, iconClass: "text-destructive" },
-      { value: "monitoring", label: "Telemetry & Health", icon: Activity },
+      { value: "monitoring", label: "Telemetry & Health", icon: Activity, iconClass: "text-success" },
       { value: "integrations", label: "Integrations & APIs", icon: Webhook },
       { value: "support", label: "Support Ops", icon: LifeBuoy },
     ],
@@ -84,7 +84,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "product-ecosystem",
     title: "Product Ecosystem",
-    accent: "bg-primary",
+    accent: "bg-purple",
     productGroup: true,
     items: [
       { value: "property-os", label: "Property OS", icon: Layers, iconClass: "text-primary" },
@@ -152,7 +152,7 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
       {/* Main Workspace — grouped platform-control hierarchy */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         {/* Desktop: vertical grouped sidebar (sticky). Mobile: compact scrollable strip. */}
-        <nav className="lg:hidden -mx-1 overflow-x-auto pb-1">
+        <nav className="lg:hidden -mx-1 overflow-x-auto pb-1" aria-label="Admin platform navigation">
           <TabsList className="flex h-auto gap-1 bg-transparent p-0">
             {ALL_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -188,14 +188,22 @@ export function EnterpriseAdminPlatform({ className }: { className?: string }) {
                   className={cn(
                     "mt-2 pt-2",
                     idx === 0 && "border-t border-border",
-                    group.productGroup && "mt-3 pt-3 border-t-2 border-border",
+                    group.productGroup &&
+                      "mt-3 pt-3 border-t-2 border-border/70 rounded-lg bg-secondary/40 px-1.5 pb-2"
                   )}
                 >
-                  <div className="flex items-center gap-2 px-3 pb-1.5">
-                    <span className={cn("h-1.5 w-1.5 rounded-full", group.accent)} />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                      {group.title}
-                    </span>
+                  <div className="flex flex-col gap-0.5 px-3 pb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("h-1.5 w-1.5 rounded-full", group.accent)} />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {group.title}
+                      </span>
+                    </div>
+                    {group.productGroup && (
+                      <span className="pl-3.5 text-[10px] font-medium text-muted-foreground/80">
+                        Product &amp; platform capabilities
+                      </span>
+                    )}
                   </div>
                   <TabsList
                     className="flex flex-col h-auto gap-0.5 bg-transparent p-0"
