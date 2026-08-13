@@ -336,23 +336,23 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── EXECUTIVE PAGE HEADER BAND ── */}
-      <div className="navy-executive-gradient rounded-2xl p-5 sm:p-6 mb-5 overflow-hidden relative">
+      {/* ── EXECUTIVE PAGE HEADER BAND (light) ── */}
+      <div className="enterprise-card p-5 sm:p-6 mb-5 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 relative z-10">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-warning">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                 CALQULUS PMS
               </span>
-              <span className="h-3 w-px bg-white/20" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+              <span className="h-3 w-px bg-border" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Manager Workspace
               </span>
             </div>
-            <h1 className="page-title text-white">
+            <h1 className="page-title text-foreground">
               {getGreeting()}, {userName}
             </h1>
-            <p className="supporting-text text-white/70 mt-1">
+            <p className="supporting-text mt-1">
               {stats
                 ? `Operations command center · ${stats.totalProperties} properties · ${stats.totalUnits} units · ${stats.activeTenants} active tenants`
                 : "Loading your operational command center…"}
@@ -361,10 +361,10 @@ const Dashboard = () => {
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             {stats && (
               <>
-                <span className="status-badge status-info bg-white/10 text-white border-white/20">
+                <span className="status-badge status-info">
                   <Home className="h-3 w-3" /> {stats.occupancyRate}% Occupied
                 </span>
-                <span className="status-badge bg-white/10 text-white border-white/20">
+                <span className="status-badge status-neutral">
                   <DollarSign className="h-3 w-3" /> {currency}
                 </span>
               </>

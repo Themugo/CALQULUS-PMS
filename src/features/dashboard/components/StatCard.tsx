@@ -172,11 +172,11 @@ export function StatCard({
                       "w-full rounded-sm transition-all duration-500",
                       isLast ? colors.spark : colors.sparkMuted,
                       isLast && "ring-1 ring-offset-0",
-                      isLast && iconColor === "accent"      && "ring-amber-400/40",
-                      isLast && iconColor === "primary"     && "ring-[hsl(214_73%_48%/0.4)]",
-                      isLast && iconColor === "success"     && "ring-emerald-500/40",
-                      isLast && iconColor === "warning"     && "ring-orange-500/40",
-                      isLast && iconColor === "destructive" && "ring-red-500/40",
+                      isLast && iconColor === "accent"      && "ring-warning/40",
+                      isLast && iconColor === "primary"     && "ring-primary/40",
+                      isLast && iconColor === "success"     && "ring-success/40",
+                      isLast && iconColor === "warning"     && "ring-warning/40",
+                      isLast && iconColor === "destructive" && "ring-destructive/40",
                     )}
                     style={{ height: `${heightPct}%` }}
                   />
