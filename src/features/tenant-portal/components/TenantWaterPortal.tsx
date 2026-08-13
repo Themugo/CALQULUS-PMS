@@ -10,10 +10,25 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import {
-  Droplets, Camera, Upload, CheckCircle, Clock,
-  AlertTriangle, Calculator, Info, Loader2, Eye
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
+import {
+  Droplets,
+  Camera,
+  Upload,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Calculator,
+  Info,
+  Loader2,
+  Eye,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -36,31 +51,69 @@ const TenantWaterPortal: React.FC = () => {
   const [disputeReason, setDisputeReason] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  type TenantRow = { id: string; name: string; unit_id: string; property_id: string; unit: string; property: string; manager_id: string; };
-  type WaterConfigRow = { property_id: string; is_active: boolean; rate_per_unit: number; water_provider: string; billing_method: string; meter_number?: string; };
-  type MeterConfigRow = { unit_id: string; meter_number?: string; };
-  type WaterCompanyRow = { short_code: string; company_name: string; paybill_number?: string; domestic_rate?: number; standing_charge?: number; sewerage_pct?: number; payment_note?: string; };
-  type WaterReadingRow = { id: string; reading_date?: string; previous_reading: number; current_reading: number; total_amount?: number; rate_per_unit?: number; disputed?: boolean; submitted_by_tenant?: boolean; manager_verified?: boolean; tenant_photo_url?: string; };
+  type TenantRow = {
+    id: string;
+    name: string;
+    unit_id: string;
+    property_id: string;
+    unit: string;
+    property: string;
+    manager_id: string;
+  };
+  type WaterConfigRow = {
+    property_id: string;
+    is_active: boolean;
+    rate_per_unit: number;
+    water_provider: string;
+    billing_method: string;
+    meter_number?: string;
+  };
+  type MeterConfigRow = { unit_id: string; meter_number?: string };
+  type WaterCompanyRow = {
+    short_code: string;
+    company_name: string;
+    paybill_number?: string;
+    domestic_rate?: number;
+    standing_charge?: number;
+    sewerage_pct?: number;
+    payment_note?: string;
+  };
+  type WaterReadingRow = {
+    id: string;
+    reading_date?: string;
+    previous_reading: number;
+    current_reading: number;
+    total_amount?: number;
+    rate_per_unit?: number;
+    disputed?: boolean;
+    submitted_by_tenant?: boolean;
+    manager_verified?: boolean;
+    tenant_photo_url?: string;
+  };
 
   // Tenant's unit and water config
   const { data: tenantInfo } = useQuery({
     queryKey: ['tenant-water-info', tenantId],
     queryFn: async () => {
       if (!tenantId) return null;
-      const { data: _tenant } = await supabase.from('tenants')
+      const { data: _tenant } = await supabase
+        .from('tenants')
         .select('id, name, unit_id, property_id, unit, property, manager_id')
-        .eq('id', tenantId).maybeSingle();
+        .eq('id', tenantId)
+        .maybeSingle();
       const tenant = _tenant as TenantRow | null;
       if (!tenant) return null;
 
-      const { data: _waterConfig } = await supabase.from('water_billing_config')
+      const { data: _waterConfig } = await supabase
+        .from('water_billing_config')
         .select('*')
         .eq('property_id', tenant.property_id)
         .eq('is_active', true)
         .maybeSingle();
       const waterConfig = _waterConfig as WaterConfigRow | null;
 
-      const { data: _meterConfig } = await supabase.from('unit_water_config')
+      const { data: _meterConfig } = await supabase
+        .from('unit_water_config')
         .select('*')
         .eq('unit_id', tenant.unit_id)
         .maybeSingle();
@@ -69,8 +122,11 @@ const TenantWaterPortal: React.FC = () => {
       const provider = waterConfig?.water_provider;
       let waterCompany: WaterCompanyRow | null = null;
       if (provider) {
-        const { data: _co } = await supabase.from('kenya_water_companies')
-          .select('*').eq('short_code', provider).maybeSingle();
+        const { data: _co } = await supabase
+          .from('kenya_water_companies')
+          .select('*')
+          .eq('short_code', provider)
+          .maybeSingle();
         waterCompany = _co as WaterCompanyRow | null;
       }
 
@@ -84,7 +140,8 @@ const TenantWaterPortal: React.FC = () => {
     queryKey: ['tenant-water-readings', tenantInfo?.tenant?.unit_id],
     queryFn: async () => {
       if (!tenantInfo?.tenant?.unit_id) return [];
-      const { data } = await supabase.from('water_meter_readings')
+      const { data } = await supabase
+        .from('water_meter_readings')
         .select('*')
         .eq('unit_id', tenantInfo!.tenant.unit_id)
         .order('reading_date', { ascending: false })
@@ -109,9 +166,13 @@ const TenantWaterPortal: React.FC = () => {
 
       if (photoFile) {
         const path = `water-meters/${tenantInfo!.tenant.unit_id}/${Date.now()}.${photoFile.name.split('.').pop()}`;
-        const { error: upErr } = await supabase.storage.from('maintenance-photos').upload(path, photoFile, { upsert: true });
+        const { error: upErr } = await supabase.storage
+          .from('maintenance-photos')
+          .upload(path, photoFile, { upsert: true });
         if (!upErr) {
-          const { data: { publicUrl } } = supabase.storage.from('maintenance-photos').getPublicUrl(path);
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('maintenance-photos').getPublicUrl(path);
           photoUrl = publicUrl;
         }
       }
@@ -123,32 +184,35 @@ const TenantWaterPortal: React.FC = () => {
       const total = consumption * rate;
 
       const { error } = await supabase.from('water_meter_readings').insert({
-        unit_id:              tenantInfo!.tenant.unit_id,
-        property_id:          tenantInfo!.tenant.property_id,
-        manager_id:           tenantInfo!.tenant.manager_id,
-        previous_reading:     prev,
-        current_reading:      curr,
-        rate_per_unit:        rate,
-        total_amount:         total,
-        reading_date:         new Date().toISOString().slice(0, 10),
-        submitted_by_tenant:  true,
-        tenant_user_id:       user!.id,
-        tenant_photo_url:     photoUrl,
-        manager_verified:     false,
-        status:               'pending',
-        notes:                'Self-reported by tenant',
+        unit_id: tenantInfo!.tenant.unit_id,
+        property_id: tenantInfo!.tenant.property_id,
+        manager_id: tenantInfo!.tenant.manager_id,
+        previous_reading: prev,
+        current_reading: curr,
+        rate_per_unit: rate,
+        total_amount: total,
+        reading_date: new Date().toISOString().slice(0, 10),
+        submitted_by_tenant: true,
+        tenant_user_id: user!.id,
+        tenant_photo_url: photoUrl,
+        manager_verified: false,
+        status: 'pending',
+        notes: 'Self-reported by tenant',
       });
       if (error) throw error;
 
-      await supabase.from('in_app_notifications').insert({
-        user_id:        tenantInfo!.tenant.manager_id,
-        manager_id:     tenantInfo!.tenant.manager_id,
-        title:          'Meter reading submitted',
-        body:           `${tenantInfo!.tenant.name} submitted a water meter reading for Unit ${tenantInfo!.tenant.unit}: ${curr} m³ (consumption: ${consumption} m³)`,
-        type:           'info',
-        source:         'system',
-        reference_type: 'water_meter',
-      }).catch(() => {});
+      await supabase
+        .from('in_app_notifications')
+        .insert({
+          user_id: tenantInfo!.tenant.manager_id,
+          manager_id: tenantInfo!.tenant.manager_id,
+          title: 'Meter reading submitted',
+          body: `${tenantInfo!.tenant.name} submitted a water meter reading for Unit ${tenantInfo!.tenant.unit}: ${curr} m³ (consumption: ${consumption} m³)`,
+          type: 'info',
+          source: 'system',
+          reference_type: 'water_meter',
+        })
+        .catch(() => {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-water-readings'] });
@@ -164,7 +228,8 @@ const TenantWaterPortal: React.FC = () => {
   // Dispute a reading
   const disputeReading = useMutation({
     mutationFn: async (readingId: string) => {
-      const { error } = await supabase.from('water_meter_readings')
+      const { error } = await supabase
+        .from('water_meter_readings')
         .update({ disputed: true, dispute_reason: disputeReason })
         .eq('id', readingId);
       if (error) throw error;
@@ -182,9 +247,8 @@ const TenantWaterPortal: React.FC = () => {
   const meterNo = tenantInfo?.meterConfig?.meter_number ?? wc?.meter_number ?? 'Not assigned';
 
   // Live bill preview from current reading input
-  const previewConsumption = currentReading && lastReading
-    ? Math.max(0, Number(currentReading) - Number(lastReading.current_reading))
-    : 0;
+  const previewConsumption =
+    currentReading && lastReading ? Math.max(0, Number(currentReading) - Number(lastReading.current_reading)) : 0;
   const previewBill = previewConsumption * Number(wc?.rate_per_unit ?? 60);
 
   return (
@@ -204,9 +268,11 @@ const TenantWaterPortal: React.FC = () => {
                   {meterNo !== 'Not assigned' && ` · Meter: ${meterNo}`}
                 </p>
                 {waterCompany?.paybill_number ? (
-                  <p className="text-xs text-[hsl(195_60%_32%)]">M-Pesa Paybill: <strong>{waterCompany.paybill_number}</strong></p>
+                  <p className="text-xs text-[hsl(195_60%_32%)]">
+                    M-Pesa Paybill: <strong>{waterCompany.paybill_number}</strong>
+                  </p>
                 ) : waterCompany?.payment_note ? (
-                  <p className="text-xs text-amber-700">{waterCompany.payment_note}</p>
+                  <p className="text-xs text-warning">{waterCompany.payment_note}</p>
                 ) : null}
               </div>
             </div>
@@ -215,7 +281,9 @@ const TenantWaterPortal: React.FC = () => {
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground">Last reading</p>
                   <p className="font-bold text-sm">{lastReading.current_reading} m³</p>
-                  <p className="text-xs text-muted-foreground">{lastReading.reading_date ? format(new Date(lastReading.reading_date), 'dd/MM/yy') : '—'}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {lastReading.reading_date ? format(new Date(lastReading.reading_date), 'dd/MM/yy') : '—'}
+                  </p>
                 </div>
               )}
               <Button
@@ -235,11 +303,29 @@ const TenantWaterPortal: React.FC = () => {
       {(waterCompany || wc) && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Rate per m³', value: wc?.rate_per_unit ? fmt(wc.rate_per_unit) : waterCompany?.domestic_rate ? fmt(waterCompany.domestic_rate) : '—' },
-            { label: 'Standing charge', value: waterCompany?.standing_charge ? fmt(waterCompany.standing_charge) : '—' },
+            {
+              label: 'Rate per m³',
+              value: wc?.rate_per_unit
+                ? fmt(wc.rate_per_unit)
+                : waterCompany?.domestic_rate
+                  ? fmt(waterCompany.domestic_rate)
+                  : '—',
+            },
+            {
+              label: 'Standing charge',
+              value: waterCompany?.standing_charge ? fmt(waterCompany.standing_charge) : '—',
+            },
             { label: 'Sewerage', value: waterCompany?.sewerage_pct ? `${waterCompany.sewerage_pct}%` : 'None' },
-            { label: 'Billing method', value: wc?.billing_method === 'meter' ? 'Metered' : wc?.billing_method === 'flat_rate' ? 'Flat rate' : 'Metered' },
-          ].map(s => (
+            {
+              label: 'Billing method',
+              value:
+                wc?.billing_method === 'meter'
+                  ? 'Metered'
+                  : wc?.billing_method === 'flat_rate'
+                    ? 'Flat rate'
+                    : 'Metered',
+            },
+          ].map((s) => (
             <div key={s.label} className="rounded-lg border border-border p-3 bg-muted/20">
               <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
               <p className="text-sm font-semibold">{s.value}</p>
@@ -256,7 +342,11 @@ const TenantWaterPortal: React.FC = () => {
         </CardHeader>
         <CardContent>
           {readingsLoading ? (
-            <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-14 w-full" />
+              ))}
+            </div>
           ) : readings.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground">
               <Droplets className="h-10 w-10 mx-auto mb-2 opacity-30" />
@@ -266,9 +356,12 @@ const TenantWaterPortal: React.FC = () => {
             <div className="space-y-2">
               {readings.map((r: WaterReadingRow) => {
                 const consumption = Number(r.current_reading) - Number(r.previous_reading);
-                const bill = Number(r.total_amount ?? (consumption * Number(r.rate_per_unit)));
+                const bill = Number(r.total_amount ?? consumption * Number(r.rate_per_unit));
                 return (
-                  <div key={r.id} className={`rounded-lg border p-3 flex items-center justify-between gap-3 ${r.disputed ? 'border-orange-300 bg-orange-50/40' : r.submitted_by_tenant && !r.manager_verified ? 'border-[hsl(195_60%_42%/0.3)] bg-[hsl(195_60%_42%/0.06)]' : 'border-border'}`}>
+                  <div
+                    key={r.id}
+                    className={`rounded-lg border p-3 flex items-center justify-between gap-3 ${r.disputed ? 'border-orange-300 bg-orange-50/40' : r.submitted_by_tenant && !r.manager_verified ? 'border-[hsl(195_60%_42%/0.3)] bg-[hsl(195_60%_42%/0.06)]' : 'border-border'}`}
+                  >
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <div className="text-xs text-muted-foreground shrink-0 pt-0.5 w-20">
                         {r.reading_date ? format(new Date(r.reading_date), 'dd/MM/yy') : '—'}
@@ -280,20 +373,29 @@ const TenantWaterPortal: React.FC = () => {
                             <span className="text-muted-foreground ml-1">({consumption} m³ used)</span>
                           </p>
                           {r.submitted_by_tenant && (
-                            <Badge variant="outline" className="text-xs border-[hsl(195_60%_42%/0.35)] text-[hsl(195_60%_32%)] bg-[hsl(195_60%_42%/0.08)]">Self-reported</Badge>
+                            <Badge
+                              variant="outline"
+                              className="text-xs border-[hsl(195_60%_42%/0.35)] text-[hsl(195_60%_32%)] bg-[hsl(195_60%_42%/0.08)]"
+                            >
+                              Self-reported
+                            </Badge>
                           )}
                           {!r.manager_verified && r.submitted_by_tenant && (
-                            <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">
-                              <Clock className="h-2.5 w-2.5 mr-1" />Awaiting verification
+                            <Badge variant="outline" className="text-xs border-warning/40 text-warning">
+                              <Clock className="h-2.5 w-2.5 mr-1" />
+                              Awaiting verification
                             </Badge>
                           )}
                           {r.manager_verified && (
-                            <Badge variant="outline" className="text-xs border-green-300 text-green-700 bg-green-50">
-                              <CheckCircle className="h-2.5 w-2.5 mr-1" />Verified
+                            <Badge variant="outline" className="text-xs border-success/40 text-success bg-success/20">
+                              <CheckCircle className="h-2.5 w-2.5 mr-1" />
+                              Verified
                             </Badge>
                           )}
                           {r.disputed && (
-                            <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">Disputed</Badge>
+                            <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
+                              Disputed
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -310,7 +412,10 @@ const TenantWaterPortal: React.FC = () => {
                           <button
                             type="button"
                             className="text-xs text-orange-600 hover:underline mt-0.5"
-                            onClick={() => { setDisputeOpen(r.id); setDisputeReason(''); }}
+                            onClick={() => {
+                              setDisputeOpen(r.id);
+                              setDisputeReason('');
+                            }}
                           >
                             Dispute
                           </button>
@@ -347,7 +452,7 @@ const TenantWaterPortal: React.FC = () => {
                 className="mt-1 border-2 border-dashed border-border rounded-xl overflow-hidden cursor-pointer hover:border-[hsl(195_60%_50%)] transition-colors"
                 onClick={() => photoRef.current?.click()}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+                  if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     photoRef.current?.click();
                   }
@@ -363,8 +468,12 @@ const TenantWaterPortal: React.FC = () => {
                 )}
               </div>
               <input
-                ref={photoRef} type="file" accept="image/*" capture="environment" className="hidden"
-                onChange={e => {
+                ref={photoRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) {
                     setPhotoFile(f);
@@ -382,7 +491,7 @@ const TenantWaterPortal: React.FC = () => {
                 step="0.001"
                 min={lastReading?.current_reading ?? 0}
                 value={currentReading}
-                onChange={e => setCurrentReading(e.target.value)}
+                onChange={(e) => setCurrentReading(e.target.value)}
                 placeholder={lastReading ? `Previous: ${lastReading.current_reading}` : 'Enter reading'}
                 className="mt-1 text-lg font-mono"
               />
@@ -416,29 +525,39 @@ const TenantWaterPortal: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-xs text-[hsl(195_60%_38%)] mt-2 flex items-center gap-1">
-                  <Info className="h-3 w-3" />Estimate — final bill set by manager after verification
+                  <Info className="h-3 w-3" />
+                  Estimate — final bill set by manager after verification
                 </p>
               </div>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSubmitOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setSubmitOpen(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={() => submitReading.mutate()}
               disabled={submitReading.isPending || uploading || !currentReading}
               className="bg-[hsl(195_60%_38%)] hover:bg-[hsl(195_60%_32%)] text-white gap-2"
             >
-              {(submitReading.isPending || uploading)
-                ? <><Loader2 className="h-4 w-4 animate-spin" />{uploading ? 'Uploading…' : 'Submitting…'}</>
-                : <><Upload className="h-4 w-4" />Submit reading</>
-              }
+              {submitReading.isPending || uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {uploading ? 'Uploading…' : 'Submitting…'}
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  Submit reading
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Dispute dialog */}
-      <Dialog open={!!disputeOpen} onOpenChange={open => !open && setDisputeOpen(null)}>
+      <Dialog open={!!disputeOpen} onOpenChange={(open) => !open && setDisputeOpen(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Dispute this reading</DialogTitle>
@@ -446,13 +565,15 @@ const TenantWaterPortal: React.FC = () => {
           </DialogHeader>
           <Textarea
             value={disputeReason}
-            onChange={e => setDisputeReason(e.target.value)}
+            onChange={(e) => setDisputeReason(e.target.value)}
             rows={4}
             placeholder="e.g. My meter shows a different reading. I have a photo showing..."
             className="resize-none"
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDisputeOpen(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDisputeOpen(null)}>
+              Cancel
+            </Button>
             <Button
               onClick={() => disputeOpen && disputeReading.mutate(disputeOpen)}
               disabled={!disputeReason.trim() || disputeReading.isPending}

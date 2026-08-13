@@ -6,10 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Progress } from '@/shared/components/ui/progress';
-import {
-  Calendar, CheckCircle, Clock, AlertTriangle,
-  TrendingDown, CreditCard, ArrowRight
-} from 'lucide-react';
+import { Calendar, CheckCircle, Clock, AlertTriangle, TrendingDown, CreditCard, ArrowRight } from 'lucide-react';
 import { format, isPast, isToday, differenceInDays } from 'date-fns';
 
 const fmt = (n: number) =>
@@ -77,11 +74,17 @@ const TenantPaymentSchedule: React.FC = () => {
     enabled: !!user?.id,
   });
 
-  const pendingInvoices = invoices.filter(i => ['pending', 'overdue'].includes(i.status));
+  const pendingInvoices = invoices.filter((i) => ['pending', 'overdue'].includes(i.status));
   const totalPending = pendingInvoices.reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0);
 
   if (schedLoading || invLoading) {
-    return <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}</div>;
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -90,119 +93,137 @@ const TenantPaymentSchedule: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Total outstanding</p>
-          <p className={`text-xl font-semibold ${totalPending > 0 ? 'text-amber-700' : 'text-green-700'}`}>
+          <p className={`text-xl font-semibold ${totalPending > 0 ? 'text-warning' : 'text-success'}`}>
             {fmt(totalPending)}
           </p>
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Overdue invoices</p>
-          <p className={`text-xl font-semibold ${invoices.filter(i => i.status === 'overdue').length > 0 ? 'text-red-700' : 'text-green-700'}`}>
-            {invoices.filter(i => i.status === 'overdue').length}
+          <p
+            className={`text-xl font-semibold ${invoices.filter((i) => i.status === 'overdue').length > 0 ? 'text-destructive' : 'text-success'}`}
+          >
+            {invoices.filter((i) => i.status === 'overdue').length}
           </p>
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20 col-span-2 sm:col-span-1">
           <p className="text-xs text-muted-foreground mb-1">Active plans</p>
-          <p className="text-xl font-semibold">{schedules.filter((s: ArrearsScheduleRow) => s.status === 'active').length}</p>
+          <p className="text-xl font-semibold">
+            {schedules.filter((s: ArrearsScheduleRow) => s.status === 'active').length}
+          </p>
         </div>
       </div>
 
       {/* Active instalment plans */}
-      {schedules.filter((s: ArrearsScheduleRow) => s.status === 'active').map((schedule: ArrearsScheduleRow) => {
-        const pct = schedule.total_owed > 0
-          ? Math.min(100, (schedule.total_paid / schedule.total_owed) * 100)
-          : 0;
-        const remaining = schedule.total_owed - schedule.total_paid;
-        const instalmentsDone = schedule.paid_count;
-        const totalInstalments = schedule.instalment_count;
-        const nextDue = schedule.next_due_date ? new Date(schedule.next_due_date) : null;
-        const nextDueStr = nextDue ? format(nextDue, 'dd/MM/yy') : '—';
-        const isOverdue = nextDue && isPast(nextDue) && !isToday(nextDue);
-        const daysUntil = nextDue ? differenceInDays(nextDue, new Date()) : null;
+      {schedules
+        .filter((s: ArrearsScheduleRow) => s.status === 'active')
+        .map((schedule: ArrearsScheduleRow) => {
+          const pct = schedule.total_owed > 0 ? Math.min(100, (schedule.total_paid / schedule.total_owed) * 100) : 0;
+          const remaining = schedule.total_owed - schedule.total_paid;
+          const instalmentsDone = schedule.paid_count;
+          const totalInstalments = schedule.instalment_count;
+          const nextDue = schedule.next_due_date ? new Date(schedule.next_due_date) : null;
+          const nextDueStr = nextDue ? format(nextDue, 'dd/MM/yy') : '—';
+          const isOverdue = nextDue && isPast(nextDue) && !isToday(nextDue);
+          const daysUntil = nextDue ? differenceInDays(nextDue, new Date()) : null;
 
-        return (
-          <Card key={schedule.id} className={`border-2 ${schedule.status === 'defaulted' ? 'border-red-300' : 'border-[hsl(214_73%_48%/0.3)]'}`}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-[hsl(214_73%_45%)]" />
-                    Instalment plan
-                  </CardTitle>
-                  {schedule.notes && (
-                    <CardDescription className="mt-0.5">{schedule.notes}</CardDescription>
-                  )}
-                </div>
-                <Badge className={`text-xs capitalize ${
-                  schedule.status === 'active'    ? 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]' :
-                  schedule.status === 'completed' ? 'bg-green-100 text-green-800 border-green-200' :
-                  schedule.status === 'defaulted' ? 'bg-red-100 text-red-800 border-red-200' : ''
-                }`}>
-                  {schedule.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Progress bar */}
-              <div>
-                <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-                  <span>Progress: {instalmentsDone}/{totalInstalments} instalments</span>
-                  <span>{Math.round(pct)}%</span>
-                </div>
-                <Progress value={pct} className="h-2" />
-              </div>
-
-              {/* Amounts grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div>
-                  <p className="text-xs text-muted-foreground">Total owed</p>
-                  <p className="font-semibold">{fmt(schedule.total_owed)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Paid so far</p>
-                  <p className="font-semibold text-green-700">{fmt(schedule.total_paid)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Remaining</p>
-                  <p className="font-semibold text-amber-700">{fmt(remaining)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Each instalment</p>
-                  <p className="font-semibold">{fmt(schedule.instalment_amount)}</p>
-                </div>
-              </div>
-
-              {/* Next due */}
-              <div className={`flex items-center justify-between p-3 rounded-lg border ${
-                isOverdue ? 'border-red-300 bg-red-50' :
-                daysUntil !== null && daysUntil <= 3 ? 'border-amber-300 bg-amber-50' :
-                'border-border bg-muted/30'
-              }`}>
-                <div className="flex items-center gap-2">
-                  {isOverdue
-                    ? <AlertTriangle className="h-4 w-4 text-red-600" />
-                    : <Calendar className="h-4 w-4 text-muted-foreground" />
-                  }
+          return (
+            <Card
+              key={schedule.id}
+              className={`border-2 ${schedule.status === 'defaulted' ? 'border-destructive/40' : 'border-primary/30'}`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs text-muted-foreground">Next payment due</p>
-                    <p className={`text-sm font-semibold ${isOverdue ? 'text-red-700' : ''}`}>{nextDueStr}</p>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <TrendingDown className="h-4 w-4 text-primary" />
+                      Instalment plan
+                    </CardTitle>
+                    {schedule.notes && <CardDescription className="mt-0.5">{schedule.notes}</CardDescription>}
+                  </div>
+                  <Badge
+                    className={`text-xs capitalize ${
+                      schedule.status === 'active'
+                        ? 'bg-primary/20 text-primary border-primary/30'
+                        : schedule.status === 'completed'
+                          ? 'bg-success/20 text-success border-success/30'
+                          : schedule.status === 'defaulted'
+                            ? 'bg-destructive/20 text-destructive border-destructive/30'
+                            : ''
+                    }`}
+                  >
+                    {schedule.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Progress bar */}
+                <div>
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+                    <span>
+                      Progress: {instalmentsDone}/{totalInstalments} instalments
+                    </span>
+                    <span>{Math.round(pct)}%</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                </div>
+
+                {/* Amounts grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total owed</p>
+                    <p className="font-semibold">{fmt(schedule.total_owed)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Paid so far</p>
+                    <p className="font-semibold text-success">{fmt(schedule.total_paid)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Remaining</p>
+                    <p className="font-semibold text-warning">{fmt(remaining)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Each instalment</p>
+                    <p className="font-semibold">{fmt(schedule.instalment_amount)}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Amount</p>
-                  <p className="font-semibold">{fmt(schedule.instalment_amount)}</p>
-                </div>
-              </div>
 
-              {isOverdue && (
-                <div className="text-xs text-red-700 font-medium flex items-center gap-1">
-                  <AlertTriangle className="h-3.5 w-3.5" />
-                  Payment is overdue. Please pay immediately to avoid additional charges.
+                {/* Next due */}
+                <div
+                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                    isOverdue
+                      ? 'border-destructive/40 bg-destructive/20'
+                      : daysUntil !== null && daysUntil <= 3
+                        ? 'border-warning/40 bg-warning/20'
+                        : 'border-border bg-muted/30'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {isOverdue ? (
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                    ) : (
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <div>
+                      <p className="text-xs text-muted-foreground">Next payment due</p>
+                      <p className={`text-sm font-semibold ${isOverdue ? 'text-destructive' : ''}`}>{nextDueStr}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Amount</p>
+                    <p className="font-semibold">{fmt(schedule.instalment_amount)}</p>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })}
+
+                {isOverdue && (
+                  <div className="text-xs text-destructive font-medium flex items-center gap-1">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Payment is overdue. Please pay immediately to avoid additional charges.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
 
       {schedules.filter((s: ArrearsScheduleRow) => s.status === 'active').length === 0 && (
         <div className="py-6 text-center text-muted-foreground">
@@ -228,19 +249,26 @@ const TenantPaymentSchedule: React.FC = () => {
                 const isPart = Number(inv.paid_amount ?? 0) > 0 && !isPaid;
 
                 return (
-                  <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border text-sm ${
-                    isOver ? 'border-red-200 bg-red-50/30' :
-                    isPart ? 'border-amber-200 bg-amber-50/30' :
-                    isPaid ? 'border-green-200 bg-green-50/20 opacity-75' :
-                    'border-border'
-                  }`}>
+                  <div
+                    key={inv.id}
+                    className={`flex items-center justify-between p-3 rounded-lg border text-sm ${
+                      isOver
+                        ? 'border-destructive/30 bg-destructive/30'
+                        : isPart
+                          ? 'border-warning/30 bg-warning/30'
+                          : isPaid
+                            ? 'border-success/30 bg-success/20 opacity-75'
+                            : 'border-border'
+                    }`}
+                  >
                     <div className="flex items-center gap-3 min-w-0">
-                      {isPaid
-                        ? <CheckCircle className="h-4 w-4 text-green-600 shrink-0" />
-                        : isOver
-                          ? <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
-                          : <Clock className="h-4 w-4 text-amber-600 shrink-0" />
-                      }
+                      {isPaid ? (
+                        <CheckCircle className="h-4 w-4 text-success shrink-0" />
+                      ) : isOver ? (
+                        <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-warning shrink-0" />
+                      )}
                       <div className="min-w-0">
                         <p className="font-medium truncate">{inv.description || inv.invoice_number}</p>
                         <p className="text-xs text-muted-foreground">
@@ -250,14 +278,10 @@ const TenantPaymentSchedule: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-3">
-                      <p className={`font-semibold ${isPaid ? 'text-green-700' : isOver ? 'text-red-700' : ''}`}>
+                      <p className={`font-semibold ${isPaid ? 'text-success' : isOver ? 'text-destructive' : ''}`}>
                         {isPaid ? fmt(Number(inv.amount)) : fmt(balDue)}
                       </p>
-                      {isPart && (
-                        <p className="text-xs text-muted-foreground">
-                          {fmt(Number(inv.paid_amount))} paid
-                        </p>
-                      )}
+                      {isPart && <p className="text-xs text-muted-foreground">{fmt(Number(inv.paid_amount))} paid</p>}
                     </div>
                   </div>
                 );
@@ -274,14 +298,22 @@ const TenantPaymentSchedule: React.FC = () => {
             <CardTitle className="text-sm text-muted-foreground">Completed plans</CardTitle>
           </CardHeader>
           <CardContent>
-            {schedules.filter((s: ArrearsScheduleRow) => s.status === 'completed').map((s: ArrearsScheduleRow) => (
-              <div key={s.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 text-sm">
-                <span className="text-muted-foreground">{fmt(s.total_owed)} — {s.instalment_count} instalments</span>
-                <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50 text-xs">
-                  <CheckCircle className="h-3 w-3 mr-1" />Completed
-                </Badge>
-              </div>
-            ))}
+            {schedules
+              .filter((s: ArrearsScheduleRow) => s.status === 'completed')
+              .map((s: ArrearsScheduleRow) => (
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between py-2 border-b border-border last:border-0 text-sm"
+                >
+                  <span className="text-muted-foreground">
+                    {fmt(s.total_owed)} — {s.instalment_count} instalments
+                  </span>
+                  <Badge variant="outline" className="border-success/40 text-success bg-success/20 text-xs">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Completed
+                  </Badge>
+                </div>
+              ))}
           </CardContent>
         </Card>
       )}

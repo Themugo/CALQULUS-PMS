@@ -15,7 +15,19 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import { Separator } from '@/shared/components/ui/separator';
-import { User, Bell, Mail, Phone, Save, Camera, LogOut, Loader2, Fingerprint, ShieldCheck, ScanFace } from 'lucide-react';
+import {
+  User,
+  Bell,
+  Mail,
+  Phone,
+  Save,
+  Camera,
+  LogOut,
+  Loader2,
+  Fingerprint,
+  ShieldCheck,
+  ScanFace,
+} from 'lucide-react';
 
 interface TenantProfile {
   id: string;
@@ -125,14 +137,13 @@ const TenantProfile = () => {
         };
         setNotifications({
           emailNotifications: prefs.email_enabled ?? true,
-          paymentReminders:   prefs.payment_reminders ?? true,
-          leaseAlerts:        prefs.lease_alerts ?? true,
+          paymentReminders: prefs.payment_reminders ?? true,
+          leaseAlerts: prefs.lease_alerts ?? true,
           maintenanceUpdates: prefs.maintenance_updates ?? true,
         });
       }
       // No localStorage fallback — preferences are DB-only
-    } catch (err) {
-    }
+    } catch (err) {}
   }, [user]);
 
   useEffect(() => {
@@ -143,16 +154,19 @@ const TenantProfile = () => {
   const saveNotificationPreferences = async (prefs: NotificationPreferences) => {
     setNotifications(prefs);
     try {
-      await supabase.from('tenant_notification_preferences').upsert({
-        tenant_user_id:      user!.id,
-        tenant_id:           userRole?.tenant_id ?? null,
-        email_enabled:       prefs.emailNotifications,
-        payment_reminders:   prefs.paymentReminders,
-        lease_alerts:        prefs.leaseAlerts,
-        maintenance_updates: prefs.maintenanceUpdates,
-        manager_messages:    true,
-        announcements:       true,
-      }, { onConflict: 'tenant_user_id' });
+      await supabase.from('tenant_notification_preferences').upsert(
+        {
+          tenant_user_id: user!.id,
+          tenant_id: userRole?.tenant_id ?? null,
+          email_enabled: prefs.emailNotifications,
+          payment_reminders: prefs.paymentReminders,
+          lease_alerts: prefs.leaseAlerts,
+          maintenance_updates: prefs.maintenanceUpdates,
+          manager_messages: true,
+          announcements: true,
+        },
+        { onConflict: 'tenant_user_id' },
+      );
       toast({
         title: 'Preferences saved',
         description: 'Your notification preferences have been updated',
@@ -182,22 +196,19 @@ const TenantProfile = () => {
 
       // Allow email update only for orphaned tenants (no property_id or manager_id)
       const isOrphaned = !profile?.property_id && !profile?.manager_id;
-      
+
       if (isOrphaned && formData.email.trim()) {
         updateData.email = formData.email.trim();
       }
 
-      const { error } = await supabase
-        .from('tenants')
-        .update(updateData)
-        .eq('id', userRole.tenant_id);
+      const { error } = await supabase.from('tenants').update(updateData).eq('id', userRole.tenant_id);
 
       if (error) {
         logError('TenantProfile.updateProfile', error);
         throw error;
       }
 
-      setProfile(prev => prev ? { ...prev, ...updateData } : null);
+      setProfile((prev) => (prev ? { ...prev, ...updateData } : null));
       toast({
         title: 'Profile updated',
         description: 'Your profile has been saved successfully',
@@ -254,9 +265,9 @@ const TenantProfile = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('tenant-photos')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('tenant-photos').getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
         .from('tenants')
@@ -265,7 +276,7 @@ const TenantProfile = () => {
 
       if (updateError) throw updateError;
 
-      setProfile(prev => prev ? { ...prev, photo_url: publicUrl } : null);
+      setProfile((prev) => (prev ? { ...prev, photo_url: publicUrl } : null));
       toast({
         title: 'Photo updated',
         description: 'Your profile photo has been updated',
@@ -289,7 +300,7 @@ const TenantProfile = () => {
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(n => n[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -347,7 +358,7 @@ const TenantProfile = () => {
 
       // Save credentials for biometric login
       const success = await saveCredentials(profile.email, biometricPassword);
-      
+
       if (success) {
         toast({
           title: `${getBiometricLabel()} enabled`,
@@ -378,7 +389,7 @@ const TenantProfile = () => {
     setBiometricEnabling(true);
     try {
       const success = await deleteCredentials();
-      
+
       if (success) {
         toast({
           title: `${getBiometricLabel()} disabled`,
@@ -406,7 +417,7 @@ const TenantProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -423,19 +434,15 @@ const TenantProfile = () => {
               <div className="relative">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={profile?.photo_url || undefined} alt={profile?.name} />
-                  <AvatarFallback className="text-2xl bg-amber-400/10 text-amber-500">
+                  <AvatarFallback className="text-2xl bg-warning text-warning">
                     {profile?.name ? getInitials(profile.name) : <User className="h-10 w-10" />}
                   </AvatarFallback>
                 </Avatar>
                 <label
                   htmlFor="photo-upload"
-                  className="absolute bottom-0 right-0 p-1.5 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 rounded-full cursor-pointer hover:bg-amber-400/90 transition-colors"
+                  className="absolute bottom-0 right-0 p-1.5 bg-gradient-to-br from-warning to-warning text-muted-foreground rounded-full cursor-pointer hover:bg-warning transition-colors"
                 >
-                  {uploadingPhoto ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Camera className="h-4 w-4" />
-                  )}
+                  {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
                 </label>
                 <input
                   id="photo-upload"
@@ -466,9 +473,7 @@ const TenantProfile = () => {
               <User className="h-5 w-5" />
               Personal Information
             </CardTitle>
-            <CardDescription>
-              Update your personal details
-            </CardDescription>
+            <CardDescription>Update your personal details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -476,7 +481,7 @@ const TenantProfile = () => {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 placeholder="Your full name"
               />
             </div>
@@ -487,15 +492,13 @@ const TenantProfile = () => {
                 <Input
                   id="email"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                   disabled={!profile?.property_id && !profile?.manager_id ? false : true}
                   className={!profile?.property_id && !profile?.manager_id ? '' : 'bg-muted'}
                 />
               </div>
               {profile?.property_id || profile?.manager_id ? (
-                <p className="text-xs text-muted-foreground">
-                  Contact your property manager to update your email
-                </p>
+                <p className="text-xs text-muted-foreground">Contact your property manager to update your email</p>
               ) : (
                 <p className="text-xs text-muted-foreground">
                   You can update your email since you are not attached to a property
@@ -509,22 +512,14 @@ const TenantProfile = () => {
                 <Input
                   id="phone"
                   value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                   placeholder="+254 700 000000"
                   type="tel"
                 />
               </div>
             </div>
-            <Button
-              onClick={handleSaveProfile}
-              disabled={saving}
-              className="w-full"
-            >
-              {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Save className="h-4 w-4 mr-2" />
-              )}
+            <Button onClick={handleSaveProfile} disabled={saving} className="w-full">
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
               Save Changes
             </Button>
           </CardContent>
@@ -537,9 +532,7 @@ const TenantProfile = () => {
               <Bell className="h-5 w-5" />
               Notification Preferences
             </CardTitle>
-            <CardDescription>
-              Choose what notifications you want to receive
-            </CardDescription>
+            <CardDescription>Choose what notifications you want to receive</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -547,9 +540,7 @@ const TenantProfile = () => {
                 <Label htmlFor="email-notifications" className="font-medium">
                   Email Notifications
                 </Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive updates via email
-                </p>
+                <p className="text-sm text-muted-foreground">Receive updates via email</p>
               </div>
               <Switch
                 id="email-notifications"
@@ -565,9 +556,7 @@ const TenantProfile = () => {
                 <Label htmlFor="payment-reminders" className="font-medium">
                   Payment Reminders
                 </Label>
-                <p className="text-sm text-muted-foreground">
-                  Get notified before payments are due
-                </p>
+                <p className="text-sm text-muted-foreground">Get notified before payments are due</p>
               </div>
               <Switch
                 id="payment-reminders"
@@ -583,16 +572,12 @@ const TenantProfile = () => {
                 <Label htmlFor="lease-alerts" className="font-medium">
                   Lease Alerts
                 </Label>
-                <p className="text-sm text-muted-foreground">
-                  Notifications about your lease status
-                </p>
+                <p className="text-sm text-muted-foreground">Notifications about your lease status</p>
               </div>
               <Switch
                 id="lease-alerts"
                 checked={notifications.leaseAlerts}
-                onCheckedChange={(checked) =>
-                  saveNotificationPreferences({ ...notifications, leaseAlerts: checked })
-                }
+                onCheckedChange={(checked) => saveNotificationPreferences({ ...notifications, leaseAlerts: checked })}
               />
             </div>
             <Separator />
@@ -601,9 +586,7 @@ const TenantProfile = () => {
                 <Label htmlFor="maintenance-updates" className="font-medium">
                   Maintenance Updates
                 </Label>
-                <p className="text-sm text-muted-foreground">
-                  Updates on your maintenance requests
-                </p>
+                <p className="text-sm text-muted-foreground">Updates on your maintenance requests</p>
               </div>
               <Switch
                 id="maintenance-updates"
@@ -624,23 +607,19 @@ const TenantProfile = () => {
                 <ShieldCheck className="h-5 w-5" />
                 Security
               </CardTitle>
-              <CardDescription>
-                Manage your login security options
-              </CardDescription>
+              <CardDescription>Manage your login security options</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-amber-400/10 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-warning flex items-center justify-center">
                     {getBiometricIcon()}
                   </div>
                   <div>
-                    <Label className="font-medium">
-                      {getBiometricLabel()} Login
-                    </Label>
+                    <Label className="font-medium">{getBiometricLabel()} Login</Label>
                     <p className="text-sm text-muted-foreground">
-                      {hasStoredCredentials 
-                        ? `Sign in quickly using ${getBiometricLabel()}` 
+                      {hasStoredCredentials
+                        ? `Sign in quickly using ${getBiometricLabel()}`
                         : `Enable ${getBiometricLabel()} for faster login`}
                     </p>
                   </div>
@@ -661,7 +640,8 @@ const TenantProfile = () => {
               {showPasswordForBiometric && (
                 <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Enter your password to enable {getBiometricLabel()} login. Your credentials will be securely stored on this device.
+                    Enter your password to enable {getBiometricLabel()} login. Your credentials will be securely stored
+                    on this device.
                   </p>
                   <div className="space-y-2">
                     <Label htmlFor="biometric-password">Password</Label>
@@ -690,9 +670,7 @@ const TenantProfile = () => {
                       disabled={biometricEnabling || !biometricPassword}
                       className="flex-1"
                     >
-                      {biometricEnabling ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
+                      {biometricEnabling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                       Enable
                     </Button>
                   </div>
@@ -705,11 +683,7 @@ const TenantProfile = () => {
         {/* Sign Out */}
         <Card className="border-destructive/20">
           <CardContent className="pt-6">
-            <Button
-              variant="destructive"
-              onClick={handleSignOut}
-              className="w-full"
-            >
+            <Button variant="destructive" onClick={handleSignOut} className="w-full">
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>

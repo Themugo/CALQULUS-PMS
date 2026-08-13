@@ -7,14 +7,32 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
-  MessageSquare, Bell, AlertTriangle, CheckCircle,
-  Clock, Megaphone, TrendingUp, Home, Wrench, FileText,
-  ChevronRight, Loader2, ThumbsUp, MessageCircle
+  MessageSquare,
+  Bell,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Megaphone,
+  TrendingUp,
+  Home,
+  Wrench,
+  FileText,
+  ChevronRight,
+  Loader2,
+  ThumbsUp,
+  MessageCircle,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
@@ -28,16 +46,21 @@ interface NoticeIconConfig {
 }
 
 const NOTICE_ICONS: Record<string, NoticeIconConfig> = {
-  rent_increase:    { icon: TrendingUp,    color: 'text-amber-600',  bg: 'bg-amber-50',  label: 'Rent increase' },
-  arrears_demand:   { icon: AlertTriangle, color: 'text-red-600',    bg: 'bg-red-50',    label: 'Arrears demand' },
-  eviction_warning: { icon: Home,          color: 'text-red-700',    bg: 'bg-red-50',    label: 'Eviction warning' },
-  entry_notice:     { icon: Home,          color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]',   label: 'Entry notice' },
-  lease_renewal:    { icon: FileText,      color: 'text-green-600',  bg: 'bg-green-50',  label: 'Lease renewal' },
-  rule_violation:   { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', label: 'Rule violation' },
-  general:          { icon: MessageSquare, color: 'text-slate-600',  bg: 'bg-slate-50',  label: 'Notice' },
-  announcement:     { icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]',   label: 'Announcement' },
-  payment_reminder: { icon: Bell,          color: 'text-amber-600',  bg: 'bg-amber-50',  label: 'Payment reminder' },
-  maintenance_update: { icon: Wrench,      color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]', label: 'Maintenance update' },
+  rent_increase: { icon: TrendingUp, color: 'text-warning', bg: 'bg-warning/20', label: 'Rent increase' },
+  arrears_demand: { icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/20', label: 'Arrears demand' },
+  eviction_warning: { icon: Home, color: 'text-destructive', bg: 'bg-destructive/20', label: 'Eviction warning' },
+  entry_notice: { icon: Home, color: 'text-primary', bg: 'bg-primary/10', label: 'Entry notice' },
+  lease_renewal: { icon: FileText, color: 'text-success', bg: 'bg-success/20', label: 'Lease renewal' },
+  rule_violation: { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', label: 'Rule violation' },
+  general: { icon: MessageSquare, color: 'text-muted-foreground', bg: 'bg-muted/20', label: 'Notice' },
+  announcement: { icon: Megaphone, color: 'text-primary', bg: 'bg-primary/10', label: 'Announcement' },
+  payment_reminder: { icon: Bell, color: 'text-warning', bg: 'bg-warning/20', label: 'Payment reminder' },
+  maintenance_update: {
+    icon: Wrench,
+    color: 'text-[hsl(218_58%_38%)]',
+    bg: 'bg-[hsl(218_58%_38%/0.08)]',
+    label: 'Maintenance update',
+  },
 };
 
 const TenantInbox: React.FC = () => {
@@ -111,8 +134,8 @@ const TenantInbox: React.FC = () => {
     enabled: !!tenantId,
   });
 
-  const unreadNotices = notices.filter(n => !n.tenant_acknowledged).length;
-  const unreadMessages = messages.filter(m => !m.is_read).length;
+  const unreadNotices = notices.filter((n) => !n.tenant_acknowledged).length;
+  const unreadMessages = messages.filter((m) => !m.is_read).length;
 
   // Acknowledge a notice
   const acknowledgeNotice = useMutation({
@@ -155,9 +178,7 @@ const TenantInbox: React.FC = () => {
   // Mark message as read
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('messages')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq('id', id);
+      await supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenant-messages-inbox'] }),
   });
@@ -169,7 +190,7 @@ const TenantInbox: React.FC = () => {
 
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!notice.tenant_acknowledged ? 'border-amber-400/60/40 bg-amber-400/6' : ''}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow ${!notice.tenant_acknowledged ? 'border-warning/40/40 bg-warning' : ''}`}
         onClick={() => setSelectedNotice(notice)}
       >
         <CardContent className="p-4">
@@ -179,15 +200,19 @@ const TenantInbox: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-1">
-                <Badge variant="outline" className="text-xs">{config.label}</Badge>
+                <Badge variant="outline" className="text-xs">
+                  {config.label}
+                </Badge>
                 {!notice.tenant_acknowledged && (
-                  <Badge className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">New</Badge>
+                  <Badge className="text-xs bg-primary/20 text-primary border-primary/30">New</Badge>
                 )}
                 {notice.status === 'disputed' && (
                   <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200">Disputed</Badge>
                 )}
                 {isUrgent && (
-                  <Badge className="text-xs bg-red-100 text-red-800 border-red-200">Action required</Badge>
+                  <Badge className="text-xs bg-destructive/20 text-destructive border-destructive/30">
+                    Action required
+                  </Badge>
                 )}
               </div>
               <p className="text-sm font-medium truncate">{notice.title}</p>
@@ -210,7 +235,7 @@ const TenantInbox: React.FC = () => {
     const Icon = config.icon;
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!msg.is_read ? 'border-amber-400/60/40 bg-amber-400/6' : ''}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow ${!msg.is_read ? 'border-warning/40/40 bg-warning' : ''}`}
         onClick={() => markRead.mutate(msg.id)}
       >
         <CardContent className="p-4">
@@ -220,16 +245,20 @@ const TenantInbox: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                {!msg.is_read && <Badge className="text-xs bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">New</Badge>}
+                {!msg.is_read && <Badge className="text-xs bg-primary/20 text-primary border-primary/30">New</Badge>}
                 {msg.message_type && (
-                  <Badge variant="outline" className="text-xs capitalize">{msg.message_type.replace(/_/g, ' ')}</Badge>
+                  <Badge variant="outline" className="text-xs capitalize">
+                    {msg.message_type.replace(/_/g, ' ')}
+                  </Badge>
                 )}
               </div>
               {msg.subject && <p className="text-sm font-medium truncate">{msg.subject}</p>}
               <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{msg.body}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
-                {msg.sent_via_sms && ' · SMS'}{msg.sent_via_email && ' · Email'}{msg.sent_via_whatsapp && ' · WhatsApp'}
+                {msg.sent_via_sms && ' · SMS'}
+                {msg.sent_via_email && ' · Email'}
+                {msg.sent_via_whatsapp && ' · WhatsApp'}
               </p>
             </div>
           </div>
@@ -246,14 +275,18 @@ const TenantInbox: React.FC = () => {
             <Bell className="h-4 w-4" />
             Notices
             {unreadNotices > 0 && (
-              <Badge className="ml-1 bg-red-100 text-red-800 border-red-200 text-xs h-5">{unreadNotices}</Badge>
+              <Badge className="ml-1 bg-destructive/20 text-destructive border-destructive/30 text-xs h-5">
+                {unreadNotices}
+              </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="messages" className="gap-2">
             <MessageSquare className="h-4 w-4" />
             Messages
             {unreadMessages > 0 && (
-              <Badge className="ml-1 bg-red-100 text-red-800 border-red-200 text-xs h-5">{unreadMessages}</Badge>
+              <Badge className="ml-1 bg-destructive/20 text-destructive border-destructive/30 text-xs h-5">
+                {unreadMessages}
+              </Badge>
             )}
           </TabsTrigger>
         </TabsList>
@@ -267,7 +300,9 @@ const TenantInbox: React.FC = () => {
               <Bell className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No notices from your manager yet</p>
             </div>
-          ) : notices.map(n => <NoticeCard key={n.id} notice={n} />)}
+          ) : (
+            notices.map((n) => <NoticeCard key={n.id} notice={n} />)
+          )}
         </TabsContent>
 
         {/* ── Broadcast messages ── */}
@@ -279,95 +314,101 @@ const TenantInbox: React.FC = () => {
               <MessageSquare className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No messages from your manager yet</p>
             </div>
-          ) : messages.map(m => <MessageCard key={m.id} msg={m} />)}
+          ) : (
+            messages.map((m) => <MessageCard key={m.id} msg={m} />)
+          )}
         </TabsContent>
       </Tabs>
 
       {/* Notice detail dialog */}
-      <Dialog open={!!selectedNotice} onOpenChange={open => !open && setSelectedNotice(null)}>
+      <Dialog open={!!selectedNotice} onOpenChange={(open) => !open && setSelectedNotice(null)}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          {selectedNotice && (() => {
-            const config = NOTICE_ICONS[selectedNotice.notice_type] ?? NOTICE_ICONS.general;
-            const Icon = config.icon;
-            return (
-              <>
-                <DialogHeader>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${config.bg}`}>
-                      <Icon className={`h-4 w-4 ${config.color}`} />
+          {selectedNotice &&
+            (() => {
+              const config = NOTICE_ICONS[selectedNotice.notice_type] ?? NOTICE_ICONS.general;
+              const Icon = config.icon;
+              return (
+                <>
+                  <DialogHeader>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${config.bg}`}>
+                        <Icon className={`h-4 w-4 ${config.color}`} />
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {config.label}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">{config.label}</Badge>
-                  </div>
-                  <DialogTitle>{selectedNotice.title}</DialogTitle>
-                  <DialogDescription>
-                    Received {format(new Date(selectedNotice.created_at), 'dd/MM/yy')}
-                    {selectedNotice.delivery_method && ` via ${selectedNotice.delivery_method}`}
-                  </DialogDescription>
-                </DialogHeader>
-                <pre className="whitespace-pre-wrap text-sm font-sans leading-relaxed p-4 bg-muted/30 rounded-lg border border-border">
-                  {selectedNotice.body}
-                </pre>
+                    <DialogTitle>{selectedNotice.title}</DialogTitle>
+                    <DialogDescription>
+                      Received {format(new Date(selectedNotice.created_at), 'dd/MM/yy')}
+                      {selectedNotice.delivery_method && ` via ${selectedNotice.delivery_method}`}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <pre className="whitespace-pre-wrap text-sm font-sans leading-relaxed p-4 bg-muted/30 rounded-lg border border-border">
+                    {selectedNotice.body}
+                  </pre>
 
-                {/* Rent increase details */}
-                {selectedNotice.notice_type === 'rent_increase' && selectedNotice.new_rent && (
-                  <div className="grid grid-cols-2 gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <div>
-                      <p className="text-xs text-amber-700">Current rent</p>
-                      <p className="font-semibold text-amber-900">
-                        KES {Number(selectedNotice.current_rent || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-amber-700">New rent</p>
-                      <p className="font-semibold text-amber-900">
-                        KES {Number(selectedNotice.new_rent).toLocaleString()}
-                      </p>
-                    </div>
-                    {selectedNotice.effective_date && (
-                      <div className="col-span-2">
-                        <p className="text-xs text-amber-700">Effective from</p>
-                        <p className="font-medium text-amber-900">
-                          {format(new Date(selectedNotice.effective_date), 'dd/MM/yy')}
+                  {/* Rent increase details */}
+                  {selectedNotice.notice_type === 'rent_increase' && selectedNotice.new_rent && (
+                    <div className="grid grid-cols-2 gap-3 p-3 bg-warning/20 border border-warning/30 rounded-lg">
+                      <div>
+                        <p className="text-xs text-warning">Current rent</p>
+                        <p className="font-semibold text-warning">
+                          KES {Number(selectedNotice.current_rent || 0).toLocaleString()}
                         </p>
                       </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  {!selectedNotice.tenant_acknowledged && (
-                    <Button
-                      className="gap-2 flex-1 bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => {
-                        acknowledgeNotice.mutate(selectedNotice.id);
-                        setSelectedNotice(null);
-                      }}
-                      disabled={acknowledgeNotice.isPending}
-                    >
-                      <ThumbsUp className="h-4 w-4" />
-                      Acknowledge receipt
-                    </Button>
-                  )}
-                  {selectedNotice.tenant_acknowledged && (
-                    <div className="flex items-center gap-2 text-sm text-green-700 flex-1">
-                      <CheckCircle className="h-4 w-4" />
-                      Acknowledged {selectedNotice.tenant_ack_at ? format(new Date(selectedNotice.tenant_ack_at), 'dd/MM/yy') : ''}
+                      <div>
+                        <p className="text-xs text-warning">New rent</p>
+                        <p className="font-semibold text-warning">
+                          KES {Number(selectedNotice.new_rent).toLocaleString()}
+                        </p>
+                      </div>
+                      {selectedNotice.effective_date && (
+                        <div className="col-span-2">
+                          <p className="text-xs text-warning">Effective from</p>
+                          <p className="font-medium text-warning">
+                            {format(new Date(selectedNotice.effective_date), 'dd/MM/yy')}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
-                  {!selectedNotice.tenant_acknowledged && (
-                    <Button
-                      variant="outline"
-                      className="gap-2 border-orange-300 text-orange-700 hover:bg-orange-50"
-                      onClick={() => setDisputeOpen(true)}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      Dispute
-                    </Button>
-                  )}
-                </div>
-              </>
-            );
-          })()}
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {!selectedNotice.tenant_acknowledged && (
+                      <Button
+                        className="gap-2 flex-1 bg-success hover:bg-success text-white"
+                        onClick={() => {
+                          acknowledgeNotice.mutate(selectedNotice.id);
+                          setSelectedNotice(null);
+                        }}
+                        disabled={acknowledgeNotice.isPending}
+                      >
+                        <ThumbsUp className="h-4 w-4" />
+                        Acknowledge receipt
+                      </Button>
+                    )}
+                    {selectedNotice.tenant_acknowledged && (
+                      <div className="flex items-center gap-2 text-sm text-success flex-1">
+                        <CheckCircle className="h-4 w-4" />
+                        Acknowledged{' '}
+                        {selectedNotice.tenant_ack_at ? format(new Date(selectedNotice.tenant_ack_at), 'dd/MM/yy') : ''}
+                      </div>
+                    )}
+                    {!selectedNotice.tenant_acknowledged && (
+                      <Button
+                        variant="outline"
+                        className="gap-2 border-orange-300 text-orange-700 hover:bg-orange-50"
+                        onClick={() => setDisputeOpen(true)}
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Dispute
+                      </Button>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
         </DialogContent>
       </Dialog>
 
@@ -384,14 +425,16 @@ const TenantInbox: React.FC = () => {
             <Label>Your reason for disputing</Label>
             <Textarea
               value={disputeText}
-              onChange={e => setDisputeText(e.target.value)}
+              onChange={(e) => setDisputeText(e.target.value)}
               rows={4}
               placeholder="Explain clearly why you are disputing this notice..."
               className="mt-1 resize-none"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDisputeOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDisputeOpen(false)}>
+              Cancel
+            </Button>
             <Button
               className="bg-orange-600 hover:bg-orange-700 text-white gap-2"
               onClick={() => selectedNotice && disputeNotice.mutate({ id: selectedNotice.id, reason: disputeText })}
@@ -407,7 +450,6 @@ const TenantInbox: React.FC = () => {
     </div>
   );
 };
-
 
 // Mobile nav injected
 export default TenantInbox;

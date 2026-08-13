@@ -54,7 +54,7 @@ const MobileBottomNav: React.FC = () => {
 
   const isActive = (item: NavItem) => {
     if (item.activeMatch && item.activeMatch.length > 0) {
-      return item.activeMatch.some(match => location.pathname === match);
+      return item.activeMatch.some((match) => location.pathname === match);
     }
     return location.pathname === item.href;
   };
@@ -72,15 +72,11 @@ const MobileBottomNav: React.FC = () => {
               to={item.href}
               className={cn(
                 'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
-                active
-                  ? 'text-amber-500'
-                  : 'text-muted-foreground hover:text-foreground'
+                active ? 'text-teal' : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              <Icon className={cn('h-5 w-5', active && 'text-amber-500')} />
-              <span className={cn('text-xs', active && 'font-medium')}>
-                {item.label}
-              </span>
+              <Icon className={cn('h-5 w-5', active && 'text-teal')} />
+              <span className={cn('text-xs', active && 'font-medium')}>{item.label}</span>
             </Link>
           );
         })}

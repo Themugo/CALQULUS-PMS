@@ -10,13 +10,18 @@ import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialo
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
+import {
+  AuthLoadingScreen,
+  PortalAuthShell,
+  type PortalAuthFeature,
+  type PortalSwitchLink,
+} from '@/features/auth/components/AuthHeroChrome';
 
 const features: PortalAuthFeature[] = [
   { icon: CreditCard, text: 'Pay rent and water bills online with instant receipts' },
-  { icon: Wrench,    text: 'Submit and track maintenance requests' },
+  { icon: Wrench, text: 'Submit and track maintenance requests' },
   { icon: Building2, text: 'View your lease, documents and vacation notices' },
-  { icon: User,      text: 'Self-service portal for your tenancy' },
+  { icon: User, text: 'Self-service portal for your tenancy' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [
@@ -151,7 +156,7 @@ const TenantLogin = () => {
   };
 
   if (loading) {
-    return <AuthLoadingScreen />;
+    return <AuthLoadingScreen variant="light" />;
   }
 
   return (
@@ -170,6 +175,7 @@ const TenantLogin = () => {
       otherPortals={otherPortals}
       formSubtitle="Sign in to access your tenant portal"
       submitLabel="Sign in to Tenant Portal"
+      variant="light"
     >
       {/* Biometric Login */}
       {biometricAvailable && hasStoredCredentials && !biometricLoading && (
@@ -193,16 +199,24 @@ const TenantLogin = () => {
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">
+            Email address
+          </Label>
           <Input
-            id="email" type="email" placeholder="you@example.com"
-            value={email} onChange={(e) => setEmail(e.target.value)} required
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
             className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">
+              Password
+            </Label>
             <ForgotPasswordDialog
               variant="tenant"
               trigger={
@@ -214,11 +228,17 @@ const TenantLogin = () => {
           </div>
           <div className="relative">
             <Input
-              id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
-              value={password} onChange={(e) => setPassword(e.target.value)} required
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
             />
-            <button type="button" onClick={() => setShowPassword(v => !v)}
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -233,7 +253,9 @@ const TenantLogin = () => {
               Signing in…
             </span>
           ) : (
-            <span className="flex items-center gap-2">Sign in to Tenant Portal <ChevronRight className="h-4 w-4" /></span>
+            <span className="flex items-center gap-2">
+              Sign in to Tenant Portal <ChevronRight className="h-4 w-4" />
+            </span>
           )}
         </Button>
       </form>

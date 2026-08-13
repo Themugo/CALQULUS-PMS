@@ -19,7 +19,9 @@ export const PaymentInstructionsGuide = ({
   bankName,
   accountNumber,
 }: PaymentInstructionsGuideProps) => {
-  const [openItem, setOpenItem] = useState<string | undefined>(paybillNumber ? 'mpesa-paybill' : tillNumber ? 'mpesa-till' : 'bank');
+  const [openItem, setOpenItem] = useState<string | undefined>(
+    paybillNumber ? 'mpesa-paybill' : tillNumber ? 'mpesa-till' : 'bank',
+  );
 
   const hasPaybill = !!paybillNumber;
   const hasTill = !!tillNumber;
@@ -33,7 +35,7 @@ export const PaymentInstructionsGuide = ({
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <BookOpen className="h-5 w-5 text-amber-500" />
+          <BookOpen className="h-5 w-5 text-warning" />
           Payment Instructions
         </CardTitle>
         <CardDescription>Step-by-step guide for making payments</CardDescription>
@@ -44,38 +46,66 @@ export const PaymentInstructionsGuide = ({
             <AccordionItem value="mpesa-paybill" className="border rounded-lg px-4 mb-2">
               <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Smartphone className="h-4 w-4 text-green-600" />
+                  <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
+                    <Smartphone className="h-4 w-4 text-success" />
                   </div>
                   <span className="font-medium">M-Pesa Paybill</span>
-                  <Badge variant="secondary" className="ml-2 text-xs">Recommended</Badge>
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    Recommended
+                  </Badge>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-4">
                 <ol className="space-y-3 ml-11">
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">1</span>
-                    <span className="text-sm">Open M-Pesa on your phone and select <strong>Lipa na M-Pesa</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm">
+                      Open M-Pesa on your phone and select <strong>Lipa na M-Pesa</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">2</span>
-                    <span className="text-sm">Select <strong>Paybill</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm">
+                      Select <strong>Paybill</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">3</span>
-                    <span className="text-sm">Enter Business Number: <strong className="font-mono bg-muted px-2 py-0.5 rounded">{paybillNumber}</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      3
+                    </span>
+                    <span className="text-sm">
+                      Enter Business Number:{' '}
+                      <strong className="font-mono bg-muted px-2 py-0.5 rounded">{paybillNumber}</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">4</span>
-                    <span className="text-sm">Enter Account Number: <strong className="font-mono bg-muted px-2 py-0.5 rounded">{accountReference || 'Your Unit Number'}</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      4
+                    </span>
+                    <span className="text-sm">
+                      Enter Account Number:{' '}
+                      <strong className="font-mono bg-muted px-2 py-0.5 rounded">
+                        {accountReference || 'Your Unit Number'}
+                      </strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">5</span>
-                    <span className="text-sm">Enter the <strong>Amount</strong> and your <strong>M-Pesa PIN</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      5
+                    </span>
+                    <span className="text-sm">
+                      Enter the <strong>Amount</strong> and your <strong>M-Pesa PIN</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-green-500" />
-                    <span className="text-sm text-green-700">You'll receive a confirmation SMS once payment is successful</span>
+                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-success" />
+                    <span className="text-sm text-success">
+                      You'll receive a confirmation SMS once payment is successful
+                    </span>
                   </li>
                 </ol>
               </AccordionContent>
@@ -86,8 +116,8 @@ export const PaymentInstructionsGuide = ({
             <AccordionItem value="mpesa-till" className="border rounded-lg px-4 mb-2">
               <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <CreditCard className="h-4 w-4 text-green-600" />
+                  <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
+                    <CreditCard className="h-4 w-4 text-success" />
                   </div>
                   <span className="font-medium">M-Pesa Till (Buy Goods)</span>
                 </div>
@@ -95,24 +125,43 @@ export const PaymentInstructionsGuide = ({
               <AccordionContent className="pt-2 pb-4">
                 <ol className="space-y-3 ml-11">
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">1</span>
-                    <span className="text-sm">Open M-Pesa on your phone and select <strong>Lipa na M-Pesa</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm">
+                      Open M-Pesa on your phone and select <strong>Lipa na M-Pesa</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">2</span>
-                    <span className="text-sm">Select <strong>Buy Goods and Services</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm">
+                      Select <strong>Buy Goods and Services</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">3</span>
-                    <span className="text-sm">Enter Till Number: <strong className="font-mono bg-muted px-2 py-0.5 rounded">{tillNumber}</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      3
+                    </span>
+                    <span className="text-sm">
+                      Enter Till Number:{' '}
+                      <strong className="font-mono bg-muted px-2 py-0.5 rounded">{tillNumber}</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">4</span>
-                    <span className="text-sm">Enter the <strong>Amount</strong> and your <strong>M-Pesa PIN</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      4
+                    </span>
+                    <span className="text-sm">
+                      Enter the <strong>Amount</strong> and your <strong>M-Pesa PIN</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-green-500" />
-                    <span className="text-sm text-green-700">You'll receive a confirmation SMS once payment is successful</span>
+                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-success" />
+                    <span className="text-sm text-success">
+                      You'll receive a confirmation SMS once payment is successful
+                    </span>
                   </li>
                 </ol>
               </AccordionContent>
@@ -123,8 +172,8 @@ export const PaymentInstructionsGuide = ({
             <AccordionItem value="bank" className="border rounded-lg px-4">
               <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-[hsl(214_73%_48%/0.12)] flex items-center justify-center">
-                    <Building2 className="h-4 w-4 text-[hsl(214_73%_45%)]" />
+                  <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Building2 className="h-4 w-4 text-primary" />
                   </div>
                   <span className="font-medium">Bank Transfer</span>
                 </div>
@@ -132,28 +181,49 @@ export const PaymentInstructionsGuide = ({
               <AccordionContent className="pt-2 pb-4">
                 <ol className="space-y-3 ml-11">
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">1</span>
-                    <span className="text-sm">Log in to your <strong>mobile banking app</strong> or visit your bank</span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm">
+                      Log in to your <strong>mobile banking app</strong> or visit your bank
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">2</span>
-                    <span className="text-sm">Select <strong>Transfer</strong> or <strong>Send Money</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm">
+                      Select <strong>Transfer</strong> or <strong>Send Money</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">3</span>
-                    <span className="text-sm">Select bank: <strong>{bankName}</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      3
+                    </span>
+                    <span className="text-sm">
+                      Select bank: <strong>{bankName}</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">4</span>
-                    <span className="text-sm">Enter Account Number: <strong className="font-mono bg-muted px-2 py-0.5 rounded">{accountNumber}</strong></span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      4
+                    </span>
+                    <span className="text-sm">
+                      Enter Account Number:{' '}
+                      <strong className="font-mono bg-muted px-2 py-0.5 rounded">{accountNumber}</strong>
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-400/10 text-amber-600 text-sm font-medium flex items-center justify-center">5</span>
-                    <span className="text-sm">Enter the <strong>Amount</strong> and confirm the transfer</span>
+                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-warning text-warning text-sm font-medium flex items-center justify-center">
+                      5
+                    </span>
+                    <span className="text-sm">
+                      Enter the <strong>Amount</strong> and confirm the transfer
+                    </span>
                   </li>
                   <li className="flex gap-3">
-                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-green-500" />
-                    <span className="text-sm text-green-700">Keep your transaction receipt as proof of payment</span>
+                    <CheckCircle2 className="flex-shrink-0 h-6 w-6 text-success" />
+                    <span className="text-sm text-success">Keep your transaction receipt as proof of payment</span>
                   </li>
                 </ol>
               </AccordionContent>
