@@ -4,18 +4,30 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CheckCircle, XCircle, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, EyeOff, ChevronRight, Building2, Users, CreditCard, Wrench } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
+
+const features: PortalAuthFeature[] = [
+  { icon: Building2, text: 'Manage properties, units and occupancy in one place' },
+  { icon: Users,      text: 'Tenant invitations, leases and lifecycle' },
+  { icon: CreditCard, text: 'Rent, water billing and M-Pesa collections' },
+  { icon: Wrench,     text: 'Maintenance requests and contractor tracking' },
+];
+
+const otherPortals: PortalSwitchLink[] = [
+  { label: 'Landlord', href: '/landlord/login' },
+  { label: 'Agency', href: '/agency/login' },
+  { label: 'Tenant', href: '/tenant/login' },
+];
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -162,154 +174,154 @@ const Auth = () => {
   const passwordStrength = getPasswordStrength(signupPassword);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground auth-gradient">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-border border-t-white" />
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground auth-gradient relative overflow-hidden px-4">
-      {/* Decorative elements */}
-      <div className="absolute inset-0 noise-overlay" />
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-muted rounded-full blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-muted rounded-full blur-3xl" />
-
-      <Card className="w-full max-w-md card-shadow border-border relative animate-scale-in bg-card">
-        <CardHeader className="text-center pb-4">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto" />
+    <PortalAuthShell
+      portalName="Manager Portal"
+      badgeLabel="Property Management Access"
+      icon={Building2}
+      tagline="Manage your properties and operations."
+      heroLines={[
+        { text: 'Manage properties.', tone: 'default' },
+        { text: 'Empower tenants.', tone: 'gradient' },
+        { text: 'Run operations.', tone: 'muted' },
+      ]}
+      heroDescription="The complete property management platform — properties, tenants, billing, maintenance and reporting in one place."
+      features={features}
+      otherPortals={otherPortals}
+      formSubtitle="Sign in or create your manager account"
+      submitLabel="Sign in to Manager Portal"
+    >
+      {biometricAvailable && hasStoredCredentials && !biometricLoading && (
+        <div className="mb-6">
+          <BiometricLoginButton biometryType={biometryType} onPress={handleBiometricLogin} isLoading={isBiometricLoggingIn} />
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
-          <CardTitle className="text-2xl font-heading">Welcome to CALQULUS PMS</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Smart rental management made simple
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {biometricAvailable && hasStoredCredentials && !biometricLoading && (
-            <div className="mb-6">
-              <BiometricLoginButton biometryType={biometryType} onPress={handleBiometricLogin} isLoading={isBiometricLoggingIn} />
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                </div>
+        </div>
+      )}
+
+      <Tabs defaultValue="login" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-2">
+          <TabsTrigger value="login">Sign In</TabsTrigger>
+          <TabsTrigger value="signup">Get Started</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="login" className="space-y-4 mt-2">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="login-email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+              <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11" />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="login-password" className="text-muted-foreground text-sm font-medium">Password</Label>
+                <ForgotPasswordDialog
+                  trigger={
+                    <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                      Forgot password?
+                    </button>
+                  }
+                />
+              </div>
+              <div className="relative">
+                <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showLoginPassword ? "Hide password" : "Show password"}>
+                  {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
-          )}
+            {biometricAvailable && !hasStoredCredentials && (
+              <div className="flex items-center space-x-2">
+                <Checkbox id="enable-biometric" checked={enableBiometric} onCheckedChange={(c) => setEnableBiometric(c as boolean)} />
+                <label htmlFor="enable-biometric" className="text-sm font-medium leading-none cursor-pointer">
+                  Enable {biometryType === 'faceId' ? 'Face ID' : 'fingerprint'} login
+                </label>
+              </div>
+            )}
+            <Button type="submit" className="w-full btn-brand h-11 font-bold" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Signing in…
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">Sign in to Manager Portal <ChevronRight className="h-4 w-4" /></span>
+              )}
+            </Button>
+          </form>
+        </TabsContent>
 
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Get Started</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login" className="space-y-4 mt-2">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="h-11" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password">Password</Label>
-                    <ForgotPasswordDialog />
-                  </div>
-                  <div className="relative">
-                    <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="h-11 pr-10" />
-                    <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                {biometricAvailable && !hasStoredCredentials && (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="enable-biometric" checked={enableBiometric} onCheckedChange={(c) => setEnableBiometric(c as boolean)} />
-                    <label htmlFor="enable-biometric" className="text-sm font-medium leading-none cursor-pointer">
-                      Enable {biometryType === 'faceId' ? 'Face ID' : 'fingerprint'} login
-                    </label>
-                  </div>
-                )}
-                <Button type="submit" className="w-full btn-brand h-11" disabled={isSubmitting}>
-                  {isSubmitting ? 'Signing in...' : 'Sign In'}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup" className="space-y-4 mt-2">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
-                  <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="h-11" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required className={`h-11 ${signupEmailError ? 'border-destructive' : ''}`} />
-                  {signupEmailError && (
-                    <p className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" />{signupEmailError}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <div className="relative">
-                    <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="h-11 pr-10" />
-                    <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  {signupPassword && (
-                    <div className="grid grid-cols-2 gap-1 text-xs p-3 bg-muted/50 rounded-lg">
-                      {[
-                        { key: 'length', label: '8+ characters' },
-                        { key: 'uppercase', label: 'Uppercase' },
-                        { key: 'lowercase', label: 'Lowercase' },
-                        { key: 'number', label: 'Number' },
-                        { key: 'special', label: 'Special char' },
-                      ].map(({ key, label }) => (
-                        <div key={key} className={`flex items-center gap-1.5 ${passwordStrength[key as keyof typeof passwordStrength] ? 'text-success' : 'text-muted-foreground'}`}>
-                          {passwordStrength[key as keyof typeof passwordStrength]
-                            ? <CheckCircle className="h-3 w-3" />
-                            : <XCircle className="h-3 w-3" />}
-                          {label}
-                        </div>
-                      ))}
+        <TabsContent value="signup" className="space-y-4 mt-2">
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="signup-name" className="text-muted-foreground text-sm font-medium">Full Name</Label>
+              <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11" />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="signup-email" className="text-muted-foreground text-sm font-medium">Email</Label>
+              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required className={`bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive' : ''}`} />
+              {signupEmailError && (
+                <p className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" />{signupEmailError}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="signup-password" className="text-muted-foreground text-sm font-medium">Password</Label>
+              <div className="relative">
+                <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showSignupPassword ? "Hide password" : "Show password"}>
+                  {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {signupPassword && (
+                <div className="grid grid-cols-2 gap-1 text-xs p-3 bg-muted/50 rounded-lg">
+                  {[
+                    { key: 'length', label: '8+ characters' },
+                    { key: 'uppercase', label: 'Uppercase' },
+                    { key: 'lowercase', label: 'Lowercase' },
+                    { key: 'number', label: 'Number' },
+                    { key: 'special', label: 'Special char' },
+                  ].map(({ key, label }) => (
+                    <div key={key} className={`flex items-center gap-1.5 ${passwordStrength[key as keyof typeof passwordStrength] ? 'text-success' : 'text-muted-foreground'}`}>
+                      {passwordStrength[key as keyof typeof passwordStrength]
+                        ? <CheckCircle className="h-3 w-3" />
+                        : <XCircle className="h-3 w-3" />}
+                      {label}
                     </div>
-                  )}
+                  ))}
                 </div>
-                <Button type="submit" className="w-full btn-brand h-11" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating account...' : 'Create Account'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+              )}
+            </div>
+            <Button type="submit" className="w-full btn-brand h-11 font-bold" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Creating account…
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">Create Account <ChevronRight className="h-4 w-4" /></span>
+              )}
+            </Button>
+          </form>
+        </TabsContent>
+      </Tabs>
 
-          <div className="mt-6 space-y-2 text-center">
-            <p className="text-sm text-muted-foreground">
-              Are you a tenant?{' '}
-              <Link to="/tenant/signup" className="text-amber-600 hover:underline font-medium">Register here</Link>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Are you a landlord?{' '}
-              <Link to="/landlord" className="text-amber-600 hover:underline font-medium">Sign in here</Link>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Platform admin?{' '}
-              <Link to="/webhost/login" className="text-amber-600 hover:underline font-medium">Webhost login</Link>
-            </p>
-          </div>
-          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t">
-            <Link to="/legal?tab=privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-            <span className="text-muted-foreground/30">·</span>
-            <Link to="/legal?tab=terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
-            <span className="text-muted-foreground/30">·</span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="h-3 w-3" /> CALQULUS PMS</span>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <div className="mt-6 space-y-2 text-center">
+        <p className="text-sm text-muted-foreground">
+          Are you a tenant?{' '}
+          <Link to="/tenant/signup" className="text-gold hover:text-primary font-medium">Register here</Link>
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Are you a landlord?{' '}
+          <Link to="/landlord/login" className="text-gold hover:text-primary font-medium">Sign in here</Link>
+        </p>
+      </div>
+    </PortalAuthShell>
   );
 };
 

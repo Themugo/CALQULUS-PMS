@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Home, Shield, Eye, EyeOff, ChevronRight, TrendingUp, FileText, Building2 } from 'lucide-react';
+import { Home, Eye, EyeOff, ChevronRight, TrendingUp, FileText, Building2, Shield } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
-import { AuthLoadingScreen, AuthGridOverlay, AuthLegalFooterLinks, OtherPortalsGrid } from '@/features/auth/components/AuthHeroChrome';
+import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
 
-const features = [
+const features: PortalAuthFeature[] = [
   { icon: Building2,  text: 'Portfolio overview — all your properties in one place' },
   { icon: TrendingUp, text: 'Revenue tracking with landlord-to-manager revenue splits' },
   { icon: FileText,   text: 'Monthly statements, lease summaries & occupancy reports' },
   { icon: Shield,     text: 'Secure access to your investment performance data' },
+];
+
+const otherPortals: PortalSwitchLink[] = [
+  { label: 'Manager', href: '/auth' },
+  { label: 'Agency', href: '/agency/login' },
+  { label: 'Tenant', href: '/tenant/login' },
 ];
 
 const LandlordPortalAuth = () => {
@@ -52,146 +57,70 @@ const LandlordPortalAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
-        <AuthGridOverlay />
-
-        <div className="relative z-10 flex flex-col h-full p-12">
-          <div className="flex items-center gap-4 mb-16">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
-            <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-primary/70 font-semibold tracking-[0.25em] uppercase mt-1">Landlord Portal</p>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
-              <Home className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs text-primary font-medium">Property Owner Access</span>
-            </div>
-
-            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-foreground">Your portfolio.</span>
-              <br />
-              <span className="text-gradient">Your returns.</span>
-              <br />
-              <span className="text-muted-foreground">Full visibility.</span>
-            </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
-              Track revenue, occupancy and statements for all your properties managed through CALQULUS PMS.
-            </p>
-
-            <div className="space-y-4">
-              {features.map((f, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 pt-8 border-t border-border">
-            <p className="text-muted-foreground text-xs">calqulus.site</p>
-            <div className="flex gap-3">
-              <Link to="/landlord" className="text-muted-foreground hover:text-primary/70 text-xs transition-colors">Manager login</Link>
-              <Link to="/tenant/login" className="text-muted-foreground hover:text-primary/70 text-xs transition-colors">Tenant portal</Link>
-            </div>
-          </div>
+    <PortalAuthShell
+      portalName="Landlord Portal"
+      badgeLabel="Property Owner Access"
+      icon={Home}
+      tagline="Monitor your portfolio and property performance."
+      heroLines={[
+        { text: 'Your portfolio.', tone: 'default' },
+        { text: 'Your returns.', tone: 'gradient' },
+        { text: 'Full visibility.', tone: 'muted' },
+      ]}
+      heroDescription="Track revenue, occupancy and statements for all your properties managed through CALQULUS PMS."
+      features={features}
+      otherPortals={otherPortals}
+      formSubtitle="Sign in to view your property portfolio"
+      submitLabel="Sign in to Landlord Portal"
+      notice="This portal is for property owners. Your property manager will invite you by email. If you haven't received an invitation, contact your property manager."
+    >
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+          <Input
+            id="email" type="email" placeholder="owner@example.com"
+            value={email} onChange={e => setEmail(e.target.value)} required
+            className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
+          />
         </div>
-      </div>
-
-      {/* Right panel */}
-      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden flex justify-center mb-8">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
-          </div>
-
-          <div className="rounded-2xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-8 shadow-sm">
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
-                <Home className="h-3 w-3 text-primary" />
-                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Landlord Portal</span>
-              </div>
-              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
-              <p className="text-muted-foreground text-sm">Sign in to view your property portfolio</p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
-                <Input
-                  id="email" type="email" placeholder="owner@example.com"
-                  value={email} onChange={e => setEmail(e.target.value)} required
-                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary/20 focus:ring-primary/20 h-11"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
-                  <ForgotPasswordDialog
-                    trigger={
-                      <button type="button" className="text-primary/70 hover:text-primary text-xs font-medium">
-                        Forgot password?
-                      </button>
-                    }
-                  />
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
-                    value={password} onChange={e => setPassword(e.target.value)} required
-                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary/20 focus:ring-primary/20 h-11 pr-11"
-                  />
-                  <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors">
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
-                {isSubmitting ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
-                    Signing in…
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">Sign in to Landlord Portal <ChevronRight className="h-4 w-4" /></span>
-                )}
-              </Button>
-            </form>
-
-            {/* Info notice */}
-            <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
-              <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  This portal is for property owners. Your property manager will invite you by email.
-                  If you haven't received an invitation, contact your property manager.
-                </p>
-              </div>
-            </div>
-
-            {/* Other portals */}
-            <OtherPortalsGrid
-              portals={[
-                { label: 'Manager', href: '/landlord' },
-                { label: 'Tenant', href: '/tenant/login' },
-                { label: 'Admin', href: '/webhost/login' },
-              ]}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+            <ForgotPasswordDialog
+              trigger={
+                <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                  Forgot password?
+                </button>
+              }
             />
-
-            <AuthLegalFooterLinks />
+          </div>
+          <div className="relative">
+            <Input
+              id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
+              value={password} onChange={e => setPassword(e.target.value)} required
+              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
+            />
+            <button type="button" onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+
+        <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              Signing in…
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">Sign in to Landlord Portal <ChevronRight className="h-4 w-4" /></span>
+          )}
+        </Button>
+      </form>
+    </PortalAuthShell>
   );
 };
 
