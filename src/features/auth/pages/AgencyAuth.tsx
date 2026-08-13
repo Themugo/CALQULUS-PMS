@@ -54,7 +54,7 @@ const AgencyAuth = () => {
   };
 
   if (loading) {
-    return <AuthLoadingScreen />;
+    return <AuthLoadingScreen variant="light" />;
   }
 
   return (
@@ -74,6 +74,7 @@ const AgencyAuth = () => {
       formSubtitle="Sign in to your agency account"
       submitLabel="Sign in to Agency Portal"
       notice="This portal is for property agencies. Manage properties on behalf of landlords, collect rent, and track commissions."
+      variant="light"
     >
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">

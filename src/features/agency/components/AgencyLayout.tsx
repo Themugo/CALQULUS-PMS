@@ -44,30 +44,29 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-muted backdrop-blur-sm lg:hidden"
+        <div className="fixed inset-0 z-40 bg-muted/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar — light executive, indigo agency identity */}
       <aside className={`
-        fixed left-0 top-0 z-50 h-full w-64 sidebar-gradient border-r border-amber-400/10
+        fixed left-0 top-0 z-50 h-full w-64 bg-card border-r border-border flex flex-col
         transform transition-transform duration-300
         lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        flex flex-col
       `}>
-        {/* Top gold line */}
-        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/50 to-transparent flex-shrink-0" />
+        {/* Top indigo accent line */}
+        <div className="h-0.5 w-full bg-gradient-to-r from-indigo/0 via-indigo/60 to-indigo/0 flex-shrink-0" />
 
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-amber-400/10 flex-shrink-0">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="min-w-0">
-              <p className="font-heading font-bold text-sm text-gradient leading-none truncate">CALQULUS</p>
-              <p className="text-[9px] text-amber-400/50 font-semibold tracking-[0.2em] uppercase mt-0.5">Agency Portal</p>
+              <p className="font-heading font-bold text-sm text-foreground leading-none truncate">CALQULUS</p>
+              <p className="text-[9px] text-indigo font-semibold tracking-[0.2em] uppercase mt-0.5">Agency Portal</p>
             </div>
           </div>
-          <button className="lg:hidden text-muted-foreground hover:text-muted-foreground transition-colors p-1"
+          <button className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-1"
             onClick={() => setSidebarOpen(false)}>
             <X className="h-4 w-4" />
           </button>
@@ -86,44 +85,44 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
                   group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                   transition-all duration-200 border touch-manipulation
                   ${active
-                    ? 'bg-gradient-to-r from-amber-400/15 to-transparent border-amber-400/25 text-amber-300'
-                    : 'text-muted-foreground hover:bg-white/5 hover:text-muted-foreground border-transparent'}
+                    ? 'bg-indigo/10 border-indigo/20 text-indigo'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground border-transparent'}
                 `}
               >
                 <item.icon className={`h-4 w-4 flex-shrink-0 transition-colors
-                  ${active ? 'text-amber-400' : 'text-muted-foreground group-hover:text-amber-400/60'}`} />
+                  ${active ? 'text-indigo' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 <span className="flex-1 truncate">{item.label}</span>
-                {active && <div className="w-1 h-4 rounded-full bg-amber-400 flex-shrink-0" />}
+                {active && <div className="w-1 h-4 rounded-full bg-indigo flex-shrink-0" />}
               </Link>
             );
           })}
         </nav>
 
         {/* Footer */}
-        <div className="flex-shrink-0 p-3 border-t border-amber-400/10">
+        <div className="flex-shrink-0 p-3 border-t border-border">
           {user && (
-            <div className="px-3 py-2 mb-2 rounded-lg bg-amber-400/5 border border-amber-400/10">
-              <p className="text-[9px] text-amber-400/50 uppercase tracking-wider font-semibold mb-0.5">Agency</p>
-              <p className="text-xs text-amber-300/70 truncate font-medium">{user.email}</p>
+            <div className="px-3 py-2 mb-2 rounded-lg bg-indigo/5 border border-indigo/10">
+              <p className="text-[9px] text-indigo uppercase tracking-wider font-semibold mb-0.5">Agency</p>
+              <p className="text-xs text-foreground/70 truncate font-medium">{user.email}</p>
             </div>
           )}
           <button
             onClick={signOut}
             className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-              text-muted-foreground hover:bg-red-500/10 hover:text-red-400 border border-transparent
-              hover:border-red-500/20 transition-all"
+              text-muted-foreground hover:bg-destructive/10 hover:text-destructive border border-transparent
+              hover:border-destructive/20 transition-all"
           >
             <LogOut className="h-4 w-4" />
             <span>Sign Out</span>
           </button>
         </div>
-        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/30 to-transparent flex-shrink-0" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-indigo/0 via-indigo/30 to-indigo/0 flex-shrink-0" />
       </aside>
 
       {/* Main content area */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Top header bar */}
-        <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-muted/50"
@@ -134,7 +133,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             {title && (
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="text-amber-500/70 font-medium hidden sm:inline">Agency</span>
+                  <span className="text-indigo font-medium hidden sm:inline">Agency</span>
                   <ChevronRight className="h-3.5 w-3.5 hidden sm:inline text-muted-foreground/50" />
                   <h1 className="font-heading font-semibold text-foreground truncate">{title}</h1>
                 </div>
@@ -143,7 +142,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[160px]">{user?.email}</span>
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-900 text-xs font-bold">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo to-purple flex items-center justify-center text-white text-xs font-bold">
               {(user?.email || 'A')[0].toUpperCase()}
             </div>
           </div>
