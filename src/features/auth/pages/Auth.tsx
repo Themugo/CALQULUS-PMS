@@ -207,7 +207,7 @@ const Auth = () => {
       )}
 
       <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-2">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="login">Sign In</TabsTrigger>
           <TabsTrigger value="signup">Get Started</TabsTrigger>
         </TabsList>
@@ -215,23 +215,23 @@ const Auth = () => {
         <TabsContent value="login" className="space-y-4 mt-2">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="login-email" className="text-muted-foreground text-sm font-medium">Email address</Label>
-              <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11" />
+              <Label htmlFor="login-email" className="text-sm font-medium text-foreground">Email address</Label>
+              <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="login-password" className="text-muted-foreground text-sm font-medium">Password</Label>
+                <Label htmlFor="login-password" className="text-sm font-medium text-foreground">Password</Label>
                 <ForgotPasswordDialog
                   trigger={
-                    <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                    <button type="button" className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors">
                       Forgot password?
                     </button>
                   }
                 />
               </div>
               <div className="relative">
-                <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11" />
-                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showLoginPassword ? "Hide password" : "Show password"}>
+                <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showLoginPassword ? "Hide password" : "Show password"}>
                   {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -260,26 +260,26 @@ const Auth = () => {
         <TabsContent value="signup" className="space-y-4 mt-2">
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="signup-name" className="text-muted-foreground text-sm font-medium">Full Name</Label>
-              <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11" />
+              <Label htmlFor="signup-name" className="text-sm font-medium text-foreground">Full Name</Label>
+              <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="signup-email" className="text-muted-foreground text-sm font-medium">Email</Label>
-              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required className={`bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive' : ''}`} />
+              <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">Email</Label>
+              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required className={`bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive focus:border-destructive focus-visible:ring-destructive/20' : ''}`} />
               {signupEmailError && (
                 <p className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" />{signupEmailError}</p>
               )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="signup-password" className="text-muted-foreground text-sm font-medium">Password</Label>
+              <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">Password</Label>
               <div className="relative">
-                <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11" />
-                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showSignupPassword ? "Hide password" : "Show password"}>
+                <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showSignupPassword ? "Hide password" : "Show password"}>
                   {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {signupPassword && (
-                <div className="grid grid-cols-2 gap-1 text-xs p-3 bg-muted/50 rounded-lg">
+                <div className="grid grid-cols-2 gap-1 text-xs p-3 bg-secondary/60 rounded-lg border border-border">
                   {[
                     { key: 'length', label: '8+ characters' },
                     { key: 'uppercase', label: 'Uppercase' },
@@ -314,11 +314,11 @@ const Auth = () => {
       <div className="mt-6 space-y-2 text-center">
         <p className="text-sm text-muted-foreground">
           Are you a tenant?{' '}
-          <Link to="/tenant/signup" className="text-gold hover:text-primary font-medium">Register here</Link>
+          <Link to="/tenant/signup" className="text-primary hover:text-primary-hover font-medium transition-colors">Register here</Link>
         </p>
         <p className="text-sm text-muted-foreground">
           Are you a landlord?{' '}
-          <Link to="/landlord/login" className="text-gold hover:text-primary font-medium">Sign in here</Link>
+          <Link to="/landlord/login" className="text-primary hover:text-primary-hover font-medium transition-colors">Sign in here</Link>
         </p>
       </div>
     </PortalAuthShell>
