@@ -12,12 +12,11 @@ import { TenantsOverview } from "@/features/dashboard/components/TenantsOverview
 import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
 import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import {
-  Users, FileText, CreditCard, Building2, TrendingUp,
-  Home, AlertCircle, Zap, Plus, UserPlus, Wrench,
+  Users, CreditCard, Building2, TrendingUp,
+  Home, AlertCircle, Zap, UserPlus, Wrench,
   Droplets, FileSpreadsheet, ArrowRight, RefreshCw,
-  CheckCircle2, Clock, Calendar, BarChart3, ShieldCheck,
-  DollarSign, Activity, CheckSquare, Sparkles, Filter,
-  PieChart, AlertTriangle, Key, Layers
+  BarChart3, ShieldCheck, AlertTriangle, PieChart, Key,
+  DollarSign, Activity, CheckSquare, Layers
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,7 +24,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
@@ -65,16 +63,16 @@ interface DashboardStats {
 }
 
 const quickActions = [
-  { label: "Add Property", icon: Building2, href: "/properties", accent: "text-[hsl(214_73%_48%)]", bg: "bg-[hsl(214_73%_48%/0.08)] border-[hsl(214_73%_48%/0.2)]" },
-  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-indigo-500", bg: "bg-indigo-500/10 border-indigo-500/20" },
-  { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-[hsl(38_52%_42%)]", bg: "bg-[hsl(38_52%_42%/0.1)] border-[hsl(38_52%_42%/0.2)]" },
-  { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-amber-500", bg: "bg-amber-400/12 border-amber-400/25" },
-  { label: "Payments", icon: DollarSign, href: "/payments", accent: "text-green-600", bg: "bg-green-500/10 border-green-500/20" },
-  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-orange-500", bg: "bg-orange-500/10 border-orange-500/20" },
-  { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-[hsl(195_60%_42%)]", bg: "bg-[hsl(195_60%_42%/0.1)] border-[hsl(195_60%_42%/0.2)]" },
-  { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-[hsl(218_58%_40%)]", bg: "bg-[hsl(218_58%_40%/0.1)] border-[hsl(218_58%_40%/0.2)]" },
-  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple-500", bg: "bg-purple-500/10 border-purple-500/20" },
+  { label: "Add Property", icon: Building2, href: "/properties", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
+  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
+  { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-[hsl(38_92%_40%)]", bg: "bg-[hsl(38_92%_40%/0.1)] border-[hsl(38_92%_40%/0.2)]" },
+  { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-[hsl(38_92%_40%)]", bg: "bg-[hsl(38_92%_40%/0.1)] border-[hsl(38_92%_40%/0.2)]" },
+  { label: "Record Payment", icon: DollarSign, href: "/payments", accent: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-[hsl(26_90%_45%)]", bg: "bg-[hsl(26_90%_45%/0.1)] border-[hsl(26_90%_45%/0.2)]" },
+  { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-[hsl(220_87%_51%)]", bg: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)]" },
+  { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-slate-500", bg: "bg-slate-500/10 border-slate-500/20" },
+  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple-600", bg: "bg-purple-500/10 border-purple-500/20" },
 ];
 
 const Dashboard = () => {
@@ -85,6 +83,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statsError, setStatsError] = useState(false);
   const [userName, setUserName] = useState("there");
   const { currency, setCurrency, currencies, formatCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState("overview");
@@ -102,6 +101,7 @@ const Dashboard = () => {
     if (!managerId || !userId) return;
     try {
       setLoading(true);
+      setStatsError(false);
 
       const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
       const endOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
@@ -206,6 +206,7 @@ const Dashboard = () => {
       });
     } catch (err) {
       logError('Dashboard.fetchStats', err);
+      setStatsError(true);
       toast({ title: "Error loading stats", description: "Please refresh the page.", variant: "destructive" });
     } finally {
       setLoading(false);
@@ -335,189 +336,244 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── EXECUTIVE COMMAND MATRIX (4 OPERATIONAL ANSWERS) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        {/* 1. What requires attention? */}
-        <Card className="border-l-4 border-l-red-500 border-border/70 bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 flex items-center gap-1.5">
-                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                What Requires Attention?
+      {/* ── EXECUTIVE PAGE HEADER BAND ── */}
+      <div className="navy-executive-gradient rounded-2xl p-5 sm:p-6 mb-5 overflow-hidden relative">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 relative z-10">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[hsl(38_92%_70%)]">
+                CALQULUS PMS
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-red-200 text-red-700 dark:text-red-400">
-                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0) + (stats?.openMaintenanceCount ?? 0)} Issues
-              </Badge>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Overdue Arrears:</span>
-                <span className="font-semibold text-red-600 dark:text-red-400">
-                  {loading ? "..." : formatCurrency(stats?.arrearsTotal ?? 0)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Expiring Leases (30d):</span>
-                <span className="font-medium text-amber-600 dark:text-amber-400">
-                  {loading ? "..." : `${stats?.expiringLeases ?? 0} leases`}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Vacant Units:</span>
-                <span className="font-medium text-foreground">
-                  {loading ? "..." : `${stats?.vacantUnits ?? 0} units`}
-                </span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/billing?filter=overdue")}
-              className="mt-2 w-full h-7 text-[11px] justify-between text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 p-0 px-2"
-            >
-              <span>Resolve Arrears ({stats?.overdueInvoices ?? 0})</span>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* 2. What needs approval? */}
-        <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <CheckSquare className="h-3.5 w-3.5 shrink-0" />
-                What Needs Approval?
+              <span className="h-3 w-px bg-white/20" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+                Manager Workspace
               </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-amber-300 text-amber-700 dark:text-amber-400">
-                {(stats?.pendingDepositRefundsCount ?? 0) + (stats?.openMaintenanceCount ?? 0)} Pending
-              </Badge>
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Deposit Refunds:</span>
-                <span className="font-semibold text-foreground">
-                  {stats?.pendingDepositRefundsCount ?? 0} pending
+            <h1 className="page-title text-white">
+              {getGreeting()}, {userName}
+            </h1>
+            <p className="supporting-text text-white/70 mt-1">
+              {stats
+                ? `Operations command center · ${stats.totalProperties} properties · ${stats.totalUnits} units · ${stats.activeTenants} active tenants`
+                : "Loading your operational command center…"}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {stats && (
+              <>
+                <span className="status-badge status-info bg-white/10 text-white border-white/20">
+                  <Home className="h-3 w-3" /> {stats.occupancyRate}% Occupied
                 </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Open Maintenance:</span>
-                <span className="font-medium text-foreground">
-                  {stats?.openMaintenanceCount ?? 0} requests
+                <span className="status-badge bg-white/10 text-white border-white/20">
+                  <DollarSign className="h-3 w-3" /> {currency}
                 </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Pending Invoices:</span>
-                <span className="font-medium text-foreground">
-                  {loading ? "..." : `${stats?.pendingInvoices ?? 0} due`}
-                </span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/maintenance")}
-              className="mt-2 w-full h-7 text-[11px] justify-between text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 p-0 px-2"
-            >
-              <span>Manage Approvals</span>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* 3. What generates revenue? */}
-        <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5 shrink-0" />
-                What Generates Revenue?
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
-                {stats?.occupancyRate ?? 0}% Occupied
-              </Badge>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Collected Rent (MTD):</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {loading ? "..." : formatCurrency(stats?.revenueMTD ?? 0)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Collection Rate:</span>
-                <span className="font-semibold text-foreground">
-                  {loading ? "..." : `${stats?.collectionRate ?? 0}%`}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Occupied / Total Units:</span>
-                <span className="font-medium text-foreground">
-                  {loading ? "..." : `${stats?.occupiedUnits ?? 0} / ${stats?.totalUnits ?? 0}`}
-                </span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/reports")}
-              className="mt-2 w-full h-7 text-[11px] justify-between text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 p-0 px-2"
-            >
-              <span>Financial Reports</span>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* 4. What happened today? */}
-        <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
-                <Activity className="h-3.5 w-3.5 shrink-0" />
-                What Happened Today?
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400">
-                Live Feed
-              </Badge>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">New Tenants MTD:</span>
-                <span className="font-semibold text-sky-600 dark:text-sky-400">
-                  +{stats?.newTenantsThisMonth ?? 0} joined
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Active Leases:</span>
-                <span className="font-medium text-foreground">
-                  {stats?.activeLeases ?? 0} active
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate">Properties Monitored:</span>
-                <span className="font-medium text-foreground">
-                  {stats?.totalProperties ?? 0} total
-                </span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/tenants")}
-              className="mt-2 w-full h-7 text-[11px] justify-between text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/30 p-0 px-2"
-            >
-              <span>View Roster</span>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </CardContent>
-        </Card>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* ── STATS ERROR / RETRY ── */}
+      {statsError && !loading && (
+        <div className="mb-5 enterprise-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-red-200">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+            </div>
+            <div>
+              <p className="card-title-exec text-red-700">Couldn't load dashboard metrics</p>
+              <p className="supporting-text">A connection issue prevented loading your latest stats. Please retry.</p>
+            </div>
+          </div>
+          <Button
+            onClick={() => { queryClient.invalidateQueries(); fetchStats(); }}
+            className="btn-brand h-9 shrink-0"
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" /> Retry
+          </Button>
+        </div>
+      )}
+
+      {/* ── ATTENTION / ACTION CENTER ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        {/* 1. Critical — What requires attention? */}
+        <div className="enterprise-card p-4 hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="status-badge status-danger">
+              <AlertCircle className="h-3 w-3 shrink-0" />
+              Requires Attention
+            </span>
+            <span className="meta-text font-semibold">
+              {loading ? <Skeleton className="h-4 w-10" /> : `${(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0) + (stats?.openMaintenanceCount ?? 0)} issues`}
+            </span>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Overdue arrears</span>
+              <span className="supporting-text font-bold text-red-600">
+                {loading ? <Skeleton className="h-4 w-16" /> : formatCurrency(stats?.arrearsTotal ?? 0)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Expiring leases (30d)</span>
+              <span className="supporting-text font-semibold text-amber-600">
+                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.expiringLeases ?? 0} leases`}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Vacant units</span>
+              <span className="supporting-text font-semibold">
+                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.vacantUnits ?? 0} units`}
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/billing?filter=overdue")}
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-red-600 hover:bg-red-50"
+          >
+            <span>Resolve arrears ({stats?.overdueInvoices ?? 0})</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+
+        {/* 2. Warning — What needs approval? */}
+        <div className="enterprise-card p-4 hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="status-badge status-warning">
+              <CheckSquare className="h-3 w-3 shrink-0" />
+              Needs Approval
+            </span>
+            <span className="meta-text font-semibold">
+              {loading ? <Skeleton className="h-4 w-12" /> : `${(stats?.pendingDepositRefundsCount ?? 0) + (stats?.openMaintenanceCount ?? 0)} pending`}
+            </span>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Deposit refunds</span>
+              <span className="supporting-text font-semibold">
+                {stats?.pendingDepositRefundsCount ?? 0} pending
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Open maintenance</span>
+              <span className="supporting-text font-semibold">
+                {stats?.openMaintenanceCount ?? 0} requests
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Pending invoices</span>
+              <span className="supporting-text font-semibold">
+                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.pendingInvoices ?? 0} due`}
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/maintenance")}
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-amber-600 hover:bg-amber-50"
+          >
+            <span>Manage approvals</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+
+        {/* 3. Success — What generates revenue? */}
+        <div className="enterprise-card p-4 hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="status-badge status-success">
+              <DollarSign className="h-3 w-3 shrink-0" />
+              Revenue
+            </span>
+            <span className="status-badge status-success">
+              {stats?.occupancyRate ?? 0}% Occupied
+            </span>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Collected rent (MTD)</span>
+              <span className="supporting-text font-bold text-emerald-600">
+                {loading ? <Skeleton className="h-4 w-20" /> : formatCurrency(stats?.revenueMTD ?? 0)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Collection rate</span>
+              <span className="supporting-text font-semibold">
+                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.collectionRate ?? 0}%`}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Occupied / total units</span>
+              <span className="supporting-text font-semibold">
+                {loading ? <Skeleton className="h-4 w-14" /> : `${stats?.occupiedUnits ?? 0} / ${stats?.totalUnits ?? 0}`}
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/reports")}
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-emerald-600 hover:bg-emerald-50"
+          >
+            <span>Financial reports</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+
+        {/* 4. Info — What happened today? */}
+        <div className="enterprise-card p-4 hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="status-badge status-info">
+              <Activity className="h-3 w-3 shrink-0" />
+              Recent Activity
+            </span>
+            <span className="status-badge status-neutral">Live feed</span>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">New tenants MTD</span>
+              <span className="supporting-text font-semibold text-[hsl(220_87%_45%)]">
+                +{stats?.newTenantsThisMonth ?? 0} joined
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Active leases</span>
+              <span className="supporting-text font-semibold">
+                {stats?.activeLeases ?? 0} active
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="supporting-text">Properties monitored</span>
+              <span className="supporting-text font-semibold">
+                {stats?.totalProperties ?? 0} total
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/tenants")}
+            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-[hsl(220_87%_45%)] hover:bg-blue-50"
+          >
+            <span>View roster</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+
+
       {/* ── KPI GRID (PORTFOLIO & FINANCIAL METRICS) ── */}
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="section-title">Portfolio & Financial Metrics</h2>
+        {!loading && stats && (
+          <span className="status-badge status-neutral">Live data</span>
+        )}
+      </div>
       <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-5">
         {loading
-          ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
+          ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
           : stats && (
             <>
               <StatCard
@@ -604,17 +660,17 @@ const Dashboard = () => {
       {!loading && stats && stats.overdueInvoices > 0 && <ArrearsHeatMap />}
 
       {/* ── QUICK ACTIONS TOOLBAR ── */}
-      <Card className="mb-6 border-border/60">
+      <Card className="mb-6 enterprise-card">
         <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-            <div className="h-6 w-6 rounded-md bg-amber-400/15 border border-amber-400/25 flex items-center justify-center flex-shrink-0">
-              <Zap className="h-3.5 w-3.5 text-amber-500" />
+          <CardTitle className="card-title-exec flex items-center gap-2">
+            <div className="h-6 w-6 rounded-md bg-[hsl(220_87%_51%/0.1)] border border-[hsl(220_87%_51%/0.2)] flex items-center justify-center flex-shrink-0">
+              <Zap className="h-3.5 w-3.5 text-[hsl(220_87%_51%)]" />
             </div>
-            Quick Operations Toolbar
+            Quick Operations
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 sm:px-5 pb-4">
-          <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-2">
             {quickActions.map((action) => (
               <button
                 key={action.label}
@@ -629,7 +685,7 @@ const Dashboard = () => {
                 <div className="h-8 w-8 rounded-lg bg-background/90 border border-border/60 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
                   <action.icon className={cn("h-4 w-4", action.accent)} />
                 </div>
-                <p className="text-[11px] font-semibold text-foreground leading-tight">{action.label}</p>
+                <p className="meta-text font-semibold text-foreground leading-tight">{action.label}</p>
               </button>
             ))}
           </div>
@@ -640,52 +696,55 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
         {/* Left Column (8 cols): Analytics, Approvals & Operations */}
         <div className="lg:col-span-8 space-y-5">
-          {/* 1. Financial & Occupancy Analytics Module */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex items-center justify-between mb-3">
-              <TabsList className="bg-muted/60 p-1 border border-border/60">
-                <TabsTrigger value="overview" className="text-xs gap-1.5">
-                  <BarChart3 className="h-3.5 w-3.5" />
-                  Revenue Analytics
-                </TabsTrigger>
-                <TabsTrigger value="occupancy" className="text-xs gap-1.5">
-                  <Home className="h-3.5 w-3.5" />
-                  Occupancy Performance
-                </TabsTrigger>
-              </TabsList>
-              <Badge variant="outline" className="text-[11px] text-muted-foreground hidden sm:inline-flex">
-                Real-time Analytics Engine
-              </Badge>
-            </div>
+          {/* 1. Revenue / Performance Analytics */}
+          <div>
+            <h2 className="section-title mb-3">Revenue & Performance</h2>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <div className="flex items-center justify-between mb-3">
+                <TabsList className="bg-muted/60 p-1 border border-border/60">
+                  <TabsTrigger value="overview" className="text-xs gap-1.5">
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    Revenue Analytics
+                  </TabsTrigger>
+                  <TabsTrigger value="occupancy" className="text-xs gap-1.5">
+                    <Home className="h-3.5 w-3.5" />
+                    Occupancy Performance
+                  </TabsTrigger>
+                </TabsList>
+                <span className="status-badge status-neutral hidden sm:inline-flex">
+                  Real-time analytics
+                </span>
+              </div>
 
-            <TabsContent value="overview" className="mt-0">
-              <ErrorBoundary compact label="Revenue chart">
-                <RevenueChart />
-              </ErrorBoundary>
-            </TabsContent>
-            <TabsContent value="occupancy" className="mt-0">
-              <ErrorBoundary compact label="Occupancy chart">
-                <OccupancyChart />
-              </ErrorBoundary>
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="overview" className="mt-0">
+                <ErrorBoundary compact label="Revenue chart">
+                  <RevenueChart />
+                </ErrorBoundary>
+              </TabsContent>
+              <TabsContent value="occupancy" className="mt-0">
+                <ErrorBoundary compact label="Occupancy chart">
+                  <OccupancyChart />
+                </ErrorBoundary>
+              </TabsContent>
+            </Tabs>
+          </div>
 
-          {/* 2. Operational Approvals & Tasks Hub */}
-          <Card className="border-border/60">
+          {/* 2. Approvals & Action Desk */}
+          <Card className="enterprise-card">
             <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <CheckSquare className="h-4 w-4 text-amber-500" />
-                    Operational Approvals & Action Desk
+                  <CardTitle className="card-title-exec flex items-center gap-2">
+                    <CheckSquare className="h-4 w-4 text-amber-600" />
+                    Approvals & Action Desk
                   </CardTitle>
-                  <CardDescription className="text-xs">
+                  <CardDescription className="supporting-text">
                     Pending deposit refunds, lease renewals, and tenant actions
                   </CardDescription>
                 </div>
-                <Badge variant="secondary" className="text-xs">
-                  {stats?.pendingDepositRefundsCount ?? 0} Pending Approvals
-                </Badge>
+                <span className="status-badge status-warning">
+                  {stats?.pendingDepositRefundsCount ?? 0} pending
+                </span>
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-5">
@@ -693,10 +752,13 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* 3. Portfolio & Tenant Roster Desk */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <PropertiesOverview />
-            <TenantsOverview />
+          {/* 3. Property & Tenant Overview */}
+          <div>
+            <h2 className="section-title mb-3">Property & Tenant Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <PropertiesOverview />
+              <TenantsOverview />
+            </div>
           </div>
 
           {/* 4. Upcoming Payments & Collection Forecast */}
@@ -707,14 +769,14 @@ const Dashboard = () => {
 
         {/* Right Column (4 cols): Live Activity Feed & Audit Log */}
         <div className="lg:col-span-4 space-y-5">
-          {/* Activity Feed ("What happened today?") */}
-          <Card className="border-border/60">
+          {/* Activity Feed */}
+          <Card className="enterprise-card">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border/40">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Activity className="h-4 w-4 text-sky-500" />
+              <CardTitle className="card-title-exec flex items-center gap-2">
+                <Activity className="h-4 w-4 text-[hsl(220_87%_51%)]" />
                 Live Activity Feed
               </CardTitle>
-              <CardDescription className="text-xs">System & tenant events log</CardDescription>
+              <CardDescription className="supporting-text">System & tenant events log</CardDescription>
             </CardHeader>
             <CardContent className="p-3 sm:p-4">
               <ErrorBoundary compact label="Activity feed">
@@ -723,14 +785,14 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Audit Trail & Manager Actions */}
-          <Card className="border-border/60">
+          {/* Audit Trail */}
+          <Card className="enterprise-card">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border/40">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              <CardTitle className="card-title-exec flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
                 Operational Audit Log
               </CardTitle>
-              <CardDescription className="text-xs">Manager system activities</CardDescription>
+              <CardDescription className="supporting-text">Manager system activities</CardDescription>
             </CardHeader>
             <CardContent className="p-3 sm:p-4">
               <ManagerActivityLog compact limit={10} />
