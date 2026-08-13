@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/shared/components/ui/card";
-import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { Card, CardContent } from '@/shared/components/ui/card';
+import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
 
 interface TenantStatsCardsProps {
   totalDue: number;
@@ -47,8 +47,8 @@ export const TenantStatsCards = ({
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-              <Clock className="h-6 w-6 text-amber-500" />
+            <div className="h-12 w-12 rounded-xl bg-warning flex items-center justify-center">
+              <Clock className="h-6 w-6 text-warning" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Pending</p>

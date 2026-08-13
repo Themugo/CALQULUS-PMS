@@ -12,13 +12,20 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shared/components/ui/dialog';
 import { format, addDays } from 'date-fns';
 import { downloadVacationNoticePdf } from '@/features/vacation-notices/lib/vacationNoticePdfExport';
-import { 
-  Plus, 
-  Clock, 
-  CheckCircle, 
+import {
+  Plus,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Loader2,
   FileText,
@@ -27,7 +34,7 @@ import {
   Calendar,
   Home,
   ChevronRight,
-  PenTool
+  PenTool,
 } from 'lucide-react';
 import { SignatureCanvas } from '@/features/contracts/components/SignatureCanvas';
 
@@ -54,11 +61,44 @@ interface VacationNotice {
   tenant_signed_at: string | null;
 }
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
-  pending: { label: "Pending", variant: "secondary", icon: Clock, color: "text-warning", badgeClass: "bg-amber-500 text-white" },
-  acknowledged: { label: "Acknowledged", variant: "default", icon: CheckCircle, color: "text-amber-500", badgeClass: "bg-[hsl(214_73%_45%)] text-white" },
-  processed: { label: "Processed", variant: "outline", icon: CheckCircle, color: "text-success", badgeClass: "bg-emerald-600 text-white" },
-  cancelled: { label: "Cancelled", variant: "destructive", icon: AlertCircle, color: "text-destructive", badgeClass: "bg-red-600 text-white" },
+const statusConfig: Record<
+  string,
+  {
+    label: string;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    icon: typeof Clock;
+    color: string;
+    badgeClass: string;
+  }
+> = {
+  pending: {
+    label: 'Pending',
+    variant: 'secondary',
+    icon: Clock,
+    color: 'text-warning',
+    badgeClass: 'bg-warning text-white',
+  },
+  acknowledged: {
+    label: 'Acknowledged',
+    variant: 'default',
+    icon: CheckCircle,
+    color: 'text-warning',
+    badgeClass: 'bg-primary text-white',
+  },
+  processed: {
+    label: 'Processed',
+    variant: 'outline',
+    icon: CheckCircle,
+    color: 'text-success',
+    badgeClass: 'bg-success text-white',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    variant: 'destructive',
+    icon: AlertCircle,
+    color: 'text-destructive',
+    badgeClass: 'bg-destructive text-white',
+  },
 };
 
 const TenantVacationNotices = () => {
@@ -69,8 +109,17 @@ const TenantVacationNotices = () => {
 
   const [notices, setNotices] = useState<VacationNotice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tenantInfo, setTenantInfo] = useState<{ id: string; name: string; email: string; property: string | null; unit: string | null; property_id: string | null; phone: string | null; manager_id: string | null } | null>(null);
-  
+  const [tenantInfo, setTenantInfo] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    property: string | null;
+    unit: string | null;
+    property_id: string | null;
+    phone: string | null;
+    manager_id: string | null;
+  } | null>(null);
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [signDialogOpen, setSignDialogOpen] = useState(false);
@@ -92,24 +141,24 @@ const TenantVacationNotices = () => {
       setLoading(false);
       return;
     }
-    
+
     const { data, error } = await supabase
-      .from("tenants")
-      .select("id, name, email, property, unit, property_id, phone, manager_id")
-      .eq("id", userRole.tenant_id)
+      .from('tenants')
+      .select('id, name, email, property, unit, property_id, phone, manager_id')
+      .eq('id', userRole.tenant_id)
       .single();
-    
+
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to load tenant information",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load tenant information',
+        variant: 'destructive',
       });
       setLoading(false);
     } else {
       setTenantInfo(data);
       if (data.phone) {
-        setFormData(prev => ({ ...prev, phoneNumber: data.phone || '' }));
+        setFormData((prev) => ({ ...prev, phoneNumber: data.phone || '' }));
       }
     }
   }, [userRole?.tenant_id, toast]);
@@ -117,23 +166,22 @@ const TenantVacationNotices = () => {
   useEffect(() => {
     fetchTenantInfo();
   }, [userRole?.tenant_id, fetchTenantInfo]);
-  
 
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const fetchNotices = useCallback(async () => {
     if (!tenantInfo?.id) return;
 
     const { data, error } = await supabase
-      .from("vacation_notices")
-      .select("*")
-      .eq("tenant_id", tenantInfo.id)
-      .order("created_at", { ascending: false });
+      .from('vacation_notices')
+      .select('*')
+      .eq('tenant_id', tenantInfo.id)
+      .order('created_at', { ascending: false });
 
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to load vacation notices",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load vacation notices',
+        variant: 'destructive',
       });
     } else {
       setNotices(data || []);
@@ -152,36 +200,34 @@ const TenantVacationNotices = () => {
 
     if (!formData.intendedMoveOutDate) {
       toast({
-        title: "Move-out date required",
-        description: "Please select your intended move-out date",
-        variant: "destructive",
+        title: 'Move-out date required',
+        description: 'Please select your intended move-out date',
+        variant: 'destructive',
       });
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("vacation_notices")
-        .insert({
-          tenant_id: tenantInfo.id,
-          property_id: tenantInfo.property_id,
-          tenant_name: tenantInfo.name,
-          tenant_email: tenantInfo.email,
-          property_name: tenantInfo.property || 'Unknown Property',
-          unit_number: tenantInfo.unit,
-          intended_move_out_date: formData.intendedMoveOutDate,
-          reason: formData.reason.trim() || null,
-          forwarding_address: formData.forwardingAddress.trim() || null,
-          phone_number: formData.phoneNumber.trim() || null,
-          manager_id: tenantInfo.manager_id,
-        });
+      const { error } = await supabase.from('vacation_notices').insert({
+        tenant_id: tenantInfo.id,
+        property_id: tenantInfo.property_id,
+        tenant_name: tenantInfo.name,
+        tenant_email: tenantInfo.email,
+        property_name: tenantInfo.property || 'Unknown Property',
+        unit_number: tenantInfo.unit,
+        intended_move_out_date: formData.intendedMoveOutDate,
+        reason: formData.reason.trim() || null,
+        forwarding_address: formData.forwardingAddress.trim() || null,
+        phone_number: formData.phoneNumber.trim() || null,
+        manager_id: tenantInfo.manager_id,
+      });
 
       if (error) throw error;
 
       toast({
-        title: "Notice submitted",
-        description: "Your vacation notice has been submitted successfully",
+        title: 'Notice submitted',
+        description: 'Your vacation notice has been submitted successfully',
       });
 
       setCreateDialogOpen(false);
@@ -194,9 +240,9 @@ const TenantVacationNotices = () => {
       fetchNotices();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to submit vacation notice. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to submit vacation notice. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -218,8 +264,8 @@ const TenantVacationNotices = () => {
       tenantSignedAt: notice.tenant_signed_at || undefined,
     });
     toast({
-      title: "Downloaded",
-      description: "Vacation notice PDF has been downloaded",
+      title: 'Downloaded',
+      description: 'Vacation notice PDF has been downloaded',
     });
   };
 
@@ -235,27 +281,27 @@ const TenantVacationNotices = () => {
     try {
       const signedAt = new Date().toISOString();
       const { error } = await supabase
-        .from("vacation_notices")
+        .from('vacation_notices')
         .update({
           tenant_signature: signature,
           tenant_signed_at: signedAt,
         })
-        .eq("id", selectedNotice.id);
+        .eq('id', selectedNotice.id);
 
       if (error) throw error;
 
       toast({
-        title: "Notice signed!",
-        description: "Your signature has been saved successfully.",
+        title: 'Notice signed!',
+        description: 'Your signature has been saved successfully.',
       });
 
       setSignDialogOpen(false);
       fetchNotices();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save your signature. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save your signature. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsSigning(false);
@@ -268,9 +314,9 @@ const TenantVacationNotices = () => {
 
     if (file.size > 10 * 1024 * 1024) {
       toast({
-        title: "File too large",
-        description: "Please upload a file smaller than 10MB",
-        variant: "destructive",
+        title: 'File too large',
+        description: 'Please upload a file smaller than 10MB',
+        variant: 'destructive',
       });
       return;
     }
@@ -282,40 +328,36 @@ const TenantVacationNotices = () => {
       const filePath = `vacation-notices/${fileName}`;
 
       // First check if bucket exists, if not we'll store the file reference
-      const { error: uploadError } = await supabase.storage
-        .from('tenant-photos')
-        .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('tenant-photos').upload(filePath, file);
 
       if (uploadError) {
         // If bucket doesn't exist or other storage issue, still allow saving the reference
         throw uploadError;
       }
 
-      const { data: urlData } = supabase.storage
-        .from('tenant-photos')
-        .getPublicUrl(filePath);
+      const { data: urlData } = supabase.storage.from('tenant-photos').getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
-        .from("vacation_notices")
+        .from('vacation_notices')
         .update({ uploaded_document_url: urlData.publicUrl })
-        .eq("id", noticeId);
+        .eq('id', noticeId);
 
       if (updateError) throw updateError;
 
       toast({
-        title: "Document uploaded",
-        description: "Your signed document has been uploaded successfully",
+        title: 'Document uploaded',
+        description: 'Your signed document has been uploaded successfully',
       });
 
       fetchNotices();
       if (selectedNotice?.id === noticeId) {
-        setSelectedNotice(prev => prev ? { ...prev, uploaded_document_url: urlData.publicUrl } : null);
+        setSelectedNotice((prev) => (prev ? { ...prev, uploaded_document_url: urlData.publicUrl } : null));
       }
     } catch (error) {
       toast({
-        title: "Upload failed",
-        description: "Failed to upload document. Please try again.",
-        variant: "destructive",
+        title: 'Upload failed',
+        description: 'Failed to upload document. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setUploading(false);
@@ -327,13 +369,13 @@ const TenantVacationNotices = () => {
     setViewDialogOpen(true);
   };
 
-  const pendingNotices = notices.filter(n => n.status === 'pending');
-  const processedNotices = notices.filter(n => n.status !== 'pending');
+  const pendingNotices = notices.filter((n) => n.status === 'pending');
+  const processedNotices = notices.filter((n) => n.status !== 'pending');
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -344,7 +386,12 @@ const TenantVacationNotices = () => {
         title="Vacation Notices"
         onBack={() => navigate('/portal')}
         trailing={
-          <Button variant="ghost" size="icon" aria-label="New vacation notice" onClick={() => setCreateDialogOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="New vacation notice"
+            onClick={() => setCreateDialogOpen(true)}
+          >
             <Plus className="h-5 w-5" />
           </Button>
         }
@@ -378,10 +425,7 @@ const TenantVacationNotices = () => {
         </div>
 
         {/* New Notice Button */}
-        <Button 
-          className="w-full" 
-          onClick={() => setCreateDialogOpen(true)}
-        >
+        <Button className="w-full" onClick={() => setCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Submit Vacation Notice
         </Button>
@@ -403,11 +447,7 @@ const TenantVacationNotices = () => {
               <div className="space-y-3">
                 <h2 className="text-sm font-medium text-muted-foreground">Pending Notices</h2>
                 {pendingNotices.map((notice) => (
-                  <NoticeCard
-                    key={notice.id}
-                    notice={notice}
-                    onClick={() => handleViewNotice(notice)}
-                  />
+                  <NoticeCard key={notice.id} notice={notice} onClick={() => handleViewNotice(notice)} />
                 ))}
               </div>
             )}
@@ -417,11 +457,7 @@ const TenantVacationNotices = () => {
               <div className="space-y-3">
                 <h2 className="text-sm font-medium text-muted-foreground">Previous Notices</h2>
                 {processedNotices.map((notice) => (
-                  <NoticeCard
-                    key={notice.id}
-                    notice={notice}
-                    onClick={() => handleViewNotice(notice)}
-                  />
+                  <NoticeCard key={notice.id} notice={notice} onClick={() => handleViewNotice(notice)} />
                 ))}
               </div>
             )}
@@ -437,9 +473,7 @@ const TenantVacationNotices = () => {
               <FileText className="h-5 w-5" />
               Notice of Intent to Vacate
             </DialogTitle>
-            <DialogDescription>
-              Submit your formal notice to vacate the property.
-            </DialogDescription>
+            <DialogDescription>Submit your formal notice to vacate the property.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -449,7 +483,7 @@ const TenantVacationNotices = () => {
                 type="date"
                 value={formData.intendedMoveOutDate}
                 min={format(addDays(new Date(), 1), 'yyyy-MM-dd')}
-                onChange={(e) => setFormData(prev => ({ ...prev, intendedMoveOutDate: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, intendedMoveOutDate: e.target.value }))}
               />
               <p className="text-xs text-muted-foreground">Most leases require 30 days notice</p>
             </div>
@@ -460,7 +494,7 @@ const TenantVacationNotices = () => {
                 placeholder="e.g., Job relocation, purchasing a home..."
                 rows={2}
                 value={formData.reason}
-                onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, reason: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -470,7 +504,7 @@ const TenantVacationNotices = () => {
                 placeholder="Enter your new address for deposit return..."
                 rows={2}
                 value={formData.forwardingAddress}
-                onChange={(e) => setFormData(prev => ({ ...prev, forwardingAddress: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, forwardingAddress: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -480,7 +514,7 @@ const TenantVacationNotices = () => {
                 type="tel"
                 placeholder="+1 (555) 000-0000"
                 value={formData.phoneNumber}
-                onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
               />
             </div>
             {tenantInfo?.property && (
@@ -510,7 +544,7 @@ const TenantVacationNotices = () => {
           <DialogHeader>
             <DialogTitle>Vacation Notice</DialogTitle>
             <DialogDescription>
-              Submitted on {selectedNotice && format(new Date(selectedNotice.created_at), "dd/MM/yy")}
+              Submitted on {selectedNotice && format(new Date(selectedNotice.created_at), 'dd/MM/yy')}
             </DialogDescription>
           </DialogHeader>
           {selectedNotice && (
@@ -533,7 +567,7 @@ const TenantVacationNotices = () => {
                   <div>
                     <Label className="text-muted-foreground">Move-Out Date</Label>
                     <p className="mt-1 text-sm font-medium">
-                      {format(new Date(selectedNotice.intended_move_out_date), "dd/MM/yy")}
+                      {format(new Date(selectedNotice.intended_move_out_date), 'dd/MM/yy')}
                     </p>
                   </div>
                 </div>
@@ -574,26 +608,24 @@ const TenantVacationNotices = () => {
                       </p>
                     )}
                   </div>
-                ) : selectedNotice.status === 'pending' && (
-                  <Button
-                    onClick={() => {
-                      setViewDialogOpen(false);
-                      handleSignNotice(selectedNotice);
-                    }}
-                    className="w-full"
-                  >
-                    <PenTool className="h-4 w-4 mr-2" />
-                    Sign Electronically
-                  </Button>
+                ) : (
+                  selectedNotice.status === 'pending' && (
+                    <Button
+                      onClick={() => {
+                        setViewDialogOpen(false);
+                        handleSignNotice(selectedNotice);
+                      }}
+                      className="w-full"
+                    >
+                      <PenTool className="h-4 w-4 mr-2" />
+                      Sign Electronically
+                    </Button>
+                  )
                 )}
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleDownloadPdf(selectedNotice)}
-                    className="w-full"
-                  >
+                  <Button variant="outline" onClick={() => handleDownloadPdf(selectedNotice)} className="w-full">
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF
                   </Button>
@@ -607,11 +639,7 @@ const TenantVacationNotices = () => {
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         disabled={uploading}
                       />
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        disabled={uploading}
-                      >
+                      <Button variant="secondary" className="w-full" disabled={uploading}>
                         {uploading ? (
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                         ) : (
@@ -627,7 +655,7 @@ const TenantVacationNotices = () => {
                       href={selectedNotice.uploaded_document_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-amber-600 underline text-center"
+                      className="text-sm text-warning underline text-center"
                     >
                       View Uploaded Document
                     </a>
@@ -637,7 +665,7 @@ const TenantVacationNotices = () => {
                 {selectedNotice.acknowledged_at && (
                   <div className="bg-success/10 border border-success/20 rounded-lg p-3">
                     <p className="text-sm text-success font-medium">
-                      Acknowledged on {format(new Date(selectedNotice.acknowledged_at), "dd/MM/yy")}
+                      Acknowledged on {format(new Date(selectedNotice.acknowledged_at), 'dd/MM/yy')}
                     </p>
                   </div>
                 )}
@@ -669,7 +697,10 @@ const TenantVacationNotices = () => {
             <div className="bg-muted/50 border rounded-lg p-4 text-sm">
               <p className="font-medium mb-2">By signing this notice, you confirm:</p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>Your intent to vacate on {selectedNotice && format(new Date(selectedNotice.intended_move_out_date), "dd/MM/yy")}</li>
+                <li>
+                  Your intent to vacate on{' '}
+                  {selectedNotice && format(new Date(selectedNotice.intended_move_out_date), 'dd/MM/yy')}
+                </li>
                 <li>You understand your lease obligations until move-out</li>
                 <li>Your electronic signature is legally binding</li>
               </ul>
@@ -690,10 +721,7 @@ const NoticeCard = ({ notice, onClick }: { notice: VacationNotice; onClick: () =
   const StatusIcon = status.icon;
 
   return (
-    <Card 
-      className="cursor-pointer hover:bg-amber-400/60 transition-colors"
-      onClick={onClick}
-    >
+    <Card className="cursor-pointer hover:bg-warning transition-colors" onClick={onClick}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -710,7 +738,7 @@ const NoticeCard = ({ notice, onClick }: { notice: VacationNotice; onClick: () =
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                <span>Move out: {format(new Date(notice.intended_move_out_date), "dd/MM/yy")}</span>
+                <span>Move out: {format(new Date(notice.intended_move_out_date), 'dd/MM/yy')}</span>
               </div>
             </div>
           </div>

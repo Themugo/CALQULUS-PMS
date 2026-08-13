@@ -11,9 +11,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { chargeMeta } from '@/shared/constants/chargeTypes';
-import {
-  Receipt, Smartphone, Layers, AlertCircle, CheckCircle2, Clock,
-} from 'lucide-react';
+import { Receipt, Smartphone, Layers, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 
 interface TenantBillsHubProps {
@@ -97,7 +95,9 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
   if (isLoading) {
     return (
       <Card>
-        <CardHeader><Skeleton className="h-6 w-48" /></CardHeader>
+        <CardHeader>
+          <Skeleton className="h-6 w-48" />
+        </CardHeader>
         <CardContent className="space-y-3">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-24 w-full" />
@@ -108,23 +108,23 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
 
   if (payable.length === 0) {
     return (
-      <Card className="border-green-200 bg-green-50/50">
+      <Card className="border-success/30 bg-success/50">
         <CardContent className="py-10 text-center">
-          <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto mb-3" />
-          <p className="font-semibold text-green-900">All caught up</p>
-          <p className="text-sm text-green-700 mt-1">No outstanding rent, water, or amenity bills.</p>
+          <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
+          <p className="font-semibold text-success">All caught up</p>
+          <p className="text-sm text-success mt-1">No outstanding rent, water, or amenity bills.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="border-amber-400/20 shadow-sm">
+    <Card className="border-warning/40 shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Receipt className="h-5 w-5 text-amber-500" />
+              <Receipt className="h-5 w-5 text-warning" />
               My bills
             </CardTitle>
             <CardDescription>
@@ -168,7 +168,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
               <div
                 key={bill.id}
                 className={`rounded-xl border p-4 transition-colors ${
-                  isChecked ? 'border-amber-400/50 bg-amber-400/8' : 'border-border bg-card'
+                  isChecked ? 'border-warning/40 bg-warning' : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -190,9 +190,15 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                       </p>
                       <Badge variant={isOverdue ? 'destructive' : 'secondary'} className="text-xs">
                         {isOverdue ? (
-                          <><AlertCircle className="h-3 w-3 mr-1" />Overdue</>
+                          <>
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            Overdue
+                          </>
                         ) : (
-                          <><Clock className="h-3 w-3 mr-1" />Due {format(new Date(bill.due_date), 'dd MMM')}</>
+                          <>
+                            <Clock className="h-3 w-3 mr-1" />
+                            Due {format(new Date(bill.due_date), 'dd MMM')}
+                          </>
                         )}
                       </Badge>
                     </div>
@@ -213,7 +219,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="mt-2 h-8 text-xs border-green-300 text-green-800 hover:bg-green-50"
+                      className="mt-2 h-8 text-xs border-success/40 text-success hover:bg-success/20"
                       onClick={() => onPay([bill])}
                     >
                       Pay only
@@ -232,26 +238,19 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                 ? 'Select bills to combine, or use Pay only on each row'
                 : `${selected.size} bill${selected.size > 1 ? 's' : ''} selected`}
             </p>
-            {selected.size > 0 && (
-              <p className="text-xl font-bold mt-0.5">{fmt(selectedTotal)}</p>
-            )}
+            {selected.size > 0 && <p className="text-xl font-bold mt-0.5">{fmt(selectedTotal)}</p>}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               size="lg"
-              className="bg-green-600 hover:bg-green-700 text-white gap-2 h-11"
+              className="bg-success hover:bg-success text-white gap-2 h-11"
               disabled={selected.size === 0}
               onClick={() => onPay(selectedBills)}
             >
               <Layers className="h-4 w-4" />
               Pay selected ({selected.size || 0})
             </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="gap-2 h-11"
-              onClick={() => onPay(payable)}
-            >
+            <Button size="lg" variant="secondary" className="gap-2 h-11" onClick={() => onPay(payable)}>
               <Smartphone className="h-4 w-4" />
               Pay everything — {fmt(totalDue)}
             </Button>

@@ -12,12 +12,32 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
-  FileText, Receipt, ClipboardCheck, Star, RefreshCw,
-  Download, CheckCircle, Clock, AlertTriangle, Plus,
-  Loader2, Droplets, PawPrint, CreditCard, ChevronDown, ChevronUp
+  FileText,
+  Receipt,
+  ClipboardCheck,
+  Star,
+  RefreshCw,
+  Download,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Plus,
+  Loader2,
+  Droplets,
+  PawPrint,
+  CreditCard,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import TenantWaterPortal from '@/features/tenant-portal/components/TenantWaterPortal';
@@ -26,16 +46,16 @@ import TenantPaymentSchedule from '@/features/tenant-portal/components/TenantPay
 import UnitInspectionChecklist from '@/features/units/components/UnitInspectionChecklist';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
-import { onActivateKey } from "@/shared/lib/a11y";
+import { onActivateKey } from '@/shared/lib/a11y';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const CONDITION_COLORS: Record<string, string> = {
-  excellent: 'text-green-700 bg-green-100',
-  good:      'text-[hsl(214_73%_35%)] bg-[hsl(214_73%_48%/0.12)]',
-  fair:      'text-amber-700 bg-amber-100',
-  poor:      'text-red-700 bg-red-100',
+  excellent: 'text-success bg-success/20',
+  good: 'text-primary bg-primary/20',
+  fair: 'text-warning bg-warning/20',
+  poor: 'text-destructive bg-destructive/20',
 };
 
 interface ChecklistItem {
@@ -79,7 +99,7 @@ const TenantDocuments: React.FC = () => {
 
   const [refRequestOpen, setRefRequestOpen] = useState(false);
   const [refForm, setRefForm] = useState({ issued_to: '', issued_to_email: '', purpose: 'new_rental', message: '' });
-  const [renewalOpen, setRenewalOpen] = useState<{id: string; decision: string} | null>(null);
+  const [renewalOpen, setRenewalOpen] = useState<{ id: string; decision: string } | null>(null);
   const [renewalForm, setRenewalForm] = useState({ decision: '', counter_rent: '', counter_term: '', message: '' });
   const [expandedInspectionIds, setExpandedInspectionIds] = useState<Record<string, boolean>>({});
 
@@ -93,7 +113,14 @@ const TenantDocuments: React.FC = () => {
         .select('*')
         .eq('tenant_id', tenantId)
         .order('invoice_date', { ascending: false });
-      return (data || []) as Array<{id: string; invoice_date: string; invoice_number: string; amount: number; status: string; description?: string}>;
+      return (data || []) as Array<{
+        id: string;
+        invoice_date: string;
+        invoice_number: string;
+        amount: number;
+        status: string;
+        description?: string;
+      }>;
     },
     enabled: !!tenantId,
   });
@@ -108,7 +135,13 @@ const TenantDocuments: React.FC = () => {
         .select('*')
         .eq('tenant_id', tenantId)
         .order('receipt_date', { ascending: false });
-      return (data || []) as Array<{id: string; receipt_date: string; receipt_number: string; amount: number; payment_method: string}>;
+      return (data || []) as Array<{
+        id: string;
+        receipt_date: string;
+        receipt_number: string;
+        amount: number;
+        payment_method: string;
+      }>;
     },
     enabled: !!tenantId,
   });
@@ -138,7 +171,7 @@ const TenantDocuments: React.FC = () => {
         .select('*')
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false });
-      return (data || []) as Array<{id: string; created_at: string; document_type: string; file_url: string}>;
+      return (data || []) as Array<{ id: string; created_at: string; document_type: string; file_url: string }>;
     },
     enabled: !!tenantId,
   });
@@ -153,7 +186,7 @@ const TenantDocuments: React.FC = () => {
         .select('*')
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false });
-      return (data || []) as Array<{id: string; created_at: string; notice_type: string; content: string}>;
+      return (data || []) as Array<{ id: string; created_at: string; notice_type: string; content: string }>;
     },
     enabled: !!tenantId,
   });
@@ -169,7 +202,13 @@ const TenantDocuments: React.FC = () => {
         .eq('tenant_id', tenantId)
         .eq('notice_type', 'lease_renewal')
         .order('created_at', { ascending: false });
-      return (data || []) as Array<{id: string; created_at: string; notice_type: string; content: string; lease_end_date?: string}>;
+      return (data || []) as Array<{
+        id: string;
+        created_at: string;
+        notice_type: string;
+        content: string;
+        lease_end_date?: string;
+      }>;
     },
     enabled: !!tenantId,
   });
@@ -179,13 +218,13 @@ const TenantDocuments: React.FC = () => {
     mutationFn: async () => {
       const { data: tenant } = await supabase.from('tenants').select('manager_id').eq('id', tenantId!).single();
       const { error } = await supabase.from('tenant_reference_requests').insert({
-        tenant_id:      tenantId,
+        tenant_id: tenantId,
         tenant_user_id: user!.id,
-        manager_id:     (tenant as {manager_id?: string})?.manager_id,
-        issued_to:      refForm.issued_to || null,
+        manager_id: (tenant as { manager_id?: string })?.manager_id,
+        issued_to: refForm.issued_to || null,
         issued_to_email: refForm.issued_to_email || null,
-        purpose:        refForm.purpose,
-        message:        refForm.message || null,
+        purpose: refForm.purpose,
+        message: refForm.message || null,
       });
       if (error) throw error;
     },
@@ -204,20 +243,25 @@ const TenantDocuments: React.FC = () => {
       if (!renewalOpen) return;
       const { data: tenant } = await supabase.from('tenants').select('manager_id').eq('id', tenantId!).single();
       const { error } = await supabase.from('tenant_lease_renewal_responses').insert({
-        tenant_id:      tenantId,
+        tenant_id: tenantId,
         tenant_user_id: user!.id,
-        manager_id:     (tenant as {manager_id?: string})?.manager_id,
-        notice_id:      renewalOpen.id,
-        decision:       renewalForm.decision,
-        counter_rent:   renewalForm.counter_rent ? Number(renewalForm.counter_rent) : null,
-        counter_term:   renewalForm.counter_term ? Number(renewalForm.counter_term) : null,
-        message:        renewalForm.message || null,
-        signed_at:      new Date().toISOString(),
+        manager_id: (tenant as { manager_id?: string })?.manager_id,
+        notice_id: renewalOpen.id,
+        decision: renewalForm.decision,
+        counter_rent: renewalForm.counter_rent ? Number(renewalForm.counter_rent) : null,
+        counter_term: renewalForm.counter_term ? Number(renewalForm.counter_term) : null,
+        message: renewalForm.message || null,
+        signed_at: new Date().toISOString(),
       });
       if (error) throw error;
       // Mark notice as acknowledged
-      await supabase.from('tenant_notices')
-        .update({ tenant_acknowledged: true, tenant_ack_at: new Date().toISOString(), tenant_response: renewalForm.decision })
+      await supabase
+        .from('tenant_notices')
+        .update({
+          tenant_acknowledged: true,
+          tenant_ack_at: new Date().toISOString(),
+          tenant_response: renewalForm.decision,
+        })
         .eq('id', renewalOpen.id);
     },
     onSuccess: () => {
@@ -232,44 +276,82 @@ const TenantDocuments: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Lease renewal banner */}
-      {renewalNotices.filter(n => !n.tenant_acknowledged).length > 0 && (
-        <div className="p-4 rounded-xl border-2 border-green-400 bg-green-50">
-          <p className="font-semibold text-green-900 flex items-center gap-2">
+      {renewalNotices.filter((n) => !n.tenant_acknowledged).length > 0 && (
+        <div className="p-4 rounded-xl border-2 border-success/40 bg-success/20">
+          <p className="font-semibold text-success flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Lease renewal offer — action required
           </p>
-          {renewalNotices.filter(n => !n.tenant_acknowledged).map(n => (
-            <div key={n.id} className="mt-2 flex items-center justify-between gap-3">
-              <p className="text-sm text-green-800">{n.title}</p>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => { setRenewalOpen(n); setRenewalForm({ decision: '', counter_rent: '', counter_term: '', message: '' }); }}>
-                Respond
-              </Button>
-            </div>
-          ))}
+          {renewalNotices
+            .filter((n) => !n.tenant_acknowledged)
+            .map((n) => (
+              <div key={n.id} className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-sm text-success">{n.title}</p>
+                <Button
+                  size="sm"
+                  className="bg-success hover:bg-success text-white"
+                  onClick={() => {
+                    setRenewalOpen(n);
+                    setRenewalForm({ decision: '', counter_rent: '', counter_term: '', message: '' });
+                  }}
+                >
+                  Respond
+                </Button>
+              </div>
+            ))}
         </div>
       )}
 
       <Tabs defaultValue="receipts">
         <TabsList className="flex-wrap h-auto gap-1 p-1">
-          <TabsTrigger value="receipts" className="text-xs"><Receipt className="h-3.5 w-3.5 mr-1.5" />Receipts ({physicalReceipts.length})</TabsTrigger>
-          <TabsTrigger value="invoices" className="text-xs"><FileText className="h-3.5 w-3.5 mr-1.5" />Invoices ({physicalInvoices.length})</TabsTrigger>
-          <TabsTrigger value="inspections" className="text-xs"><ClipboardCheck className="h-3.5 w-3.5 mr-1.5" />Inspections ({inspections.length})</TabsTrigger>
-          <TabsTrigger value="water" className="text-xs"><Droplets className="h-3.5 w-3.5 mr-1.5" />Water</TabsTrigger>
-          <TabsTrigger value="pets" className="text-xs"><PawPrint className="h-3.5 w-3.5 mr-1.5" />Pets & Vehicles</TabsTrigger>
-          <TabsTrigger value="schedule" className="text-xs"><CreditCard className="h-3.5 w-3.5 mr-1.5" />Payment Schedule</TabsTrigger>
-          <TabsTrigger value="references" className="text-xs"><Star className="h-3.5 w-3.5 mr-1.5" />References ({references.length})</TabsTrigger>
+          <TabsTrigger value="receipts" className="text-xs">
+            <Receipt className="h-3.5 w-3.5 mr-1.5" />
+            Receipts ({physicalReceipts.length})
+          </TabsTrigger>
+          <TabsTrigger value="invoices" className="text-xs">
+            <FileText className="h-3.5 w-3.5 mr-1.5" />
+            Invoices ({physicalInvoices.length})
+          </TabsTrigger>
+          <TabsTrigger value="inspections" className="text-xs">
+            <ClipboardCheck className="h-3.5 w-3.5 mr-1.5" />
+            Inspections ({inspections.length})
+          </TabsTrigger>
+          <TabsTrigger value="water" className="text-xs">
+            <Droplets className="h-3.5 w-3.5 mr-1.5" />
+            Water
+          </TabsTrigger>
+          <TabsTrigger value="pets" className="text-xs">
+            <PawPrint className="h-3.5 w-3.5 mr-1.5" />
+            Pets & Vehicles
+          </TabsTrigger>
+          <TabsTrigger value="schedule" className="text-xs">
+            <CreditCard className="h-3.5 w-3.5 mr-1.5" />
+            Payment Schedule
+          </TabsTrigger>
+          <TabsTrigger value="references" className="text-xs">
+            <Star className="h-3.5 w-3.5 mr-1.5" />
+            References ({references.length})
+          </TabsTrigger>
         </TabsList>
 
         {/* Physical receipts */}
         <TabsContent value="receipts" className="mt-4">
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Physical receipts</CardTitle><CardDescription>Paper receipts recorded by your manager</CardDescription></CardHeader>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Physical receipts</CardTitle>
+              <CardDescription>Paper receipts recorded by your manager</CardDescription>
+            </CardHeader>
             <CardContent>
-              {prLoading ? <Skeleton className="h-24 w-full" /> : physicalReceipts.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground"><Receipt className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">No physical receipts yet</p></div>
+              {prLoading ? (
+                <Skeleton className="h-24 w-full" />
+              ) : physicalReceipts.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground">
+                  <Receipt className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No physical receipts yet</p>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  {physicalReceipts.map(r => (
+                  {physicalReceipts.map((r) => (
                     <div key={r.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div>
                         <p className="text-sm font-medium">{r.description}</p>
@@ -281,8 +363,14 @@ const TenantDocuments: React.FC = () => {
                       <div className="text-right">
                         <p className="font-semibold text-sm">{fmt(Number(r.amount))}</p>
                         {r.document_url && (
-                          <a href={r.document_url} target="_blank" rel="noopener noreferrer" className="text-xs text-[hsl(214_73%_45%)] hover:underline flex items-center gap-1 justify-end mt-0.5">
-                            <Download className="h-3 w-3" />Download
+                          <a
+                            href={r.document_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline flex items-center gap-1 justify-end mt-0.5"
+                          >
+                            <Download className="h-3 w-3" />
+                            Download
                           </a>
                         )}
                       </div>
@@ -297,13 +385,21 @@ const TenantDocuments: React.FC = () => {
         {/* Physical invoices */}
         <TabsContent value="invoices" className="mt-4">
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Physical invoices</CardTitle><CardDescription>Paper invoices issued by your manager</CardDescription></CardHeader>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Physical invoices</CardTitle>
+              <CardDescription>Paper invoices issued by your manager</CardDescription>
+            </CardHeader>
             <CardContent>
-              {piLoading ? <Skeleton className="h-24 w-full" /> : physicalInvoices.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground"><FileText className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">No physical invoices yet</p></div>
+              {piLoading ? (
+                <Skeleton className="h-24 w-full" />
+              ) : physicalInvoices.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground">
+                  <FileText className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No physical invoices yet</p>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  {physicalInvoices.map(inv => (
+                  {physicalInvoices.map((inv) => (
                     <div key={inv.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div>
                         <p className="text-sm font-medium">{inv.description}</p>
@@ -315,7 +411,10 @@ const TenantDocuments: React.FC = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-sm">{fmt(Number(inv.total_amount || inv.amount))}</p>
-                        <Badge variant="outline" className={`text-xs mt-0.5 capitalize ${inv.status === 'paid' ? 'border-green-300 text-green-700' : 'border-amber-300 text-amber-700'}`}>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs mt-0.5 capitalize ${inv.status === 'paid' ? 'border-success/40 text-success' : 'border-warning/40 text-warning'}`}
+                        >
                           {inv.status}
                         </Badge>
                       </div>
@@ -336,22 +435,42 @@ const TenantDocuments: React.FC = () => {
                 Unit inspections
               </CardTitle>
               <CardDescription>
-                Move-in and move-out condition reports — items listed as not working at move-in are pre-existing and cannot be charged to your deposit.
+                Move-in and move-out condition reports — items listed as not working at move-in are pre-existing and
+                cannot be charged to your deposit.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {inspLoading ? <Skeleton className="h-24 w-full" /> : inspections.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground"><ClipboardCheck className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">No inspection reports yet</p></div>
+              {inspLoading ? (
+                <Skeleton className="h-24 w-full" />
+              ) : inspections.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground">
+                  <ClipboardCheck className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No inspection reports yet</p>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {inspections.map((insp: UnitInspection) => {
                     const expanded = !!expandedInspectionIds[insp.id];
-                    const checklist = insp.checklist_items as {rooms?: Array<{room: string; items: Array<{status: string; name: string; notes?: string}>}>; utilities?: Array<{status: string; name: string; notes?: string}>; fixtures?: Array<{status: string; name: string; notes?: string}>} | null;
-                    const allIssues = checklist ? [
-                      ...(checklist.rooms || []).flatMap((r) => r.items.filter((i) => i.status === 'not_working' || i.status === 'needs_repair').map((i) => ({ ...i, room: r.room }))),
-                      ...(checklist.utilities || []).filter((i) => i.status === 'not_working' || i.status === 'needs_repair').map((i) => ({ ...i, room: 'Utilities' })),
-                      ...(checklist.fixtures || []).filter((i) => i.status === 'not_working' || i.status === 'needs_repair').map((i) => ({ ...i, room: 'Fixtures' })),
-                    ] : [];
+                    const checklist = insp.checklist_items as {
+                      rooms?: Array<{ room: string; items: Array<{ status: string; name: string; notes?: string }> }>;
+                      utilities?: Array<{ status: string; name: string; notes?: string }>;
+                      fixtures?: Array<{ status: string; name: string; notes?: string }>;
+                    } | null;
+                    const allIssues = checklist
+                      ? [
+                          ...(checklist.rooms || []).flatMap((r) =>
+                            r.items
+                              .filter((i) => i.status === 'not_working' || i.status === 'needs_repair')
+                              .map((i) => ({ ...i, room: r.room })),
+                          ),
+                          ...(checklist.utilities || [])
+                            .filter((i) => i.status === 'not_working' || i.status === 'needs_repair')
+                            .map((i) => ({ ...i, room: 'Utilities' })),
+                          ...(checklist.fixtures || [])
+                            .filter((i) => i.status === 'not_working' || i.status === 'needs_repair')
+                            .map((i) => ({ ...i, room: 'Fixtures' })),
+                        ]
+                      : [];
 
                     return (
                       <div key={insp.id} className="rounded-lg border border-border overflow-hidden">
@@ -369,26 +488,36 @@ const TenantDocuments: React.FC = () => {
                             setExpandedInspectionIds((current) => ({
                               ...current,
                               [insp.id]: !current[insp.id],
-                            }))
+                            })),
                           )}
                         >
                           <div className="flex items-center gap-3 flex-wrap">
-                            <Badge variant="outline" className="text-xs capitalize">{insp.inspection_type?.replace('_', ' ')}</Badge>
+                            <Badge variant="outline" className="text-xs capitalize">
+                              {insp.inspection_type?.replace('_', ' ')}
+                            </Badge>
                             {insp.overall_condition && (
-                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONDITION_COLORS[insp.overall_condition] || ''}`}>
+                              <span
+                                className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONDITION_COLORS[insp.overall_condition] || ''}`}
+                              >
                                 {insp.overall_condition}
                               </span>
                             )}
                             {allIssues.length > 0 && (
-                              <span className="text-xs text-amber-700 font-medium">{allIssues.length} pre-existing issue{allIssues.length > 1 ? 's' : ''}</span>
+                              <span className="text-xs text-warning font-medium">
+                                {allIssues.length} pre-existing issue{allIssues.length > 1 ? 's' : ''}
+                              </span>
                             )}
                             <p className="text-xs text-muted-foreground">
                               {insp.inspection_date ? format(new Date(insp.inspection_date), 'dd/MM/yy') : '—'}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            {insp.tenant_agreed === true && <CheckCircle className="h-4 w-4 text-green-600" />}
-                            {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                            {insp.tenant_agreed === true && <CheckCircle className="h-4 w-4 text-success" />}
+                            {expanded ? (
+                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            )}
                           </div>
                         </div>
 
@@ -396,17 +525,28 @@ const TenantDocuments: React.FC = () => {
                           <div className="border-t border-border p-4 bg-muted/10">
                             {/* Pre-existing issues summary */}
                             {allIssues.length > 0 && (
-                              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                                <p className="text-xs font-semibold text-amber-900 mb-2">
-                                  Pre-existing issues at {insp.inspection_type === 'move_in' ? 'move-in' : 'move-out'} (recorded {format(new Date(insp.inspection_date || insp.created_at), 'dd/MM/yy')}):
+                              <div className="mb-4 p-3 bg-warning/20 border border-warning/30 rounded-lg">
+                                <p className="text-xs font-semibold text-warning mb-2">
+                                  Pre-existing issues at {insp.inspection_type === 'move_in' ? 'move-in' : 'move-out'}{' '}
+                                  (recorded {format(new Date(insp.inspection_date || insp.created_at), 'dd/MM/yy')}):
                                 </p>
                                 <div className="space-y-1">
-                                  {allIssues.map((issue: {status: string; room: string; name: string; notes?: string}, i: number) => (
-                                    <div key={i} className="text-xs text-amber-800 flex items-start gap-1.5">
-                                      <span className="shrink-0 mt-0.5">{issue.status === 'not_working' ? '✗' : '⚠'}</span>
-                                      <span><span className="font-medium">{issue.room}:</span> {issue.name}{issue.notes ? ` — ${issue.notes}` : ''}</span>
-                                    </div>
-                                  ))}
+                                  {allIssues.map(
+                                    (
+                                      issue: { status: string; room: string; name: string; notes?: string },
+                                      i: number,
+                                    ) => (
+                                      <div key={i} className="text-xs text-warning flex items-start gap-1.5">
+                                        <span className="shrink-0 mt-0.5">
+                                          {issue.status === 'not_working' ? '✗' : '⚠'}
+                                        </span>
+                                        <span>
+                                          <span className="font-medium">{issue.room}:</span> {issue.name}
+                                          {issue.notes ? ` — ${issue.notes}` : ''}
+                                        </span>
+                                      </div>
+                                    ),
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -423,7 +563,7 @@ const TenantDocuments: React.FC = () => {
                             ) : (
                               <div>
                                 {insp.damage_found && (
-                                  <div className="flex items-start gap-2 p-2 bg-red-50 rounded-lg text-xs text-red-800 mb-2">
+                                  <div className="flex items-start gap-2 p-2 bg-destructive/20 rounded-lg text-xs text-destructive mb-2">
                                     <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                                     <span>{insp.damage_description}</span>
                                   </div>
@@ -461,39 +601,70 @@ const TenantDocuments: React.FC = () => {
         <TabsContent value="references" className="mt-4 space-y-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <div><CardTitle className="text-sm">Reference letters</CardTitle><CardDescription>Letters issued by your manager</CardDescription></div>
+              <div>
+                <CardTitle className="text-sm">Reference letters</CardTitle>
+                <CardDescription>Letters issued by your manager</CardDescription>
+              </div>
               <Button size="sm" onClick={() => setRefRequestOpen(true)}>
-                <Plus className="h-4 w-4 mr-1.5" />Request reference
+                <Plus className="h-4 w-4 mr-1.5" />
+                Request reference
               </Button>
             </CardHeader>
             <CardContent>
               {references.length === 0 && refRequests.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground"><Star className="h-10 w-10 mx-auto mb-2 opacity-30" /><p className="text-sm">No reference letters yet</p><p className="text-xs mt-1 opacity-70">Request one from your manager above</p></div>
+                <div className="py-8 text-center text-muted-foreground">
+                  <Star className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No reference letters yet</p>
+                  <p className="text-xs mt-1 opacity-70">Request one from your manager above</p>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  {refRequests.map(rr => (
+                  {refRequests.map((rr) => (
                     <div key={rr.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div>
                         <p className="text-sm font-medium">Reference request</p>
-                        <p className="text-xs text-muted-foreground capitalize">{rr.purpose?.replace('_', ' ')} {rr.issued_to ? `· For ${rr.issued_to}` : ''}</p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {rr.purpose?.replace('_', ' ')} {rr.issued_to ? `· For ${rr.issued_to}` : ''}
+                        </p>
                         <p className="text-xs text-muted-foreground">{format(new Date(rr.created_at), 'dd/MM/yy')}</p>
                       </div>
-                      <Badge variant="outline" className={`text-xs capitalize ${rr.status === 'issued' ? 'border-green-300 text-green-700' : rr.status === 'declined' ? 'border-red-300 text-red-700' : 'border-amber-300 text-amber-700'}`}>
-                        {rr.status === 'pending' ? <Clock className="h-3 w-3 mr-1 inline" /> : rr.status === 'issued' ? <CheckCircle className="h-3 w-3 mr-1 inline" /> : null}
+                      <Badge
+                        variant="outline"
+                        className={`text-xs capitalize ${rr.status === 'issued' ? 'border-success/40 text-success' : rr.status === 'declined' ? 'border-destructive/40 text-destructive' : 'border-warning/40 text-warning'}`}
+                      >
+                        {rr.status === 'pending' ? (
+                          <Clock className="h-3 w-3 mr-1 inline" />
+                        ) : rr.status === 'issued' ? (
+                          <CheckCircle className="h-3 w-3 mr-1 inline" />
+                        ) : null}
                         {rr.status}
                       </Badge>
                     </div>
                   ))}
-                  {references.map(ref => (
-                    <div key={ref.id} className="flex items-center justify-between p-3 rounded-lg border border-green-300 bg-green-50">
+                  {references.map((ref) => (
+                    <div
+                      key={ref.id}
+                      className="flex items-center justify-between p-3 rounded-lg border border-success/40 bg-success/20"
+                    >
                       <div>
-                        <p className="text-sm font-medium text-green-900">Reference letter</p>
-                        <p className="text-xs text-green-700">{ref.tenancy_period} {ref.issued_to ? `· For ${ref.issued_to}` : ''}</p>
-                        {ref.overall_rating && <div className="flex gap-0.5 mt-0.5">{Array.from({length: ref.overall_rating}).map((_, i) => <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />)}</div>}
+                        <p className="text-sm font-medium text-success">Reference letter</p>
+                        <p className="text-xs text-success">
+                          {ref.tenancy_period} {ref.issued_to ? `· For ${ref.issued_to}` : ''}
+                        </p>
+                        {ref.overall_rating && (
+                          <div className="flex gap-0.5 mt-0.5">
+                            {Array.from({ length: ref.overall_rating }).map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-warning text-warning" />
+                            ))}
+                          </div>
+                        )}
                       </div>
                       {ref.document_url && (
                         <a href={ref.document_url} target="_blank" rel="noopener noreferrer">
-                          <Button size="sm" variant="outline" className="gap-1 h-7 text-xs"><Download className="h-3 w-3" />Download</Button>
+                          <Button size="sm" variant="outline" className="gap-1 h-7 text-xs">
+                            <Download className="h-3 w-3" />
+                            Download
+                          </Button>
                         </a>
                       )}
                     </div>
@@ -508,12 +679,17 @@ const TenantDocuments: React.FC = () => {
       {/* Reference request dialog */}
       <Dialog open={refRequestOpen} onOpenChange={setRefRequestOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Request a reference letter</DialogTitle><DialogDescription>Your manager will issue a formal reference letter for your tenancy.</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Request a reference letter</DialogTitle>
+            <DialogDescription>Your manager will issue a formal reference letter for your tenancy.</DialogDescription>
+          </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label>Purpose</Label>
-              <Select value={refForm.purpose} onValueChange={v => setRefForm(p => ({ ...p, purpose: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <Select value={refForm.purpose} onValueChange={(v) => setRefForm((p) => ({ ...p, purpose: v }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="new_rental">New rental application</SelectItem>
                   <SelectItem value="employment">Employment verification</SelectItem>
@@ -522,12 +698,38 @@ const TenantDocuments: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div><Label>Send to (new landlord name)</Label><Input value={refForm.issued_to} onChange={e => setRefForm(p => ({ ...p, issued_to: e.target.value }))} placeholder="New landlord / company" className="mt-1" /></div>
-            <div><Label>Their email (optional)</Label><Input type="email" value={refForm.issued_to_email} onChange={e => setRefForm(p => ({ ...p, issued_to_email: e.target.value }))} className="mt-1" /></div>
-            <div><Label>Message to manager (optional)</Label><Textarea value={refForm.message} onChange={e => setRefForm(p => ({ ...p, message: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
+            <div>
+              <Label>Send to (new landlord name)</Label>
+              <Input
+                value={refForm.issued_to}
+                onChange={(e) => setRefForm((p) => ({ ...p, issued_to: e.target.value }))}
+                placeholder="New landlord / company"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Their email (optional)</Label>
+              <Input
+                type="email"
+                value={refForm.issued_to_email}
+                onChange={(e) => setRefForm((p) => ({ ...p, issued_to_email: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Message to manager (optional)</Label>
+              <Textarea
+                value={refForm.message}
+                onChange={(e) => setRefForm((p) => ({ ...p, message: e.target.value }))}
+                rows={2}
+                className="mt-1 resize-none"
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRefRequestOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setRefRequestOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={() => submitRefRequest.mutate()} disabled={submitRefRequest.isPending}>
               {submitRefRequest.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Send request
@@ -537,16 +739,27 @@ const TenantDocuments: React.FC = () => {
       </Dialog>
 
       {/* Lease renewal response dialog */}
-      <Dialog open={!!renewalOpen} onOpenChange={open => !open && setRenewalOpen(null)}>
+      <Dialog open={!!renewalOpen} onOpenChange={(open) => !open && setRenewalOpen(null)}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Respond to lease renewal offer</DialogTitle><DialogDescription>{renewalOpen?.title}</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Respond to lease renewal offer</DialogTitle>
+            <DialogDescription>{renewalOpen?.title}</DialogDescription>
+          </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label>Your decision</Label>
               <div className="grid grid-cols-3 gap-2 mt-1">
-                {[{v:'accept',l:'Accept',c:'border-green-400 text-green-700'},{v:'negotiate',l:'Negotiate',c:'border-amber-400 text-amber-700'},{v:'decline',l:'Decline',c:'border-red-400 text-red-700'}].map(opt => (
-                  <button key={opt.v} type="button" onClick={() => setRenewalForm(p => ({ ...p, decision: opt.v }))}
-                    className={`py-2 rounded-lg border text-sm font-medium transition-colors ${renewalForm.decision === opt.v ? opt.c + ' bg-opacity-10' : 'border-border text-muted-foreground'}`}>
+                {[
+                  { v: 'accept', l: 'Accept', c: 'border-success/40 text-success' },
+                  { v: 'negotiate', l: 'Negotiate', c: 'border-warning/40 text-warning' },
+                  { v: 'decline', l: 'Decline', c: 'border-destructive/40 text-destructive' },
+                ].map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => setRenewalForm((p) => ({ ...p, decision: opt.v }))}
+                    className={`py-2 rounded-lg border text-sm font-medium transition-colors ${renewalForm.decision === opt.v ? opt.c + ' bg-opacity-10' : 'border-border text-muted-foreground'}`}
+                  >
                     {opt.l}
                   </button>
                 ))}
@@ -554,14 +767,41 @@ const TenantDocuments: React.FC = () => {
             </div>
             {renewalForm.decision === 'negotiate' && (
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Counter rent (KES)</Label><Input type="number" value={renewalForm.counter_rent} onChange={e => setRenewalForm(p => ({ ...p, counter_rent: e.target.value }))} className="mt-1" /></div>
-                <div><Label>Term (months)</Label><Input type="number" value={renewalForm.counter_term} onChange={e => setRenewalForm(p => ({ ...p, counter_term: e.target.value }))} className="mt-1" /></div>
+                <div>
+                  <Label>Counter rent (KES)</Label>
+                  <Input
+                    type="number"
+                    value={renewalForm.counter_rent}
+                    onChange={(e) => setRenewalForm((p) => ({ ...p, counter_rent: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Term (months)</Label>
+                  <Input
+                    type="number"
+                    value={renewalForm.counter_term}
+                    onChange={(e) => setRenewalForm((p) => ({ ...p, counter_term: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
               </div>
             )}
-            <div><Label>Message to manager</Label><Textarea value={renewalForm.message} onChange={e => setRenewalForm(p => ({ ...p, message: e.target.value }))} rows={3} className="mt-1 resize-none" placeholder="Any additional comments..." /></div>
+            <div>
+              <Label>Message to manager</Label>
+              <Textarea
+                value={renewalForm.message}
+                onChange={(e) => setRenewalForm((p) => ({ ...p, message: e.target.value }))}
+                rows={3}
+                className="mt-1 resize-none"
+                placeholder="Any additional comments..."
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRenewalOpen(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setRenewalOpen(null)}>
+              Cancel
+            </Button>
             <Button onClick={() => submitRenewal.mutate()} disabled={!renewalForm.decision || submitRenewal.isPending}>
               {submitRenewal.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Submit response

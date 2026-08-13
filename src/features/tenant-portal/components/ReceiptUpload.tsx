@@ -36,7 +36,14 @@ interface ExtractedData {
   notes?: string | null;
 }
 
-export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoices, onUploadComplete }: ReceiptUploadProps) => {
+export const ReceiptUpload = ({
+  tenantId,
+  managerId,
+  propertyName,
+  unit,
+  invoices,
+  onUploadComplete,
+}: ReceiptUploadProps) => {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -76,7 +83,8 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
         setIsPdf(true);
         toast({
           title: 'PDF detected',
-          description: 'For best results, please screenshot your receipt or paste the transaction text in the notes field.',
+          description:
+            'For best results, please screenshot your receipt or paste the transaction text in the notes field.',
         });
         setParsing(false);
         return;
@@ -85,7 +93,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
         const imageBase64 = await fileToBase64(file);
         requestBody = { imageBase64, mimeType: file.type };
       }
-      
+
       const { data, error } = await supabase.functions.invoke('parse-receipt', {
         body: requestBody,
       });
@@ -143,7 +151,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
 
   const handleRescan = async () => {
     if (!selectedFile) return;
-    
+
     // Clear previous auto-filled data
     setAmount('');
     setPaymentDate(format(new Date(), 'yyyy-MM-dd'));
@@ -151,7 +159,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
     setReferenceNumber('');
     setNotes('');
     setAutoFilled(false);
-    
+
     await parseReceiptWithAI(selectedFile);
   };
 
@@ -166,11 +174,11 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
         });
         return;
       }
-      
+
       setSelectedFile(file);
       setAutoFilled(false);
       setIsPdf(file.type === 'application/pdf');
-      
+
       // Parse both images and PDFs (PDFs will show guidance)
       await parseReceiptWithAI(file);
     }
@@ -229,11 +237,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
       if (managerId) {
         try {
           // Get tenant info for notification
-          const { data: tenantData } = await supabase
-            .from('tenants')
-            .select('name, email')
-            .eq('id', tenantId)
-            .single();
+          const { data: tenantData } = await supabase.from('tenants').select('name, email').eq('id', tenantId).single();
 
           if (tenantData) {
             await supabase.functions.invoke('notify-manager-receipt-upload', {
@@ -273,7 +277,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      
+
       onUploadComplete?.();
     } catch (error: any) {
       toast({
@@ -290,24 +294,24 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Receipt className="h-5 w-5 text-amber-500" />
+          <Receipt className="h-5 w-5 text-warning" />
           Upload Payment Receipt
           <Badge variant="secondary" className="ml-2 gap-1">
             <Sparkles className="h-3 w-3" />
             AI Auto-fill
           </Badge>
         </CardTitle>
-        <CardDescription>
-          Upload a receipt image and we'll automatically extract the details
-        </CardDescription>
+        <CardDescription>Upload a receipt image and we'll automatically extract the details</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* File Upload - Move to top for better UX */}
         <div className="space-y-2">
           <Label>Receipt/Screenshot *</Label>
-          <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-            parsing ? 'border-amber-400/50 bg-amber-400/8' : 'hover:border-amber-400/60/50'
-          }`}>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+              parsing ? 'border-warning/40 bg-warning' : 'hover:border-warning/40/50'
+            }`}
+          >
             <input
               ref={fileInputRef}
               type="file"
@@ -320,17 +324,13 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
             <label htmlFor="receipt-upload" className={`cursor-pointer ${parsing ? 'pointer-events-none' : ''}`}>
               {parsing ? (
                 <div className="space-y-2">
-                  <Loader2 className="h-8 w-8 mx-auto text-amber-500 animate-spin" />
-                  <p className="text-sm text-amber-600 font-medium">
-                    Scanning receipt with AI...
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Extracting payment details automatically
-                  </p>
+                  <Loader2 className="h-8 w-8 mx-auto text-warning animate-spin" />
+                  <p className="text-sm text-warning font-medium">Scanning receipt with AI...</p>
+                  <p className="text-xs text-muted-foreground">Extracting payment details automatically</p>
                 </div>
               ) : selectedFile ? (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-2 text-green-600">
+                  <div className="flex items-center justify-center gap-2 text-success">
                     {isPdf ? <FileText className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
                     <span className="font-medium">{selectedFile.name}</span>
                   </div>
@@ -349,26 +349,16 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
               ) : (
                 <div className="space-y-2">
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Click to upload receipt image or PDF
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    We'll auto-extract payment details • Max 5MB
-                  </p>
+                  <p className="text-sm text-muted-foreground">Click to upload receipt image or PDF</p>
+                  <p className="text-xs text-muted-foreground">We'll auto-extract payment details • Max 5MB</p>
                 </div>
               )}
             </label>
           </div>
-          
+
           {/* Rescan Button */}
           {selectedFile && !parsing && !isPdf && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleRescan}
-              className="w-full mt-2 gap-2"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={handleRescan} className="w-full mt-2 gap-2">
               <RefreshCw className="h-4 w-4" />
               Rescan Receipt
             </Button>
@@ -419,12 +409,7 @@ export const ReceiptUpload = ({ tenantId, managerId, propertyName, unit, invoice
         <div className="space-y-2">
           <Label htmlFor="paymentDate">Payment Date *</Label>
           <div className="relative">
-            <Input
-              id="paymentDate"
-              type="date"
-              value={paymentDate}
-              onChange={(e) => setPaymentDate(e.target.value)}
-            />
+            <Input id="paymentDate" type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} />
             <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>

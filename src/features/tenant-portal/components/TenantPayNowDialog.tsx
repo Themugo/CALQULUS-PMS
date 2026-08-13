@@ -1,7 +1,7 @@
 /**
  * TenantPayNowDialog — Self-initiated M-Pesa STK push (single or combined bills).
  */
-import { format } from "date-fns";
+import { format } from 'date-fns';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -53,10 +53,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const amountDue = useMemo(
-    () => invoices.reduce((sum, inv) => sum + balanceOf(inv), 0),
-    [invoices],
-  );
+  const amountDue = useMemo(() => invoices.reduce((sum, inv) => sum + balanceOf(inv), 0), [invoices]);
   const isCombined = invoices.length > 1;
   const primary = invoices[0];
 
@@ -69,14 +66,12 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
     }
   }, [open, tenantPhone]);
 
-   
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
     if (!open) clearPolling();
     return () => clearPolling();
   }, [open]);
 
-   
   const clearPolling = () => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (countdownRef.current) clearInterval(countdownRef.current);
@@ -120,7 +115,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
       const { data, error } = await supabase.functions.invoke('initiate-mpesa-stk-push', { body });
 
-      if (error || !data?.checkoutRequestId && !data?.CheckoutRequestID) {
+      if (error || (!data?.checkoutRequestId && !data?.CheckoutRequestID)) {
         throw new Error(data?.error || error?.message || 'Failed to initiate payment');
       }
 
@@ -191,7 +186,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5 text-green-600" />
+            <Smartphone className="h-5 w-5 text-success" />
             Pay via M-Pesa
           </DialogTitle>
           <DialogDescription>
@@ -204,24 +199,27 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
         <div className="space-y-4 py-1">
           {status === 'idle' && (
             <>
-              <div className="rounded-xl bg-green-50 border border-green-200 p-4 space-y-2 max-h-48 overflow-y-auto">
+              <div className="rounded-xl bg-success/20 border border-success/30 p-4 space-y-2 max-h-48 overflow-y-auto">
                 {isCombined && (
-                  <div className="flex items-center gap-2 text-xs font-medium text-green-800 mb-2">
+                  <div className="flex items-center gap-2 text-xs font-medium text-success mb-2">
                     <Layers className="h-3.5 w-3.5" />
                     Combined payment — allocated to each bill automatically
                   </div>
                 )}
                 {invoices.map((inv) => (
-                  <div key={inv.id} className="flex justify-between text-sm border-b border-green-100 last:border-0 pb-2 last:pb-0">
+                  <div
+                    key={inv.id}
+                    className="flex justify-between text-sm border-b border-success/30 last:border-0 pb-2 last:pb-0"
+                  >
                     <span className="text-muted-foreground truncate max-w-[55%]">
                       {inv.description || inv.invoice_number}
                     </span>
                     <span className="font-medium shrink-0">{fmt(balanceOf(inv))}</span>
                   </div>
                 ))}
-                <div className="border-t border-green-200 pt-2 flex justify-between items-center">
-                  <span className="font-semibold text-green-900">Total due</span>
-                  <span className="text-xl font-bold text-green-800">{fmt(amountDue)}</span>
+                <div className="border-t border-success/30 pt-2 flex justify-between items-center">
+                  <span className="font-semibold text-success">Total due</span>
+                  <span className="text-xl font-bold text-success">{fmt(amountDue)}</span>
                 </div>
               </div>
 
@@ -243,7 +241,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
               <Button
                 onClick={initiatePayment}
-                className="w-full h-12 text-base bg-green-600 hover:bg-green-700 text-white gap-2"
+                className="w-full h-12 text-base bg-success hover:bg-success text-white gap-2"
               >
                 <Smartphone className="h-5 w-5" />
                 Send M-Pesa Request — {fmt(amountDue)}
@@ -258,7 +256,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
           {status === 'initiating' && (
             <div className="py-10 text-center space-y-3">
-              <Loader2 className="h-12 w-12 mx-auto text-green-600 animate-spin" />
+              <Loader2 className="h-12 w-12 mx-auto text-success animate-spin" />
               <p className="font-semibold text-lg">Connecting to Safaricom…</p>
             </div>
           )}
@@ -266,18 +264,16 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
           {status === 'waiting' && (
             <div className="py-6 text-center space-y-5">
               <div className="relative inline-flex items-center justify-center">
-                <div className="absolute h-20 w-20 rounded-full bg-green-100 animate-ping opacity-50" />
-                <div className="relative h-20 w-20 rounded-full bg-green-50 border-2 border-green-300 flex items-center justify-center">
-                  <Smartphone className="h-10 w-10 text-green-600" />
+                <div className="absolute h-20 w-20 rounded-full bg-success/20 animate-ping opacity-50" />
+                <div className="relative h-20 w-20 rounded-full bg-success/20 border-2 border-success/40 flex items-center justify-center">
+                  <Smartphone className="h-10 w-10 text-success" />
                 </div>
               </div>
               <p className="font-bold text-xl">Check your phone</p>
-              <p className="text-sm text-muted-foreground">
-                Enter your M-Pesa PIN to pay {fmt(amountDue)}
-              </p>
+              <p className="text-sm text-muted-foreground">Enter your M-Pesa PIN to pay {fmt(amountDue)}</p>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-green-500 rounded-full transition-all duration-1000"
+                  className="h-full bg-success rounded-full transition-all duration-1000"
                   style={{ width: `${(countdown / 90) * 100}%` }}
                 />
               </div>
@@ -287,15 +283,11 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
           {status === 'success' && (
             <div className="py-8 text-center space-y-4">
-              <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
-              <p className="font-bold text-2xl text-green-700">Payment confirmed!</p>
+              <CheckCircle className="h-16 w-16 text-success mx-auto" />
+              <p className="font-bold text-2xl text-success">Payment confirmed!</p>
               <p className="text-sm text-muted-foreground">{fmt(amountDue)} received</p>
-              {mpesaReceipt && (
-                <p className="font-mono text-sm bg-green-50 py-2 rounded-lg">{mpesaReceipt}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Your receipt is on its way — check email and Documents.
-              </p>
+              {mpesaReceipt && <p className="font-mono text-sm bg-success/20 py-2 rounded-lg">{mpesaReceipt}</p>}
+              <p className="text-xs text-muted-foreground">Your receipt is on its way — check email and Documents.</p>
             </div>
           )}
 

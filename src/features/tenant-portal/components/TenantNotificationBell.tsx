@@ -4,17 +4,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Popover, PopoverContent, PopoverTrigger,
-} from '@/shared/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import {
-  Bell, BellRing, CheckCheck, Megaphone,
-  CreditCard, Wrench, FileSignature, AlertTriangle, Info
+  Bell,
+  BellRing,
+  CheckCheck,
+  Megaphone,
+  CreditCard,
+  Wrench,
+  FileSignature,
+  AlertTriangle,
+  Info,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { onActivateKey } from "@/shared/lib/a11y";
+import { onActivateKey } from '@/shared/lib/a11y';
 
 interface TenantNotification {
   id: string;
@@ -29,15 +34,15 @@ interface TenantNotification {
 }
 
 const TYPE_CONFIG: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
-  payment:     { icon: CreditCard,    color: 'text-green-600',  bg: 'bg-green-50' },
-  maintenance: { icon: Wrench,        color: 'text-amber-600',  bg: 'bg-amber-50' },
-  notice:      { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50' },
-  broadcast:   { icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]' },
-  announcement:{ icon: Megaphone,     color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]' },
-  contract:    { icon: FileSignature, color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]' },
-  reminder:    { icon: BellRing,      color: 'text-red-600',    bg: 'bg-red-50' },
-  alert:       { icon: AlertTriangle, color: 'text-red-600',    bg: 'bg-red-50' },
-  info:        { icon: Info,          color: 'text-slate-600',  bg: 'bg-slate-50' },
+  payment: { icon: CreditCard, color: 'text-success', bg: 'bg-success/20' },
+  maintenance: { icon: Wrench, color: 'text-warning', bg: 'bg-warning/20' },
+  notice: { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50' },
+  broadcast: { icon: Megaphone, color: 'text-primary', bg: 'bg-primary/10' },
+  announcement: { icon: Megaphone, color: 'text-primary', bg: 'bg-primary/10' },
+  contract: { icon: FileSignature, color: 'text-[hsl(218_58%_38%)]', bg: 'bg-[hsl(218_58%_38%/0.08)]' },
+  reminder: { icon: BellRing, color: 'text-destructive', bg: 'bg-destructive/20' },
+  alert: { icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/20' },
+  info: { icon: Info, color: 'text-muted-foreground', bg: 'bg-muted/20' },
 };
 
 const TenantNotificationBell: React.FC = () => {
@@ -63,28 +68,35 @@ const TenantNotificationBell: React.FC = () => {
     refetchInterval: 30_000,
   });
 
-  const unread = notifications.filter(n => !n.is_read).length;
+  const unread = notifications.filter((n) => !n.is_read).length;
 
   // Real-time subscription
   useEffect(() => {
     if (!user?.id) return;
     const channel = supabase
       .channel(`notifications-${user.id}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'in_app_notifications',
-        filter: `user_id=eq.${user.id}`,
-      }, () => {
-        queryClient.invalidateQueries({ queryKey: ['tenant-notifications', user.id] });
-      })
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'in_app_notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['tenant-notifications', user.id] });
+        },
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id, queryClient]);
 
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('in_app_notifications')
+      await supabase
+        .from('in_app_notifications')
         .update({ is_read: true, read_at: new Date().toISOString() })
         .eq('id', id);
     },
@@ -93,9 +105,10 @@ const TenantNotificationBell: React.FC = () => {
 
   const markAllRead = useMutation({
     mutationFn: async () => {
-      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+      const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
       if (unreadIds.length === 0) return;
-      await supabase.from('in_app_notifications')
+      await supabase
+        .from('in_app_notifications')
         .update({ is_read: true, read_at: new Date().toISOString() })
         .in('id', unreadIds);
     },
@@ -104,7 +117,8 @@ const TenantNotificationBell: React.FC = () => {
 
   const dismiss = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('in_app_notifications')
+      await supabase
+        .from('in_app_notifications')
         .update({ is_dismissed: true, dismissed_at: new Date().toISOString() })
         .eq('id', id);
     },
@@ -120,10 +134,15 @@ const TenantNotificationBell: React.FC = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9" aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-9 w-9"
+          aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+        >
           {unread > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
           {unread > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 h-5 min-w-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center px-1">
+            <span className="absolute -top-0.5 -right-0.5 h-5 min-w-5 rounded-full bg-destructive text-white text-xs font-bold flex items-center justify-center px-1">
               {unread > 99 ? '99+' : unread}
             </span>
           )}
@@ -135,7 +154,8 @@ const TenantNotificationBell: React.FC = () => {
           <div className="flex items-center gap-2">
             {unread > 0 && (
               <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" onClick={() => markAllRead.mutate()}>
-                <CheckCheck className="h-3 w-3" />Mark all read
+                <CheckCheck className="h-3 w-3" />
+                Mark all read
               </Button>
             )}
           </div>
@@ -147,13 +167,13 @@ const TenantNotificationBell: React.FC = () => {
               <p className="text-sm">No notifications</p>
             </div>
           ) : (
-            notifications.map(n => {
+            notifications.map((n) => {
               const config = TYPE_CONFIG[n.type] ?? TYPE_CONFIG.info;
               const Icon = config.icon;
               return (
                 <div
                   key={n.id}
-                  className={`flex items-start gap-3 px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-[hsl(214_73%_48%/0.06)] dark:bg-[hsl(214_73%_30%/0.15)]' : ''}`}
+                  className={`flex items-start gap-3 px-4 py-3 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-primary/10' : ''}`}
                   role="button"
                   tabIndex={0}
                   onClick={() => handleClick(n)}
@@ -164,19 +184,17 @@ const TenantNotificationBell: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`text-sm leading-tight ${!n.is_read ? 'font-semibold' : 'font-medium'}`}>{n.title}</p>
-                      {!n.is_read && (
-                        <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_48%)] shrink-0 mt-1" />
-                      )}
+                      <p className={`text-sm leading-tight ${!n.is_read ? 'font-semibold' : 'font-medium'}`}>
+                        {n.title}
+                      </p>
+                      {!n.is_read && <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.body}</p>
                     <div className="flex items-center justify-between mt-1.5">
                       <span className="text-xs text-muted-foreground/70">
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </span>
-                      {n.action_label && (
-                        <span className="text-xs text-amber-600 font-medium">{n.action_label} →</span>
-                      )}
+                      {n.action_label && <span className="text-xs text-warning font-medium">{n.action_label} →</span>}
                     </div>
                   </div>
                 </div>

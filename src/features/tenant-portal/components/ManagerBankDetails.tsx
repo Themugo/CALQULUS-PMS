@@ -23,7 +23,6 @@ interface BankDetails {
   property_id: string | null;
 }
 
-
 interface DetailRowProps {
   label: string;
   value: string;
@@ -40,7 +39,7 @@ function DetailRow({ label, value, fieldName, copiedField, onCopy }: DetailRowPr
         <p className="font-medium">{value}</p>
       </div>
       <Button variant="ghost" size="sm" onClick={() => onCopy(value, fieldName)} className="h-8 w-8 p-0">
-        {copiedField === fieldName ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+        {copiedField === fieldName ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
       </Button>
     </div>
   );
@@ -59,16 +58,10 @@ function BankAccountCard({ account, copiedField, copiedAll, onCopy, onCopyAll }:
     <div className="space-y-4">
       {/* Copy All Button */}
       <div className="flex justify-end">
-        <Button
-           
-          variant="outline"
-          size="sm"
-          onClick={() => onCopyAll(account)}
-          className="gap-2"
-        >
+        <Button variant="outline" size="sm" onClick={() => onCopyAll(account)} className="gap-2">
           {copiedAll ? (
             <>
-              <Check className="h-4 w-4 text-green-500" />
+              <Check className="h-4 w-4 text-success" />
               Copied!
             </>
           ) : (
@@ -83,14 +76,44 @@ function BankAccountCard({ account, copiedField, copiedAll, onCopy, onCopyAll }:
       {/* Bank Details Section */}
       <div className="space-y-3">
         <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Bank Transfer</h4>
-        <DetailRow label="Bank Name" value={account.bank_name} fieldName={`Bank Name - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
-        <DetailRow label="Account Name" value={account.account_name} fieldName={`Account Name - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
-        <DetailRow label="Account Number" value={account.account_number} fieldName={`Account Number - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+        <DetailRow
+          label="Bank Name"
+          value={account.bank_name}
+          fieldName={`Bank Name - ${account.id}`}
+          copiedField={copiedField}
+          onCopy={onCopy}
+        />
+        <DetailRow
+          label="Account Name"
+          value={account.account_name}
+          fieldName={`Account Name - ${account.id}`}
+          copiedField={copiedField}
+          onCopy={onCopy}
+        />
+        <DetailRow
+          label="Account Number"
+          value={account.account_number}
+          fieldName={`Account Number - ${account.id}`}
+          copiedField={copiedField}
+          onCopy={onCopy}
+        />
         {account.branch_name && (
-          <DetailRow label="Branch" value={account.branch_name} fieldName={`Branch - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+          <DetailRow
+            label="Branch"
+            value={account.branch_name}
+            fieldName={`Branch - ${account.id}`}
+            copiedField={copiedField}
+            onCopy={onCopy}
+          />
         )}
         {account.swift_code && (
-          <DetailRow label="SWIFT Code" value={account.swift_code} fieldName={`SWIFT Code - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+          <DetailRow
+            label="SWIFT Code"
+            value={account.swift_code}
+            fieldName={`SWIFT Code - ${account.id}`}
+            copiedField={copiedField}
+            onCopy={onCopy}
+          />
         )}
       </div>
 
@@ -102,10 +125,22 @@ function BankAccountCard({ account, copiedField, copiedAll, onCopy, onCopyAll }:
             M-Pesa
           </h4>
           {account.paybill_number && (
-            <DetailRow label="Paybill Number" value={account.paybill_number} fieldName={`Paybill - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+            <DetailRow
+              label="Paybill Number"
+              value={account.paybill_number}
+              fieldName={`Paybill - ${account.id}`}
+              copiedField={copiedField}
+              onCopy={onCopy}
+            />
           )}
           {account.till_number && (
-            <DetailRow label="Till Number" value={account.till_number} fieldName={`Till Number - ${account.id}`} copiedField={copiedField} onCopy={onCopy} />
+            <DetailRow
+              label="Till Number"
+              value={account.till_number}
+              fieldName={`Till Number - ${account.id}`}
+              copiedField={copiedField}
+              onCopy={onCopy}
+            />
           )}
         </div>
       )}
@@ -255,7 +290,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Building2 className="h-5 w-5 text-amber-500" />
+            <Building2 className="h-5 w-5 text-warning" />
             Payment Details
             {account.is_default && (
               <Badge variant="secondary" className="text-xs ml-2">
@@ -267,7 +302,13 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
           <CardDescription>Use these details to make payments directly to your landlord</CardDescription>
         </CardHeader>
         <CardContent>
-          <BankAccountCard account={account} copiedField={copiedField} copiedAll={copiedAll} onCopy={copyToClipboard} onCopyAll={copyAllDetails} />
+          <BankAccountCard
+            account={account}
+            copiedField={copiedField}
+            copiedAll={copiedAll}
+            onCopy={copyToClipboard}
+            onCopyAll={copyAllDetails}
+          />
         </CardContent>
       </Card>
     );
@@ -278,7 +319,7 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Building2 className="h-5 w-5 text-amber-500" />
+          <Building2 className="h-5 w-5 text-warning" />
           Payment Details
         </CardTitle>
         <CardDescription>Use these details to make payments directly to your landlord</CardDescription>
@@ -295,7 +336,13 @@ export const ManagerBankDetails = ({ managerId, propertyId }: ManagerBankDetails
           </TabsList>
           {bankAccounts.map((account) => (
             <TabsContent key={account.id} value={account.id}>
-              <BankAccountCard account={account} copiedField={copiedField} copiedAll={copiedAll} onCopy={copyToClipboard} onCopyAll={copyAllDetails} />
+              <BankAccountCard
+                account={account}
+                copiedField={copiedField}
+                copiedAll={copiedAll}
+                onCopy={copyToClipboard}
+                onCopyAll={copyAllDetails}
+              />
             </TabsContent>
           ))}
         </Tabs>

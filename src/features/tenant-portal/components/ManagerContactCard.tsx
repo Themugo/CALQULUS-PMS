@@ -206,26 +206,24 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <User className="h-5 w-5 text-amber-500" />
+          <User className="h-5 w-5 text-warning" />
           {company ? 'Your Property Manager' : 'Property Manager'}
         </CardTitle>
-        <CardDescription>
-          Contact your property manager for any inquiries
-        </CardDescription>
+        <CardDescription>Contact your property manager for any inquiries</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Company Branding */}
         {company && (
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-amber-400/5 to-accent/5 border border-amber-400/60/10">
+          <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-warning to-accent/5 border border-warning/40/10">
             {company.logo_url ? (
-              <img 
-                src={company.logo_url} 
-                alt={company.company_name} 
+              <img
+                src={company.logo_url}
+                alt={company.company_name}
                 className="h-14 w-14 rounded-lg object-contain bg-white p-1 border"
               />
             ) : (
-              <div className="h-14 w-14 rounded-lg bg-amber-400/10 flex items-center justify-center">
-                <Building2 className="h-7 w-7 text-amber-500" />
+              <div className="h-14 w-14 rounded-lg bg-warning flex items-center justify-center">
+                <Building2 className="h-7 w-7 text-warning" />
               </div>
             )}
             <div>
@@ -240,7 +238,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                   variant="link"
                   size="sm"
                   onClick={handleWebsiteClick}
-                  className="h-auto p-0 text-amber-600 text-xs"
+                  className="h-auto p-0 text-warning text-xs"
                 >
                   <Globe className="h-3 w-3 mr-1" />
                   {company.website}
@@ -252,9 +250,9 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
 
         {/* Manager Profile */}
         <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 border-2 border-amber-400/20">
+          <Avatar className="h-14 w-14 border-2 border-warning/40">
             <AvatarImage src={manager.photo_url || undefined} alt={manager.full_name || 'Manager'} />
-            <AvatarFallback className="bg-amber-400/10 text-amber-600 text-lg font-semibold">
+            <AvatarFallback className="bg-warning text-warning text-lg font-semibold">
               {getInitials(manager.full_name)}
             </AvatarFallback>
           </Avatar>
@@ -274,8 +272,8 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
           {/* Email */}
           <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center shrink-0">
-                <Mail className="h-4 w-4 text-amber-500" />
+              <div className="h-9 w-9 rounded-full bg-warning flex items-center justify-center shrink-0">
+                <Mail className="h-4 w-4 text-warning" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Email</p>
@@ -290,11 +288,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 onClick={() => copyToClipboard(manager.email, 'Email')}
                 className="h-8 w-8"
               >
-                {copiedField === 'Email' ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
+                {copiedField === 'Email' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
               <Button
                 variant="ghost"
@@ -312,8 +306,8 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
           {manager.phone && (
             <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-amber-500" />
+                <div className="h-9 w-9 rounded-full bg-warning flex items-center justify-center shrink-0">
+                  <Phone className="h-4 w-4 text-warning" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Phone</p>
@@ -328,11 +322,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                   onClick={() => copyToClipboard(manager.phone!, 'Phone')}
                   className="h-8 w-8"
                 >
-                  {copiedField === 'Phone' ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
+                  {copiedField === 'Phone' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                 </Button>
                 <Button
                   variant="ghost"
@@ -348,7 +338,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                   size="icon"
                   aria-label="Message on WhatsApp"
                   onClick={handleWhatsAppClick}
-                  className="h-8 w-8 text-green-600 hover:text-green-700"
+                  className="h-8 w-8 text-success hover:text-success"
                 >
                   <MessageCircle className="h-4 w-4" />
                 </Button>
@@ -359,23 +349,13 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
 
         {/* Quick Actions */}
         <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEmailClick}
-            className="flex-1"
-          >
+          <Button variant="outline" size="sm" onClick={handleEmailClick} className="flex-1">
             <Mail className="h-4 w-4 mr-2" />
             Email
           </Button>
           {displayPhone && (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePhoneClick}
-                className="flex-1"
-              >
+              <Button variant="outline" size="sm" onClick={handlePhoneClick} className="flex-1">
                 <Phone className="h-4 w-4 mr-2" />
                 Call
               </Button>
@@ -383,7 +363,7 @@ export const ManagerContactCard = ({ managerId, propertyId }: ManagerContactCard
                 variant="outline"
                 size="sm"
                 onClick={handleWhatsAppClick}
-                className="flex-1 text-green-600 border-green-600/30 hover:bg-green-50 hover:text-green-700"
+                className="flex-1 text-success border-success hover:bg-success/20 hover:text-success"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
                 WhatsApp

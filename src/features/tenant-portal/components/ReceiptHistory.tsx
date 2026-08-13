@@ -16,16 +16,14 @@ const getSignedReceiptUrl = async (receiptPath: string): Promise<string | null> 
   if (isFullUrl(receiptPath)) {
     return receiptPath;
   }
-  
+
   // Generate a signed URL with 1-hour expiry
-  const { data, error } = await supabase.storage
-    .from('payment-receipts')
-    .createSignedUrl(receiptPath, 3600);
-  
+  const { data, error } = await supabase.storage.from('payment-receipts').createSignedUrl(receiptPath, 3600);
+
   if (error) {
     return null;
   }
-  
+
   return data.signedUrl;
 };
 
@@ -48,7 +46,10 @@ interface ReceiptHistoryProps {
   refreshTrigger?: number;
 }
 
-const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: typeof Clock }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: typeof Clock }
+> = {
   pending: { label: 'Pending Review', variant: 'secondary', icon: Clock },
   verified: { label: 'Verified', variant: 'default', icon: CheckCircle2 },
   rejected: { label: 'Rejected', variant: 'destructive', icon: XCircle },
@@ -89,24 +90,27 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
     fetchReceipts();
   }, [tenantId, refreshTrigger, fetchReceipts]);
 
-  const handleViewReceipt = useCallback(async (receiptId: string, receiptUrl: string) => {
-    // Check if we already have a signed URL
-    if (signedUrls[receiptId]) {
-      window.open(signedUrls[receiptId], '_blank', 'noopener,noreferrer');
-      return;
-    }
+  const handleViewReceipt = useCallback(
+    async (receiptId: string, receiptUrl: string) => {
+      // Check if we already have a signed URL
+      if (signedUrls[receiptId]) {
+        window.open(signedUrls[receiptId], '_blank', 'noopener,noreferrer');
+        return;
+      }
 
-    setLoadingUrls(prev => ({ ...prev, [receiptId]: true }));
-    
-    const url = await getSignedReceiptUrl(receiptUrl);
-    
-    if (url) {
-      setSignedUrls(prev => ({ ...prev, [receiptId]: url }));
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-    
-    setLoadingUrls(prev => ({ ...prev, [receiptId]: false }));
-  }, [signedUrls]);
+      setLoadingUrls((prev) => ({ ...prev, [receiptId]: true }));
+
+      const url = await getSignedReceiptUrl(receiptUrl);
+
+      if (url) {
+        setSignedUrls((prev) => ({ ...prev, [receiptId]: url }));
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+
+      setLoadingUrls((prev) => ({ ...prev, [receiptId]: false }));
+    },
+    [signedUrls],
+  );
 
   if (loading) {
     return (
@@ -128,7 +132,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-amber-500" />
+            <FileText className="h-5 w-5 text-warning" />
             Uploaded Receipts
           </CardTitle>
           <CardDescription>Your payment receipts will appear here</CardDescription>
@@ -147,7 +151,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-amber-500" />
+          <FileText className="h-5 w-5 text-warning" />
           Uploaded Receipts
         </CardTitle>
         <CardDescription>Track the status of your payment submissions</CardDescription>
@@ -160,13 +164,11 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
           return (
             <div
               key={receipt.id}
-              className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-amber-400/60 transition-colors"
+              className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-warning transition-colors"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium">
-                    KES {receipt.amount.toLocaleString()}
-                  </span>
+                  <span className="font-medium">KES {receipt.amount.toLocaleString()}</span>
                   <Badge variant={config.variant} className="gap-1">
                     <StatusIcon className="h-3 w-3" />
                     {config.label}
@@ -175,9 +177,7 @@ export const ReceiptHistory = ({ tenantId, refreshTrigger }: ReceiptHistoryProps
                 <div className="text-sm text-muted-foreground space-y-1">
                   <p>
                     {paymentMethodLabels[receipt.payment_method] || receipt.payment_method}
-                    {receipt.reference_number && (
-                      <span className="font-mono ml-1">({receipt.reference_number})</span>
-                    )}
+                    {receipt.reference_number && <span className="font-mono ml-1">({receipt.reference_number})</span>}
                   </p>
                   <p>Paid on {format(new Date(receipt.payment_date), 'dd/MM/yy')}</p>
                   {receipt.status === 'rejected' && receipt.rejection_reason && (

@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import type { ReactNode } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
 
 interface MobilePageHeaderProps {
   title: string;

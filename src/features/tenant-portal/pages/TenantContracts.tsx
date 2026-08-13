@@ -6,31 +6,67 @@ import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePage
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shared/components/ui/dialog';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { formatDate, formatDateTime12h } from '@/shared/lib/dateFormat';
 import DOMPurify from 'dompurify';
-import { 
-  PenTool, 
-  Eye, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  Download, 
-  ScrollText,
-  Loader2,
-  Upload
-} from 'lucide-react';
+import { PenTool, Eye, CheckCircle, Clock, AlertCircle, Download, ScrollText, Loader2, Upload } from 'lucide-react';
 import { SignatureCanvas } from '@/features/contracts/components/SignatureCanvas';
 
 import { useTenantContracts, type Contract } from '@/features/tenant-portal/hooks/useTenantContracts';
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock; color: string; badgeClass: string }> = {
-  draft: { label: "Draft", variant: "outline", icon: Clock, color: "text-muted-foreground", badgeClass: "bg-slate-600 text-white border-slate-700" },
-  pending_signature: { label: "Awaiting Signature", variant: "secondary", icon: PenTool, color: "text-amber-500", badgeClass: "bg-amber-500 text-white border-amber-600" },
-  signed: { label: "Signed", variant: "default", icon: CheckCircle, color: "text-emerald-500", badgeClass: "bg-emerald-600 text-white border-emerald-700" },
-  active: { label: "Active", variant: "default", icon: CheckCircle, color: "text-[hsl(214_73%_48%)]", badgeClass: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]" },
-  expired: { label: "Expired", variant: "destructive", icon: AlertCircle, color: "text-red-500", badgeClass: "bg-red-600 text-white border-red-700" },
+const statusConfig: Record<
+  string,
+  {
+    label: string;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    icon: typeof Clock;
+    color: string;
+    badgeClass: string;
+  }
+> = {
+  draft: {
+    label: 'Draft',
+    variant: 'outline',
+    icon: Clock,
+    color: 'text-muted-foreground',
+    badgeClass: 'bg-muted text-white border-border',
+  },
+  pending_signature: {
+    label: 'Awaiting Signature',
+    variant: 'secondary',
+    icon: PenTool,
+    color: 'text-warning',
+    badgeClass: 'bg-warning text-white border-warning',
+  },
+  signed: {
+    label: 'Signed',
+    variant: 'default',
+    icon: CheckCircle,
+    color: 'text-success',
+    badgeClass: 'bg-success text-white border-success',
+  },
+  active: {
+    label: 'Active',
+    variant: 'default',
+    icon: CheckCircle,
+    color: 'text-primary',
+    badgeClass: 'bg-primary text-white border-primary',
+  },
+  expired: {
+    label: 'Expired',
+    variant: 'destructive',
+    icon: AlertCircle,
+    color: 'text-destructive',
+    badgeClass: 'bg-destructive text-white border-destructive',
+  },
 };
 
 const TenantContracts = () => {
@@ -61,7 +97,7 @@ const TenantContracts = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -73,10 +109,10 @@ const TenantContracts = () => {
       <main className="p-4 max-w-2xl mx-auto space-y-4">
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-amber-500/10 border-amber-500/30">
+          <Card className="bg-warning border-warning">
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center gap-2">
-                <PenTool className="h-4 w-4 text-amber-500" />
+                <PenTool className="h-4 w-4 text-warning" />
                 <div>
                   <p className="text-2xl font-bold text-foreground">{pendingSignatureContracts.length}</p>
                   <p className="text-xs text-muted-foreground">Needs Signature</p>
@@ -84,10 +120,10 @@ const TenantContracts = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-emerald-500/10 border-emerald-500/30">
+          <Card className="bg-success border-success">
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-emerald-500" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <div>
                   <p className="text-2xl font-bold text-foreground">{activeContracts.length}</p>
                   <p className="text-xs text-muted-foreground">Active</p>
@@ -182,16 +218,15 @@ const TenantContracts = () => {
             <DialogDescription>
               {selectedContract?.valid_from && selectedContract?.valid_until && (
                 <span>
-                  Valid from {formatDate(selectedContract.valid_from)} to{" "}
-                  {formatDate(selectedContract.valid_until)}
+                  Valid from {formatDate(selectedContract.valid_from)} to {formatDate(selectedContract.valid_until)}
                 </span>
               )}
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="h-[45vh] border rounded-lg p-4 bg-muted/30">
             <div
-              className="prose prose-sm max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedContract?.content || "") }}
+              className="prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedContract?.content || '') }}
             />
           </ScrollArea>
           {/* Signature Display Section */}
@@ -207,7 +242,8 @@ const TenantContracts = () => {
                     className="h-16 border rounded bg-white p-2"
                   />
                   <p className="text-xs text-muted-foreground mt-2">
-                    Signed on {selectedContract.manager_signed_at && formatDateTime12h(selectedContract.manager_signed_at)}
+                    Signed on{' '}
+                    {selectedContract.manager_signed_at && formatDateTime12h(selectedContract.manager_signed_at)}
                   </p>
                 </>
               ) : (
@@ -229,11 +265,12 @@ const TenantContracts = () => {
                     className="h-16 border rounded bg-white p-2"
                   />
                   <p className="text-xs text-muted-foreground mt-2">
-                    Signed on {selectedContract.tenant_signed_at && formatDateTime12h(selectedContract.tenant_signed_at)}
+                    Signed on{' '}
+                    {selectedContract.tenant_signed_at && formatDateTime12h(selectedContract.tenant_signed_at)}
                   </p>
                 </>
               ) : (
-                <div className="flex items-center gap-2 text-amber-500">
+                <div className="flex items-center gap-2 text-warning">
                   <PenTool className="h-4 w-4" />
                   <span className="text-sm">Awaiting your signature</span>
                 </div>
@@ -252,21 +289,23 @@ const TenantContracts = () => {
                 className="w-full sm:w-auto"
               >
                 <Download className="h-4 w-4 mr-2" />
-                {isExporting ? "Exporting..." : "Download PDF"}
+                {isExporting ? 'Exporting...' : 'Download PDF'}
               </Button>
             )}
-            {selectedContract && !selectedContract?.tenant_signature && (selectedContract?.status === "pending_signature" || selectedContract?.uploaded_contract_url) && (
-              <Button 
-                onClick={() => {
-                  setViewDialogOpen(false);
-                  handleSignContract(selectedContract);
-                }}
-                className="w-full sm:w-auto"
-              >
-                <PenTool className="h-4 w-4 mr-2" />
-                Sign Contract
-              </Button>
-            )}
+            {selectedContract &&
+              !selectedContract?.tenant_signature &&
+              (selectedContract?.status === 'pending_signature' || selectedContract?.uploaded_contract_url) && (
+                <Button
+                  onClick={() => {
+                    setViewDialogOpen(false);
+                    handleSignContract(selectedContract);
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  <PenTool className="h-4 w-4 mr-2" />
+                  Sign Contract
+                </Button>
+              )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -279,9 +318,7 @@ const TenantContracts = () => {
               <PenTool className="h-5 w-5" />
               Sign Contract
             </DialogTitle>
-            <DialogDescription>
-              Please review and sign: {selectedContract?.title}
-            </DialogDescription>
+            <DialogDescription>Please review and sign: {selectedContract?.title}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="bg-muted/50 border rounded-lg p-4 text-sm">
@@ -316,22 +353,22 @@ interface ContractCardProps {
   highlight?: boolean;
 }
 
-function ContractCard({ 
-  contract, 
-  onView, 
-  onSign, 
-  onExport, 
-  onUpload, 
+function ContractCard({
+  contract,
+  onView,
+  onSign,
+  onExport,
+  onUpload,
   onDownloadUploaded,
-  isExporting, 
-  isUploading, 
-  highlight 
+  isExporting,
+  isUploading,
+  highlight,
 }: ContractCardProps) {
   const status = statusConfig[contract.status] || statusConfig.draft;
   const StatusIcon = status.icon;
 
   return (
-    <Card className={highlight ? "border-amber-500/50 bg-amber-500/5" : "border-border"}>
+    <Card className={highlight ? 'border-warning bg-warning' : 'border-border'}>
       <CardContent className="pt-4 pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -342,7 +379,7 @@ function ContractCard({
                 {status.label}
               </Badge>
               {contract.uploaded_contract_url && (
-                <Badge className="text-xs bg-emerald-600 text-white border-emerald-700">
+                <Badge className="text-xs bg-success text-white border-success">
                   <Upload className="h-3 w-3 mr-1" />
                   Uploaded
                 </Badge>
@@ -355,11 +392,17 @@ function ContractCard({
             </p>
             {/* Signature Status */}
             <div className="flex gap-2 mt-2">
-              <Badge variant="outline" className={`text-xs ${contract.manager_signature ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'text-muted-foreground'}`}>
-                Manager {contract.manager_signature ? "✓" : "○"}
+              <Badge
+                variant="outline"
+                className={`text-xs ${contract.manager_signature ? 'bg-success text-success border-success' : 'text-muted-foreground'}`}
+              >
+                Manager {contract.manager_signature ? '✓' : '○'}
               </Badge>
-              <Badge variant="outline" className={`text-xs ${contract.tenant_signature ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'text-muted-foreground'}`}>
-                Tenant {contract.tenant_signature ? "✓" : "○"}
+              <Badge
+                variant="outline"
+                className={`text-xs ${contract.tenant_signature ? 'bg-success text-success border-success' : 'text-muted-foreground'}`}
+              >
+                Tenant {contract.tenant_signature ? '✓' : '○'}
               </Badge>
             </div>
           </div>
@@ -370,7 +413,13 @@ function ContractCard({
             View
           </Button>
           {onExport && (contract.tenant_signature || contract.manager_signature) && (
-            <Button variant="outline" size="sm" onClick={() => onExport(contract)} disabled={isExporting} title="Export as PDF">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onExport(contract)}
+              disabled={isExporting}
+              title="Export as PDF"
+            >
               <Download className="h-4 w-4" />
             </Button>
           )}
@@ -393,12 +442,12 @@ function ContractCard({
           {contract.uploaded_contract_url && (
             <>
               {onDownloadUploaded && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => onDownloadUploaded(contract.uploaded_contract_url!, contract.title)}
                   title="Download uploaded document"
-                  className="text-emerald-500"
+                  className="text-success"
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -410,12 +459,14 @@ function ContractCard({
               </a>
             </>
           )}
-          {onSign && !contract.tenant_signature && (contract.status === "pending_signature" || contract.uploaded_contract_url) && (
-            <Button size="sm" onClick={() => onSign(contract)} className="flex-1">
-              <PenTool className="h-4 w-4 mr-1" />
-              Sign
-            </Button>
-          )}
+          {onSign &&
+            !contract.tenant_signature &&
+            (contract.status === 'pending_signature' || contract.uploaded_contract_url) && (
+              <Button size="sm" onClick={() => onSign(contract)} className="flex-1">
+                <PenTool className="h-4 w-4 mr-1" />
+                Sign
+              </Button>
+            )}
         </div>
       </CardContent>
     </Card>

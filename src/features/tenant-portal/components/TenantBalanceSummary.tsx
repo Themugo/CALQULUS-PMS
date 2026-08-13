@@ -5,22 +5,16 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import {
-  Table, TableBody, TableCell,
-  TableHead, TableHeader, TableRow,
-} from '@/shared/components/ui/table';
-import {
-  Wallet, TrendingDown, TrendingUp,
-  CheckCircle, AlertTriangle, Clock, Gift
-} from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
+import { Wallet, TrendingDown, TrendingUp, CheckCircle, AlertTriangle, Clock, Gift } from 'lucide-react';
 import { format } from 'date-fns';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 interface TenantBalanceSummaryProps {
-  tenantId: string;  // the tenant row id (from tenants table)
-  userId: string;    // auth user id
+  tenantId: string; // the tenant row id (from tenants table)
+  userId: string; // auth user id
 }
 
 interface BalanceResult {
@@ -48,7 +42,6 @@ interface ArrearsSchedule {
 }
 
 const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, userId }) => {
-
   // Running balance from SQL function
   const { data: balance, isLoading: balLoading } = useQuery({
     queryKey: ['tenant-balance', userId],
@@ -93,8 +86,8 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
   });
 
   const creditBalance = Number(balance?.credit_balance ?? 0);
-  const balanceDue    = Number(balance?.balance_due ?? 0);
-  const isFullyPaid   = balanceDue === 0 && creditBalance >= 0;
+  const balanceDue = Number(balance?.balance_due ?? 0);
+  const isFullyPaid = balanceDue === 0 && creditBalance >= 0;
 
   return (
     <div className="space-y-4">
@@ -104,10 +97,12 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">Balance due</p>
-              <AlertTriangle className={`h-4 w-4 ${balanceDue > 0 ? 'text-amber-500' : 'text-green-500'}`} />
+              <AlertTriangle className={`h-4 w-4 ${balanceDue > 0 ? 'text-warning' : 'text-success'}`} />
             </div>
-            {balLoading ? <Skeleton className="h-7 w-24" /> : (
-              <p className={`text-xl font-semibold ${balanceDue > 0 ? 'text-amber-700' : 'text-green-700'}`}>
+            {balLoading ? (
+              <Skeleton className="h-7 w-24" />
+            ) : (
+              <p className={`text-xl font-semibold ${balanceDue > 0 ? 'text-warning' : 'text-success'}`}>
                 {fmt(balanceDue)}
               </p>
             )}
@@ -121,10 +116,12 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">Credit balance</p>
-              <Gift className="h-4 w-4 text-[hsl(214_73%_48%)]" />
+              <Gift className="h-4 w-4 text-primary" />
             </div>
-            {balLoading ? <Skeleton className="h-7 w-24" /> : (
-              <p className={`text-xl font-semibold ${creditBalance > 0 ? 'text-[hsl(214_73%_40%)]' : 'text-muted-foreground'}`}>
+            {balLoading ? (
+              <Skeleton className="h-7 w-24" />
+            ) : (
+              <p className={`text-xl font-semibold ${creditBalance > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                 {fmt(creditBalance)}
               </p>
             )}
@@ -138,9 +135,11 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-muted-foreground">Total paid</p>
-              <TrendingUp className="h-4 w-4 text-[hsl(214_73%_48%)]" />
+              <TrendingUp className="h-4 w-4 text-primary" />
             </div>
-            {balLoading ? <Skeleton className="h-7 w-24" /> : (
+            {balLoading ? (
+              <Skeleton className="h-7 w-24" />
+            ) : (
               <p className="text-xl font-semibold">{fmt(Number(balance?.total_paid ?? 0))}</p>
             )}
             <p className="text-xs text-muted-foreground mt-1">All time payments</p>
@@ -150,9 +149,9 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
 
       {/* Instalment plan (if active) */}
       {schedule && (
-        <Card className="border-[hsl(214_73%_48%/0.25)] bg-[hsl(214_73%_48%/0.06)]">
+        <Card className="border-primary/30 bg-primary/10">
           <CardHeader className="pb-2 pt-4">
-            <CardTitle className="text-sm flex items-center gap-2 text-[hsl(214_73%_30%)]">
+            <CardTitle className="text-sm flex items-center gap-2 text-primary">
               <Clock className="h-4 w-4" />
               Instalment plan active
             </CardTitle>
@@ -160,27 +159,27 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
           <CardContent className="pb-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               <div>
-                <p className="text-xs text-[hsl(214_73%_40%)]">Total owed</p>
-                <p className="font-semibold text-[hsl(214_73%_30%)]">{fmt(schedule.total_owed)}</p>
+                <p className="text-xs text-primary">Total owed</p>
+                <p className="font-semibold text-primary">{fmt(schedule.total_owed)}</p>
               </div>
               <div>
-                <p className="text-xs text-[hsl(214_73%_40%)]">Total paid</p>
-                <p className="font-semibold text-[hsl(214_73%_30%)]">{fmt(schedule.total_paid)}</p>
+                <p className="text-xs text-primary">Total paid</p>
+                <p className="font-semibold text-primary">{fmt(schedule.total_paid)}</p>
               </div>
               <div>
-                <p className="text-xs text-[hsl(214_73%_40%)]">Instalments</p>
-                <p className="font-semibold text-[hsl(214_73%_30%)]">{schedule.paid_count}/{schedule.instalment_count}</p>
+                <p className="text-xs text-primary">Instalments</p>
+                <p className="font-semibold text-primary">
+                  {schedule.paid_count}/{schedule.instalment_count}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-[hsl(214_73%_40%)]">Next due</p>
-                <p className="font-semibold text-[hsl(214_73%_30%)]">
+                <p className="text-xs text-primary">Next due</p>
+                <p className="font-semibold text-primary">
                   {schedule.next_due_date ? format(new Date(schedule.next_due_date), 'dd MMM') : '—'}
                 </p>
               </div>
             </div>
-            {schedule.notes && (
-              <p className="text-xs text-[hsl(214_73%_40%)] mt-2">{schedule.notes}</p>
-            )}
+            {schedule.notes && <p className="text-xs text-primary mt-2">{schedule.notes}</p>}
           </CardContent>
         </Card>
       )}
@@ -214,32 +213,42 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
                         variant="outline"
                         className={
                           entry.entry_type === 'credit'
-                            ? 'border-green-300 text-green-700 bg-green-50'
+                            ? 'border-success/40 text-success bg-success/20'
                             : entry.entry_type === 'refund'
-                              ? 'border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] bg-[hsl(214_73%_48%/0.08)]'
-                              : 'border-amber-300 text-amber-700 bg-amber-50'
+                              ? 'border-primary/30 text-primary bg-primary/10'
+                              : 'border-warning/40 text-warning bg-warning/20'
                         }
                       >
                         {entry.entry_type === 'credit' ? (
-                          <><TrendingUp className="h-3 w-3 mr-1" />Credit</>
+                          <>
+                            <TrendingUp className="h-3 w-3 mr-1" />
+                            Credit
+                          </>
                         ) : entry.entry_type === 'refund' ? (
-                          <><CheckCircle className="h-3 w-3 mr-1" />Refund</>
+                          <>
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Refund
+                          </>
                         ) : (
-                          <><TrendingDown className="h-3 w-3 mr-1" />Applied</>
+                          <>
+                            <TrendingDown className="h-3 w-3 mr-1" />
+                            Applied
+                          </>
                         )}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
                       {entry.description || '—'}
                     </TableCell>
-                    <TableCell className={`text-right font-medium text-sm ${
-                      entry.entry_type === 'credit' ? 'text-green-700' : 'text-amber-700'
-                    }`}>
-                      {entry.entry_type === 'debit' ? '-' : '+'}{fmt(entry.amount)}
+                    <TableCell
+                      className={`text-right font-medium text-sm ${
+                        entry.entry_type === 'credit' ? 'text-success' : 'text-warning'
+                      }`}
+                    >
+                      {entry.entry_type === 'debit' ? '-' : '+'}
+                      {fmt(entry.amount)}
                     </TableCell>
-                    <TableCell className="text-right text-sm font-semibold">
-                      {fmt(entry.balance_after)}
-                    </TableCell>
+                    <TableCell className="text-right text-sm font-semibold">{fmt(entry.balance_after)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

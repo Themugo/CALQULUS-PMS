@@ -10,7 +10,14 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { PawPrint, Car, Plus, Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
@@ -18,8 +25,8 @@ import { Tables } from '@/integrations/supabase/types';
 const PET_TYPES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Reptile', 'Other'];
 
 const STATUS_BADGE: Record<string, string> = {
-  true:  'border-green-300 text-green-700 bg-green-50',
-  false: 'border-amber-300 text-amber-700 bg-amber-50',
+  true: 'border-success/40 text-success bg-success/20',
+  false: 'border-warning/40 text-warning bg-warning/20',
 };
 
 const TenantPetsVehicles: React.FC = () => {
@@ -38,8 +45,11 @@ const TenantPetsVehicles: React.FC = () => {
     queryKey: ['tenant-ids', tenantId],
     queryFn: async () => {
       if (!tenantId) return null;
-      const { data } = await supabase.from('tenants')
-        .select('id, unit_id, property_id, manager_id').eq('id', tenantId).maybeSingle();
+      const { data } = await supabase
+        .from('tenants')
+        .select('id, unit_id, property_id, manager_id')
+        .eq('id', tenantId)
+        .maybeSingle();
       return data as Tables<'tenants'>;
     },
     enabled: !!tenantId,
@@ -49,7 +59,11 @@ const TenantPetsVehicles: React.FC = () => {
     queryKey: ['tenant-pets', tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
-      const { data } = await supabase.from('tenant_pets').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false });
+      const { data } = await supabase
+        .from('tenant_pets')
+        .select('*')
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false });
       return (data || []) as Tables<'tenant_pets'>[];
     },
     enabled: !!tenantId,
@@ -59,7 +73,11 @@ const TenantPetsVehicles: React.FC = () => {
     queryKey: ['tenant-vehicles', tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
-      const { data } = await supabase.from('tenant_vehicles').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false });
+      const { data } = await supabase
+        .from('tenant_vehicles')
+        .select('*')
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false });
       return (data || []) as Tables<'tenant_vehicles'>[];
     },
     enabled: !!tenantId,
@@ -69,25 +87,30 @@ const TenantPetsVehicles: React.FC = () => {
     mutationFn: async () => {
       if (!petForm.pet_type) throw new Error('Select pet type');
       const { error } = await supabase.from('tenant_pets').insert({
-        tenant_id:  tenantId,
-        unit_id:    tenantData?.unit_id,
+        tenant_id: tenantId,
+        unit_id: tenantData?.unit_id,
         manager_id: tenantData?.manager_id,
-        pet_type:   petForm.pet_type.toLowerCase(),
-        breed:      petForm.breed || null,
-        name:       petForm.name || null,
-        notes:      petForm.notes || null,
+        pet_type: petForm.pet_type.toLowerCase(),
+        breed: petForm.breed || null,
+        name: petForm.name || null,
+        notes: petForm.notes || null,
         is_approved: false,
       });
       if (error) throw error;
 
       // Notify manager
       if (tenantData?.manager_id) {
-        await supabase.from('in_app_notifications').insert({
-          user_id: tenantData.manager_id, manager_id: tenantData.manager_id,
-          title: 'Pet registration request',
-          body: `Tenant has registered a ${petForm.pet_type}${petForm.name ? ` named ${petForm.name}` : ''} — approval required.`,
-          type: 'info', source: 'system',
-        }).catch(() => {});
+        await supabase
+          .from('in_app_notifications')
+          .insert({
+            user_id: tenantData.manager_id,
+            manager_id: tenantData.manager_id,
+            title: 'Pet registration request',
+            body: `Tenant has registered a ${petForm.pet_type}${petForm.name ? ` named ${petForm.name}` : ''} — approval required.`,
+            type: 'info',
+            source: 'system',
+          })
+          .catch(() => {});
       }
     },
     onSuccess: () => {
@@ -103,25 +126,30 @@ const TenantPetsVehicles: React.FC = () => {
     mutationFn: async () => {
       if (!vehicleForm.plate_number.trim()) throw new Error('Plate number required');
       const { error } = await supabase.from('tenant_vehicles').insert({
-        tenant_id:   tenantId,
-        unit_id:     tenantData?.unit_id,
-        manager_id:  tenantData?.manager_id,
-        make:        vehicleForm.make || null,
-        model:       vehicleForm.model || null,
-        colour:      vehicleForm.colour || null,
+        tenant_id: tenantId,
+        unit_id: tenantData?.unit_id,
+        manager_id: tenantData?.manager_id,
+        make: vehicleForm.make || null,
+        model: vehicleForm.model || null,
+        colour: vehicleForm.colour || null,
         plate_number: vehicleForm.plate_number.trim().toUpperCase(),
-        notes:       vehicleForm.notes || null,
+        notes: vehicleForm.notes || null,
         is_approved: false,
       });
       if (error) throw error;
 
       if (tenantData?.manager_id) {
-        await supabase.from('in_app_notifications').insert({
-          user_id: tenantData.manager_id, manager_id: tenantData.manager_id,
-          title: 'Vehicle registration request',
-          body: `Tenant registered vehicle ${vehicleForm.plate_number.toUpperCase()} (${vehicleForm.colour} ${vehicleForm.make} ${vehicleForm.model}) — approval required.`,
-          type: 'info', source: 'system',
-        }).catch(() => {});
+        await supabase
+          .from('in_app_notifications')
+          .insert({
+            user_id: tenantData.manager_id,
+            manager_id: tenantData.manager_id,
+            title: 'Vehicle registration request',
+            body: `Tenant registered vehicle ${vehicleForm.plate_number.toUpperCase()} (${vehicleForm.colour} ${vehicleForm.make} ${vehicleForm.model}) — approval required.`,
+            type: 'info',
+            source: 'system',
+          })
+          .catch(() => {});
       }
     },
     onSuccess: () => {
@@ -153,14 +181,19 @@ const TenantPetsVehicles: React.FC = () => {
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <div>
                 <CardTitle className="text-sm">Registered pets</CardTitle>
-                <CardDescription>Register pets for manager approval. Some properties require a pet deposit.</CardDescription>
+                <CardDescription>
+                  Register pets for manager approval. Some properties require a pet deposit.
+                </CardDescription>
               </div>
               <Button size="sm" onClick={() => setPetOpen(true)}>
-                <Plus className="h-4 w-4 mr-1.5" />Register pet
+                <Plus className="h-4 w-4 mr-1.5" />
+                Register pet
               </Button>
             </CardHeader>
             <CardContent>
-              {petsLoading ? <Skeleton className="h-16 w-full" /> : pets.length === 0 ? (
+              {petsLoading ? (
+                <Skeleton className="h-16 w-full" />
+              ) : pets.length === 0 ? (
                 <div className="py-8 text-center text-muted-foreground">
                   <PawPrint className="h-8 w-8 mx-auto mb-2 opacity-30" />
                   <p className="text-sm">No pets registered</p>
@@ -170,20 +203,32 @@ const TenantPetsVehicles: React.FC = () => {
                   {pets.map((p: Tables<'tenant_pets'>) => (
                     <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
-                        <PawPrint className="h-5 w-5 text-amber-600" />
+                        <PawPrint className="h-5 w-5 text-warning" />
                         <div>
                           <p className="text-sm font-medium capitalize">
-                            {p.pet_type}{p.name ? ` — ${p.name}` : ''}
+                            {p.pet_type}
+                            {p.name ? ` — ${p.name}` : ''}
                           </p>
                           {p.breed && <p className="text-xs text-muted-foreground">{p.breed}</p>}
-                          {p.pet_deposit > 0 && <p className="text-xs text-muted-foreground">Deposit: KES {Number(p.pet_deposit).toLocaleString()}</p>}
+                          {p.pet_deposit > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              Deposit: KES {Number(p.pet_deposit).toLocaleString()}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Badge variant="outline" className={`text-xs ${STATUS_BADGE[String(p.is_approved)]}`}>
-                        {p.is_approved
-                          ? <><CheckCircle className="h-3 w-3 mr-1" />Approved</>
-                          : <><Clock className="h-3 w-3 mr-1" />Pending approval</>
-                        }
+                        {p.is_approved ? (
+                          <>
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Approved
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="h-3 w-3 mr-1" />
+                            Pending approval
+                          </>
+                        )}
                       </Badge>
                     </div>
                   ))}
@@ -202,11 +247,14 @@ const TenantPetsVehicles: React.FC = () => {
                 <CardDescription>Register vehicles for parking and security purposes.</CardDescription>
               </div>
               <Button size="sm" onClick={() => setVehicleOpen(true)}>
-                <Plus className="h-4 w-4 mr-1.5" />Register vehicle
+                <Plus className="h-4 w-4 mr-1.5" />
+                Register vehicle
               </Button>
             </CardHeader>
             <CardContent>
-              {vehiclesLoading ? <Skeleton className="h-16 w-full" /> : vehicles.length === 0 ? (
+              {vehiclesLoading ? (
+                <Skeleton className="h-16 w-full" />
+              ) : vehicles.length === 0 ? (
                 <div className="py-8 text-center text-muted-foreground">
                   <Car className="h-8 w-8 mx-auto mb-2 opacity-30" />
                   <p className="text-sm">No vehicles registered</p>
@@ -216,21 +264,32 @@ const TenantPetsVehicles: React.FC = () => {
                   {vehicles.map((v: Tables<'tenant_vehicles'>) => (
                     <div key={v.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
-                        <Car className="h-5 w-5 text-[hsl(214_73%_45%)]" />
+                        <Car className="h-5 w-5 text-primary" />
                         <div>
                           <p className="text-sm font-semibold font-mono">{v.plate_number}</p>
                           <p className="text-xs text-muted-foreground">
                             {[v.colour, v.make, v.model].filter(Boolean).join(' ')}
                           </p>
                           {v.parking_bay && <p className="text-xs text-muted-foreground">Bay: {v.parking_bay}</p>}
-                          {v.parking_fee > 0 && <p className="text-xs text-muted-foreground">Parking: KES {Number(v.parking_fee).toLocaleString()}/mo</p>}
+                          {v.parking_fee > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              Parking: KES {Number(v.parking_fee).toLocaleString()}/mo
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Badge variant="outline" className={`text-xs ${STATUS_BADGE[String(v.is_approved)]}`}>
-                        {v.is_approved
-                          ? <><CheckCircle className="h-3 w-3 mr-1" />Approved</>
-                          : <><Clock className="h-3 w-3 mr-1" />Pending</>
-                        }
+                        {v.is_approved ? (
+                          <>
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Approved
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="h-3 w-3 mr-1" />
+                            Pending
+                          </>
+                        )}
                       </Badge>
                     </div>
                   ))}
@@ -245,25 +304,62 @@ const TenantPetsVehicles: React.FC = () => {
       <Dialog open={petOpen} onOpenChange={setPetOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><PawPrint className="h-5 w-5 text-amber-600" />Register a pet</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <PawPrint className="h-5 w-5 text-warning" />
+              Register a pet
+            </DialogTitle>
             <DialogDescription>Your manager will review and approve your pet registration.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
               <Label>Pet type</Label>
-              <Select value={petForm.pet_type} onValueChange={v => setPetForm(p => ({ ...p, pet_type: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>{PET_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+              <Select value={petForm.pet_type} onValueChange={(v) => setPetForm((p) => ({ ...p, pet_type: v }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PET_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Pet name</Label><Input value={petForm.name} onChange={e => setPetForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Buddy" className="mt-1" /></div>
-              <div><Label>Breed</Label><Input value={petForm.breed} onChange={e => setPetForm(p => ({ ...p, breed: e.target.value }))} placeholder="e.g. Labrador" className="mt-1" /></div>
+              <div>
+                <Label>Pet name</Label>
+                <Input
+                  value={petForm.name}
+                  onChange={(e) => setPetForm((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g. Buddy"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Breed</Label>
+                <Input
+                  value={petForm.breed}
+                  onChange={(e) => setPetForm((p) => ({ ...p, breed: e.target.value }))}
+                  placeholder="e.g. Labrador"
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div><Label>Notes (optional)</Label><Input value={petForm.notes} onChange={e => setPetForm(p => ({ ...p, notes: e.target.value }))} placeholder="Any details for manager" className="mt-1" /></div>
+            <div>
+              <Label>Notes (optional)</Label>
+              <Input
+                value={petForm.notes}
+                onChange={(e) => setPetForm((p) => ({ ...p, notes: e.target.value }))}
+                placeholder="Any details for manager"
+                className="mt-1"
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPetOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setPetOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={() => addPet.mutate()} disabled={addPet.isPending}>
               {addPet.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}Register pet
             </Button>
@@ -275,23 +371,60 @@ const TenantPetsVehicles: React.FC = () => {
       <Dialog open={vehicleOpen} onOpenChange={setVehicleOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Car className="h-5 w-5 text-[hsl(214_73%_45%)]" />Register a vehicle</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Car className="h-5 w-5 text-primary" />
+              Register a vehicle
+            </DialogTitle>
             <DialogDescription>Your manager will review and assign a parking bay if available.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
               <Label>Plate number *</Label>
-              <Input value={vehicleForm.plate_number} onChange={e => setVehicleForm(p => ({ ...p, plate_number: e.target.value.toUpperCase() }))} placeholder="KCB 123A" className="mt-1 font-mono" />
+              <Input
+                value={vehicleForm.plate_number}
+                onChange={(e) => setVehicleForm((p) => ({ ...p, plate_number: e.target.value.toUpperCase() }))}
+                placeholder="KCB 123A"
+                className="mt-1 font-mono"
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Make</Label><Input value={vehicleForm.make} onChange={e => setVehicleForm(p => ({ ...p, make: e.target.value }))} placeholder="Toyota" className="mt-1" /></div>
-              <div><Label>Model</Label><Input value={vehicleForm.model} onChange={e => setVehicleForm(p => ({ ...p, model: e.target.value }))} placeholder="Corolla" className="mt-1" /></div>
+              <div>
+                <Label>Make</Label>
+                <Input
+                  value={vehicleForm.make}
+                  onChange={(e) => setVehicleForm((p) => ({ ...p, make: e.target.value }))}
+                  placeholder="Toyota"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Model</Label>
+                <Input
+                  value={vehicleForm.model}
+                  onChange={(e) => setVehicleForm((p) => ({ ...p, model: e.target.value }))}
+                  placeholder="Corolla"
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div><Label>Colour</Label><Input value={vehicleForm.colour} onChange={e => setVehicleForm(p => ({ ...p, colour: e.target.value }))} placeholder="Silver" className="mt-1" /></div>
+            <div>
+              <Label>Colour</Label>
+              <Input
+                value={vehicleForm.colour}
+                onChange={(e) => setVehicleForm((p) => ({ ...p, colour: e.target.value }))}
+                placeholder="Silver"
+                className="mt-1"
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setVehicleOpen(false)}>Cancel</Button>
-            <Button onClick={() => addVehicle.mutate()} disabled={addVehicle.isPending || !vehicleForm.plate_number.trim()}>
+            <Button variant="outline" onClick={() => setVehicleOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => addVehicle.mutate()}
+              disabled={addVehicle.isPending || !vehicleForm.plate_number.trim()}
+            >
               {addVehicle.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}Register vehicle
             </Button>
           </DialogFooter>

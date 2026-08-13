@@ -55,7 +55,7 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
     <Card className="border-dashed">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Smartphone className="h-4 w-4 text-green-600" />
+          <Smartphone className="h-4 w-4 text-success" />
           Scan to Pay
         </CardTitle>
         <CardDescription className="text-xs">

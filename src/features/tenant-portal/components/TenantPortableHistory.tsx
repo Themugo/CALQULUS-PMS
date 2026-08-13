@@ -6,28 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import {
-  Table, TableBody, TableCell,
-  TableHead, TableHeader, TableRow,
-} from '@/shared/components/ui/table';
-import {
-  Home, FileText, Wrench, FileSignature,
-  CheckCircle, Clock, Archive, Calendar
-} from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
+import { Home, FileText, Wrench, FileSignature, CheckCircle, Clock, Archive, Calendar } from 'lucide-react';
 import { format, differenceInMonths } from 'date-fns';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_COLORS: Record<string, string> = {
-  active:    'bg-green-100 text-green-800 border-green-200',
-  archived:  'bg-slate-100 text-slate-700 border-slate-200',
-  paid:      'bg-green-100 text-green-800 border-green-200',
-  pending:   'bg-amber-100 text-amber-800 border-amber-200',
-  overdue:   'bg-red-100 text-red-800 border-red-200',
-  completed: 'bg-green-100 text-green-800 border-green-200',
-  open:      'bg-amber-100 text-amber-800 border-amber-200',
-  in_progress: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
+  active: 'bg-success/20 text-success border-success/30',
+  archived: 'bg-muted/20 text-muted-foreground border-muted/30',
+  paid: 'bg-success/20 text-success border-success/30',
+  pending: 'bg-warning/20 text-warning border-warning/30',
+  overdue: 'bg-destructive/20 text-destructive border-destructive/30',
+  completed: 'bg-success/20 text-success border-success/30',
+  open: 'bg-warning/20 text-warning border-warning/30',
+  in_progress: 'bg-primary/20 text-primary border-primary/30',
 };
 
 interface TenancyRecord {
@@ -141,13 +135,19 @@ const TenantPortableHistory: React.FC = () => {
   });
 
   const totalPaid = invoices
-    .filter(i => i.status === 'paid')
+    .filter((i) => i.status === 'paid')
     .reduce((s, i) => s + Number(i.paid_amount ?? i.amount), 0);
   const totalUnits = tenancies.length;
-  const currentTenancy = tenancies.find(t => t.status === 'active');
+  const currentTenancy = tenancies.find((t) => t.status === 'active');
 
   if (tenanciesLoading) {
-    return <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>;
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full" />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -160,11 +160,11 @@ const TenantPortableHistory: React.FC = () => {
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Total rent paid</p>
-          <p className="text-lg font-semibold text-green-700">{fmt(totalPaid)}</p>
+          <p className="text-lg font-semibold text-success">{fmt(totalPaid)}</p>
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Contracts signed</p>
-          <p className="text-xl font-semibold">{contracts.filter(c => c.tenant_signed_at).length}</p>
+          <p className="text-xl font-semibold">{contracts.filter((c) => c.tenant_signed_at).length}</p>
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Maintenance raised</p>
@@ -198,63 +198,75 @@ const TenantPortableHistory: React.FC = () => {
             <div className="py-12 text-center text-muted-foreground">
               <Home className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p className="text-sm font-medium">No tenancy history yet</p>
-              <p className="text-xs mt-1 opacity-70">Your rental history will appear here once linked by your manager</p>
+              <p className="text-xs mt-1 opacity-70">
+                Your rental history will appear here once linked by your manager
+              </p>
             </div>
-          ) : tenancies.map((t: TenancyRecord) => {
-            const months = t.move_out_date
-              ? differenceInMonths(new Date(t.move_out_date), new Date(t.move_in_date))
-              : differenceInMonths(new Date(), new Date(t.move_in_date));
-            return (
-              <Card key={t.id} className={t.status === 'active' ? 'border-green-200' : ''}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${t.status === 'active' ? 'bg-green-100' : 'bg-slate-100'}`}>
-                        <Home className={`h-4 w-4 ${t.status === 'active' ? 'text-green-700' : 'text-slate-500'}`} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <p className="font-medium text-sm">{t.tenant_name}'s Unit</p>
-                          <Badge variant="outline" className={`text-xs ${STATUS_COLORS[t.status] || ''}`}>
-                            {t.status === 'active' ? 'Current' : 'Past'}
-                          </Badge>
+          ) : (
+            tenancies.map((t: TenancyRecord) => {
+              const months = t.move_out_date
+                ? differenceInMonths(new Date(t.move_out_date), new Date(t.move_in_date))
+                : differenceInMonths(new Date(), new Date(t.move_in_date));
+              return (
+                <Card key={t.id} className={t.status === 'active' ? 'border-success/30' : ''}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${t.status === 'active' ? 'bg-success/20' : 'bg-muted/20'}`}
+                        >
+                          <Home
+                            className={`h-4 w-4 ${t.status === 'active' ? 'text-success' : 'text-muted-foreground'}`}
+                          />
                         </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <p className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {t.move_in_date ? format(new Date(t.move_in_date), 'dd/MM/yy') : '—'}
-                            {t.move_out_date ? ` → ${format(new Date(t.move_out_date), 'dd/MM/yy')}` : ' → Present'}
-                            <span className="ml-1 text-foreground font-medium">({months} months)</span>
-                          </p>
-                          {t.monthly_rent && <p>Rent: {fmt(t.monthly_rent)}/month</p>}
-                          {t.move_out_reason && <p className="capitalize">Exit: {t.move_out_reason.replace(/_/g, ' ')}</p>}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      {t.total_paid > 0 && (
-                        <div className="mb-1">
-                          <p className="text-xs text-muted-foreground">Paid</p>
-                          <p className="text-sm font-semibold text-green-700">{fmt(t.total_paid)}</p>
-                        </div>
-                      )}
-                      {t.arrears_at_moveout > 0 && (
                         <div>
-                          <p className="text-xs text-muted-foreground">Arrears at exit</p>
-                          <p className="text-sm font-medium text-red-700">{fmt(t.arrears_at_moveout)}</p>
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <p className="font-medium text-sm">{t.tenant_name}'s Unit</p>
+                            <Badge variant="outline" className={`text-xs ${STATUS_COLORS[t.status] || ''}`}>
+                              {t.status === 'active' ? 'Current' : 'Past'}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground space-y-0.5">
+                            <p className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {t.move_in_date ? format(new Date(t.move_in_date), 'dd/MM/yy') : '—'}
+                              {t.move_out_date ? ` → ${format(new Date(t.move_out_date), 'dd/MM/yy')}` : ' → Present'}
+                              <span className="ml-1 text-foreground font-medium">({months} months)</span>
+                            </p>
+                            {t.monthly_rent && <p>Rent: {fmt(t.monthly_rent)}/month</p>}
+                            {t.move_out_reason && (
+                              <p className="capitalize">Exit: {t.move_out_reason.replace(/_/g, ' ')}</p>
+                            )}
+                          </div>
                         </div>
-                      )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        {t.total_paid > 0 && (
+                          <div className="mb-1">
+                            <p className="text-xs text-muted-foreground">Paid</p>
+                            <p className="text-sm font-semibold text-success">{fmt(t.total_paid)}</p>
+                          </div>
+                        )}
+                        {t.arrears_at_moveout > 0 && (
+                          <div>
+                            <p className="text-xs text-muted-foreground">Arrears at exit</p>
+                            <p className="text-sm font-medium text-destructive">{fmt(t.arrears_at_moveout)}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
         </TabsContent>
 
         {/* ── All invoices ── */}
         <TabsContent value="invoices" className="mt-4">
-          {invoicesLoading ? <Skeleton className="h-40 w-full" /> : invoices.length === 0 ? (
+          {invoicesLoading ? (
+            <Skeleton className="h-40 w-full" />
+          ) : invoices.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground text-sm">No invoices found</div>
           ) : (
             <Table>
@@ -269,10 +281,12 @@ const TenantPortableHistory: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoices.map(inv => (
+                {invoices.map((inv) => (
                   <TableRow key={inv.id}>
                     <TableCell className="font-mono text-xs">{inv.invoice_number}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground max-w-xs truncate">{inv.description || '—'}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                      {inv.description || '—'}
+                    </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {inv.due_date ? format(new Date(inv.due_date), 'dd/MM/yy') : '—'}
                     </TableCell>
@@ -294,19 +308,24 @@ const TenantPortableHistory: React.FC = () => {
 
         {/* ── Contracts ── */}
         <TabsContent value="contracts" className="mt-4">
-          {contractsLoading ? <Skeleton className="h-40 w-full" /> : contracts.length === 0 ? (
+          {contractsLoading ? (
+            <Skeleton className="h-40 w-full" />
+          ) : contracts.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground text-sm">No contracts found</div>
           ) : (
             <div className="space-y-3">
-              {contracts.map(c => (
+              {contracts.map((c) => (
                 <Card key={c.id} className={c.archived_at ? 'opacity-75' : ''}>
                   <CardContent className="p-4 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${c.archived_at ? 'bg-slate-100' : 'bg-[hsl(214_73%_48%/0.08)]'}`}>
-                        {c.archived_at
-                          ? <Archive className="h-4 w-4 text-slate-500" />
-                          : <FileSignature className="h-4 w-4 text-[hsl(214_73%_45%)]" />
-                        }
+                      <div
+                        className={`h-8 w-8 rounded-lg flex items-center justify-center ${c.archived_at ? 'bg-muted/20' : 'bg-primary/10'}`}
+                      >
+                        {c.archived_at ? (
+                          <Archive className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <FileSignature className="h-4 w-4 text-primary" />
+                        )}
                       </div>
                       <div>
                         <p className="text-sm font-medium">{c.title}</p>
@@ -321,8 +340,9 @@ const TenantPortableHistory: React.FC = () => {
                         {c.status.replace(/_/g, ' ')}
                       </Badge>
                       {c.tenant_signed_at && (
-                        <Badge variant="outline" className="text-xs border-green-300 text-green-700 bg-green-50">
-                          <CheckCircle className="h-3 w-3 mr-1" />Signed
+                        <Badge variant="outline" className="text-xs border-success/40 text-success bg-success/20">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Signed
                         </Badge>
                       )}
                     </div>
@@ -335,7 +355,9 @@ const TenantPortableHistory: React.FC = () => {
 
         {/* ── Maintenance ── */}
         <TabsContent value="maintenance" className="mt-4">
-          {maintLoading ? <Skeleton className="h-40 w-full" /> : maintenance.length === 0 ? (
+          {maintLoading ? (
+            <Skeleton className="h-40 w-full" />
+          ) : maintenance.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground text-sm">No maintenance requests found</div>
           ) : (
             <Table>
@@ -359,10 +381,13 @@ const TenantPortableHistory: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {m.property_name}{m.unit_number ? ` · ${m.unit_number}` : ''}
+                      {m.property_name}
+                      {m.unit_number ? ` · ${m.unit_number}` : ''}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs capitalize">{m.priority}</Badge>
+                      <Badge variant="outline" className="text-xs capitalize">
+                        {m.priority}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`text-xs capitalize ${STATUS_COLORS[m.status] || ''}`}>

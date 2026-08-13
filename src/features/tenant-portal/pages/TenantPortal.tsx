@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -7,13 +7,36 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDate } from '@/shared/lib/dateFormat';
-import { Building2, FileText, CheckCircle, Clock, AlertCircle, LogOut, CreditCard, History, Smartphone, RefreshCw, Loader2, ScrollText, Upload, MessageSquare, Wrench } from 'lucide-react';
+import {
+  Building2,
+  FileText,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  LogOut,
+  CreditCard,
+  History,
+  Smartphone,
+  RefreshCw,
+  Loader2,
+  ScrollText,
+  Upload,
+  MessageSquare,
+  Wrench,
+} from 'lucide-react';
 import { TenantContractsSection } from '@/features/tenants/components/TenantContractsSection';
 import TenantBalanceSummary from '@/features/tenant-portal/components/TenantBalanceSummary';
 import TenantPaymentDetails from '@/features/tenant-portal/components/TenantPaymentDetails';
@@ -105,8 +128,16 @@ const TenantPortal = () => {
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [receiptRefresh, setReceiptRefresh] = useState(0);
-  const [managerProfile, setManagerProfile] = useState<{ full_name: string | null; email: string | null; phone: string | null } | null>(null);
-  const [maintenanceSummary, setMaintenanceSummary] = useState<{ openCount: number; urgentCount: number; latestTitle: string | null }>({ openCount: 0, urgentCount: 0, latestTitle: null });
+  const [managerProfile, setManagerProfile] = useState<{
+    full_name: string | null;
+    email: string | null;
+    phone: string | null;
+  } | null>(null);
+  const [maintenanceSummary, setMaintenanceSummary] = useState<{
+    openCount: number;
+    urgentCount: number;
+    latestTitle: string | null;
+  }>({ openCount: 0, urgentCount: 0, latestTitle: null });
 
   // Fetch tenant info with offline support
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -118,7 +149,7 @@ const TenantPortal = () => {
       .eq('id', userRole.tenant_id)
       .single();
     if (error) throw error;
-    
+
     // Use manager_id from tenant directly, fallback to property's manager_id
     let managerId: string | null = data.manager_id;
     if (!managerId && data?.property_id) {
@@ -142,7 +173,7 @@ const TenantPortal = () => {
         managerId = subPerm.manager_id;
       }
     }
-    
+
     return {
       id: data.id,
       name: data.name,
@@ -218,7 +249,11 @@ const TenantPortal = () => {
 
   useEffect(() => {
     if (!user?.id) return;
-    supabase.from('profiles').select('phone').eq('id', user.id).maybeSingle()
+    supabase
+      .from('profiles')
+      .select('phone')
+      .eq('id', user.id)
+      .maybeSingle()
       .then(({ data }) => setTenantPhone(data?.phone ?? null));
   }, [user?.id]);
 
@@ -240,8 +275,8 @@ const TenantPortal = () => {
       .eq('tenant_id', userRole.tenant_id)
       .then(({ data }) => {
         const rows = data || [];
-        const openReqs = rows.filter(r => r.status === 'open' || r.status === 'in_progress');
-        const urgentReqs = openReqs.filter(r => r.priority === 'urgent' || r.priority === 'high');
+        const openReqs = rows.filter((r) => r.status === 'open' || r.status === 'in_progress');
+        const urgentReqs = openReqs.filter((r) => r.priority === 'urgent' || r.priority === 'high');
         setMaintenanceSummary({
           openCount: openReqs.length,
           urgentCount: urgentReqs.length,
@@ -255,11 +290,11 @@ const TenantPortal = () => {
   const filteredInvoices = React.useMemo(() => {
     if (!invoices) return [];
     if (!tenantInfo?.statement_history_months) return invoices;
-    
+
     const cutoffDate = new Date();
     cutoffDate.setMonth(cutoffDate.getMonth() - tenantInfo.statement_history_months);
-    
-    return invoices.filter(invoice => new Date(invoice.due_date) >= cutoffDate);
+
+    return invoices.filter((invoice) => new Date(invoice.due_date) >= cutoffDate);
   }, [invoices, tenantInfo?.statement_history_months]);
 
   // Handle payment return from Stripe - only show notification, actual update via webhook
@@ -442,11 +477,14 @@ const TenantPortal = () => {
   const safeInvoices = filteredInvoices || [];
 
   const stats = {
-    totalDue: safeInvoices.filter((i) => i.status === 'pending' || i.status === 'overdue').reduce(
-      (acc, i) => acc + Number((i as PayableInvoice).balance_due ?? i.amount),
-      0,
-    ),
-    paidThisYear: safeInvoices.filter((i) => i.status === 'paid' && i.paid_date && new Date(i.paid_date).getFullYear() === new Date().getFullYear()).reduce((acc, i) => acc + Number(i.amount), 0),
+    totalDue: safeInvoices
+      .filter((i) => i.status === 'pending' || i.status === 'overdue')
+      .reduce((acc, i) => acc + Number((i as PayableInvoice).balance_due ?? i.amount), 0),
+    paidThisYear: safeInvoices
+      .filter(
+        (i) => i.status === 'paid' && i.paid_date && new Date(i.paid_date).getFullYear() === new Date().getFullYear(),
+      )
+      .reduce((acc, i) => acc + Number(i.amount), 0),
     pendingCount: safeInvoices.filter((i) => i.status === 'pending').length,
     overdueCount: safeInvoices.filter((i) => i.status === 'overdue').length,
   };
@@ -466,26 +504,27 @@ const TenantPortal = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal"></div>
       </div>
     );
   }
 
   // Get urgent invoices (pending or overdue)
-  const urgentInvoices = safeInvoices.filter(i => i.status === 'pending' || i.status === 'overdue');
+  const urgentInvoices = safeInvoices.filter((i) => i.status === 'pending' || i.status === 'overdue');
 
-  const propertyInfo = tenantInfo?.property && tenantInfo?.unit
-    ? `${tenantInfo.property} - Unit ${tenantInfo.unit}`
-    : 'View and manage your invoices below.';
+  const propertyInfo =
+    tenantInfo?.property && tenantInfo?.unit
+      ? `${tenantInfo.property} - Unit ${tenantInfo.unit}`
+      : 'View and manage your invoices below.';
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
+      <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-400/20">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-teal to-primary flex items-center justify-center shadow-sm shadow-teal/20">
+              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
             </div>
             <div>
               <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS PMS</h1>
@@ -495,7 +534,12 @@ const TenantPortal = () => {
           <div className="flex items-center gap-2 md:gap-4">
             <span className="text-xs md:text-sm text-muted-foreground hidden md:block">{user?.email}</span>
             <TenantNotificationBell />
-            <Button variant="outline" size="sm" onClick={signOut} className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-amber-400/10 hover:text-amber-600 hover:border-amber-400/30 transition-all duration-200">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={signOut}
+              className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
+            >
               <LogOut className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Sign Out</span>
             </Button>
@@ -520,12 +564,19 @@ const TenantPortal = () => {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-destructive">Failed to load portal data</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {tenantError?.message || invoicesError?.message || leaseError?.message || 'An unexpected error occurred.'}
+                    {tenantError?.message ||
+                      invoicesError?.message ||
+                      leaseError?.message ||
+                      'An unexpected error occurred.'}
                   </p>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { refetchTenant(); refetchInvoices(); refetchLease(); }}
+                    onClick={() => {
+                      refetchTenant();
+                      refetchInvoices();
+                      refetchLease();
+                    }}
                     className="mt-3 gap-2 rounded-xl border-destructive/50 hover:bg-destructive/10 transition-all duration-200"
                   >
                     <RefreshCw className="h-4 w-4" />
@@ -539,14 +590,16 @@ const TenantPortal = () => {
 
         {/* Demo mode banner */}
         {user?.email?.includes('@calqulusrms.com') && (
-          <div className="mb-4 rounded-2xl border border-amber-300/60 bg-gradient-to-br from-amber-50/80 to-amber-100/50 px-4 py-3 shadow-sm">
-            <span className="text-sm text-amber-800 font-medium"><strong>Demo mode</strong> — sample data</span>
+          <div className="mb-4 rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 shadow-sm">
+            <span className="text-sm text-warning font-medium">
+              <strong>Demo mode</strong> — sample data
+            </span>
           </div>
         )}
 
         {/* ── Orphan tenant: no manager link ── */}
         {/* When userRole.tenant_id is null (self-registered) OR
-            tenant has no manager_id, show the independent diary */}
+ tenant has no manager_id, show the independent diary */}
         {(!userRole?.tenant_id || (!tenantLoading && !tenantInfo?.manager_id)) && !tenantLoading && (
           <div className="space-y-4">
             <div className="mb-6">
@@ -560,590 +613,662 @@ const TenantPortal = () => {
         )}
 
         {/* ── Linked tenant: has manager_id — full portal ── */}
-        {userRole?.tenant_id && tenantInfo?.manager_id && (<>
-
-        {/* Mobile View */}
-        {isMobile ? (
-          <MobileTenantHome
-            tenantName={tenantInfo?.name || 'Tenant'}
-            greeting={getGreeting()}
-            propertyInfo={propertyInfo}
-            stats={stats}
-            urgentInvoices={urgentInvoices}
-            lease={lease}
-            managerId={tenantInfo?.manager_id}
-            propertyId={tenantInfo?.property_id}
-            formatCurrency={(amount) => formatCurrency(amount)}
-            onPayInvoice={openPayDialog}
-          />
-        ) : (
+        {userRole?.tenant_id && tenantInfo?.manager_id && (
           <>
-            {/* Desktop Executive Header */}
-            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/60 p-5 rounded-2xl shadow-sm">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold text-foreground">
-                    {getGreeting()}, {tenantInfo?.name?.split(' ')[0] || 'there'}! 👋
-                  </h2>
-                  <Badge variant="outline" className="border-emerald-300 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20">
-                    Active Tenant
-                  </Badge>
+            {/* Mobile View */}
+            {isMobile ? (
+              <MobileTenantHome
+                tenantName={tenantInfo?.name || 'Tenant'}
+                greeting={getGreeting()}
+                propertyInfo={propertyInfo}
+                stats={stats}
+                urgentInvoices={urgentInvoices}
+                lease={lease}
+                managerId={tenantInfo?.manager_id}
+                propertyId={tenantInfo?.property_id}
+                formatCurrency={(amount) => formatCurrency(amount)}
+                onPayInvoice={openPayDialog}
+              />
+            ) : (
+              <>
+                {/* Desktop Welcome Header */}
+                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border p-5 rounded-2xl shadow-sm">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-bold text-foreground">
+                        {getGreeting()}, {tenantInfo?.name?.split(' ')[0] || 'there'}! 👋
+                      </h2>
+                      <Badge variant="outline" className="border-success/30 text-success bg-success/10">
+                        Active Tenant
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-0.5">{propertyInfo}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm"
+                      onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
+                      disabled={urgentInvoices.length === 0}
+                    >
+                      <Smartphone className="h-4 w-4 mr-2" />
+                      Quick Pay M-Pesa
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-0.5">{propertyInfo}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
-                  onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                  disabled={urgentInvoices.length === 0}
-                >
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  Quick Pay M-Pesa
-                </Button>
-              </div>
-            </div>
 
-            {/* ── 6-EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
-              {/* 1. Where do I live? */}
-              <Card className="border-l-4 border-l-purple-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5" />
-                      Where Do I Live?
-                    </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-purple-300 text-purple-700 dark:text-purple-400">
-                      Unit {tenantInfo?.unit || '—'}
-                    </Badge>
+                {/* ── Status at a glance ── */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
+                  {/* 1. My Home */}
+                  <Card className="border-l-4 border-l-teal border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
+                          <Building2 className="h-3.5 w-3.5" />
+                          My Home
+                        </span>
+                        <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
+                          Unit {tenantInfo?.unit || '—'}
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Property:</span>
+                          <span
+                            className="font-bold text-foreground truncate max-w-[100px]"
+                            title={tenantInfo?.property || '—'}
+                          >
+                            {tenantInfo?.property || '—'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Manager:</span>
+                          <span
+                            className="font-semibold text-foreground truncate max-w-[100px]"
+                            title={managerProfile?.full_name || 'Property Manager'}
+                          >
+                            {managerProfile?.full_name || 'Property Manager'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 2. Balance Due */}
+                  <Card className="border-l-4 border-l-warning border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
+                          <AlertCircle className="h-3.5 w-3.5" />
+                          Balance Due
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] h-4 ${stats.overdueCount > 0 ? 'border-destructive/30 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
+                        >
+                          {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : `${stats.pendingCount} Pending`}
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Total Balance:</span>
+                          <span className={`font-bold ${stats.totalDue > 0 ? 'text-warning' : 'text-success'}`}>
+                            {formatCurrency(stats.totalDue)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Pending Bills:</span>
+                          <span className="font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 3. Next Payment */}
+                  <Card className="border-l-4 border-l-destructive border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5" />
+                          Next Payment
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] h-4 ${urgentInvoices[0]?.status === 'overdue' ? 'border-destructive/40 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
+                        >
+                          {urgentInvoices[0]
+                            ? urgentInvoices[0].status === 'overdue'
+                              ? 'OVERDUE'
+                              : 'DUE SOON'
+                            : 'PAID'}
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Next Due Date:</span>
+                          <span className="font-bold text-foreground">
+                            {urgentInvoices[0] ? formatDate(urgentInvoices[0].due_date) : 'All paid'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Status:</span>
+                          <span
+                            className={`font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-destructive' : 'text-success'}`}
+                          >
+                            {urgentInvoices[0]
+                              ? urgentInvoices[0].status === 'overdue'
+                                ? 'Overdue'
+                                : 'Upcoming'
+                              : 'All clear'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 4. Paid This Year */}
+                  <Card className="border-l-4 border-l-success border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
+                          <CreditCard className="h-3.5 w-3.5" />
+                          Paid This Year
+                        </span>
+                        <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
+                          YTD Paid
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Total Paid:</span>
+                          <span className="font-bold text-success">{formatCurrency(stats.paidThisYear)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Last Receipt:</span>
+                          <span
+                            className="font-semibold text-foreground truncate max-w-[100px]"
+                            title={recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
+                          >
+                            {recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 5. My Lease */}
+                  <Card className="border-l-4 border-l-primary border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                          <FileText className="h-3.5 w-3.5" />
+                          My Lease
+                        </span>
+                        <Badge variant="outline" className="text-[10px] h-4 border-primary/30 text-primary capitalize">
+                          {lease?.status || 'Active'}
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Monthly Rent:</span>
+                          <span className="font-bold text-foreground">
+                            {lease ? formatCurrency(lease.monthly_rent) : '—'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Lease End:</span>
+                          <span className="font-semibold text-foreground">
+                            {lease ? formatDate(lease.end_date) : '—'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* 6. Maintenance */}
+                  <Card className="border-l-4 border-l-info border-border bg-card hover:shadow-md transition-all">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-info flex items-center gap-1.5">
+                          <Wrench className="h-3.5 w-3.5" />
+                          Maintenance
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] h-4 ${maintenanceSummary.openCount > 0 ? 'border-warning/30 text-warning bg-warning/10' : 'border-info/30 text-info'}`}
+                        >
+                          {maintenanceSummary.openCount} Open
+                        </Badge>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Open Repairs:</span>
+                          <span className="font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Urgent Issues:</span>
+                          <span
+                            className={`font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-destructive' : 'text-success'}`}
+                          >
+                            {maintenanceSummary.urgentCount > 0 ? `${maintenanceSummary.urgentCount} urgent` : 'None'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-card border border-border rounded-2xl mb-6 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">Quick Actions:</span>
                   </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Property:</span>
-                      <span className="font-bold text-foreground truncate max-w-[100px]" title={tenantInfo?.property || '—'}>{tenantInfo?.property || '—'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Manager:</span>
-                      <span className="font-semibold text-foreground truncate max-w-[100px]" title={managerProfile?.full_name || 'Property Manager'}>{managerProfile?.full_name || 'Property Manager'}</span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm rounded-xl gap-1.5 text-xs h-8"
+                      onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
+                      disabled={urgentInvoices.length === 0}
+                    >
+                      <Smartphone className="h-3.5 w-3.5" />
+                      Pay Rent
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-warning/10"
+                      asChild
+                    >
+                      <Link to="/portal/maintenance">
+                        <Wrench className="h-3.5 w-3.5 text-warning" />
+                        Request Repair
+                      </Link>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-success/10"
+                      asChild
+                    >
+                      <Link to="/portal/payments">
+                        <History className="h-3.5 w-3.5 text-success" />
+                        Payment History
+                      </Link>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-primary/10"
+                      asChild
+                    >
+                      <Link to="/portal/documents">
+                        <FileText className="h-3.5 w-3.5 text-primary" />
+                        Lease & Documents
+                      </Link>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-info/10"
+                      asChild
+                    >
+                      <Link to="/portal/inbox">
+                        <MessageSquare className="h-3.5 w-3.5 text-info" />
+                        Contact Manager
+                      </Link>
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              {/* 2. What do I owe? */}
-              <Card className="border-l-4 border-l-amber-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                      <AlertCircle className="h-3.5 w-3.5" />
-                      What Do I Owe?
-                    </span>
-                    <Badge variant="outline" className={`text-[10px] h-4 ${stats.overdueCount > 0 ? 'border-red-300 text-red-600 bg-red-50' : 'border-amber-300 text-amber-700'}`}>
-                      {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : `${stats.pendingCount} Pending`}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Total Balance:</span>
-                      <span className={`font-bold ${stats.totalDue > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600'}`}>{formatCurrency(stats.totalDue)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Pending Bills:</span>
-                      <span className="font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                {/* Lease expiry warning — shown ≤60 days before expiry */}
+                {lease &&
+                  (() => {
+                    // eslint-disable-next-line react-hooks/purity
+                    const daysLeft = Math.ceil((new Date(lease.end_date).getTime() - Date.now()) / 86_400_000);
+                    if (daysLeft > 60 || daysLeft < -30) return null;
+                    const isExpired = daysLeft <= 0;
+                    const isUrgent = daysLeft <= 14;
+                    return (
+                      <div
+                        className={`mb-4 rounded-2xl border p-4 flex items-start gap-3 shadow-sm transition-all duration-300 ${
+                          isUrgent ? 'bg-destructive/10 border-destructive/40' : 'bg-warning/10 border-warning/40'
+                        }`}
+                      >
+                        <div className="rounded-xl bg-card p-2 shadow-sm">
+                          <span className="text-2xl shrink-0">{isExpired ? '❌' : isUrgent ? '🚨' : '⚠️'}</span>
+                        </div>
+                        <div>
+                          <p className={`font-semibold text-sm ${isUrgent ? 'text-destructive' : 'text-warning'}`}>
+                            {isExpired
+                              ? 'Your lease has expired'
+                              : `Lease expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`}
+                          </p>
+                          <p className={`text-xs mt-0.5 ${isUrgent ? 'text-destructive/80' : 'text-warning/80'}`}>
+                            {isExpired
+                              ? 'Contact your manager to discuss renewal or move-out.'
+                              : `Ends ${format(new Date(lease.end_date), 'dd/MM/yy')}. Speak to your manager about renewal.`}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
-              {/* 3. When is it due? */}
-              <Card className="border-l-4 border-l-rose-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5" />
-                      When Is It Due?
-                    </span>
-                    <Badge variant="outline" className={`text-[10px] h-4 ${urgentInvoices[0]?.status === 'overdue' ? 'border-red-400 text-red-600 bg-red-50' : 'border-rose-300 text-rose-700'}`}>
-                      {urgentInvoices[0] ? (urgentInvoices[0].status === 'overdue' ? 'OVERDUE' : 'DUE SOON') : 'PAID'}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Next Due Date:</span>
-                      <span className="font-bold text-foreground">{urgentInvoices[0] ? formatDate(urgentInvoices[0].due_date) : 'All paid'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Status:</span>
-                      <span className={`font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-red-500' : 'text-emerald-600'}`}>
-                        {urgentInvoices[0] ? (urgentInvoices[0].status === 'overdue' ? 'Overdue' : 'Upcoming') : 'All clear'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                {/* ── Hero Balance Card — overdue / pending / clear states ── */}
+                {(() => {
+                  const hasOverdue = stats.overdueCount > 0;
+                  const hasPending = stats.pendingCount > 0;
+                  const isAllClear = !hasOverdue && !hasPending;
 
-              {/* 4. What have I paid? */}
-              <Card className="border-l-4 border-l-emerald-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                      <CreditCard className="h-3.5 w-3.5" />
-                      What Have I Paid?
-                    </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-emerald-300 text-emerald-700 dark:text-emerald-400">
-                      YTD Paid
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Total Paid:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(stats.paidThisYear)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Last Receipt:</span>
-                      <span className="font-semibold text-foreground truncate max-w-[100px]" title={recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}>
-                        {recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  // Lease progress bar
+                  const leaseProgress = lease
+                    ? (() => {
+                        const start = new Date(lease.start_date).getTime();
+                        const end = new Date(lease.end_date).getTime();
+                        const now = Date.now();
+                        const total = end - start;
+                        const elapsed = now - start;
+                        const pct = Math.min(100, Math.max(0, (elapsed / total) * 100));
+                        const daysLeft = Math.max(0, Math.ceil((end - now) / 86_400_000));
+                        return { pct, daysLeft };
+                      })()
+                    : null;
 
-              {/* 5. Is my lease active? */}
-              <Card className="border-l-4 border-l-sky-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
-                      <FileText className="h-3.5 w-3.5" />
-                      Is My Lease Active?
-                    </span>
-                    <Badge variant="outline" className="text-[10px] h-4 border-sky-300 text-sky-700 dark:text-sky-400 capitalize">
-                      {lease?.status || 'Active'}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Monthly Rent:</span>
-                      <span className="font-bold text-foreground">{lease ? formatCurrency(lease.monthly_rent) : '—'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Lease End:</span>
-                      <span className="font-semibold text-foreground">{lease ? formatDate(lease.end_date) : '—'}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  if (isAllClear) {
+                    return (
+                      <div className="mb-6 rounded-2xl p-5 border-2 bg-success/10 border-success/40 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <div className="flex items-center gap-4">
+                            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center shrink-0 shadow-sm">
+                              <CheckCircle className="h-7 w-7 text-success" />
+                            </div>
+                            <div>
+                              <p className="font-bold text-lg text-success">All paid up!</p>
+                              <p className="text-sm text-success/80">No pending invoices</p>
+                              {recentPayments.length > 0 && (
+                                <p className="text-xs text-success/70 mt-0.5">
+                                  Last payment: {recentPayments[0].invoice_number} &middot;{' '}
+                                  {formatCurrency(recentPayments[0].amount)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {leaseProgress && (
+                            <div className="w-full sm:w-48">
+                              <div className="flex justify-between text-xs text-success/80 mb-1">
+                                <span>{Math.round(leaseProgress.pct)}% elapsed</span>
+                                <span>{leaseProgress.daysLeft} days left</span>
+                              </div>
+                              <div className="h-2 bg-success/20 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-success rounded-full transition-all duration-500"
+                                  style={{ width: `${leaseProgress.pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
 
-              {/* 6. Attention & Repairs */}
-              <Card className="border-l-4 border-l-indigo-500 border-border/70 bg-card hover:shadow-md transition-all">
-                <CardContent className="p-3.5">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                      <Wrench className="h-3.5 w-3.5" />
-                      Attention & Repairs
-                    </span>
-                    <Badge variant="outline" className={`text-[10px] h-4 ${maintenanceSummary.openCount > 0 ? 'border-amber-300 text-amber-700 bg-amber-50' : 'border-indigo-300 text-indigo-700'}`}>
-                      {maintenanceSummary.openCount} Open
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Open Repairs:</span>
-                      <span className="font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Urgent Issues:</span>
-                      <span className={`font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
-                        {maintenanceSummary.urgentCount > 0 ? `${maintenanceSummary.urgentCount} urgent` : 'None'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Operations Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-card border border-border/60 rounded-2xl mb-6 shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-foreground uppercase tracking-wider">Quick Actions:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm rounded-xl gap-1.5 text-xs h-8"
-                  onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                  disabled={urgentInvoices.length === 0}
-                >
-                  <Smartphone className="h-3.5 w-3.5" />
-                  Pay Rent
-                </Button>
-
-                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-amber-50 dark:hover:bg-amber-950/20" asChild>
-                  <Link to="/portal/maintenance">
-                    <Wrench className="h-3.5 w-3.5 text-amber-500" />
-                    Request Repair
-                  </Link>
-                </Button>
-
-                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-emerald-50 dark:hover:bg-emerald-950/20" asChild>
-                  <Link to="/portal/payments">
-                    <History className="h-3.5 w-3.5 text-emerald-600" />
-                    Payment History
-                  </Link>
-                </Button>
-
-                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-sky-50 dark:hover:bg-sky-950/20" asChild>
-                  <Link to="/portal/documents">
-                    <FileText className="h-3.5 w-3.5 text-sky-600" />
-                    Lease & Documents
-                  </Link>
-                </Button>
-
-                <Button size="sm" variant="outline" className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-purple-50 dark:hover:bg-purple-950/20" asChild>
-                  <Link to="/portal/inbox">
-                    <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
-                    Contact Manager
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-        {/* Lease expiry warning — shown ≤60 days before expiry */}
-        {lease && (() => {
-          // eslint-disable-next-line react-hooks/purity
-          const daysLeft = Math.ceil((new Date(lease.end_date).getTime() - Date.now()) / 86_400_000);
-          if (daysLeft > 60 || daysLeft < -30) return null;
-          const isExpired = daysLeft <= 0;
-          const isUrgent  = daysLeft <= 14;
-          return (
-            <div className={`mb-4 rounded-2xl border p-4 flex items-start gap-3 shadow-sm transition-all duration-300 ${
-              isUrgent 
-                ? 'bg-gradient-to-br from-red-50 to-red-100/50 border-red-300/50' 
-                : 'bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-300/50'
-            }`}>
-              <div className="rounded-xl bg-white p-2 shadow-sm">
-                <span className="text-2xl shrink-0">{isExpired ? '❌' : isUrgent ? '🚨' : '⚠️'}</span>
-              </div>
-              <div>
-                <p className={`font-semibold text-sm ${isUrgent ? 'text-red-800' : 'text-amber-800'}`}>
-                  {isExpired ? 'Your lease has expired' : `Lease expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`}
-                </p>
-                <p className={`text-xs mt-0.5 ${isUrgent ? 'text-red-700' : 'text-amber-700'}`}>
-                  {isExpired
-                    ? 'Contact your manager to discuss renewal or move-out.'
-                    : `Ends ${format(new Date(lease.end_date), 'dd/MM/yy')}. Speak to your manager about renewal.`}
-                </p>
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* ── Hero Balance Card — overdue / pending / clear states ── */}
-        {(() => {
-          const hasOverdue = stats.overdueCount > 0;
-          const hasPending = stats.pendingCount > 0;
-          const isAllClear = !hasOverdue && !hasPending;
-
-          // Lease progress bar
-          const leaseProgress = lease ? (() => {
-            const start = new Date(lease.start_date).getTime();
-            const end = new Date(lease.end_date).getTime();
-            const now = Date.now();
-            const total = end - start;
-            const elapsed = now - start;
-            const pct = Math.min(100, Math.max(0, (elapsed / total) * 100));
-            const daysLeft = Math.max(0, Math.ceil((end - now) / 86_400_000));
-            return { pct, daysLeft };
-          })() : null;
-
-          if (isAllClear) {
-            return (
-              <div className="mb-6 rounded-2xl p-5 border-2 bg-gradient-to-br from-green-50 to-emerald-100/50 border-green-300/50 shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center shrink-0 shadow-sm">
-                      <CheckCircle className="h-7 w-7 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-lg text-green-900">All paid up!</p>
-                      <p className="text-sm text-green-700">No pending invoices</p>
-                      {recentPayments.length > 0 && (
-                        <p className="text-xs text-green-600 mt-0.5">
-                          Last payment: {recentPayments[0].invoice_number} &middot; {formatCurrency(recentPayments[0].amount)}
-                        </p>
+                  const mostUrgent = urgentInvoices.sort((a, b) => {
+                    if (a.status === 'overdue' && b.status !== 'overdue') return -1;
+                    if (b.status === 'overdue' && a.status !== 'overdue') return 1;
+                    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+                  })[0];
+                  const balanceDue = Number((mostUrgent as PayableInvoice).balance_due ?? mostUrgent.amount);
+                  const isOverdue = mostUrgent.status === 'overdue';
+                  return (
+                    <div
+                      className={`mb-6 rounded-2xl p-5 border-2 shadow-sm hover:shadow-md transition-all duration-300 ${
+                        isOverdue ? 'bg-destructive/10 border-destructive/40' : 'bg-warning/10 border-warning/40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                              isOverdue ? 'bg-destructive/20' : 'bg-warning/20'
+                            }`}
+                          >
+                            <Smartphone className={`h-7 w-7 ${isOverdue ? 'text-destructive' : 'text-warning'}`} />
+                          </div>
+                          <div>
+                            <p className={`font-bold text-lg ${isOverdue ? 'text-destructive' : 'text-warning'}`}>
+                              {isOverdue ? 'Payment overdue' : 'Rent due'}
+                            </p>
+                            <p className={`text-sm ${isOverdue ? 'text-destructive/80' : 'text-warning/80'}`}>
+                              {mostUrgent.invoice_number}
+                              {urgentInvoices.length > 1 && ` + ${urgentInvoices.length - 1} more`}
+                            </p>
+                            <p className={`text-xs mt-0.5 ${isOverdue ? 'text-destructive/70' : 'text-warning/70'}`}>
+                              Due {format(new Date(mostUrgent.due_date), 'dd/MM')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className="text-right">
+                            <p className={`text-2xl font-bold ${isOverdue ? 'text-destructive' : 'text-warning'}`}>
+                              {formatCurrency(balanceDue)}
+                            </p>
+                            {urgentInvoices.length > 1 && (
+                              <p className="text-xs text-muted-foreground">Total: {formatCurrency(stats.totalDue)}</p>
+                            )}
+                          </div>
+                          <Button
+                            size="lg"
+                            className={`gap-2 h-12 px-6 text-base font-semibold shadow-lg rounded-xl transition-all duration-200 ${
+                              isOverdue ? 'bg-destructive hover:bg-destructive/90' : 'bg-warning hover:bg-warning/90'
+                            } text-white`}
+                            onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
+                          >
+                            <Smartphone className="h-5 w-5" />
+                            Pay via M-Pesa
+                          </Button>
+                        </div>
+                      </div>
+                      {leaseProgress && (
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                            <span>{Math.round(leaseProgress.pct)}% of lease elapsed</span>
+                            <span>{leaseProgress.daysLeft} days remaining</span>
+                          </div>
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                isOverdue ? 'bg-destructive/60' : 'bg-warning/60'
+                              }`}
+                              style={{ width: `${leaseProgress.pct}%` }}
+                            />
+                          </div>
+                        </div>
                       )}
                     </div>
+                  );
+                })()}
+
+                {/* Bills hub — rent, water, security, amenities */}
+                {userRole?.tenant_id && (
+                  <div className="mb-8">
+                    <TenantBillsHub tenantId={userRole.tenant_id} onPay={openStkPay} />
                   </div>
-                  {leaseProgress && (
-                    <div className="w-full sm:w-48">
-                      <div className="flex justify-between text-xs text-green-700 mb-1">
-                        <span>{Math.round(leaseProgress.pct)}% elapsed</span>
-                        <span>{leaseProgress.daysLeft} days left</span>
-                      </div>
-                      <div className="h-2 bg-green-200/50 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${leaseProgress.pct}%` }} />
-                      </div>
+                )}
+
+                {/* Bank Details Section */}
+                {tenantInfo?.manager_id && (
+                  <div className="mb-8">
+                    <ManagerBankDetails
+                      managerId={tenantInfo.manager_id}
+                      propertyId={tenantInfo.property_id || undefined}
+                    />
+                  </div>
+                )}
+
+                {/* Receipt Upload Section */}
+                {tenantInfo?.id && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <ReceiptUpload
+                      tenantId={tenantInfo.id}
+                      invoices={safeInvoices.filter((inv) => inv.status !== 'paid' && inv.status !== 'cancelled')}
+                      onUploadComplete={() => setReceiptRefresh((prev) => prev + 1)}
+                    />
+                    <ReceiptHistory tenantId={tenantInfo.id} refreshTrigger={receiptRefresh} />
+                  </div>
+                )}
+
+                {/* Balance & Credit Summary */}
+                {tenantInfo && user && (
+                  <div className="mb-8">
+                    <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Account Balance
+                    </h2>
+                    <TenantBalanceSummary tenantId={tenantInfo.id} userId={user.id} />
+                  </div>
+                )}
+
+                {/* Payment terms & M-Pesa details — set by manager at registration */}
+                {userRole?.tenant_id && (
+                  <div className="mb-8">
+                    <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Payment details
+                    </h2>
+                    <TenantPaymentDetails />
+                  </div>
+                )}
+
+                {/* Multi-unit: show all units if tenant has more than one */}
+                {userRole?.tenant_id && (
+                  <div className="mb-8">
+                    <TenantMultiUnit tenantId={userRole.tenant_id} />
+                  </div>
+                )}
+
+                {/* My Rental History — portable across all units ever lived in */}
+                <div className="mb-8">
+                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+                    <History className="h-4 w-4" />
+                    My Rental History
+                  </h2>
+                  <TenantPortableHistory />
+                </div>
+
+                {/* Contracts Section */}
+                <div className="mb-8">
+                  <TenantContractsSection />
+                </div>
+
+                {/* Invoices Table */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Your Invoices
+                      </CardTitle>
+                      <CardDescription>View and pay your rent invoices</CardDescription>
                     </div>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          const mostUrgent = urgentInvoices.sort((a, b) => {
-            if (a.status === 'overdue' && b.status !== 'overdue') return -1;
-            if (b.status === 'overdue' && a.status !== 'overdue') return  1;
-            return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-          })[0];
-          const balanceDue = Number((mostUrgent as PayableInvoice).balance_due ?? mostUrgent.amount);
-          const isOverdue  = mostUrgent.status === 'overdue';
-          return (
-            <div className={`mb-6 rounded-2xl p-5 border-2 shadow-sm hover:shadow-md transition-all duration-300 ${
-              isOverdue 
-                ? 'bg-gradient-to-br from-red-50 to-red-100/50 border-red-300/50' 
-                : 'bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-300/50'
-            }`}>
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-4">
-                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
-                    isOverdue ? 'bg-gradient-to-br from-red-100 to-red-200' : 'bg-gradient-to-br from-amber-100 to-amber-200'
-                  }`}>
-                    <Smartphone className={`h-7 w-7 ${isOverdue ? 'text-red-600' : 'text-amber-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`font-bold text-lg ${isOverdue ? 'text-red-900' : 'text-amber-900'}`}>
-                      {isOverdue ? 'Payment overdue' : 'Rent due'}
-                    </p>
-                    <p className={`text-sm ${isOverdue ? 'text-red-700' : 'text-amber-700'}`}>
-                      {mostUrgent.invoice_number}
-                      {urgentInvoices.length > 1 && ` + ${urgentInvoices.length - 1} more`}
-                    </p>
-                    <p className={`text-xs mt-0.5 ${isOverdue ? 'text-red-600' : 'text-amber-600'}`}>
-                      Due {format(new Date(mostUrgent.due_date), 'dd/MM')}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="text-right">
-                    <p className={`text-2xl font-bold ${isOverdue ? 'text-red-800' : 'text-amber-800'}`}>
-                      {formatCurrency(balanceDue)}
-                    </p>
-                    {urgentInvoices.length > 1 && (
-                      <p className="text-xs text-muted-foreground">
-                        Total: {formatCurrency(stats.totalDue)}
-                      </p>
+                    <Button variant="outline" asChild>
+                      <Link to="/portal/payments" className="gap-2">
+                        <History className="h-4 w-4" />
+                        Payment History
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/portal/inbox" className="gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        Inbox
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/portal/documents" className="gap-2">
+                        <FileText className="h-4 w-4" />
+                        Documents
+                      </Link>
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    {safeInvoices.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No invoices found.</p>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Invoice #</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Due Date</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {safeInvoices.map((invoice) => {
+                            const StatusIcon = statusConfig[invoice.status].icon;
+                            return (
+                              <TableRow key={invoice.id}>
+                                <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                                <TableCell>{invoice.description || 'Monthly Rent'}</TableCell>
+                                <TableCell>{formatDate(invoice.due_date)}</TableCell>
+                                <TableCell className="font-semibold">
+                                  {(invoice as PayableInvoice).balance_due != null &&
+                                  Number((invoice as PayableInvoice).balance_due) !== Number(invoice.amount) ? (
+                                    <div>
+                                      <span>{formatCurrency(Number((invoice as PayableInvoice).balance_due))}</span>
+                                      <p className="text-xs text-muted-foreground font-normal">
+                                        of {formatCurrency(Number(invoice.amount))}
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    formatCurrency(Number(invoice.amount))
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge
+                                    variant={statusConfig[invoice.status].variant}
+                                    className="flex items-center gap-1 w-fit"
+                                  >
+                                    <StatusIcon className="h-3 w-3" />
+                                    {statusConfig[invoice.status].label}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {(invoice.status === 'pending' || invoice.status === 'overdue') && (
+                                    <Button
+                                      size="sm"
+                                      className="bg-teal hover:bg-teal/90 text-white gap-1.5"
+                                      onClick={() => openStkPay([invoice as PayableInvoice])}
+                                    >
+                                      <Smartphone className="h-3.5 w-3.5" />
+                                      Pay Now
+                                    </Button>
+                                  )}
+                                  {invoice.status === 'paid' && invoice.paid_date && (
+                                    <span className="text-sm text-muted-foreground">
+                                      Paid {formatDate(invoice.paid_date)}
+                                    </span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
                     )}
-                  </div>
-                  <Button
-                    size="lg"
-                    className={`gap-2 h-12 px-6 text-base font-semibold shadow-lg rounded-xl transition-all duration-200 ${
-                      isOverdue ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700'
-                    } text-foreground`}
-                    onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                  >
-                    <Smartphone className="h-5 w-5" />
-                    Pay via M-Pesa
-                  </Button>
-                </div>
-              </div>
-              {leaseProgress && (
-                <div className="mt-3 pt-3 border-t border-border">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>{Math.round(leaseProgress.pct)}% of lease elapsed</span>
-                    <span>{leaseProgress.daysLeft} days remaining</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all duration-500 ${
-                      isOverdue ? 'bg-red-400' : 'bg-amber-400'
-                    }`} style={{ width: `${leaseProgress.pct}%` }} />
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* Bills hub — rent, water, security, amenities */}
-        {userRole?.tenant_id && (
-          <div className="mb-8">
-            <TenantBillsHub
-              tenantId={userRole.tenant_id}
-              onPay={openStkPay}
-            />
-          </div>
-        )}
-
-        {/* Bank Details Section */}
-        {tenantInfo?.manager_id && (
-          <div className="mb-8">
-            <ManagerBankDetails 
-              managerId={tenantInfo.manager_id} 
-              propertyId={tenantInfo.property_id || undefined}
-            />
-          </div>
-        )}
-
-        {/* Receipt Upload Section */}
-        {tenantInfo?.id && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <ReceiptUpload
-              tenantId={tenantInfo.id}
-              invoices={safeInvoices.filter(inv => inv.status !== 'paid' && inv.status !== 'cancelled')}
-              onUploadComplete={() => setReceiptRefresh(prev => prev + 1)}
-            />
-            <ReceiptHistory
-              tenantId={tenantInfo.id}
-              refreshTrigger={receiptRefresh}
-            />
-          </div>
-        )}
-
-        {/* Balance & Credit Summary */}
-        {tenantInfo && user && (
-          <div className="mb-8">
-            <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Account Balance
-            </h2>
-            <TenantBalanceSummary tenantId={tenantInfo.id} userId={user.id} />
-          </div>
-        )}
-
-        {/* Payment terms & M-Pesa details — set by manager at registration */}
-        {userRole?.tenant_id && (
-          <div className="mb-8">
-            <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Payment details
-            </h2>
-            <TenantPaymentDetails />
-          </div>
-        )}
-
-        {/* Multi-unit: show all units if tenant has more than one */}
-        {userRole?.tenant_id && (
-          <div className="mb-8">
-            <TenantMultiUnit tenantId={userRole.tenant_id} />
-          </div>
-        )}
-
-        {/* My Rental History — portable across all units ever lived in */}
-        <div className="mb-8">
-          <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-            <History className="h-4 w-4" />
-            My Rental History
-          </h2>
-          <TenantPortableHistory />
-        </div>
-
-        {/* Contracts Section */}
-        <div className="mb-8">
-          <TenantContractsSection />
-        </div>
-
-        {/* Invoices Table */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Your Invoices
-              </CardTitle>
-              <CardDescription>View and pay your rent invoices</CardDescription>
-            </div>
-            <Button variant="outline" asChild>
-              <Link to="/portal/payments" className="gap-2">
-                <History className="h-4 w-4" />
-                Payment History
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/portal/inbox" className="gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Inbox
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/portal/documents" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Documents
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {safeInvoices.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No invoices found.</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Invoice #</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {safeInvoices.map((invoice) => {
-                    const StatusIcon = statusConfig[invoice.status].icon;
-                    return (
-                      <TableRow key={invoice.id}>
-                        <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                        <TableCell>{invoice.description || 'Monthly Rent'}</TableCell>
-                        <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                        <TableCell className="font-semibold">
-                          {(invoice as PayableInvoice).balance_due != null && Number((invoice as PayableInvoice).balance_due) !== Number(invoice.amount)
-                            ? (
-                              <div>
-                                <span>{formatCurrency(Number((invoice as PayableInvoice).balance_due))}</span>
-                                <p className="text-xs text-muted-foreground font-normal">
-                                  of {formatCurrency(Number(invoice.amount))}
-                                </p>
-                              </div>
-                            )
-                            : formatCurrency(Number(invoice.amount))
-                          }
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusConfig[invoice.status].variant} className="flex items-center gap-1 w-fit">
-                            <StatusIcon className="h-3 w-3" />
-                            {statusConfig[invoice.status].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {(invoice.status === 'pending' || invoice.status === 'overdue') && (
-                            <Button
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white gap-1.5"
-                              onClick={() => openStkPay([invoice as PayableInvoice])}
-                            >
-                              <Smartphone className="h-3.5 w-3.5" />
-                              Pay Now
-                            </Button>
-                          )}
-                          {invoice.status === 'paid' && invoice.paid_date && (
-                            <span className="text-sm text-muted-foreground">
-                              Paid {formatDate(invoice.paid_date)}
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                  </CardContent>
+                </Card>
+              </>
             )}
-          </CardContent>
-        </Card>
+            {/* End linked-tenant section */}
           </>
         )}
-        {/* End linked-tenant section */}
-        </>)}
       </main>
 
       {/* Pay Invoice Dialog */}
@@ -1154,9 +1279,7 @@ const TenantPortal = () => {
               <CreditCard className="h-5 w-5" />
               Pay Invoice
             </DialogTitle>
-            <DialogDescription>
-              Choose your preferred payment method and currency.
-            </DialogDescription>
+            <DialogDescription>Choose your preferred payment method and currency.</DialogDescription>
           </DialogHeader>
           {selectedInvoice && (
             <div className="space-y-4 py-4">
@@ -1176,7 +1299,10 @@ const TenantPortal = () => {
               {/* Currency Selector */}
               <div className="space-y-2 pt-2 border-t">
                 <Label>Payment Method</Label>
-                <Select value={selectedCurrency} onValueChange={(value: SupportedCurrency) => setSelectedCurrency(value)}>
+                <Select
+                  value={selectedCurrency}
+                  onValueChange={(value: SupportedCurrency) => setSelectedCurrency(value)}
+                >
                   <SelectTrigger className="w-full bg-background">
                     <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
@@ -1209,9 +1335,7 @@ const TenantPortal = () => {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     className="bg-background"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Format: 07XXXXXXXX or +254XXXXXXXXX
-                  </p>
+                  <p className="text-xs text-muted-foreground">Format: 07XXXXXXXX or +254XXXXXXXXX</p>
                 </div>
               )}
             </div>
@@ -1245,30 +1369,24 @@ const TenantPortal = () => {
               <Smartphone className="h-5 w-5" />
               M-Pesa Payment Status
             </DialogTitle>
-            <DialogDescription>
-              Check the status of your M-Pesa payment.
-            </DialogDescription>
+            <DialogDescription>Check the status of your M-Pesa payment.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="flex items-center justify-center py-6">
               <div className="text-center space-y-3">
-                <div className="h-16 w-16 mx-auto rounded-full bg-amber-400/10 flex items-center justify-center">
-                  <Smartphone className="h-8 w-8 text-amber-500" />
+                <div className="h-16 w-16 mx-auto rounded-full bg-warning/10 flex items-center justify-center">
+                  <Smartphone className="h-8 w-8 text-warning" />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Complete the M-Pesa prompt on your phone, then click below to verify.
                 </p>
-                {pendingPaymentRef && (
-                  <p className="text-xs text-muted-foreground">
-                    Reference: {pendingPaymentRef}
-                  </p>
-                )}
+                {pendingPaymentRef && <p className="text-xs text-muted-foreground">Reference: {pendingPaymentRef}</p>}
               </div>
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setVerifyDialogOpen(false);
                 setPendingPaymentRef(null);
