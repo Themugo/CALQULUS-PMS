@@ -372,7 +372,7 @@ const LandlordDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal" />
       </div>
     );
   }
@@ -394,7 +394,7 @@ const LandlordDashboard = () => {
               <div className="font-heading font-bold text-sm text-gradient leading-none">CALQULUS PMS</div>
               <div className="text-[10px] text-muted-foreground tracking-wider uppercase">Landlord Workspace</div>
             </div>
-            <Badge variant="outline" className="ml-1 text-xs border-primary/30 text-primary bg-primary/10">
+            <Badge variant="outline" className="ml-1 text-xs border-teal/30 text-teal bg-teal/10">
               Property Owner
             </Badge>
           </div>
@@ -447,15 +447,15 @@ const LandlordDashboard = () => {
 
         {/* ── EXECUTIVE KPI MATRIX ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* 1. Portfolio — blue/primary */}
-          <Card className="border-l-4 border-l-primary border-border/70 bg-card hover:shadow-md transition-all">
+          {/* 1. Portfolio — teal */}
+          <Card className="border-l-4 border-l-teal border-border/70 bg-card hover:shadow-md transition-all">
             <CardContent className="p-3.5">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
                   <Building2 className="h-3.5 w-3.5 shrink-0" />
                   Portfolio
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-primary/30 text-primary">
+                <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
                   {portfolioData?.totalProperties ?? 0} Props
                 </Badge>
               </div>
@@ -605,9 +605,9 @@ const LandlordDashboard = () => {
               value: propertiesLoading ? '—' : String(portfolioData?.totalProperties ?? 0),
               sub: propertiesLoading ? '' : `${portfolioData?.totalUnits ?? 0} total units (${portfolioData?.totalVacant ?? 0} vacant)`,
               icon: Building2,
-              iconBg: 'bg-gradient-to-br from-primary/15 to-primary/5 border-primary/20',
-              iconColor: 'text-primary',
-              accent: 'via-primary/60',
+              iconBg: 'bg-gradient-to-br from-teal/15 to-teal/5 border-teal/20',
+              iconColor: 'text-teal',
+              accent: 'via-teal/60',
             },
             {
               label: 'Portfolio Occupancy',
@@ -633,14 +633,14 @@ const LandlordDashboard = () => {
               value: payoutsLoading ? '—' : fmt(totalPaidOut),
               sub: payoutsLoading ? '' : `${pendingPayouts} request${pendingPayouts !== 1 ? 's' : ''} pending`,
               icon: Banknote,
-              iconBg: 'bg-gradient-to-br from-primary/15 to-primary/5 border-primary/20',
-              iconColor: 'text-primary',
-              accent: 'via-primary/60',
+              iconBg: 'bg-gradient-to-br from-teal/15 to-teal/5 border-teal/20',
+              iconColor: 'text-teal',
+              accent: 'via-teal/60',
             },
           ].map(stat => (
             <div
               key={stat.label}
-              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-primary/20"
+              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-teal/20"
             >
               <div className={`absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent ${stat.accent} to-transparent`} />
               <div className="flex items-start justify-between gap-3">
@@ -745,9 +745,9 @@ const LandlordDashboard = () => {
                   <div className="rounded-lg border border-border bg-secondary-background p-4 text-left max-w-sm mx-auto space-y-2">
                     <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Next steps</p>
                     <ol className="text-sm text-muted-foreground space-y-1">
-                      <li className="flex gap-2"><span className="font-bold shrink-0 text-primary">1.</span>Share your account email with your property manager</li>
-                      <li className="flex gap-2"><span className="font-bold shrink-0 text-primary">2.</span>They will link your properties from their portal</li>
-                      <li className="flex gap-2"><span className="font-bold shrink-0 text-primary">3.</span>You will receive access immediately</li>
+                      <li className="flex gap-2"><span className="font-bold shrink-0 text-teal">1.</span>Share your account email with your property manager</li>
+                      <li className="flex gap-2"><span className="font-bold shrink-0 text-teal">2.</span>They will link your properties from their portal</li>
+                      <li className="flex gap-2"><span className="font-bold shrink-0 text-teal">3.</span>You will receive access immediately</li>
                     </ol>
                     <p className="text-xs text-muted-foreground pt-1">Your email: <strong className="text-foreground">{user?.email}</strong></p>
                   </div>
@@ -766,7 +766,7 @@ const LandlordDashboard = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="font-semibold truncate text-foreground text-base">{prop.name}</h3>
-                              <Badge variant="outline" className="text-xs shrink-0 border-primary/30 text-primary">
+                              <Badge variant="outline" className="text-xs shrink-0 border-teal/30 text-teal">
                                 {prop.revenue_share_pct}% revenue share
                               </Badge>
                             </div>
@@ -838,7 +838,7 @@ const LandlordDashboard = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-primary/30 text-primary hover:bg-primary/10"
+                                className="border-teal/30 text-teal hover:bg-teal/10"
                                 onClick={() => {
                                   setSelectedProperty(prop.id);
                                   setPayoutDialogOpen(true);
