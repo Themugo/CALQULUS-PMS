@@ -1,5 +1,6 @@
 import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 import { Link } from "react-router-dom";
+import { cn } from "@/shared/lib/utils";
 
 /**
  * Shared decorative chrome for the role-specific auth screens
@@ -40,6 +41,12 @@ export interface PortalAuthShellProps {
   submitLabel: string;
   /** Optional notice shown below the form (portal guidance). */
   notice?: string;
+  /**
+   * Visual variant. "hero" (default) keeps the established navy hero for
+   * portals not yet migrated to the light executive system. "light" renders
+   * a light SaaS surface — opt-in per portal during the light-theme rollout.
+   */
+  variant?: "hero" | "light";
   /** Form + any auxiliary controls rendered inside the right card. */
   children: React.ReactNode;
 }
@@ -63,12 +70,20 @@ export function PortalAuthShell({
   formSubtitle,
   submitLabel: _submitLabel,
   notice,
+  variant = "hero",
   children,
 }: PortalAuthShellProps) {
+  const isLight = variant === "light";
   return (
-    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
+    <div className={cn(
+      "min-h-screen flex bg-background text-foreground",
+      isLight ? "surface-subtle" : "hero-gradient"
+    )}>
       {/* ── Left hero panel ── */}
-      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
+      <div className={cn(
+        "hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden",
+        isLight && "border-r border-border"
+      )}>
         <AuthGridOverlay />
 
         <div className="relative z-10 flex flex-col h-full p-12">
@@ -150,9 +165,12 @@ export function PortalAuthShell({
 }
 
 /** Full-screen branded loading state shown while auth state is resolving. */
-export function AuthLoadingScreen() {
+export function AuthLoadingScreen({ variant = "hero" }: { variant?: "hero" | "light" }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground hero-gradient">
+    <div className={cn(
+      "min-h-screen flex items-center justify-center bg-background text-foreground",
+      variant === "light" ? "surface-subtle" : "hero-gradient"
+    )}>
       <div className="flex flex-col items-center gap-4">
         <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
         <div className="flex gap-1.5">

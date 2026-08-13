@@ -174,7 +174,7 @@ const Auth = () => {
   const passwordStrength = getPasswordStrength(signupPassword);
 
   if (loading) {
-    return <AuthLoadingScreen />;
+    return <AuthLoadingScreen variant="light" />;
   }
 
   return (
@@ -193,6 +193,7 @@ const Auth = () => {
       otherPortals={otherPortals}
       formSubtitle="Sign in or create your manager account"
       submitLabel="Sign in to Manager Portal"
+      variant="light"
     >
       {biometricAvailable && hasStoredCredentials && !biometricLoading && (
         <div className="mb-6">
