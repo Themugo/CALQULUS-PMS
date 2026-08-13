@@ -18,17 +18,17 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_BADGE: Record<string, string> = {
-  occupied:    'bg-green-100 text-green-800 border-green-200',
-  vacant:      'bg-amber-100 text-amber-800 border-amber-200',
-  maintenance: 'bg-red-100 text-red-800 border-red-200',
-  reserved:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
+  occupied:    'bg-success/15 text-success border-success/30',
+  vacant:      'bg-warning/15 text-warning border-warning/30',
+  maintenance: 'bg-destructive/15 text-destructive border-destructive/30',
+  reserved:    'bg-teal/15 text-teal border-teal/30',
 };
 
 const MAINTENANCE_STATUS: Record<string, string> = {
-  pending:     'bg-amber-100 text-amber-800 border-amber-200',
-  in_progress: 'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
-  completed:   'bg-green-100 text-green-800 border-green-200',
-  cancelled:   'bg-slate-100 text-slate-600 border-slate-200',
+  pending:     'bg-warning/15 text-warning border-warning/30',
+  in_progress: 'bg-info/15 text-info border-info/30',
+  completed:   'bg-success/15 text-success border-success/30',
+  cancelled:   'bg-muted text-muted-foreground border-border',
 };
 
 interface Props {
@@ -142,10 +142,10 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
       {/* Summary KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Occupancy', value: `${occupancyRate}%`, sub: `${occupiedUnits}/${totalUnits} units`, icon: Home, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Vacant units', value: vacantUnits, sub: maintenanceUnits > 0 ? `+${maintenanceUnits} on maintenance` : 'Ready to let', icon: Building2, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { label: 'Monthly gross rent', value: fmt(monthlyGross), sub: `${fmt(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-[hsl(214_73%_45%)]', bg: 'bg-[hsl(214_73%_48%/0.08)]' },
-          { label: 'Open maintenance', value: openMaintenance, sub: openMaintenance > 0 ? 'Requires attention' : 'All clear', icon: Wrench, color: openMaintenance > 0 ? 'text-red-600' : 'text-green-600', bg: openMaintenance > 0 ? 'bg-red-50' : 'bg-green-50' },
+          { label: 'Occupancy', value: `${occupancyRate}%`, sub: `${occupiedUnits}/${totalUnits} units`, icon: Home, color: 'text-success', bg: 'bg-success/10' },
+          { label: 'Vacant units', value: vacantUnits, sub: maintenanceUnits > 0 ? `+${maintenanceUnits} on maintenance` : 'Ready to let', icon: Building2, color: 'text-warning', bg: 'bg-warning/10' },
+          { label: 'Monthly gross rent', value: fmt(monthlyGross), sub: `${fmt(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-teal', bg: 'bg-teal/10' },
+          { label: 'Open maintenance', value: openMaintenance, sub: openMaintenance > 0 ? 'Requires attention' : 'All clear', icon: Wrench, color: openMaintenance > 0 ? 'text-destructive' : 'text-success', bg: openMaintenance > 0 ? 'bg-destructive/10' : 'bg-success/10' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl border border-border p-4 ${s.bg}`}>
             <div className="flex items-center justify-between mb-1">
@@ -167,7 +167,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
             <Wrench className="h-3.5 w-3.5" />
             Maintenance
             {openMaintenance > 0 && (
-              <span className="ml-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold">{openMaintenance}</span>
+              <span className="ml-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-bold">{openMaintenance}</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="revenue" className="text-xs gap-1.5">
@@ -196,15 +196,15 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                       : null;
                     return (
                       <div key={unit.id} className={`flex items-center justify-between p-3 rounded-lg border ${
-                        unit.status === 'vacant' ? 'border-amber-200 bg-amber-50/30' :
-                        unit.status === 'maintenance' ? 'border-red-200 bg-red-50/30' :
+                        unit.status === 'vacant' ? 'border-warning/30 bg-warning/5' :
+                        unit.status === 'maintenance' ? 'border-destructive/30 bg-destructive/5' :
                         'border-border'
                       }`}>
                         <div className="flex items-center gap-3 min-w-0">
                           <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                            unit.status === 'occupied' ? 'bg-green-100 text-green-800' :
-                            unit.status === 'vacant' ? 'bg-amber-100 text-amber-800' :
-                            'bg-red-100 text-red-800'
+                            unit.status === 'occupied' ? 'bg-success/15 text-success' :
+                            unit.status === 'vacant' ? 'bg-warning/15 text-warning' :
+                            'bg-destructive/15 text-destructive'
                           }`}>
                             {(unit.label || unit.unit_number).slice(-2)}
                           </div>
@@ -218,7 +218,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                               {unit.floor_number && <span className="text-xs text-muted-foreground">Floor {unit.floor_number}</span>}
                             </div>
                             {daysVacant !== null && daysVacant > 0 && (
-                              <p className="text-xs text-amber-700 mt-0.5">
+                              <p className="text-xs text-warning mt-0.5">
                                 Vacant {daysVacant} day{daysVacant !== 1 ? 's' : ''}
                                 {daysVacant > 30 && ' — consider reviewing asking rent'}
                               </p>
@@ -230,7 +230,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                             <p className="text-sm font-semibold">{fmt(unit.monthly_rent)}/mo</p>
                           )}
                           {rev && (
-                            <p className={`text-xs mt-0.5 ${rev.collected < rev.billed ? 'text-amber-700' : 'text-green-700'}`}>
+                            <p className={`text-xs mt-0.5 ${rev.collected < rev.billed ? 'text-warning' : 'text-success'}`}>
                               {fmt(rev.collected)} collected
                               {rev.collected < rev.billed && ` (${fmt(rev.billed - rev.collected)} outstanding)`}
                             </p>
@@ -249,7 +249,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium">Overall occupancy</p>
-                <span className="text-sm font-bold text-green-700">{occupancyRate}%</span>
+                <span className="text-sm font-bold text-success">{occupancyRate}%</span>
               </div>
               <Progress value={occupancyRate} className="h-3" />
               <div className="flex justify-between text-xs text-muted-foreground mt-2">
@@ -285,8 +285,8 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                 <div className="space-y-2">
                   {maintenance.map(m => (
                     <div key={m.id} className={`flex items-center justify-between p-3 rounded-lg border ${
-                      m.status === 'completed' ? 'border-green-200 bg-green-50/20 opacity-75' :
-                      m.priority === 'urgent' || m.priority === 'high' ? 'border-red-200 bg-red-50/30' :
+                      m.status === 'completed' ? 'border-success/30 bg-success/5 opacity-75' :
+                      m.priority === 'urgent' || m.priority === 'high' ? 'border-destructive/30 bg-destructive/5' :
                       'border-border'
                     }`}>
                       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -297,7 +297,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                               {m.status?.replace('_', ' ')}
                             </Badge>
                             {m.priority === 'urgent' && (
-                              <Badge className="text-xs bg-red-100 text-red-800 border-red-200">Urgent</Badge>
+                              <Badge className="text-xs bg-destructive/15 text-destructive border-destructive/30">Urgent</Badge>
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5">
@@ -310,7 +310,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                       <div className="text-right shrink-0">
                         {m.budget && <p className="text-xs text-muted-foreground">Budget: {fmt(m.budget)}</p>}
                         {m.deposit_deduction_amount > 0 && (
-                          <p className="text-xs text-orange-700">Deposit deduction: {fmt(m.deposit_deduction_amount)}</p>
+                          <p className="text-xs text-warning">Deposit deduction: {fmt(m.deposit_deduction_amount)}</p>
                         )}
                       </div>
                     </div>
@@ -335,13 +335,13 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
                   <Tooltip formatter={(v: number) => fmt(v)} />
-                  <Bar dataKey="gross" name="Gross collected" fill="#94a3b8" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="net" name={`Your net (${revenueSharePct}%)`} fill="#16a34a" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="gross" name="Gross collected" fill="hsl(var(--teal))" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="net" name={`Your net (${revenueSharePct}%)`} fill="hsl(var(--success))" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex gap-4 justify-center mt-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-slate-400 inline-block" />Gross collected</span>
-                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-green-600 inline-block" />Your net ({revenueSharePct}%)</span>
+                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-teal inline-block" />Gross collected</span>
+                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-success inline-block" />Your net ({revenueSharePct}%)</span>
               </div>
             </CardContent>
           </Card>

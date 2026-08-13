@@ -53,7 +53,7 @@ const LandlordPortalAuth = () => {
   };
 
   if (loading) {
-    return <AuthLoadingScreen />;
+    return <AuthLoadingScreen variant="light" />;
   }
 
   return (
@@ -73,6 +73,7 @@ const LandlordPortalAuth = () => {
       formSubtitle="Sign in to view your property portfolio"
       submitLabel="Sign in to Landlord Portal"
       notice="This portal is for property owners. Your property manager will invite you by email. If you haven't received an invitation, contact your property manager."
+      variant="light"
     >
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">

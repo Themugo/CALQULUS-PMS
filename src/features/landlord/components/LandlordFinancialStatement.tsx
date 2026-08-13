@@ -124,7 +124,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-primary',  bg: 'bg-primary/10' },
+              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-teal',  bg: 'bg-teal/10' },
               { label: `Management fee (${mgmtFee}%)`, value: fmt(financials.management_fee), icon: TrendingDown, color: 'text-muted-foreground', bg: 'bg-muted/50' },
               { label: 'Your net revenue',       value: fmt(financials.net_to_landlord),    icon: Banknote,    color: 'text-success', bg: 'bg-success/10' },
               { label: 'Payout pending',         value: fmt(financials.payout_pending),     icon: DollarSign,  color: 'text-warning', bg: 'bg-warning/10' },
