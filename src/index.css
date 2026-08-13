@@ -109,6 +109,9 @@
   --color-purple: var(--purple);
   --color-purple-foreground: var(--purple-foreground);
   --color-purple-bg: var(--purple-bg);
+  --color-indigo: var(--indigo);
+  --color-indigo-foreground: var(--indigo-foreground);
+  --color-indigo-bg: var(--indigo-bg);
   --color-teal: var(--teal);
   --color-teal-foreground: var(--teal-foreground);
   --color-teal-bg: var(--teal-bg);
@@ -305,6 +308,9 @@
     --purple: hsl(252 92% 66%);              /* #7A5AF8 */
     --purple-foreground: hsl(0 0% 100%);
     --purple-bg: hsl(252 92% 96%);
+    --indigo: hsl(239 84% 67%);              /* #6366F1 agency primary accent */
+    --indigo-foreground: hsl(0 0% 100%);
+    --indigo-bg: hsl(239 84% 97%);           /* #EEF2FF soft indigo tint */
     --teal: hsl(173 83% 32%);                /* #0E9384 */
     --teal-foreground: hsl(0 0% 100%);
     --teal-bg: hsl(173 83% 96%);
@@ -370,6 +376,9 @@
     --purple: hsl(252 92% 66%);
     --purple-foreground: hsl(0 0% 100%);
     --purple-bg: hsl(252 92% 96%);
+    --indigo: hsl(239 84% 67%);
+    --indigo-foreground: hsl(0 0% 100%);
+    --indigo-bg: hsl(239 84% 97%);
     --teal: hsl(173 83% 32%);
     --teal-foreground: hsl(0 0% 100%);
     --teal-bg: hsl(173 83% 96%);
