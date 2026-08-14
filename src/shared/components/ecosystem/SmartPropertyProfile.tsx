@@ -41,7 +41,7 @@ export function SmartPropertyProfile({ className }: { className?: string }) {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-extrabold text-foreground">Kilimani Heights Luxury Apartments</h3>
-              <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[9px] font-bold">
+              <Badge className="bg-success/10 text-success border-success/20 text-[9px] font-bold">
                 DIGITAL PASSPORT VERIFIED
               </Badge>
             </div>
@@ -80,19 +80,19 @@ export function SmartPropertyProfile({ className }: { className?: string }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 border rounded-xl bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">Current Fair Valuation</span>
-              <strong className="text-base font-extrabold text-emerald-600">KES 450,000,000</strong>
+              <strong className="text-base font-extrabold text-success">KES 450,000,000</strong>
               <span className="text-[9px] text-muted-foreground block">+6.8% YoY Appreciation</span>
             </div>
 
             <div className="p-3 border rounded-xl bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">Occupancy Rate</span>
               <strong className="text-base font-extrabold text-foreground">95.8% (23/24 Units)</strong>
-              <span className="text-[9px] text-emerald-600 font-bold block">1 Unit Pending Lease</span>
+              <span className="text-[9px] text-success font-bold block">1 Unit Pending Lease</span>
             </div>
 
             <div className="p-3 border rounded-xl bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground font-bold uppercase block">Energy Performance</span>
-              <strong className="text-base font-extrabold text-blue-600">Grade B+ (84/100)</strong>
+              <strong className="text-base font-extrabold text-info">Grade B+ (84/100)</strong>
               <span className="text-[9px] text-muted-foreground block">Solar Utility Integration</span>
             </div>
 
@@ -136,7 +136,7 @@ export function SmartPropertyProfile({ className }: { className?: string }) {
                   <Badge
                     className={cn(
                       "text-[9px] font-bold uppercase",
-                      ast.status === "Optimal" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      ast.status === "Optimal" ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"
                     )}
                   >
                     {ast.status}

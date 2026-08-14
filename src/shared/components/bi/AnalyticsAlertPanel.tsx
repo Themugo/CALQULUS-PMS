@@ -27,10 +27,10 @@ export function AnalyticsAlertPanel({ className }: { className?: string }) {
     <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
       <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="h-4 w-4 text-amber-500" />
+          <ShieldAlert className="h-4 w-4 text-warning" />
           <CardTitle className="text-sm font-bold text-foreground">Operational Analytics Alerts</CardTitle>
         </div>
-        <Badge variant="outline" className="text-xs font-bold bg-amber-500/10 text-amber-600 border-amber-500/20">
+        <Badge variant="outline" className="text-xs font-bold bg-warning/10 text-warning border-warning/20">
           {SAMPLE_ALERTS.length} Active Triggers
         </Badge>
       </CardHeader>
@@ -41,14 +41,14 @@ export function AnalyticsAlertPanel({ className }: { className?: string }) {
             key={alt.id}
             className={cn(
               "p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs",
-              alt.severity === "critical" && "bg-red-500/5 border-red-500/20",
-              alt.severity === "warning" && "bg-amber-500/5 border-amber-500/20",
+              alt.severity === "critical" && "bg-destructive/100/5 border-destructive/20",
+              alt.severity === "warning" && "bg-warning/100/5 border-warning/20",
               alt.severity === "informational" && "bg-sky-500/5 border-sky-500/20"
             )}
           >
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <AlertTriangle className={cn("h-4 w-4 shrink-0", alt.severity === "critical" ? "text-red-500" : "text-amber-500")} />
+                <AlertTriangle className={cn("h-4 w-4 shrink-0", alt.severity === "critical" ? "text-destructive" : "text-warning")} />
                 <span className="font-bold text-foreground">{alt.title}</span>
                 {alt.propertyName && (
                   <span className="text-muted-foreground text-[11px]">• {alt.propertyName}</span>

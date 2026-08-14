@@ -71,9 +71,9 @@ interface NotificationFailureRow {
 const channelMeta: Record<Channel, { label: string; icon: typeof Mail; tone: string }> = {
   email:           { label: "Email",       icon: Mail,           tone: "bg-sky-100 text-sky-800 border-sky-200" },
   sms:             { label: "SMS",         icon: MessageSquare,  tone: "bg-emerald-100 text-emerald-800 border-emerald-200" },
-  whatsapp:        { label: "WhatsApp",    icon: MessageCircle,  tone: "bg-green-100 text-green-800 border-green-200" },
+  whatsapp:        { label: "WhatsApp",    icon: MessageCircle,  tone: "bg-green-100 text-green-800 border-success/30" },
   manager_notify:  { label: "Manager",     icon: Bell,           tone: "bg-violet-100 text-violet-800 border-violet-200" },
-  landlord_notify: { label: "Landlord",    icon: Users,          tone: "bg-amber-100 text-amber-800 border-amber-200" },
+  landlord_notify: { label: "Landlord",    icon: Users,          tone: "bg-amber-100 text-amber-800 border-warning/30" },
 };
 
 export default function NotificationFailuresPanel() {
@@ -159,11 +159,11 @@ export default function NotificationFailuresPanel() {
           const Icon = meta.icon;
           const count = counts[ch];
           return (
-            <Card key={ch} className={count > 0 ? "border-red-200" : ""}>
+            <Card key={ch} className={count > 0 ? "border-destructive/30" : ""}>
               <CardContent className="p-3 flex items-center gap-2">
-                <Icon className={`h-6 w-6 ${count > 0 ? "text-red-500" : "text-slate-400"}`} />
+                <Icon className={`h-6 w-6 ${count > 0 ? "text-destructive" : "text-slate-400"}`} />
                 <div>
-                  <div className={`text-lg font-bold ${count > 0 ? "text-red-700" : "text-slate-700"}`}>
+                  <div className={`text-lg font-bold ${count > 0 ? "text-destructive" : "text-slate-700"}`}>
                     {count}
                   </div>
                   <div className="text-xs text-muted-foreground">{meta.label}</div>
@@ -179,7 +179,7 @@ export default function NotificationFailuresPanel() {
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <AlertCircle className="h-5 w-5 text-warning" />
               Receipt notification failures
             </CardTitle>
             <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isLoading}>
@@ -192,7 +192,7 @@ export default function NotificationFailuresPanel() {
             <div className="py-10 text-center text-muted-foreground">Loading…</div>
           ) : rows.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground">
-              <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-green-500" />
+              <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-success" />
               No pending failures. Every recent payment notification was delivered.
             </div>
           ) : (
@@ -251,7 +251,7 @@ export default function NotificationFailuresPanel() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <AlertCircle className="h-5 w-5 text-warning" />
               Notification failure
             </DialogTitle>
             <DialogDescription>
@@ -283,7 +283,7 @@ export default function NotificationFailuresPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Error</div>
-                <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900 whitespace-pre-wrap break-words">
+                <div className="rounded-md bg-warning/10 border border-warning/30 p-3 text-sm text-amber-900 whitespace-pre-wrap break-words">
                   {viewingRow.error ?? "(no error message)"}
                 </div>
               </div>

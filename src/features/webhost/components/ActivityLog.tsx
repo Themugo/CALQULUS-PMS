@@ -40,8 +40,8 @@ const ROLE_BADGE: Record<string, string> = {
   manager:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   submanager: 'bg-secondary-background text-secondary-foreground border-border',
   webhost:    'bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_32%)] border-[hsl(38_52%_42%/0.25)]',
-  landlord:   'bg-warning/10 text-warning border-amber-200',
-  system:     'bg-green-100 text-green-700 border-green-200',
+  landlord:   'bg-warning/10 text-warning border-warning/30',
+  system:     'bg-green-100 text-success border-success/30',
 };
 
 const ACTION_COLOR = (action: string): string => {

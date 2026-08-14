@@ -277,7 +277,7 @@ const TenantLTVAnalytics = () => {
       case 'medium':
         return <Badge className="bg-warning text-white border-warning">{priority}</Badge>;
       case 'low':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{priority}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{priority}</Badge>;
       default:
         return <Badge variant="outline">{priority}</Badge>;
     }

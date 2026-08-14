@@ -297,7 +297,7 @@ const WebhostPaymentSettings: React.FC = () => {
       <Card className="bg-card border-warning/15">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-success/20 flex items-center justify-center">
               <Smartphone className="h-5 w-5 text-green-400" />
             </div>
             <div>

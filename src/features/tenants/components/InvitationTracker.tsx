@@ -239,7 +239,7 @@ export function InvitationTracker() {
   const getStatusBadge = (invitation: Invitation) => {
     if (invitation.status === "used") {
       return (
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+        <Badge className="bg-success/10 text-success border-success/20">
           <CheckCircle2 className="h-3 w-3 mr-1" />
           Used
         </Badge>
@@ -247,14 +247,14 @@ export function InvitationTracker() {
     }
     if (isPast(parseISO(invitation.expires_at))) {
       return (
-        <Badge className="bg-red-500/10 text-red-600 border-red-500/20">
+        <Badge className="bg-destructive/10 text-destructive border-destructive/20">
           <XCircle className="h-3 w-3 mr-1" />
           Expired
         </Badge>
       );
     }
     return (
-      <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20">
+      <Badge className="bg-warning/10 text-warning border-warning/20">
         <Clock className="h-3 w-3 mr-1" />
         Pending
       </Badge>
@@ -310,7 +310,7 @@ export function InvitationTracker() {
                     </p>
                   )}
                   {invitation.used_at && (
-                    <p className="text-xs text-emerald-600">
+                    <p className="text-xs text-success">
                       Used {formatDistanceToNow(parseISO(invitation.used_at), { addSuffix: true })}
                     </p>
                   )}
@@ -333,7 +333,7 @@ export function InvitationTracker() {
                           size="sm"
                           variant="ghost"
                           onClick={() => handleWhatsAppShare(invitation)}
-                          className="text-green-600 hover:text-green-700"
+                          className="text-success hover:text-success"
                           title="Send via WhatsApp"
                         >
                           <MessageCircle className="h-4 w-4" />
@@ -412,24 +412,24 @@ export function InvitationTracker() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="p-4 rounded-lg border bg-amber-500/5 border-amber-500/20">
+          <div className="p-4 rounded-lg border bg-warning/5 border-warning/20">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-amber-600">Pending</span>
+              <Clock className="h-4 w-4 text-warning" />
+              <span className="text-sm font-medium text-warning">Pending</span>
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.pending.length}</p>
           </div>
-          <div className="p-4 rounded-lg border bg-emerald-500/5 border-emerald-500/20">
+          <div className="p-4 rounded-lg border bg-success/5 border-success/20">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-600">Used</span>
+              <CheckCircle2 className="h-4 w-4 text-success" />
+              <span className="text-sm font-medium text-success">Used</span>
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.used.length}</p>
           </div>
-          <div className="p-4 rounded-lg border bg-red-500/5 border-red-500/20">
+          <div className="p-4 rounded-lg border bg-destructive/5 border-destructive/20">
             <div className="flex items-center gap-2">
-              <XCircle className="h-4 w-4 text-red-600" />
-              <span className="text-sm font-medium text-red-600">Expired</span>
+              <XCircle className="h-4 w-4 text-destructive" />
+              <span className="text-sm font-medium text-destructive">Expired</span>
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.expired.length}</p>
           </div>

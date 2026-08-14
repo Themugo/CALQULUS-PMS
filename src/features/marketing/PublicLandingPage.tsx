@@ -22,8 +22,8 @@ type Accent = "blue" | "green" | "purple" | "amber" | "cyan" | "teal";
 
 const accentMap: Record<Accent, { icon: string; chip: string; line: string; ring: string }> = {
   blue:   { icon: "text-[hsl(220_87%_51%)]",  chip: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)] text-[hsl(220_87%_45%)]",  line: "bg-[hsl(220_87%_51%)]",  ring: "hover:border-[hsl(220_87%_51%/0.4)]" },
-  green:  { icon: "text-emerald-600",          chip: "bg-emerald-500/8 border-emerald-500/20 text-emerald-700",                              line: "bg-emerald-600",         ring: "hover:border-emerald-500/40" },
-  purple: { icon: "text-purple-600",           chip: "bg-purple-500/8 border-purple-500/20 text-purple-700",                                  line: "bg-purple-600",          ring: "hover:border-purple-500/40" },
+  green:  { icon: "text-success",          chip: "bg-success/10 border-success/20 text-success",                              line: "bg-emerald-600",         ring: "hover:border-emerald-500/40" },
+  purple: { icon: "text-purple",           chip: "bg-purple-500/8 border-purple-500/20 text-purple-700",                                  line: "bg-purple-600",          ring: "hover:border-purple-500/40" },
   amber:  { icon: "text-[hsl(32_95%_44%)]",    chip: "bg-[hsl(32_95%_44%/0.08)] border-[hsl(32_95%_44%/0.2)] text-[hsl(28_90%_40%)]",        line: "bg-[hsl(32_95%_44%)]",   ring: "hover:border-[hsl(32_95%_44%/0.4)]" },
   cyan:   { icon: "text-[hsl(199_89%_40%)]",   chip: "bg-[hsl(199_89%_40%/0.08)] border-[hsl(199_89%_40%/0.2)] text-[hsl(199_89%_36%)]",     line: "bg-[hsl(199_89%_40%)]",  ring: "hover:border-[hsl(199_89%_40%/0.4)]" },
   teal:   { icon: "text-[hsl(172_80%_30%)]",   chip: "bg-[hsl(172_80%_30%/0.08)] border-[hsl(172_80%_30%/0.2)] text-[hsl(172_80%_26%)]",     line: "bg-[hsl(172_80%_30%)]",  ring: "hover:border-[hsl(172_80%_30%/0.4)]" },
@@ -315,8 +315,8 @@ export function PublicLandingPage() {
                 </a>
 
                 <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                    <MapPin className="h-4 w-4 text-emerald-600" />
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-success/10 border border-success/20">
+                    <MapPin className="h-4 w-4 text-success" />
                   </span>
                   <div>
                     <p className="supporting-text">Location</p>
@@ -329,8 +329,8 @@ export function PublicLandingPage() {
             <div className="enterprise-card p-6">
               {submitted ? (
                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                    <Lock className="h-6 w-6 text-emerald-600" />
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10 border border-success/20">
+                    <Lock className="h-6 w-6 text-success" />
                   </span>
                   <h3 className="card-title-exec mt-4">Inquiry received</h3>
                   <p className="supporting-text mt-1 max-w-xs">

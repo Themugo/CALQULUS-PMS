@@ -38,12 +38,12 @@ interface TenantNoticeComposerProps {
 }
 
 const NOTICE_TYPES = [
-  { value: 'rent_increase',   label: 'Rent increase notice',    icon: TrendingUp,    color: 'text-amber-600', template: true },
-  { value: 'arrears_demand',  label: 'Arrears demand letter',   icon: AlertTriangle, color: 'text-red-600',   template: true },
-  { value: 'eviction_warning',label: 'Eviction warning',        icon: Home,          color: 'text-red-700',   template: true },
+  { value: 'rent_increase',   label: 'Rent increase notice',    icon: TrendingUp,    color: 'text-warning', template: true },
+  { value: 'arrears_demand',  label: 'Arrears demand letter',   icon: AlertTriangle, color: 'text-destructive',   template: true },
+  { value: 'eviction_warning',label: 'Eviction warning',        icon: Home,          color: 'text-destructive',   template: true },
   { value: 'entry_notice',    label: 'Maintenance entry notice', icon: Home,          color: 'text-[hsl(214_73%_45%)]',  template: true },
-  { value: 'lease_renewal',   label: 'Lease renewal offer',     icon: FileText,      color: 'text-green-600', template: true },
-  { value: 'rule_violation',  label: 'Rule violation notice',   icon: AlertTriangle, color: 'text-orange-600', template: false },
+  { value: 'lease_renewal',   label: 'Lease renewal offer',     icon: FileText,      color: 'text-success', template: true },
+  { value: 'rule_violation',  label: 'Rule violation notice',   icon: AlertTriangle, color: 'text-warning', template: false },
   { value: 'general',         label: 'General notice',          icon: Bell,          color: 'text-slate-600', template: false },
 ];
 
@@ -67,9 +67,9 @@ const TEMPLATES: Record<string, (t: Tenant, extra?: Record<string, unknown>) => 
 const STATUS_COLORS: Record<string, string> = {
   draft:        'bg-slate-100 text-slate-700 border-slate-200',
   sent:         'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  delivered:    'bg-green-100 text-green-800 border-green-200',
-  acknowledged: 'bg-green-100 text-green-800 border-green-200',
-  disputed:     'bg-red-100 text-red-800 border-red-200',
+  delivered:    'bg-green-100 text-green-800 border-success/30',
+  acknowledged: 'bg-green-100 text-green-800 border-success/30',
+  disputed:     'bg-red-100 text-red-800 border-destructive/30',
   withdrawn:    'bg-slate-100 text-slate-500 border-slate-200',
 };
 
@@ -260,8 +260,8 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
                     onClick={() => loadTemplate(t.value)}
                     className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.notice_type === t.value
-                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
-                        : 'border-border hover:border-amber-400/30 text-muted-foreground'
+                        ? 'border-amber-400/50 bg-warning/10 text-warning'
+                        : 'border-border hover:border-warning/30 text-muted-foreground'
                     }`}
                   >
                     <t.icon className={`h-3.5 w-3.5 shrink-0 ${t.color}`} />
@@ -273,7 +273,7 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
 
             {/* Rent increase extras */}
             {form.notice_type === 'rent_increase' && (
-              <div className="grid grid-cols-3 gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="grid grid-cols-3 gap-3 p-3 bg-warning/10 rounded-lg border border-warning/30">
                 <div>
                   <Label className="text-xs">Current rent (KES)</Label>
                   <Input type="number" value={form.current_rent} onChange={e => setForm(p => ({ ...p, current_rent: e.target.value }))} className="mt-1 h-8 text-sm" />

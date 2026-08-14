@@ -80,7 +80,7 @@ export function OpenPlatformWorkspace({ className }: { className?: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+          <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
             REST API v2.4 (OpenAPI 3.0)
           </Badge>
           <Button size="sm" className="h-8 text-xs font-bold gap-1 bg-primary text-primary-foreground">
@@ -94,12 +94,12 @@ export function OpenPlatformWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">API Request Volume</span>
           <strong className="text-lg font-black text-foreground">168,420 / mo</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">99.98% Success Rate</span>
+          <span className="text-[9px] text-success font-bold block">99.98% Success Rate</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Active Webhooks</span>
-          <strong className="text-lg font-black text-blue-600">8 Webhook Endpoints</strong>
+          <strong className="text-lg font-black text-info">8 Webhook Endpoints</strong>
           <span className="text-[9px] text-muted-foreground block">M-Pesa, Water, CRB</span>
         </Card>
 
@@ -112,7 +112,7 @@ export function OpenPlatformWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Rate Limit SLA</span>
           <strong className="text-lg font-black text-foreground">1,000 req/min</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">Enterprise Tier</span>
+          <span className="text-[9px] text-success font-bold block">Enterprise Tier</span>
         </Card>
       </div>
 

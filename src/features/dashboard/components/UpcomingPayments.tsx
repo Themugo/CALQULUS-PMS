@@ -218,12 +218,12 @@ export function UpcomingPayments() {
                     </Badge>
                   )}
                   {payment.status === "due_today" && (
-                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-amber-500/20 text-amber-600 border-amber-500/30">
+                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-warning/20 text-warning border-warning/30">
                       Due Today
                     </Badge>
                   )}
                   {payment.status === "due_soon" && (
-                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-orange-500/20 text-orange-600 border-orange-500/30">
+                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-orange-500/20 text-warning border-orange-500/30">
                       {payment.daysUntilDue}d
                     </Badge>
                   )}

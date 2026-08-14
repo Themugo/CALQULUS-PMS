@@ -198,7 +198,7 @@ const BankIntegrationSettings: React.FC = () => {
           </div>
           <div className="flex gap-2">
             {unmatchedCount !== undefined && unmatchedCount > 0 && (
-              <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
+              <Badge variant="outline" className="border-amber-300 text-warning bg-warning/10">
                 {unmatchedCount} unmatched
               </Badge>
             )}
@@ -209,7 +209,7 @@ const BankIntegrationSettings: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800">
+          <div className="mb-4 p-3 rounded-lg bg-info/10 border border-blue-200 text-xs text-blue-800">
             <p className="font-medium mb-1 flex items-center gap-1"><Zap className="h-3.5 w-3.5" />How bank integration works</p>
             <p>Your bank sends a real-time notification to your CALQULUS PMS webhook URL whenever a payment lands. CALQULUS PMS matches it to a pending invoice by amount + unit number in the reference, marks it paid, and sends the tenant a receipt — instantly, with no manual work.</p>
           </div>
@@ -246,7 +246,7 @@ const BankIntegrationSettings: React.FC = () => {
                           {intg.is_active ? 'Active' : 'Paused'}
                         </Badge>
                         {intg.auto_reconcile && (
-                          <Badge variant="outline" className="text-xs border-green-300 text-green-700 bg-green-50">
+                          <Badge variant="outline" className="text-xs border-green-300 text-success bg-success/10">
                             Auto-reconcile
                           </Badge>
                         )}
@@ -278,7 +278,7 @@ const BankIntegrationSettings: React.FC = () => {
                           onClick={() => copyWebhook(wUrl, intg.id)}
                         >
                           {copiedWebhook === intg.id
-                            ? <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                            ? <CheckCircle className="h-3.5 w-3.5 text-success" />
                             : <Copy className="h-3.5 w-3.5" />
                           }
                         </Button>

@@ -36,13 +36,13 @@ function heatLevel(amount: number, max: number): 0 | 1 | 2 | 3 | 4 {
 
 const heatStyles: Record<0 | 1 | 2 | 3 | 4, { tile: string; badge: string; label: string }> = {
   0: {
-    tile:  "bg-emerald-500/8 border-emerald-500/20 hover:border-emerald-500/40",
-    badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    tile:  "bg-success/10 border-success/20 hover:border-emerald-500/40",
+    badge: "bg-success/15 text-success ",
     label: "Clear",
   },
   1: {
-    tile:  "bg-amber-400/10 border-amber-400/30 hover:border-amber-400/60",
-    badge: "bg-amber-400/20 text-amber-700 dark:text-amber-400",
+    tile:  "bg-amber-400/10 border-warning/30 hover:border-amber-400/60",
+    badge: "bg-warning/20 text-warning ",
     label: "Low",
   },
   2: {
@@ -52,12 +52,12 @@ const heatStyles: Record<0 | 1 | 2 | 3 | 4, { tile: string; badge: string; label
   },
   3: {
     tile:  "bg-red-400/15 border-red-400/40 hover:border-red-500/70",
-    badge: "bg-red-400/20 text-red-700 dark:text-red-400",
+    badge: "bg-red-400/20 text-destructive ",
     label: "High",
   },
   4: {
-    tile:  "bg-red-600/20 border-red-500/50 hover:border-red-500/80",
-    badge: "bg-red-500/25 text-red-700 dark:text-red-300 font-bold",
+    tile:  "bg-red-600/20 border-destructive/50 hover:border-red-500/80",
+    badge: "bg-destructive/100/25 text-destructive dark:text-red-300 font-bold",
     label: "Critical",
   },
 };
@@ -120,8 +120,8 @@ export function ArrearsHeatMap() {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-red-500/15 to-orange-500/5 border border-red-500/20 flex items-center justify-center shadow-sm">
-              <Flame className="h-3.5 w-3.5 text-red-500" />
+            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-red-500/15 to-orange-500/5 border border-destructive/20 flex items-center justify-center shadow-sm">
+              <Flame className="h-3.5 w-3.5 text-destructive" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground leading-tight">Arrears Heat Map</p>
@@ -130,7 +130,7 @@ export function ArrearsHeatMap() {
           </div>
           <div className="flex items-center gap-2">
             {!isLoading && criticalCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5">
+              <span className="flex items-center gap-1 text-[11px] font-semibold text-destructive  bg-destructive/10 border border-destructive/20 rounded-full px-2 py-0.5">
                 <AlertTriangle className="h-3 w-3" />
                 {criticalCount} critical
               </span>
@@ -158,8 +158,8 @@ export function ArrearsHeatMap() {
         {/* All-clear state */}
         {!isLoading && (!data || data.length === 0) && (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <div className="h-12 w-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+            <div className="h-12 w-12 rounded-full bg-success/10 border border-success/20 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-success" />
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold text-foreground">All properties clear</p>
@@ -216,7 +216,7 @@ export function ArrearsHeatMap() {
                     {/* Arrears amount */}
                     <p className={cn(
                       "text-sm font-bold tracking-tight",
-                      level >= 3 ? "text-red-600 dark:text-red-400" : "text-foreground"
+                      level >= 3 ? "text-destructive " : "text-foreground"
                     )}>
                       {formatCurrency(prop.totalArrears)}
                     </p>
@@ -235,7 +235,7 @@ export function ArrearsHeatMap() {
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-semibold">Total Arrears</p>
-                  <p className="text-sm font-bold text-red-600 dark:text-red-400">{formatCurrency(totalArrears)}</p>
+                  <p className="text-sm font-bold text-destructive ">{formatCurrency(totalArrears)}</p>
                 </div>
                 <div className="h-6 w-px bg-border/60" />
                 <div>

@@ -130,6 +130,8 @@
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-elevated: var(--elevated);
+  --color-elevated-foreground: var(--elevated-foreground);
 
   --color-sidebar: var(--sidebar-background);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -260,6 +262,8 @@
 
     --card: hsl(0 0% 100%);                  /* #FFFFFF white cards */
     --card-foreground: hsl(224 45% 16%);
+    --elevated: hsl(0 0% 100%);               /* #FFFFFF elevated surface (popovers/dialogs) */
+    --elevated-foreground: hsl(224 45% 16%);
 
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(224 45% 16%);

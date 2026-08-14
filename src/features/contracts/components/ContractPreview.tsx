@@ -58,12 +58,12 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
     <div className="space-y-6">
       {/* Uploaded Contract Section */}
       {contract.uploaded_contract_url && (
-        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+        <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <FileCheck className="h-5 w-5 text-emerald-500" />
+              <FileCheck className="h-5 w-5 text-success" />
               <div>
-                <p className="font-medium text-emerald-600 dark:text-emerald-400">Signed Contract Uploaded</p>
+                <p className="font-medium text-success ">Signed Contract Uploaded</p>
                 <p className="text-xs text-muted-foreground">A signed version of this contract has been uploaded</p>
               </div>
             </div>
@@ -164,8 +164,8 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 border border-dashed border-amber-500/30 rounded-lg bg-amber-500/5">
-              <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30">○ Pending</Badge>
+            <div className="p-4 border border-dashed border-warning/30 rounded-lg bg-warning/5">
+              <Badge className="bg-warning/10 text-warning border-warning/30">○ Pending</Badge>
               <p className="text-xs text-muted-foreground mt-2">Awaiting manager signature</p>
             </div>
           )}
@@ -187,8 +187,8 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 border border-dashed border-amber-500/30 rounded-lg bg-amber-500/5">
-              <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30">○ Pending</Badge>
+            <div className="p-4 border border-dashed border-warning/30 rounded-lg bg-warning/5">
+              <Badge className="bg-warning/10 text-warning border-warning/30">○ Pending</Badge>
               <p className="text-xs text-muted-foreground mt-2">Awaiting tenant signature</p>
             </div>
           )}

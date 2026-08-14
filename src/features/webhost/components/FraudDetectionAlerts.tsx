@@ -237,7 +237,7 @@ const FraudDetectionAlerts = () => {
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{severity}</Badge>;
       default:
         return <Badge variant="outline">{severity}</Badge>;
     }

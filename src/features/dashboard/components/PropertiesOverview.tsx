@@ -74,8 +74,8 @@ export function PropertiesOverview() {
 
   const getOccupancyColor = (rate: number) => {
     if (rate >= 90) return "bg-emerald-500";
-    if (rate >= 70) return "bg-amber-500";
-    return "bg-red-500";
+    if (rate >= 70) return "bg-warning/100";
+    return "bg-destructive/100";
   };
 
   if (loading) {
@@ -105,13 +105,13 @@ export function PropertiesOverview() {
     <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-white via-white to-slate-50/50 p-4 sm:p-6 shadow-sm animate-fade-in backdrop-blur-sm">
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground flex items-center gap-2">
-          <div className="rounded-lg bg-gradient-to-br from-amber-400/18 to-amber-400/8 p-2">
-            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+          <div className="rounded-lg bg-gradient-to-br from-warning/20 to-amber-400/8 p-2">
+            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
           </div>
           Properties
         </h3>
         <Link to="/properties">
-          <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-500 hover:bg-amber-400/8 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
+          <Button variant="ghost" size="sm" className="text-warning hover:text-warning hover:bg-warning/10 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
             View All
             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
           </Button>
@@ -144,7 +144,7 @@ export function PropertiesOverview() {
                 className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/20 hover:from-muted/50 hover:to-muted/40 border border-border/30 hover:border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 animate-slide-in touch-manipulation"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-amber-400/18 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-400/15 group-hover:shadow-md transition-all duration-300">
+                <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-warning/20 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-400/15 group-hover:shadow-md transition-all duration-300">
                   {property.image_url ? (
                     <img 
                       src={property.image_url} 
@@ -152,7 +152,7 @@ export function PropertiesOverview() {
                       className="h-full w-full rounded-xl object-cover"
                     />
                   ) : (
-                    <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-amber-500" />
+                    <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-warning" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
@@ -169,9 +169,9 @@ export function PropertiesOverview() {
                     variant="outline" 
                     className={cn(
                       "text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg font-semibold border-2",
-                      occupancyRate >= 90 && "border-emerald-500/50 text-emerald-600 bg-emerald-500/5",
-                      occupancyRate >= 70 && occupancyRate < 90 && "border-amber-500/50 text-amber-600 bg-amber-500/5",
-                      occupancyRate < 70 && "border-red-500/50 text-red-600 bg-red-500/5"
+                      occupancyRate >= 90 && "border-success/50 text-success bg-success/5",
+                      occupancyRate >= 70 && occupancyRate < 90 && "border-warning/50 text-warning bg-warning/5",
+                      occupancyRate < 70 && "border-destructive/50 text-destructive bg-destructive/5"
                     )}
                   >
                     {property.occupied}/{property.units}

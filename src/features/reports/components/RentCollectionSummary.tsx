@@ -69,9 +69,9 @@ const fmtKES = (n: number) =>
   }).format(n);
 
 const STATUS_BADGE: Record<string, string> = {
-  paid:      'bg-emerald-100 text-emerald-700',
-  pending:   'bg-amber-100 text-amber-700',
-  overdue:   'bg-red-100 text-red-700',
+  paid:      'bg-emerald-100 text-success',
+  pending:   'bg-amber-100 text-warning',
+  overdue:   'bg-red-100 text-destructive',
   cancelled: 'bg-slate-100 text-slate-500',
 };
 
@@ -496,7 +496,7 @@ export const RentCollectionSummary: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-amber-500" />
+            <TrendingUp className="h-4 w-4 text-warning" />
             Rent Collection Report
           </CardTitle>
           <CardDescription>Monthly PDF report grouped by property — download or email to landlords, managers &amp; agencies</CardDescription>
@@ -556,9 +556,9 @@ export const RentCollectionSummary: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: 'Total Billed',       val: totalBilled,      icon: TrendingUp,   color: 'text-[hsl(214_73%_45%)]',    bg: 'bg-[hsl(214_73%_48%/0.08)]    dark:bg-[hsl(214_73%_25%/0.2)]' },
-            { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-            { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50   dark:bg-amber-950/30' },
-            { label: 'Arrears invoices',   val: arrearsCount,     icon: AlertTriangle,color: 'text-red-600',     bg: 'bg-red-50     dark:bg-red-950/30', count: true },
+            { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-success', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+            { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-warning',   bg: 'bg-warning/10   dark:bg-amber-950/30' },
+            { label: 'Arrears invoices',   val: arrearsCount,     icon: AlertTriangle,color: 'text-destructive',     bg: 'bg-destructive/10     dark:bg-red-950/30', count: true },
           ].map(({ label, val, icon: Icon, color, bg, count }) => (
             <Card key={label} className="border-0 shadow-sm">
               <CardContent className={cn('p-4 rounded-xl', bg)}>
@@ -602,9 +602,9 @@ export const RentCollectionSummary: React.FC = () => {
                   </CardTitle>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="text-muted-foreground">Billed: <strong>{formatCurrency(prop.billed)}</strong></span>
-                    <span className="text-emerald-600">Collected: <strong>{formatCurrency(prop.collected)}</strong></span>
+                    <span className="text-success">Collected: <strong>{formatCurrency(prop.collected)}</strong></span>
                     {prop.outstanding > 0 && (
-                      <span className="text-amber-600">Outstanding: <strong>{formatCurrency(prop.outstanding)}</strong></span>
+                      <span className="text-warning">Outstanding: <strong>{formatCurrency(prop.outstanding)}</strong></span>
                     )}
                   </div>
                 </div>
@@ -663,7 +663,7 @@ export const RentCollectionSummary: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {schedEnabled
-                ? <Bell className="h-3.5 w-3.5 text-emerald-500" />
+                ? <Bell className="h-3.5 w-3.5 text-success" />
                 : <BellOff className="h-3.5 w-3.5 text-muted-foreground" />}
               <Switch
                 checked={schedEnabled}
@@ -710,7 +710,7 @@ export const RentCollectionSummary: React.FC = () => {
                     <Users className="h-2.5 w-2.5" />
                     {r}
                     <button
-                      className="ml-0.5 hover:text-red-500 transition-colors"
+                      className="ml-0.5 hover:text-destructive transition-colors"
                       onClick={() => setSchedRecipients(rs => rs.filter(x => x !== r))}
                     >
                       <X className="h-2.5 w-2.5" />
@@ -735,7 +735,7 @@ export const RentCollectionSummary: React.FC = () => {
           </div>
 
           {schedEnabled && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-3 text-xs text-emerald-700 dark:text-emerald-400">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-3 text-xs text-success ">
               <strong>Active:</strong> An HTML summary of last month's rent collection will be sent to{' '}
               {schedRecipients.length > 0 ? `${schedRecipients.length} recipient${schedRecipients.length > 1 ? 's' : ''}` : 'saved recipients'}{' '}
               on day {schedSendDay} of each month at 07:00 EAT.
@@ -806,7 +806,7 @@ export const RentCollectionSummary: React.FC = () => {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Mail className="h-4 w-4 text-amber-500" />
+              <Mail className="h-4 w-4 text-warning" />
               Send Report Now (One-off)
             </CardTitle>
             <CardDescription>Add landlord, agency, or manager email addresses — the PDF is attached automatically</CardDescription>

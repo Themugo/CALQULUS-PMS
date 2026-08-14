@@ -25,11 +25,11 @@ interface Tenant {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  expired: "bg-red-500/10 text-red-600 border-red-500/20",
+  active: "bg-success/10 text-success border-success/20",
+  pending: "bg-warning/10 text-warning border-warning/20",
+  expired: "bg-destructive/10 text-destructive border-destructive/20",
   terminated: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  expiring: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+  expiring: "bg-orange-500/10 text-warning border-orange-500/20",
 };
 
 interface PropertyLeasesTabProps {
@@ -54,7 +54,7 @@ export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="h-5 w-5 text-amber-500" />
+            <FileText className="h-5 w-5 text-warning" />
             Leases
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -91,7 +91,7 @@ export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
                 <TableRow key={lease.id}>
                   <TableCell className="font-medium">{lease.unit}</TableCell>
                   <TableCell>{getTenantName(lease.tenant_id)}</TableCell>
-                  <TableCell className="font-medium text-emerald-600">
+                  <TableCell className="font-medium text-success">
                     {formatCurrency(lease.monthly_rent)}/mo
                   </TableCell>
                   <TableCell>

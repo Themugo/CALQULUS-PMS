@@ -77,9 +77,9 @@ const sourceMeta: Record<DeadLetterRow["source"], { label: string; icon: typeof 
 };
 
 const statusMeta: Record<DeadLetterRow["status"], { label: string; tone: string }> = {
-  pending:  { label: "Pending",  tone: "bg-destructive/15 text-destructive border-red-200" },
-  replayed: { label: "Replayed", tone: "bg-warning/10 text-warning border-amber-200" },
-  resolved: { label: "Resolved", tone: "bg-green-100 text-green-800 border-green-200" },
+  pending:  { label: "Pending",  tone: "bg-destructive/15 text-destructive border-destructive/30" },
+  replayed: { label: "Replayed", tone: "bg-warning/10 text-warning border-warning/30" },
+  resolved: { label: "Resolved", tone: "bg-green-100 text-green-800 border-success/30" },
   ignored:  { label: "Ignored",  tone: "bg-secondary-background text-secondary-foreground border-border" },
 };
 
@@ -178,7 +178,7 @@ export default function WebhookDeadLetterPanel() {
           const Icon = meta.icon;
           const count = counts?.[src] ?? 0;
           return (
-            <Card key={src} className={count > 0 ? "border-red-200" : ""}>
+            <Card key={src} className={count > 0 ? "border-destructive/30" : ""}>
               <CardContent className="p-4 flex items-center gap-3">
                 <Icon className={`h-8 w-8 ${count > 0 ? "text-destructive" : "text-muted-foreground"}`} />
                 <div>
@@ -234,7 +234,7 @@ export default function WebhookDeadLetterPanel() {
             <div className="py-10 text-center text-muted-foreground">Loading…</div>
           ) : rows.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground">
-              <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-green-500" />
+              <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-success" />
               No {statusFilter !== "all" ? statusFilter : ""} entries.
               {statusFilter === "pending" && " The queue is clear."}
             </div>
@@ -335,7 +335,7 @@ export default function WebhookDeadLetterPanel() {
 
               <div>
                 <div className="text-sm font-medium mb-1">Error</div>
-                <div className="rounded-md bg-destructive/10 border border-red-200 p-3 text-sm text-destructive whitespace-pre-wrap break-words">
+                <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive whitespace-pre-wrap break-words">
                   {viewingRow.error ?? "(no error message)"}
                 </div>
               </div>

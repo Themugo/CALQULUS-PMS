@@ -70,8 +70,8 @@ const fmt = (n: number) =>
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
   approved: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  paid: 'bg-green-100 text-green-700 border-green-200',
-  rejected: 'bg-red-100 text-red-700 border-red-200',
+  paid: 'bg-green-100 text-success border-success/30',
+  rejected: 'bg-red-100 text-destructive border-destructive/30',
 };
 
 const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId }) => {
@@ -307,7 +307,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
             <div className="flex items-center justify-between gap-4 p-3 bg-muted/30 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-amber-700 font-semibold text-sm">
+                  <span className="text-warning font-semibold text-sm">
                     {(landlordLink.profile?.full_name || landlordLink.profile?.email || 'L')[0].toUpperCase()}
                   </span>
                 </div>
@@ -320,7 +320,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
                 </div>
               </div>
               <div className="text-right">
-                <Badge variant="outline" className="mb-2 border-amber-300 text-amber-700 bg-amber-50">
+                <Badge variant="outline" className="mb-2 border-amber-300 text-warning bg-warning/10">
                   {landlordLink.revenue_share_pct}% revenue share
                 </Badge>
                 <div className="text-xs text-muted-foreground">
@@ -409,7 +409,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
+                              className="h-7 text-xs border-green-300 text-success hover:bg-success/10"
                               onClick={() => updatePayout.mutate({ id: payout.id, status: 'approved' })}
                               disabled={updatePayout.isPending}
                             >
@@ -477,11 +477,11 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
                     <>
                       <div className="flex justify-between mb-1">
                         <span className="text-muted-foreground">Management fee ({feePct}%)</span>
-                        <span className="text-red-600">– {fmt(feeAmt)}</span>
+                        <span className="text-destructive">– {fmt(feeAmt)}</span>
                       </div>
                       <div className="flex justify-between font-semibold border-t border-border pt-1 mt-1">
                         <span>Net to landlord</span>
-                        <span className="text-green-700">{fmt(netAmt)}</span>
+                        <span className="text-success">{fmt(netAmt)}</span>
                       </div>
                     </>
                   )}

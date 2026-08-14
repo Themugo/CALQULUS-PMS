@@ -223,7 +223,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
         <Card className="bg-card border-warning/15">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-xl bg-success/20 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-green-400" />
               </div>
               <div>

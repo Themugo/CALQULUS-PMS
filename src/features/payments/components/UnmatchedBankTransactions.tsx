@@ -158,10 +158,10 @@ const UnmatchedBankTransactions: React.FC = () => {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Unmatched bank transactions
               {unmatchedTxs.length > 0 && (
-                <Badge className="bg-amber-100 text-amber-800 border-amber-200">{unmatchedTxs.length}</Badge>
+                <Badge className="bg-amber-100 text-amber-800 border-warning/30">{unmatchedTxs.length}</Badge>
               )}
             </CardTitle>
             <CardDescription>
@@ -176,7 +176,7 @@ const UnmatchedBankTransactions: React.FC = () => {
         <CardContent>
           {unmatchedTxs.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground">
-              <CheckCircle className="h-10 w-10 mx-auto mb-3 opacity-30 text-green-600" />
+              <CheckCircle className="h-10 w-10 mx-auto mb-3 opacity-30 text-success" />
               <p className="text-sm font-medium">All bank payments matched</p>
               <p className="text-xs mt-1 opacity-70">No unmatched transactions</p>
             </div>
@@ -302,9 +302,9 @@ const UnmatchedBankTransactions: React.FC = () => {
                 const diff = selectedTx.amount - inv.balance_due;
                 return (
                   <div className={`p-3 rounded-lg border text-xs ${
-                    Math.abs(diff) < 1 ? 'border-green-300 bg-green-50 text-green-800' :
+                    Math.abs(diff) < 1 ? 'border-green-300 bg-success/10 text-green-800' :
                     diff > 0 ? 'border-[hsl(214_73%_48%/0.3)] bg-[hsl(214_73%_48%/0.08)] text-[hsl(214_73%_35%)]' :
-                    'border-amber-300 bg-amber-50 text-amber-800'
+                    'border-amber-300 bg-warning/10 text-amber-800'
                   }`}>
                     {Math.abs(diff) < 1 ? '✓ Exact match — invoice will be closed' :
                      diff > 0 ? `⬆ Overpayment by ${formatCurrency(diff)} — excess held as advance credit` :

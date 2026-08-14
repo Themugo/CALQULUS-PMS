@@ -70,7 +70,7 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-emerald-600" /> Statutory Compliance & Regulatory Clearance Vault
+            <ShieldCheck className="h-5 w-5 text-success" /> Statutory Compliance & Regulatory Clearance Vault
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Track building licenses, fire safety audits, health & safety permits, NEMA certificates, and county deadlines.
@@ -78,7 +78,7 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+          <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
             COMPLIANCE INDEX: 96%
           </Badge>
           <Button size="sm" className="h-8 text-xs font-bold gap-1 bg-primary text-primary-foreground">
@@ -91,14 +91,14 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Active Clearances</span>
-          <strong className="text-lg font-black text-emerald-600">14 Certificates</strong>
+          <strong className="text-lg font-black text-success">14 Certificates</strong>
           <span className="text-[9px] text-muted-foreground block">Zero Expired Licenses</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Upcoming Renewals</span>
-          <strong className="text-lg font-black text-amber-600">1 Due in 30 Days</strong>
-          <span className="text-[9px] text-amber-600 font-bold block">Fire Audit Pending</span>
+          <strong className="text-lg font-black text-warning">1 Due in 30 Days</strong>
+          <span className="text-[9px] text-warning font-bold block">Fire Audit Pending</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -109,7 +109,7 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Encrypted Document Vault</span>
-          <strong className="text-lg font-black text-blue-600">RSA-256 Secured</strong>
+          <strong className="text-lg font-black text-info">RSA-256 Secured</strong>
           <span className="text-[9px] text-muted-foreground block">Automated Renewal Alerts</span>
         </Card>
       </div>
@@ -157,7 +157,7 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
                 <Badge
                   className={cn(
                     "text-[9px] font-bold uppercase",
-                    rec.status === "Valid" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    rec.status === "Valid" ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"
                   )}
                 >
                   {rec.status}

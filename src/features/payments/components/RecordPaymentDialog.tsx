@@ -179,7 +179,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-green-600" />
+            <CreditCard className="h-5 w-5 text-success" />
             Record payment
           </DialogTitle>
           <DialogDescription>
@@ -257,8 +257,8 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
               {enteredAmount > 0 && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   {isOverpayment && <Badge className="bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)] text-xs">Advance</Badge>}
-                  {isPartial && <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">Partial</Badge>}
-                  {isExact && <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">Exact</Badge>}
+                  {isPartial && <Badge className="bg-amber-100 text-amber-800 border-warning/30 text-xs">Partial</Badge>}
+                  {isExact && <Badge className="bg-green-100 text-green-800 border-success/30 text-xs">Exact</Badge>}
                 </div>
               )}
             </div>
@@ -281,7 +281,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
                   onClick={() => setMethod(m.value)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-colors text-xs ${
                     method === m.value
-                      ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                      ? 'border-amber-400/50 bg-warning/10 text-warning'
                       : 'border-border hover:border-amber-400/40 text-muted-foreground'
                   }`}
                 >
@@ -323,11 +323,11 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
 
           {/* Installment plan toggle (only for partial payments) */}
           {isPartial && (
-            <div className="p-3 rounded-lg border border-amber-200 bg-amber-50/50 space-y-3">
+            <div className="p-3 rounded-lg border border-warning/30 bg-warning/10/50 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-amber-900">Set up installment plan</p>
-                  <p className="text-xs text-amber-700">Tenant pays the remaining {fmt(targetBalance - enteredAmount)} in instalments</p>
+                  <p className="text-xs text-warning">Tenant pays the remaining {fmt(targetBalance - enteredAmount)} in instalments</p>
                 </div>
                 <Switch checked={isInstallment} onCheckedChange={setIsInstallment} />
               </div>
@@ -380,7 +380,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
 
           {/* Receipt info */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 text-xs text-muted-foreground">
-            <CheckCircle className="h-3.5 w-3.5 text-green-600 shrink-0" />
+            <CheckCircle className="h-3.5 w-3.5 text-success shrink-0" />
             <span>Receipt will be emailed and SMS'd to {tenant.name} immediately after recording.</span>
           </div>
         </div>

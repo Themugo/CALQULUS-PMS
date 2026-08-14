@@ -77,7 +77,7 @@ export function MarketingWebsite() {
               <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
                 CALQULUS <span className="text-emerald-400">RMS</span>
               </span>
-              <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-success/10 text-emerald-400 border border-success/20">
                 Enterprise v2.4
               </span>
             </div>
@@ -144,11 +144,11 @@ export function MarketingWebsite() {
       {/* ── HERO SECTION ── */}
       <section className="relative pt-20 pb-28 overflow-hidden">
         {/* Glowing Ambient Backgrounds */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-success/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 px-4 py-1.5 text-sm rounded-full mb-8 inline-flex items-center gap-2">
+          <Badge className="bg-success/10 text-emerald-400 border-success/30 px-4 py-1.5 text-sm rounded-full mb-8 inline-flex items-center gap-2">
             <Sparkles className="h-4 w-4" /> The Next-Generation Real Estate Operating System
           </Badge>
 
@@ -214,7 +214,7 @@ export function MarketingWebsite() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-slate-900 border-slate-800 hover:border-emerald-500/40 transition-all duration-300">
               <CardHeader>
-                <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                <div className="h-12 w-12 rounded-xl bg-success/10 border border-success/20 text-emerald-400 flex items-center justify-center mb-4">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-xl text-slate-100">Property Managers</CardTitle>
@@ -376,12 +376,12 @@ export function MarketingWebsite() {
           <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-8 shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
               <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                <div className="h-3 w-3 rounded-full bg-amber-500/80" />
-                <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
+                <div className="h-3 w-3 rounded-full bg-destructive/100/80" />
+                <div className="h-3 w-3 rounded-full bg-warning/100/80" />
+                <div className="h-3 w-3 rounded-full bg-success/100" />
                 <span className="text-xs font-mono text-slate-500 ml-2">www.calqulus.site/{activeTab}</span>
               </div>
-              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Live System Sync</Badge>
+              <Badge className="bg-success/10 text-emerald-400 border-success/20">Live System Sync</Badge>
             </div>
 
             {activeTab === 'manager' && (
@@ -390,7 +390,7 @@ export function MarketingWebsite() {
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-xs text-slate-400">Total Monthly Collections</div>
                     <div className="text-2xl font-bold text-emerald-400 mt-1">$48,250.00</div>
-                    <div className="text-xs text-emerald-500 mt-1">+14% vs last month</div>
+                    <div className="text-xs text-success mt-1">+14% vs last month</div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-xs text-slate-400">Portfolio Occupancy</div>
@@ -412,14 +412,14 @@ export function MarketingWebsite() {
                         <span className="font-medium text-slate-200">Unit 4B - Grand Plaza</span>
                         <span className="text-slate-500 ml-2">M-Pesa Ref: QKS8921A</span>
                       </div>
-                      <Badge className="bg-emerald-500/20 text-emerald-400">Paid $850.00</Badge>
+                      <Badge className="bg-success/20 text-emerald-400">Paid $850.00</Badge>
                     </div>
                     <div className="flex justify-between items-center p-2 rounded bg-slate-900">
                       <div>
                         <span className="font-medium text-slate-200">Unit 12A - Riverside Suites</span>
                         <span className="text-slate-500 ml-2">M-Pesa Ref: QKS7810B</span>
                       </div>
-                      <Badge className="bg-emerald-500/20 text-emerald-400">Paid $1,200.00</Badge>
+                      <Badge className="bg-success/20 text-emerald-400">Paid $1,200.00</Badge>
                     </div>
                   </div>
                 </div>
@@ -472,9 +472,9 @@ export function MarketingWebsite() {
               <div className="max-w-md mx-auto p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-slate-100 text-sm">Tenant Mobile Hub</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Unit 304</Badge>
+                  <Badge className="bg-success/20 text-emerald-400">Unit 304</Badge>
                 </div>
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+                <div className="p-4 rounded-xl bg-success/10 border border-success/30 text-center">
                   <div className="text-slate-300">Current Balance Due</div>
                   <div className="text-3xl font-extrabold text-emerald-400 mt-1">$0.00</div>
                   <div className="text-emerald-400 mt-1 font-medium">Lease Status: Active</div>
@@ -494,7 +494,7 @@ export function MarketingWebsite() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 mb-4">
+              <Badge className="bg-success/10 text-emerald-400 border-success/30 mb-4">
                 Bank-Grade Security
               </Badge>
               <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-100 leading-tight">
@@ -506,7 +506,7 @@ export function MarketingWebsite() {
 
               <div className="mt-8 space-y-4">
                 <div className="flex gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <div className="h-10 w-10 rounded-lg bg-success/10 border border-success/20 text-emerald-400 flex items-center justify-center shrink-0">
                     <Lock className="h-5 w-5" />
                   </div>
                   <div>
@@ -542,15 +542,15 @@ export function MarketingWebsite() {
               <div className="divide-y divide-slate-800 text-sm">
                 <div className="py-3 flex justify-between items-center">
                   <span className="text-slate-300 font-medium">SOC 2 Type II Certified</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Verified</Badge>
+                  <Badge className="bg-success/20 text-emerald-400">Verified</Badge>
                 </div>
                 <div className="py-3 flex justify-between items-center">
                   <span className="text-slate-300 font-medium">Data Protection Act Compliance</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Compliant</Badge>
+                  <Badge className="bg-success/20 text-emerald-400">Compliant</Badge>
                 </div>
                 <div className="py-3 flex justify-between items-center">
                   <span className="text-slate-300 font-medium">Audit Trail Logging</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
+                  <Badge className="bg-success/20 text-emerald-400">Active</Badge>
                 </div>
                 <div className="py-3 flex justify-between items-center">
                   <span className="text-slate-300 font-medium">System Uptime SLA</span>
@@ -637,7 +637,7 @@ export function MarketingWebsite() {
             </Card>
 
             {/* Pro */}
-            <Card className="bg-slate-900 border-emerald-500/50 relative shadow-xl shadow-emerald-500/10">
+            <Card className="bg-slate-900 border-success/50 relative shadow-xl shadow-emerald-500/10">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <Badge className="bg-emerald-500 text-slate-950 font-bold text-xs px-3">MOST POPULAR</Badge>
               </div>
@@ -771,7 +771,7 @@ export function MarketingWebsite() {
             <div className="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-2xl">
               {contactSubmitted ? (
                 <div className="text-center py-12 space-y-4">
-                  <div className="h-12 w-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+                  <div className="h-12 w-12 rounded-full bg-success/20 text-emerald-400 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="h-6 w-6" />
                   </div>
                   <h4 className="text-xl font-bold text-slate-100">Inquiry Received</h4>

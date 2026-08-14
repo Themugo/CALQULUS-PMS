@@ -159,8 +159,8 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
             {/* Enable Toggle */}
             <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-amber-400/12 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-amber-500" />
+                <div className="h-10 w-10 rounded-full bg-warning/15 flex items-center justify-center">
+                  <Wallet className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground">Enable E-Wallet Payments</p>
@@ -178,9 +178,9 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
             </div>
 
             {settings.is_enabled && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="text-sm text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-success/100/10 border border-green-500/20">
+                <CheckCircle className="h-4 w-4 text-success" />
+                <span className="text-sm text-success ">
                   E-Wallet payment option will be shown to tenants
                 </span>
               </div>

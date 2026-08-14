@@ -133,7 +133,7 @@ const AdminPermissionsEditor: React.FC<AdminPermissionsEditorProps> = ({
       </div>
 
       {/* Tenant access notice — always shown */}
-      <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-red-200 rounded-lg text-xs text-destructive">
+      <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-xs text-destructive">
         <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
         <span>
           <strong>Tenant data is never accessible to any webhost admin.</strong> This is a platform-level

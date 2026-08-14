@@ -257,7 +257,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
           <div className="text-xs text-muted-foreground ml-auto">
             {rows.length} units · {rows.filter(r => !r.is_vacant).length} occupied
             {totals && totals.bal > 0 && (
-              <span className="ml-2 text-red-600 font-medium">
+              <span className="ml-2 text-destructive font-medium">
                 · {fmtFull(totals.bal)} outstanding
               </span>
             )}
@@ -335,7 +335,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                     </td>
                     <td className="border border-gray-300 px-2 py-1 text-right">
                       {row.water_bal > 0 ? (
-                        <span className="text-red-600 font-medium">{fmt(row.water_bal)}</span>
+                        <span className="text-destructive font-medium">{fmt(row.water_bal)}</span>
                       ) : ''}
                     </td>
                     {extraCols.map(col => {
@@ -351,9 +351,9 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                     </td>
                     <td className="border border-gray-300 px-2 py-1 text-right">
                       {row.bal > 0 ? (
-                        <span className="text-red-700 font-bold">{fmt(row.bal)}</span>
+                        <span className="text-destructive font-bold">{fmt(row.bal)}</span>
                       ) : row.is_vacant ? '' : (
-                        <span className="text-green-600 text-xs">–</span>
+                        <span className="text-success text-xs">–</span>
                       )}
                     </td>
                     <td className="border border-gray-300 px-2 py-1 text-center font-mono text-xs text-muted-foreground">
@@ -381,7 +381,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                     {totals.water_paid > 0 ? fmt(totals.water_paid) : '-'}
                   </td>
                   <td className="border border-gray-400 px-2 py-1.5 text-right">
-                    {totals.water_bal > 0 ? <span className="text-red-700">{fmt(totals.water_bal)}</span> : '-'}
+                    {totals.water_bal > 0 ? <span className="text-destructive">{fmt(totals.water_bal)}</span> : '-'}
                   </td>
                   {extraCols.map(col => (
                     <td key={col} className="border border-gray-400 px-2 py-1.5 text-right">
@@ -389,7 +389,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                     </td>
                   ))}
                   <td className="border border-gray-400 px-2 py-1.5 text-right font-bold">{fmt(totals.total)}</td>
-                  <td className="border border-gray-400 px-2 py-1.5 text-right font-bold text-red-700">
+                  <td className="border border-gray-400 px-2 py-1.5 text-right font-bold text-destructive">
                     {totals.bal > 0 ? fmt(totals.bal) : '-'}
                   </td>
                   <td className="border border-gray-400 px-2 py-1.5" />
@@ -406,12 +406,12 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Rent payable', value: totals.rent_payable, color: 'text-foreground' },
-            { label: 'Rent collected', value: totals.rent_paid, color: 'text-green-700' },
+            { label: 'Rent collected', value: totals.rent_paid, color: 'text-success' },
             { label: 'Water collected', value: totals.water_paid, color: 'text-[hsl(195_60%_32%)]' },
             {
               label: 'Total outstanding',
               value: totals.bal,
-              color: totals.bal > 0 ? 'text-red-700' : 'text-green-700',
+              color: totals.bal > 0 ? 'text-destructive' : 'text-success',
               icon: totals.bal > 0 ? AlertTriangle : undefined,
             },
           ].map(stat => (

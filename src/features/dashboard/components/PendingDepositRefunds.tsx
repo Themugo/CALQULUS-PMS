@@ -114,8 +114,8 @@ export function PendingDepositRefunds() {
   const getMethodBadge = (method: string) => {
     const methods: Record<string, { label: string; className: string }> = {
       bank_transfer: { label: "Bank", className: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]" },
-      mpesa: { label: "M-Pesa", className: "bg-green-500/10 text-green-600 border-green-500/20" },
-      cash: { label: "Cash", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+      mpesa: { label: "M-Pesa", className: "bg-success/10 text-success border-success/20" },
+      cash: { label: "Cash", className: "bg-warning/10 text-warning border-warning/20" },
       cheque: { label: "Cheque", className: "bg-[hsl(218_58%_38%/0.1)] text-[hsl(218_58%_38%)] border-[hsl(218_58%_38%/0.2)]" },
     };
     const m = methods[method] || { label: method, className: "bg-muted text-muted-foreground" };
@@ -145,7 +145,7 @@ export function PendingDepositRefunds() {
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
           <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-amber-500" />
+            <Wallet className="h-5 w-5 text-warning" />
             Pending Deposit Refunds
           </CardTitle>
           <CardDescription>
@@ -159,7 +159,7 @@ export function PendingDepositRefunds() {
       <CardContent>
         {pendingRefunds.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-emerald-500/50" />
+            <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-success/50" />
             <p className="text-sm">No pending refunds</p>
           </div>
         ) : (
@@ -186,7 +186,7 @@ export function PendingDepositRefunds() {
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
                         {getMethodBadge(refund.refund_method)}
-                        <Badge variant="outline" className="gap-1 bg-amber-500/10 text-amber-600 border-amber-500/20">
+                        <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20">
                           <Clock className="h-3 w-3" />
                           Pending
                         </Badge>
@@ -196,7 +196,7 @@ export function PendingDepositRefunds() {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end gap-2">
-                      <p className="font-semibold text-emerald-600">
+                      <p className="font-semibold text-success">
                         {formatCurrency(refund.refund_amount)}
                       </p>
                       <Button 

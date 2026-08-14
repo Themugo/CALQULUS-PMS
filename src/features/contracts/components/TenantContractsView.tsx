@@ -113,7 +113,7 @@ export const TenantContractsView = ({
                 <div className="bg-muted/50 px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-amber-400/10 flex items-center justify-center">
-                      <Building className="h-5 w-5 text-amber-500" />
+                      <Building className="h-5 w-5 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium">{tenant.name}</p>
@@ -161,9 +161,9 @@ export const TenantContractsView = ({
                 <div className="p-4 space-y-4">
                   {pendingContracts.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-medium text-sm text-amber-600">Pending Signatures</h4>
+                      <h4 className="font-medium text-sm text-warning">Pending Signatures</h4>
                       {pendingContracts.map((contract) => (
-                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-amber-500/5">
+                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-warning/5">
                           <div>
                             <p className="font-medium text-sm">{contract.title}</p>
                             <p className="text-xs text-muted-foreground">
@@ -185,11 +185,11 @@ export const TenantContractsView = ({
 
                   {signedContracts.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-medium text-sm text-emerald-600">Signed Agreements</h4>
+                      <h4 className="font-medium text-sm text-success">Signed Agreements</h4>
                       {signedContracts.map((contract) => (
-                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-emerald-500/5">
+                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-success/5">
                           <div className="flex items-center gap-3">
-                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                            <CheckCircle className="h-5 w-5 text-success" />
                             <div>
                               <p className="font-medium text-sm">{contract.title}</p>
                               <p className="text-xs text-muted-foreground">

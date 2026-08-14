@@ -276,7 +276,7 @@ const PredictiveMaintenanceDashboard = () => {
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{severity}</Badge>;
       default:
         return <Badge variant="outline">{severity}</Badge>;
     }
@@ -306,7 +306,7 @@ const PredictiveMaintenanceDashboard = () => {
       case 'urgent':
         return <Badge className="bg-warning text-white border-warning">{urgency}</Badge>;
       case 'scheduled':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{urgency}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{urgency}</Badge>;
       case 'monitor':
         return <Badge className="bg-secondary-foreground text-white border-gray-600">{urgency}</Badge>;
       default:

@@ -124,7 +124,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Archive className="h-5 w-5 text-amber-600" />
+                <Archive className="h-5 w-5 text-warning" />
                 Process move-out
               </DialogTitle>
               <DialogDescription>
@@ -136,7 +136,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
               {/* Tenant summary */}
               <div className="p-3 rounded-lg bg-muted/40 flex items-center gap-3">
                 <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-amber-500" />
+                  <User className="h-4 w-4 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{tenant.name}</p>
@@ -145,7 +145,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
                   </p>
                 </div>
                 {tenant.deposit_balance !== null && tenant.deposit_balance > 0 && (
-                  <Badge className="ml-auto bg-amber-100 text-amber-800 border-amber-200">
+                  <Badge className="ml-auto bg-amber-100 text-amber-800 border-warning/30">
                     KES {tenant.deposit_balance.toLocaleString()} deposit held
                   </Badge>
                 )}
@@ -163,7 +163,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
                   { icon: User,          text: 'Tenant\'s portal history remains accessible for configured days' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <item.icon className="h-3.5 w-3.5 shrink-0 mt-0.5 text-green-600" />
+                    <item.icon className="h-3.5 w-3.5 shrink-0 mt-0.5 text-success" />
                     {item.text}
                   </div>
                 ))}
@@ -235,7 +235,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
 
               {/* Deposit warning */}
               {tenant.deposit_balance !== null && tenant.deposit_balance > 0 && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/30 text-xs text-amber-800">
                   <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                   <span>
                     <strong>Deposit of KES {tenant.deposit_balance.toLocaleString()} is still held.</strong> Process the
@@ -265,13 +265,13 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
           /* Summary screen */
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-green-700">
+              <DialogTitle className="flex items-center gap-2 text-success">
                 <CheckCircle className="h-5 w-5" />
                 Move-out complete
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div className="p-4 rounded-lg bg-green-50 border border-green-200 space-y-2">
+              <div className="p-4 rounded-lg bg-success/10 border border-success/30 space-y-2">
                 <p className="text-sm font-medium text-green-900">
                   {tenant.name} has been successfully moved out of {tenant.unit}
                 </p>

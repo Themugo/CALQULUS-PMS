@@ -325,7 +325,7 @@ export function MpesaPaymentDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5 text-green-600" />
+            <Smartphone className="h-5 w-5 text-success" />
             M-Pesa Payment
           </DialogTitle>
           <DialogDescription>
@@ -336,7 +336,7 @@ export function MpesaPaymentDialog({
         {invoice && (
           <div className="space-y-4">
             {/* Unit + Amount summary */}
-            <div className="rounded-lg border bg-green-50 p-4">
+            <div className="rounded-lg border bg-success/10 p-4">
               <div className="flex items-center gap-2 mb-1 text-green-800">
                 <Home className="h-4 w-4" />
                 <span className="font-semibold">{invoice.leases?.property ?? "Property"}</span>
@@ -346,12 +346,12 @@ export function MpesaPaymentDialog({
                   <Hash className="h-3 w-3" />
                   Unit {unitNumber}
                 </Badge>
-                <span className="text-lg font-bold text-green-700">
+                <span className="text-lg font-bold text-success">
                   {formatCurrency(invoice.amount)}
                 </span>
               </div>
               {accountReference && (
-                <p className="mt-1 text-xs text-green-600">
+                <p className="mt-1 text-xs text-success">
                   M-Pesa account ref: <strong>{accountReference}</strong>
                 </p>
               )}
@@ -418,9 +418,9 @@ export function MpesaPaymentDialog({
               </Alert>
             )}
             {paymentStatus === "success" && (
-              <Alert className="border-green-500 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-700">
+              <Alert className="border-green-500 bg-success/10">
+                <CheckCircle className="h-4 w-4 text-success" />
+                <AlertDescription className="text-success">
                   Payment received! Your receipt will be emailed to you.
                 </AlertDescription>
               </Alert>

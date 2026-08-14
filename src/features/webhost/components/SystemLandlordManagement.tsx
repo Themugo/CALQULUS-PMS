@@ -70,8 +70,8 @@ const fmt = (n: number) =>
 const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   approved: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  paid: 'bg-green-100 text-green-800 border-green-200',
-  rejected: 'bg-destructive/15 text-destructive border-red-200',
+  paid: 'bg-green-100 text-green-800 border-success/30',
+  rejected: 'bg-destructive/15 text-destructive border-destructive/30',
 };
 
 const SystemLandlordManagement: React.FC = () => {
@@ -486,7 +486,7 @@ const SystemLandlordManagement: React.FC = () => {
                         <div className="flex gap-1">
                           {p.status === 'pending' && (
                             <>
-                              <Button size="sm" variant="outline" className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50" onClick={() => setPayoutDialog({ id: p.id, status: 'approved', label: 'Approve this payout request?' })}>Approve</Button>
+                              <Button size="sm" variant="outline" className="h-7 text-xs border-green-300 text-success hover:bg-success/10" onClick={() => setPayoutDialog({ id: p.id, status: 'approved', label: 'Approve this payout request?' })}>Approve</Button>
                               <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive hover:bg-destructive/10" onClick={() => setPayoutDialog({ id: p.id, status: 'rejected', label: 'Reject this payout request?' })}>Reject</Button>
                             </>
                           )}

@@ -77,7 +77,7 @@ export default function LeasingDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Leasing & Occupancy Command Center</h1>
-            <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-500/20 font-bold">
+            <Badge variant="outline" className="bg-purple-500/10 text-purple border-purple-500/20 font-bold">
               Leasing Officer Workspace
             </Badge>
           </div>
@@ -167,7 +167,7 @@ export default function LeasingDashboard() {
                   data?.expiringLeases.map((l) => (
                     <TableRow key={l.id}>
                       <TableCell className="font-semibold text-xs text-foreground">{l.unit || 'Unit A'}</TableCell>
-                      <TableCell className="text-xs text-purple-600 font-medium">{l.end_date}</TableCell>
+                      <TableCell className="text-xs text-purple font-medium">{l.end_date}</TableCell>
                       <TableCell className="text-xs font-bold">{l.monthly_rent ? `KES ${l.monthly_rent}` : 'N/A'}</TableCell>
                       <TableCell className="text-right">
                         <Button size="sm" variant="outline" className="h-6 text-[11px]" onClick={() => window.location.href = '/leases'}>
@@ -191,15 +191,15 @@ export default function LeasingDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
-              <span className="flex items-center gap-2"><UserPlus className="h-4 w-4 text-emerald-500" /> Send Tenant Onboarding Link</span>
+              <span className="flex items-center gap-2"><UserPlus className="h-4 w-4 text-success" /> Send Tenant Onboarding Link</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/leases'}>
-              <span className="flex items-center gap-2"><FileCheck className="h-4 w-4 text-purple-500" /> Draft Lease Agreement</span>
+              <span className="flex items-center gap-2"><FileCheck className="h-4 w-4 text-purple" /> Draft Lease Agreement</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/tenants'}>
-              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-amber-500" /> Review Vacation Notices</span>
+              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-warning" /> Review Vacation Notices</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>

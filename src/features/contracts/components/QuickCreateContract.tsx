@@ -321,7 +321,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-amber-500" />
+            <Zap className="h-5 w-5 text-warning" />
             Quick Create Contract
           </DialogTitle>
           <DialogDescription>
@@ -456,8 +456,8 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
           <>
             <div className="space-y-4 py-4">
               <div className="flex items-center justify-center">
-                <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <Check className="h-8 w-8 text-green-500" />
+                <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center">
+                  <Check className="h-8 w-8 text-success" />
                 </div>
               </div>
               <div className="text-center">
@@ -468,10 +468,10 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
               </div>
 
               {credentialsEmailed && (
-                <div className="space-y-2 p-4 border border-green-500/20 rounded-lg bg-green-500/5">
+                <div className="space-y-2 p-4 border border-success/20 rounded-lg bg-success/100/5">
                   <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    <Label className="text-green-600 font-medium">Login Credentials Sent</Label>
+                    <Check className="h-4 w-4 text-success" />
+                    <Label className="text-success font-medium">Login Credentials Sent</Label>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     The tenant has received an email with their login credentials to access the portal.
@@ -486,7 +486,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
                     {getShareableLink()}
                   </code>
                   <Button variant="outline" size="icon" onClick={handleCopyLink} aria-label={copied ? "Link copied" : "Copy link"}>
-                    {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">

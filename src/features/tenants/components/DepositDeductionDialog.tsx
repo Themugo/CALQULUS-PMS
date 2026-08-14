@@ -449,9 +449,9 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, { icon: React.ReactNode; className: string }> = {
-      pending: { icon: <Clock className="h-3 w-3" />, className: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+      pending: { icon: <Clock className="h-3 w-3" />, className: "bg-warning/10 text-warning border-warning/20" },
       processing: { icon: <Loader2 className="h-3 w-3 animate-spin" />, className: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]" },
-      completed: { icon: <CheckCircle2 className="h-3 w-3" />, className: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+      completed: { icon: <CheckCircle2 className="h-3 w-3" />, className: "bg-success/10 text-success border-success/20" },
       cancelled: { icon: <Ban className="h-3 w-3" />, className: "bg-slate-500/10 text-slate-500 border-slate-500/20" },
     };
     const style = styles[status] || styles.pending;
@@ -504,11 +504,11 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
                     KES {originalDeposit.toLocaleString()}
                   </p>
                 </div>
-                <div className={`p-4 rounded-lg border ${existingRefund ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-amber-400/10 border-amber-400/20'}`}>
+                <div className={`p-4 rounded-lg border ${existingRefund ? 'bg-success/10 border-success/20' : 'bg-amber-400/10 border-amber-400/20'}`}>
                   <p className="text-sm text-muted-foreground">
                     {existingRefund ? "Refunded Amount" : "Current Balance"}
                   </p>
-                  <p className={`text-xl font-semibold ${existingRefund ? 'text-emerald-600' : 'text-amber-500'}`}>
+                  <p className={`text-xl font-semibold ${existingRefund ? 'text-success' : 'text-warning'}`}>
                     KES {existingRefund ? existingRefund.refund_amount.toLocaleString() : currentBalance.toLocaleString()}
                   </p>
                 </div>
@@ -516,10 +516,10 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
 
               {/* Existing Refund Status */}
               {existingRefund && (
-                <div className="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/20 space-y-3">
+                <div className="p-4 rounded-lg bg-success/5 border border-success/20 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium text-foreground flex items-center gap-2">
-                      <ArrowUpRight className="h-4 w-4 text-emerald-600" />
+                      <ArrowUpRight className="h-4 w-4 text-success" />
                       Refund Status
                     </h4>
                     {getStatusBadge(existingRefund.status)}
@@ -701,8 +701,8 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
 
             {/* Refund Tab */}
             <TabsContent value="refund" className="space-y-4 mt-0">
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                <p className="text-sm text-amber-700 dark:text-amber-400">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
+                <p className="text-sm text-warning ">
                   <strong>Note:</strong> Initiating a refund will set the tenant status to inactive and zero out their deposit balance.
                 </p>
               </div>
@@ -714,9 +714,9 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
                     KES {deductionHistory.reduce((sum, d) => sum + d.amount, 0).toLocaleString()}
                   </p>
                 </div>
-                <div className="p-3 rounded-lg bg-emerald-500/10 text-center">
+                <div className="p-3 rounded-lg bg-success/10 text-center">
                   <p className="text-xs text-muted-foreground">Refund Amount</p>
-                  <p className="text-lg font-semibold text-emerald-600">
+                  <p className="text-lg font-semibold text-success">
                     KES {currentBalance.toLocaleString()}
                   </p>
                 </div>

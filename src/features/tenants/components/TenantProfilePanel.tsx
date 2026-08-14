@@ -157,9 +157,9 @@ function SelectField({ label, field, options, editing, form, profile, onSelect }
 }
 
 const RISK_COLORS: Record<string, string> = {
-  clear:       'bg-green-100 text-green-800 border-green-200',
-  caution:     'bg-amber-100 text-amber-800 border-amber-200',
-  blacklisted: 'bg-red-100 text-red-800 border-red-200',
+  clear:       'bg-green-100 text-green-800 border-success/30',
+  caution:     'bg-amber-100 text-amber-800 border-warning/30',
+  blacklisted: 'bg-red-100 text-red-800 border-destructive/30',
 };
 
 const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdate }) => {
@@ -262,7 +262,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
             </Badge>
           )}
           {profile?.risk_flag === 'clear' && (
-            <Badge className="text-xs bg-green-100 text-green-800 border-green-200">
+            <Badge className="text-xs bg-green-100 text-green-800 border-success/30">
               <CheckCircle className="h-3 w-3 mr-1" />Clear
             </Badge>
           )}
@@ -416,7 +416,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
                     <div><span className="text-muted-foreground text-xs">Phone</span><p className="font-medium">{g.phone}</p></div>
                     <div><span className="text-muted-foreground text-xs">Relationship</span><p>{g.relationship || '—'}</p></div>
                     <div><span className="text-muted-foreground text-xs">Type</span><p className="capitalize">{g.guarantee_type}</p></div>
-                    {g.guarantee_amount && <div className="col-span-2"><span className="text-muted-foreground text-xs">Guarantee covers up to</span><p className="font-semibold text-green-700">KES {Number(g.guarantee_amount).toLocaleString()}</p></div>}
+                    {g.guarantee_amount && <div className="col-span-2"><span className="text-muted-foreground text-xs">Guarantee covers up to</span><p className="font-semibold text-success">KES {Number(g.guarantee_amount).toLocaleString()}</p></div>}
                   </CardContent>
                 </Card>
               ))}

@@ -116,7 +116,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-amber-500" />
+            <CreditCard className="h-5 w-5 text-warning" />
             Create instalment plan
           </DialogTitle>
           <DialogDescription>
@@ -172,7 +172,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
           {/* Per-instalment amount */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-amber-400/6 border border-amber-400/20">
             <span className="text-sm font-medium">Each instalment</span>
-            <span className="text-lg font-bold text-amber-500">{fmt(perInstalment)}</span>
+            <span className="text-lg font-bold text-warning">{fmt(perInstalment)}</span>
           </div>
 
           {/* Notes */}
@@ -212,7 +212,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
 
           {/* Warning if total doesn't match */}
           {Math.abs(schedule.reduce((s, r) => s + r.amount, 0) - totalBalance) > 1 && (
-            <div className="flex items-start gap-2 p-2 rounded bg-amber-50 border border-amber-200 text-xs text-amber-800">
+            <div className="flex items-start gap-2 p-2 rounded bg-warning/10 border border-warning/30 text-xs text-amber-800">
               <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
               Rounding: plan total is {fmt(schedule.reduce((s, r) => s + r.amount, 0))} vs outstanding {fmt(totalBalance)}
             </div>

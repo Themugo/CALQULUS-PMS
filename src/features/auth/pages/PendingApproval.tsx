@@ -89,7 +89,7 @@ const PendingApproval = () => {
           <div className="flex justify-center mb-4">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12" />
           </div>
-          <div className="flex items-center justify-center gap-2 text-amber-500 mb-2">
+          <div className="flex items-center justify-center gap-2 text-warning mb-2">
             <Building2 className="h-5 w-5" />
             <span className="text-sm font-medium">Property Manager Portal</span>
           </div>
@@ -98,8 +98,8 @@ const PendingApproval = () => {
         <Card className="w-full border-border bg-muted backdrop-blur-xl shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
-                <Clock className={`h-8 w-8 ${isSuspended ? 'text-orange-500' : isRejected ? 'text-red-500' : 'text-amber-500'}`} />
+              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-warning/10' : isRejected ? 'bg-destructive/10' : 'bg-warning/10'}`}>
+                <Clock className={`h-8 w-8 ${isSuspended ? 'text-warning' : isRejected ? 'text-destructive' : 'text-warning'}`} />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">
@@ -125,14 +125,14 @@ const PendingApproval = () => {
                         Pay the outstanding balance to restore access immediately.
                       </p>
                       {suspensionReason && (
-                        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-left mb-3">
-                          <p className="text-xs text-red-600 font-medium mb-1">Details:</p>
-                          <p className="text-sm text-red-200">{suspensionReason}</p>
+                        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-left mb-3">
+                          <p className="text-xs text-destructive font-medium mb-1">Details:</p>
+                          <p className="text-sm text-destructive">{suspensionReason}</p>
                         </div>
                       )}
-                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
+                      <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-left">
                         <p className="text-xs text-primary font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
-                        <ol className="text-sm text-amber-200 space-y-1">
+                        <ol className="text-sm text-warning space-y-1">
                           <li>1. Pay your outstanding invoice via the Platform Billing page</li>
                           <li>2. Once payment is confirmed, your account will be reinstated automatically</li>
                           <li>3. If payment was already made, contact the platform administrator</li>
@@ -145,9 +145,9 @@ const PendingApproval = () => {
                         Access to your account has been suspended. Please contact the platform administrator to resolve this.
                       </p>
                       {suspensionReason && (
-                        <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3 text-left">
-                          <p className="text-xs text-orange-400 font-medium mb-1">Reason given:</p>
-                          <p className="text-sm text-orange-200">{suspensionReason}</p>
+                        <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-left">
+                          <p className="text-xs text-warning font-medium mb-1">Reason given:</p>
+                          <p className="text-sm text-warning">{suspensionReason}</p>
                         </div>
                       )}
                     </>
@@ -160,9 +160,9 @@ const PendingApproval = () => {
                     If you believe this was a mistake, please contact our support team for assistance.
                   </p>
                   {rejectionReason && (
-                    <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-left">
-                      <p className="text-xs text-red-600 font-medium mb-1">Reason given:</p>
-                      <p className="text-sm text-red-200">{rejectionReason}</p>
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-left">
+                      <p className="text-xs text-destructive font-medium mb-1">Reason given:</p>
+                      <p className="text-sm text-destructive">{rejectionReason}</p>
                     </div>
                   )}
                 </div>

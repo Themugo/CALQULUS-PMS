@@ -206,7 +206,7 @@ const SOC2ComplianceDashboard = () => {
       case 'medium':
         return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
       case 'low':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{severity}</Badge>;
       default:
         return <Badge variant="outline">{severity}</Badge>;
     }
@@ -342,7 +342,7 @@ const SOC2ComplianceDashboard = () => {
                     <span className="text-warning/70">Implemented</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-secondary-background rounded-full h-2">
-                        <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'implemented').length / controls.length) * 100}%` }} />
+                        <div className="bg-success/100 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'implemented').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'implemented').length}</span>
                     </div>

@@ -93,7 +93,7 @@ interface ContractsTableProps {
 
 const statusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   draft: { label: "Draft", styles: "bg-slate-600 text-white border-slate-700", icon: FileText },
-  pending_signature: { label: "Pending Signature", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
+  pending_signature: { label: "Pending Signature", styles: "bg-warning/100 text-white border-amber-600", icon: Clock },
   signed: { label: "Signed", styles: "bg-emerald-600 text-white border-emerald-700", icon: CheckCircle },
   expired: { label: "Expired", styles: "bg-red-600 text-white border-red-700", icon: ShieldX },
   cancelled: { label: "Cancelled", styles: "bg-gray-600 text-white border-gray-700", icon: ShieldX },
@@ -233,7 +233,7 @@ export const ContractsTable = ({
                         onClick={() => onSendWhatsApp(contract)}
                         disabled={isSendingWhatsApp === contract.id}
                         title="Send WhatsApp/SMS Notification"
-                        className="text-green-500 hover:text-green-600"
+                        className="text-success hover:text-success"
                       >
                         {isSendingWhatsApp === contract.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -276,7 +276,7 @@ export const ContractsTable = ({
                           onClick={() => onDownloadUploaded(contract.uploaded_contract_url!, contract.title)}
                           title="Download Uploaded Contract"
                         >
-                          <Download className="h-4 w-4 text-emerald-500" />
+                          <Download className="h-4 w-4 text-success" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -297,7 +297,7 @@ export const ContractsTable = ({
                             size="icon"
                             onClick={() => onSubmitForApproval(contract)}
                             title="Submit for Approval"
-                            className="text-orange-500 hover:text-orange-600"
+                            className="text-warning hover:text-warning"
                           >
                             <ShieldCheck className="h-4 w-4" />
                           </Button>
@@ -319,7 +319,7 @@ export const ContractsTable = ({
                       size="icon"
                       onClick={() => onDelete(contract)}
                       title="Delete"
-                      className="text-red-500 hover:text-red-600"
+                      className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

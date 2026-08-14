@@ -186,12 +186,12 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
   const CredentialStatus = ({ isConfigured, label }: { isConfigured: boolean; label: string }) => (
     <div className="flex items-center gap-2">
       {isConfigured ? (
-        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+        <Badge variant="outline" className="bg-success/10 text-success border-success/30">
           <CheckCircle2 className="h-3 w-3 mr-1" />
           Configured
         </Badge>
       ) : (
-        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+        <Badge variant="outline" className="bg-warning/10 text-warning border-warning/30">
           <XCircle className="h-3 w-3 mr-1" />
           Not Set
         </Badge>
@@ -270,7 +270,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
               href="https://developer.safaricom.co.ke" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-amber-600 underline"
+              className="text-warning underline"
             >
               Safaricom Daraja Portal
             </a>

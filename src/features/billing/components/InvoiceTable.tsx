@@ -27,9 +27,9 @@ const STATUS_CONFIG: Record<
   InvoiceStatus,
   { styles: string; icon: React.ComponentType<{ className?: string }> }
 > = {
-  paid:      { styles: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: CheckCircle },
-  pending:   { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20",       icon: Clock },
-  overdue:   { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: AlertCircle },
+  paid:      { styles: "bg-success/10 text-emerald-400 border-success/20", icon: CheckCircle },
+  pending:   { styles: "bg-warning/10 text-amber-400 border-warning/20",       icon: Clock },
+  overdue:   { styles: "bg-destructive/10 text-red-400 border-destructive/20",             icon: AlertCircle },
   cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle },
 };
 
@@ -213,7 +213,7 @@ export function InvoiceTable({
                       )}
                       <Button
                         variant="outline" size="sm"
-                        className="h-8 text-xs text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10"
+                        className="h-8 text-xs text-emerald-400 border-success/30 hover:bg-success/10"
                         onClick={() => onMpesa(invoice)}
                       >
                         <Smartphone className="h-3.5 w-3.5 mr-1" />

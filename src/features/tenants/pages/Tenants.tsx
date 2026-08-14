@@ -93,8 +93,8 @@ interface TenantHistoryItem {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  active: "bg-success/10 text-emerald-400 border-success/20",
+  pending: "bg-warning/10 text-amber-400 border-warning/20",
   inactive: "bg-slate-500/10 text-slate-400 border-slate-500/20",
 };
 
@@ -242,7 +242,7 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                        className="h-8 w-8 text-warning hover:text-warning hover:bg-warning/10"
                         onClick={() => onMoveOut(tenant)}
                         title="Process Move-Out"
                       >
@@ -613,7 +613,7 @@ const Tenants = () => {
                             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-amber-400" />
                             <div className="bg-muted/30 rounded-lg p-3">
                               <div className="flex items-center justify-between mb-1">
-                                <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
+                                <Badge variant="outline" className="bg-amber-400/10 text-warning border-amber-400/20">
                                   {item.action}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">

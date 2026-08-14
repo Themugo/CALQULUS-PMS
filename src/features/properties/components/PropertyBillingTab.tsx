@@ -90,15 +90,15 @@ interface Lease {
 const EXPENDITURE_CATEGORIES = [
   { key: "electricity", label: "Electricity", icon: Zap, color: "text-yellow-500" },
   { key: "water", label: "Water", icon: Droplets, color: "text-[hsl(195_60%_42%)]" },
-  { key: "security", label: "Security", icon: Shield, color: "text-red-500" },
+  { key: "security", label: "Security", icon: Shield, color: "text-destructive" },
   { key: "staff", label: "Staff Salaries", icon: Users, color: "text-[hsl(218_58%_40%)]" },
   { key: "other", label: "Other Expenses", icon: Receipt, color: "text-muted-foreground" },
 ];
 
 const statusConfig: Record<InvoiceStatus, { styles: string; icon: React.ComponentType<{ className?: string }> }> = {
-  paid: { styles: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: CheckCircle },
-  pending: { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20", icon: Clock },
-  overdue: { styles: "bg-red-500/10 text-red-400 border-red-500/20", icon: AlertCircle },
+  paid: { styles: "bg-success/10 text-emerald-400 border-success/20", icon: CheckCircle },
+  pending: { styles: "bg-warning/10 text-amber-400 border-warning/20", icon: Clock },
+  overdue: { styles: "bg-destructive/10 text-red-400 border-destructive/20", icon: AlertCircle },
   cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20", icon: XCircle },
 };
 
@@ -398,19 +398,19 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Paid</p>
-            <p className="text-lg font-bold text-emerald-600">{formatCurrency(totalPaid)}</p>
+            <p className="text-lg font-bold text-success">{formatCurrency(totalPaid)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Pending</p>
-            <p className="text-lg font-bold text-amber-600">{formatCurrency(totalPending)}</p>
+            <p className="text-lg font-bold text-warning">{formatCurrency(totalPending)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Overdue</p>
-            <p className="text-lg font-bold text-red-600">{formatCurrency(totalOverdue)}</p>
+            <p className="text-lg font-bold text-destructive">{formatCurrency(totalOverdue)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -585,7 +585,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                       <TableRow key={inv.id}>
                         <TableCell className="font-medium">{inv.invoice_number}</TableCell>
                         <TableCell>{inv.tenants?.name || "—"}</TableCell>
-                        <TableCell className="font-medium text-emerald-600">{formatCurrency(inv.amount)}</TableCell>
+                        <TableCell className="font-medium text-success">{formatCurrency(inv.amount)}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{formatDate(inv.paid_date!)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
@@ -614,7 +614,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
               )}
               <div className="mt-4 p-3 rounded-lg bg-muted/50 flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Monthly Total</span>
-                <span className="font-bold text-emerald-600">{formatCurrency(monthlyIncome)}</span>
+                <span className="font-bold text-success">{formatCurrency(monthlyIncome)}</span>
               </div>
             </CardContent>
           </Card>
@@ -671,9 +671,9 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                   <span className="font-semibold">Total Expenditures</span>
                   <span className="font-bold">{formatCurrency(totalExpenditures)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-emerald-500/10">
                   <span className="font-semibold">Net Income</span>
-                  <span className="font-bold text-emerald-600">{formatCurrency(monthlyIncome - totalExpenditures)}</span>
+                  <span className="font-bold text-success">{formatCurrency(monthlyIncome - totalExpenditures)}</span>
                 </div>
               </div>
             </CardContent>

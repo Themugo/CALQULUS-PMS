@@ -68,7 +68,7 @@ const priorityColors: Record<RequestPriority, string> = {
 };
 
 const statusColors: Record<RequestStatus, string> = {
-  open: "bg-amber-500 text-white",
+  open: "bg-warning/100 text-white",
   in_progress: "bg-[hsl(214_73%_45%)] text-white",
   completed: "bg-emerald-600 text-white",
   cancelled: "bg-slate-600 text-white",
@@ -163,11 +163,11 @@ export function MaintenanceActiveReport({
     const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
     if (diffDays < 0) {
-      return { label: `${Math.abs(diffDays)} day(s) overdue`, color: "text-red-500", isOverdue: true };
+      return { label: `${Math.abs(diffDays)} day(s) overdue`, color: "text-destructive", isOverdue: true };
     } else if (diffDays === 0) {
-      return { label: "Due today", color: "text-amber-500", isOverdue: false };
+      return { label: "Due today", color: "text-warning", isOverdue: false };
     } else if (diffDays <= 3) {
-      return { label: `Due in ${diffDays} day(s)`, color: "text-amber-500", isOverdue: false };
+      return { label: `Due in ${diffDays} day(s)`, color: "text-warning", isOverdue: false };
     } else {
       return { label: formatDate(dueDate), color: "text-muted-foreground", isOverdue: false };
     }
@@ -204,7 +204,7 @@ export function MaintenanceActiveReport({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-amber-400/10">
-                  <Target className="h-5 w-5 text-amber-500" />
+                  <Target className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <CardTitle className="text-lg text-foreground">Active Report</CardTitle>
@@ -253,38 +253,38 @@ export function MaintenanceActiveReport({
             
             {/* Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+              <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                  <span className="text-sm font-medium text-red-500">Overdue</span>
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                  <span className="text-sm font-medium text-destructive">Overdue</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{overdueRequests.length}</p>
               </div>
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Clock className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Due Soon</span>
+                  <Clock className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Due Soon</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{dueSoonRequests.length}</p>
               </div>
               <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Wrench className="h-4 w-4 text-orange-500" />
-                  <span className="text-sm font-medium text-orange-500">High Priority</span>
+                  <Wrench className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">High Priority</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{urgentRequests.length}</p>
               </div>
-              <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <div className="p-4 rounded-lg bg-success/10 border border-success/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-500">Total Budget</span>
+                  <DollarSign className="h-4 w-4 text-success" />
+                  <span className="text-sm font-medium text-success">Total Budget</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(totalBudget)}</p>
               </div>
               <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Completion Rate</span>
+                  <TrendingUp className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Completion Rate</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold text-foreground">{completionRate}%</p>
@@ -322,7 +322,7 @@ export function MaintenanceActiveReport({
                   {sortedActiveRequests.slice(0, 10).map((request) => {
                     const dueDateStatus = getDueDateStatus(request.expected_completion_date);
                     return (
-                      <TableRow key={request.id} className={`border-border ${dueDateStatus.isOverdue ? 'bg-red-500/5' : ''}`}>
+                      <TableRow key={request.id} className={`border-border ${dueDateStatus.isOverdue ? 'bg-destructive/5' : ''}`}>
                         <TableCell>
                           <div className="font-medium text-foreground">{request.title}</div>
                           <div className="text-xs text-muted-foreground">{request.tenant_name}</div>

@@ -253,7 +253,7 @@ const LandlordAuth = () => {
                   <ForgotPasswordDialog
                     variant="landlord"
                     trigger={
-                      <button type="button" className="text-primary hover:text-amber-200 text-xs font-semibold">
+                      <button type="button" className="text-primary hover:text-primary/80 text-xs font-semibold">
                         Forgot password?
                       </button>
                     }
