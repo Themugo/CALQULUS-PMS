@@ -327,6 +327,7 @@ export const RentCollectionSummary: React.FC = () => {
       setSchedSendDay(schedule.send_day);
       setSchedRecipients(schedule.recipients ?? []);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule?.id, schedule?.enabled, schedule?.send_day, schedule?.updated_at]);
 
   // ── Group by property ────────────────────────────────────────────────────

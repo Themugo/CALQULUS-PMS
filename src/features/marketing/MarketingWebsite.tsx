@@ -45,6 +45,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
+import { Footer } from '@/shared/components/layout/Footer';
 
 export function MarketingWebsite() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
@@ -833,65 +834,7 @@ export function MarketingWebsite() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-slate-950 border-t border-slate-800/80 py-16 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-            <div className="col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-bold">
-                  <Building2 className="h-5 w-5" />
-                </div>
-                <span className="text-base font-bold text-slate-100">CALQULUS RMS</span>
-              </div>
-              <p className="text-xs text-slate-400 max-w-sm leading-relaxed mb-4">
-                The leading enterprise real estate management system powering property managers, agencies, landlords, and tenants across East Africa and beyond.
-              </p>
-              <div className="flex items-center gap-2 text-emerald-400 font-mono text-[11px]">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /> All Systems Operational
-              </div>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Platform</h5>
-              <ul className="space-y-2">
-                <li><a href="/auth" className="hover:text-emerald-400 transition-colors">Manager Dashboard</a></li>
-                <li><a href="/agency/login" className="hover:text-emerald-400 transition-colors">Agency Portal</a></li>
-                <li><a href="/landlord/login" className="hover:text-emerald-400 transition-colors">Landlord Portal</a></li>
-                <li><a href="/tenant/login" className="hover:text-emerald-400 transition-colors">Tenant App</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Solutions</h5>
-              <ul className="space-y-2">
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Water Billing</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">M-Pesa Reconciliation</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Maintenance Desk</a></li>
-                <li><a href="#security" className="hover:text-emerald-400 transition-colors">Landlord Firewall</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Legal & Governance</h5>
-              <ul className="space-y-2">
-                <li><a href="/legal" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="/legal" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
-                <li><a href="#security" className="hover:text-emerald-400 transition-colors">Security Whitepaper</a></li>
-                <li><a href="/legal" className="hover:text-emerald-400 transition-colors">Data Protection</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© {new Date().getFullYear()} CALQULUS RMS. All rights reserved. Registered Enterprise Software.</p>
-            <div className="flex gap-6">
-              <a href="/legal" className="hover:text-slate-200">Legal Notice</a>
-              <a href="#security" className="hover:text-slate-200">Security</a>
-              <a href="#contact" className="hover:text-slate-200">Support</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

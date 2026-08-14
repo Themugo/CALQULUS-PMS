@@ -76,13 +76,12 @@ export function DashboardWidget({
   return (
     <Card
       className={cn(
-        "border-border/80 bg-card hover:shadow-sm transition-all duration-200 overflow-hidden",
-        accentBorderClasses[accentColor],
+        "border border-border bg-card hover:border-border/90 hover:shadow-2xs transition-all duration-200 overflow-hidden",
         colSpan ? colSpanClasses[colSpan] : "",
         className
       )}
     >
-      <CardHeader className="p-4 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between gap-2 space-y-0">
+      <CardHeader className="p-3.5 sm:p-4 border-b border-border/60 bg-muted/20 flex flex-row items-center justify-between gap-2 space-y-0">
         <div className="flex items-center gap-2.5 min-w-0">
           {Icon && (
             <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center shrink-0", iconColorClasses[accentColor])}>

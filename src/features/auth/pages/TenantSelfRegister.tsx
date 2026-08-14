@@ -103,7 +103,13 @@ const TenantSelfRegister = () => {
 
       <div className="relative z-10 w-full max-w-lg">
         <div className="flex justify-center mb-8">
-          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12 w-auto object-contain" />
+          <div className="flex items-center gap-3">
+            <img src={calqulusLogo} alt="CALQULUS RMS" className="h-10 w-10 rounded-xl object-cover ring-1 ring-border/80 shadow-xs" />
+            <div className="text-left">
+              <p className="font-heading font-bold text-lg text-foreground leading-none">CALQULUS <span className="text-primary font-bold">RMS</span></p>
+              <p className="text-[10px] text-primary font-semibold tracking-wider uppercase mt-0.5">Tenant Onboarding</p>
+            </div>
+          </div>
         </div>
         <div className="text-center mb-8">
           <h1 className="font-heading text-2xl font-bold text-foreground mb-2">Create your tenant account</h1>

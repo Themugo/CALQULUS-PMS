@@ -763,14 +763,14 @@ Status: PAID
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-amber-500" />
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                      <Clock className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Pending Amount</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(invoiceStats.totalPending)}</p>
+                      <p className="text-xs text-muted-foreground font-medium">Pending Amount</p>
+                      <p className="text-xl font-bold text-foreground">{formatCurrency(invoiceStats.totalPending)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -779,34 +779,34 @@ Status: PAID
               <StatCard
                 icon={CheckCircle}
                 iconBgClass="bg-emerald-500/10"
-                iconColorClass="text-emerald-500"
+                iconColorClass="text-emerald-600"
                 label="Total Paid"
                 value={formatCurrency(invoiceStats.totalPaid)}
               />
 
               <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-amber-400/10 flex items-center justify-center">
-                      <Receipt className="h-6 w-6 text-amber-500" />
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                      <Receipt className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Pending Invoices</p>
-                      <p className="text-2xl font-bold text-foreground">{invoiceStats.pendingCount}</p>
+                      <p className="text-xs text-muted-foreground font-medium">Pending Invoices</p>
+                      <p className="text-xl font-bold text-foreground">{invoiceStats.pendingCount}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                      <AlertCircle className="h-6 w-6 text-destructive" />
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive shrink-0">
+                      <AlertCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Overdue</p>
-                      <p className="text-2xl font-bold text-foreground">{invoiceStats.overdueCount}</p>
+                      <p className="text-xs text-muted-foreground font-medium">Overdue</p>
+                      <p className="text-xl font-bold text-foreground">{invoiceStats.overdueCount}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -851,14 +851,14 @@ Status: PAID
             {/* Receipt Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                      <FileCheck className="h-6 w-6 text-emerald-500" />
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
+                      <FileCheck className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Receipts</p>
-                      <p className="text-2xl font-bold text-foreground">{paidInvoices.length}</p>
+                      <p className="text-xs text-muted-foreground font-medium">Total Receipts</p>
+                      <p className="text-xl font-bold text-foreground">{paidInvoices.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -867,20 +867,20 @@ Status: PAID
               <StatCard
                 icon={CheckCircle}
                 iconBgClass="bg-emerald-500/10"
-                iconColorClass="text-emerald-500"
+                iconColorClass="text-emerald-600"
                 label="Total Paid"
                 value={formatCurrency(invoiceStats.totalPaid)}
               />
 
               <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-amber-400/10 flex items-center justify-center">
-                      <Calendar className="h-6 w-6 text-amber-500" />
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                      <Calendar className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Latest Payment</p>
-                      <p className="text-2xl font-bold text-foreground">
+                      <p className="text-xs text-muted-foreground font-medium">Latest Payment</p>
+                      <p className="text-xl font-bold text-foreground">
                         {paidInvoices.length > 0 && paidInvoices[0].paid_date 
                           ? format(new Date(paidInvoices[0].paid_date), "dd/MM")
                           : "N/A"

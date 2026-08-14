@@ -18,15 +18,15 @@ interface StatCardProps {
  */
 export function StatCard({ icon: Icon, iconBgClass, iconColorClass, label, value }: StatCardProps) {
   return (
-    <Card className="bg-card border-border">
-      <CardContent className="p-6">
-        <div className="flex items-center gap-4">
-          <div className={`h-12 w-12 rounded-full ${iconBgClass} flex items-center justify-center`}>
-            <Icon className={`h-6 w-6 ${iconColorClass}`} />
+    <Card className="bg-card border-border/80 hover:border-border transition-all">
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-center gap-3.5">
+          <div className={`h-10 w-10 rounded-lg ${iconBgClass} border border-border/40 flex items-center justify-center shrink-0`}>
+            <Icon className={`h-5 w-5 ${iconColorClass}`} />
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="text-2xl font-bold text-foreground">{value}</p>
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-muted-foreground truncate">{label}</p>
+            <p className="text-xl font-bold text-foreground tracking-tight mt-0.5">{value}</p>
           </div>
         </div>
       </CardContent>

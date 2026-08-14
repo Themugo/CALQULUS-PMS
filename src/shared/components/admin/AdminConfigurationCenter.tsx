@@ -73,7 +73,7 @@ export function AdminConfigurationCenter({ className }: { className?: string }) 
               <Label className="text-xs font-bold">Default Tenant Invitation Email Signature</Label>
               <textarea
                 className="w-full h-20 p-2 text-xs border rounded-lg bg-background"
-                defaultValue="Welcome to CALQULUS RMS. Please click below to complete setting up your online tenant account."
+                defaultValue="Welcome to CALQULUS PMS. Please click below to complete setting up your online tenant account."
               />
             </div>
           </TabsContent>
@@ -82,11 +82,11 @@ export function AdminConfigurationCenter({ className }: { className?: string }) 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">System Application Title</Label>
-                <Input defaultValue="CALQULUS RMS - Enterprise SaaS" className="h-8 text-xs" />
+                <Input defaultValue="CALQULUS PMS - Enterprise SaaS" className="h-8 text-xs" />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Support Email Footer</Label>
-                <Input defaultValue="support@calqulusrms.com" className="h-8 text-xs" />
+                <Input defaultValue="support@calqulus.site" className="h-8 text-xs" />
               </div>
             </div>
           </TabsContent>

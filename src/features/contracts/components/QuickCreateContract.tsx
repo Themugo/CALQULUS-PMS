@@ -456,8 +456,8 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
           <>
             <div className="space-y-4 py-4">
               <div className="flex items-center justify-center">
-                <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <Check className="h-8 w-8 text-green-500" />
+                <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
+                  <Check className="h-6 w-6" />
                 </div>
               </div>
               <div className="text-center">

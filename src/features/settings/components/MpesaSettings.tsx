@@ -120,6 +120,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
       setIsLoading(true);
       fetchSettings();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, fetchSettings]);
 
   const handleSave = async () => {

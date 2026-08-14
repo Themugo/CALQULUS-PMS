@@ -30,10 +30,10 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     ? { name: "Landlord Owner Portal", role: "Property Owner", icon: Building2, badge: "Landlord", route: "/landlord/dashboard" }
     : isTenant
     ? { name: "Tenant Portal", role: "Resident", icon: Home, badge: "Tenant", route: "/portal" }
-    : { name: "CALQULUS RMS Enterprise", role: "Property Manager", icon: Building2, badge: "Pro", route: "/" };
+    : { name: "CALQULUS PMS Enterprise", role: "Property Manager", icon: Building2, badge: "Pro", route: "/" };
 
   const workspaces = [
-    { name: "CALQULUS RMS Enterprise", subtitle: "Primary Management Hub", role: "Manager", route: "/", active: isManager && !isAgency && !isWebhost && !isLandlord && !isTenant },
+    { name: "CALQULUS PMS Enterprise", subtitle: "Primary Management Hub", role: "Manager", route: "/", active: isManager && !isAgency && !isWebhost && !isLandlord && !isTenant },
     ...(isAgency || isWebhost ? [{ name: "Agency Workspace", subtitle: "Client & Owner Commission Management", role: "Agency", route: "/agency", active: isAgency }] : []),
     ...(isWebhost ? [{ name: "Webhost Admin Platform", subtitle: "Platform Oversight & Billing Tiers", role: "Webhost", route: "/webhost", active: isWebhost }] : []),
     ...(isLandlord || isWebhost ? [{ name: "Landlord Owner Portal", subtitle: "Revenue & Occupancy Statements", role: "Landlord", route: "/landlord/dashboard", active: isLandlord }] : []),

@@ -94,6 +94,7 @@ export const CompanySettings = () => {
     };
 
     fetchCompanySettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isManager, user?.id]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

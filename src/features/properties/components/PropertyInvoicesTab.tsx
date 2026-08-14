@@ -65,6 +65,7 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
       setIsLoading(false);
     };
     fetchInvoices();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenantIdsKey]);
 
   const getTenantName = (tenantId: string | null) => {

@@ -93,6 +93,7 @@ const Settings = () => {
       }
     };
     fetchProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   useEffect(() => {
@@ -125,6 +126,7 @@ const Settings = () => {
       }
     };
     fetchNotificationSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

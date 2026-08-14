@@ -1,43 +1,275 @@
-import { Globe, ShieldCheck, Heart } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Globe,
+  ShieldCheck,
+  Building2,
+  HelpCircle,
+  FileText,
+  Lock,
+  ArrowUpRight,
+  Sparkles,
+  Layers,
+  Terminal,
+} from "lucide-react";
+import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { HelpCenterModal } from "./HelpCenterModal";
 
-export function Footer() {
+export interface FooterProps {
+  variant?: "default" | "compact" | "agency" | "landlord" | "tenant" | "webhost";
+  className?: string;
+}
+
+export function Footer({ variant = "default", className = "" }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  // Compact variant for embedded screens or minimal layouts
+  if (variant === "compact") {
+    return (
+      <footer className={`w-full border-t border-border/70 bg-card/40 px-4 md:px-6 py-3 text-xs text-muted-foreground mt-auto ${className}`}>
+        <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <img src={calqulusLogo} alt="CALQULUS" className="h-5 w-5 rounded object-cover" />
+            <span className="font-semibold text-foreground tracking-tight">CALQULUS PMS</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span className="font-mono text-[11px] text-muted-foreground">v2.4.0</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Operational
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px]">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+              SOC2 & ISO-27001
+            </span>
+            <span className="text-muted-foreground/40">•</span>
+            <Link to="/legal?tab=terms" className="hover:text-foreground transition-colors">
+              Terms & Privacy
+            </Link>
+            <span className="text-muted-foreground/40">•</span>
+            <span>© {currentYear} CALQULUS Technologies</span>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   return (
-    <footer className="w-full border-t border-border/60 bg-card/30 px-4 md:px-6 lg:px-8 py-3 text-xs text-muted-foreground mt-auto">
-      <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-foreground/80 tracking-tight">CALQULUS RMS</span>
-          <span className="text-muted-foreground/40">•</span>
-          <span className="font-mono text-[11px] text-muted-foreground">v2.4.0-enterprise</span>
-          <span className="text-muted-foreground/40">•</span>
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            System Operational
-          </span>
+    <>
+      <footer
+        id="app-universal-footer"
+        className={`w-full border-t border-border bg-card/60 backdrop-blur-xs text-xs text-muted-foreground mt-auto transition-colors ${className}`}
+      >
+        {/* Main Footer Content Grid */}
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
+            {/* 1. Brand Area (Spans 2 cols on large screens) */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={calqulusLogo}
+                  alt="CALQULUS PMS"
+                  className="h-8 w-8 rounded-lg object-cover ring-1 ring-border shadow-2xs"
+                />
+                <div>
+                  <span className="font-bold text-base text-foreground tracking-tight block">
+                    CALQULUS <span className="text-primary font-semibold">PMS</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest block">
+                    Enterprise Property Management OS
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-sm">
+                Next-generation real estate operations platform powering property managers, agencies, landlords, and tenants with automated billing, M-Pesa reconciliation, and multi-tier authority.
+              </p>
+
+              {/* System Live Status & Regional Anchor */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  All Systems Operational
+                </div>
+
+                <div className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground px-2 py-0.5">
+                  <Globe className="h-3.5 w-3.5 text-primary/80" />
+                  East Africa (KES / UTC+3)
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Navigation Portals */}
+            <div className="space-y-3">
+              <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">
+                Portals & Access
+              </h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <Link
+                    to="/"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                  >
+                    <span>Manager Dashboard</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/agency"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                  >
+                    <span>Agency Portal</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/landlord/dashboard"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                  >
+                    <span>Landlord View</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/portal"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                  >
+                    <span>Tenant Portal</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/webhost"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                  >
+                    <span>Webhost Control</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* 3. Support & Operations */}
+            <div className="space-y-3">
+              <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">
+                Support & Operations
+              </h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <button
+                    onClick={() => setHelpOpen(true)}
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 text-left"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 text-primary" />
+                    <span>Documentation & Guides</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setHelpOpen(true)}
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 text-left"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span>Contact Operations Desk</span>
+                  </button>
+                </li>
+                <li>
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>SOC2 Type II Certified</span>
+                  </span>
+                </li>
+                <li>
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Lock className="h-3.5 w-3.5 text-primary/80" />
+                    <span>256-Bit Data Encryption</span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {/* 4. Legal & Compliance */}
+            <div className="space-y-3">
+              <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">
+                Legal & Governance
+              </h4>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <Link
+                    to="/legal?tab=terms"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5"
+                  >
+                    <FileText className="h-3.5 w-3.5 text-muted-foreground/70" />
+                    <span>Terms of Service</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/legal?tab=privacy"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5"
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/70" />
+                    <span>Privacy Policy</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/legal?tab=privacy"
+                    className="hover:text-primary transition-colors flex items-center gap-1.5"
+                  >
+                    <span>Data Protection Policy</span>
+                  </Link>
+                </li>
+                <li>
+                  <span className="text-[11px] text-muted-foreground/70 flex items-center gap-1">
+                    <span>Kenya Data Protection Act</span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 text-muted-foreground text-[11px]">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary/80" />
-            SOC2 & ISO-27001 Compliant
-          </span>
-          <span className="hidden md:inline text-muted-foreground/40">•</span>
-          <a
-            href="/legal"
-            className="hover:text-foreground transition-colors underline-offset-4 hover:underline hidden md:inline"
-          >
-            Terms & Privacy
-          </a>
-          <span className="hidden md:inline text-muted-foreground/40">•</span>
-          <span className="flex items-center gap-1">
-            <Globe className="h-3 w-3" />
-            East Africa (KES / UTC+3)
-          </span>
-          <span className="text-muted-foreground/40">•</span>
-          <span>© {currentYear} CALQULUS Technologies</span>
+        {/* 5. Bottom Bar */}
+        <div className="border-t border-border/80 bg-background/50 px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-muted-foreground">
+              <span>© {currentYear} CALQULUS Technologies Ltd. All rights reserved.</span>
+              <span className="hidden sm:inline text-muted-foreground/40">•</span>
+              <span className="font-mono text-muted-foreground/80">v2.4.0-enterprise</span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-5 text-muted-foreground">
+              <Link
+                to="/legal?tab=terms"
+                className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+              >
+                Terms
+              </Link>
+              <span className="text-muted-foreground/30">•</span>
+              <Link
+                to="/legal?tab=privacy"
+                className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+              >
+                Privacy
+              </Link>
+              <span className="text-muted-foreground/30">•</span>
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+              >
+                Support
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+
+      {/* Global Help Center Modal Triggered from Footer */}
+      <HelpCenterModal open={helpOpen} onOpenChange={setHelpOpen} />
+    </>
   );
 }

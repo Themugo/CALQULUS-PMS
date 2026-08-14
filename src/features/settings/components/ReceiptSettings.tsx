@@ -67,6 +67,7 @@ export const ReceiptSettings = () => {
     };
 
     fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isManager, user?.id]);
 
   const handleSave = async () => {

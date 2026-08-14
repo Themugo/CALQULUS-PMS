@@ -69,7 +69,7 @@ export function BrandAssetManager({
             <div className="p-3 bg-slate-100 rounded-lg flex items-center justify-center border border-dashed border-slate-300 h-16">
               <span className="font-extrabold text-slate-800 text-sm tracking-tight flex items-center gap-1.5">
                 <span className="h-6 w-6 rounded bg-primary text-primary-foreground flex items-center justify-center text-xs font-black">C</span>
-                CALQULUS <span className="text-primary text-xs font-normal">RMS</span>
+                CALQULUS <span className="text-primary text-xs font-normal">PMS</span>
               </span>
             </div>
             <Input
@@ -89,7 +89,7 @@ export function BrandAssetManager({
             <div className="p-3 bg-slate-950 rounded-lg flex items-center justify-center border border-dashed border-slate-800 h-16">
               <span className="font-extrabold text-slate-100 text-sm tracking-tight flex items-center gap-1.5">
                 <span className="h-6 w-6 rounded bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black">C</span>
-                CALQULUS <span className="text-emerald-400 text-xs font-normal">RMS</span>
+                CALQULUS <span className="text-emerald-400 text-xs font-normal">PMS</span>
               </span>
             </div>
             <Input

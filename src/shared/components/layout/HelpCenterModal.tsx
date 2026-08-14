@@ -63,7 +63,7 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
   const faqs = [
     {
       q: "How are M-Pesa Paybill transactions matched to tenants?",
-      a: "CALQULUS RMS uses the tenant's national ID, account number, or registered phone number to automatically reconcile payments into tenant ledger invoices.",
+      a: "CALQULUS PMS uses the tenant's national ID, account number, or registered phone number to automatically reconcile payments into tenant ledger invoices.",
     },
     {
       q: "Can submanagers create property listings?",
@@ -71,7 +71,7 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
     },
     {
       q: "Why can't Webhosts view individual tenant names?",
-      a: "By architectural design, CALQULUS RMS enforces a strict Webhost Firewall protecting tenant PII. Webhosts only oversee system health, subscriptions, and aggregate metrics.",
+      a: "By architectural design, CALQULUS PMS enforces a strict Webhost Firewall protecting tenant PII. Webhosts only oversee system health, subscriptions, and aggregate metrics.",
     },
   ];
 
@@ -331,7 +331,7 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
         <div className="p-3 px-6 border-t border-border bg-muted/30 flex items-center justify-between text-[11px] text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-            CALQULUS RMS Knowledge Base
+            CALQULUS PMS Knowledge Base
           </span>
           <a
             href="https://www.calqulus.site/docs"

@@ -42,7 +42,7 @@ export function KeyboardShortcutsModal({ open, onOpenChange }: KeyboardShortcuts
         <DialogHeader>
           <DialogTitle className="text-base font-bold">Keyboard Shortcuts</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Use these fast key combinations to navigate CALQULUS RMS instantly.
+            Use these fast key combinations to navigate CALQULUS PMS instantly.
           </DialogDescription>
         </DialogHeader>
 

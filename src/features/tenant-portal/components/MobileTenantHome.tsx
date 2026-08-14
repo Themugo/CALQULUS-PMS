@@ -183,7 +183,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
 
       {/* Lease Status Card */}
       {lease && leaseInfo && (
-        <Card className="overflow-hidden border-l-4 border-l-primary">
+        <Card className="overflow-hidden border border-border bg-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">

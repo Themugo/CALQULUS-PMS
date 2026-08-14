@@ -35,7 +35,7 @@ const SAMPLE_ANNOUNCEMENTS: AnnouncementItem[] = [
     id: "ann-02",
     title: "Platform Upgrade & Invoice Processing Auto-Sync",
     category: "Platform",
-    message: "CALQULUS RMS updated with new automated M-Pesa STK push retry mechanisms for rent invoices.",
+    message: "CALQULUS PMS updated with new automated M-Pesa STK push retry mechanisms for rent invoices.",
     audience: "All Tenants",
     publishedAt: "1 day ago",
     severity: "low",

@@ -87,6 +87,7 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
     };
 
     fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isManager, user?.id, propertyId]);
 
   const handleSave = async () => {

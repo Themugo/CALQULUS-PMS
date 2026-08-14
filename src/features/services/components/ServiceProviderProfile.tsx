@@ -105,6 +105,7 @@ const ServiceProviderProfile: React.FC = () => {
         })));
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider?.id, provider?.updated_at]);
 
   // Categories for picker

@@ -8,6 +8,7 @@ import {
   Calendar, Handshake, Droplets, Mail, FileSpreadsheet, ChevronRight,
 } from 'lucide-react';
 import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { Footer } from '@/shared/components/layout/Footer';
 
 const navItems = [
   { label: 'Dashboard',        href: '/agency',                    icon: LayoutDashboard },
@@ -60,7 +61,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
+            <img src={calqulusLogo} alt="CALQULUS RMS" className="h-9 w-9 rounded-lg object-cover ring-1 ring-border/80 shadow-2xs flex-shrink-0" />
             <div className="min-w-0">
               <p className="font-heading font-bold text-sm text-foreground leading-none truncate">CALQULUS</p>
               <p className="text-[9px] text-indigo font-semibold tracking-[0.2em] uppercase mt-0.5">Agency Portal</p>
@@ -152,6 +153,9 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden animate-fade-in">
           {children}
         </main>
+
+        {/* Footer */}
+        <Footer variant="agency" />
       </div>
     </div>
   );
