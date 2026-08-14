@@ -27,7 +27,7 @@ import type { BillingInvoice, BillingExpenditure } from "../hooks/useBillingData
 const EXPENDITURE_CATEGORIES = [
   { key: "electricity", label: "Electricity",     icon: Zap,      color: "text-yellow-500" },
   { key: "water",       label: "Water",            icon: Droplets, color: "text-[hsl(195_60%_42%)]"   },
-  { key: "security",    label: "Security",         icon: Shield,   color: "text-red-500"    },
+  { key: "security",    label: "Security",         icon: Shield,   color: "text-destructive"    },
   { key: "staff",       label: "Staff Salaries",   icon: Users,    color: "text-[hsl(218_58%_40%)]" },
   { key: "other",       label: "Other Expenses",   icon: Receipt,  color: "text-muted-foreground" },
 ] as const;
@@ -118,24 +118,24 @@ export function ExpendituresTab({
       <div className="grid gap-4 md:grid-cols-4">
         {[
           {
-            icon: <ArrowUpRight className="h-6 w-6 text-emerald-500" />,
-            bg: "bg-emerald-500/10",
+            icon: <ArrowUpRight className="h-6 w-6 text-success" />,
+            bg: "bg-success/10",
             label: "Income (Payments)",
             value: formatCurrency(monthlyIncome),
             color: "text-emerald-400",
           },
           {
-            icon: <ArrowDownRight className="h-6 w-6 text-red-500" />,
-            bg: "bg-red-500/10",
+            icon: <ArrowDownRight className="h-6 w-6 text-destructive" />,
+            bg: "bg-destructive/10",
             label: "Total Expenditures",
             value: formatCurrency(totalExpenditures),
             color: "text-red-400",
           },
           {
             icon: netProfit >= 0
-              ? <TrendingUp className="h-6 w-6 text-emerald-500" />
-              : <TrendingDown className="h-6 w-6 text-red-500" />,
-            bg: netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10",
+              ? <TrendingUp className="h-6 w-6 text-success" />
+              : <TrendingDown className="h-6 w-6 text-destructive" />,
+            bg: netProfit >= 0 ? "bg-success/10" : "bg-destructive/10",
             label: `Net ${netProfit >= 0 ? "Profit" : "Loss"}`,
             value: formatCurrency(Math.abs(netProfit)),
             color: netProfit >= 0 ? "text-emerald-400" : "text-red-400",
@@ -204,7 +204,7 @@ export function ExpendituresTab({
                       </TableCell>
                     </TableRow>
                   ))}
-                  <TableRow className="hover:bg-transparent bg-emerald-500/5 border-border">
+                  <TableRow className="hover:bg-transparent bg-success/5 border-border">
                     <TableCell colSpan={4} className="font-bold">Total Income</TableCell>
                     <TableCell className="text-right font-bold text-lg text-emerald-400">
                       {formatCurrency(monthlyIncome)}
@@ -256,7 +256,7 @@ export function ExpendituresTab({
                             >
                               {isSaving
                                 ? <Loader2 className="h-4 w-4 animate-spin" />
-                                : <Save className="h-4 w-4 text-emerald-500" />}
+                                : <Save className="h-4 w-4 text-success" />}
                             </Button>
                             <Button
                               variant="ghost" size="icon" className="h-8 w-8"
@@ -264,7 +264,7 @@ export function ExpendituresTab({
                               onClick={() => cancelEditing(cat.key)}
                               disabled={isSaving}
                             >
-                              <X className="h-4 w-4 text-red-500" />
+                              <X className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
                         ) : (
@@ -327,10 +327,10 @@ export function ExpendituresTab({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="hover:bg-muted/30 bg-emerald-500/5 border-border">
+                <TableRow className="hover:bg-muted/30 bg-success/5 border-border">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+                      <ArrowUpRight className="h-4 w-4 text-success" />
                       <span className="font-medium">Total Income (Payments)</span>
                     </div>
                   </TableCell>
@@ -358,10 +358,10 @@ export function ExpendituresTab({
                   );
                 })}
 
-                <TableRow className="hover:bg-transparent bg-red-500/5 border-border">
+                <TableRow className="hover:bg-transparent bg-destructive/5 border-border">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <ArrowDownRight className="h-4 w-4 text-red-500" />
+                      <ArrowDownRight className="h-4 w-4 text-destructive" />
                       <span className="font-medium">Total Expenditures</span>
                     </div>
                   </TableCell>
@@ -371,7 +371,7 @@ export function ExpendituresTab({
                 </TableRow>
 
                 <TableRow
-                  className={`hover:bg-transparent border-border ${netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"}`}
+                  className={`hover:bg-transparent border-border ${netProfit >= 0 ? "bg-success/10" : "bg-destructive/10"}`}
                 >
                   <TableCell className="font-bold text-lg">
                     Net {netProfit >= 0 ? "Profit" : "Loss"}

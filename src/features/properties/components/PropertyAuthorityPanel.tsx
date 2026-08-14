@@ -126,7 +126,7 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
     <Card className="border-amber-400/20">
       <CardHeader className="pb-3">
         <div className="flex items-start gap-2">
-          <Shield className="h-5 w-5 text-amber-500 mt-0.5" />
+          <Shield className="h-5 w-5 text-warning mt-0.5" />
           <div>
             <CardTitle className="text-base">Authority & operating model</CardTitle>
             <CardDescription>

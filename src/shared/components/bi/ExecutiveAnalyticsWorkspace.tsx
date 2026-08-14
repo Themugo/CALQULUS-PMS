@@ -42,13 +42,13 @@ export function ExecutiveAnalyticsWorkspace() {
         <Card className="p-4 border-border/80 bg-card shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Gross Operating Revenue</span>
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-success/10 text-success flex items-center justify-center">
               <DollarSign className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-xl font-bold text-foreground">KES 6,850,000</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-0.5">
+            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
               <ArrowUpRight className="h-3 w-3" /> +14.2% {comparisonMode}
             </Badge>
           </div>
@@ -64,7 +64,7 @@ export function ExecutiveAnalyticsWorkspace() {
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-xl font-bold text-foreground">94.8%</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-0.5">
+            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
               <ArrowUpRight className="h-3 w-3" /> +2.1% {comparisonMode}
             </Badge>
           </div>
@@ -80,7 +80,7 @@ export function ExecutiveAnalyticsWorkspace() {
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-xl font-bold text-foreground">96.2%</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-0.5">
+            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
               <ArrowUpRight className="h-3 w-3" /> +1.8% {comparisonMode}
             </Badge>
           </div>
@@ -90,13 +90,13 @@ export function ExecutiveAnalyticsWorkspace() {
         <Card className="p-4 border-border/80 bg-card shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Net Operating Arrears</span>
-            <div className="h-8 w-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center">
               <AlertTriangle className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-xl font-bold text-red-600">KES 245,000</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-0.5">
+            <span className="text-xl font-bold text-destructive">KES 245,000</span>
+            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
               <ArrowDownRight className="h-3 w-3" /> -8.4% {comparisonMode}
             </Badge>
           </div>
@@ -153,7 +153,7 @@ export function ExecutiveAnalyticsWorkspace() {
         <Card className="lg:col-span-1 border-border/80 bg-card shadow-sm">
           <CardHeader className="p-4 border-b bg-muted/20">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <Sparkles className="h-4 w-4 text-success" />
               <CardTitle className="text-sm font-bold text-foreground">Occupancy Forecast & Benchmark</CardTitle>
             </div>
             <CardDescription className="text-xs text-muted-foreground">

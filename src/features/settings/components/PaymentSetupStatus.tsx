@@ -117,14 +117,14 @@ export const PaymentSetupStatus = () => {
   const allReady = score >= 100 && (data?.receiptsOn ?? false);
 
   return (
-    <Card className={allReady ? 'border-green-200 bg-green-50/30' : 'border-amber-200 bg-amber-50/20'}>
+    <Card className={allReady ? 'border-success/30 bg-success/10/30' : 'border-warning/30 bg-warning/10/20'}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="text-base flex items-center gap-2">
-            <Plug className="h-4 w-4 text-amber-500" />
+            <Plug className="h-4 w-4 text-warning" />
             Payment setup by property
           </CardTitle>
-          <Badge variant={allReady ? 'default' : 'secondary'} className={allReady ? 'bg-green-600' : ''}>
+          <Badge variant={allReady ? 'default' : 'secondary'} className={allReady ? 'bg-success' : ''}>
             {score}% properties ready
           </Badge>
         </div>
@@ -138,7 +138,7 @@ export const PaymentSetupStatus = () => {
 
         <div className="flex items-center gap-2 text-sm">
           {data?.receiptsOn ? (
-            <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
           ) : (
             <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
           )}
@@ -168,14 +168,14 @@ export const PaymentSetupStatus = () => {
                     <TableCell className="font-medium">{row.name}</TableCell>
                     <TableCell className="text-center">
                       {row.mpesaReady ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-600 inline" />
+                        <CheckCircle2 className="h-4 w-4 text-success inline" />
                       ) : (
                         <Circle className="h-4 w-4 text-muted-foreground inline" />
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {row.bankReady ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-600 inline" />
+                        <CheckCircle2 className="h-4 w-4 text-success inline" />
                       ) : (
                         <Circle className="h-4 w-4 text-muted-foreground inline" />
                       )}

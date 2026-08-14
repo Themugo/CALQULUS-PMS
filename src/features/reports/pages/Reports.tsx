@@ -178,7 +178,7 @@ const Reports: React.FC = () => {
                   <Users className="h-4 w-4" />
                   {occupancySummary.totalOccupied} occupied
                 </span>
-                <Badge variant="outline" className={`${occupancySummary.overallRate >= 80 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                <Badge variant="outline" className={`${occupancySummary.overallRate >= 80 ? 'bg-success/10 text-success border-success/30' : 'bg-warning/10 text-warning border-warning/30'}`}>
                   {occupancySummary.overallRate}% occupancy
                 </Badge>
               </>
@@ -207,7 +207,7 @@ const Reports: React.FC = () => {
               <AlertTriangle className="h-3.5 w-3.5" />Arrears Aging
             </TabsTrigger>
             <TabsTrigger value="alerts" className="gap-1.5 text-xs">
-              <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />Analytics Alerts
+              <ShieldAlert className="h-3.5 w-3.5 text-warning" />Analytics Alerts
             </TabsTrigger>
             <TabsTrigger value="by-property" className="gap-1.5 text-xs">
               <BarChart3 className="h-3.5 w-3.5" />By Property
@@ -268,8 +268,8 @@ const Reports: React.FC = () => {
                   <div className="mt-3 grid grid-cols-3 gap-3 text-center">
                     {[
                       { label: 'Total billed', val: revenueTrend.reduce((s, r) => s + r.billed, 0), color: 'text-muted-foreground' },
-                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-amber-600' },
-                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-red-600' },
+                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-warning' },
+                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-destructive' },
                     ].map(s => (
                       <div key={s.label} className="rounded-lg bg-muted/40 p-2">
                         <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -310,9 +310,9 @@ const Reports: React.FC = () => {
                         <div key={p.name} className="flex items-center gap-3 text-xs">
                           <span className="w-32 truncate text-muted-foreground">{p.name}</span>
                           <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                            <div className="h-full rounded-full bg-green-500" style={{ width: `${p.rate}%` }} />
+                            <div className="h-full rounded-full bg-success/100" style={{ width: `${p.rate}%` }} />
                           </div>
-                          <span className={`w-10 text-right font-medium ${p.rate >= 80 ? 'text-green-700' : p.rate >= 50 ? 'text-amber-700' : 'text-red-700'}`}>
+                          <span className={`w-10 text-right font-medium ${p.rate >= 80 ? 'text-success' : p.rate >= 50 ? 'text-warning' : 'text-destructive'}`}>
                             {p.rate}%
                           </span>
                           <span className="text-muted-foreground w-12 text-right">{p.occupied}/{p.total}</span>
@@ -366,13 +366,13 @@ const Reports: React.FC = () => {
                             <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                             <span className="text-sm font-medium">{bucket.name}</span>
                           </div>
-                          <span className={`text-sm font-semibold ${bucket.value > 0 ? 'text-red-700' : 'text-muted-foreground'}`}>
+                          <span className={`text-sm font-semibold ${bucket.value > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
                             {bucket.value > 0 ? fmt(bucket.value) : '—'}
                           </span>
                         </div>
                       ))}
                       {totalArrears > 0 && (
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200 font-semibold">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-destructive/10 border border-destructive/30 font-semibold">
                           <span className="text-sm text-red-800">Total outstanding</span>
                           <span className="text-sm text-red-800">{fmt(totalArrears)}</span>
                         </div>

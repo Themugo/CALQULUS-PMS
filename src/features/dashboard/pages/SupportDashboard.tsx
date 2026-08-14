@@ -65,7 +65,7 @@ export default function SupportDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Tenant Support & Communications Center</h1>
-            <Badge variant="outline" className="bg-sky-500/10 text-sky-600 border-sky-500/20 font-bold">
+            <Badge variant="outline" className="bg-sky-500/10 text-info border-sky-500/20 font-bold">
               Support Specialist Workspace
             </Badge>
           </div>
@@ -170,15 +170,15 @@ export default function SupportDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
-              <span className="flex items-center gap-2"><UserCheck className="h-4 w-4 text-emerald-500" /> Resend Tenant Invitation</span>
+              <span className="flex items-center gap-2"><UserCheck className="h-4 w-4 text-success" /> Resend Tenant Invitation</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/tenants'}>
-              <span className="flex items-center gap-2"><Search className="h-4 w-4 text-sky-500" /> Lookup Tenant Profile</span>
+              <span className="flex items-center gap-2"><Search className="h-4 w-4 text-info" /> Lookup Tenant Profile</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>
-              <span className="flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-amber-500" /> Escalate Maintenance Ticket</span>
+              <span className="flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-warning" /> Escalate Maintenance Ticket</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>

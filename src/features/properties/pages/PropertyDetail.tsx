@@ -83,11 +83,11 @@ interface Lease {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  active: "bg-success/10 text-success border-success/20",
+  pending: "bg-warning/10 text-warning border-warning/20",
   inactive: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  expiring: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-  expired: "bg-red-500/10 text-red-600 border-red-500/20",
+  expiring: "bg-orange-500/10 text-warning border-orange-500/20",
+  expired: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
 const PropertyDetail = () => {
@@ -396,7 +396,7 @@ const PropertyDetail = () => {
                     className="h-20 w-20 object-cover"
                   />
                 ) : (
-                  <Building2 className="h-10 w-10 text-amber-500" />
+                  <Building2 className="h-10 w-10 text-warning" />
                 )}
               </div>
               <div className="flex-1">
@@ -422,13 +422,13 @@ const PropertyDetail = () => {
                     </Badge>
                   )}
                   {(property as {is_gated?: boolean}).is_gated && (
-                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">🛡 Gated</Badge>
+                    <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/30">🛡 Gated</Badge>
                   )}
                   {(property as {has_lift?: boolean}).has_lift && (
                     <Badge variant="outline" className="text-xs bg-[hsl(214_73%_48%/0.06)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">🛗 Lift</Badge>
                   )}
                   {(property as {has_backup_power?: boolean}).has_backup_power && (
-                    <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">⚡ Generator</Badge>
+                    <Badge variant="outline" className="text-xs bg-warning/10 text-warning border-warning/30">⚡ Generator</Badge>
                   )}
                   {(property as {has_borehole?: boolean}).has_borehole && (
                     <Badge variant="outline" className="text-xs bg-[hsl(195_60%_42%/0.08)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.25)]">💧 Borehole</Badge>
@@ -463,9 +463,9 @@ const PropertyDetail = () => {
                 </div>
                 <p className={cn(
                   "text-2xl font-bold",
-                  occupancyRate >= 90 && "text-emerald-600",
-                  occupancyRate >= 70 && occupancyRate < 90 && "text-amber-600",
-                  occupancyRate < 70 && "text-red-600"
+                  occupancyRate >= 90 && "text-success",
+                  occupancyRate >= 70 && occupancyRate < 90 && "text-warning",
+                  occupancyRate < 70 && "text-destructive"
                 )}>
                   {occupancyRate}%
                 </p>
@@ -475,7 +475,7 @@ const PropertyDetail = () => {
                   <DollarSign className="h-4 w-4" />
                   <span className="text-xs font-medium">Revenue</span>
                 </div>
-                <p className="text-2xl font-bold text-emerald-600">
+                <p className="text-2xl font-bold text-success">
                   {formatCurrency(property.revenue)}
                 </p>
               </div>
@@ -486,14 +486,14 @@ const PropertyDetail = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-warning" />
               Quick Stats
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Active Tenants</span>
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+              <Badge variant="outline" className="bg-success/10 text-success border-success/20">
                 {tenants.filter((t) => t.status === "active").length}
               </Badge>
             </div>
@@ -505,13 +505,13 @@ const PropertyDetail = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Vacant Units</span>
-              <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20">
+              <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">
                 {property.units - property.occupied}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Expiring Leases</span>
-              <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
+              <Badge variant="outline" className="bg-orange-500/10 text-warning border-orange-500/20">
                 {leases.filter((l) => l.status === "expiring").length}
               </Badge>
             </div>
@@ -585,7 +585,7 @@ const PropertyDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Home className="h-5 w-5 text-amber-500" />
+                <Home className="h-5 w-5 text-warning" />
                 Tenants & Leases
               </CardTitle>
             </CardHeader>
@@ -624,7 +624,7 @@ const PropertyDetail = () => {
                           <div className="flex items-center gap-2">
                             <div className={cn(
                               "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium",
-                              tenant ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+                              tenant ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
                             )}>
                               <Home className="h-4 w-4" />
                             </div>
@@ -636,7 +636,7 @@ const PropertyDetail = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={signedUrls[tenant.id]} alt={tenant.name} />
-                                <AvatarFallback className="bg-amber-400/10 text-amber-600 text-xs">
+                                <AvatarFallback className="bg-amber-400/10 text-warning text-xs">
                                   {getInitials(tenant.name)}
                                 </AvatarFallback>
                               </Avatar>
@@ -681,7 +681,7 @@ const PropertyDetail = () => {
                               {lease.status}
                             </Badge>
                           ) : tenant ? (
-                            <Badge variant="outline" className="text-amber-600 border-amber-500/20 bg-amber-500/10">
+                            <Badge variant="outline" className="text-warning border-warning/20 bg-warning/10">
                               No Lease
                             </Badge>
                           ) : (
@@ -690,7 +690,7 @@ const PropertyDetail = () => {
                         </TableCell>
                         <TableCell>
                           {lease ? (
-                            <span className="font-medium text-emerald-600">
+                            <span className="font-medium text-success">
                               {formatCurrency(lease.monthly_rent)}/mo
                             </span>
                           ) : (

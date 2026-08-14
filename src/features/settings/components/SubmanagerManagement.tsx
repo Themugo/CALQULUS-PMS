@@ -808,7 +808,7 @@ const SubmanagerManagement = () => {
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-amber-500" />
+                    <Zap className="h-4 w-4 text-warning" />
                     Quick Setup Preset
                   </Label>
                   <Select value={newPreset} onValueChange={(v) => handleNewPresetChange(v as PermissionPreset)}>
@@ -850,7 +850,7 @@ const SubmanagerManagement = () => {
                   </div>
                   <div className="border-t pt-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-green-400 inline-block" />
+                      <span className="h-2 w-2 rounded-full bg-success inline-block" />
                       What they can do (write actions)
                     </p>
                     {WRITE_PERMISSION_KEYS.map((key) => (
@@ -900,7 +900,7 @@ const SubmanagerManagement = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
+                  <Zap className="h-4 w-4 text-warning" />
                   Quick Setup Preset
                 </Label>
                 <Select value={editingPreset} onValueChange={(v) => handleEditPresetChange(v as PermissionPreset)}>
@@ -941,7 +941,7 @@ const SubmanagerManagement = () => {
                 </div>
                 <div className="border-t pt-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-green-400 inline-block" />
+                    <span className="h-2 w-2 rounded-full bg-success inline-block" />
                     What they can do (write actions)
                   </p>
                   {WRITE_PERMISSION_KEYS.map((key) => (

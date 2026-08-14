@@ -133,7 +133,7 @@ const PaymentHistory = () => {
             <CardContent className="pt-4 md:pt-6">
               <div className="flex items-center gap-3 md:gap-4">
                 <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
+                  <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">Transactions</p>
@@ -159,7 +159,7 @@ const PaymentHistory = () => {
             <CardContent className="pt-4 md:pt-6">
               <div className="flex items-center gap-3 md:gap-4">
                 <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">All Payments</p>

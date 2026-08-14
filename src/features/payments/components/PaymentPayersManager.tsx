@@ -44,11 +44,11 @@ const METHODS = [
 ];
 
 const PAYER_COLORS: Record<string, string> = {
-  self:          'bg-green-100 text-green-800 border-green-200',
+  self:          'bg-green-100 text-green-800 border-success/30',
   employer:      'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   parent:        'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
   housing_assoc: 'bg-teal-100 text-teal-800 border-teal-200',
-  guarantor:     'bg-amber-100 text-amber-800 border-amber-200',
+  guarantor:     'bg-amber-100 text-amber-800 border-warning/30',
   split:         'bg-orange-100 text-orange-800 border-orange-200',
   custom:        'bg-slate-100 text-slate-700 border-slate-200',
 };
@@ -229,7 +229,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
                 );
               })}
               {payers.some(p => p.pays_percentage && p.is_active) && (
-                <div className={`text-xs p-2 rounded-lg border ${totalPct === 100 ? 'border-green-300 bg-green-50 text-green-800' : 'border-amber-300 bg-amber-50 text-amber-800'}`}>
+                <div className={`text-xs p-2 rounded-lg border ${totalPct === 100 ? 'border-green-300 bg-success/10 text-green-800' : 'border-amber-300 bg-warning/10 text-amber-800'}`}>
                   {totalPct === 100
                     ? '✓ Split adds up to 100% — rent fully covered'
                     : `⚠ Split adds up to ${totalPct}% — ${totalPct < 100 ? `${100 - totalPct}% uncovered` : `${totalPct - 100}% over-assigned`}`
@@ -259,7 +259,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
                     onClick={() => setForm(p => ({ ...p, payer_type: t.value }))}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.payer_type === t.value
-                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                        ? 'border-amber-400/50 bg-warning/10 text-warning'
                         : 'border-border hover:border-amber-400/40 text-muted-foreground'
                     }`}
                   >

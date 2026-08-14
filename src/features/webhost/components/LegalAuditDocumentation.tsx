@@ -353,7 +353,7 @@ const LegalAuditDocumentation = () => {
       case 'medium':
         return <Badge className="bg-warning text-white border-warning">{level}</Badge>;
       case 'low':
-        return <Badge className="bg-blue-500 text-white border-blue-600">{level}</Badge>;
+        return <Badge className="bg-info/100 text-white border-blue-600">{level}</Badge>;
       default:
         return <Badge variant="outline">{level}</Badge>;
     }

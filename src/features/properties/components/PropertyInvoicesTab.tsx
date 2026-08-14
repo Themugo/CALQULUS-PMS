@@ -27,9 +27,9 @@ interface Tenant {
 }
 
 const statusStyles: Record<string, string> = {
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  paid: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  overdue: "bg-red-500/10 text-red-600 border-red-500/20",
+  pending: "bg-warning/10 text-warning border-warning/20",
+  paid: "bg-success/10 text-success border-success/20",
+  overdue: "bg-destructive/10 text-destructive border-destructive/20",
   cancelled: "bg-slate-500/10 text-slate-600 border-slate-500/20",
 };
 
@@ -81,13 +81,13 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-amber-500" />
+            <CreditCard className="h-5 w-5 text-warning" />
             Property Invoices
           </CardTitle>
           <div className="flex gap-4 mt-2 text-sm">
-            <span className="text-emerald-600">Paid: {formatCurrency(totalPaid)}</span>
-            <span className="text-amber-600">Pending: {formatCurrency(totalPending)}</span>
-            <span className="text-red-600">Overdue: {formatCurrency(totalOverdue)}</span>
+            <span className="text-success">Paid: {formatCurrency(totalPaid)}</span>
+            <span className="text-warning">Pending: {formatCurrency(totalPending)}</span>
+            <span className="text-destructive">Overdue: {formatCurrency(totalOverdue)}</span>
           </div>
         </div>
         <Link to="/billing">

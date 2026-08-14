@@ -39,7 +39,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Payment related
   if (actionLower.includes("payment received") || actionLower.includes("paid")) {
-    return { icon: CheckCircle, iconBg: "bg-emerald-500/10 text-emerald-500", category: "Payment" };
+    return { icon: CheckCircle, iconBg: "bg-success/10 text-success", category: "Payment" };
   }
   if (actionLower.includes("payment") && actionLower.includes("fail")) {
     return { icon: XCircle, iconBg: "bg-destructive/10 text-destructive", category: "Payment" };
@@ -66,13 +66,13 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
     return { icon: UserCheck, iconBg: "bg-teal-500/10 text-teal-500", category: "Account" };
   }
   if (actionLower.includes("created") && actionLower.includes("tenant")) {
-    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-amber-500", category: "Tenant" };
+    return { icon: UserPlus, iconBg: "bg-warning/15 text-warning", category: "Tenant" };
   }
   if (actionLower.includes("move out") || actionLower.includes("vacated")) {
-    return { icon: LogOut, iconBg: "bg-orange-500/10 text-orange-500", category: "Tenant" };
+    return { icon: LogOut, iconBg: "bg-orange-500/10 text-warning", category: "Tenant" };
   }
   if (actionLower.includes("tenant") || actionLower.includes("move in")) {
-    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-amber-500", category: "Tenant" };
+    return { icon: UserPlus, iconBg: "bg-warning/15 text-warning", category: "Tenant" };
   }
   
   // Property related
@@ -85,7 +85,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Maintenance related
   if (actionLower.includes("maintenance") || actionLower.includes("repair")) {
-    return { icon: Wrench, iconBg: "bg-amber-500/10 text-amber-500", category: "Maintenance" };
+    return { icon: Wrench, iconBg: "bg-warning/10 text-warning", category: "Maintenance" };
   }
   
   // Alerts and notifications

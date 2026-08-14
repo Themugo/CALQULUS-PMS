@@ -158,7 +158,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
                 <Badge variant="outline" className="text-[9px] font-bold uppercase">
                   {vendor.category}
                 </Badge>
-                <div className="flex items-center gap-1 text-amber-500 font-bold text-[11px]">
+                <div className="flex items-center gap-1 text-warning font-bold text-[11px]">
                   <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                   <span>{vendor.rating}</span>
                   <span className="text-muted-foreground font-normal text-[10px]">({vendor.reviewCount})</span>
@@ -168,7 +168,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
               <div>
                 <h4 className="font-extrabold text-foreground text-xs flex items-center gap-1.5">
                   {vendor.name}
-                  {vendor.verifiedBadge && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+                  {vendor.verifiedBadge && <ShieldCheck className="h-3.5 w-3.5 text-success shrink-0" />}
                 </h4>
                 <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{vendor.description}</p>
               </div>
@@ -177,7 +177,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
             <div className="pt-3 border-t space-y-2 shrink-0">
               <div className="flex justify-between items-center text-[10px]">
                 <span className="text-muted-foreground font-semibold">Pricing: <strong className="text-foreground">{vendor.startingPrice}</strong></span>
-                <Badge className="bg-blue-500/10 text-blue-600 border-none text-[8px] font-bold">{vendor.slaHours}</Badge>
+                <Badge className="bg-info/10 text-info border-none text-[8px] font-bold">{vendor.slaHours}</Badge>
               </div>
 
               <Button
@@ -185,7 +185,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
                 onClick={() => handleRequestQuote(vendor.name)}
                 className="w-full h-8 text-[11px] font-bold gap-1 bg-primary text-primary-foreground"
               >
-                {requestedVendor === vendor.name ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> : <ArrowRight className="h-3.5 w-3.5" />}
+                {requestedVendor === vendor.name ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <ArrowRight className="h-3.5 w-3.5" />}
                 {requestedVendor === vendor.name ? "Quote Request Sent!" : "Request Service Quote"}
               </Button>
             </div>

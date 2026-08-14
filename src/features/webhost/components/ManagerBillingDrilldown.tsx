@@ -26,9 +26,9 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-warning/10 text-warning border-amber-200',
-  paid:      'bg-green-100 text-green-800 border-green-200',
-  overdue:   'bg-destructive/15 text-destructive border-red-200',
+  pending:   'bg-warning/10 text-warning border-warning/30',
+  paid:      'bg-green-100 text-green-800 border-success/30',
+  overdue:   'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-secondary-background text-muted-foreground/70 border-border',
 };
 
@@ -173,7 +173,7 @@ const ManagerBillingDrilldown: React.FC = () => {
                       <Badge variant="outline" className="text-xs capitalize border-warning/20 text-warning/70">{m.subscription_tier}</Badge>
                     )}
                     {m.status === 'suspended_nonpayment' && (
-                      <Badge variant="outline" className="text-xs bg-destructive/15 text-destructive border-red-200">Suspended — non-payment</Badge>
+                      <Badge variant="outline" className="text-xs bg-destructive/15 text-destructive border-destructive/30">Suspended — non-payment</Badge>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">{m.agency_name ?? m.email}</p>

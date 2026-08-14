@@ -86,7 +86,7 @@ export const PaymentReminderSettings = () => {
     <Card className="card-shadow animate-fade-in">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading">
-          <Bell className="h-5 w-5 text-amber-500" />
+          <Bell className="h-5 w-5 text-warning" />
           Payment Reminders
         </CardTitle>
         <CardDescription>
@@ -201,7 +201,7 @@ export const PaymentReminderSettings = () => {
 
         {lastSent && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <CheckCircle2 className="h-4 w-4 text-success" />
             <span>
               Last sent: {lastSent.toLocaleString()}
             </span>

@@ -335,7 +335,7 @@ const TenantAuth = () => {
                 Didn't receive the email? Check your spam folder or{' '}
                 <button 
                   onClick={() => setShowVerificationMessage(false)}
-                  className="text-amber-600 hover:underline"
+                  className="text-primary hover:underline"
                 >
                   try again
                 </button>
@@ -344,7 +344,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm">
                 Already verified?{' '}
-                <Link to="/tenant/login" className="text-amber-600 hover:underline">
+                <Link to="/tenant/login" className="text-primary hover:underline">
                   Sign in here
                 </Link>
               </p>
@@ -399,7 +399,7 @@ const TenantAuth = () => {
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm mb-3">Already have an account?</p>
               <Link to="/tenant/login">
-                <Button variant="outline" className="w-full border-primary/20 text-amber-600 hover:bg-primary/10">
+                <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10">
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
@@ -477,8 +477,8 @@ const TenantAuth = () => {
                 <div className="space-y-1">
                   {Object.entries(passwordStrength).map(([key, valid]) => (
                     <div key={key} className="flex items-center gap-2 text-xs">
-                      {valid ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}
-                      <span className={valid ? 'text-emerald-600' : 'text-muted-foreground'}>
+                      {valid ? <CheckCircle className="h-3 w-3 text-success" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}
+                      <span className={valid ? 'text-success' : 'text-muted-foreground'}>
                         {key === 'length' && 'At least 8 characters'}
                         {key === 'uppercase' && 'One uppercase letter'}
                         {key === 'lowercase' && 'One lowercase letter'}
@@ -532,7 +532,7 @@ const TenantAuth = () => {
           </CardDescription>
           {invitation && (
             <div className="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-              <p className="text-xs text-amber-600 font-medium">
+              <p className="text-xs text-primary font-medium">
                 Property: {invitation.property_name}{invitation.unit ? ` - Unit ${invitation.unit}` : ''}
               </p>
               {landlordContact && (
@@ -543,7 +543,7 @@ const TenantAuth = () => {
                     {landlordContact.email && (
                       <a 
                         href={`mailto:${landlordContact.email}`}
-                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
                         <Mail className="h-3 w-3" />
                         {landlordContact.email}
@@ -552,7 +552,7 @@ const TenantAuth = () => {
                     {landlordContact.phone && (
                       <a 
                         href={`tel:${landlordContact.phone}`}
-                        className="text-xs text-amber-600 hover:underline flex items-center gap-1"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
                         📞 {landlordContact.phone}
                       </a>
@@ -657,7 +657,7 @@ const TenantAuth = () => {
           <div className="text-center w-full">
             <p className="text-muted-foreground text-sm">
               Already have an account?{' '}
-              <Link to="/tenant/login" className="text-amber-600 hover:underline font-medium">
+              <Link to="/tenant/login" className="text-primary hover:underline font-medium">
                 Sign In
               </Link>
             </p>

@@ -24,9 +24,9 @@ export const PasswordChange = () => {
     if (/[^a-zA-Z0-9]/.test(password)) score += 12.5;
 
     if (score <= 25) return { score, label: "Weak", color: "bg-destructive" };
-    if (score <= 50) return { score, label: "Fair", color: "bg-orange-500" };
-    if (score <= 75) return { score, label: "Good", color: "bg-yellow-500" };
-    return { score, label: "Strong", color: "bg-green-500" };
+    if (score <= 50) return { score, label: "Fair", color: "bg-warning" };
+    if (score <= 75) return { score, label: "Good", color: "bg-success" };
+    return { score, label: "Strong", color: "bg-success/100" };
   };
 
   const validatePassword = (password: string): string | null => {
@@ -127,7 +127,7 @@ export const PasswordChange = () => {
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Password strength:</span>
-                <span className={strength.score >= 75 ? "text-green-600" : "text-muted-foreground"}>
+                <span className={strength.score >= 75 ? "text-success" : "text-muted-foreground"}>
                   {strength.label}
                 </span>
               </div>
@@ -146,26 +146,26 @@ export const PasswordChange = () => {
             placeholder="Confirm new password"
           />
           {confirmPassword && (
-            <p className={`text-xs ${passwordsMatch ? "text-green-600" : "text-destructive"}`}>
+            <p className={`text-xs ${passwordsMatch ? "text-success" : "text-destructive"}`}>
               {passwordsMatch ? "✓ Passwords match" : "✗ Passwords do not match"}
             </p>
           )}
         </div>
 
         <ul className="text-xs text-muted-foreground space-y-1">
-          <li className={newPassword.length >= 8 ? "text-green-600" : ""}>
+          <li className={newPassword.length >= 8 ? "text-success" : ""}>
             • At least 8 characters
           </li>
-          <li className={/[a-z]/.test(newPassword) ? "text-green-600" : ""}>
+          <li className={/[a-z]/.test(newPassword) ? "text-success" : ""}>
             • One lowercase letter
           </li>
-          <li className={/[A-Z]/.test(newPassword) ? "text-green-600" : ""}>
+          <li className={/[A-Z]/.test(newPassword) ? "text-success" : ""}>
             • One uppercase letter
           </li>
-          <li className={/[0-9]/.test(newPassword) ? "text-green-600" : ""}>
+          <li className={/[0-9]/.test(newPassword) ? "text-success" : ""}>
             • One number
           </li>
-          <li className={/[^a-zA-Z0-9]/.test(newPassword) ? "text-green-600" : ""}>
+          <li className={/[^a-zA-Z0-9]/.test(newPassword) ? "text-success" : ""}>
             • One special character
           </li>
         </ul>

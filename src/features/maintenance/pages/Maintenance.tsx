@@ -93,7 +93,7 @@ interface Unit {
 }
 
 const statusColors: Record<RequestStatus, string> = {
-  open: "bg-amber-500 text-white border-amber-600",
+  open: "bg-warning/100 text-white border-amber-600",
   in_progress: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]",
   completed: "bg-emerald-600 text-white border-emerald-700",
   cancelled: "bg-slate-600 text-white border-slate-700",
@@ -376,7 +376,7 @@ export default function Maintenance() {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="p-1.5 sm:p-2 rounded-lg bg-amber-400/10">
-                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
@@ -388,8 +388,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-amber-500/10">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-warning/10">
+                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Open</p>
@@ -414,8 +414,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-emerald-500/10">
-                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
@@ -720,7 +720,7 @@ export default function Maintenance() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
+                          <Badge variant="outline" className="bg-amber-400/10 text-warning border-amber-400/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                         </TableCell>
@@ -826,7 +826,7 @@ export default function Maintenance() {
                           <Badge variant="outline" className={priorityColors[request.priority]}>
                             {request.priority} priority
                           </Badge>
-                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
+                          <Badge variant="outline" className="bg-amber-400/10 text-warning border-amber-400/20">
                             {getCategoryLabel(request.category || 'other')}
                           </Badge>
                           <Badge variant="outline" className="bg-slate-500/10 text-slate-300 border-slate-500/30">
@@ -834,7 +834,7 @@ export default function Maintenance() {
                             {request.tenant_name}
                           </Badge>
                           {request.budget && (
-                            <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
+                            <Badge variant="outline" className="bg-success/10 text-green-400 border-success/30">
                               Budget: {formatCurrency(request.budget)}
                             </Badge>
                           )}

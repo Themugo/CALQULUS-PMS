@@ -22,8 +22,8 @@ const actions = [
     icon: UserPlus,
     href: "/tenants",
     description: "Onboard a new tenant",
-    accent: "from-emerald-500/20 to-emerald-600/10 border-emerald-500/20",
-    iconColor: "text-emerald-500",
+    accent: "from-emerald-500/20 to-emerald-600/10 border-success/20",
+    iconColor: "text-success",
     hoverBg: "hover:border-emerald-500/40 hover:from-emerald-500/25",
   },
   {
@@ -32,7 +32,7 @@ const actions = [
     href: "/billing",
     description: "Bill a tenant",
     accent: "from-amber-400/20 to-amber-500/10 border-amber-400/25",
-    iconColor: "text-amber-500",
+    iconColor: "text-warning",
     hoverBg: "hover:border-amber-400/50 hover:from-amber-400/28",
   },
   {
@@ -72,7 +72,7 @@ export function ManagerQuickActions({ hasProperties: _hasProperties }: ManagerQu
       <CardHeader className="pb-3 pt-4 px-4 sm:px-5">
         <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <div className="h-6 w-6 rounded-md bg-amber-400/15 border border-amber-400/25 flex items-center justify-center flex-shrink-0">
-            <Zap className="h-3.5 w-3.5 text-amber-500" />
+            <Zap className="h-3.5 w-3.5 text-warning" />
           </div>
           Quick Actions
         </CardTitle>

@@ -38,14 +38,14 @@ interface InvoiceTableProps {
 
 const getInvoiceStatusBadge = (status: string, dueDate: string) => {
   if (status === "paid") {
-    return <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Paid</Badge>;
+    return <Badge className="bg-success/10 text-success border-success/20">Paid</Badge>;
   }
   if (status === "pending") {
     const isOverdue = new Date(dueDate) < new Date();
     if (isOverdue) {
-      return <Badge className="bg-red-500/10 text-red-700 border-red-500/20">Overdue</Badge>;
+      return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Overdue</Badge>;
     }
-    return <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/20">Pending</Badge>;
+    return <Badge className="bg-warning/10 text-warning border-warning/20">Pending</Badge>;
   }
   return <Badge variant="outline">{status}</Badge>;
 };
@@ -96,7 +96,7 @@ export const InvoiceTable = ({
                         variant="ghost"
                         onClick={() => onSendInvoiceEmail(invoice)}
                         disabled={isSendingEmail === invoice.id}
-                        className="text-blue-500 hover:bg-blue-500/10"
+                        className="text-info hover:bg-info/10"
                         title="Send to Email"
                       >
                         {isSendingEmail === invoice.id ? (
@@ -110,7 +110,7 @@ export const InvoiceTable = ({
                         variant="ghost"
                         onClick={() => onSendWhatsApp(invoice, "invoice")}
                         disabled={isSendingWhatsApp === invoice.id}
-                        className="text-green-500 hover:bg-green-500/10"
+                        className="text-success hover:bg-success/10"
                         title="Send to WhatsApp/SMS"
                       >
                         {isSendingWhatsApp === invoice.id ? (
@@ -124,7 +124,7 @@ export const InvoiceTable = ({
                         variant="outline"
                         onClick={() => onPayClick(invoice, "stripe")}
                         disabled={isProcessing}
-                        className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10"
+                        className="border-info/30 text-info hover:bg-info/10"
                       >
                         <CreditCard className="h-4 w-4 mr-1" />
                         Card
@@ -134,7 +134,7 @@ export const InvoiceTable = ({
                         variant="outline"
                         onClick={() => onPayClick(invoice, "mpesa")}
                         disabled={isProcessing}
-                        className="border-green-500/30 text-green-600 hover:bg-green-500/10"
+                        className="border-success/30 text-success hover:bg-success/10"
                       >
                         <Smartphone className="h-4 w-4 mr-1" />
                         M-Pesa
@@ -145,7 +145,7 @@ export const InvoiceTable = ({
                       size="sm"
                       variant="ghost"
                       onClick={() => onDownloadInvoice(invoice)}
-                      className="text-blue-500 hover:bg-blue-500/10"
+                      className="text-info hover:bg-info/10"
                     >
                       <DownloadIcon className="h-4 w-4" />
                     </Button>

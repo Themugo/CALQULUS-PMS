@@ -72,7 +72,7 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Rocket className="h-5 w-5 text-amber-500" />
+            <Rocket className="h-5 w-5 text-warning" />
             <CardTitle className="text-base">Getting Started</CardTitle>
             <Badge variant="secondary" className="text-xs">{completedCount}/{steps.length}</Badge>
           </div>
@@ -95,7 +95,7 @@ export function OnboardingWizard({ onDismiss }: OnboardingWizardProps) {
               }`}
             >
               {step.completed ? (
-                <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               )}

@@ -10,7 +10,7 @@ import { Loader2, Eye, EyeOff, Check, X, ShieldCheck, AlertTriangle } from "luci
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
   return (
-    <div className={`flex items-center gap-2 text-sm ${met ? "text-green-600" : "text-muted-foreground"}`}>
+    <div className={`flex items-center gap-2 text-sm ${met ? "text-success" : "text-muted-foreground"}`}>
       {met ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
       <span>{text}</span>
     </div>
@@ -107,7 +107,7 @@ const ActivateAccount = () => {
       <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
         <Card className="w-full max-w-md mx-4">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-amber-500 mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-warning mb-4" />
             <p className="text-muted-foreground">Validating activation link...</p>
           </CardContent>
         </Card>
@@ -147,7 +147,7 @@ const ActivateAccount = () => {
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <ShieldCheck className="h-8 w-8 text-green-600" />
+              <ShieldCheck className="h-8 w-8 text-success" />
             </div>
             <CardTitle>Account Activated!</CardTitle>
             <CardDescription>
@@ -173,7 +173,7 @@ const ActivateAccount = () => {
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
-            <ShieldCheck className="h-8 w-8 text-amber-500" />
+            <ShieldCheck className="h-8 w-8 text-warning" />
           </div>
           <CardTitle>Activate Your Account</CardTitle>
           <CardDescription>

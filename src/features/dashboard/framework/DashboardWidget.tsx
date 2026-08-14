@@ -66,11 +66,11 @@ export function DashboardWidget({
 
   const iconColorClasses = {
     primary: "text-primary bg-primary/10",
-    emerald: "text-emerald-500 bg-emerald-500/10",
-    amber: "text-amber-500 bg-amber-500/10",
-    red: "text-red-500 bg-red-500/10",
-    sky: "text-sky-500 bg-sky-500/10",
-    purple: "text-purple-500 bg-purple-500/10",
+    emerald: "text-success bg-success/10",
+    amber: "text-warning bg-warning/10",
+    red: "text-destructive bg-destructive/10",
+    sky: "text-info bg-sky-500/10",
+    purple: "text-purple bg-purple-500/10",
   };
 
   return (

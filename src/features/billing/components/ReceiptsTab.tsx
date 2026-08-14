@@ -130,7 +130,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
         {[
           { label: "Total Receipts", value: paidInvoices.length.toString(), color: "text-foreground" },
           { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-emerald-400" },
-          { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-amber-500" },
+          { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-warning" },
         ].map(({ label, value, color }, i) => (
           <div key={label} className="rounded-xl border border-border bg-card p-4 card-shadow animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
             <p className="text-sm text-muted-foreground">{label}</p>

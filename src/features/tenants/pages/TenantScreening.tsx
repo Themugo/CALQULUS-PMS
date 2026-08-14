@@ -194,7 +194,7 @@ export default function TenantScreening() {
           <Card>
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Critical</p>
-              <p className="text-2xl font-bold text-red-600">{criticalCount}</p>
+              <p className="text-2xl font-bold text-destructive">{criticalCount}</p>
             </CardContent>
           </Card>
           <Card className="col-span-2 sm:col-span-1">
@@ -279,7 +279,7 @@ export default function TenantScreening() {
                               </span>
                             )}
                             {entry.amount_owed > 0 && (
-                              <span className="flex items-center gap-1 text-red-600">
+                              <span className="flex items-center gap-1 text-destructive">
                                 <Banknote className="h-3 w-3" />{fmt(entry.amount_owed)} owed
                               </span>
                             )}

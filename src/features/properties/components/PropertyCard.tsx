@@ -71,9 +71,9 @@ const getCategoryLabel = (property: Property): string => {
 
 // Memoized occupancy color
 const getOccupancyColor = (rate: number): string => {
-  if (rate >= 80) return "text-emerald-600";
-  if (rate >= 50) return "text-amber-600";
-  return "text-red-500";
+  if (rate >= 80) return "text-success";
+  if (rate >= 50) return "text-warning";
+  return "text-destructive";
 };
 
 // Optimized PropertyCard with memoization
@@ -128,7 +128,7 @@ export const PropertyCard = memo<PropertyCardProps>(({
               <div className="min-w-0">
                 <Link 
                   to={`/properties/${property.id}`} 
-                  className="font-heading font-semibold text-foreground text-sm hover:text-amber-500 transition-colors truncate block"
+                  className="font-heading font-semibold text-foreground text-sm hover:text-warning transition-colors truncate block"
                 >
                   {property.name}
                 </Link>

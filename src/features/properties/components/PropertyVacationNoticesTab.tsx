@@ -32,10 +32,10 @@ interface VacationNotice {
 }
 
 const statusConfig: Record<string, { label: string; color: string; badgeClass: string }> = {
-  pending: { label: "Pending", color: "text-yellow-500", badgeClass: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+  pending: { label: "Pending", color: "text-yellow-500", badgeClass: "bg-warning/10 text-warning border-warning/20" },
   acknowledged: { label: "Acknowledged", color: "text-[hsl(214_73%_48%)]", badgeClass: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]" },
-  approved: { label: "Approved", color: "text-green-500", badgeClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  rejected: { label: "Rejected", color: "text-red-500", badgeClass: "bg-red-500/10 text-red-600 border-red-500/20" },
+  approved: { label: "Approved", color: "text-success", badgeClass: "bg-success/10 text-success border-success/20" },
+  rejected: { label: "Rejected", color: "text-destructive", badgeClass: "bg-destructive/10 text-destructive border-destructive/20" },
   completed: { label: "Completed", color: "text-gray-500", badgeClass: "bg-slate-500/10 text-slate-600 border-slate-500/20" },
 };
 
@@ -96,11 +96,11 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              <CalendarX className="h-5 w-5 text-amber-500" />
+              <CalendarX className="h-5 w-5 text-warning" />
               Vacation Notices
             </CardTitle>
             {pendingCount > 0 && (
-              <p className="text-sm text-amber-600 mt-1">{pendingCount} pending notice(s)</p>
+              <p className="text-sm text-warning mt-1">{pendingCount} pending notice(s)</p>
             )}
           </div>
         </CardHeader>

@@ -713,7 +713,7 @@ const ManagerPaymentHistory = () => {
               <Clock className="h-4 w-4" />
               Pending
               {pendingInvoices.length > 0 && (
-                <Badge className="ml-1 h-5 min-w-5 text-xs bg-amber-100 text-amber-800 border-amber-200">
+                <Badge className="ml-1 h-5 min-w-5 text-xs bg-amber-100 text-amber-800 border-warning/30">
                   {pendingInvoices.length}
                 </Badge>
               )}
@@ -804,7 +804,7 @@ const ManagerPaymentHistory = () => {
                           {inv.leases?.property ?? inv.tenants?.property ?? "—"}{" "}
                           {inv.leases?.unit ?? inv.tenants?.unit ? `· Unit ${inv.leases?.unit ?? inv.tenants?.unit}` : ""}
                         </TableCell>
-                        <TableCell className={`text-sm ${isOverdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
+                        <TableCell className={`text-sm ${isOverdue ? "text-destructive font-medium" : "text-muted-foreground"}`}>
                           {inv.due_date ? format(new Date(inv.due_date), "dd/MM/yy") : "—"}
                           {isOverdue && <span className="ml-1 text-xs">(overdue)</span>}
                         </TableCell>
@@ -827,8 +827,8 @@ const ManagerPaymentHistory = () => {
                           <Badge
                             variant="outline"
                             className={isOverdue
-                              ? "border-red-300 text-red-700 bg-red-50"
-                              : "border-amber-300 text-amber-700 bg-amber-50"
+                              ? "border-red-300 text-destructive bg-destructive/10"
+                              : "border-amber-300 text-warning bg-warning/10"
                             }
                           >
                             {isOverdue ? <AlertTriangle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
@@ -890,8 +890,8 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-emerald-500" />
+              <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Collected</p>
@@ -907,7 +907,7 @@ const ManagerPaymentHistory = () => {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                <Receipt className="h-6 w-6 text-amber-500" />
+                <Receipt className="h-6 w-6 text-warning" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Transactions</p>
@@ -922,8 +922,8 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in" style={{ animationDelay: "100ms" }}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <Smartphone className="h-6 w-6 text-green-500" />
+              <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
+                <Smartphone className="h-6 w-6 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">M-Pesa Payments</p>
@@ -958,7 +958,7 @@ const ManagerPaymentHistory = () => {
         <Card className="md:col-span-2 card-shadow animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <BarChart3 className="h-5 w-5 text-amber-500" />
+              <BarChart3 className="h-5 w-5 text-warning" />
               Monthly Revenue (Last 6 Months)
             </CardTitle>
             <CardDescription>Revenue breakdown by payment method</CardDescription>
@@ -999,7 +999,7 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Smartphone className="h-5 w-5 text-emerald-500" />
+              <Smartphone className="h-5 w-5 text-success" />
               Payment Methods
             </CardTitle>
             <CardDescription>Distribution by payment type</CardDescription>
@@ -1040,7 +1040,7 @@ const ManagerPaymentHistory = () => {
         <Card className="md:col-span-2 lg:col-span-3 card-shadow animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Building className="h-5 w-5 text-amber-500" />
+              <Building className="h-5 w-5 text-warning" />
               Top Properties by Revenue
             </CardTitle>
             <CardDescription>Revenue collection by property</CardDescription>
@@ -1087,7 +1087,7 @@ const ManagerPaymentHistory = () => {
       <Card className="mb-6 card-shadow animate-fade-in">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-amber-500" />
+            <Users className="h-5 w-5 text-warning" />
             Tenant Payment Details
           </CardTitle>
           <CardDescription>Payment breakdown by tenant with total amounts and transaction counts</CardDescription>
@@ -1117,7 +1117,7 @@ const ManagerPaymentHistory = () => {
                   tabIndex={0}
                   className={`p-4 rounded-lg border transition-all cursor-pointer ${
                     selectedTenant === tenant.id
-                      ? "border-amber-400/50 bg-amber-400/8"
+                      ? "border-amber-400/50 bg-warning/10"
                       : "border-border hover:border-amber-400/60/50 hover:bg-muted/30"
                   }`}
                   onClick={toggleTenantSelection}
@@ -1141,7 +1141,7 @@ const ManagerPaymentHistory = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Total Paid</p>
-                      <p className="font-semibold text-emerald-500">{formatCurrency(tenant.totalAmount)}</p>
+                      <p className="font-semibold text-success">{formatCurrency(tenant.totalAmount)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Transactions</p>
@@ -1332,7 +1332,7 @@ const ManagerPaymentHistory = () => {
                     <div className="flex items-center gap-2">
                       {payment.tenants?.phone ? (
                         <>
-                          <Smartphone className="h-4 w-4 text-emerald-500" />
+                          <Smartphone className="h-4 w-4 text-success" />
                           <span className="text-sm text-emerald-400">M-Pesa</span>
                         </>
                       ) : (
@@ -1346,7 +1346,7 @@ const ManagerPaymentHistory = () => {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-1"
+                      className="bg-success/10 text-emerald-400 border-success/20 gap-1"
                     >
                       <CheckCircle className="h-3 w-3" />
                       Paid

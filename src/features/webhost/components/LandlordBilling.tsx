@@ -24,9 +24,9 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-warning/10 text-warning border-amber-200',
-  paid:      'bg-green-100 text-green-800 border-green-200',
-  overdue:   'bg-destructive/15 text-destructive border-red-200',
+  pending:   'bg-warning/10 text-warning border-warning/30',
+  paid:      'bg-green-100 text-green-800 border-success/30',
+  overdue:   'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-secondary-background text-muted-foreground border-border',
   waived:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
 };

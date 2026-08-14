@@ -189,7 +189,7 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Settings2 className="h-5 w-5 text-orange-500" />
+            <Settings2 className="h-5 w-5 text-warning" />
             Property Deductions — {propertyName}
           </CardTitle>
           <Button size="sm" onClick={() => setIsDeductionDialogOpen(true)}>
@@ -240,7 +240,7 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-green-500" />
+            <DollarSign className="h-5 w-5 text-success" />
             Amenity Charges (Garbage, Security, etc.)
           </CardTitle>
           <Button size="sm" onClick={() => setIsAmenityDialogOpen(true)}>

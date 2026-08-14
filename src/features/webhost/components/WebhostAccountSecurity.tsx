@@ -267,7 +267,7 @@ const WebhostAccountSecurity: React.FC = () => {
                         </td>
                         <td className="py-2.5 pr-4">
                           {a.is_immutable ? (
-                            <Badge className="bg-blue-500/15 text-primary border border-blue-500/30">Immutable</Badge>
+                            <Badge className="bg-info/100/15 text-primary border border-info/30">Immutable</Badge>
                           ) : a.suspended ? (
                             <Badge className="bg-destructive/15 text-destructive border border-destructive/30">Suspended</Badge>
                           ) : (

@@ -83,7 +83,7 @@ function ValidationIndicator({ bankName, accountNumber }: { bankName: string; ac
   const status = getValidationStatus(bankName, accountNumber);
   if (!status) return null;
   return (
-    <div className={`flex items-center gap-1 text-xs mt-1 ${status.valid ? 'text-green-600' : 'text-destructive'}`}>
+    <div className={`flex items-center gap-1 text-xs mt-1 ${status.valid ? 'text-success' : 'text-destructive'}`}>
       {status.valid ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
       <span>{status.message}</span>
     </div>

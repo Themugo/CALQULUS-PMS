@@ -256,13 +256,13 @@ export const PushNotificationSettings: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className={`h-11 w-11 rounded-xl flex items-center justify-center transition-colors ${
                 isSubscribed 
-                  ? "bg-amber-400/20 text-amber-500" 
+                  ? "bg-warning/20 text-warning" 
                   : permission === "denied" 
                   ? "bg-destructive/10 text-destructive"
                   : "bg-muted text-muted-foreground"
               }`}>
                 {isSubscribed ? (
-                  <Bell className="h-6 w-6 text-amber-500 animate-bounce" />
+                  <Bell className="h-6 w-6 text-warning animate-bounce" />
                 ) : (
                   <BellOff className="h-6 w-6" />
                 )}
@@ -273,7 +273,7 @@ export const PushNotificationSettings: React.FC = () => {
                     Push Notifications
                   </CardTitle>
                   {isSubscribed && (
-                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 gap-1 text-xs">
+                    <Badge variant="outline" className="bg-success/10 text-success border-success/30 gap-1 text-xs">
                       <CheckCircle2 className="h-3 w-3" /> Active
                     </Badge>
                   )}
@@ -327,7 +327,7 @@ export const PushNotificationSettings: React.FC = () => {
 
           {!isSupported && (
             <div className="p-3.5 bg-muted rounded-lg text-xs text-muted-foreground flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 flex-shrink-0 text-warning" />
               <span>Web push notifications are not supported on this browser version.</span>
             </div>
           )}
@@ -335,7 +335,7 @@ export const PushNotificationSettings: React.FC = () => {
           {isSubscribed && (
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-card border rounded-lg text-xs">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Sparkles className="h-4 w-4 text-amber-500" />
+                <Sparkles className="h-4 w-4 text-warning" />
                 <span>Device is registered for instant web push dispatch.</span>
               </div>
               <Button
@@ -348,7 +348,7 @@ export const PushNotificationSettings: React.FC = () => {
                 {testingNotification ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <Send className="h-3.5 w-3.5 text-amber-500" />
+                  <Send className="h-3.5 w-3.5 text-warning" />
                 )}
                 Send Test Alert
               </Button>
@@ -361,7 +361,7 @@ export const PushNotificationSettings: React.FC = () => {
       <Card className="card-shadow">
         <CardHeader className="p-4 sm:p-6 pb-3">
           <CardTitle className="font-heading text-base sm:text-lg flex items-center gap-2">
-            <Clock className="h-5 w-5 text-amber-500" />
+            <Clock className="h-5 w-5 text-warning" />
             Notification Topics
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">
@@ -377,7 +377,7 @@ export const PushNotificationSettings: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="h-9 w-9 rounded-lg bg-success/10 text-success flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CreditCard className="h-4 w-4" />
                   </div>
                   <div>
@@ -397,7 +397,7 @@ export const PushNotificationSettings: React.FC = () => {
 
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="h-9 w-9 rounded-lg bg-info/10 text-info flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Wrench className="h-4 w-4" />
                   </div>
                   <div>
@@ -437,7 +437,7 @@ export const PushNotificationSettings: React.FC = () => {
 
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="h-9 w-9 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center flex-shrink-0 mt-0.5">
                     <ShieldCheck className="h-4 w-4" />
                   </div>
                   <div>

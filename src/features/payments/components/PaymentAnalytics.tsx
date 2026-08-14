@@ -81,10 +81,10 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Collected (shown period)', value: fmt(totalCollected), icon: TrendingUp, color: 'text-green-700', bg: 'bg-green-50' },
-          { label: 'Outstanding',               value: fmt(totalPending),   icon: CreditCard,  color: 'text-amber-700', bg: 'bg-amber-50' },
-          { label: 'Overdue balance',            value: fmt(totalOverdue),  icon: TrendingDown,color: 'text-red-700',   bg: 'bg-red-50' },
-          { label: 'Collection rate',            value: `${collectionRate}%`, icon: Users, color: collectionRate >= 80 ? 'text-green-700' : 'text-amber-700', bg: collectionRate >= 80 ? 'bg-green-50' : 'bg-amber-50' },
+          { label: 'Collected (shown period)', value: fmt(totalCollected), icon: TrendingUp, color: 'text-success', bg: 'bg-success/10' },
+          { label: 'Outstanding',               value: fmt(totalPending),   icon: CreditCard,  color: 'text-warning', bg: 'bg-warning/10' },
+          { label: 'Overdue balance',            value: fmt(totalOverdue),  icon: TrendingDown,color: 'text-destructive',   bg: 'bg-destructive/10' },
+          { label: 'Collection rate',            value: `${collectionRate}%`, icon: Users, color: collectionRate >= 80 ? 'text-success' : 'text-warning', bg: collectionRate >= 80 ? 'bg-success/10' : 'bg-warning/10' },
         ].map(k => (
           <div key={k.label} className={`rounded-xl border border-border p-3 ${k.bg}`}>
             <div className="flex items-center justify-between mb-1">
@@ -164,10 +164,10 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-0.5">
                     <span className="text-sm font-medium">{t.name}</span>
-                    <span className="text-sm font-semibold text-green-700">{fmt(t.total)}</span>
+                    <span className="text-sm font-semibold text-success">{fmt(t.total)}</span>
                   </div>
                   <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full"
+                    <div className="h-full bg-success/100 rounded-full"
                       style={{ width: `${(t.total / topTenants[0].total) * 100}%` }} />
                   </div>
                 </div>

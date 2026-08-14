@@ -107,7 +107,7 @@ export default function AccountantDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Financial Operational Command Center</h1>
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold">
+            <Badge variant="outline" className="bg-success/10 text-success border-success/20 font-bold">
               Accountant Workspace
             </Badge>
           </div>
@@ -214,19 +214,19 @@ export default function AccountantDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/statements'}>
-              <span className="flex items-center gap-2"><Receipt className="h-4 w-4 text-emerald-500" /> Generate Owner Statements</span>
+              <span className="flex items-center gap-2"><Receipt className="h-4 w-4 text-success" /> Generate Owner Statements</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/water-billing'}>
-              <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-sky-500" /> Process Water & Utility Billing</span>
+              <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-info" /> Process Water & Utility Billing</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/billing'}>
-              <span className="flex items-center gap-2"><Scale className="h-4 w-4 text-amber-500" /> Reconcile Bank Statements</span>
+              <span className="flex items-center gap-2"><Scale className="h-4 w-4 text-warning" /> Reconcile Bank Statements</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
-              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-purple-500" /> Audit Rent Reminders</span>
+              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-purple" /> Audit Rent Reminders</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -265,7 +265,7 @@ export default function AccountantDashboard() {
                   data?.overdueInvoices.map((inv) => (
                     <TableRow key={inv.id}>
                       <TableCell className="font-mono text-xs font-semibold">{inv.invoice_number}</TableCell>
-                      <TableCell className="text-xs text-red-500 font-medium">{inv.due_date}</TableCell>
+                      <TableCell className="text-xs text-destructive font-medium">{inv.due_date}</TableCell>
                       <TableCell className="text-xs font-bold text-right">{fmt(inv.balance_due || inv.amount)}</TableCell>
                       <TableCell className="text-right">
                         <Button size="sm" variant="ghost" className="h-6 text-[11px] text-primary">
@@ -311,7 +311,7 @@ export default function AccountantDashboard() {
                     <TableRow key={payout.id}>
                       <TableCell className="text-xs">{payout.created_at ? format(new Date(payout.created_at), 'MMM dd') : 'N/A'}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                        <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/20">
                           {payout.status}
                         </Badge>
                       </TableCell>

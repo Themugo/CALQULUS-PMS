@@ -153,16 +153,16 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
     <div className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-red-200 bg-red-50 p-3">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3">
           <p className="text-xs text-muted-foreground">Unmatched</p>
-          <p className="text-xl font-bold text-red-700">{unmatched.length}</p>
+          <p className="text-xl font-bold text-destructive">{unmatched.length}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {fmt(unmatched.reduce((s, t) => s + Number(t.amount), 0))} total
           </p>
         </div>
-        <div className="rounded-xl border border-green-200 bg-green-50 p-3">
+        <div className="rounded-xl border border-success/30 bg-success/10 p-3">
           <p className="text-xs text-muted-foreground">Matched</p>
-          <p className="text-xl font-bold text-green-700">{matched.length}</p>
+          <p className="text-xl font-bold text-success">{matched.length}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {fmt(matched.reduce((s, t) => s + Number(t.amount), 0))} total
           </p>
@@ -178,13 +178,13 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
 
       {/* Info when no bank integration */}
       {transactions.length === 0 && !isLoading && (
-        <Card className="border-blue-200 bg-blue-50/40">
+        <Card className="border-blue-200 bg-info/10/40">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Landmark className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+              <Landmark className="h-5 w-5 text-info shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-blue-900 text-sm">No bank transactions yet</p>
-                <p className="text-xs text-blue-700 mt-1">
+                <p className="text-xs text-info mt-1">
                   Connect your bank in Settings → Bank Integration to receive automatic transaction feeds.
                   Supported banks: Equity, KCB, NCBA, Co-op, ABSA, Stanbic.
                   When a tenant pays, the transaction appears here for matching.
@@ -220,22 +220,22 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
             <div className="space-y-2">
               {filtered.map(tx => (
                 <div key={tx.id} className={`flex items-center gap-3 p-3 rounded-lg border ${
-                  tx.match_status === 'matched' ? 'border-green-200 bg-green-50/30' :
+                  tx.match_status === 'matched' ? 'border-success/30 bg-success/10/30' :
                   tx.match_status === 'ignored' ? 'border-border opacity-50' :
-                  'border-amber-200 bg-amber-50/30'
+                  'border-warning/30 bg-warning/10/30'
                 }`}>
                   <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${
                     tx.match_status === 'matched' ? 'bg-green-100' : 'bg-amber-100'
                   }`}>
                     {tx.match_status === 'matched'
-                      ? <CheckCircle className="h-4 w-4 text-green-600" />
-                      : <AlertTriangle className="h-4 w-4 text-amber-600" />}
+                      ? <CheckCircle className="h-4 w-4 text-success" />
+                      : <AlertTriangle className="h-4 w-4 text-warning" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold">{fmt(tx.amount)}</p>
                       <Badge variant="outline" className="text-xs capitalize">{tx.bank_name}</Badge>
-                      <Badge variant="outline" className={`text-xs ${tx.match_status === 'matched' ? 'bg-green-100 text-green-800 border-green-200' : tx.match_status === 'ignored' ? '' : 'bg-amber-100 text-amber-800 border-amber-200'}`}>
+                      <Badge variant="outline" className={`text-xs ${tx.match_status === 'matched' ? 'bg-green-100 text-green-800 border-success/30' : tx.match_status === 'ignored' ? '' : 'bg-amber-100 text-amber-800 border-warning/30'}`}>
                         {tx.match_status}
                       </Badge>
                     </div>

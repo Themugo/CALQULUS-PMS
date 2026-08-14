@@ -186,23 +186,23 @@ const ResetPassword = () => {
                 <div className="text-xs space-y-1 mt-2 p-2 bg-muted rounded">
                   <p className="font-medium text-muted-foreground">Password requirements:</p>
                   <div className="grid grid-cols-2 gap-1">
-                    <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-success' : 'text-muted-foreground'}`}>
                       {passwordStrength.length ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                       8+ characters
                     </div>
-                    <div className={`flex items-center gap-1 ${passwordStrength.uppercase ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-1 ${passwordStrength.uppercase ? 'text-success' : 'text-muted-foreground'}`}>
                       {passwordStrength.uppercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                       Uppercase
                     </div>
-                    <div className={`flex items-center gap-1 ${passwordStrength.lowercase ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-1 ${passwordStrength.lowercase ? 'text-success' : 'text-muted-foreground'}`}>
                       {passwordStrength.lowercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                       Lowercase
                     </div>
-                    <div className={`flex items-center gap-1 ${passwordStrength.number ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-1 ${passwordStrength.number ? 'text-success' : 'text-muted-foreground'}`}>
                       {passwordStrength.number ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                       Number
                     </div>
-                    <div className={`flex items-center gap-1 ${passwordStrength.special ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-1 ${passwordStrength.special ? 'text-success' : 'text-muted-foreground'}`}>
                       {passwordStrength.special ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                       Special char
                     </div>
@@ -227,7 +227,7 @@ const ResetPassword = () => {
                 </p>
               )}
               {confirmPassword && password === confirmPassword && (
-                <p className="text-xs text-emerald-500 flex items-center gap-1">
+                <p className="text-xs text-success flex items-center gap-1">
                   <CheckCircle className="h-3 w-3" />
                   Passwords match
                 </p>

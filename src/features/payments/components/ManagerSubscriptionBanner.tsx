@@ -13,11 +13,11 @@ import { Link } from 'react-router-dom';
 const TIER_COLORS: Record<string, string> = {
   // New tiers
   lite:         'border-slate-300 bg-slate-50',
-  pro:          'border-blue-300 bg-blue-50',
-  enterprise:   'border-amber-300 bg-amber-50',
+  pro:          'border-blue-300 bg-info/10',
+  enterprise:   'border-amber-300 bg-warning/10',
   // Legacy tier names (backwards compat)
   starter:      'border-slate-300 bg-slate-50',
-  growth:       'border-blue-300 bg-blue-50',
+  growth:       'border-blue-300 bg-info/10',
   professional: 'border-purple-300 bg-purple-50',
 };
 
@@ -26,8 +26,8 @@ const TIER_BADGE: Record<string, string> = {
   pro:          'bg-blue-100 text-blue-800 border-blue-300',
   enterprise:   'bg-amber-100 text-amber-800 border-amber-300',
   starter:      'bg-slate-100 text-slate-700 border-slate-300',
-  growth:       'bg-blue-100 text-blue-700 border-blue-200',
-  professional: 'bg-amber-400/15 text-amber-700 border-purple-300',
+  growth:       'bg-blue-100 text-info border-blue-200',
+  professional: 'bg-amber-400/15 text-warning border-purple-300',
 };
 
 const NEXT_TIER: Record<string, string> = {
@@ -81,13 +81,13 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
 
   if (compact) {
     return (
-      <div className={`rounded-lg border p-3 ${atLimit ? 'border-red-300 bg-red-50' : nearLimit ? 'border-amber-300 bg-amber-50' : TIER_COLORS[tier]}`}>
+      <div className={`rounded-lg border p-3 ${atLimit ? 'border-red-300 bg-destructive/10' : nearLimit ? 'border-amber-300 bg-warning/10' : TIER_COLORS[tier]}`}>
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className={`text-xs capitalize ${TIER_BADGE[tier]}`}>
                 {TIER_LIMITS[tier]?.label ?? tier}
               </Badge>
-            {(atLimit || nearLimit) && <AlertTriangle className={`h-3.5 w-3.5 ${atLimit ? 'text-red-600' : 'text-amber-600'}`} />}
+            {(atLimit || nearLimit) && <AlertTriangle className={`h-3.5 w-3.5 ${atLimit ? 'text-destructive' : 'text-warning'}`} />}
           </div>
           {nextTier && (
             <Link to="/platform-billing">
@@ -101,20 +101,20 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
           <div>
             <div className="flex justify-between text-xs mb-0.5">
               <span className="text-muted-foreground">Properties</span>
-              <span className={`font-medium ${propPct >= 80 ? 'text-red-600' : ''}`}>
+              <span className={`font-medium ${propPct >= 80 ? 'text-destructive' : ''}`}>
                 {usedProps}/{maxProps < 999 ? maxProps : '∞'}
               </span>
             </div>
-            {maxProps < 999 && <Progress value={propPct} className={`h-1.5 ${propPct >= 80 ? '[&>div]:bg-red-500' : ''}`} />}
+            {maxProps < 999 && <Progress value={propPct} className={`h-1.5 ${propPct >= 80 ? '[&>div]:bg-destructive/100' : ''}`} />}
           </div>
           <div>
             <div className="flex justify-between text-xs mb-0.5">
               <span className="text-muted-foreground">Units</span>
-              <span className={`font-medium ${unitPct >= 80 ? 'text-red-600' : ''}`}>
+              <span className={`font-medium ${unitPct >= 80 ? 'text-destructive' : ''}`}>
                 {usedUnits}/{maxUnits < 9999 ? maxUnits : '∞'}
               </span>
             </div>
-            {maxUnits < 9999 && <Progress value={unitPct} className={`h-1.5 ${unitPct >= 80 ? '[&>div]:bg-red-500' : ''}`} />}
+            {maxUnits < 9999 && <Progress value={unitPct} className={`h-1.5 ${unitPct >= 80 ? '[&>div]:bg-destructive/100' : ''}`} />}
           </div>
         </div>
       </div>
@@ -122,12 +122,12 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
   }
 
   return (
-    <Card className={`border-2 ${atLimit ? 'border-red-300 bg-red-50/40' : nearLimit ? 'border-amber-300 bg-amber-50/40' : TIER_COLORS[tier]}`}>
+    <Card className={`border-2 ${atLimit ? 'border-red-300 bg-destructive/10/40' : nearLimit ? 'border-amber-300 bg-warning/10/40' : TIER_COLORS[tier]}`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${TIER_BADGE[tier].split(' ')[0]}`}>
-              <Zap className={`h-5 w-5 ${tier === 'enterprise' ? 'text-amber-600' : tier === 'professional' ? 'text-purple-600' : tier === 'growth' ? 'text-blue-600' : 'text-slate-600'}`} />
+              <Zap className={`h-5 w-5 ${tier === 'enterprise' ? 'text-warning' : tier === 'professional' ? 'text-purple' : tier === 'growth' ? 'text-info' : 'text-slate-600'}`} />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -162,13 +162,13 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <stat.icon className="h-3 w-3" />{stat.label}
                 </span>
-                <span className={`font-medium ${stat.pct >= 100 ? 'text-red-600' : stat.pct >= 80 ? 'text-amber-600' : ''}`}>
+                <span className={`font-medium ${stat.pct >= 100 ? 'text-destructive' : stat.pct >= 80 ? 'text-warning' : ''}`}>
                   {stat.used} {stat.max < 999 ? `/ ${stat.max}` : ''}
                 </span>
               </div>
               {stat.max < 999 && (
                 <Progress value={Math.min(100, stat.pct)}
-                  className={`h-2 ${stat.pct >= 100 ? '[&>div]:bg-red-500' : stat.pct >= 80 ? '[&>div]:bg-amber-500' : ''}`}
+                  className={`h-2 ${stat.pct >= 100 ? '[&>div]:bg-destructive/100' : stat.pct >= 80 ? '[&>div]:bg-warning/100' : ''}`}
                 />
               )}
             </div>
@@ -176,14 +176,14 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
         </div>
 
         {atLimit && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-red-700 font-medium">
+          <div className="mt-3 flex items-center gap-2 text-xs text-destructive font-medium">
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             You've reached your {usedProps >= maxProps ? 'property' : 'unit'} limit.
             Upgrade your plan to add more.
           </div>
         )}
         {nearLimit && !atLimit && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
+          <div className="mt-3 flex items-center gap-2 text-xs text-warning">
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             You're approaching your limit. Consider upgrading before you're blocked.
           </div>

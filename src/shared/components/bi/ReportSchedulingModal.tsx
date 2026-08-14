@@ -94,7 +94,7 @@ export function ReportSchedulingModal({ isOpen, onClose, reportTitle = "Executiv
               Cancel
             </Button>
             <Button type="submit" size="sm" className="h-8 text-xs font-bold gap-1.5 bg-primary">
-              {isSaved ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Save className="h-3.5 w-3.5" />}
+              {isSaved ? <Check className="h-3.5 w-3.5 text-success" /> : <Save className="h-3.5 w-3.5" />}
               {isSaved ? "Distribution Active!" : "Save Schedule"}
             </Button>
           </DialogFooter>

@@ -130,8 +130,8 @@ export function MaintenanceBudgetDashboard({
           <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-green-500/10">
-                  <DollarSign className="h-5 w-5 text-green-500" />
+                <div className="p-2 rounded-lg bg-success/10">
+                  <DollarSign className="h-5 w-5 text-success" />
                 </div>
                 <div>
                   <CardTitle className="text-lg text-foreground">Budget Dashboard</CardTitle>
@@ -142,7 +142,7 @@ export function MaintenanceBudgetDashboard({
               </div>
               <div className="flex items-center gap-4">
                 <div className="hidden sm:flex items-center gap-2">
-                  <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
+                  <Badge variant="outline" className="bg-success/10 text-success border-success/30">
                     {spentPercentage}% utilized
                   </Badge>
                 </div>
@@ -160,22 +160,22 @@ export function MaintenanceBudgetDashboard({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Total Allocated</span>
+                  <DollarSign className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Total Allocated</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalAllocated)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <div className="p-4 rounded-lg bg-success/10 border border-success/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-500">Spent</span>
+                  <TrendingUp className="h-4 w-4 text-success" />
+                  <span className="text-sm font-medium text-success">Spent</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalSpent)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Building2 className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Pending</span>
+                  <Building2 className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Pending</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalPending)}</p>
               </div>
@@ -304,8 +304,8 @@ export function MaintenanceBudgetDashboard({
                         <tr key={index} className="border-t border-border">
                           <td className="p-3 text-sm font-medium text-foreground">{property.fullName}</td>
                           <td className="p-3 text-sm text-right text-muted-foreground">{formatCurrency(property.allocated)}</td>
-                          <td className="p-3 text-sm text-right text-green-500">{formatCurrency(property.spent)}</td>
-                          <td className="p-3 text-sm text-right text-amber-500">{formatCurrency(property.pending)}</td>
+                          <td className="p-3 text-sm text-right text-success">{formatCurrency(property.spent)}</td>
+                          <td className="p-3 text-sm text-right text-warning">{formatCurrency(property.pending)}</td>
                           <td className="p-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <Progress value={utilization} className="w-16 h-2" />
