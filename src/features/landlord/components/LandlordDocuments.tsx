@@ -14,13 +14,13 @@ import {
 import { format } from 'date-fns';
 
 const DOC_TYPE_CONFIG: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
-  financial_statement:  { label: 'Financial statement', icon: BarChart3,       color: 'text-green-600' },
-  inspection_report:    { label: 'Inspection report',   icon: ClipboardCheck,  color: 'text-[hsl(214_73%_45%)]' },
-  occupancy_report:     { label: 'Occupancy report',    icon: Home,            color: 'text-[hsl(218_58%_38%)]' },
-  lease_summary:        { label: 'Lease summary',       icon: FileText,        color: 'text-amber-600' },
-  maintenance_summary:  { label: 'Maintenance summary', icon: FileSpreadsheet, color: 'text-red-600' },
-  property_photo:       { label: 'Property photo',      icon: Home,            color: 'text-slate-600' },
-  custom:               { label: 'Document',            icon: FileText,        color: 'text-slate-600' },
+  financial_statement:  { label: 'Financial statement', icon: BarChart3,       color: 'text-success' },
+  inspection_report:    { label: 'Inspection report',   icon: ClipboardCheck,  color: 'text-info' },
+  occupancy_report:     { label: 'Occupancy report',    icon: Home,            color: 'text-primary' },
+  lease_summary:        { label: 'Lease summary',       icon: FileText,        color: 'text-warning' },
+  maintenance_summary:  { label: 'Maintenance summary', icon: FileSpreadsheet, color: 'text-destructive' },
+  property_photo:       { label: 'Property photo',      icon: Home,            color: 'text-muted-foreground' },
+  custom:               { label: 'Document',            icon: FileText,        color: 'text-muted-foreground' },
 };
 
 const LandlordDocuments: React.FC = () => {
