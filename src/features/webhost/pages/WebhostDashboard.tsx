@@ -125,35 +125,35 @@ const WebhostDashboard = () => {
   const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-secondary-foreground hover:text-primary hover:bg-soft-blue transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
-      {/* Premium executive header — navy gradient (#050B2A → #0B1440) */}
-      <header className="sticky top-0 z-50 navy-executive-gradient border-b border-navy-deep/60 shadow-sm">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+      {/* Premium application header — light surface, consistent with all portals */}
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-card/90 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
               <img src={calqulusLogo} alt="CALQULUS PMS" className="h-7 w-auto object-contain" />
             </div>
             <div className="hidden sm:block min-w-0">
-              <p className="font-heading text-base font-bold text-white leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-blue-200/80 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
+              <p className="font-heading text-base font-bold text-foreground leading-none">CALQULUS PMS</p>
+              <p className="text-[10px] text-muted-foreground tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-semibold text-blue-50 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SYSTEM OPERATIONAL</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
-              <div className="h-2 w-2 rounded-full bg-blue-300" />
-              <span className="text-xs font-medium text-blue-50 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-xs font-medium text-foreground truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
               {getLevelBadge()}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="border border-white/25 text-blue-50 hover:bg-white/10 hover:text-white hover:border-white/40 transition-all"
+              className="border border-border text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>

@@ -360,7 +360,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <button
               onClick={() => navigate("/webhost")}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-md text-xs font-medium transition-colors touch-manipulation text-amber-400 hover:bg-amber-400/10",
+                "flex w-full items-center gap-2.5 rounded-md text-xs font-medium transition-colors touch-manipulation text-warning hover:bg-warning/10",
                 collapsed ? "justify-center p-2.5" : "px-3 py-2"
               )}
               title={collapsed ? "Back to Webhost" : undefined}
