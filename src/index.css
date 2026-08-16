@@ -628,6 +628,63 @@
     border-color: hsl(216 41% 88%);
   }
 
+  /* ── Landlord portal identity (scoped white-label accent) ───────────
+     The landlord portal leads with a subtle green/teal identity on top of
+     the shared light executive design system. These are scoped overrides of
+     the global tokens, so a future white-label customer can re-skin the
+     landlord portal by overriding these same variables without touching
+     dashboard components. Primary #059669 (emerald-600), secondary #0D9488
+     (teal-600). Surfaces stay white on a #F4F7FB page; never dark/black. */
+  .landlord-portal {
+    --background: hsl(210 38% 97%);          /* #F4F7FB */
+    --secondary-background: hsl(210 38% 97%);
+    --foreground: hsl(222 47% 11%);          /* #0F172A primary text */
+
+    --card: hsl(0 0% 100%);                  /* #FFFFFF surfaces */
+    --card-foreground: hsl(222 47% 11%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222 47% 11%);
+
+    /* Landlord accent = emerald #059669 */
+    --primary: hsl(160 84% 31%);
+    --primary-foreground: hsl(0 0% 100%);
+    --primary-hover: hsl(160 84% 26%);
+    --accent: hsl(160 84% 31%);
+    --accent-foreground: hsl(0 0% 100%);
+    --ring: hsl(160 84% 31%);
+
+    /* Secondary accent = teal #0D9488 */
+    --teal: hsl(173 75% 31%);                /* #0D9488 */
+    --teal-foreground: hsl(0 0% 100%);
+    --teal-bg: hsl(152 76% 96%);             /* #ECFDF5 accent-soft */
+
+    --sidebar-primary: hsl(160 84% 31%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-ring: hsl(160 84% 31%);
+
+    --muted-foreground: hsl(215 16% 47%);    /* #64748B muted text */
+    --secondary-foreground: hsl(215 25% 27%);/* #334155 secondary text */
+    --border: hsl(218 27% 89%);              /* #DCE3ED border */
+    --input: hsl(218 27% 89%);
+  }
+
+  /* Landlord accent-tinted brand button (green) — white-label safe. */
+  .landlord-portal .btn-brand {
+    background-color: hsl(160 84% 31%);
+    color: #FFFFFF;
+    font-weight: 600;
+  }
+  .landlord-portal .btn-brand:hover {
+    background-color: hsl(160 84% 26%);
+  }
+  /* Landlord gradient text leans emerald→teal instead of navy→blue. */
+  .landlord-portal .text-gradient {
+    background: linear-gradient(135deg, hsl(160 84% 26%) 0%, hsl(173 75% 31%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
   /* ── Executive table system ─────────────────────────────────────────
      Soft navy-tinted header, white rows, subtle borders, generous row height. */
   .exec-table { width: 100%; border-collapse: collapse; }
