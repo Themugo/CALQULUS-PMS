@@ -10,14 +10,15 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { formatDistanceToNow } from 'date-fns';
-import { checkHealth } from '@/shared/lib/observability';
 import {
-  Users, Building, TrendingUp,
+  Users, Building,
   CheckCircle, Clock, DollarSign, Home, Search,
   AlertCircle, BarChart3, ArrowRight, Zap, RefreshCw,
-  ShieldCheck, Activity, Layers, ScrollText, Tag, ChevronRight,
-  ServerCog, MapPin,
+  ShieldCheck, Layers, ScrollText, Tag, ChevronRight,
+  ServerCog, MapPin, Bug, Receipt,
 } from 'lucide-react';
+import { HEALTH_COPY, usePlatformHealth } from '@/features/webhost/hooks/usePlatformHealth';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 type ManagerInvoiceRow = { amount: number | null };
 type PropertyRow = { id: string; name: string; address: string | null; manager_id: string | null; created_at: string };
@@ -29,37 +30,6 @@ const fmt = (n: number) =>
 interface WebhostOverviewProps {
   onNavigateTab?: (tab: string) => void;
 }
-
-type HealthState = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
-
-// Real, lightweight platform health probe. Reuses the existing checkHealth()
-// helper from the observability stack — no invented metrics. Aggregates the
-// component statuses into a single honest value.
-function usePlatformHealth() {
-  return useQuery<HealthState>({
-    queryKey: ['webhost-overview-health'],
-    queryFn: async () => {
-      try {
-        const checks = await checkHealth();
-        if (!checks.length) return 'unknown';
-        if (checks.some(c => c.status === 'unhealthy')) return 'unhealthy';
-        if (checks.some(c => c.status === 'degraded')) return 'degraded';
-        return 'healthy';
-      } catch {
-        return 'unknown';
-      }
-    },
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
-}
-
-const HEALTH_COPY: Record<HealthState, { label: string; dot: string; text: string; sub: string }> = {
-  healthy: { label: 'System Operational', dot: 'bg-success', text: 'text-success', sub: 'Platform services responding normally' },
-  degraded: { label: 'System Degraded', dot: 'bg-warning', text: 'text-warning', sub: 'Some platform services are responding slowly' },
-  unhealthy: { label: 'System Issue', dot: 'bg-destructive', text: 'text-destructive', sub: 'A platform service is unreachable — investigate' },
-  unknown: { label: 'System Status', dot: 'bg-muted-foreground', text: 'text-muted-foreground', sub: 'Health probe unavailable' },
-};
 
 // ── Platform status band ─────────────────────────────────────────────
 const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = ({ onNavigateTab }) => {
@@ -107,7 +77,7 @@ const PlatformStatusBand: React.FC<{ onNavigateTab?: (tab: string) => void }> = 
 };
 
 // ── Empty state for zero-value attention items ───────────────────────
-const HealthyEmpty: React.FC<{ message: string; icon: React.ComponentType<{ className?: string }> }> = ({ message, icon: Icon }) => (
+const HealthyEmpty: React.FC<{ message: string }> = ({ message }) => (
   <div className="flex items-center gap-2 rounded-lg bg-success/10 border border-success/20 px-2.5 py-1.5">
     <CheckCircle className="h-3.5 w-3.5 text-success shrink-0" />
     <span className="text-[11px] font-medium text-success">{message}</span>
@@ -258,7 +228,7 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
             <div className="flex justify-between items-center text-[11px] text-secondary-foreground pt-3 border-t border-border">
               <span>Total 6-Month Billing: <strong className="text-foreground font-bold ml-1">{fmt(total6Mo)}</strong></span>
               <span className="text-primary/90 font-medium flex items-center gap-1">
-                <Zap className="h-3 w-3 text-primary" /> Interactive Recharts Engine
+                Paid subscription invoices
               </span>
             </div>
           </div>
@@ -285,7 +255,6 @@ type OverviewStats = {
 };
 
 interface CardShellProps {
-  accent: 'amber' | 'emerald' | 'sky' | 'purple';
   onClick?: () => void;
   title: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -293,25 +262,19 @@ interface CardShellProps {
   children: React.ReactNode;
 }
 
-const CardShell: React.FC<CardShellProps> = ({ accent, onClick, title, icon: Icon, badge, children }) => {
-  const accents = {
-    amber: { bar: 'border-l-warning', text: 'text-warning', hover: 'hover:border-warning/50', glow: 'group-hover:text-warning' },
-    emerald: { bar: 'border-l-success', text: 'text-success', hover: 'hover:border-success/50', glow: 'group-hover:text-success' },
-    sky: { bar: 'border-l-primary', text: 'text-primary', hover: 'hover:border-primary/50', glow: 'group-hover:text-primary' },
-    purple: { bar: 'border-l-info', text: 'text-info', hover: 'hover:border-info/50', glow: 'group-hover:text-info' },
-  }[accent];
+const CardShell: React.FC<CardShellProps> = ({ onClick, title, icon: Icon, badge, children }) => {
   return (
     <Card
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick(); } }}
-      className={`border-l-4 ${accents.bar} border-y border-r border-border bg-card hover:shadow-md ${accents.hover} transition-all ${onClick ? 'cursor-pointer group' : ''} rounded-2xl`}
+      className={`enterprise-card rounded-2xl hover:shadow-md transition-all ${onClick ? 'cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring' : ''}`}
     >
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2.5">
-          <span className={`text-[11px] font-bold uppercase tracking-wider ${accents.text} flex items-center gap-1.5 ${accents.glow}`}>
-            <Icon className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 group-hover:text-primary">
+            <Icon className="h-3.5 w-3.5 text-primary" />
             {title}
           </span>
           {badge && (
@@ -431,12 +394,10 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
       {/* ── 1. PLATFORM STATUS ── */}
       <PlatformStatusBand onNavigateTab={onNavigateTab} />
 
-      {/* ── 2/3/4. EXECUTIVE ANSWERS (Attention · Billing · Roster · Privacy) ── */}
+      {/* ── 2. EXECUTIVE ANSWERS (Attention · Subscriptions · Accounts · Security) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Attention Required */}
         <CardShell
-          accent="amber"
-          title="Attention Required"
+          title="Attention"
           icon={AlertCircle}
           onClick={() => onNavigateTab?.(pendingManagers > 0 ? 'managers' : overdueInvoices > 0 ? 'billing' : 'billing')}
           badge={hasAttention
@@ -468,14 +429,12 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
               </div>
             </div>
           ) : (
-            <HealthyEmpty message="No outstanding approvals, overdue invoices, or payouts" icon={CheckCircle} />
+            <HealthyEmpty message="No outstanding approvals, overdue invoices, or payouts" />
           )}
         </CardShell>
 
-        {/* Platform Billing */}
         <CardShell
-          accent="emerald"
-          title="Platform Billing"
+          title="Subscriptions"
           icon={DollarSign}
           onClick={() => onNavigateTab?.('billing')}
           badge={hasBillingHistory
@@ -510,10 +469,8 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           )}
         </CardShell>
 
-        {/* Platform Roster */}
         <CardShell
-          accent="sky"
-          title="Platform Roster"
+          title="Accounts"
           icon={Building}
           onClick={() => onNavigateTab?.('managers')}
           badge={{ label: 'Active scope', cls: 'border-primary/30 text-primary bg-primary/10' }}
@@ -538,10 +495,8 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
           )}
         </CardShell>
 
-        {/* Tenant Data Privacy */}
         <CardShell
-          accent="purple"
-          title="Tenant Data Privacy"
+          title="Security"
           icon={ShieldCheck}
           onClick={() => onNavigateTab?.('security')}
           badge={{ label: 'Enforced', cls: 'border-info/30 text-info bg-info/10' }}
@@ -567,132 +522,32 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
         </CardShell>
       </div>
 
-      {/* ── 5/6. MAIN WORKSPACE MATRIX ── */}
+      {/* ── MAIN WORKSPACE: subscriptions trend + shortcuts ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column (8 cols): Revenue Trend & Properties Audit */}
         <div className="lg:col-span-8 space-y-5">
           <PlatformRevenueTrend onNavigateTab={onNavigateTab} />
-
-          {/* ── 6. Recent Properties Audit ── */}
-          <Card className="enterprise-card rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-border">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
-                    <Activity className="h-4 w-4 text-primary" />
-                    Recent Properties Audit Trail
-                  </CardTitle>
-                  <CardDescription className="text-xs text-secondary-foreground">
-                    Latest properties registered across manager accounts
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="relative min-w-[200px]">
-                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-secondary-foreground" />
-                    <Input
-                      type="text"
-                      placeholder="Search properties..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      aria-label="Search recent properties"
-                      className="h-8 pl-8 text-xs bg-card border-border text-foreground placeholder:text-secondary-foreground focus:border-primary/50 rounded-lg"
-                    />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => queryClient.invalidateQueries()}
-                    aria-label="Refresh data"
-                    className="h-8 w-8 p-0 text-secondary-foreground hover:text-primary hover:bg-soft-blue"
-                  >
-                    <RefreshCw className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              {isLoadingProperties ? (
-                <div className="space-y-2">
-                  {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full bg-secondary-background rounded-xl" />)}
-                </div>
-              ) : filteredProperties.length === 0 ? (
-                <div className="py-10 text-center">
-                  <Building className="h-9 w-9 mx-auto text-secondary-foreground mb-2" />
-                  <p className="text-sm font-medium text-secondary-foreground">
-                    {searchQuery ? 'No matching properties found' : 'No properties on record yet'}
-                  </p>
-                  <p className="text-xs text-secondary-foreground mt-1">
-                    {searchQuery ? 'Try a different search term.' : 'Newly registered properties will appear here.'}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {(filteredProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map(prop => {
-                    const hasManager = !!prop.manager_profile;
-                    const registeredAt = prop.created_at ? formatDistanceToNow(new Date(prop.created_at), { addSuffix: true }) : '';
-                    return (
-                      <div
-                        key={prop.id}
-                        onClick={() => onNavigateTab?.('properties')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('properties'); } }}
-                        className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-3 hover:bg-secondary-background hover:border-primary/40 transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-primary/30"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">{prop.name}</p>
-                          <p className="text-[11px] text-secondary-foreground truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="h-3 w-3 text-secondary-foreground shrink-0" />
-                            {prop.address || 'No location specified'}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-bold ${hasManager ? 'border-success/30 text-success bg-success/10' : 'border-border text-secondary-foreground bg-secondary-background'}`}>
-                              {hasManager ? 'Linked' : 'Unlinked'}
-                            </Badge>
-                            {registeredAt && (
-                              <span className="text-[10px] text-secondary-foreground flex items-center gap-1">
-                                <Clock className="h-2.5 w-2.5" /> {registeredAt}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0 max-w-[130px]">
-                          <p className="text-[11px] font-semibold text-primary truncate">
-                            {prop.manager_profile?.full_name || (hasManager ? 'Manager' : '—')}
-                          </p>
-                          <p className="text-[10px] text-secondary-foreground truncate">
-                            {prop.manager_profile?.email || (hasManager ? '—' : 'No manager')}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Right Column (4 cols): Command Desk & Privacy Policy */}
         <div className="lg:col-span-4 space-y-5">
-          {/* ── 7. Platform Command Desk ── */}
           <Card className="enterprise-card rounded-2xl overflow-hidden">
             <CardHeader className="pb-2 pt-4 px-4 sm:px-5 border-b border-border">
               <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
                 <Zap className="h-4 w-4 text-primary" />
-                Platform Command Desk
+                Platform shortcuts
               </CardTitle>
-              <CardDescription className="text-xs text-secondary-foreground">Quick shortcuts to admin modules</CardDescription>
+              <CardDescription className="text-xs text-secondary-foreground">Accounts, subscriptions, security, and issues first</CardDescription>
             </CardHeader>
             <CardContent className="p-3">
               <div className="space-y-1.5">
                 {([
-                  { tab: 'managers', icon: Users, iconColor: 'text-warning', hoverText: 'group-hover:text-warning', hoverBorder: 'hover:border-warning/40', label: 'Manager Accounts', meta: `${approvedManagers} approved` },
-                  { tab: 'tiers', icon: Layers, iconColor: 'text-primary', hoverText: 'group-hover:text-primary', hoverBorder: 'hover:border-primary/40', label: 'Subscription Tiers', meta: 'Configured' },
-                  { tab: 'billing-rules', icon: ScrollText, iconColor: 'text-success', hoverText: 'group-hover:text-success', hoverBorder: 'hover:border-success/40', label: 'Platform Billing Rules', meta: 'Active' },
-                  { tab: 'custom-pricing', icon: Tag, iconColor: 'text-info', hoverText: 'group-hover:text-info', hoverBorder: 'hover:border-info/40', label: 'Custom Pricing Blocks', meta: 'Manage' },
-                  { tab: 'unlinked-landlords', icon: Home, iconColor: 'text-warning', hoverText: 'group-hover:text-warning', hoverBorder: 'hover:border-warning/40', label: 'System Landlords', meta: `${systemLandlords} unlinked` },
-                  { tab: 'security', icon: ShieldCheck, iconColor: 'text-destructive', hoverText: 'group-hover:text-destructive', hoverBorder: 'hover:border-destructive/40', label: 'Security & Audit Logs', meta: 'Protected' },
+                  { tab: 'managers', icon: Users, label: 'Accounts', meta: `${approvedManagers} approved` },
+                  { tab: 'billing', icon: Receipt, label: 'Subscriptions', meta: 'Billing' },
+                  { tab: 'security', icon: ShieldCheck, label: 'Security & audit', meta: 'Protected' },
+                  { tab: 'error-logs', icon: Bug, label: 'Issues', meta: 'Support' },
+                  { tab: 'tiers', icon: Layers, label: 'Subscription tiers', meta: 'Configured' },
+                  { tab: 'billing-rules', icon: ScrollText, label: 'Billing rules', meta: 'Active' },
+                  { tab: 'custom-pricing', icon: Tag, label: 'Custom pricing', meta: 'Manage' },
+                  { tab: 'unlinked-landlords', icon: Home, label: 'System landlords', meta: `${systemLandlords} unlinked` },
                 ] as const).map(item => {
                   const Icon = item.icon;
                   return (
@@ -700,15 +555,15 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
                       key={item.tab}
                       type="button"
                       onClick={() => onNavigateTab?.(item.tab)}
-                      className={`w-full p-2.5 rounded-xl border border-border bg-card hover:bg-secondary-background ${item.hoverBorder} flex items-center justify-between text-xs transition-all text-left group focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                      className="w-full min-h-10 p-2.5 rounded-xl border border-border bg-card hover:bg-secondary-background hover:border-primary/40 flex items-center justify-between text-xs transition-all text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <span className={`font-semibold text-foreground flex items-center gap-2 ${item.hoverText}`}>
-                        <Icon className={`h-3.5 w-3.5 ${item.iconColor}`} />
+                      <span className="font-semibold text-foreground flex items-center gap-2 group-hover:text-primary">
+                        <Icon className="h-3.5 w-3.5 text-primary" />
                         {item.label}
                       </span>
                       <div className="flex items-center gap-1.5">
                         <Badge variant="outline" className="text-[10px] border-border bg-secondary-background text-secondary-foreground font-bold">{item.meta}</Badge>
-                        <ChevronRight className={`h-3 w-3 text-secondary-foreground ${item.hoverText}`} />
+                        <ChevronRight className="h-3 w-3 text-secondary-foreground group-hover:text-primary" />
                       </div>
                     </button>
                   );
@@ -717,34 +572,126 @@ const WebhostOverview: React.FC<WebhostOverviewProps> = ({ onNavigateTab }) => {
             </CardContent>
           </Card>
 
-          {/* ── 8. Tenant Data Privacy notice ── */}
           <Card
             onClick={() => onNavigateTab?.('security')}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('security'); } }}
-            className="border-info/30 bg-info/5 hover:bg-info/10 transition-all cursor-pointer group rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="enterprise-card hover:border-primary/40 transition-all cursor-pointer group rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <CardContent className="p-4 flex items-start gap-3">
-              <div className="h-9 w-9 rounded-xl bg-info/10 border border-info/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <ShieldCheck className="h-5 w-5 text-info" />
+              <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-info uppercase tracking-wider flex items-center justify-between gap-2">
-                  <span>Tenant Data Isolation Policy</span>
-                  <ChevronRight className="h-3.5 w-3.5 text-info group-hover:translate-x-0.5 transition-transform shrink-0" />
+                <p className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center justify-between gap-2">
+                  <span>Tenant data isolation</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </p>
                 <p className="text-xs text-secondary-foreground mt-1.5 leading-relaxed font-normal">
-                  Webhost administrators operate at the platform administration level only. By architecture and Row-Level Security policy, tenant identities, rent payment records, and lease details are completely isolated from Webhost views.
-                </p>
-                <p className="text-[10px] text-info font-semibold mt-2 uppercase tracking-wider">
-                  Platform-level access · No tenant PII
+                  Webhost administrators operate at the platform level only. Tenant identities, rent payments, and lease details stay isolated from this view.
                 </p>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Demoted: recent organizations — not first-screen operational clutter */}
+      <Card className="enterprise-card rounded-2xl overflow-hidden">
+        <CardHeader className="pb-3 pt-4 px-4 sm:px-5 border-b border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
+                <Building className="h-4 w-4 text-primary" />
+                Recent organizations
+              </CardTitle>
+              <CardDescription className="text-xs text-secondary-foreground">
+                Latest properties registered across manager accounts
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative min-w-[200px] flex-1">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-secondary-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search organizations…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search recent organizations"
+                  className="h-10 pl-8 text-xs bg-card border-border text-foreground placeholder:text-secondary-foreground focus:border-primary/50 rounded-lg"
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => queryClient.invalidateQueries()}
+                aria-label="Refresh data"
+                className="h-10 w-10 p-0 text-secondary-foreground hover:text-primary hover:bg-soft-blue"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {isLoadingProperties ? (
+            <div className="space-y-2">
+              {Array.from({length:4}).map((_,i) => <Skeleton key={i} className="h-14 w-full bg-secondary-background rounded-xl" />)}
+            </div>
+          ) : filteredProperties.length === 0 ? (
+            <EmptyState
+              icon={Building}
+              title={searchQuery ? 'No matching organizations' : 'No organizations on record yet'}
+              description={searchQuery ? 'Try a different search term.' : 'Newly registered properties will appear here.'}
+              className="border-0 bg-transparent min-h-[160px]"
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {(filteredProperties as (PropertyRow & { manager_profile: ProfileRow | null })[]).map(prop => {
+                const hasManager = !!prop.manager_profile;
+                const registeredAt = prop.created_at ? formatDistanceToNow(new Date(prop.created_at), { addSuffix: true }) : '';
+                return (
+                  <div
+                    key={prop.id}
+                    onClick={() => onNavigateTab?.('properties')}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigateTab?.('properties'); } }}
+                    className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-3 hover:bg-secondary-background hover:border-primary/40 transition-all cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">{prop.name}</p>
+                      <p className="text-[11px] text-secondary-foreground truncate flex items-center gap-1 mt-0.5">
+                        <MapPin className="h-3 w-3 text-secondary-foreground shrink-0" />
+                        {prop.address || 'No location specified'}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-bold ${hasManager ? 'border-success/30 text-success bg-success/10' : 'border-border text-secondary-foreground bg-secondary-background'}`}>
+                          {hasManager ? 'Linked' : 'Unlinked'}
+                        </Badge>
+                        {registeredAt && (
+                          <span className="text-[10px] text-secondary-foreground flex items-center gap-1">
+                            <Clock className="h-2.5 w-2.5" /> {registeredAt}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 max-w-[130px]">
+                      <p className="text-[11px] font-semibold text-primary truncate">
+                        {prop.manager_profile?.full_name || (hasManager ? 'Manager' : '—')}
+                      </p>
+                      <p className="text-[10px] text-secondary-foreground truncate">
+                        {prop.manager_profile?.email || (hasManager ? '—' : 'No manager')}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

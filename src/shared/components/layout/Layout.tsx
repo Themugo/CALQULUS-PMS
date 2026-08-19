@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { PageHeader } from "./PageHeader";
 import { ContextPanel } from "./ContextPanel";
 import { CommandPalette } from "./CommandPalette";
 import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
@@ -40,6 +41,12 @@ export function Layout({
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       {/* Key sequence indicator for fast keyboard navigation */}
       {keySequence.length > 0 && (
         <div className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground text-xs font-mono font-bold px-3 py-1.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in-0 duration-150">
@@ -80,31 +87,20 @@ export function Layout({
           onToggleContextPanel={() => setContextPanelOpen((prev) => !prev)}
         />
 
-        {/* Workspace Page Header (Title, Subtitle, & Primary Actions) */}
         {(title || headerActions) && (
-          <div className="border-b border-border/60 bg-background px-4 md:px-6 lg:px-8 py-5">
-            <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="min-w-0 space-y-1">
-                <h1 className="page-title text-foreground truncate">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="supporting-text">
-                    {subtitle}
-                  </p>
-                )}
-              </div>
-              {headerActions && (
-                <div className="flex items-center gap-2 shrink-0">
-                  {headerActions}
-                </div>
-              )}
-            </div>
-          </div>
+          <PageHeader
+            title={title}
+            description={subtitle}
+            actions={headerActions}
+            className="px-4 py-5 md:px-6 lg:px-8"
+          />
         )}
 
-        {/* Main Content Viewport (Desktop-first Max-width Container) */}
-        <main className="flex-1 w-full max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-6 animate-fade-in">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 w-full max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-6 animate-fade-in outline-none"
+        >
           {children}
         </main>
 

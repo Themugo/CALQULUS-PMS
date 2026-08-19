@@ -22,6 +22,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
+      role="status"
       className={cn(
         "flex min-h-[220px] flex-col items-center justify-center rounded-lg border border-dashed border-border p-8 text-center bg-card/50 animate-in fade-in-0 duration-200",
         className

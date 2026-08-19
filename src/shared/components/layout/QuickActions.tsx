@@ -86,7 +86,7 @@ export function QuickActions() {
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"
-          className="h-8 gap-1.5 bg-primary text-primary-foreground font-semibold px-3 shadow-sm hover:bg-primary/90 transition-all text-xs"
+          className="h-10 gap-1.5 bg-primary text-primary-foreground font-semibold px-3 shadow-sm hover:bg-primary/90 transition-all text-xs"
         >
           <Plus className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Quick Action</span>

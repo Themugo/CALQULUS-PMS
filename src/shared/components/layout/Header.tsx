@@ -59,7 +59,7 @@ export function Header({
           variant="ghost"
           size="icon"
           aria-label="Open menu"
-          className="lg:hidden h-8 w-8 text-muted-foreground hover:text-foreground shrink-0"
+          className="lg:hidden h-10 w-10 text-muted-foreground hover:text-foreground shrink-0"
           onClick={onMenuClick}
         >
           <Menu className="h-4 w-4" />
@@ -83,8 +83,10 @@ export function Header({
 
         {/* Global Search & Command Palette Trigger */}
         <button
+          type="button"
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center gap-3 h-8 w-64 lg:w-72 px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all"
+          aria-label="Search or jump to a page"
+          className="hidden md:flex items-center gap-3 h-10 w-64 lg:w-72 px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
           <span className="flex-1 text-left truncate">Search or jump to...</span>
@@ -98,7 +100,7 @@ export function Header({
           variant="ghost"
           size="icon"
           aria-label="Search"
-          className="md:hidden h-8 w-8 text-muted-foreground hover:text-foreground"
+          className="md:hidden h-10 w-10 text-muted-foreground hover:text-foreground"
           onClick={onOpenCommandPalette}
         >
           <Search className="h-4 w-4" />
@@ -108,7 +110,8 @@ export function Header({
         <Button
           variant="ghost"
           size="icon"
-          className="hidden sm:flex h-8 w-8 text-muted-foreground hover:text-foreground"
+          aria-label="Help center and keyboard shortcuts"
+          className="hidden sm:flex h-10 w-10 text-muted-foreground hover:text-foreground"
           onClick={onOpenHelpCenter || onOpenShortcutsHelp}
           title="Help Center & Keyboard Shortcuts (?)"
         >
@@ -123,13 +126,14 @@ export function Header({
 
         {/* Workspace Context Panel Toggle */}
         {onToggleContextPanel && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:flex h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={onToggleContextPanel}
-            title="Toggle Workspace Activity & Context"
-          >
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle workspace activity and context"
+              className="hidden sm:flex h-10 w-10 text-muted-foreground hover:text-foreground"
+              onClick={onToggleContextPanel}
+              title="Toggle Workspace Activity & Context"
+            >
             <PanelRight className="h-4 w-4" />
           </Button>
         )}
@@ -140,7 +144,8 @@ export function Header({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              aria-label="Toggle theme"
+              className="h-10 w-10 text-muted-foreground hover:text-foreground"
               title="Toggle theme"
             >
               {resolvedTheme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}

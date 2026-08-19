@@ -80,7 +80,7 @@ export function ProfileMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-2 pl-1.5 pr-2.5 h-9 rounded-md hover:bg-muted/80 transition-colors"
+          className="flex items-center gap-2 pl-1.5 pr-2.5 h-10 rounded-md hover:bg-muted/80 transition-colors"
         >
           <div className="relative">
             <Avatar className="h-7 w-7 border border-border">
@@ -89,7 +89,7 @@ export function ProfileMenu() {
                 {getInitials(fullName)}
               </AvatarFallback>
             </Avatar>
-            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-background" />
+            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success ring-2 ring-background" />
           </div>
 
           <div className="hidden lg:flex flex-col items-start text-left">

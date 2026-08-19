@@ -6,6 +6,7 @@ import { Controller, ControllerProps, FieldPath, FieldValues, FormProvider, useF
 
 import { cn } from "@/shared/lib/utils";
 import { Label } from "@/shared/components/ui/label";
+import { toUserFacingError } from "@/shared/lib/errorLogger";
 
 const Form = FormProvider;
 
@@ -112,14 +113,24 @@ FormDescription.displayName = "FormDescription";
 const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, children, ...props }, ref) => {
     const { error, formMessageId } = useFormField();
-    const body = error ? String(error?.message) : children;
+    const raw = error ? String(error?.message ?? "") : children;
+    const body =
+      typeof raw === "string"
+        ? toUserFacingError(raw, "Please check this field and try again.")
+        : raw;
 
     if (!body) {
       return null;
     }
 
     return (
-      <p ref={ref} id={formMessageId} className={cn("text-sm font-medium text-destructive", className)} {...props}>
+      <p
+        ref={ref}
+        id={formMessageId}
+        role="alert"
+        className={cn("text-sm font-medium text-destructive", className)}
+        {...props}
+      >
         {body}
       </p>
     );

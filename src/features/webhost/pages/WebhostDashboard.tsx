@@ -6,9 +6,14 @@ import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
+import { PageHeader } from '@/shared/components/layout/PageHeader';
+import { Footer } from '@/shared/components/layout/Footer';
+import { statusBadgeClass } from '@/shared/lib/statusBadge';
+import { cn } from '@/shared/lib/utils';
 import {
   Globe, Users, Building, Home, LogOut, Shield,
   Receipt, Crown, FileSignature, ShieldAlert, Bug, Layers, ScrollText, Tag,
+  type LucideIcon,
 } from 'lucide-react';
 import ManagerManagement from '@/features/webhost/components/ManagerManagement';
 import PropertyAssignment from '@/features/webhost/components/PropertyAssignment';
@@ -26,9 +31,22 @@ import SystemLandlordManagement from '@/features/webhost/components/SystemLandlo
 import { EnterpriseAdminPlatform } from '@/shared/components/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { HEALTH_COPY, usePlatformHealth } from '@/features/webhost/hooks/usePlatformHealth';
 
 // NOTE: TenantManagement is intentionally NOT imported.
 // Webhosts have zero access to tenant data by platform policy.
+
+type TabGroup = 'primary' | 'secondary';
+
+interface AdminTab {
+  value: string;
+  label: string;
+  icon: LucideIcon;
+  enabled: boolean;
+  group: TabGroup;
+  count?: number;
+  countTone?: 'warning' | 'danger';
+}
 
 const WebhostDashboard = () => {
   const {
@@ -37,8 +55,9 @@ const WebhostDashboard = () => {
   } = useAuth();
 
   const [activeTab, setActiveTab] = React.useState('overview');
+  const { data: health = 'unknown', isLoading: healthLoading } = usePlatformHealth();
+  const healthCopy = HEALTH_COPY[health];
 
-  // Query pending action items for tab notification badges
   const { data: pendingCounts } = useQuery({
     queryKey: ['webhost-dashboard-pending-counts'],
     queryFn: async () => {
@@ -75,7 +94,7 @@ const WebhostDashboard = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <BrandMark size="hero" className="animate-pulse-soft" />
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5" role="status" aria-live="polite" aria-label="Loading platform administration">
             {[0,1,2].map(i => (
               <div key={i} className="w-2 h-2 rounded-full bg-primary/70 animate-pulse-soft"
                 style={{ animationDelay: `${i * 0.2}s` }} />
@@ -102,13 +121,13 @@ const WebhostDashboard = () => {
     switch (myPermissions.admin_level) {
       case 'super_admin':
         return (
-          <Badge className="bg-primary/15 text-primary border border-primary/30 ml-2 gap-1">
+          <Badge className={cn(statusBadgeClass('info'), 'ml-2 gap-1')}>
             <Crown className="h-3 w-3" />Super Admin
           </Badge>
         );
       case 'admin':
         return (
-          <Badge className="bg-primary/15 text-primary border border-primary/30 ml-2 gap-1">
+          <Badge className={cn(statusBadgeClass('neutral'), 'ml-2 gap-1')}>
             <Shield className="h-3 w-3" />Admin
           </Badge>
         );
@@ -119,21 +138,84 @@ const WebhostDashboard = () => {
     }
   };
 
-  // Executive nav pill style: clean light-blue surface, single CALQULUS blue
-  // accent for the active state. Error Logs keeps its semantic red. All logic
-  // (badges, counts, conditional tabs) is preserved below.
-  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-secondary-foreground hover:text-primary hover:bg-soft-blue transition-all text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-medium";
+  const tabs: AdminTab[] = [
+    { value: 'overview', label: 'Overview', icon: Globe, enabled: true, group: 'primary' },
+    {
+      value: 'managers',
+      label: 'Accounts',
+      icon: Users,
+      enabled: canViewManagers,
+      group: 'primary',
+      count: pendingCounts?.pendingManagers ?? 0,
+      countTone: 'warning',
+    },
+    {
+      value: 'billing',
+      label: 'Subscriptions',
+      icon: Receipt,
+      enabled: canViewBilling,
+      group: 'primary',
+      count: pendingCounts?.overdueInvoices ?? 0,
+      countTone: 'danger',
+    },
+    { value: 'security', label: 'Security', icon: ShieldAlert, enabled: canViewSecurity, group: 'primary' },
+    { value: 'error-logs', label: 'Issues', icon: Bug, enabled: true, group: 'primary' },
+    { value: 'admin-suite', label: 'Admin Platform', icon: Crown, enabled: true, group: 'secondary' },
+    { value: 'properties', label: 'Properties', icon: Building, enabled: canViewProperties, group: 'secondary' },
+    { value: 'unlinked-landlords', label: 'Landlords', icon: Home, enabled: canViewLandlords, group: 'secondary' },
+    { value: 'tiers', label: 'Tiers', icon: Layers, enabled: isSuperAdmin || canViewBilling, group: 'secondary' },
+    { value: 'billing-rules', label: 'Billing Rules', icon: ScrollText, enabled: isSuperAdmin || canViewBilling, group: 'secondary' },
+    { value: 'custom-pricing', label: 'Custom Pricing', icon: Tag, enabled: isSuperAdmin || canViewBilling, group: 'secondary' },
+    { value: 'contracts', label: 'Contracts', icon: FileSignature, enabled: true, group: 'secondary' },
+  ];
+
+  const primaryTabs = tabs.filter((t) => t.enabled && t.group === 'primary');
+  const secondaryTabs = tabs.filter((t) => t.enabled && t.group === 'secondary');
+
+  const tabCls = "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-sm text-secondary-foreground hover:text-primary hover:bg-soft-blue transition-all text-xs sm:text-sm px-3.5 py-2 min-h-10 rounded-lg font-medium";
+
+  const renderTab = (tab: AdminTab) => {
+    const Icon = tab.icon;
+    const showCount = (tab.count ?? 0) > 0;
+    return (
+      <TabsTrigger key={tab.value} value={tab.value} className={tabCls}>
+        <Icon className="h-3.5 w-3.5 mr-1.5" />
+        {tab.label}
+        {showCount && (
+          <span
+            className={cn(
+              'ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold text-white',
+              tab.countTone === 'danger' ? 'bg-destructive' : 'bg-warning',
+            )}
+          >
+            {tab.count}
+          </span>
+        )}
+      </TabsTrigger>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white flex flex-col">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
           <BrandMark size="md" showWordmark subtitle="Admin" className="min-w-0" />
 
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
-              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">System operational</span>
+              <div
+                className={cn('h-2 w-2 rounded-full', healthLoading ? 'bg-muted-foreground' : healthCopy.dot, health === 'healthy' && !healthLoading ? 'animate-pulse' : '')}
+                aria-hidden
+              />
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {healthLoading ? 'Checking status' : healthCopy.label}
+              </span>
             </div>
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
               <div className="h-2 w-2 rounded-full bg-primary" />
@@ -144,7 +226,7 @@ const WebhostDashboard = () => {
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="text-muted-foreground hover:text-destructive"
+              className="text-muted-foreground hover:text-destructive min-h-10"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -153,14 +235,13 @@ const WebhostDashboard = () => {
         </div>
       </header>
 
-      {/* Main */}
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 outline-none">
         {!myPermissions ? (
           <div className="enterprise-card p-10 text-center">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="section-title text-center mb-2">Permissions Pending</h3>
+            <h3 className="section-title text-center mb-2">Permissions pending</h3>
             <p className="supporting-text text-center max-w-md mx-auto">
               Your webhost account is active but permissions haven't been assigned yet.
               A super admin needs to configure your access level.
@@ -168,73 +249,25 @@ const WebhostDashboard = () => {
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <PageHeader
+              title="Platform administration"
+              description="System health, accounts, subscriptions, security, and operational issues — without tenant or landlord operational detail."
+              className="border-0 px-0 py-0"
+              status={
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground lg:hidden">
+                  <span className={cn('h-1.5 w-1.5 rounded-full', healthCopy.dot)} aria-hidden />
+                  {healthLoading ? 'Checking' : healthCopy.label}
+                </span>
+              }
+            />
+
             <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
               <TabsList className="bg-card border border-border h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl shadow-sm">
-                <TabsTrigger value="overview" className={tabCls}>
-                  <Globe className="h-3.5 w-3.5 mr-1.5" />Overview
-                </TabsTrigger>
-                <TabsTrigger value="admin-suite" className={tabCls}>
-                  <Crown className="h-3.5 w-3.5 mr-1.5" />Admin Platform
-                </TabsTrigger>
-                {canViewManagers && (
-                  <TabsTrigger value="managers" className={tabCls}>
-                    <Users className="h-3.5 w-3.5 mr-1.5" />
-                    Managers
-                    {(pendingCounts?.pendingManagers ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-warning text-white font-extrabold shadow-sm">
-                        {pendingCounts?.pendingManagers}
-                      </span>
-                    )}
-                  </TabsTrigger>
+                {primaryTabs.map(renderTab)}
+                {secondaryTabs.length > 0 && (
+                  <span className="hidden md:inline-block h-6 w-px bg-border mx-1 self-center" aria-hidden />
                 )}
-                {canViewProperties && (
-                  <TabsTrigger value="properties" className={tabCls}>
-                    <Building className="h-3.5 w-3.5 mr-1.5" />Properties
-                  </TabsTrigger>
-                )}
-                {canViewLandlords && (
-                  <TabsTrigger value="unlinked-landlords" className={tabCls}>
-                    <Home className="h-3.5 w-3.5 mr-1.5" />Landlords
-                  </TabsTrigger>
-                )}
-                {canViewBilling && (
-                  <TabsTrigger value="billing" className={tabCls}>
-                    <Receipt className="h-3.5 w-3.5 mr-1.5" />
-                    Billing
-                    {(pendingCounts?.overdueInvoices ?? 0) > 0 && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-destructive text-white font-extrabold shadow-sm">
-                        {pendingCounts?.overdueInvoices}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                )}
-                {(isSuperAdmin || canViewBilling) && (
-                  <TabsTrigger value="tiers" className={tabCls}>
-                    <Layers className="h-3.5 w-3.5 mr-1.5" />Tiers
-                  </TabsTrigger>
-                )}
-                {(isSuperAdmin || canViewBilling) && (
-                  <TabsTrigger value="billing-rules" className={tabCls}>
-                    <ScrollText className="h-3.5 w-3.5 mr-1.5" />Billing Rules
-                  </TabsTrigger>
-                )}
-                {(isSuperAdmin || canViewBilling) && (
-                  <TabsTrigger value="custom-pricing" className={tabCls}>
-                    <Tag className="h-3.5 w-3.5 mr-1.5" />Custom Pricing
-                  </TabsTrigger>
-                )}
-                <TabsTrigger value="contracts" className={tabCls}>
-                  <FileSignature className="h-3.5 w-3.5 mr-1.5" />Contracts
-                </TabsTrigger>
-                {canViewSecurity && (
-                  <TabsTrigger value="security" className={tabCls}>
-                    <ShieldAlert className="h-3.5 w-3.5 mr-1.5" />Security
-                  </TabsTrigger>
-                )}
-                <TabsTrigger value="error-logs"
-                  className="data-[state=active]:bg-destructive data-[state=active]:text-white data-[state=active]:font-semibold text-secondary-foreground hover:text-destructive hover:bg-destructive/10 text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition-all font-medium">
-                  <Bug className="h-3.5 w-3.5 mr-1.5" />Error Logs
-                </TabsTrigger>
+                {secondaryTabs.map(renderTab)}
               </TabsList>
             </div>
 
@@ -264,8 +297,7 @@ const WebhostDashboard = () => {
         )}
       </main>
 
-      {/* Bottom accent hairline — restrained blue */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      <Footer variant="compact" />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 import { Label } from "@/shared/components/ui/label";
 import { CALQULUS_FIELD } from "@/shared/theme/tokens";
+import { toUserFacingError } from "@/shared/lib/errorLogger";
 
 interface FieldProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: React.ReactNode;
@@ -32,7 +33,7 @@ export function Field({
       {children}
       {error ? (
         <p className={CALQULUS_FIELD.error} role="alert">
-          {error}
+          {typeof error === "string" ? toUserFacingError(error, "Please check this field and try again.") : error}
         </p>
       ) : helper ? (
         <p className={CALQULUS_FIELD.helper}>{helper}</p>

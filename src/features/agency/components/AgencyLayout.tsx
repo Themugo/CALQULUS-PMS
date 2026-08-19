@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
-import { Button } from '@/shared/components/ui/button';
 import {
   Building2, Users, LogOut, LayoutDashboard, FileText,
   Wrench, CreditCard, Settings, BarChart3, Menu, X,
@@ -43,6 +42,12 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-muted/80 backdrop-blur-sm lg:hidden"
@@ -122,7 +127,9 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
-              className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-muted/50"
+              type="button"
+              aria-label="Open menu"
+              className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-2 -ml-1.5 rounded-lg hover:bg-muted/50 min-h-10 min-w-10 inline-flex items-center justify-center"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -146,7 +153,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden animate-fade-in">
+        <main id="main-content" tabIndex={-1} className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden animate-fade-in outline-none">
           {children}
         </main>
 

@@ -1,15 +1,20 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { Skeleton } from "./skeleton";
 
 export interface LoadingStateProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: string;
   size?: "sm" | "md" | "lg";
+  variant?: "spinner" | "skeleton";
+  rows?: number;
 }
 
 export function LoadingState({
-  label = "Loading data...",
+  label = "Loading…",
   size = "md",
+  variant = "spinner",
+  rows = 4,
   className,
   ...props
 }: LoadingStateProps) {
@@ -19,8 +24,28 @@ export function LoadingState({
     lg: "h-8 w-8",
   };
 
+  if (variant === "skeleton") {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        className={cn("space-y-2 p-4", className)}
+        {...props}
+      >
+        <span className="sr-only">{label}</span>
+        {Array.from({ length: rows }).map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full" />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
       className={cn(
         "flex min-h-[180px] flex-col items-center justify-center p-6 text-center text-muted-foreground",
         className
