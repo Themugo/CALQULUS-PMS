@@ -117,8 +117,10 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                !i.description?.toLowerCase().includes('security')
         );
         const rentPaid = rentInvoices
-          .filter(i => i.status === 'paid')
-          .reduce((s: number, i: { paid_amount: number | null; amount: number }) => s + Number(i.paid_amount ?? i.amount), 0);
+          .reduce((s: number, i: { paid_amount: number | null; amount: number; status: string }) => {
+            if (i.status === 'cancelled' || i.status === 'failed' || i.status === 'refunded') return s;
+            return s + Number(i.paid_amount ?? 0);
+          }, 0);
 
         // Deposits
         const hseDep = unit.house_deposit ?? 0;
@@ -131,8 +133,10 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
                             (waterCharge?.amount ?? 0);
         const waterInvoices = tenantInvoices.filter(i => i.description?.toLowerCase().includes('water'));
         const waterPaid = waterInvoices
-          .filter(i => i.status === 'paid')
-          .reduce((s: number, i: { paid_amount: number | null; amount: number }) => s + Number(i.paid_amount ?? i.amount), 0);
+          .reduce((s: number, i: { paid_amount: number | null; amount: number; status: string }) => {
+            if (i.status === 'cancelled' || i.status === 'failed' || i.status === 'refunded') return s;
+            return s + Number(i.paid_amount ?? 0);
+          }, 0);
         const waterBal = Math.max(0, waterBilled - waterPaid);
 
         // Extra charges (garbage, security, etc.)
@@ -146,7 +150,9 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
           return {
             label: c.charge_label,
             amount: Number(c.amount),
-            paid: matchedInv?.status === 'paid' ? Number(matchedInv.paid_amount ?? matchedInv.amount) : 0,
+            paid: matchedInv && !['cancelled', 'failed', 'refunded'].includes(matchedInv.status)
+              ? Number(matchedInv.paid_amount ?? 0)
+              : 0,
           };
         });
 

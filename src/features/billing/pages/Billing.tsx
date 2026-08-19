@@ -35,6 +35,7 @@ import { ExpendituresTab } from "@/features/billing/components/ExpendituresTab";
 import { ReceiptsTab } from "@/features/billing/components/ReceiptsTab";
 import { useToast } from "@/shared/hooks/use-toast";
 import { toUserFacingError, logError } from "@/shared/lib/errorLogger";
+import { roundMoney, isPositiveMoney } from "@/shared/lib/money";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import {
@@ -260,8 +261,8 @@ const Billing = () => {
 
   const handleSaveEditInvoice = () => {
     if (!editingInvoice) return;
-    const amount = parseFloat(editInvoiceData.amount);
-    if (isNaN(amount) || amount <= 0) {
+    const amount = roundMoney(Number(editInvoiceData.amount));
+    if (!isPositiveMoney(amount)) {
       toast({ title: "Validation Error", description: "Please enter a valid amount", variant: "destructive" });
       return;
     }
@@ -357,8 +358,12 @@ const Billing = () => {
             <TabsList className="bg-card border border-border">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="partially_paid">Partially Paid</TabsTrigger>
               <TabsTrigger value="paid">Paid</TabsTrigger>
               <TabsTrigger value="overdue">Overdue</TabsTrigger>
+              <TabsTrigger value="failed">Failed</TabsTrigger>
+              <TabsTrigger value="refunded">Refunded</TabsTrigger>
+              <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
             </TabsList>
             <TabsContent value={activeTab}>
               <div className="rounded-xl border border-border bg-card card-shadow overflow-hidden animate-fade-in">

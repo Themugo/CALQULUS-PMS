@@ -13,6 +13,7 @@
 
 import { serve } from "std/http/server.ts";
 import { requireEnv } from "../_shared/env.ts";
+import { isPositiveMoney, roundMoney } from "../_shared/money.ts";
 import {
   withMiddleware,
   errorResponse,
@@ -35,7 +36,6 @@ serve(
       const {
         tenantId,
         invoiceId,
-        amount,
         paymentMethod = "mpesa_ussd",
         reference,
         paymentDate,
@@ -43,8 +43,8 @@ serve(
         isInstallment = false,
         instalmentCount,
       } = body;
-
-      if (!tenantId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !reference) {
+      const amount = roundMoney(Number(body.amount));
+      if (!tenantId || !isPositiveMoney(amount) || !reference) {
         throw errorResponse("tenantId, positive amount, and reference required", 400);
       }
 

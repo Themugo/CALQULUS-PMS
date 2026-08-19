@@ -21,16 +21,19 @@ import { downloadInvoicePDF } from "@/features/billing/lib/invoicePdfExport";
 import { downloadReceiptPDF } from "@/features/billing/lib/receiptPdfExport";
 import type { BillingInvoice } from "../hooks/useBillingData";
 
-type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled";
+type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "failed" | "refunded";
 
 const STATUS_CONFIG: Record<
   InvoiceStatus,
-  { styles: string; icon: React.ComponentType<{ className?: string }> }
+  { styles: string; icon: React.ComponentType<{ className?: string }>; label: string }
 > = {
-  paid:      { styles: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: CheckCircle },
-  pending:   { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20",       icon: Clock },
-  overdue:   { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: AlertCircle },
-  cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle },
+  paid:           { styles: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: CheckCircle, label: "Paid" },
+  partially_paid: { styles: "bg-sky-500/10 text-sky-400 border-sky-500/20",             icon: Clock,       label: "Partially Paid" },
+  pending:        { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20",       icon: Clock,       label: "Pending" },
+  overdue:        { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: AlertCircle, label: "Overdue" },
+  failed:         { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: XCircle,     label: "Failed" },
+  refunded:       { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle,     label: "Refunded" },
+  cancelled:      { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle,     label: "Cancelled" },
 };
 
 interface Props {
@@ -126,7 +129,12 @@ export function InvoiceTable({
               </TableCell>
 
               <TableCell className="font-semibold text-foreground">
-                {formatCurrency(invoice.amount)}
+                <div>{formatCurrency(invoice.amount)}</div>
+                {(status === "partially_paid" || Number(invoice.balance_due ?? 0) > 0) && status !== "paid" && (
+                  <div className="text-xs font-normal text-muted-foreground">
+                    Due {formatCurrency(Number(invoice.balance_due ?? invoice.amount))}
+                  </div>
+                )}
               </TableCell>
 
               <TableCell className="text-muted-foreground">
@@ -136,7 +144,7 @@ export function InvoiceTable({
               <TableCell>
                 <Badge variant="outline" className={`${cfg.styles} gap-1`}>
                   <StatusIcon className="h-3 w-3" />
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {cfg.label}
                 </Badge>
               </TableCell>
 
@@ -200,7 +208,7 @@ export function InvoiceTable({
                   )}
 
                   {/* Edit + M-Pesa + Mark Paid (non-terminal statuses) */}
-                  {status !== "paid" && status !== "cancelled" && (
+                  {status !== "paid" && status !== "cancelled" && status !== "failed" && status !== "refunded" && (
                     <>
                       {canEdit && (
                         <Button

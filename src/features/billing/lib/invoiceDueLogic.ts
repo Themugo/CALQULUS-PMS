@@ -8,8 +8,10 @@
 /**
  * Check if an invoice is overdue (1+ days past due date)
  */
+const CLOSED_INVOICE_STATUSES = new Set(['paid', 'cancelled', 'failed', 'refunded']);
+
 export const isInvoiceOverdue = (dueDate: string, status: string): boolean => {
-  if (status === 'paid' || status === 'cancelled') return false;
+  if (CLOSED_INVOICE_STATUSES.has(status)) return false;
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -43,7 +45,7 @@ export const getDaysUntilDue = (dueDate: string): number => {
  * Check if invoice should trigger a reminder (5 days before due or less)
  */
 export const shouldSendReminder = (dueDate: string, status: string): boolean => {
-  if (status === 'paid' || status === 'cancelled') return false;
+  if (CLOSED_INVOICE_STATUSES.has(status)) return false;
   
   const daysUntilDue = getDaysUntilDue(dueDate);
   
@@ -57,9 +59,13 @@ export const shouldSendReminder = (dueDate: string, status: string): boolean => 
 export const getInvoiceDisplayStatus = (
   dueDate: string, 
   status: string
-): 'paid' | 'pending' | 'overdue' | 'cancelled' => {
-  if (status === 'paid') return 'paid';
-  if (status === 'cancelled') return 'cancelled';
+): 'paid' | 'pending' | 'overdue' | 'cancelled' | 'partially_paid' | 'failed' | 'refunded' => {
+  if (status === 'paid' || status === 'cancelled' || status === 'failed' || status === 'refunded') {
+    return status;
+  }
+  if (status === 'partially_paid' && !isInvoiceOverdue(dueDate, status)) {
+    return 'partially_paid';
+  }
   
   // Check if overdue (1+ days past due)
   if (isInvoiceOverdue(dueDate, status)) {

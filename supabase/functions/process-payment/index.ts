@@ -27,7 +27,9 @@ import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
 import { recordWebhookFailure } from "../_shared/webhookHelpers.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { isPositiveMoney, roundMoney, toMinorUnits, fromMinorUnits } from "../_shared/money.ts";
 import { checkApiVersion, withApiVersion, CURRENT_API_VERSION } from "../_shared/apiVersion.ts";
+import { processPaymentAtomic } from "../_shared/atomicPaymentProcessing.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -179,12 +181,12 @@ serve(async (req) => {
     const body: ProcessPaymentRequest = await req.json();
     requestBody = body;
     const {
-      tenantId, amount, paymentMethod, paymentDate, reference,
+      tenantId, paymentMethod, paymentDate, reference,
       invoiceId, invoiceIds, unitId, propertyId, unitNumber, phone, recordedBy, notes, transactionId,
     } = body;
     let managerId = body.managerId;
-
-    if (!tenantId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !paymentMethod || !paymentDate || !reference) {
+    let amount = roundMoney(Number(body.amount));
+    if (!tenantId || !isPositiveMoney(amount) || !paymentMethod || !paymentDate || !reference) {
       return new Response(JSON.stringify({ error: "Missing or invalid required fields" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
@@ -262,7 +264,7 @@ serve(async (req) => {
         .select("id, invoice_number, amount, original_amount, paid_amount, balance_due, due_date, status, installment_plan")
         .in("id", invoiceIds)
         .eq("tenant_id", tenantId)
-        .in("status", ["pending", "overdue"])
+        .in("status", ["pending", "overdue", "partially_paid"])
         .order("due_date", { ascending: true });
       invoices = data ?? [];
       if (invoices.length !== invoiceIds.length) {
@@ -272,20 +274,81 @@ serve(async (req) => {
     } else if (invoiceId) {
       const { data } = await supabase.from("invoices")
         .select("id, invoice_number, amount, original_amount, paid_amount, balance_due, due_date, status, installment_plan")
-        .eq("id", invoiceId).single();
-      if (data) invoices = [data];
+        .eq("id", invoiceId)
+        .eq("tenant_id", tenantId)
+        .in("status", ["pending", "overdue", "partially_paid"])
+        .maybeSingle();
+      if (!data) {
+        return new Response(JSON.stringify({ error: "Selected bill is not payable" }),
+          { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
+      invoices = [data];
     } else {
       // Auto-allocate to oldest unpaid invoices for this tenant
       const { data } = await supabase.from("invoices")
         .select("id, invoice_number, amount, original_amount, paid_amount, balance_due, due_date, status, installment_plan")
         .eq("tenant_id", tenantId)
-        .in("status", ["pending", "overdue"])
+        .in("status", ["pending", "overdue", "partially_paid"])
         .order("due_date", { ascending: true });
       invoices = data ?? [];
     }
 
-    // ── 3. Create or update transaction record ─────────────────────────
     let txId = transactionId;
+    let remaining = 0;
+    let creditBalance = 0;
+    const allocations: { invoiceId: string; alloc: number; closes: boolean }[] = [];
+    const closedInvoiceNumbers: string[] = [];
+    const invoiceRollback: { id: string; paid_amount: number; balance_due: number; status: string; paid_date: string | null }[] = [];
+    let usedAtomicRpc = false;
+
+    const atomic = await processPaymentAtomic(supabase, {
+      tenantId,
+      managerId,
+      amount,
+      paymentMethod,
+      paymentDate,
+      reference,
+      invoiceId,
+      invoiceIds,
+      unitId,
+      propertyId,
+      unitNumber,
+      phone: tenantPhone ?? undefined,
+      recordedBy,
+      notes,
+      transactionId,
+    });
+
+    if (atomic.success) {
+      usedAtomicRpc = true;
+      txId = atomic.transactionId;
+      remaining = roundMoney(Number(atomic.advanceCredit ?? 0));
+      creditBalance = roundMoney(Number(atomic.creditBalance ?? 0));
+      for (const alloc of atomic.allocations ?? []) {
+        allocations.push({ invoiceId: alloc.invoiceId, alloc: alloc.amount, closes: alloc.closed });
+        if (alloc.closed) {
+          const inv = invoices.find((i) => i.id === alloc.invoiceId);
+          if (inv?.invoice_number) closedInvoiceNumbers.push(inv.invoice_number);
+        }
+      }
+      if (atomic.idempotent) {
+        log("Idempotent replay via process_payment_atomic", { reference, txId });
+        return withApiVersion(new Response(JSON.stringify({
+          success: true,
+          idempotent: true,
+          transactionId: txId,
+          message: "Payment already recorded with this reference",
+        }), { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }));
+      }
+      log("Allocated via process_payment_atomic", { txId, remaining, allocations: allocations.length });
+    } else if (!atomic.missingFunction) {
+      throw new Error(`Atomic payment RPC failed: ${atomic.error}`);
+    } else {
+      log("process_payment_atomic missing — using compensating PostgREST path", { error: atomic.error });
+    }
+
+    // ── 3. Create or update transaction record (legacy compensating path) ─
+    if (!usedAtomicRpc) {
     if (!txId) {
       const { data: tx, error: txErr } = await supabase.from("payment_transactions").insert({
         tenant_id:      tenantId,
@@ -345,63 +408,33 @@ serve(async (req) => {
 
     log("Transaction recorded", { txId });
 
-    // ── 3b. Determine payment receiver (manager or landlord) ─────────────
-    let paymentReceiverType: string | null = null;
-    let landlordIdForNotify: string | null = null;
-
-    // Check the transaction record first (STK callback path already has it)
-    const { data: txRecord } = await supabase.from("payment_transactions")
-      .select("payment_receiver_type, landlord_id")
-      .eq("id", txId)
-      .maybeSingle();
-
-    if (txRecord?.payment_receiver_type) {
-      paymentReceiverType = txRecord.payment_receiver_type;
-      landlordIdForNotify = txRecord.landlord_id;
-    } else if (propertyId) {
-      // Fallback: look up property_landlords (for direct/offline payments)
-      const { data: pl } = await supabase.from("property_landlords")
-        .select("landlord_user_id, payment_destination")
-        .eq("property_id", propertyId).maybeSingle();
-      if (pl?.payment_destination === "landlord") {
-        paymentReceiverType = "landlord";
-        landlordIdForNotify = pl.landlord_user_id;
-      }
-    }
-
-    log("Payment receiver", { paymentReceiverType, landlordIdForNotify });
-
-    // ── 4. Allocate payment across invoices (atomic block) ────────────
-    // All invoice updates + allocation inserts are wrapped in a single
-    // try/catch. If any step fails we attempt to rollback the invoice
-    // changes already applied so the database is not left in a partially-
-    // applied state. Notifications (step 10) are fire-and-forget with
-    // dead-letter — they are NOT part of this atomic block.
-    let remaining = amount;
-    const allocations: { invoiceId: string; alloc: number; closes: boolean }[] = [];
-    const closedInvoiceNumbers: string[] = [];
-    const invoiceRollback: { id: string; paid_amount: number; balance_due: number; status: string; paid_date: string | null }[] = [];
+    // ── 4. Allocate payment across invoices (compensating path) ────────
+    let remainingMinor = toMinorUnits(amount);
 
     try {
       for (const inv of invoices) {
-        if (remaining <= 0) break;
+        if (remainingMinor <= 0) break;
 
-        const owed = Number(inv.balance_due ?? (Number(inv.original_amount ?? inv.amount) - Number(inv.paid_amount ?? 0)));
-        if (owed <= 0) continue;
+        const paidMinor = toMinorUnits(Number(inv.paid_amount ?? 0));
+        const owedMinor = inv.balance_due != null && Number.isFinite(Number(inv.balance_due))
+          ? Math.max(0, toMinorUnits(Number(inv.balance_due)))
+          : Math.max(0, toMinorUnits(Number(inv.original_amount ?? inv.amount)) - paidMinor);
+        if (owedMinor <= 0) continue;
 
-        const alloc = Math.min(remaining, owed);
-        const closes = alloc >= owed;
-        remaining -= alloc;
+        const allocMinor = Math.min(remainingMinor, owedMinor);
+        const closes = allocMinor >= owedMinor;
+        remainingMinor -= allocMinor;
+        const alloc = fromMinorUnits(allocMinor);
 
-        const newPaidAmount = Number(inv.paid_amount ?? 0) + alloc;
-        const newBalanceDue = Math.max(0, owed - alloc);
-        const newStatus     = closes ? "paid" : (inv.status === "overdue" ? "overdue" : "pending");
+        const newPaidAmount = fromMinorUnits(paidMinor + allocMinor);
+        const newBalanceDue = fromMinorUnits(owedMinor - allocMinor);
+        const newStatus     = closes ? "paid" : (paidMinor + allocMinor > 0 ? "partially_paid" : (inv.status === "overdue" ? "overdue" : "pending"));
 
         // Snapshot current state for potential rollback
         invoiceRollback.push({
           id: inv.id,
           paid_amount: Number(inv.paid_amount ?? 0),
-          balance_due: Number(inv.balance_due ?? owed),
+          balance_due: Number(inv.balance_due ?? fromMinorUnits(owedMinor)),
           status: inv.status,
           paid_date: inv.paid_date ?? null,
         });
@@ -443,15 +476,16 @@ serve(async (req) => {
       throw allocError;
     }
 
-    // ── 5. Handle advance / overpayment (atomic block) ────────────────
-    let creditBalance = 0;
+    remaining = fromMinorUnits(remainingMinor);
+
+    // ── 5. Handle advance / overpayment (compensating path) ────────────
     if (remaining > 0) {
       const { data: lastCredit } = await supabase.from("tenant_credit_ledger")
         .select("balance_after").eq("tenant_id", tenantId)
         .order("created_at", { ascending: false }).limit(1).maybeSingle();
 
-      const prevBalance = Number((lastCredit as any)?.balance_after ?? 0);
-      creditBalance = prevBalance + remaining;
+      const prevBalance = roundMoney(Number((lastCredit as any)?.balance_after ?? 0));
+      creditBalance = roundMoney(prevBalance + remaining);
 
       const { error: creditErr } = await supabase.from("tenant_credit_ledger").insert({
         tenant_id:      tenantId,
@@ -480,6 +514,31 @@ serve(async (req) => {
       }).eq("id", txId);
       if (txUpdateErr) throw new Error(`Transaction update failed: ${txUpdateErr.message}`);
     }
+    } // end compensating path
+
+    // ── 3b. Determine payment receiver (manager or landlord) ─────────────
+    let paymentReceiverType: string | null = null;
+    let landlordIdForNotify: string | null = null;
+
+    const { data: txRecord } = await supabase.from("payment_transactions")
+      .select("payment_receiver_type, landlord_id")
+      .eq("id", txId)
+      .maybeSingle();
+
+    if (txRecord?.payment_receiver_type) {
+      paymentReceiverType = txRecord.payment_receiver_type;
+      landlordIdForNotify = txRecord.landlord_id;
+    } else if (propertyId) {
+      const { data: pl } = await supabase.from("property_landlords")
+        .select("landlord_user_id, payment_destination")
+        .eq("property_id", propertyId).maybeSingle();
+      if (pl?.payment_destination === "landlord") {
+        paymentReceiverType = "landlord";
+        landlordIdForNotify = pl.landlord_user_id;
+      }
+    }
+
+    log("Payment receiver", { paymentReceiverType, landlordIdForNotify });
 
     // ── 6. Compute final outstanding balance ───────────────────────────
     // Note: if the RPC fails (table missing, network blip) we can't tell

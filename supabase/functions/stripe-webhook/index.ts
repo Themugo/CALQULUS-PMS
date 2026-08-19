@@ -28,6 +28,7 @@ import Stripe from "stripe/stripe@18.5.0";
 import { createClient } from "supabase/supabase-js@2";
 import { recordWebhookFailure } from "../_shared/webhookHelpers.ts";
 import { requireEnv } from "../_shared/env.ts";
+import { roundMoney } from "../_shared/money.ts";
 
 const STRIPE_SECRET_KEY     = requireEnv("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = requireEnv("STRIPE_WEBHOOK_SECRET");
@@ -145,7 +146,7 @@ serve(async (req) => {
         }
 
         const zeroDecimalCurrencies = new Set(["jpy", "krw", "vnd", "clp", "pyg", "gnf", "kmf", "djf", "xaf", "xof", "xpf", "bif", "isk"]);
-        const amount = zeroDecimalCurrencies.has(currency) ? amountTotal : amountTotal / 100;
+        const amount = roundMoney(zeroDecimalCurrencies.has(currency) ? amountTotal : amountTotal / 100);
         const paymentReference = reference ?? String(session.payment_intent ?? session.id);
 
         const processResp = await fetch(`${SUPABASE_URL}/functions/v1/process-payment`, {

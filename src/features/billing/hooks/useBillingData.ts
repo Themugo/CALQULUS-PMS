@@ -18,6 +18,7 @@ import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { logError } from "@/shared/lib/errorLogger";
+import { roundMoney } from "@/shared/lib/money";
 import type { Database } from "@/integrations/supabase/types";
 
 // ── Typed row aliases ────────────────────────────────────────────────────────
@@ -226,7 +227,7 @@ export function useMarkInvoicePaid() {
       if (loadError) throw loadError;
       if (!invoice?.tenant_id) throw new Error("Invoice is missing a tenant");
 
-      const amount = Number(invoice.balance_due ?? invoice.amount);
+      const amount = roundMoney(Number(invoice.balance_due ?? invoice.amount));
       if (!Number.isFinite(amount) || amount <= 0) {
         throw new Error("Invoice has no remaining balance to record");
       }

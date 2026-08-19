@@ -6,6 +6,7 @@
  */
 
 import { useCurrency } from "@/shared/hooks/useCurrency";
+import { roundMoney } from "@/shared/lib/money";
 import type { BillingInvoice } from "../hooks/useBillingData";
 
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -19,10 +20,10 @@ export function BillingStatsBar({ invoices, isLoading = false }: Props) {
   const { formatCurrency } = useCurrency();
 
   const stats = {
-    total:   invoices.reduce((s, i) => s + i.amount, 0),
-    paid:    invoices.filter(i => i.status === "paid").reduce((s, i) => s + i.amount, 0),
-    pending: invoices.filter(i => i.status === "pending").reduce((s, i) => s + i.amount, 0),
-    overdue: invoices.filter(i => i.status === "overdue").reduce((s, i) => s + i.amount, 0),
+    total:   roundMoney(invoices.reduce((s, i) => s + Number(i.amount ?? 0), 0)),
+    paid:    roundMoney(invoices.reduce((s, i) => s + Number(i.paid_amount ?? (i.status === "paid" ? i.amount : 0)), 0)),
+    pending: roundMoney(invoices.filter(i => i.status === "pending" || i.status === "partially_paid").reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0)),
+    overdue: roundMoney(invoices.filter(i => i.status === "overdue").reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0)),
   };
 
   const cards = [

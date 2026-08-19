@@ -35,9 +35,14 @@ export interface AtomicPaymentInput {
 
 export interface AtomicPaymentResult {
   success: boolean;
+  idempotent?: boolean;
   transactionId?: string;
   allocations?: Array<{ invoiceId: string; amount: number; closed: boolean }>;
+  advanceCredit?: number;
+  creditBalance?: number;
+  totalAllocated?: number;
   error?: string;
+  missingFunction?: boolean;
 }
 
 /**
@@ -68,11 +73,30 @@ export async function processPaymentAtomic(
   });
 
   if (error) {
+    const code = (error as { code?: string }).code ?? "";
+    const missingFunction =
+      code === "PGRST202" ||
+      code === "42883" ||
+      /does not exist|could not find the function/i.test(error.message);
     console.error("[atomic-payment] RPC failed:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message, missingFunction };
   }
 
-  return { success: true, ...(data as any) };
+  const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | null;
+  const allocs = Array.isArray(row?.allocations) ? row.allocations as Array<{ invoice_id: string; amount: number; closed: boolean }> : [];
+  return {
+    success: true,
+    idempotent: Boolean(row?.idempotent),
+    transactionId: String(row?.transaction_id ?? ""),
+    allocations: allocs.map((a) => ({
+      invoiceId: a.invoice_id,
+      amount: Number(a.amount),
+      closed: Boolean(a.closed),
+    })),
+    advanceCredit: Number(row?.advance_credit ?? 0),
+    creditBalance: Number(row?.credit_balance ?? 0),
+    totalAllocated: Number(row?.total_allocated ?? 0),
+  };
 }
 
 /**

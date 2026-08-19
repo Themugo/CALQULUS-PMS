@@ -16,6 +16,7 @@ import { createClient } from "supabase/supabase-js@2";
 import { timingSafeEqual, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
 import { validateMpesaCallback, extractMpesaMetadata } from "../_shared/webhookSchemas.ts";
 import { requireEnv } from "../_shared/env.ts";
+import { roundMoney } from "../_shared/money.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -95,15 +96,15 @@ serve(async (req) => {
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    // Check expiration (10 minute window)
+    // STK timeout applies only to unsuccessful / abandoned requests.
+    // A late ResultCode=0 still means money moved and must be allocated.
     const age = Date.now() - new Date(transaction.initiated_at).getTime();
-    if (age > 10 * 60 * 1000) {
-      // Atomically update to failed
-      await supabase.from("payment_transactions").update({ 
-        status: "failed", 
-        failure_reason: "Expired" 
+    if (resultCode !== 0 && age > 10 * 60 * 1000) {
+      await supabase.from("payment_transactions").update({
+        status: "failed",
+        failure_reason: "Expired",
       }).eq("id", transaction.id).eq("status", "pending");
-      
+
       log("Transaction expired", { checkoutRequestId, age });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Expired" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
@@ -111,8 +112,21 @@ serve(async (req) => {
 
     // ── 6. Process successful payment ────────────────────────────────
     if (resultCode === 0) {
-      const paidAmount = amount ?? Number(transaction.amount);
-      const mpesaReceiptNumber = receiptNumber ?? "";
+      const paidAmount = roundMoney(Number(amount ?? transaction.amount));
+      const initiatedAmount = roundMoney(Number(transaction.amount ?? 0));
+      if (initiatedAmount > 0 && paidAmount !== initiatedAmount) {
+        log("Callback amount differs from STK initiation — allocating actual paid amount", {
+          checkoutRequestId,
+          initiatedAmount,
+          paidAmount,
+        });
+      }
+      const mpesaReceiptNumber = receiptNumber || checkoutRequestId;
+      if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+        log("Invalid callback amount", { checkoutRequestId, amount });
+        return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Accepted" }),
+          { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
       const paidDate = new Date().toISOString().split("T")[0];
 
       // Atomic update: only succeeds if status is still "pending"

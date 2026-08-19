@@ -75,7 +75,7 @@ export const LeaseStatements = () => {
   const fetchInvoiceSummaries = async (tenantIds: string[]) => {
     const { data, error } = await supabase
       .from("invoices")
-      .select("tenant_id, amount, status")
+      .select("tenant_id, amount, paid_amount, balance_due, status")
       .in("tenant_id", tenantIds);
 
     if (error) {
@@ -103,17 +103,23 @@ export const LeaseStatements = () => {
       const summary = summaryMap.get(invoice.tenant_id);
       if (summary) {
         summary.total_invoices++;
-        summary.total_amount += invoice.amount;
-        
+        summary.total_amount += Number(invoice.amount ?? 0);
+        summary.paid_amount += Number(invoice.paid_amount ?? (invoice.status === "paid" ? invoice.amount : 0));
+        const outstanding = Number(
+          invoice.balance_due ??
+          Math.max(0, Number(invoice.amount ?? 0) - Number(invoice.paid_amount ?? 0)),
+        );
+
         if (invoice.status === "paid") {
           summary.paid_count++;
-          summary.paid_amount += invoice.amount;
-        } else if (invoice.status === "pending") {
-          summary.pending_count++;
-          summary.outstanding_amount += invoice.amount;
         } else if (invoice.status === "overdue") {
           summary.overdue_count++;
-          summary.outstanding_amount += invoice.amount;
+          summary.outstanding_amount += outstanding;
+        } else if (invoice.status === "pending" || invoice.status === "partially_paid") {
+          summary.pending_count++;
+          summary.outstanding_amount += outstanding;
+        } else if (invoice.status !== "cancelled" && invoice.status !== "failed" && invoice.status !== "refunded") {
+          summary.outstanding_amount += outstanding;
         }
       }
     });
