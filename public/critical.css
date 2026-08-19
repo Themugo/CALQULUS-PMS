@@ -7,14 +7,14 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);
+  background: #EEF2F8;
 }
 
 .initial-loader-spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid rgba(201, 168, 76, 0.2);
-  border-top-color: #c9a84c;
+  border: 4px solid rgba(21, 94, 239, 0.2);
+  border-top-color: #155EEF;
   border-radius: 50%;
   animation: calqulus-spin 1s linear infinite;
 }

@@ -10,7 +10,7 @@ import {
   CheckCircle, XCircle, Eye, EyeOff, ChevronRight,
   User, Home, KeyRound, Loader2,
 } from 'lucide-react';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 
 const STEPS = [
   { id: 'verify', title: 'Verify invite',  icon: KeyRound },
@@ -104,7 +104,7 @@ const TenantSelfRegister = () => {
       <div className="relative z-10 w-full max-w-lg">
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-3">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-10 w-10 rounded-xl object-cover ring-1 ring-border/80 shadow-xs" />
+            <BrandMark size="md" />
             <div className="text-left">
               <p className="font-heading font-bold text-lg text-foreground leading-none">CALQULUS <span className="text-primary font-bold">RMS</span></p>
               <p className="text-[10px] text-primary font-semibold tracking-wider uppercase mt-0.5">Tenant Onboarding</p>

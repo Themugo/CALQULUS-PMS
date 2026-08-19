@@ -3,16 +3,12 @@ import { Link } from "react-router-dom";
 import {
   Globe,
   ShieldCheck,
-  Building2,
   HelpCircle,
   FileText,
   Lock,
-  ArrowUpRight,
   Sparkles,
-  Layers,
-  Terminal,
 } from "lucide-react";
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { HelpCenterModal } from "./HelpCenterModal";
 
 export interface FooterProps {
@@ -30,13 +26,13 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
       <footer className={`w-full border-t border-border/70 bg-card/40 px-4 md:px-6 py-3 text-xs text-muted-foreground mt-auto ${className}`}>
         <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <img src={calqulusLogo} alt="CALQULUS" className="h-5 w-5 rounded object-cover" />
+            <BrandMark size="xs" />
             <span className="font-semibold text-foreground tracking-tight">CALQULUS PMS</span>
             <span className="text-muted-foreground/40">•</span>
             <span className="font-mono text-[11px] text-muted-foreground">v2.4.0</span>
             <span className="text-muted-foreground/40">•</span>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               Operational
             </span>
           </div>
@@ -70,19 +66,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
             {/* 1. Brand Area (Spans 2 cols on large screens) */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <img
-                  src={calqulusLogo}
-                  alt="CALQULUS PMS"
-                  className="h-8 w-8 rounded-lg object-cover ring-1 ring-border shadow-2xs"
-                />
-                <div>
-                  <span className="font-bold text-base text-foreground tracking-tight block">
-                    CALQULUS <span className="text-primary font-semibold">PMS</span>
-                  </span>
-                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest block">
-                    Enterprise Property Management OS
-                  </span>
-                </div>
+                <BrandMark size="md" showWordmark subtitle="PMS" />
               </div>
 
               <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-sm">
@@ -91,8 +75,8 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
 
               {/* System Live Status & Regional Anchor */}
               <div className="flex flex-wrap items-center gap-3 pt-1">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-success/10 border border-success/20 text-[11px] font-medium text-success">
+                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
                   All Systems Operational
                 </div>
 
@@ -178,7 +162,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                 </li>
                 <li>
                   <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                    <ShieldCheck className="h-3.5 w-3.5 text-success" />
                     <span>SOC2 Type II Certified</span>
                   </span>
                 </li>

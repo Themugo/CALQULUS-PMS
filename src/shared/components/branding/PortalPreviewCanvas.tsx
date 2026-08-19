@@ -5,11 +5,12 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { cn } from "@/shared/lib/utils";
+import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export function PortalPreviewCanvas({
-  primaryColor = "#10b981",
-  secondaryColor = "#065f46",
-  companyName = "CALQULUS PROPERTY MANAGEMENT",
+  primaryColor = CALQULUS_COLOR.primary,
+  secondaryColor = CALQULUS_COLOR.textPrimary,
+  companyName = CALQULUS_BRAND.product,
   className,
 }: {
   primaryColor?: string;

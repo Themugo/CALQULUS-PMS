@@ -33,7 +33,7 @@ import LandlordPropertyDetail from '@/features/landlord/components/LandlordPrope
 import LandlordNotificationPreferences from '@/features/landlord/components/LandlordNotificationPreferences';
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 
 interface PropertySummary {
   id: string;
@@ -357,11 +357,7 @@ const LandlordDashboard = () => {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-card/90 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
-            <div className="min-w-0">
-              <div className="font-heading font-bold text-sm text-gradient leading-none">CALQULUS PMS</div>
-              <div className="text-[10px] text-muted-foreground tracking-wider uppercase">Landlord Workspace</div>
-            </div>
+            <BrandMark size="md" showWordmark subtitle="Landlord" />
             <Badge variant="outline" className="ml-1 text-xs border-teal/30 text-teal bg-teal/10">
               Property Owner
             </Badge>

@@ -19,7 +19,7 @@ const badgeVariants = cva(
         indigo:      "border-info/40 bg-info/10 text-info font-medium",
         purple:      "border-purple/40 bg-purple/10 text-purple font-semibold",
         teal:        "border-teal/40 bg-teal/10 text-teal font-semibold",
-        gold:        "border-gold/40 bg-gold/10 text-gold font-semibold",
+        gold:        "border-primary/40 bg-primary/10 text-primary font-semibold",
         slate:       "border-border bg-secondary-background text-secondary-foreground font-medium",
       },
     },

@@ -7,7 +7,7 @@ import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from 'lucide-react';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { AuthLoadingScreen, AuthGridOverlay } from '@/features/auth/components/AuthHeroChrome';
 
 const isRecommendedWebhostHost = () => {
@@ -73,7 +73,7 @@ const WebhostAuth = () => {
 
         <div className="relative z-10 flex flex-col h-full p-12">
           <div className="flex items-center gap-4 mb-16">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <BrandMark size="hero" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
               <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
@@ -117,7 +117,7 @@ const WebhostAuth = () => {
       <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex justify-center mb-8">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <BrandMark size="hero" />
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">

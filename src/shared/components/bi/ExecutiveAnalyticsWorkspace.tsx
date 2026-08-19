@@ -13,6 +13,7 @@ import {
   Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { cn } from "@/shared/lib/utils";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 const MOM_DATA = [
   { period: "Jan", Current: 480000, Previous: 420000, Forecast: 500000 },
@@ -132,8 +133,8 @@ export function ExecutiveAnalyticsWorkspace() {
               <AreaChart data={MOM_DATA} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorCurrent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1E6FD9" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#1E6FD9" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -141,9 +142,9 @@ export function ExecutiveAnalyticsWorkspace() {
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${v / 1000}K`} />
                 <Tooltip formatter={(v: number) => `KES ${v.toLocaleString()}`} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Area type="monotone" dataKey="Current" stroke="#1E6FD9" fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
+                <Area type="monotone" dataKey="Current" stroke={CALQULUS_COLOR.primary} fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
                 <Line type="monotone" dataKey="Previous" stroke="#94a3b8" strokeDasharray="5 5" strokeWidth={1.5} />
-                <Line type="monotone" dataKey="Forecast" stroke="#10b981" strokeDasharray="3 3" strokeWidth={2} />
+                <Line type="monotone" dataKey="Forecast" stroke={CALQULUS_COLOR.success} strokeDasharray="3 3" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -168,8 +169,8 @@ export function ExecutiveAnalyticsWorkspace() {
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                 <YAxis domain={[80, 100]} tick={{ fontSize: 11 }} />
                 <Tooltip />
-                <Bar dataKey="Occupancy" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Line type="monotone" dataKey="Target" stroke="#ef4444" strokeWidth={2} />
+                <Bar dataKey="Occupancy" fill={CALQULUS_COLOR.success} radius={[4, 4, 0, 0]} />
+                <Line type="monotone" dataKey="Target" stroke={CALQULUS_COLOR.danger} strokeWidth={2} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 
 interface WorkspaceSwitcherProps {
   collapsed?: boolean;
@@ -48,12 +48,12 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         >
           {collapsed ? (
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary mx-auto">
-              <img src={calqulusLogo} alt="CALQULUS" className="h-6 w-auto object-contain" />
+              <BrandMark size="xs" />
             </div>
           ) : (
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0 border border-primary/20">
-                <img src={calqulusLogo} alt="CALQULUS" className="h-5 w-auto object-contain" />
+                <BrandMark size="xs" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">

@@ -60,8 +60,8 @@ export function Layout({
 
         {/* View-Only Warning Notice for Webhost Preview */}
         {isViewOnly && (
-          <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2">
-            <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-semibold">
+          <div className="bg-warning/10 border-b border-warning/20 px-4 py-2">
+            <div className="flex items-center justify-center gap-2 text-warning text-xs font-semibold">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>View-only mode active — browsing as Webhost administrator. Mutation actions are restricted.</span>
             </div>

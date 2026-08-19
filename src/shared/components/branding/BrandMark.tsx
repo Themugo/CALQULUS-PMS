@@ -7,6 +7,7 @@ const MARK_SIZE = {
   sm: "h-7 w-7",
   md: "h-9 w-9",
   lg: "h-12 w-12",
+  nav: "h-8 w-8",
   hero: "h-14 w-auto",
 } as const;
 

@@ -8,6 +8,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
 import { cn } from "@/shared/lib/utils";
+import { CALQULUS_COLOR, CALQULUS_BRAND } from "@/shared/theme/tokens";
 
 export interface BrandThemeConfig {
   primaryColorHex: string;
@@ -21,22 +22,22 @@ export interface BrandThemeConfig {
 }
 
 const PRESET_THEMES: { name: string; primary: string; secondary: string; accent: string }[] = [
-  { name: "Calqulus Emerald Enterprise", primary: "#10b981", secondary: "#065f46", accent: "#f59e0b" },
-  { name: "Royal Sapphire Agency", primary: "#2563eb", secondary: "#1e3a8a", accent: "#10b981" },
-  { name: "Luxury Onyx & Amber", primary: "#d97706", secondary: "#78350f", accent: "#3b82f6" },
-  { name: "Teal Modern Urban", primary: "#14b8a6", secondary: "#134e4a", accent: "#ec4899" },
+  { name: CALQULUS_BRAND.product, primary: CALQULUS_COLOR.primary, secondary: CALQULUS_COLOR.textPrimary, accent: CALQULUS_COLOR.info },
+  { name: "Royal Sapphire Agency", primary: "#2563eb", secondary: "#1e3a8a", accent: CALQULUS_COLOR.success },
+  { name: "Luxury Onyx & Amber", primary: CALQULUS_COLOR.warning, secondary: "#78350f", accent: CALQULUS_COLOR.primary },
+  { name: "Teal Modern Urban", primary: "#14b8a6", secondary: "#134e4a", accent: CALQULUS_COLOR.info },
 ];
 
 export function ThemeStudioEditor({
   config = {
-    primaryColorHex: "#10b981",
-    secondaryColorHex: "#065f46",
-    accentColorHex: "#f59e0b",
-    fontFamilyHeading: "Plus Jakarta Sans",
-    fontFamilyBody: "Inter",
-    borderRadiusPx: 12,
-    enableDarkMode: true,
-    tenantPortalThemeName: "Calqulus Emerald Enterprise",
+    primaryColorHex: CALQULUS_COLOR.primary,
+    secondaryColorHex: CALQULUS_COLOR.textPrimary,
+    accentColorHex: CALQULUS_COLOR.info,
+    fontFamilyHeading: "Outfit",
+    fontFamilyBody: "system-ui",
+    borderRadiusPx: 10,
+    enableDarkMode: false,
+    tenantPortalThemeName: CALQULUS_BRAND.product,
   },
   onChange,
   className,

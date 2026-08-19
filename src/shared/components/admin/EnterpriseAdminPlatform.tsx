@@ -52,9 +52,9 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "platform-control",
     title: "Platform Control",
-    accent: "bg-gold",
+    accent: "bg-primary",
     items: [
-      { value: "platform-admins", label: "Platform Admins", icon: Crown, iconClass: "text-gold" },
+      { value: "platform-admins", label: "Platform Admins", icon: Crown, iconClass: "text-primary" },
       { value: "rbac", label: "RBAC & Permissions", icon: ShieldCheck },
       { value: "flags", label: "Feature Flags", icon: Sliders },
       { value: "config", label: "Configuration", icon: Settings },

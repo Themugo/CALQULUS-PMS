@@ -14,7 +14,7 @@ import {
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { ensureSignedInRole } from '@/features/auth/lib/authFlow';
 
 // SECURITY: Demo authentication has been removed for production security.
@@ -116,7 +116,7 @@ const LandlordAuth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground hero-gradient">
         <div className="flex flex-col items-center gap-4">
-          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-16 w-auto animate-pulse-soft" />
+          <BrandMark size="hero" className="animate-pulse-soft" />
           <div className="flex gap-1.5">
             {[0,1,2].map(i => (
               <div key={i} className="w-2 h-2 rounded-full bg-primary/10 animate-pulse-soft" style={{ animationDelay: `${i * 0.2}s` }} />
@@ -148,7 +148,7 @@ const LandlordAuth = () => {
         <div className="relative z-10 flex flex-col h-full p-12">
           {/* Navbar strip */}
           <div className="flex items-center gap-4 pb-8 mb-12 border-b border-border">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <BrandMark size="hero" />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none tracking-tight">CALQULUS</p>
               <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1.5">Property Management System</p>
@@ -204,7 +204,7 @@ const LandlordAuth = () => {
         <div className="relative w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex justify-center mb-8">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <BrandMark size="hero" />
           </div>
 
           {/* Form card */}

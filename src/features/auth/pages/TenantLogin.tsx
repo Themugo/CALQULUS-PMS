@@ -184,7 +184,7 @@ const TenantLogin = () => {
             biometryType={biometryType}
             onPress={handleBiometricLogin}
             isLoading={isBiometricLoggingIn}
-            className="border-primary/20 text-gold hover:bg-primary/10"
+            className="border-primary/20 text-primary hover:bg-primary/10"
           />
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
@@ -220,7 +220,7 @@ const TenantLogin = () => {
             <ForgotPasswordDialog
               variant="tenant"
               trigger={
-                <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                <button type="button" className="text-primary hover:text-primary text-xs font-semibold">
                   Forgot password?
                 </button>
               }
@@ -265,13 +265,13 @@ const TenantLogin = () => {
         <p className="text-muted-foreground text-sm text-center">Don't have an account?</p>
         <div className="flex flex-col sm:flex-row gap-2">
           <Link to="/tenant/signup" className="flex-1">
-            <Button variant="outline" className="w-full border-primary/20 text-gold hover:bg-primary/10 font-medium">
+            <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-medium">
               <UserPlus className="h-4 w-4 mr-2" />
               Register independently
             </Button>
           </Link>
           <Link to="/tenant/invitation" className="flex-1">
-            <Button variant="outline" className="w-full border-primary/20 text-gold hover:bg-primary/10 font-medium">
+            <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-medium">
               <Link2 className="h-4 w-4 mr-2" />
               Accept manager invite
             </Button>

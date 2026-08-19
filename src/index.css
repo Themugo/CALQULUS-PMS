@@ -160,7 +160,8 @@
   --animate-slide-in: slide-in 0.3s ease-out;
   --animate-scale-in: scale-in 0.2s ease-out;
   --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
-  --animate-shimmer-gold: shimmer-gold 2s ease-in-out infinite;
+  --animate-shimmer-gold: shimmer-brand 2s ease-in-out infinite;
+  --animate-shimmer-brand: shimmer-brand 2s ease-in-out infinite;
 }
 
 /* ── Keyframes ─────────────────────────────────────────────────────── */
@@ -336,19 +337,23 @@
     --sidebar-muted: hsl(219 20% 45%);        /* neutral inactive text */
   }
 
-  /* Dark theme is REMOVED. `.dark` mirrors the light tokens so the theme
-     toggle stays functional but the interface is always light. */
+  /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
+     leftover `dark:` utilities cannot reintroduce a heavy dashboard.
+     Production experience is always light. */
   .dark {
     --background: hsl(216 42% 95%);
     --secondary-background: hsl(216 42% 97%);
     --foreground: hsl(224 45% 16%);
     --card: hsl(0 0% 100%);
     --card-foreground: hsl(224 45% 16%);
+    --surface: hsl(0 0% 100%);
+    --surface-elevated: hsl(216 42% 97%);
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(224 45% 16%);
     --primary: hsl(220 87% 51%);
     --primary-foreground: hsl(0 0% 100%);
     --primary-hover: hsl(222 83% 45%);
+    --primary-active: hsl(223 87% 35%);
     --navy-primary: hsl(230 71% 15%);
     --navy-deep: hsl(230 79% 9%);
     --navy-mid: hsl(228 54% 19%);
@@ -405,6 +410,10 @@
     @apply border-border;
   }
 
+  html {
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     overflow-x: clip;
@@ -416,42 +425,39 @@
 }
 
 /* ── Custom Enterprise utilities & classes ────────────────────────────────────── */
-/* Light enterprise surfaces (dark theme removed). */
+/* Production chrome is light. navy-executive-gradient is dormant (non-product). */
 .hero-gradient,
 .auth-gradient {
-  background-color: hsl(210 40% 99%) !important;
-  color: hsl(222 47% 11%) !important;
+  background-color: hsl(216 42% 95%) !important;
+  color: hsl(224 45% 16%) !important;
 }
 
 .sidebar-gradient {
   background-color: hsl(0 0% 100%) !important;
 }
 
-/* CALQULUS brand gradient — executive navy gradient (no pure black). */
 @utility text-gradient {
-  background: linear-gradient(135deg, hsl(230 71% 15%) 0%, hsl(220 87% 51%) 100%);
+  background: linear-gradient(135deg, hsl(224 45% 16%) 0%, hsl(220 87% 51%) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
 }
 
-/* Executive navy gradient surface — premium header / hero. #050B2A → #0B1440. */
+/* Dormant decorative surface — do not use on production dashboards. */
 @utility navy-executive-gradient {
   background: linear-gradient(135deg, hsl(230 79% 9%) 0%, hsl(230 71% 15%) 100%);
   color: hsl(0 0% 100%);
 }
 
-/* Restrained executive card elevation — subtle, near-flat. */
 @utility card-shadow {
-  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 1px -1px rgb(15 23 42 / 0.03);
+  box-shadow: 0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 1px -1px rgb(23 33 61 / 0.03);
 }
 
-/* Enterprise card system: white surface, soft border, subtle shadow, 12px radius. */
 @utility enterprise-card {
   background-color: hsl(0 0% 100%);
   border: 1px solid hsl(216 41% 88%);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px 0 rgb(5 11 42 / 0.04), 0 1px 3px 0 rgb(5 11 42 / 0.03);
+  border-radius: 0.625rem;
+  box-shadow: 0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 3px 0 rgb(23 33 61 / 0.03);
 }
 
 @utility btn-brand {
@@ -462,13 +468,13 @@
 }
 
 @utility hero-gradient {
-  background: linear-gradient(135deg, hsl(230 79% 9%) 0%, hsl(230 71% 15%) 100%);
-  color: #FFFFFF;
+  background-color: hsl(216 42% 95%);
+  color: hsl(224 45% 16%);
 }
 
 @utility auth-gradient {
-  background: linear-gradient(135deg, hsl(230 79% 9%) 0%, hsl(230 71% 15%) 100%);
-  color: #FFFFFF;
+  background-color: hsl(216 42% 95%);
+  color: hsl(224 45% 16%);
 }
 
 @utility sidebar-gradient {
@@ -508,11 +514,11 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: hsl(216 41% 88%);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
+    background: hsl(219 20% 45%);
   }
 
   *:focus-visible {
@@ -525,10 +531,10 @@
   .prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 600; margin-top: 1.25em; margin-bottom: 0.5em; }
   .prose ul, .prose ol { padding-left: 1.25em; margin-top: 0.5em; margin-bottom: 0.5em; }
   .prose li { margin-top: 0.25em; margin-bottom: 0.25em; }
-  .prose a { color: #155EEF; text-decoration: underline; }
+  .prose a { color: hsl(220 87% 51%); text-decoration: underline; }
   .prose strong { font-weight: 600; }
   .prose code { font-size: 0.875em; background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 4px; }
-  .prose blockquote { border-left: 3px solid #155EEF; padding-left: 1em; color: hsl(var(--muted-foreground)); }
+  .prose blockquote { border-left: 3px solid hsl(220 87% 51%); padding-left: 1em; color: hsl(var(--muted-foreground)); }
   .prose img { max-width: 100%; border-radius: var(--radius); }
   .dark .prose { color: hsl(var(--foreground)); }
 
@@ -541,7 +547,7 @@
     font-size: 1.75rem;
     line-height: 1.2;
     font-weight: 700;
-    color: hsl(230 71% 15%);
+    color: hsl(224 45% 16%);
     letter-spacing: -0.02em;
   }
   @media (min-width: 768px) {
@@ -552,7 +558,7 @@
     font-size: 1.375rem;
     line-height: 1.35;
     font-weight: 700;
-    color: hsl(230 71% 15%);
+    color: hsl(224 45% 16%);
     letter-spacing: -0.01em;
   }
   .card-title-exec {
@@ -572,7 +578,7 @@
     font-size: 1.875rem;
     line-height: 1.1;
     font-weight: 700;
-    color: hsl(230 71% 15%);
+    color: hsl(224 45% 16%);
     letter-spacing: -0.02em;
   }
   .meta-text {

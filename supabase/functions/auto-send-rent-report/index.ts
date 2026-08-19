@@ -210,7 +210,7 @@ function buildHtmlEmail(
         <p style="color:#475569;font-size:13px;margin:0 0 14px 0;">
           Log in to CALQULUS PMS to download the full PDF report or take action on outstanding balances.
         </p>
-        <a href="${appUrl}" style="background:#C9A84C;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+        <a href="${appUrl}" style="background:#155EEF;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
           Open CALQULUS PMS
         </a>
       </div>

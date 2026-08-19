@@ -25,7 +25,7 @@ import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccount
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
 import { EnterpriseAdminPlatform } from '@/shared/components/admin';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 
 // NOTE: TenantManagement is intentionally NOT imported.
 // Webhosts have zero access to tenant data by platform policy.
@@ -74,7 +74,7 @@ const WebhostDashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
+          <BrandMark size="hero" className="animate-pulse-soft" />
           <div className="flex gap-1.5">
             {[0,1,2].map(i => (
               <div key={i} className="w-2 h-2 rounded-full bg-primary/70 animate-pulse-soft"
@@ -126,34 +126,25 @@ const WebhostDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
-      {/* Premium executive header — navy gradient (#050B2A → #0B1440) */}
-      <header className="sticky top-0 z-50 navy-executive-gradient border-b border-navy-deep/60 shadow-sm">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden shrink-0">
-              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-7 w-auto object-contain" />
-            </div>
-            <div className="hidden sm:block min-w-0">
-              <p className="font-heading text-base font-bold text-white leading-none">CALQULUS PMS</p>
-              <p className="text-[10px] text-blue-200/80 tracking-widest font-semibold uppercase mt-0.5">PLATFORM ADMINISTRATION</p>
-            </div>
-          </div>
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+          <BrandMark size="md" showWordmark subtitle="Admin" className="min-w-0" />
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-semibold text-blue-50 uppercase tracking-wider">SYSTEM OPERATIONAL</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">System operational</span>
             </div>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
-              <div className="h-2 w-2 rounded-full bg-blue-300" />
-              <span className="text-xs font-medium text-blue-50 truncate max-w-[180px]">{user?.email || 'mugo.james27@gmail.com'}</span>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-xs font-medium text-foreground truncate max-w-[180px]">{user?.email}</span>
               {getLevelBadge()}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="border border-white/25 text-blue-50 hover:bg-white/10 hover:text-white hover:border-white/40 transition-all"
+              className="text-muted-foreground hover:text-destructive"
             >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign Out</span>

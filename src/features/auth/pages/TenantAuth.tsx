@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
-import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 interface Invitation {
@@ -418,7 +418,7 @@ const TenantAuth = () => {
         <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-16 w-auto" />
+              <BrandMark size="hero" />
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">Self-Registration</CardTitle>
             <CardDescription className="text-muted-foreground mt-2">
@@ -520,11 +520,7 @@ const TenantAuth = () => {
       <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm max-h-[calc(100vh-2rem)] overflow-y-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img 
-              src={calqulusLogo} 
-              alt="CALQULUS PMS" 
-              className="h-14 w-auto"
-            />
+            <BrandMark size="hero" />
           </div>
           <CardTitle className="text-2xl font-bold text-foreground">Create Tenant Account</CardTitle>
           <CardDescription className="text-muted-foreground">

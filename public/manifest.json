@@ -5,8 +5,8 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0A1628",
-  "theme_color": "#C9A84C",
+  "background_color": "#EEF2F8",
+  "theme_color": "#155EEF",
   "lang": "en-KE",
   "categories": [
     "finance",

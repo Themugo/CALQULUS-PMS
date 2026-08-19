@@ -16,6 +16,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { cn } from "@/shared/lib/utils";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 const MODULE_OPTIONS = [
   { id: "invoices", name: "Financial & Invoices", fields: ["amount", "paid_amount", "balance_due", "status", "due_date", "property_name"] },
@@ -253,9 +254,9 @@ export function CustomReportBuilder() {
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="Billed" fill="#1E6FD9" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Collected" fill="#10b981" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Arrears" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Billed" fill={CALQULUS_COLOR.primary} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Collected" fill={CALQULUS_COLOR.success} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Arrears" fill={CALQULUS_COLOR.danger} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -268,8 +269,8 @@ export function CustomReportBuilder() {
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Line type="monotone" dataKey="Billed" stroke="#1E6FD9" strokeWidth={2} />
-                    <Line type="monotone" dataKey="Collected" stroke="#10b981" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Billed" stroke={CALQULUS_COLOR.primary} strokeWidth={2} />
+                    <Line type="monotone" dataKey="Collected" stroke={CALQULUS_COLOR.success} strokeWidth={2} />
                   </ReLineChart>
                 </ResponsiveContainer>
               )}

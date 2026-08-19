@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 
 interface ManagerProfileData {
   approval_status?: string;
@@ -87,7 +87,7 @@ const PendingApproval = () => {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12" />
+            <BrandMark size="lg" />
           </div>
           <div className="flex items-center justify-center gap-2 text-amber-500 mb-2">
             <Building2 className="h-5 w-5" />

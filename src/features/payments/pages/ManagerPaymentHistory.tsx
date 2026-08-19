@@ -357,8 +357,8 @@ const ManagerPaymentHistory = () => {
   // Payment method distribution
   const paymentMethodData = useMemo(() => {
     return [
-      { name: "M-Pesa", value: stats.mpesaPayments, color: "#10b981" },
-      { name: "Card/Other", value: stats.cardPayments, color: "#3b82f6" },
+      { name: "M-Pesa", value: stats.mpesaPayments, color: BRAND_CHART_COLORS[2] },
+      { name: "Card/Other", value: stats.cardPayments, color: BRAND_CHART_COLORS[0] },
     ];
   }, [stats.mpesaPayments, stats.cardPayments]);
 
@@ -987,8 +987,8 @@ const ManagerPaymentHistory = () => {
                     formatter={(value: number) => formatCurrency(value)}
                   />
                   <Legend />
-                  <Bar dataKey="mpesa" name="M-Pesa" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="card" name="Card/Other" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="mpesa" name="M-Pesa" fill={BRAND_CHART_COLORS[2]} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="card" name="Card/Other" fill={BRAND_CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

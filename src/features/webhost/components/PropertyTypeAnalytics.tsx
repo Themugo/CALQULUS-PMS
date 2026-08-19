@@ -7,13 +7,14 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { Building2, TrendingUp } from 'lucide-react';
 import { CATEGORY_BY_KEY, GROUP_LABELS, GROUP_COLORS, getCategoryGroup } from '@/shared/constants/propertyTypes';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 
 const GROUP_CHART_COLORS: Record<string, string> = {
-  residential: '#3b82f6',
-  commercial:  '#f59e0b',
-  industrial:  '#6b7280',
-  mixed:       '#8b5cf6',
-  land:        '#22c55e',
+  residential: CALQULUS_COLOR.primary,
+  commercial:  CALQULUS_COLOR.warning,
+  industrial:  CALQULUS_COLOR.textMuted,
+  mixed:       CALQULUS_COLOR.info,
+  land:        CALQULUS_COLOR.success,
 };
 
 const fmt = (n: number) =>
@@ -163,8 +164,8 @@ const PropertyTypeAnalytics: React.FC = () => {
                     labelStyle={{ color: '#e2e8f0' }}
                     itemStyle={{ color: '#94a3b8' }}
                   />
-                  <Bar dataKey="count" name="Properties" fill="#C9A84C" radius={[0,3,3,0]}/>
-                  <Bar dataKey="units"  name="Units"      fill="#1E6FD9" radius={[0,3,3,0]}/>
+                  <Bar dataKey="count" name="Properties" fill={CALQULUS_COLOR.primary} radius={[0,3,3,0]}/>
+                  <Bar dataKey="units"  name="Units"      fill={CALQULUS_COLOR.info} radius={[0,3,3,0]}/>
                 </BarChart>
               </ResponsiveContainer>
             )}

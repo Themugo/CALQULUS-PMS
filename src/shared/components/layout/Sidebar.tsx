@@ -37,7 +37,7 @@ import { useNavHistory } from "@/shared/hooks/useNavHistory";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 
 interface NavItem {
   name: string;
@@ -225,19 +225,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
         >
           {collapsed ? (
-            <img src={calqulusLogo} alt="CALQULUS" className="h-8 w-8 rounded-lg object-cover ring-1 ring-border/80 shadow-2xs mx-auto" />
+            <BrandMark size="nav" />
           ) : (
-            <div className="flex items-center gap-2.5 min-w-0">
-              <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-9 rounded-lg object-cover ring-1 ring-border/80 shadow-2xs flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="font-heading font-bold text-sm tracking-tight text-sidebar-foreground truncate leading-none">
-                  CALQULUS
-                </p>
-                <p className="text-[10px] text-sidebar-muted font-medium tracking-wider uppercase mt-1">
-                  PMS Enterprise
-                </p>
-              </div>
-            </div>
+            <BrandMark size="md" showWordmark subtitle="PMS" />
           )}
 
           <div className="flex items-center gap-1 flex-shrink-0">

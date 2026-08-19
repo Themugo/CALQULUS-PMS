@@ -4,7 +4,7 @@ import { logError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/shared/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 
 const NotFound = () => {
   const location = useLocation();
@@ -39,44 +39,34 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center hero-gradient px-4">
-      {/* Grid overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-        backgroundImage: `linear-gradient(hsl(42 51% 55% / 0.5) 1px, transparent 1px),
-                          linear-gradient(90deg, hsl(42 51% 55% / 0.5) 1px, transparent 1px)`,
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+        backgroundImage: `linear-gradient(hsl(220 87% 51% / 0.4) 1px, transparent 1px),
+                          linear-gradient(90deg, hsl(220 87% 51% / 0.4) 1px, transparent 1px)`,
         backgroundSize: '48px 48px',
       }} />
 
       <div className="relative z-10 text-center max-w-md w-full">
-        {/* Logo */}
         <div className="flex justify-center mb-10">
-          <img src={calqulusLogo} alt="CALQULUS PMS" className="h-12 w-auto object-contain opacity-80" />
+          <BrandMark size="lg" />
         </div>
 
-        {/* 404 number */}
         <div className="relative mb-6">
-          <p className="font-heading text-[120px] sm:text-[160px] font-bold leading-none select-none"
-            style={{
-              background: 'linear-gradient(135deg, hsl(42 73% 67% / 0.15) 0%, hsl(42 51% 55% / 0.08) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
+          <p className="font-heading text-[120px] sm:text-[160px] font-bold leading-none select-none text-primary/15">
             404
           </p>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-16 w-16 rounded-2xl bg-amber-400/12 border border-amber-400/20 flex items-center justify-center shadow-lg shadow-amber-400/5">
-              <Search className="h-8 w-8 text-amber-400/60" />
+            <div className="h-16 w-16 rounded-[var(--radius)] bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Search className="h-8 w-8 text-primary/60" />
             </div>
           </div>
         </div>
 
-        {/* Message */}
-        <h1 className="font-heading text-2xl font-bold text-foreground mb-3">Page not found</h1>
-        <p className="text-muted-foreground text-sm mb-2 leading-relaxed">
+        <h1 className="type-page-title mb-3">Page not found</h1>
+        <p className="type-body text-muted-foreground mb-2">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-border mb-8">
-          <code className="text-amber-400/70 text-xs font-mono">{location.pathname}</code>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border mb-8">
+          <code className="text-muted-foreground text-xs font-mono">{location.pathname}</code>
         </div>
 
         {/* Actions */}

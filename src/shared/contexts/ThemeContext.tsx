@@ -32,10 +32,7 @@ export function ThemeProvider({ children, defaultTheme = "system" }: { children:
   useEffect(() => {
     const root = document.documentElement;
 
-    // Dark theme has been removed from CALQULUS. The interface is always light.
-    // The theme toggle remains functional (it still stores the user's choice
-    // and updates `resolvedTheme` in context), but it no longer applies a
-    // `.dark` class — the light enterprise palette is the only visual mode.
+    // Dark mode is classified dormant. Production always uses the light token set.
     root.classList.remove("dark");
     setResolvedTheme("light");
 

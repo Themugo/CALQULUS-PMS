@@ -27,8 +27,10 @@ import {
   ReportSchedulingModal,
 } from '@/shared/components/bi';
 import { Sparkles, FileText, Sliders, ShieldAlert, Clock } from 'lucide-react';
+import { BRAND_CHART_COLORS } from '@/shared/lib/chartColors';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 
-const COLORS = ['#C9A84C', '#1E6FD9', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4']; // CALQULUS brand palette
+const COLORS = [...BRAND_CHART_COLORS];
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -260,8 +262,8 @@ const Reports: React.FC = () => {
                       <Tooltip formatter={(v: number) => fmt(v)} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Bar dataKey="billed"    name="Billed"    fill="hsl(218 30% 65%)" radius={[3,3,0,0]} />
-                      <Bar dataKey="collected" name="Collected" fill="#C9A84C" radius={[3,3,0,0]} />
-                      <Bar dataKey="arrears"   name="Arrears"   fill="hsl(0 84% 60%)" radius={[3,3,0,0]} />
+                      <Bar dataKey="collected" name="Collected" fill={CALQULUS_COLOR.success} radius={[3,3,0,0]} />
+                      <Bar dataKey="arrears"   name="Arrears"   fill={CALQULUS_COLOR.danger} radius={[3,3,0,0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
@@ -302,7 +304,7 @@ const Reports: React.FC = () => {
                         <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                         <Tooltip />
                         <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Bar dataKey="occupied" name="Occupied" stackId="a" fill="#C9A84C" radius={[0,0,0,0]} />
+                        <Bar dataKey="occupied" name="Occupied" stackId="a" fill={CALQULUS_COLOR.success} radius={[0,0,0,0]} />
                         <Bar dataKey="vacant"   name="Vacant"   stackId="a" fill="hsl(218 30% 88%)" radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -311,7 +313,7 @@ const Reports: React.FC = () => {
                         <div key={p.name} className="flex items-center gap-3 text-xs">
                           <span className="w-32 truncate text-muted-foreground">{p.name}</span>
                           <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                            <div className="h-full rounded-full bg-green-500" style={{ width: `${p.rate}%` }} />
+                            <div className="h-full rounded-full bg-success" style={{ width: `${p.rate}%` }} />
                           </div>
                           <span className={`w-10 text-right font-medium ${p.rate >= 80 ? 'text-green-700' : p.rate >= 50 ? 'text-amber-700' : 'text-red-700'}`}>
                             {p.rate}%
@@ -409,7 +411,7 @@ const Reports: React.FC = () => {
                         <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" interval={0} />
                         <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${Math.round(v / 1000)}K`} />
                         <Tooltip formatter={(v: number) => fmt(v)} />
-                        <Bar dataKey="revenue" name="Revenue collected" fill="#1E6FD9" radius={[3,3,0,0]} />
+                        <Bar dataKey="revenue" name="Revenue collected" fill={CALQULUS_COLOR.primary} radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-3 space-y-1.5 max-h-48 overflow-y-auto">

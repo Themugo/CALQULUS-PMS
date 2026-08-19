@@ -1,4 +1,4 @@
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Link } from "react-router-dom";
 import { cn } from "@/shared/lib/utils";
 
@@ -42,9 +42,8 @@ export interface PortalAuthShellProps {
   /** Optional notice shown below the form (portal guidance). */
   notice?: string;
   /**
-   * Visual variant. "hero" (default) keeps the established navy hero for
-   * portals not yet migrated to the light executive system. "light" renders
-   * a light SaaS surface — opt-in per portal during the light-theme rollout.
+   * Visual variant. Default is the light executive surface. "hero" is
+   * retained for compatibility and now renders the same light chrome.
    */
   variant?: "hero" | "light";
   /** Form + any auxiliary controls rendered inside the right card. */
@@ -54,7 +53,7 @@ export interface PortalAuthShellProps {
 /**
  * Consistent two-panel portal login layout shared across the four public
  * portals (Manager, Landlord, Agency, Tenant). Provides the same visual
- * language — navy hero, CALQULUS blue primary actions, restrained gold
+ * language — light surface, CALQULUS primary actions, restrained
  * accents, consistent spacing, fields, buttons and focus states — while
  * letting each portal identify itself via portalName/tagline/icon.
  */
@@ -70,7 +69,7 @@ export function PortalAuthShell({
   formSubtitle,
   submitLabel: _submitLabel,
   notice,
-  variant = "hero",
+  variant = "light",
   children,
 }: PortalAuthShellProps) {
   const isLight = variant === "light";
@@ -88,11 +87,7 @@ export function PortalAuthShell({
 
         <div className="relative z-10 flex flex-col h-full p-12">
           <div className="flex items-center gap-4 mb-16">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
-            <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
-              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">{portalName}</p>
-            </div>
+            <BrandMark size="hero" showWordmark subtitle={portalName} />
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
@@ -133,10 +128,10 @@ export function PortalAuthShell({
       <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex justify-center mb-8">
-            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto object-contain" />
+            <BrandMark size="hero" />
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+          <div className="rounded-[var(--radius)] border border-border bg-card p-6 sm:p-8 card-shadow">
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
                 <Icon className="h-3 w-3 text-primary" />
@@ -165,14 +160,14 @@ export function PortalAuthShell({
 }
 
 /** Full-screen branded loading state shown while auth state is resolving. */
-export function AuthLoadingScreen({ variant = "hero" }: { variant?: "hero" | "light" }) {
+export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "light" }) {
   return (
     <div className={cn(
       "min-h-screen flex items-center justify-center bg-background text-foreground",
       variant === "light" ? "surface-subtle" : "hero-gradient"
     )}>
       <div className="flex flex-col items-center gap-4">
-        <img src={calqulusLogo} alt="CALQULUS PMS" className="h-14 w-auto animate-pulse-soft" />
+        <BrandMark size="hero" className="animate-pulse-soft" />
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
             <div

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -186,20 +187,20 @@ export default function AccountantDashboard() {
               <AreaChart data={data?.financialTrends}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor={CALQULUS_COLOR.success} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={CALQULUS_COLOR.success} stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    <stop offset="5%" stopColor={CALQULUS_COLOR.danger} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={CALQULUS_COLOR.danger} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tickFormatter={v => `${v / 1000}k`} tick={{ fontSize: 12 }} />
                 <Tooltip formatter={(value: any) => fmt(Number(value))} />
-                <Area type="monotone" dataKey="revenue" name="Total Revenue" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="expenses" name="Expenses" stroke="#ef4444" fillOpacity={1} fill="url(#colorExpenses)" strokeWidth={2} />
+                <Area type="monotone" dataKey="revenue" name="Total Revenue" stroke={CALQULUS_COLOR.success} fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
+                <Area type="monotone" dataKey="expenses" name="Expenses" stroke={CALQULUS_COLOR.danger} fillOpacity={1} fill="url(#colorExpenses)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

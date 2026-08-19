@@ -9,7 +9,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 
 /* ── CALQULUS public landing page ───────────────────────────────────
    Compact, information-dense executive SaaS landing for the public root.
@@ -83,10 +83,7 @@ export function PublicLandingPage() {
       <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5" aria-label="CALQULUS PMS home">
-            <img src={calqulusLogo} alt="" className="h-7 w-7 rounded-md object-cover" />
-            <span className="text-base font-bold tracking-tight text-navy-primary">
-              CALQULUS <span className="text-primary">PMS</span>
-            </span>
+            <BrandMark size="sm" showWordmark />
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
@@ -175,7 +172,7 @@ export function PublicLandingPage() {
           {/* Compact executive highlight panel */}
           <div className="enterprise-card hidden p-6 md:block">
             <div className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-gold" />
+              <Crown className="h-5 w-5 text-primary" />
               <span className="card-title-exec">One platform, four journeys</span>
             </div>
             <p className="supporting-text mt-2">
@@ -368,8 +365,7 @@ export function PublicLandingPage() {
         <footer className="border-t border-border py-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
-              <img src={calqulusLogo} alt="" className="h-6 w-6 rounded object-cover" />
-              <span className="font-semibold text-navy-primary">CALQULUS PMS</span>
+              <BrandMark size="xs" showWordmark />
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               {NAV_LINKS.map((l) => (

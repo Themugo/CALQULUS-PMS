@@ -8,20 +8,21 @@ import { ThemeStudioEditor, BrandThemeConfig } from "./ThemeStudioEditor";
 import { PortalPreviewCanvas } from "./PortalPreviewCanvas";
 import { CustomDomainConfig } from "./CustomDomainConfig";
 import { cn } from "@/shared/lib/utils";
+import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export function MultiBrandStudio({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState("theme");
   const [saved, setSaved] = useState(false);
 
   const [themeConfig, setThemeConfig] = useState<BrandThemeConfig>({
-    primaryColorHex: "#10b981",
-    secondaryColorHex: "#065f46",
-    accentColorHex: "#f59e0b",
-    fontFamilyHeading: "Plus Jakarta Sans",
-    fontFamilyBody: "Inter",
-    borderRadiusPx: 12,
-    enableDarkMode: true,
-    tenantPortalThemeName: "Calqulus Emerald Enterprise",
+    primaryColorHex: CALQULUS_COLOR.primary,
+    secondaryColorHex: CALQULUS_COLOR.textPrimary,
+    accentColorHex: CALQULUS_COLOR.info,
+    fontFamilyHeading: "Outfit",
+    fontFamilyBody: "system-ui",
+    borderRadiusPx: 10,
+    enableDarkMode: false,
+    tenantPortalThemeName: CALQULUS_BRAND.product,
   });
 
   const handleSaveBrand = () => {

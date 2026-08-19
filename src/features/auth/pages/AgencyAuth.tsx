@@ -90,7 +90,7 @@ const AgencyAuth = () => {
             <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
             <ForgotPasswordDialog
               trigger={
-                <button type="button" className="text-gold hover:text-primary text-xs font-semibold">
+                <button type="button" className="text-primary hover:text-primary text-xs font-semibold">
                   Forgot password?
                 </button>
               }
