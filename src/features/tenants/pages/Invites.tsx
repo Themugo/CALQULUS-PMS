@@ -7,7 +7,7 @@ const Invites = () => {
   return (
     <Layout
       title="Invites"
-      subtitle="Send and track tenant invitations"
+      subtitle="Send invitations, then convert accepted tenants into leases and invoices"
       headerActions={
         <InviteTenantDialog trigger={
           <button className="inline-flex items-center gap-2 rounded-lg btn-brand px-4 py-2 text-sm">

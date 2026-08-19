@@ -470,7 +470,7 @@ const Properties = () => {
 
 
   return (
-    <Layout title="Properties" subtitle="Manage your property portfolio">
+    <Layout title="Properties" subtitle="Buildings, units, and occupancy — open a property to manage tenants and leases">
       {/* Clean toolbar */}
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex flex-wrap items-center gap-2">

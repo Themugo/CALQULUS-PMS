@@ -45,7 +45,6 @@ import {
   CheckCircle2,
   Clock,
   AlertTriangle,
-  XCircle,
   Upload,
   Download,
   ExternalLink,
@@ -105,22 +104,6 @@ interface Lease {
   document_url: string | null;
   tenants?: Tenant | null;
 }
-
-const statusStyles: Record<LeaseStatus, string> = {
-  active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  expiring: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  expired: "bg-red-500/10 text-red-400 border-red-500/20",
-  pending: "bg-slate-500/10 text-slate-400 border-slate-500/20",
-  terminated: "bg-red-500/10 text-red-400 border-red-500/20",
-};
-
-const statusIcons: Record<LeaseStatus, React.ReactNode> = {
-  active: <CheckCircle2 className="h-4 w-4" />,
-  expiring: <AlertTriangle className="h-4 w-4" />,
-  expired: <XCircle className="h-4 w-4" />,
-  pending: <Clock className="h-4 w-4" />,
-  terminated: <XCircle className="h-4 w-4" />,
-};
 
 // Document Preview Component
 const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
@@ -678,7 +661,7 @@ const Leases = () => {
   };
 
   return (
-    <Layout title="Leases" subtitle="Manage lease agreements and tenant statements">
+    <Layout title="Leases" subtitle="Status, dates, tenant, property, rent, and expiry — renew or end a lease here">
       <Tabs defaultValue="agreements" className="w-full">
         <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-2 sm:flex">
           <TabsTrigger value="agreements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
@@ -696,13 +679,13 @@ const Leases = () => {
           {/* Summary Stats - Scrollable on mobile */}
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 scrollbar-hide">
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-amber-400/60/50 ${statusFilter === "all" ? "ring-2 ring-amber-400" : ""}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("all")}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   </div>
                   <div className="text-right sm:text-left">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Total</p>
@@ -712,49 +695,49 @@ const Leases = () => {
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-emerald-500/50 ${statusFilter === "active" ? "ring-2 ring-emerald-500" : ""}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "active" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("active")}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                   </div>
                   <div className="text-right sm:text-left">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Active</p>
-                    <p className="text-lg sm:text-2xl font-bold text-emerald-500">{leaseStats.active}</p>
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{leaseStats.active}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-amber-500/50 ${statusFilter === "expiring" ? "ring-2 ring-amber-500" : ""}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "expiring" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("expiring")}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-warning/10 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                   </div>
                   <div className="text-right sm:text-left">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Expiring</p>
-                    <p className="text-lg sm:text-2xl font-bold text-amber-500">{leaseStats.expiring}</p>
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{leaseStats.expiring}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-slate-500/50 ${statusFilter === "pending" ? "ring-2 ring-slate-500" : ""}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "pending" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("pending")}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-slate-500/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   </div>
                   <div className="text-right sm:text-left">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">Pending</p>
-                    <p className="text-lg sm:text-2xl font-bold text-slate-400">{leaseStats.pending}</p>
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{leaseStats.pending}</p>
                   </div>
                 </div>
               </CardContent>

@@ -165,7 +165,7 @@ const VacationNotices = () => {
   };
 
   return (
-    <Layout title="Vacation Notices" subtitle="Manage tenant move-out notices">
+    <Layout title="Vacation Notices" subtitle="Upcoming move-outs — prepare units, leases, and deposit refunds">
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3 mb-6">
         <Card>

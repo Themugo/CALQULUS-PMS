@@ -7,7 +7,7 @@ interface StatCardProps {
   change?: string;
   changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
-  iconColor?: "primary" | "accent" | "success" | "warning" | "destructive";
+  iconColor?: "neutral" | "primary" | "accent" | "success" | "warning" | "destructive";
   progressValue?: number;
   /** Counts per bar rendered as a mini sparkline bar chart */
   sparkData?: number[];
@@ -20,6 +20,15 @@ interface StatCardProps {
 }
 
 const iconColorMap = {
+  neutral: {
+    bg: "bg-muted/50 border-border",
+    icon: "text-muted-foreground",
+    glow: "",
+    progress: "bg-primary",
+    accentVia: "via-primary/40",
+    spark: "bg-primary",
+    sparkMuted: "bg-primary/20",
+  },
   primary: {
     bg: "bg-gradient-to-br from-primary/15 to-primary/5 border-primary/20",
     icon: "text-primary",
@@ -73,7 +82,7 @@ export function StatCard({
   change,
   changeType = "neutral",
   icon: Icon,
-  iconColor = "accent",
+  iconColor = "neutral",
   progressValue,
   sparkData,
   sparkLabels,
@@ -172,6 +181,7 @@ export function StatCard({
                       "w-full rounded-sm transition-all duration-500",
                       isLast ? colors.spark : colors.sparkMuted,
                       isLast && "ring-1 ring-offset-0",
+                      isLast && iconColor === "neutral"     && "ring-primary/30",
                       isLast && iconColor === "accent"      && "ring-warning/40",
                       isLast && iconColor === "primary"     && "ring-primary/40",
                       isLast && iconColor === "success"     && "ring-success/40",

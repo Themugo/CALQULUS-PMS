@@ -200,7 +200,7 @@ const ManagerLandlords = () => {
   });
 
   return (
-    <Layout title="Landlords" subtitle="Manage property owners and revenue sharing">
+    <Layout title="Landlords" subtitle="Link property owners, set revenue share, and see which buildings they own">
       <div className="space-y-6">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)

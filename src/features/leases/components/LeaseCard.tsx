@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Calendar, Wallet, Paperclip, CheckCircle2, Clock, AlertTriangle, XCircle } from "lucide-react";
 import { formatDate } from "@/shared/lib/dateFormat";
+import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
+import { cn } from "@/shared/lib/utils";
 
 type LeaseStatus = "active" | "expiring" | "expired" | "pending" | "terminated";
 
@@ -38,14 +39,6 @@ interface LeaseCardProps {
   onView: () => void;
 }
 
-const statusStyles: Record<LeaseStatus, string> = {
-  active: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
-  expiring: "bg-amber-500/10 text-amber-700 border-amber-500/20",
-  expired: "bg-red-500/10 text-red-700 border-red-500/20",
-  pending: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.2)]",
-  terminated: "bg-gray-500/10 text-gray-700 border-gray-500/20",
-};
-
 const statusIcons: Record<LeaseStatus, React.ReactNode> = {
   active: <CheckCircle2 className="h-3 w-3" />,
   expiring: <Clock className="h-3 w-3" />,
@@ -57,7 +50,10 @@ const statusIcons: Record<LeaseStatus, React.ReactNode> = {
 export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView }: LeaseCardProps) => {
   return (
     <Card
-      className={`group cursor-pointer transition-all duration-200 active:scale-[0.98] hover:border-amber-400/60/50 bg-card border-border ${isSelected ? "ring-2 ring-amber-400 border-amber-400/60" : ""}`}
+      className={cn(
+        "group cursor-pointer transition-all duration-200 active:scale-[0.98] hover:border-primary/40 bg-card border-border",
+        isSelected && "ring-2 ring-primary border-primary/60"
+      )}
       onClick={onView}
     >
       <CardContent className="p-3 sm:p-4">
@@ -72,38 +68,40 @@ export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView 
             />
             <Avatar className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
               <AvatarImage src={lease.tenants?.photo_url || undefined} />
-              <AvatarFallback className="bg-amber-400 text-slate-900 text-xs sm:text-sm font-medium">
+              <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm font-medium">
                 {lease.tenants?.name?.split(" ").map((n) => n[0]).join("") || "?"}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm sm:text-base text-foreground truncate group-hover:text-amber-500 transition-colors">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className={cn(statusBadgeClass(leaseStatusTone(lease.status)), "flex-shrink-0")}>
+                  {statusIcons[lease.status]}
+                  <span className="capitalize">{lease.status}</span>
+                </span>
+              </div>
+              <h3 className="font-semibold text-sm sm:text-base text-foreground truncate group-hover:text-primary transition-colors">
                 {lease.tenants?.name || "No Tenant"}
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                {lease.property} • {lease.unit}
+                {lease.property} · {lease.unit}
               </p>
             </div>
           </div>
-          <Badge variant="outline" className={`${statusStyles[lease.status]} text-[10px] sm:text-xs flex-shrink-0 px-1.5 sm:px-2`}>
-            {statusIcons[lease.status]}
-            <span className="ml-1 capitalize">{lease.status}</span>
-          </Badge>
         </div>
 
         <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-border">
           <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-1 sm:gap-1.5 text-muted-foreground">
               <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span>{formatDate(lease.end_date)}</span>
+              <span>Expires {formatDate(lease.end_date)}</span>
             </div>
             <div className="flex items-center gap-1 sm:gap-1.5">
-              <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
+              <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
               <span className="font-semibold text-foreground">{formatCurrency(lease.monthly_rent)}</span>
             </div>
           </div>
           {lease.document_url && (
-            <div className="flex items-center gap-1 text-emerald-500">
+            <div className="flex items-center gap-1 text-success">
               <Paperclip className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
           )}

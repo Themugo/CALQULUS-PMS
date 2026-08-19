@@ -8,7 +8,6 @@ import ServiceMarketplace from "@/features/services/components/ServiceMarketplac
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Badge } from "@/shared/components/ui/badge";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import {
   Dialog,
@@ -55,6 +54,11 @@ import { formatDate } from "@/shared/lib/dateFormat";
 import { MAINTENANCE_CATEGORIES, getCategoryLabel } from "@/features/maintenance/lib/maintenanceCategories";
 import { MaintenanceActiveReport } from "@/features/maintenance/components/MaintenanceActiveReport";
 import { MaintenanceBudgetDashboard } from "@/features/maintenance/components/MaintenanceBudgetDashboard";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import {
+  requestAgeLabel,
+  statusBadgeClass,
+} from "@/shared/lib/statusBadge";
 
 type RequestStatus = "open" | "in_progress" | "completed" | "cancelled";
 type RequestPriority = "low" | "medium" | "high" | "urgent";
@@ -93,18 +97,24 @@ interface Unit {
 }
 
 const statusColors: Record<RequestStatus, string> = {
-  open: "bg-amber-500 text-white border-amber-600",
-  in_progress: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]",
-  completed: "bg-emerald-600 text-white border-emerald-700",
-  cancelled: "bg-slate-600 text-white border-slate-700",
+  open: statusBadgeClass("warning"),
+  in_progress: statusBadgeClass("info"),
+  completed: statusBadgeClass("success"),
+  cancelled: statusBadgeClass("neutral"),
 };
 
 const priorityColors: Record<RequestPriority, string> = {
-  low: "bg-slate-500 text-white border-slate-600",
-  medium: "bg-[hsl(214_73%_48%)] text-white border-[hsl(214_73%_40%)]",
-  high: "bg-orange-500 text-white border-orange-600",
-  urgent: "bg-red-600 text-white border-red-700",
+  low: statusBadgeClass("neutral"),
+  medium: statusBadgeClass("warning"),
+  high: statusBadgeClass("danger"),
+  urgent: statusBadgeClass("danger"),
 };
+
+function nextMaintenanceAction(status: RequestStatus, assignedTo: string | null): string {
+  if (status === "open") return assignedTo ? "Start work" : "Assign";
+  if (status === "in_progress") return "Complete";
+  return "—";
+}
 
 const statusIcons: Record<RequestStatus, React.ReactNode> = {
   open: <AlertTriangle className="h-4 w-4" />,
@@ -368,16 +378,16 @@ export default function Maintenance() {
 
   return (
     <Layout
-      title="Maintenance Requests"
-      subtitle="Track and manage repair tickets"
+      title="Maintenance"
+      subtitle="Priority, status, property, unit, and age — assign, start, or complete work orders"
     >
       {/* Stats Cards */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4 mb-4 sm:mb-6">
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-amber-400/10">
-                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-muted">
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
@@ -389,8 +399,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-amber-500/10">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-warning/10">
+                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Open</p>
@@ -402,8 +412,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-[hsl(214_73%_48%/0.1)]">
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-[hsl(214_73%_48%)]" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">In Progress</p>
@@ -415,8 +425,8 @@ export default function Maintenance() {
         <Card className="bg-card border-border">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-emerald-500/10">
-                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
@@ -682,23 +692,25 @@ export default function Maintenance() {
               Loading requests...
             </div>
           ) : filteredRequests.length === 0 ? (
-            <div className="text-center py-8 sm:py-12 text-muted-foreground text-sm">
-              No maintenance requests found.
-            </div>
+            <EmptyState
+              icon={Wrench}
+              title="No maintenance requests found"
+              description="Create a work order to track repairs by property, unit, and priority."
+            />
           ) : viewMode === "table" ? (
             <Card className="bg-card border-border">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-border">
-                      <TableHead>Task</TableHead>
-                      <TableHead>Owner</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Request Date</TableHead>
                       <TableHead>Priority</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Budget</TableHead>
+                      <TableHead>Issue</TableHead>
+                      <TableHead className="hidden md:table-cell">Property / Unit</TableHead>
+                      <TableHead className="hidden lg:table-cell">Tenant</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead className="hidden xl:table-cell">Assigned</TableHead>
+                      <TableHead className="hidden lg:table-cell">Next</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -706,45 +718,39 @@ export default function Maintenance() {
                     {filteredRequests.map((request) => (
                       <TableRow key={request.id} className="border-border">
                         <TableCell>
+                          <span className={priorityColors[request.priority]}>
+                            {request.priority}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className={statusColors[request.status]}>
+                            {request.status.replace("_", " ")}
+                          </span>
+                        </TableCell>
+                        <TableCell>
                           <div>
                             <p className="font-medium text-foreground">{request.title}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-muted-foreground md:hidden">
                               {request.property_name}
-                              {request.unit_number && ` - Unit ${request.unit_number}`}
+                              {request.unit_number && ` · ${request.unit_number}`}
                             </p>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-foreground">{request.tenant_name}</span>
-                          </div>
+                        <TableCell className="hidden md:table-cell">
+                          <p className="text-sm text-foreground">{request.property_name}</p>
+                          <p className="text-xs text-muted-foreground">{request.unit_number || "—"}</p>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
-                            {getCategoryLabel(request.category || 'other')}
-                          </Badge>
+                        <TableCell className="hidden lg:table-cell">
+                          <span className="text-sm text-foreground">{request.tenant_name}</span>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(request.requested_date)}
+                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                          {requestAgeLabel(request.created_at)}
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={priorityColors[request.priority]}>
-                            {request.priority}
-                          </Badge>
+                        <TableCell className="hidden xl:table-cell text-sm text-muted-foreground">
+                          {request.assigned_to || "Unassigned"}
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={statusColors[request.status]}>
-                            {request.status.replace("_", " ")}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {request.expected_completion_date
-                            ? formatDate(request.expected_completion_date)
-                            : "-"}
-                        </TableCell>
-                        <TableCell className="text-foreground">
-                          {request.budget ? formatCurrency(request.budget) : "-"}
+                        <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                          {nextMaintenanceAction(request.status, request.assigned_to)}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex gap-2 justify-end">
@@ -782,7 +788,7 @@ export default function Maintenance() {
                             {request.status === "in_progress" && can('manage_maintenance') && (
                               <Button
                                 size="sm"
-                                className="bg-emerald-600 hover:bg-emerald-700"
+                                className="bg-success hover:bg-success/90"
                                 onClick={() => updateRequestStatus(request.id, "completed")}
                               >
                                 Complete
@@ -804,7 +810,7 @@ export default function Maintenance() {
                     <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                       <div className="flex-1">
                         <div className="flex items-start gap-3 mb-2">
-                          <div className="p-2 rounded-lg bg-amber-400/10">
+                          <div className="p-2 rounded-lg bg-muted">
                             {statusIcons[request.status]}
                           </div>
                           <div>
@@ -821,23 +827,23 @@ export default function Maintenance() {
                           {request.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline" className={statusColors[request.status]}>
+                          <span className={statusColors[request.status]}>
                             {request.status.replace("_", " ")}
-                          </Badge>
-                          <Badge variant="outline" className={priorityColors[request.priority]}>
+                          </span>
+                          <span className={priorityColors[request.priority]}>
                             {request.priority} priority
-                          </Badge>
-                          <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
+                          </span>
+                          <span className={statusBadgeClass("neutral")}>
                             {getCategoryLabel(request.category || 'other')}
-                          </Badge>
-                          <Badge variant="outline" className="bg-slate-500/10 text-slate-300 border-slate-500/30">
+                          </span>
+                          <span className={statusBadgeClass("neutral")}>
                             <User className="h-3 w-3 mr-1" />
                             {request.tenant_name}
-                          </Badge>
+                          </span>
                           {request.budget && (
-                            <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
+                            <span className={statusBadgeClass("success")}>
                               Budget: {formatCurrency(request.budget)}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                         {request.assigned_to && (
@@ -851,7 +857,7 @@ export default function Maintenance() {
                             <span>Due: {formatDate(request.expected_completion_date)}</span>
                           )}
                           {request.completion_date && (
-                            <span className="text-emerald-400">Completed: {formatDate(request.completion_date)}</span>
+                            <span className="text-success">Completed: {formatDate(request.completion_date)}</span>
                           )}
                         </div>
                       </div>
@@ -894,7 +900,7 @@ export default function Maintenance() {
                           {request.status === "in_progress" && can('manage_maintenance') && (
                             <Button
                               size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700"
+                              className="bg-success hover:bg-success/90"
                               onClick={() => updateRequestStatus(request.id, "completed")}
                             >
                               Complete

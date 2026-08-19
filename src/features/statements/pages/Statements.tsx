@@ -14,7 +14,7 @@ const Statements = () => {
   return (
     <Layout
       title="Statements"
-      subtitle="Generate monthly collection statements per property"
+      subtitle="Monthly collection statements by property — export what was billed and paid"
       headerActions={
         <PropertySelectDropdown
           properties={properties}

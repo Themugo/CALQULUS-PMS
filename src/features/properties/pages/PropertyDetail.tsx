@@ -369,7 +369,7 @@ const PropertyDetail = () => {
   return (
     <Layout
       title={property.name}
-      subtitle={property.address}
+      subtitle="Property → units → tenants. Open a building to manage occupancy, leases, and billing."
       headerActions={
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => navigate("/properties")}>

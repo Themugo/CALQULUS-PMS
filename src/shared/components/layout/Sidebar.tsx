@@ -23,6 +23,7 @@ import {
   Building2,
   FileCheck,
   Receipt,
+  Wallet,
   MessageSquare,
   User,
   Home,
@@ -60,23 +61,29 @@ const managerNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: "TENANTS & LEASES",
+    title: "PORTFOLIO",
     items: [
-      { name: "Leases", href: "/leases", icon: FileText, permission: "view_leases" },
-      { name: "Tenants", href: "/tenants", icon: Users, permission: "view_tenants" },
-      { name: "Tenant Screening", href: "/tenant-screening", icon: UserX, permission: "view_tenants" },
-      { name: "Invites", href: "/invites", icon: Mail, permission: "view_tenants" },
-      { name: "Vacation Notices", href: "/vacation-notices", icon: Calendar, permission: "view_tenants" },
+      { name: "Properties", href: "/properties", icon: Building2, permission: "view_properties" },
+      { name: "Landlords", href: "/landlords", icon: Handshake, permission: "view_properties" },
     ],
   },
   {
-    title: "FINANCIALS & BILLING",
+    title: "OCCUPANCY",
     items: [
-      { name: "Billing & Invoices", href: "/billing", icon: CreditCard, permission: "view_invoices" },
+      { name: "Leases", href: "/leases", icon: FileText, permission: "view_leases" },
+      { name: "Tenants", href: "/tenants", icon: Users, permission: "view_tenants" },
+      { name: "Invites", href: "/invites", icon: Mail, permission: "view_tenants" },
+      { name: "Vacation Notices", href: "/vacation-notices", icon: Calendar, permission: "view_tenants" },
+      { name: "Tenant Screening", href: "/tenant-screening", icon: UserX, permission: "view_tenants" },
+    ],
+  },
+  {
+    title: "COLLECTIONS",
+    items: [
+      { name: "Billing", href: "/billing", icon: CreditCard, permission: "view_invoices" },
       { name: "Water Billing", href: "/water-billing", icon: Droplets, permission: "view_invoices" },
       { name: "Statements", href: "/statements", icon: FileSpreadsheet, permission: "view_invoices" },
-      { name: "Payment History", href: "/payments", icon: Receipt, permission: "view_invoices" },
-      { name: "Platform Billing", href: "/platform-billing", icon: Building2 },
+      { name: "Payment History", href: "/payments", icon: Wallet, permission: "view_invoices" },
     ],
   },
   {
@@ -84,13 +91,13 @@ const managerNavGroups: NavGroup[] = [
     items: [
       { name: "Maintenance", href: "/maintenance", icon: Wrench, permission: "view_maintenance" },
       { name: "Contracts", href: "/contracts", icon: FileCheck, permission: "view_contracts" },
-      { name: "Landlords", href: "/landlords", icon: Handshake, permission: "view_properties" },
       { name: "Reports", href: "/reports", icon: BarChart3 },
     ],
   },
   {
     title: "ACCOUNT",
     items: [
+      { name: "Platform Billing", href: "/platform-billing", icon: Receipt },
       { name: "Settings", href: "/settings", icon: Settings },
     ],
   },
@@ -350,7 +357,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <button
               onClick={() => navigate("/webhost")}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-md text-xs font-medium transition-colors touch-manipulation text-amber-400 hover:bg-amber-400/10",
+                "flex w-full items-center gap-2.5 rounded-md text-xs font-medium transition-colors touch-manipulation text-warning hover:bg-warning/10",
                 collapsed ? "justify-center p-2.5" : "px-3 py-2"
               )}
               title={collapsed ? "Back to Webhost" : undefined}

@@ -6,7 +6,6 @@
  */
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -20,20 +19,22 @@ import { formatDate } from "@/shared/lib/dateFormat";
 import { downloadInvoicePDF } from "@/features/billing/lib/invoicePdfExport";
 import { downloadReceiptPDF } from "@/features/billing/lib/receiptPdfExport";
 import type { BillingInvoice } from "../hooks/useBillingData";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import { statusBadgeClass } from "@/shared/lib/statusBadge";
 
 type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "failed" | "refunded";
 
 const STATUS_CONFIG: Record<
   InvoiceStatus,
-  { styles: string; icon: React.ComponentType<{ className?: string }>; label: string }
+  { tone: "success" | "warning" | "danger" | "info" | "neutral"; icon: React.ComponentType<{ className?: string }>; label: string }
 > = {
-  paid:           { styles: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", icon: CheckCircle, label: "Paid" },
-  partially_paid: { styles: "bg-sky-500/10 text-sky-400 border-sky-500/20",             icon: Clock,       label: "Partially Paid" },
-  pending:        { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20",       icon: Clock,       label: "Pending" },
-  overdue:        { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: AlertCircle, label: "Overdue" },
-  failed:         { styles: "bg-red-500/10 text-red-400 border-red-500/20",             icon: XCircle,     label: "Failed" },
-  refunded:       { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle,     label: "Refunded" },
-  cancelled:      { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20",       icon: XCircle,     label: "Cancelled" },
+  paid:           { tone: "success", icon: CheckCircle, label: "Paid" },
+  partially_paid: { tone: "info",    icon: Clock,       label: "Partial" },
+  pending:        { tone: "warning", icon: Clock,       label: "Pending" },
+  overdue:        { tone: "danger",  icon: AlertCircle, label: "Overdue" },
+  failed:         { tone: "danger",  icon: XCircle,     label: "Failed" },
+  refunded:       { tone: "neutral", icon: XCircle,     label: "Refunded" },
+  cancelled:      { tone: "neutral", icon: XCircle,     label: "Cancelled" },
 };
 
 interface Props {
@@ -70,9 +71,11 @@ export function InvoiceTable({
 
   if (invoices.length === 0) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
-        No invoices found. Create your first invoice to get started.
-      </div>
+      <EmptyState
+        icon={Building}
+        title="No invoices in this view"
+        description="Create an invoice from a lease, then record payment and download the receipt."
+      />
     );
   }
 
@@ -80,17 +83,17 @@ export function InvoiceTable({
     <Table>
       <TableHeader>
         <TableRow className="hover:bg-transparent border-border">
-          <TableHead className="font-heading font-semibold">Invoice #</TableHead>
-          <TableHead className="font-heading font-semibold">Tenant</TableHead>
-          <TableHead className="font-heading font-semibold">Property</TableHead>
-          <TableHead className="font-heading font-semibold">Amount</TableHead>
-          <TableHead className="font-heading font-semibold">Due Date</TableHead>
-          <TableHead className="font-heading font-semibold">Status</TableHead>
-          <TableHead className="font-heading font-semibold text-right">Actions</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Invoice</TableHead>
+          <TableHead>Tenant</TableHead>
+          <TableHead>Property / Unit</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Due</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice, index) => {
+        {invoices.map((invoice) => {
           const status = invoice.status as InvoiceStatus;
           const cfg    = STATUS_CONFIG[status] ?? STATUS_CONFIG.cancelled;
           const StatusIcon = cfg.icon;
@@ -98,30 +101,35 @@ export function InvoiceTable({
           return (
             <TableRow
               key={invoice.id}
-              className="hover:bg-muted/30 border-border animate-slide-in"
-              style={{ animationDelay: `${index * 30}ms` }}
+              className="hover:bg-muted/30 border-border"
             >
+              <TableCell>
+                <span className={`${statusBadgeClass(cfg.tone)} gap-1`}>
+                  <StatusIcon className="h-3 w-3" />
+                  {cfg.label}
+                </span>
+              </TableCell>
               <TableCell className="font-medium font-mono text-foreground">
                 {invoice.invoice_number}
               </TableCell>
 
               <TableCell>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={invoice.tenants?.photo_url ?? undefined} />
-                    <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
                       {invoice.tenants?.name?.split(" ").map(n => n[0]).join("") ?? "?"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-foreground">{invoice.tenants?.name ?? "No Tenant"}</span>
+                  <span className="text-foreground truncate">{invoice.tenants?.name ?? "No Tenant"}</span>
                 </div>
               </TableCell>
 
               <TableCell>
                 {invoice.leases ? (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Building className="h-4 w-4" />
-                    <span>{invoice.leases.property} — {invoice.leases.unit}</span>
+                  <div className="text-sm">
+                    <p className="text-foreground truncate">{invoice.leases.property}</p>
+                    <p className="text-xs text-muted-foreground">{invoice.leases.unit}</p>
                   </div>
                 ) : (
                   <span className="text-muted-foreground">—</span>
@@ -139,13 +147,6 @@ export function InvoiceTable({
 
               <TableCell className="text-muted-foreground">
                 {formatDate(invoice.due_date)}
-              </TableCell>
-
-              <TableCell>
-                <Badge variant="outline" className={`${cfg.styles} gap-1`}>
-                  <StatusIcon className="h-3 w-3" />
-                  {cfg.label}
-                </Badge>
               </TableCell>
 
               <TableCell>
@@ -176,7 +177,7 @@ export function InvoiceTable({
                   {/* Download receipt PDF (paid only) */}
                   {status === "paid" && (
                     <Button
-                      variant="ghost" size="sm" className="h-8 px-2 text-emerald-400"
+                      variant="ghost" size="sm" className="h-8 px-2 text-success"
                       title="Download Receipt PDF"
                       onClick={() => downloadReceiptPDF({
                         invoice_number: invoice.invoice_number,
@@ -221,7 +222,7 @@ export function InvoiceTable({
                       )}
                       <Button
                         variant="outline" size="sm"
-                        className="h-8 text-xs text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10"
+                        className="h-8 text-xs text-success border-success/30 hover:bg-success/10"
                         onClick={() => onMpesa(invoice)}
                       >
                         <Smartphone className="h-3.5 w-3.5 mr-1" />

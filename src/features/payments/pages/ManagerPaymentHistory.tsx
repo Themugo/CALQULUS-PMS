@@ -681,7 +681,7 @@ const ManagerPaymentHistory = () => {
   return (
     <Layout
       title="Payment History"
-      subtitle="View all completed payments and record new ones"
+      subtitle="Completed payments and receipts — record a payment against an invoice"
     >
       {/* Record Payment dialog */}
       {recordDialogOpen && recordTenant && (

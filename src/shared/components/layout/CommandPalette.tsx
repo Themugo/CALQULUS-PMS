@@ -42,20 +42,22 @@ interface SearchResult {
 
 const ALL_PAGES: NavPage[] = [
   { name: "Dashboard", href: "/", category: "Overview" },
-  { name: "Leases", href: "/leases", category: "Tenants & Leases" },
-  { name: "Tenants", href: "/tenants", category: "Tenants & Leases" },
-  { name: "Tenant Screening", href: "/tenant-screening", category: "Tenants & Leases" },
-  { name: "Invites", href: "/invites", category: "Tenants & Leases" },
-  { name: "Vacation Notices", href: "/vacation-notices", category: "Tenants & Leases" },
-  { name: "Billing & Invoices", href: "/billing", category: "Financials & Billing" },
-  { name: "Water Billing", href: "/water-billing", category: "Financials & Billing" },
-  { name: "Statements", href: "/statements", category: "Financials & Billing" },
-  { name: "Payment History", href: "/payments", category: "Financials & Billing" },
-  { name: "Maintenance Work Orders", href: "/maintenance", category: "Operations" },
-  { name: "Contracts & Agreements", href: "/contracts", category: "Operations" },
-  { name: "Landlords Registry", href: "/landlords", category: "Operations" },
-  { name: "Reports & Analytics", href: "/reports", category: "Operations" },
-  { name: "System Settings", href: "/settings", category: "Account" },
+  { name: "Properties", href: "/properties", category: "Portfolio" },
+  { name: "Landlords", href: "/landlords", category: "Portfolio" },
+  { name: "Leases", href: "/leases", category: "Occupancy" },
+  { name: "Tenants", href: "/tenants", category: "Occupancy" },
+  { name: "Tenant Screening", href: "/tenant-screening", category: "Occupancy" },
+  { name: "Invites", href: "/invites", category: "Occupancy" },
+  { name: "Vacation Notices", href: "/vacation-notices", category: "Occupancy" },
+  { name: "Billing", href: "/billing", category: "Collections" },
+  { name: "Water Billing", href: "/water-billing", category: "Collections" },
+  { name: "Statements", href: "/statements", category: "Collections" },
+  { name: "Payment History", href: "/payments", category: "Collections" },
+  { name: "Maintenance", href: "/maintenance", category: "Operations" },
+  { name: "Contracts", href: "/contracts", category: "Operations" },
+  { name: "Reports", href: "/reports", category: "Operations" },
+  { name: "Platform Billing", href: "/platform-billing", category: "Account" },
+  { name: "Settings", href: "/settings", category: "Account" },
 ];
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
@@ -235,7 +237,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {favorites.length > 0 && (
                 <div>
                   <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                    <Star className="h-3 w-3 text-amber-500 fill-amber-500" /> Pinned Modules
+                    <Star className="h-3 w-3 text-primary fill-primary" /> Pinned Modules
                   </p>
                   <div className="grid grid-cols-2 gap-1 mt-1">
                     {favorites.map((page) => (
@@ -244,7 +246,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         onClick={() => handleSelect(page.href)}
                         className="flex items-center gap-2 p-2 rounded-md hover:bg-muted text-left transition-colors"
                       >
-                        <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                        <Star className="h-3.5 w-3.5 text-primary fill-primary shrink-0" />
                         <span className="text-xs font-medium text-foreground truncate">{page.name}</span>
                       </button>
                     ))}

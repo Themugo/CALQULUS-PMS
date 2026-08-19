@@ -39,9 +39,8 @@ import {
   TabsTrigger,
 } from "@/shared/components/ui/tabs";
 import {
-  Search, Mail, Phone, History, Upload, User, Calendar,
-  Home, FileText, Wallet, Users, Send, UserCheck, UserX,
-  Clock, Archive, UserPlus, Building2,
+  Search, History, FileText, Users,
+  Clock, Archive, UserPlus, Building2, UserCheck, UserX,
 } from "lucide-react";
 import { TenantStatement } from "@/features/tenants/components/TenantStatement";
 import { InvitationTracker } from "@/features/tenants/components/InvitationTracker";
@@ -54,6 +53,9 @@ import PaymentPayersManager from "@/features/payments/components/PaymentPayersMa
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
 
 interface Property {
   id: string;
@@ -93,9 +95,9 @@ interface TenantHistoryItem {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  inactive: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+  active: statusBadgeClass("success"),
+  pending: statusBadgeClass("warning"),
+  inactive: statusBadgeClass("neutral"),
 };
 
 
@@ -111,115 +113,90 @@ interface TenantTableProps {
 }
 
 function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
-  return (    <div className="rounded-xl border border-border bg-card overflow-hidden">
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
       {isLoading ? (
-        <div className="p-8 text-center text-muted-foreground">Loading tenants...</div>
-      ) : tenantList.length === 0 ? (
-        <div className="p-8 text-center text-muted-foreground">
-          {searchQuery ? "No tenants match your search." : "No tenants in this category."}
+        <div className="p-4 space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full rounded-md" />
+          ))}
         </div>
+      ) : tenantList.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title={searchQuery ? "No tenants match your search" : "No tenants in this category"}
+          description={searchQuery ? "Try a different name, unit, or property." : "Invite a tenant to a property to start the lease and billing path."}
+        />
       ) : (
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border">
-              <TableHead className="font-heading font-semibold">Tenant</TableHead>
-              <TableHead className="font-heading font-semibold">Contact</TableHead>
-              <TableHead className="font-heading font-semibold">Property</TableHead>
-              <TableHead className="font-heading font-semibold">Move-in Date</TableHead>
-              <TableHead className="font-heading font-semibold">Payment Details</TableHead>
-              <TableHead className="font-heading font-semibold">Status</TableHead>
-              <TableHead className="w-24"></TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Tenant</TableHead>
+              <TableHead>Property / Unit</TableHead>
+              <TableHead>Rent</TableHead>
+              <TableHead className="hidden lg:table-cell">Move-in</TableHead>
+              <TableHead className="hidden md:table-cell">Contact</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tenantList.map((tenant, index) => (
+            {tenantList.map((tenant) => (
               <TableRow
                 key={tenant.id}
-                className="hover:bg-muted/30 border-border animate-slide-in"
-                style={{ animationDelay: `${index * 30}ms` }}
+                className="hover:bg-muted/30 border-border"
               >
                 <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 ring-2 ring-transparent">
+                  <span className={statusStyles[tenant.status] || statusBadgeClass(tenantStatusTone(tenant.status))}>
+                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Avatar className="h-8 w-8">
                       <AvatarImage src={signedUrls[tenant.id] || undefined} />
-                      <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
                         {tenant.name.split(" ").map((n) => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-foreground">{tenant.name}</span>
+                    <span className="font-medium text-foreground truncate">{tenant.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-3.5 w-3.5" />
-                      {tenant.email}
-                    </div>
-                    {tenant.phone && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="h-3.5 w-3.5" />
-                        {tenant.phone}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
+                  <div className="min-w-0">
                     {tenant.property ? (
-                      <div className="flex items-center gap-2 text-sm text-foreground">
-                        <Home className="h-3.5 w-3.5 text-muted-foreground" />
-                        {tenant.property}
-                      </div>
+                      <p className="text-sm text-foreground truncate">{tenant.property}</p>
                     ) : (
                       <span className="text-muted-foreground text-sm">Unassigned</span>
                     )}
-                    {tenant.unit && (
-                      <div className="text-sm text-muted-foreground pl-5">{tenant.unit}</div>
-                    )}
+                    <p className="text-xs text-muted-foreground truncate">{tenant.unit || "No unit"}</p>
                   </div>
                 </TableCell>
                 <TableCell>
-                  {tenant.move_in_date ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {format(new Date(tenant.move_in_date), 'dd/MM/yy')}
+                  {tenant.monthly_rent ? (
+                    <div className="text-sm">
+                      <p className="font-medium text-foreground">KES {tenant.monthly_rent.toLocaleString()}/mo</p>
+                      {tenant.deposit_amount ? (
+                        <p className="text-xs text-muted-foreground">
+                          Deposit {((tenant.deposit_balance ?? tenant.deposit_amount)).toLocaleString()}
+                        </p>
+                      ) : null}
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-muted-foreground text-sm">No rent set</span>
                   )}
                 </TableCell>
-                <TableCell>
-                  <div className="space-y-0.5 text-sm">
-                    {tenant.monthly_rent ? (
-                      <div className="font-medium text-foreground">
-                        KES {tenant.monthly_rent.toLocaleString()}/mo
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">No rent set</span>
-                    )}
-                    {tenant.deposit_amount && (
-                      <div className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Wallet className="h-3 w-3" />
-                        Balance: KES {(tenant.deposit_balance ?? tenant.deposit_amount).toLocaleString()}
-                        <span className="text-muted-foreground/60">
-                          / {tenant.deposit_amount.toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                    {tenant.other_charges && tenant.other_charges > 0 && (
-                      <div className="text-xs text-muted-foreground">
-                        +KES {tenant.other_charges.toLocaleString()} {tenant.other_charges_description ? `(${tenant.other_charges_description})` : 'other'}
-                      </div>
-                    )}
+                <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
+                  {tenant.move_in_date ? format(new Date(tenant.move_in_date), "dd/MM/yy") : "—"}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  <div className="space-y-0.5 text-sm text-muted-foreground">
+                    <p className="truncate max-w-[180px]">{tenant.email}</p>
+                    {tenant.phone && <p>{tenant.phone}</p>}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={statusStyles[tenant.status] || statusStyles.active}>
-                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 justify-end">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -238,11 +215,11 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                     >
                       <History className="h-4 w-4" />
                     </Button>
-                    {tenant.status === 'active' && tenant.unit_id && canApproveMoveouts && (
+                    {tenant.status === "active" && tenant.unit_id && canApproveMoveouts && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                        className="h-8 w-8 text-warning hover:text-warning hover:bg-warning/10"
                         onClick={() => onMoveOut(tenant)}
                         title="Process Move-Out"
                       >
@@ -414,7 +391,7 @@ const Tenants = () => {
   const inactiveTenants = tenants.filter(t => t.status === "inactive");
 
   return (
-    <Layout title="Tenants" subtitle="View tenant records across all properties">
+    <Layout title="Tenants" subtitle="Who lives where, what they owe, and which lease needs action">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>

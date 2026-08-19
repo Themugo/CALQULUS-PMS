@@ -14,7 +14,7 @@ const WaterBilling = () => {
   return (
     <Layout
       title="Water Billing"
-      subtitle="Manage meter readings and water charges per property"
+      subtitle="Meter readings and water charges by property and unit"
       headerActions={
         <PropertySelectDropdown
           properties={properties}

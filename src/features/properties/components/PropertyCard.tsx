@@ -9,8 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { MapPin, ChevronDown, Eye, Layers, Pencil, Trash2 } from "lucide-react";
+import { MapPin, ChevronDown, ChevronRight, Eye, Layers, Pencil, Trash2 } from "lucide-react";
 import { CATEGORY_BY_KEY } from "@/shared/constants/propertyTypes";
+import { occupancyRateColor } from "@/shared/lib/statusBadge";
 
 export interface Property {
   id: string;
@@ -69,12 +70,8 @@ const getCategoryLabel = (property: Property): string => {
   return LEGACY_CATEGORY_LABELS[catKey] || catKey;
 };
 
-// Memoized occupancy color
-const getOccupancyColor = (rate: number): string => {
-  if (rate >= 80) return "text-emerald-600";
-  if (rate >= 50) return "text-amber-600";
-  return "text-red-500";
-};
+// Occupancy color uses design-system semantic tokens
+const getOccupancyColor = (rate: number): string => occupancyRateColor(rate);
 
 // Optimized PropertyCard with memoization
 export const PropertyCard = memo<PropertyCardProps>(({
@@ -107,7 +104,8 @@ export const PropertyCard = memo<PropertyCardProps>(({
   const handleDelete = useCallback(() => onDelete(property), [onDelete, property]);
   
   // Precompute class names
-  const cardClassName = `overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-amber-400" : ""}`;
+  const vacantUnits = Math.max(0, property.units - property.occupied);
+  const cardClassName = `overflow-hidden transition-all duration-200 animate-fade-in hover:shadow-md ${isSelected ? "ring-2 ring-primary" : ""}`;
   const animationDelay = `${Math.min(index * 30, 300)}ms`; // Cap delay for performance
 
   return (
@@ -128,7 +126,7 @@ export const PropertyCard = memo<PropertyCardProps>(({
               <div className="min-w-0">
                 <Link 
                   to={`/properties/${property.id}`} 
-                  className="font-heading font-semibold text-foreground text-sm hover:text-amber-500 transition-colors truncate block"
+                  className="font-heading font-semibold text-foreground text-sm hover:text-primary transition-colors truncate block"
                 >
                   {property.name}
                 </Link>
@@ -163,15 +161,29 @@ export const PropertyCard = memo<PropertyCardProps>(({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
+            <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground min-w-0">
+              <span className="font-medium text-foreground truncate">{property.units} units</span>
+              <ChevronRight className="h-3 w-3 shrink-0 text-border" />
+              <span className="truncate">{property.occupied} occupied</span>
+              <ChevronRight className="h-3 w-3 shrink-0 text-border" />
+              <span className="truncate">{propertyTenants.length} tenant{propertyTenants.length !== 1 ? "s" : ""}</span>
+            </div>
+            <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${Math.min(100, Math.max(0, occupancyRate))}%` }}
+              />
+            </div>
+            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
               <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                 {categoryLabel}
               </Badge>
-              <span className="text-xs text-muted-foreground">{property.units} units</span>
-              <span className="text-xs text-muted-foreground">{propertyTenants.length} tenants</span>
               <span className={`text-xs font-medium ${occupancyColor}`}>
                 {occupancyRate.toFixed(0)}% occupied
               </span>
+              {vacantUnits > 0 && (
+                <span className="text-xs text-muted-foreground">{vacantUnits} vacant</span>
+              )}
             </div>
           </div>
         </div>

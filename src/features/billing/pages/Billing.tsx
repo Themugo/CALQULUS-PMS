@@ -287,7 +287,7 @@ const Billing = () => {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <Layout title="Billing & Invoices" subtitle="Manage payments, invoices, and expenditures">
+    <Layout title="Billing" subtitle="Invoice lifecycle from billed to paid — collect, record a payment, then download the receipt">
       <Tabs
         value={mainTab}
         onValueChange={v => setMainTab(v as MainTab)}
@@ -355,10 +355,10 @@ const Billing = () => {
 
           {/* Status filter tabs + table */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="bg-card border border-border">
+            <TabsList className="bg-card border border-border flex-wrap h-auto">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="partially_paid">Partially Paid</TabsTrigger>
+              <TabsTrigger value="partially_paid">Partial</TabsTrigger>
               <TabsTrigger value="paid">Paid</TabsTrigger>
               <TabsTrigger value="overdue">Overdue</TabsTrigger>
               <TabsTrigger value="failed">Failed</TabsTrigger>
@@ -424,7 +424,7 @@ const Billing = () => {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={editingInvoice.tenants.photo_url ?? undefined} />
-                  <AvatarFallback className="bg-amber-400 text-slate-900">
+                  <AvatarFallback className="bg-primary/10 text-primary">
                     {editingInvoice.tenants.name?.split(" ").map(n => n[0]).join("") ?? "?"}
                   </AvatarFallback>
                 </Avatar>

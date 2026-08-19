@@ -1,5 +1,6 @@
 import { Layout } from "@/shared/components/layout/Layout";
 import { StatCard } from "@/features/dashboard/components/StatCard";
+import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
 import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupStatus";
 import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
@@ -12,11 +13,9 @@ import { TenantsOverview } from "@/features/dashboard/components/TenantsOverview
 import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
 import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import {
-  Users, CreditCard, Building2, TrendingUp,
-  Home, AlertCircle, Zap, UserPlus, Wrench,
-  Droplets, FileSpreadsheet, ArrowRight, RefreshCw,
-  BarChart3, ShieldCheck, AlertTriangle, PieChart, Key,
-  DollarSign, Activity, CheckSquare, Layers
+  Home, AlertCircle, ArrowRight, RefreshCw,
+  BarChart3, ShieldCheck, AlertTriangle, PieChart,
+  DollarSign, Activity, CheckSquare, Calendar,
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,7 +31,6 @@ import { toast } from "@/shared/hooks/use-toast";
 import { logError } from "@/shared/lib/errorLogger";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/shared/lib/utils";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { useLeaseExpiryReminders } from "@/shared/hooks/useLeaseExpiryReminders";
 
@@ -61,19 +59,6 @@ interface DashboardStats {
   urgentMaintenanceCount: number;
   pendingDepositRefundsCount: number;
 }
-
-const quickActions = [
-  { label: "Add Property", icon: Building2, href: "/properties", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
-  { label: "Add Unit", icon: Layers, href: "/properties", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
-  { label: "Add Tenant", icon: UserPlus, href: "/tenants", accent: "text-success", bg: "bg-success/10 border-success/20" },
-  { label: "Create Lease", icon: Key, href: "/leases", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
-  { label: "New Invoice", icon: CreditCard, href: "/billing", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
-  { label: "Record Payment", icon: DollarSign, href: "/payments", accent: "text-success", bg: "bg-success/10 border-success/20" },
-  { label: "Maintenance", icon: Wrench, href: "/maintenance", accent: "text-warning", bg: "bg-warning/10 border-warning/20" },
-  { label: "Water Billing", icon: Droplets, href: "/water-billing", accent: "text-primary", bg: "bg-primary/10 border-primary/20" },
-  { label: "Statements", icon: FileSpreadsheet, href: "/statements", accent: "text-muted-foreground", bg: "bg-muted border-border" },
-  { label: "Reports", icon: BarChart3, href: "/reports", accent: "text-purple", bg: "bg-purple/10 border-purple/20" },
-];
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -263,43 +248,12 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
-  const { data: tenantSparkData } = useQuery({
-    queryKey: ['tenant-sparkline-7d', managerId],
-    queryFn: async () => {
-      if (!managerId) return { counts: [], labels: [] };
-      const days = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return d;
-      });
-      const results = await Promise.all(
-        days.map(d => {
-          const start = new Date(d); start.setHours(0, 0, 0, 0);
-          const end   = new Date(d); end.setHours(23, 59, 59, 999);
-          return supabase
-            .from('tenants')
-            .select('id', { count: 'exact', head: true })
-            .eq('manager_id', managerId)
-            .gte('created_at', start.toISOString())
-            .lte('created_at', end.toISOString());
-        })
-      );
-      const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return {
-        counts: results.map(r => r.count ?? 0),
-        labels: days.map(d => DAY_LABELS[d.getDay()]),
-      };
-    },
-    enabled: !!managerId,
-    staleTime: 5 * 60 * 1000,
-  });
-
   return (
     <Layout
       title={`${getGreeting()}, ${userName}`}
       subtitle={stats
-        ? `Operations Command Center · ${stats.totalProperties} Properties · ${stats.totalUnits} Units (${stats.occupancyRate}% Occupied) · ${stats.activeTenants} Active Tenants`
-        : "Loading operational command center…"}
+        ? `Portfolio health · ${stats.totalProperties} properties · ${stats.occupiedUnits}/${stats.totalUnits} occupied · ${formatCurrency(stats.collectedRent)} collected this month`
+        : "Portfolio health, collections, and what needs action today"}
       headerActions={
         <div className="flex items-center gap-2">
           <Button
@@ -336,43 +290,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── EXECUTIVE PAGE HEADER BAND (light) ── */}
-      <div className="enterprise-card p-5 sm:p-6 mb-5 relative overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 relative z-10">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                CALQULUS PMS
-              </span>
-              <span className="h-3 w-px bg-border" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Manager Workspace
-              </span>
-            </div>
-            <h1 className="page-title text-foreground">
-              {getGreeting()}, {userName}
-            </h1>
-            <p className="supporting-text mt-1">
-              {stats
-                ? `Operations command center · ${stats.totalProperties} properties · ${stats.totalUnits} units · ${stats.activeTenants} active tenants`
-                : "Loading your operational command center…"}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {stats && (
-              <>
-                <span className="status-badge status-info">
-                  <Home className="h-3 w-3" /> {stats.occupancyRate}% Occupied
-                </span>
-                <span className="status-badge status-neutral">
-                  <DollarSign className="h-3 w-3" /> {currency}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* ── STATS ERROR / RETRY ── */}
       {statsError && !loading && (
         <div className="mb-5 enterprise-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-destructive/30">
@@ -394,7 +311,74 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* ── PORTFOLIO HEALTH ── */}
+      <div className="mb-2 flex items-center justify-between">
+        <div>
+          <h2 className="section-title">Portfolio health</h2>
+          <p className="supporting-text hidden sm:block">Collected rent, arrears, occupancy, and leases due soon</p>
+        </div>
+      </div>
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-5 mb-5">
+        {loading
+          ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+          : stats && (
+            <>
+              <StatCard
+                title="Collected rent"
+                value={formatCurrency(stats.revenueMTD)}
+                change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
+                changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
+                icon={DollarSign}
+                iconColor="primary"
+              />
+              <StatCard
+                title="Outstanding arrears"
+                value={formatCurrency(stats.arrearsTotal)}
+                change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue invoices` : "All invoices clear"}
+                changeType={stats.overdueInvoices > 0 ? "negative" : "positive"}
+                icon={AlertTriangle}
+                iconColor={stats.arrearsTotal > 0 ? "destructive" : "success"}
+              />
+              <StatCard
+                title="Occupancy"
+                value={`${stats.occupancyRate}%`}
+                change={`${stats.occupiedUnits} occupied · ${stats.vacantUnits} vacant`}
+                changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
+                icon={Home}
+                iconColor={stats.occupancyRate >= 90 ? "success" : stats.occupancyRate >= 70 ? "primary" : stats.occupancyRate >= 50 ? "warning" : "destructive"}
+                progressValue={stats.occupancyRate}
+              />
+              <StatCard
+                title="Collection rate"
+                value={`${stats.collectionRate}%`}
+                change={`Expected ${formatCurrency(stats.expectedRent)}`}
+                changeType={stats.collectionRate >= 90 ? "positive" : stats.collectionRate >= 75 ? "neutral" : "negative"}
+                icon={PieChart}
+                iconColor="neutral"
+              />
+              <StatCard
+                title="Leases expiring"
+                value={stats.expiringLeases.toString()}
+                change="Next 30 days"
+                changeType={stats.expiringLeases > 0 ? "negative" : "positive"}
+                icon={Calendar}
+                iconColor={stats.expiringLeases > 0 ? "warning" : "neutral"}
+                sparkData={leaseExpiryData?.counts}
+                sparkLabels={leaseExpiryData?.labels}
+                sparkUnit="lease"
+                sparkCaption="4-week outlook"
+              />
+            </>
+          )}
+      </div>
+
       {/* ── ATTENTION / ACTION CENTER ── */}
+      <div className="mb-2 flex items-center justify-between">
+        <div>
+          <h2 className="section-title">Needs action today</h2>
+          <p className="supporting-text hidden sm:block">Overdue rent, approvals, vacancies, and open repairs</p>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         {/* 1. Critical — What requires attention? */}
         <div className="enterprise-card p-4 hover:shadow-md transition-all">
@@ -564,73 +548,6 @@ const Dashboard = () => {
       </div>
 
 
-      {/* ── KPI GRID (PORTFOLIO & FINANCIAL METRICS) ── */}
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="section-title">Portfolio & Financial Metrics</h2>
-        {!loading && stats && (
-          <span className="status-badge status-neutral">Live data</span>
-        )}
-      </div>
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-5">
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
-          : stats && (
-            <>
-              <StatCard
-                title="Properties & Units"
-                value={`${stats.totalProperties} Props`}
-                change={`${stats.occupiedUnits}/${stats.totalUnits} Units Occupied`}
-                changeType="neutral"
-                icon={Building2}
-                iconColor="primary"
-              />
-              <StatCard
-                title="Tenants Roster"
-                value={stats.activeTenants.toString()}
-                change={`+${stats.newTenantsThisMonth} joined this month`}
-                changeType={stats.newTenantsThisMonth > 0 ? "positive" : "neutral"}
-                icon={Users}
-                iconColor="accent"
-                sparkData={tenantSparkData?.counts}
-                sparkLabels={tenantSparkData?.labels}
-              />
-              <StatCard
-                title="Portfolio Occupancy"
-                value={`${stats.occupancyRate}%`}
-                change={`${stats.vacantUnits} units vacant`}
-                changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
-                icon={Home}
-                iconColor="success"
-                progressValue={stats.occupancyRate}
-              />
-              <StatCard
-                title="Collected Rent"
-                value={formatCurrency(stats.revenueMTD)}
-                change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
-                changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
-                icon={TrendingUp}
-                iconColor="warning"
-              />
-              <StatCard
-                title="Collection Rate"
-                value={`${stats.collectionRate}%`}
-                change={`Expected: ${formatCurrency(stats.expectedRent)}`}
-                changeType={stats.collectionRate >= 90 ? "positive" : stats.collectionRate >= 75 ? "neutral" : "negative"}
-                icon={PieChart}
-                iconColor="success"
-              />
-              <StatCard
-                title="Outstanding Arrears"
-                value={formatCurrency(stats.arrearsTotal)}
-                change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue invoices` : "All invoices clear"}
-                changeType={stats.overdueInvoices > 0 ? "negative" : "positive"}
-                icon={AlertTriangle}
-                iconColor="accent"
-              />
-            </>
-          )}
-      </div>
-
       {/* ── ARREARS URGENT ALERT BAR ── */}
       {!loading && stats && stats.arrearsTotal > 0 && (
         <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
@@ -659,38 +576,7 @@ const Dashboard = () => {
       {/* ── ARREARS HEAT MAP (IF OVERDUE EXIST) ── */}
       {!loading && stats && stats.overdueInvoices > 0 && <ArrearsHeatMap />}
 
-      {/* ── QUICK ACTIONS TOOLBAR ── */}
-      <Card className="mb-6 enterprise-card">
-        <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
-          <CardTitle className="card-title-exec flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-              <Zap className="h-3.5 w-3.5 text-primary" />
-            </div>
-            Quick Operations
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-5 pb-4">
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-2">
-            {quickActions.map((action) => (
-              <button
-                key={action.label}
-                onClick={() => navigate(action.href)}
-                className={cn(
-                  "group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border",
-                  "transition-all duration-200 touch-manipulation text-center",
-                  "hover:-translate-y-0.5 hover:shadow-sm active:scale-95",
-                  action.bg
-                )}
-              >
-                <div className="h-8 w-8 rounded-lg bg-background/90 border border-border/60 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
-                  <action.icon className={cn("h-4 w-4", action.accent)} />
-                </div>
-                <p className="meta-text font-semibold text-foreground leading-tight">{action.label}</p>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ManagerQuickActions hasProperties={(stats?.totalProperties ?? 0) > 0} />
 
       {/* ── MAIN WORKSPACE SECTION (12-COLUMN RESPONSIVE LAYOUT) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
@@ -698,7 +584,7 @@ const Dashboard = () => {
         <div className="lg:col-span-8 space-y-5">
           {/* 1. Revenue / Performance Analytics */}
           <div>
-            <h2 className="section-title mb-3">Revenue & Performance</h2>
+            <h2 className="section-title mb-3">Trends</h2>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="flex items-center justify-between mb-3">
                 <TabsList className="bg-muted/60 p-1 border border-border/60">

@@ -27,10 +27,10 @@ export function BillingStatsBar({ invoices, isLoading = false }: Props) {
   };
 
   const cards = [
-    { label: "Total Billed",  value: stats.total,   color: "text-foreground" },
-    { label: "Collected",     value: stats.paid,    color: "text-emerald-400" },
-    { label: "Pending",       value: stats.pending, color: "text-amber-400" },
-    { label: "Overdue",       value: stats.overdue, color: "text-red-400" },
+    { label: "Total billed",  value: stats.total,   tone: "text-foreground",     hint: "All invoices this period" },
+    { label: "Collected",     value: stats.paid,    tone: "text-foreground",     hint: "Paid in full" },
+    { label: "Pending",       value: stats.pending, tone: "text-warning",        hint: "Awaiting payment" },
+    { label: "Overdue",       value: stats.overdue, tone: "text-destructive",    hint: "Past due" },
   ] as const;
 
   if (isLoading) {
@@ -48,16 +48,16 @@ export function BillingStatsBar({ invoices, isLoading = false }: Props) {
 
   return (
     <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-      {cards.map(({ label, value, color }, i) => (
+      {cards.map(({ label, value, tone, hint }) => (
         <div
           key={label}
-          className="rounded-xl border border-border/60 bg-card p-3 sm:p-4 card-shadow animate-fade-in hover:border-amber-400/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-          style={{ animationDelay: `${i * 50}ms` }}
+          className="rounded-xl border border-border bg-card p-3 sm:p-4 card-shadow"
         >
-          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-2">{label}</p>
-          <p className={`font-heading text-lg sm:text-2xl font-bold truncate ${color}`}>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+          <p className={`font-heading text-lg sm:text-2xl font-bold truncate ${tone}`}>
             {formatCurrency(value)}
           </p>
+          <p className="text-[11px] text-muted-foreground mt-1">{hint}</p>
         </div>
       ))}
     </div>
