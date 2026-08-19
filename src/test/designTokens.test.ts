@@ -76,3 +76,14 @@ describe("chart palette follows tokens", () => {
     expect(CHART_STATUS_COLORS.negative).toBe(CALQULUS_COLOR.danger);
   });
 });
+
+describe("index.css Tailwind v4 production safety", () => {
+  it("does not @apply custom type classes that break vite build", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const css = readFileSync(join(process.cwd(), "src/index.css"), "utf8");
+    for (const name of ["page-title", "section-title", "card-title-exec", "metric-value", "meta-text"]) {
+      expect(css).not.toMatch(new RegExp(`@apply\\s+${name}\\b`));
+    }
+  });
+});
