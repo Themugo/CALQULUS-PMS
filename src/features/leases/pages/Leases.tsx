@@ -59,9 +59,11 @@ import { leaseSchema, formatValidationErrors } from "@/shared/lib/validations";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { formatDate } from "@/shared/lib/dateFormat";
-import { logError } from "@/shared/lib/errorLogger";
+import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { LeaseStatements } from "@/features/leases/components/LeaseStatements";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { LeaseCard } from "@/features/leases/components/LeaseCard";
 
 type LeaseStatus = "active" | "expiring" | "expired" | "pending" | "terminated";
@@ -175,6 +177,7 @@ const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
 const Leases = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { logActivity: _logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
   const [leases, setLeases] = useState<Lease[]>([]);
@@ -369,8 +372,8 @@ const Leases = () => {
 
     if (error) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to create lease",
+        title: "Couldn't create lease",
+        description: toUserFacingError(error, "Could not create this lease. Your details are still here — try again."),
         variant: "destructive",
       });
       return;
@@ -439,6 +442,7 @@ const Leases = () => {
       title: "Lease Created",
       description: `Lease agreement for ${selectedTenant?.name || "tenant"} has been created.`,
     });
+    invalidateManagerActivation(queryClient);
 
     setNewLease({
       tenant_id: "",

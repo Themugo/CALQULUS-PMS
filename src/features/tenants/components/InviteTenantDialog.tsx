@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -20,6 +20,11 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { toast } from "@/shared/hooks/use-toast";
+import { toUserFacingError } from "@/shared/lib/errorLogger";
+import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { useAuth } from "@/features/auth/AuthContext";
 import { Mail, Loader2, UserPlus, Copy, Check, MessageCircle, Phone, Send } from "lucide-react";
 
 interface InviteTenantDialogProps {
@@ -29,21 +34,26 @@ interface InviteTenantDialogProps {
 }
 
 export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTenantDialogProps) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingSms, setIsSendingSms] = useState(false);
-  const [email, setEmail] = useState("");
-  const [tenantName, setTenantName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [selectedPropertyId, setSelectedPropertyId] = useState(preSelectedPropertyId || "");
-  const [unit, setUnit] = useState("");
+  const draft = loadFormDraft<{
+    email: string; tenantName: string; phone: string; selectedPropertyId: string; unit: string;
+    monthlyRent: string; houseDeposit: string; waterDeposit: string;
+  }>("invite-tenant");
+  const [email, setEmail] = useState(draft?.email ?? "");
+  const [tenantName, setTenantName] = useState(draft?.tenantName ?? "");
+  const [phone, setPhone] = useState(draft?.phone ?? "");
+  const [selectedPropertyId, setSelectedPropertyId] = useState(preSelectedPropertyId || draft?.selectedPropertyId || "");
+  const [unit, setUnit] = useState(draft?.unit ?? "");
   const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [smsSent, setSmsSent] = useState(false);
-  // Payment details — pushed to tenant portal immediately on invite
-  const [monthlyRent, setMonthlyRent] = useState("");
-  const [houseDeposit, setHouseDeposit] = useState("");
-  const [waterDeposit, setWaterDeposit] = useState("");
+  const [monthlyRent, setMonthlyRent] = useState(draft?.monthlyRent ?? "");
+  const [houseDeposit, setHouseDeposit] = useState(draft?.houseDeposit ?? "");
+  const [waterDeposit, setWaterDeposit] = useState(draft?.waterDeposit ?? "");
 
   const { data: properties } = useQuery({
     queryKey: ["properties-for-invite"],
@@ -58,6 +68,13 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
   });
 
   const selectedProperty = properties?.find(p => p.id === selectedPropertyId);
+
+  useEffect(() => {
+    if (invitationUrl) return;
+    saveFormDraft("invite-tenant", {
+      email, tenantName, phone, selectedPropertyId, unit, monthlyRent, houseDeposit, waterDeposit,
+    });
+  }, [email, tenantName, phone, selectedPropertyId, unit, monthlyRent, houseDeposit, waterDeposit, invitationUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,10 +140,14 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
         });
       }
 
+      clearFormDraft("invite-tenant");
+      trackTimeToFirst("tenant", { managerId: user?.id, signupAt: user?.created_at });
+      invalidateManagerActivation(queryClient);
+
     } catch (err: unknown) {
       toast({
         title: "Failed to send invitation",
-        description: err instanceof Error ? err.message : "An error occurred",
+        description: toUserFacingError(err, "Could not send this invitation. Your details are still here — try again."),
         variant: "destructive",
       });
     } finally {
@@ -208,7 +229,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
     } catch (err: unknown) {
       toast({
         title: "Failed to send SMS",
-        description: err instanceof Error ? err.message : "An error occurred",
+        description: toUserFacingError(err, "Could not send the SMS. The invitation is still here — try again."),
         variant: "destructive",
       });
     } finally {
@@ -218,16 +239,19 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
 
   const handleClose = () => {
     setOpen(false);
-    // Reset form after closing
+    if (!invitationUrl) return;
     setTimeout(() => {
       setEmail("");
       setTenantName("");
       setPhone("");
-      setSelectedPropertyId("");
+      setSelectedPropertyId(preSelectedPropertyId || "");
       setUnit("");
       setInvitationUrl(null);
       setCopied(false);
       setSmsSent(false);
+      setMonthlyRent("");
+      setHouseDeposit("");
+      setWaterDeposit("");
     }, 300);
   };
 

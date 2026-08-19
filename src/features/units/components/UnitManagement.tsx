@@ -61,8 +61,11 @@ import UnitUtilityMeters from "@/features/units/components/UnitUtilityMeters";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { toUserFacingError } from "@/shared/lib/errorLogger";
 
 interface Unit {
   id: string;
@@ -109,6 +112,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
+  const queryClient = useQueryClient();
   
   const [units, setUnits] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -345,9 +349,9 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       if (error) {
         toast({
           title: "Error",
-          description: error.message.includes("unique") 
-            ? "A unit with this number already exists" 
-            : "Failed to create unit",
+          description: error.message.includes("unique")
+            ? "A unit with this number already exists"
+            : toUserFacingError(error, "Could not create this unit. Your details are still here — try again."),
           variant: "destructive",
         });
       } else {
@@ -364,6 +368,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           title: "Unit Created",
           description: `Unit ${unitNumber} has been added to ${propertyName}.`,
         });
+        invalidateManagerActivation(queryClient);
         setIsDialogOpen(false);
         resetForm();
         fetchUnits();
@@ -906,11 +911,12 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   });
                   if (error) throw error;
                   toast({ title: `${data} units created`, description: `${bulkPrefix}${bulkStart} to ${bulkPrefix}${parseInt(bulkStart) + parseInt(bulkCount) - 1}` });
+                  invalidateManagerActivation(queryClient);
                   setBulkOpen(false);
                   fetchUnits();
                   onUnitsChange?.();
-} catch (err: unknown) {
-  toast({ title: 'Bulk create failed', description: err instanceof Error ? err.message : 'Unknown error', variant: 'destructive' });
+                } catch (err: unknown) {
+                  toast({ title: "Bulk create failed", description: toUserFacingError(err, "Could not create those units. Try again."), variant: "destructive" });
                 }
                 setBulkCreating(false);
               }}

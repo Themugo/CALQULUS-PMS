@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateManagerActivation } from '@/features/dashboard/hooks/useManagerActivation';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { logError } from '@/shared/lib/errorLogger';
+import { logError, toUserFacingError } from '@/shared/lib/errorLogger';
 import { Building2, CreditCard, Loader2, Save, Plus, Trash2, Star, CheckCircle2, XCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
@@ -161,6 +163,7 @@ interface BankDetailsSettingsProps {
 
 export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetailsSettingsProps = {}) => {
   const { user, isManager } = useAuth();
+  const queryClient = useQueryClient();
   const scoped = !!propertyId || !!defaultScopeOnly;
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -336,9 +339,10 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
 
       sendNotifications(account, isNew);
       toast({ title: 'Bank Details Saved', description: 'Bank details updated and tenants notified via SMS & email.' });
+      invalidateManagerActivation(queryClient);
       if (!isNew) fetchData();
     } catch (err) {
-      toast({ title: 'Error', description: err instanceof Error ? err.message : 'Failed to save bank details.', variant: 'destructive' });
+      toast({ title: 'Could not save bank details', description: toUserFacingError(err, 'Your details are still here. Check the fields and try again.'), variant: 'destructive' });
     } finally {
       setSaving(null);
     }

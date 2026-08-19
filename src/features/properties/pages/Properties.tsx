@@ -53,13 +53,33 @@ import { supabase } from "@/integrations/supabase/client";
 import { propertySchema, formatValidationErrors } from "@/shared/lib/validations";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CATEGORY_BY_KEY, CATEGORIES_BY_GROUP, GROUP_LABELS, PROPERTY_CATEGORIES } from "@/shared/constants/propertyTypes";
 import { PropertyCard, type Property, type Tenant } from "@/features/properties/components/PropertyCard";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { useAuth } from "@/features/auth/AuthContext";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+
+const EMPTY_PROPERTY_FORM = {
+  name: "",
+  address: "",
+  house_number: "",
+  house_label_prefix: "",
+  units: "",
+  image_url: "",
+  property_type: "flat",
+  number_of_floors: "",
+  rent_per_house: "",
+  payment_details: "",
+};
 
 const Properties = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
@@ -84,18 +104,7 @@ const Properties = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [newProperty, setNewProperty] = useState({
-    name: "",
-    address: "",
-    house_number: "",
-    house_label_prefix: "",
-    units: "",
-    image_url: "",
-    property_type: "flat",
-    number_of_floors: "",
-    rent_per_house: "",
-    payment_details: "",
-  });
+  const [newProperty, setNewProperty] = useState(() => loadFormDraft<typeof EMPTY_PROPERTY_FORM>("new-property") ?? EMPTY_PROPERTY_FORM);
 
   // Edit state
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -188,6 +197,10 @@ const Properties = () => {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    saveFormDraft("new-property", newProperty);
+  }, [newProperty]);
+
   const handleAddProperty = async () => {
     if (!managerId) {
       toast({
@@ -260,8 +273,10 @@ const Properties = () => {
         entityType: 'property',
         details: { name: validationResult.data.name, address: validationResult.data.address }
       });
-      setNewProperty({ name: "", address: "", house_number: "", house_label_prefix: "", units: "",     image_url: "",
-    property_type: "flat", number_of_floors: "", rent_per_house: "", payment_details: "" });
+      trackTimeToFirst("property", { managerId, signupAt: user?.created_at });
+      invalidateManagerActivation(queryClient);
+      clearFormDraft("new-property");
+      setNewProperty(EMPTY_PROPERTY_FORM);
       setIsDialogOpen(false);
       fetchData();
     }
@@ -667,9 +682,21 @@ const Properties = () => {
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Loading properties...</div>
       ) : getFilteredProperties().length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          {searchQuery ? `No properties found matching "${searchQuery}"` : "No properties found. Add your first property to get started."}
-        </div>
+        searchQuery ? (
+          <EmptyState
+            icon={Search}
+            title={`No properties matching “${searchQuery}”`}
+            description="Try a different name or address."
+          />
+        ) : (
+          <EmptyState
+            icon={Building2}
+            title="Add your first property"
+            description="This is the fastest path to first value: a building, then units, then a tenant you can invoice."
+            actionLabel="Add a property"
+            onAction={() => setIsDialogOpen(true)}
+          />
+        )
       ) : (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {getFilteredProperties().map((property, index) => (

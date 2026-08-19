@@ -18,6 +18,8 @@ import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { logError } from "@/shared/lib/errorLogger";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { roundMoney } from "@/shared/lib/money";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -173,6 +175,7 @@ export function useBillingData(selectedMonth: string) {
   });
 
   /** Call after any mutation that changes invoices to get fresh data. */
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateInvoices = useCallback(() => {
     if (!user?.id) return;
     queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
@@ -255,6 +258,8 @@ export function useMarkInvoicePaid() {
     },
     onSuccess: () => {
       if (!user?.id) return;
+      trackTimeToFirst("payment", { managerId: user.id, signupAt: user.created_at });
+      invalidateManagerActivation(queryClient);
       queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
     },
   });

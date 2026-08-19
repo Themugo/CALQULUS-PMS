@@ -10,7 +10,10 @@
  */
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/AuthContext";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -56,6 +59,7 @@ const Billing = () => {
   const { user }  = useAuth();
   const { can }   = useRBAC();
   const { logActivity } = useActivityLog();
+  const queryClient = useQueryClient();
 
   // ── UI state (data state has moved to the hook) ──────────────────────────
 
@@ -107,6 +111,10 @@ const Billing = () => {
       if (error) throw error;
       toast({ title: "Invoices Generated", description: data.message || "Monthly invoices generated." });
       logActivity({ action: "generate_monthly_invoices", entityType: "invoice", metadata: { count: data.count ?? null } });
+      if ((data?.count ?? 0) > 0) {
+        trackTimeToFirst("invoice", { managerId: user?.id, signupAt: user?.created_at });
+      }
+      invalidateManagerActivation(queryClient);
       invalidateInvoices();
     } catch (err: unknown) {
       toast({ title: "Error", description: toUserFacingError(err, "Could not generate invoices. Please try again."), variant: "destructive" });
@@ -184,6 +192,8 @@ const Billing = () => {
       }
 
       toast({ title: "Invoice Created", description: "Invoice created and recorded." });
+      trackTimeToFirst("invoice", { managerId: user?.id, signupAt: user?.created_at });
+      invalidateManagerActivation(queryClient);
 
       if (data.send_notification && inserted?.tenants?.email) {
         const { data: co } = await supabase
@@ -241,6 +251,8 @@ const Billing = () => {
               )
               .catch(() => {/* silent – payment already recorded */});
           }
+          trackTimeToFirst("payment", { managerId: user?.id, signupAt: user?.created_at });
+          invalidateManagerActivation(queryClient);
           toast({ title: "Payment recorded", description: "Invoice closed through the payment ledger." });
         },
         onError: (err) =>

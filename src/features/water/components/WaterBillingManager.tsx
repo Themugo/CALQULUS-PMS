@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { useState, useEffect, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -36,6 +36,8 @@ import { Droplets, Settings, Plus, GaugeCircle, Receipt, Save, Loader2 } from "l
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrency } from "@/shared/hooks/useCurrency";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { cn } from "@/shared/lib/utils";
 
 interface WaterCompanyRow {
@@ -98,6 +100,7 @@ interface WaterBillingManagerProps {
 export function WaterBillingManager({ propertyId, propertyName }: WaterBillingManagerProps) {
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
+  const queryClient = useQueryClient();
 
   // Fetch water providers from DB — falls back to FALLBACK_PROVIDERS if unavailable
   const { data: KENYAN_WATER_PROVIDERS = FALLBACK_PROVIDERS } = useQuery({
@@ -327,6 +330,8 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
               title: "Water Invoice Generated", 
               description: `${formatCurrency(waterAmount)} invoice created for ${tenant.name}` 
             });
+            trackTimeToFirst("invoice", { managerId: user.id, signupAt: user.created_at });
+            invalidateManagerActivation(queryClient);
           }
         } else if (tenant && invoiceMode === "bundled") {
           toast({ 

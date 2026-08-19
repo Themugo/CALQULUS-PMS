@@ -7,6 +7,8 @@ import { useActivityLog } from '@/shared/hooks/useActivityLog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { queryKeys } from '@/shared/hooks/useOptimizedQuery';
 import { toUserFacingError } from '@/shared/lib/errorLogger';
+import { trackTimeToFirst } from '@/features/dashboard/lib/activationMetrics';
+import { invalidateManagerActivation } from '@/features/dashboard/hooks/useManagerActivation';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -172,6 +174,8 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(user.id) });
       }
+      trackTimeToFirst('payment', { managerId: user?.id, signupAt: user?.created_at });
+      invalidateManagerActivation(queryClient);
       onSuccess?.();
       onOpenChange(false);
     },

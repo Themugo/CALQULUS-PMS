@@ -1,6 +1,7 @@
 import { Layout } from "@/shared/components/layout/Layout";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
+import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
 import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupStatus";
 import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
@@ -33,6 +34,7 @@ import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { useLeaseExpiryReminders } from "@/shared/hooks/useLeaseExpiryReminders";
+import { useManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 
 interface DashboardStats {
   totalTenants: number;
@@ -64,6 +66,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { managerId } = useManagerScope();
   useLeaseExpiryReminders();
+  const { isEmptyPortfolio, progress } = useManagerActivation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -251,7 +254,9 @@ const Dashboard = () => {
   return (
     <Layout
       title={`${getGreeting()}, ${userName}`}
-      subtitle={stats
+      subtitle={isEmptyPortfolio
+        ? `Portfolio setup ${progress.percent}% complete — add a property to collect rent`
+        : stats
         ? `Portfolio health · ${stats.totalProperties} properties · ${stats.occupiedUnits}/${stats.totalUnits} occupied · ${formatCurrency(stats.collectedRent)} collected this month`
         : "Portfolio health, collections, and what needs action today"}
       headerActions={
@@ -277,7 +282,7 @@ const Dashboard = () => {
         </div>
       }
     >
-      <PaymentSetupStatus />
+      {!isEmptyPortfolio && <PaymentSetupStatus />}
       <ManagerSubscriptionBanner compact />
 
       {/* Demo banner */}
@@ -311,6 +316,12 @@ const Dashboard = () => {
         </div>
       )}
 
+      <ManagerQuickActions />
+
+      {isEmptyPortfolio && !loading ? (
+        <ManagerActivationEmpty />
+      ) : (
+      <>
       {/* ── PORTFOLIO HEALTH ── */}
       <div className="mb-2 flex items-center justify-between">
         <div>
@@ -573,10 +584,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── ARREARS HEAT MAP (IF OVERDUE EXIST) ── */}
       {!loading && stats && stats.overdueInvoices > 0 && <ArrearsHeatMap />}
-
-      <ManagerQuickActions hasProperties={(stats?.totalProperties ?? 0) > 0} />
 
       {/* ── MAIN WORKSPACE SECTION (12-COLUMN RESPONSIVE LAYOUT) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
@@ -686,6 +694,8 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+      </>
+      )}
     </Layout>
   );
 };

@@ -28,6 +28,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
@@ -110,6 +113,7 @@ interface PropertyBillingTabProps {
 export function PropertyBillingTab({ propertyId, propertyName }: PropertyBillingTabProps) {
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { formatCurrency } = useCurrency();
   const { logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
@@ -710,6 +714,8 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                 manager_id:  user?.id,
               });
               if (error) throw error;
+              trackTimeToFirst("invoice", { managerId: user?.id, signupAt: user?.created_at });
+              invalidateManagerActivation(queryClient);
               setIsDialogOpen(false);
               fetchInvoices();
             }}

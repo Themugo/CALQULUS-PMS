@@ -6,8 +6,10 @@ import { Label } from "@/shared/components/ui/label";
 import { Loader2, Building2, Upload, X, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
-import { logError } from "@/shared/lib/errorLogger";
+import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 
@@ -16,6 +18,7 @@ import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 export const CompanySettings = () => {
   const { toast } = useToast();
   const { isManager, user } = useAuth();
+  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -285,10 +288,11 @@ export const CompanySettings = () => {
         title: "Company Details Saved",
         description: "Your company information has been updated.",
       });
+      invalidateManagerActivation(queryClient);
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save company details. Please try again.",
+        title: "Couldn't save company details",
+        description: toUserFacingError(error, "Your details are still here. Check the fields and try again."),
         variant: "destructive",
       });
     } finally {
