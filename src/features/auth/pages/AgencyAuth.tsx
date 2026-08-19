@@ -5,22 +5,24 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Handshake, Eye, EyeOff, ChevronRight, Building2, Users, CreditCard } from 'lucide-react';
+import { Handshake, Eye, EyeOff, Building2, Users, CreditCard, Percent } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
+import { AgencyDeskPreview } from '@/features/auth/components/AgencyDeskPreview';
+import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
-  { icon: Building2,  text: 'Manage properties on behalf of landlords' },
-  { icon: Users,      text: 'Full tenant operations & rent collection' },
-  { icon: Handshake,  text: 'Revenue sharing with configurable splits' },
-  { icon: CreditCard, text: 'Agency billing, statements & payouts' },
+  { icon: Building2, text: 'Client properties', detail: 'Buildings you run on behalf of landlords.', tint: 'bg-soft-blue text-primary' },
+  { icon: Users, text: 'Tenants & leases', detail: 'Invites, occupancy, and rent on those units.', tint: 'bg-indigo-bg text-indigo' },
+  { icon: Percent, text: 'Revenue share', detail: 'Configurable split per property.', tint: 'bg-gold-bg text-primary' },
+  { icon: CreditCard, text: 'Collections', detail: 'M-Pesa, statements, and payouts.', tint: 'bg-teal-bg text-teal' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [
-  { label: 'Manager', href: '/auth' },
-  { label: 'Landlord', href: '/landlord/login' },
-  { label: 'Tenant', href: '/tenant/login' },
+  { label: 'Manager', href: PUBLIC_ROUTES.managerSignIn },
+  { label: 'Landlord', href: PUBLIC_ROUTES.landlordLogin },
+  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
 ];
 
 const AgencyAuth = () => {
@@ -42,6 +44,10 @@ const AgencyAuth = () => {
     }
   }, [user, loading, userRole, navigate]);
 
+  useEffect(() => {
+    document.title = 'Agency sign-in | CALQULUS PMS';
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
@@ -59,38 +65,36 @@ const AgencyAuth = () => {
 
   return (
     <PortalAuthShell
-      portalName="Agency Portal"
-      badgeLabel="Property Agency Access"
+      portalName="Agency"
+      badgeLabel="Agency desk"
       icon={Handshake}
-      tagline="Manage your agency portfolio and clients."
-      heroLines={[
-        { text: 'Manage portfolios.', tone: 'default' },
-        { text: 'Serve landlords.', tone: 'gradient' },
-        { text: 'Grow your agency.', tone: 'muted' },
-      ]}
-      heroDescription="The complete platform for property agencies managing estates on behalf of landlords across East Africa."
+      tagline="Properties managed for landlords, with a configurable split."
+      heroTitle="Run the book on behalf of landlords."
+      heroDescription="Client buildings, tenants, rent, and statements sit on the same records. Payment destination follows the operating model set on each property."
       features={features}
       otherPortals={otherPortals}
-      formSubtitle="Sign in to your agency account"
-      submitLabel="Sign in to Agency Portal"
-      notice="This portal is for property agencies. Manage properties on behalf of landlords, collect rent, and track commissions."
+      formTitle="Sign in"
+      formSubtitle="Use the agency email for this book."
+      submitLabel="Sign in"
+      notice="This portal is for agencies. Your webhost or platform team provisions the account. It is not a landlord login and not a tenant login."
+      aside={<AgencyDeskPreview />}
       variant="light"
     >
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">Email address</Label>
           <Input
             id="email" type="email" placeholder="agent@agency.com"
             value={email} onChange={e => setEmail(e.target.value)} required
-            className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
+            className="h-11 border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
             <ForgotPasswordDialog
               trigger={
-                <button type="button" className="text-primary hover:text-primary text-xs font-semibold">
+                <button type="button" className="text-xs font-semibold text-primary hover:text-primary-hover">
                   Forgot password?
                 </button>
               }
@@ -100,10 +104,10 @@ const AgencyAuth = () => {
             <Input
               id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
               value={password} onChange={e => setPassword(e.target.value)} required
-              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
+              className="h-11 border-border bg-card pr-11 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
             />
             <button type="button" onClick={() => setShowPassword(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-2.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -111,14 +115,14 @@ const AgencyAuth = () => {
           </div>
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+        <Button type="submit" disabled={isSubmitting} className="btn-brand mt-2 h-11 w-full text-sm font-semibold">
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               Signing in…
             </span>
           ) : (
-            <span className="flex items-center gap-2">Sign in to Agency Portal <ChevronRight className="h-4 w-4" /></span>
+            'Sign in'
           )}
         </Button>
       </form>

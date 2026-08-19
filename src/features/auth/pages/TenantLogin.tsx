@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { UserPlus, Link2, Eye, EyeOff, ChevronRight, User, Building2, CreditCard, Wrench } from 'lucide-react';
+import { UserPlus, Link2, Eye, EyeOff, User, Building2, CreditCard, Wrench, FileText } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
@@ -16,18 +16,20 @@ import {
   type PortalAuthFeature,
   type PortalSwitchLink,
 } from '@/features/auth/components/AuthHeroChrome';
+import { TenantDeskPreview } from '@/features/auth/components/TenantDeskPreview';
+import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
-  { icon: CreditCard, text: 'Pay rent and water bills online with instant receipts' },
-  { icon: Wrench, text: 'Submit and track maintenance requests' },
-  { icon: Building2, text: 'View your lease, documents and vacation notices' },
-  { icon: User, text: 'Self-service portal for your tenancy' },
+  { icon: CreditCard, text: 'Rent & water', detail: 'Pay your invoices. Receipts stay on this tenancy.', tint: 'bg-gold-bg text-primary' },
+  { icon: Wrench, text: 'Repairs', detail: 'Submit and track requests for your unit.', tint: 'bg-teal-bg text-teal' },
+  { icon: FileText, text: 'Lease & documents', detail: 'Your agreement and files — not other tenants.', tint: 'bg-indigo-bg text-indigo' },
+  { icon: Building2, text: 'Vacation notice', detail: 'Give notice against the same lease record.', tint: 'bg-soft-blue text-primary' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [
-  { label: 'Manager', href: '/auth' },
-  { label: 'Landlord', href: '/landlord/login' },
-  { label: 'Agency', href: '/agency/login' },
+  { label: 'Manager', href: PUBLIC_ROUTES.managerSignIn },
+  { label: 'Landlord', href: PUBLIC_ROUTES.landlordLogin },
+  { label: 'Agency', href: PUBLIC_ROUTES.agencyLogin },
 ];
 
 const TenantLogin = () => {
@@ -57,6 +59,10 @@ const TenantLogin = () => {
       // Don't redirect managers/webhosts from tenant login - they're on the wrong page
     }
   }, [user, loading, userRole, navigate]);
+
+  useEffect(() => {
+    document.title = 'Tenant sign-in | CALQULUS PMS';
+  }, []);
 
   const handleBiometricLogin = async () => {
     setIsBiometricLoggingIn(true);
@@ -161,20 +167,18 @@ const TenantLogin = () => {
 
   return (
     <PortalAuthShell
-      portalName="Tenant Portal"
-      badgeLabel="Tenant Access"
+      portalName="Tenant"
+      badgeLabel="Your unit"
       icon={User}
-      tagline="Manage your tenancy, payments and requests."
-      heroLines={[
-        { text: 'Your tenancy.', tone: 'default' },
-        { text: 'Your payments.', tone: 'gradient' },
-        { text: 'In your hands.', tone: 'muted' },
-      ]}
-      heroDescription="Access your lease, pay rent and water bills, submit maintenance requests and manage your tenancy with CALQULUS PMS."
+      tagline="This login is only for your lease, invoices, and repairs."
+      heroTitle="Pay rent, report a repair, read your lease."
+      heroDescription="Balance, M-Pesa, maintenance, and documents for the unit you occupy. You cannot see other tenants. Landlord contact details are not shown here."
       features={features}
       otherPortals={otherPortals}
-      formSubtitle="Sign in to access your tenant portal"
-      submitLabel="Sign in to Tenant Portal"
+      formTitle="Sign in"
+      formSubtitle="Use the email on your invitation or lease."
+      submitLabel="Sign in"
+      aside={<TenantDeskPreview />}
       variant="light"
     >
       {/* Biometric Login */}
@@ -199,7 +203,7 @@ const TenantLogin = () => {
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">
             Email address
           </Label>
           <Input
@@ -209,18 +213,18 @@ const TenantLogin = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
+            className="h-11 border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">
+            <Label htmlFor="password" className="text-sm font-medium text-foreground">
               Password
             </Label>
             <ForgotPasswordDialog
               variant="tenant"
               trigger={
-                <button type="button" className="text-primary hover:text-primary text-xs font-semibold">
+                <button type="button" className="text-xs font-semibold text-primary hover:text-primary-hover">
                   Forgot password?
                 </button>
               }
@@ -234,51 +238,48 @@ const TenantLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
+              className="h-11 border-border bg-card pr-11 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-2.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
-        <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+        <Button type="submit" disabled={isSubmitting} className="btn-brand mt-2 h-11 w-full text-sm font-semibold">
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               Signing in…
             </span>
           ) : (
-            <span className="flex items-center gap-2">
-              Sign in to Tenant Portal <ChevronRight className="h-4 w-4" />
-            </span>
+            'Sign in'
           )}
         </Button>
       </form>
 
-      {/* Account creation options */}
-      <div className="mt-5 pt-5 border-t border-border space-y-3">
-        <p className="text-muted-foreground text-sm text-center">Don't have an account?</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Link to="/tenant/signup" className="flex-1">
-            <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-medium">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Register independently
+      <div className="mt-5 space-y-3 border-t border-border pt-5">
+        <p className="text-center text-sm text-muted-foreground">New here?</p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link to="/tenant/invitation" className="flex-1">
+            <Button variant="outline" className="min-h-11 w-full font-medium">
+              <Link2 className="mr-2 h-4 w-4" />
+              Open invitation
             </Button>
           </Link>
-          <Link to="/tenant/invitation" className="flex-1">
-            <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-medium">
-              <Link2 className="h-4 w-4 mr-2" />
-              Accept manager invite
+          <Link to="/tenant/signup" className="flex-1">
+            <Button variant="outline" className="min-h-11 w-full font-medium">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Enter invite code
             </Button>
           </Link>
         </div>
-        <p className="text-xs text-muted-foreground text-center">
-          Invited by your manager? Use "Accept manager invite". Otherwise register independently.
+        <p className="text-center text-xs text-muted-foreground">
+          Both paths need a manager invitation. This page does not create a tenancy on its own.
         </p>
       </div>
     </PortalAuthShell>

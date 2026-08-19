@@ -21,7 +21,7 @@ test.describe("Phase 12 credentialed portal certification", () => {
 
   test("manager: login → dashboard → property → billing", async ({ page }) => {
     test.skip(!MANAGER_EMAIL || !MANAGER_PASSWORD, "Set E2E_MANAGER_EMAIL and E2E_MANAGER_PASSWORD");
-    await signIn(page, "/auth", MANAGER_EMAIL, MANAGER_PASSWORD, /sign in to manager portal/i);
+    await signIn(page, "/auth", MANAGER_EMAIL, MANAGER_PASSWORD, /^sign in$/i);
     await expect(page).toHaveURL(/\/$|\/properties|\/dashboard/i, { timeout: 30_000 });
     await expect(page.getByText(/properties monitored|portfolio health|collected/i).first()).toBeVisible({ timeout: 30_000 });
 
@@ -34,7 +34,7 @@ test.describe("Phase 12 credentialed portal certification", () => {
 
   test("landlord: login → portfolio → statement", async ({ page }) => {
     test.skip(!LANDLORD_EMAIL || !LANDLORD_PASSWORD, "Set E2E_LANDLORD_EMAIL and E2E_LANDLORD_PASSWORD");
-    await signIn(page, "/landlord/login", LANDLORD_EMAIL, LANDLORD_PASSWORD, /sign in to landlord portal/i);
+    await signIn(page, "/landlord/login", LANDLORD_EMAIL, LANDLORD_PASSWORD, /^sign in$/i);
     await expect(page).toHaveURL(/\/landlord\/dashboard/, { timeout: 30_000 });
     await expect(page.getByText(/portfolio/i).first()).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/statement|occup/i).first()).toBeVisible({ timeout: 20_000 });
@@ -42,7 +42,7 @@ test.describe("Phase 12 credentialed portal certification", () => {
 
   test("tenant: login → balance → pay → maintenance", async ({ page }) => {
     test.skip(!TENANT_EMAIL || !TENANT_PASSWORD, "Set E2E_TENANT_EMAIL and E2E_TENANT_PASSWORD");
-    await signIn(page, "/tenant/login", TENANT_EMAIL, TENANT_PASSWORD, /sign in to tenant portal/i);
+    await signIn(page, "/tenant/login", TENANT_EMAIL, TENANT_PASSWORD, /^sign in$/i);
     await expect(page).toHaveURL(/\/portal/, { timeout: 30_000 });
     await expect(
       page.getByText(/pay rent|balance|invoice|payment diary|add payment|no payments logged/i).first(),
