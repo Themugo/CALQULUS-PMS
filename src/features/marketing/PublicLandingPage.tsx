@@ -1,20 +1,18 @@
 import { useEffect, type FormEvent, type ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ArrowRight,
-  BarChart3,
   Briefcase,
   Building2,
-  CreditCard,
-  Droplets,
-  FileText,
+  ChevronDown,
+  ChevronRight,
   Home,
   LayoutDashboard,
   Mail,
   MapPin,
-  Receipt,
-  ShieldCheck,
   Users,
+  Wallet,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -26,9 +24,9 @@ import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
 import { CONTACT_EMAIL, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { redirectBrowser } from "@/shared/lib/redirectBrowser";
 
-const SECTION = "scroll-mt-24 py-12 sm:py-14";
-const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6";
-const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.14em] text-primary";
+const SECTION = "scroll-mt-24 py-14 sm:py-16";
+const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8";
+const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary";
 
 function SectionIntro({
   id,
@@ -37,87 +35,57 @@ function SectionIntro({
   description,
 }: {
   id?: string;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
 }) {
   return (
     <div id={id} className="mb-8 max-w-2xl">
-      <p className={EYEBROW}>{eyebrow}</p>
-      <h2 className="section-title mt-2 text-[1.4rem] sm:text-[1.6rem]">{title}</h2>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">{description}</p>
+      {eyebrow ? <p className={EYEBROW}>{eyebrow}</p> : null}
+      <h2 className={`section-title text-[1.45rem] sm:text-[1.7rem] ${eyebrow ? "mt-2" : ""}`}>{title}</h2>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">{description}</p>
     </div>
   );
 }
 
-function IconWell({
-  children,
-  className = "bg-soft-blue text-primary",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+function IconWell({ children }: { children: ReactNode }) {
   return (
-    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${className}`}>
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-soft-blue text-primary">
       {children}
     </span>
   );
 }
 
-const MODULES = [
+const PILLARS = [
   {
-    title: "Properties & units",
-    detail: "Buildings, unit mix, and occupancy on the same record.",
+    title: "Property",
+    description: "The building record holds the units people occupy.",
     icon: Building2,
-    tint: "bg-soft-blue text-primary",
+    items: ["Properties", "Units", "Occupancy", "Tenants"],
   },
   {
-    title: "Tenants & leases",
-    detail: "Who lives where, rent terms, deposits, and move-in dates.",
-    icon: Users,
-    tint: "bg-indigo-bg text-indigo",
+    title: "Finance",
+    description: "Rent due, invoices issued, and money received stay on one ledger.",
+    icon: Wallet,
+    items: ["Rent", "Billing", "Payments", "Receipts", "Statements"],
   },
   {
-    title: "Rent & invoices",
-    detail: "Issue rent, track balance due, and keep a clear ledger.",
-    icon: Receipt,
-    tint: "bg-gold-bg text-primary",
-  },
-  {
-    title: "Payments",
-    detail: "M-Pesa collections or a recorded receipt against the invoice.",
-    icon: CreditCard,
-    tint: "bg-teal-bg text-teal",
-  },
-  {
-    title: "Water & maintenance",
-    detail: "Meter readings and repair tickets against the same units.",
-    icon: Droplets,
-    tint: "bg-teal-bg text-teal",
-  },
-  {
-    title: "Landlord reporting",
-    detail: "Occupancy and revenue share — never tenant PII.",
-    icon: BarChart3,
-    tint: "bg-indigo-bg text-indigo",
+    title: "Operations",
+    description: "Repair tickets, contractors, and reports sit next to the same units.",
+    icon: Wrench,
+    items: ["Maintenance", "Requests", "Contractors", "Reporting"],
   },
 ] as const;
 
-const WORKFLOW = [
-  { step: "01", title: "Sign up", detail: "Create a manager account. Approval is required before billing starts." },
-  { step: "02", title: "Onboard", detail: "Add a property, units, and a tenant. Issue the first invoice." },
-  { step: "03", title: "Pay", detail: "Platform billing is monthly, in KES, and visible on the account." },
-  { step: "04", title: "Operate", detail: "Collect rent, track repairs, and report to landlords from the same records." },
-] as const;
+const FLOW = ["Property", "Tenant", "Lease", "Billing", "Payment", "Reporting"] as const;
 
 const ROLES = [
   {
-    title: "Property manager",
-    description: "Run properties, tenants, leases, rent, payments, maintenance, and landlord reporting.",
+    title: "Property Manager",
+    description: "Run properties, tenants, leases, rent, payments, and maintenance from one desk.",
     href: PUBLIC_ROUTES.managerSignUp,
     cta: "Manager portal",
     icon: LayoutDashboard,
-    tint: "bg-soft-blue text-primary",
   },
   {
     title: "Landlord",
@@ -125,47 +93,24 @@ const ROLES = [
     href: PUBLIC_ROUTES.landlordLogin,
     cta: "Landlord portal",
     icon: Home,
-    tint: "bg-gold-bg text-primary",
   },
   {
     title: "Agency",
-    description: "Manage a client portfolio, operating model, and property operations.",
+    description: "Manage a client portfolio and the operating model for the buildings you run.",
     href: PUBLIC_ROUTES.agencyLogin,
     cta: "Agency portal",
     icon: Briefcase,
-    tint: "bg-indigo-bg text-indigo",
   },
   {
     title: "Tenant",
-    description: "Pay rent, submit maintenance, and read the lease for the unit you occupy.",
+    description: "Pay rent, submit a repair, and read the lease for the unit you occupy.",
     href: PUBLIC_ROUTES.tenantLogin,
     cta: "Tenant portal",
     icon: Users,
-    tint: "bg-teal-bg text-teal",
-  },
-] as const;
-
-const ACCOUNT = [
-  {
-    title: "Data isolation",
-    detail: "Each manager’s records stay scoped to that account. Access is role-based.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Collections",
-    detail: "Tenant payments use M-Pesa or a recorded receipt. Platform fees are invoiced in-app.",
-    icon: CreditCard,
-  },
-  {
-    title: "Privacy",
-    detail: "We collect what is needed to run rentals. We do not sell tenant or landlord data.",
-    icon: FileText,
   },
 ] as const;
 
 function HomeView() {
-  const { data: tiers = [] } = usePublicTiers();
-
   const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -180,37 +125,28 @@ function HomeView() {
     <>
       <section className="relative overflow-hidden">
         <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
-        <div className={`${CONTAINER} relative grid items-center gap-10 py-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12 lg:py-16`}>
+        <div
+          className={`${CONTAINER} relative grid items-center gap-10 py-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-12 lg:py-16`}
+        >
           <div>
-            <p className={EYEBROW}>Kenya &amp; East Africa · property operations</p>
+            <p className={EYEBROW}>Property operations, connected</p>
             <h1 className="page-title mt-3 max-w-xl text-[2rem] leading-[1.15] sm:text-[2.45rem] lg:text-[2.7rem]">
-              One workspace for properties, tenants, rent, and repairs.
+              Run your properties with clarity and control.
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-              The building record drives the tenant, the lease, the invoice, the M-Pesa receipt,
-              the repair ticket, and the landlord report. That is the product.
+              CALQULUS brings properties, units, tenants, leases, rent, payments and maintenance into
+              one focused operational system.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="btn-brand min-h-11">
                 <Link to={PUBLIC_ROUTES.managerSignUp}>
                   Start managing
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="min-h-11 bg-card/80">
-                <Link to={PUBLIC_ROUTES.pricing}>View plans</Link>
+                <a href="#platform">Explore the platform</a>
               </Button>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {ROLES.map((role) => (
-                <Link
-                  key={role.title}
-                  to={role.href}
-                  className="rounded-full border border-border bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
-                >
-                  {role.title}
-                </Link>
-              ))}
             </div>
           </div>
           <ProductPreview />
@@ -219,18 +155,25 @@ function HomeView() {
 
       <section id="platform" className={`${CONTAINER} ${SECTION}`}>
         <SectionIntro
-          eyebrow="Workspace"
-          title="The same cards you work from after you sign in."
-          description="Modules match the live manager desk: properties, people, money, and repairs — not a brochure of slogans."
+          title="Everything important, connected."
+          description="Three operational pillars — the same records a manager works from after sign-in. Nothing here is a brochure of slogans."
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {MODULES.map((mod) => (
-            <article key={mod.title} className="enterprise-card p-5 transition-shadow hover:shadow-md">
-              <IconWell className={mod.tint}>
-                <mod.icon className="h-5 w-5" aria-hidden />
+        <div className="grid gap-4 lg:grid-cols-3">
+          {PILLARS.map((pillar) => (
+            <article key={pillar.title} className="enterprise-card p-6">
+              <IconWell>
+                <pillar.icon className="h-5 w-5" aria-hidden />
               </IconWell>
-              <h3 className="card-title-exec mt-4">{mod.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{mod.detail}</p>
+              <h3 className={`${EYEBROW} mt-4`}>{pillar.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{pillar.description}</p>
+              <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2">
+                {pillar.items.map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </article>
           ))}
         </div>
@@ -239,16 +182,26 @@ function HomeView() {
       <section id="how-it-works" className={`border-y border-border/80 bg-card/60 ${SECTION}`}>
         <div className={CONTAINER}>
           <SectionIntro
-            eyebrow="Workflow"
-            title="Sign up, set up a property, then collect rent."
-            description="Four operating steps. Nothing here is a sales funnel — it is how a new manager account actually starts."
+            title="From property to payment."
+            description="A unit is leased, billed, paid, and reported from the same operational chain."
           />
-          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {WORKFLOW.map((item) => (
-              <li key={item.step} className="enterprise-card relative p-5">
-                <p className="font-heading text-sm font-bold text-primary">{item.step}</p>
-                <h3 className="card-title-exec mt-2">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+          <ol className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-0">
+            {FLOW.map((step, index) => (
+              <li key={step} className="flex flex-1 flex-col items-stretch lg:flex-row lg:items-center">
+                <div className="enterprise-card flex min-h-12 flex-1 items-center justify-center px-3 py-3 text-center">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                    {step}
+                  </span>
+                </div>
+                {index < FLOW.length - 1 ? (
+                  <>
+                    <ChevronDown className="mx-auto my-0.5 h-4 w-4 shrink-0 text-muted-foreground lg:hidden" aria-hidden />
+                    <ChevronRight
+                      className="mx-1 hidden h-4 w-4 shrink-0 text-muted-foreground lg:block"
+                      aria-hidden
+                    />
+                  </>
+                ) : null}
               </li>
             ))}
           </ol>
@@ -257,14 +210,13 @@ function HomeView() {
 
       <section id="solutions" className={`${CONTAINER} ${SECTION}`}>
         <SectionIntro
-          eyebrow="Portals"
-          title="Open the desk that matches your role."
+          title="One system. Clear experiences."
           description="Managers buy and run CALQULUS. Landlords, agencies, and tenants use the portals connected to that work."
         />
         <div className="grid gap-4 sm:grid-cols-2">
           {ROLES.map((role) => (
             <article key={role.title} className="enterprise-card flex flex-col p-6">
-              <IconWell className={role.tint}>
+              <IconWell>
                 <role.icon className="h-5 w-5" aria-hidden />
               </IconWell>
               <h3 className="card-title-exec mt-4">{role.title}</h3>
@@ -272,7 +224,7 @@ function HomeView() {
               <Button asChild variant="outline" className="mt-5 min-h-11 w-full bg-card sm:w-auto">
                 <Link to={role.href}>
                   {role.cta}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </Button>
             </article>
@@ -281,50 +233,34 @@ function HomeView() {
       </section>
 
       <section id="pricing" className={`border-y border-border/80 bg-card/60 ${SECTION}`}>
-        <div className={CONTAINER}>
-          <SectionIntro
-            eyebrow="Pricing"
-            title="Per property, per month, in Kenyan shillings."
-            description="Multiply the published rate by the buildings you manage. Custom blocks exist for larger portfolios — core operations are not locked behind plan walls."
-          />
-          <PublicPricing tiers={tiers} />
+        <div className={`${CONTAINER} flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between`}>
+          <div className="max-w-xl">
+            <p className={EYEBROW}>Pricing</p>
+            <h2 className="section-title mt-2 text-[1.45rem] sm:text-[1.7rem]">
+              Per property, per month, in Kenyan shillings.
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+              Published rates multiply by the buildings you manage. Custom blocks exist for larger
+              portfolios — core operations are not locked behind plan walls.
+            </p>
+          </div>
+          <Button asChild size="lg" variant="outline" className="min-h-11 shrink-0 bg-card">
+            <Link to={PUBLIC_ROUTES.pricing}>
+              View plans
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
         </div>
       </section>
 
-      <section className={`${CONTAINER} ${SECTION}`}>
-        <SectionIntro
-          eyebrow="Account"
-          title="How the account is handled."
-          description="Isolation, collections, and the legal pages that apply to the live product."
-        />
-        <div className="grid gap-4 md:grid-cols-3">
-          {ACCOUNT.map((item) => (
-            <article key={item.title} className="enterprise-card p-5">
-              <IconWell>
-                <item.icon className="h-5 w-5" aria-hidden />
-              </IconWell>
-              <h3 className="card-title-exec mt-4">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
-            </article>
-          ))}
-        </div>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <Link to={PUBLIC_ROUTES.legalPrivacy} className="font-medium text-primary hover:underline">
-            Privacy policy
-          </Link>
-          <Link to={PUBLIC_ROUTES.legalTerms} className="font-medium text-primary hover:underline">
-            Terms of service
-          </Link>
-        </div>
-      </section>
-
-      <section id="contact" className={`border-t border-border bg-card/70 ${SECTION}`}>
-        <div className={`${CONTAINER} grid gap-8 lg:grid-cols-[1fr_24rem]`}>
+      <section id="contact" className={`${CONTAINER} ${SECTION}`}>
+        <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
           <div>
             <p className={EYEBROW}>Contact</p>
             <h2 className="section-title mt-2">Talk to CALQULUS</h2>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Property management teams, landlords, and agencies can write about a portfolio and what they need to run.
+              Property management teams, landlords, and agencies can write about a portfolio and what
+              they need to run.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               <li className="flex items-center gap-2 text-foreground">
@@ -372,6 +308,33 @@ function HomeView() {
           </form>
         </div>
       </section>
+
+      <section id="about" className="scroll-mt-24 bg-navy-primary text-white">
+        <div className={`${CONTAINER} py-14 sm:py-16`}>
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-heading text-[1.55rem] font-bold leading-tight tracking-tight sm:text-[1.85rem]">
+              Ready to bring your property operations together?
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
+              Start managing your portfolio with a system built around the way property operations
+              actually work.
+            </p>
+            <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+              <Button asChild size="lg" className="btn-brand min-h-11">
+                <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              >
+                <a href="#contact">Contact us</a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
@@ -397,32 +360,24 @@ function PricingView() {
 
 export function PublicLandingPage() {
   const { pathname, hash } = useLocation();
-  const navigate = useNavigate();
   const isPricing = pathname === PUBLIC_ROUTES.pricing;
 
   useEffect(() => {
-    const title = isPricing
+    document.title = isPricing
       ? "Pricing | CALQULUS PMS"
-      : "CALQULUS PMS | Property Management & Operations Platform";
-    document.title = title;
+      : "CALQULUS PMS | Property Operations, Connected";
   }, [isPricing]);
 
   useEffect(() => {
-    if (pathname === PUBLIC_ROUTES.home && hash === "#pricing") {
-      const pricing = document.getElementById("pricing");
-      if (pricing) {
-        pricing.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-      navigate(PUBLIC_ROUTES.pricing, { replace: true });
+    if (!hash) return;
+    const id = hash.replace("#", "");
+    const target = document.getElementById(id);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, [hash, navigate, pathname]);
+  }, [hash, pathname]);
 
-  return (
-    <PublicShell>
-      {isPricing ? <PricingView /> : <HomeView />}
-    </PublicShell>
-  );
+  return <PublicShell>{isPricing ? <PricingView /> : <HomeView />}</PublicShell>;
 }
 
 export default PublicLandingPage;

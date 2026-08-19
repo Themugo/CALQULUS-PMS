@@ -13,39 +13,35 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { PUBLIC_NAV, PUBLIC_ROUTES, homeSectionHref } from "@/features/marketing/publicConfig";
 
+const navLinkClass =
+  "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 export function PublicHeader() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const onPricing = pathname === PUBLIC_ROUTES.pricing;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 shadow-[0_1px_0_0_hsl(220_87%_51%/0.08)] backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-white/92 shadow-[0_1px_0_0_hsl(220_87%_51%/0.08)] backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to={PUBLIC_ROUTES.home}
-          className="flex min-w-0 items-center rounded-md focus-visible:outline-none"
+          className="flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="CALQULUS home"
         >
           <BrandMark size="nav" showWordmark subtitle="" fetchPriority="high" />
         </Link>
 
-        <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
           {PUBLIC_NAV.map((item) => (
-            <a
-              key={item.hash}
-              href={homeSectionHref(item.hash, pathname)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
+            <a key={item.hash} href={homeSectionHref(item.hash, pathname)} className={navLinkClass}>
               {item.label}
             </a>
           ))}
           <Link
             to={PUBLIC_ROUTES.pricing}
             aria-current={onPricing ? "page" : undefined}
-            className={cn(
-              "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground",
-              onPricing ? "text-foreground" : "text-muted-foreground",
-            )}
+            className={cn(navLinkClass, onPricing && "text-foreground")}
           >
             Pricing
           </Link>
@@ -83,7 +79,7 @@ export function PublicHeader() {
                     key={item.hash}
                     href={homeSectionHref(item.hash, pathname)}
                     onClick={() => setOpen(false)}
-                    className="rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                    className="min-h-11 rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
                   >
                     {item.label}
                   </a>
@@ -91,7 +87,7 @@ export function PublicHeader() {
                 <Link
                   to={PUBLIC_ROUTES.pricing}
                   onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  className="min-h-11 rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
                 >
                   Pricing
                 </Link>

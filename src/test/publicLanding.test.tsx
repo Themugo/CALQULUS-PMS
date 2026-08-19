@@ -19,13 +19,11 @@ function renderAt(path: string) {
 }
 
 describe("PublicLandingPage", () => {
-  it("renders the operational homepage with a single h1", () => {
+  it("renders the executive homepage with a single h1", () => {
     renderAt("/");
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent(
-      "One workspace for properties, tenants, rent, and repairs.",
-    );
+    expect(headings[0]).toHaveTextContent("Run your properties with clarity and control.");
   });
 
   it("keeps working portal routes on role cards", () => {
@@ -33,6 +31,10 @@ describe("PublicLandingPage", () => {
     expect(screen.getByRole("link", { name: /^start managing$/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
+    );
+    expect(screen.getByRole("link", { name: /explore the platform/i })).toHaveAttribute(
+      "href",
+      "#platform",
     );
     expect(screen.getByRole("link", { name: /manager portal/i })).toHaveAttribute(
       "href",
@@ -55,14 +57,20 @@ describe("PublicLandingPage", () => {
   it("uses restrained primary navigation without Contact dominating", () => {
     renderAt("/");
     const primary = screen.getByRole("navigation", { name: "Primary" });
-    expect(primary).toHaveTextContent("Workspace");
-    expect(primary).toHaveTextContent("Portals");
-    expect(primary).toHaveTextContent("Workflow");
+    expect(primary).toHaveTextContent("Platform");
+    expect(primary).toHaveTextContent("How it works");
+    expect(primary).toHaveTextContent("Solutions");
     expect(primary).toHaveTextContent("Pricing");
     expect(primary).not.toHaveTextContent("Contact");
     const header = screen.getByRole("banner");
-    expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute("href", PUBLIC_ROUTES.managerSignIn);
-    expect(within(header).getByRole("link", { name: "Get started" })).toHaveAttribute("href", PUBLIC_ROUTES.managerSignUp);
+    expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignIn,
+    );
+    expect(within(header).getByRole("link", { name: "Get started" })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignUp,
+    );
   });
 
   it("labels the dashboard visual as a preview", () => {
@@ -70,9 +78,10 @@ describe("PublicLandingPage", () => {
     expect(screen.getByText(/illustrative view of the calqulus manager dashboard/i)).toBeInTheDocument();
   });
 
-  it("points commercial CTA at the existing pricing route", () => {
+  it("points commercial CTA at the existing pricing route without embedding fake prices", () => {
     renderAt("/");
     expect(screen.getByRole("link", { name: /view plans/i })).toHaveAttribute("href", PUBLIC_ROUTES.pricing);
+    expect(screen.queryByText(/\/ property \/ month/i)).not.toBeInTheDocument();
   });
 
   it("renders the pricing page without duplicating the homepage h1", () => {
@@ -83,10 +92,22 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("stays on a light public canvas without navy page chrome", () => {
+  it("keeps a light public canvas and reserves navy for footer and closing CTA", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
-    expect(container.querySelector(".bg-navy-primary")).toBeNull();
+    expect(container.querySelector("footer.bg-navy-primary")).toBeTruthy();
+    expect(container.querySelector("#about.bg-navy-primary")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
+  });
+
+  it("exposes the operational flow from property to reporting", () => {
+    const { container } = renderAt("/");
+    const flow = container.querySelector("#how-it-works");
+    expect(flow).toBeTruthy();
+    const scoped = within(flow as HTMLElement);
+    expect(scoped.getByText("Lease")).toBeInTheDocument();
+    expect(scoped.getByText("Billing")).toBeInTheDocument();
+    expect(scoped.getByText("Payment")).toBeInTheDocument();
+    expect(scoped.getByText("Reporting")).toBeInTheDocument();
   });
 });

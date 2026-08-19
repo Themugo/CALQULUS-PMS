@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { CONTACT_EMAIL, PUBLIC_ROUTES, homeSectionHref } from "@/features/marketing/publicConfig";
+import {
+  CONTACT_EMAIL,
+  PUBLIC_NAV,
+  PUBLIC_ROUTES,
+  homeSectionHref,
+} from "@/features/marketing/publicConfig";
 
 describe("public marketing config", () => {
   it("uses the live portal login routes", () => {
@@ -21,5 +26,10 @@ describe("public marketing config", () => {
     expect(homeSectionHref("platform", "/")).toBe("#platform");
     expect(homeSectionHref("platform", "/pricing")).toBe("/#platform");
     expect(homeSectionHref("contact", "/legal")).toBe("/#contact");
+  });
+
+  it("exposes executive primary navigation hashes", () => {
+    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "How it works", "Solutions"]);
+    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "how-it-works", "solutions"]);
   });
 });

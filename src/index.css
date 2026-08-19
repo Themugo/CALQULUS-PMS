@@ -460,14 +460,13 @@
   box-shadow: 0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 3px 0 rgb(23 33 61 / 0.03);
 }
 
-/* Public pages: luminous light canvas — never navy, slate-950, or black. */
+/* Public pages: light canvas. Navy is reserved for footer and closing CTA. */
 @utility public-canvas {
-  background-color: hsl(210 50% 97.5%);
+  background-color: hsl(216 42% 96.5%);
   background-image:
-    radial-gradient(ellipse 920px 560px at 6% -12%, hsl(220 87% 51% / 0.14), transparent 58%),
-    radial-gradient(ellipse 780px 520px at 100% -8%, hsl(173 70% 42% / 0.11), transparent 54%),
-    radial-gradient(ellipse 680px 420px at 78% 108%, hsl(199 89% 48% / 0.10), transparent 56%),
-    linear-gradient(180deg, hsl(210 50% 98.5%) 0%, hsl(216 42% 97%) 48%, hsl(210 40% 96.5%) 100%);
+    radial-gradient(ellipse 920px 560px at 6% -12%, hsl(220 87% 51% / 0.10), transparent 58%),
+    radial-gradient(ellipse 720px 480px at 100% -10%, hsl(230 71% 15% / 0.045), transparent 56%),
+    linear-gradient(180deg, hsl(210 50% 98.5%) 0%, hsl(216 42% 97%) 52%, hsl(216 36% 96%) 100%);
 }
 
 @utility public-hero-grid {

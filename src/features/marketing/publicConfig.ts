@@ -18,11 +18,36 @@ export const PUBLIC_ROUTES = {
 } as const;
 
 export const PUBLIC_NAV = [
-  { label: "Workspace", hash: "platform" },
-  { label: "Portals", hash: "solutions" },
-  { label: "Workflow", hash: "how-it-works" },
+  { label: "Platform", hash: "platform" },
+  { label: "How it works", hash: "how-it-works" },
+  { label: "Solutions", hash: "solutions" },
 ] as const;
 
 export function homeSectionHref(hash: string, pathname: string): string {
   return pathname === PUBLIC_ROUTES.home ? `#${hash}` : `/#${hash}`;
 }
+
+export const PLATFORM_LINKS = [
+  { label: "Property management", hash: "platform" },
+  { label: "Rent & payments", hash: "how-it-works" },
+  { label: "Maintenance", hash: "platform" },
+  { label: "Reporting", hash: "how-it-works" },
+] as const;
+
+export const PORTAL_LINKS = [
+  { label: "Property managers", href: PUBLIC_ROUTES.managerSignUp },
+  { label: "Landlords", href: PUBLIC_ROUTES.landlordLogin },
+  { label: "Agencies", href: PUBLIC_ROUTES.agencyLogin },
+  { label: "Tenants", href: PUBLIC_ROUTES.tenantLogin },
+] as const;
+
+export const COMPANY_LINKS = [
+  { label: "About", hash: "about" },
+  { label: "Pricing", href: PUBLIC_ROUTES.pricing },
+  { label: "Contact", hash: "contact" },
+] as const;
+
+export const LEGAL_LINKS = [
+  { label: "Privacy", href: PUBLIC_ROUTES.legalPrivacy },
+  { label: "Terms", href: PUBLIC_ROUTES.legalTerms },
+] as const;

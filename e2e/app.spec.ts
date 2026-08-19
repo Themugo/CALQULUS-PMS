@@ -19,7 +19,7 @@ test.describe("CALQULUS PMS E2E Tests", () => {
   test.describe("Public pages", () => {
     test("public homepage presents CALQULUS", async ({ page }) => {
       await page.goto("/");
-      await expect(page.getByRole("heading", { level: 1 })).toContainText("One workspace", { timeout: 15000 });
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("clarity and control", { timeout: 15000 });
     });
 
     test("auth page loads login form", async ({ page }) => {

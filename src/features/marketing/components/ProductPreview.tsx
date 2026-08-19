@@ -1,12 +1,12 @@
-import { AlertTriangle, Building2, CreditCard, Droplets, Home, Wrench } from "lucide-react";
+import { AlertTriangle, Building2, CreditCard, Home, Wrench } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { invoiceStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 
 const METRICS = [
   { label: "Units", value: "48", detail: "4 vacant", icon: Home, tint: "bg-soft-blue text-primary" },
-  { label: "Occupancy", value: "92%", detail: "44 occupied", icon: Building2, tint: "bg-teal-bg text-teal" },
-  { label: "Collected", value: "KES 1.24M", detail: "This month", icon: CreditCard, tint: "bg-gold-bg text-primary" },
-  { label: "Outstanding", value: "KES 86k", detail: "4 overdue", icon: AlertTriangle, tint: "bg-indigo-bg text-indigo" },
+  { label: "Occupancy", value: "92%", detail: "44 occupied", icon: Building2, tint: "bg-success/10 text-success" },
+  { label: "Collected", value: "KES 1.24M", detail: "This month", icon: CreditCard, tint: "bg-success/10 text-success" },
+  { label: "Outstanding", value: "KES 86k", detail: "4 overdue", icon: AlertTriangle, tint: "bg-destructive/10 text-destructive" },
 ] as const;
 
 const QUEUE = [
@@ -16,15 +16,15 @@ const QUEUE = [
 ] as const;
 
 const WORK = [
-  { label: "Open repairs", value: "2", icon: Wrench },
-  { label: "Water readings due", value: "6", icon: Droplets },
+  { label: "Open repairs", value: "2", icon: Wrench, tone: "warning" },
+  { label: "Attention items", value: "3", icon: AlertTriangle, tone: "danger" },
 ] as const;
 
 /** Static illustration of the manager dashboard — not a live data view. */
 export function ProductPreview() {
   return (
     <figure className="mx-auto w-full max-w-lg md:max-w-none">
-      <div className="enterprise-card overflow-hidden shadow-[0_18px_40px_-24px_rgb(21_94_239_/_0.35)]">
+      <div className="enterprise-card overflow-hidden shadow-[0_18px_40px_-24px_rgb(21_94_239_/_0.28)]">
         <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-2.5">
             <BrandMark size="xs" />
@@ -64,10 +64,12 @@ export function ProductPreview() {
               <p className="type-label">Collections this month</p>
               <p className="text-xs font-semibold text-primary">93%</p>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-soft-blue">
-              <div className="h-full w-[93%] rounded-full bg-gradient-to-r from-primary to-teal" />
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
+              <div className="h-full w-[93%] rounded-full bg-primary" />
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">KES 1.24M received · KES 86k still due</p>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              KES 1.24M received · <span className="text-destructive">KES 86k still due</span>
+            </p>
           </div>
 
           <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -87,7 +89,10 @@ export function ProductPreview() {
             <div className="grid grid-cols-2 gap-2 sm:w-36 sm:grid-cols-1">
               {WORK.map((item) => (
                 <div key={item.label} className="rounded-lg border border-border bg-card p-3">
-                  <item.icon className="h-3.5 w-3.5 text-primary" aria-hidden />
+                  <item.icon
+                    className={`h-3.5 w-3.5 ${item.tone === "danger" ? "text-destructive" : "text-warning"}`}
+                    aria-hidden
+                  />
                   <p className="mt-1 font-heading text-lg font-semibold leading-none">{item.value}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">{item.label}</p>
                 </div>
