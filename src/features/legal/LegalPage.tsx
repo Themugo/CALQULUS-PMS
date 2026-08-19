@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Button } from '@/shared/components/ui/button';
-import { Shield, FileText, ChevronLeft } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Shield, FileText } from 'lucide-react';
+import { PublicShell } from '@/features/marketing/components/PublicShell';
+import { cn } from '@/shared/lib/utils';
 
 const LAST_UPDATED = 'May 2026';
 const COMPANY     = 'CALQULUS PMS Ltd';
@@ -18,42 +18,54 @@ const LegalPage: React.FC = () => {
   const defaultTab: Tab = (paramTab === 'terms' || location.hash === '#terms') ? 'terms' : 'privacy';
   const [tab, setTab] = useState<Tab>(defaultTab);
 
+  React.useEffect(() => {
+    document.title = tab === 'terms' ? 'Terms of Service | CALQULUS PMS' : 'Privacy Policy | CALQULUS PMS';
+  }, [tab]);
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="border-b border-border bg-muted backdrop-blur sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-              <ChevronLeft className="h-4 w-4" />Back
-            </Button>
-          </Link>
-          <div className="flex items-center gap-3">
+    <PublicShell>
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-2" role="tablist" aria-label="Legal documents">
             <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'privacy'}
               onClick={() => setTab('privacy')}
-              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'privacy' ? 'bg-amber-400 text-foreground' : 'text-slate-400 hover:text-foreground'
-              }`}
+              className={cn(
+                'inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors',
+                tab === 'privacy'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+              )}
             >
-              <Shield className="h-3.5 w-3.5" />Privacy Policy
+              <Shield className="h-3.5 w-3.5" />
+              Privacy Policy
             </button>
             <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'terms'}
               onClick={() => setTab('terms')}
-              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-colors ${
-                tab === 'terms' ? 'bg-amber-400 text-foreground' : 'text-slate-400 hover:text-foreground'
-              }`}
+              className={cn(
+                'inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors',
+                tab === 'terms'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+              )}
             >
-              <FileText className="h-3.5 w-3.5" />Terms of Service
+              <FileText className="h-3.5 w-3.5" />
+              Terms of Service
             </button>
           </div>
-          <div className="text-xs text-muted-foreground">Updated {LAST_UPDATED}</div>
+          <p className="text-xs text-muted-foreground">Updated {LAST_UPDATED}</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
         {tab === 'privacy' ? <PrivacyPolicy /> : <TermsOfService />}
       </div>
-    </div>
+    </PublicShell>
   );
 };
 
@@ -67,7 +79,7 @@ const PrivacyPolicy: React.FC = () => (
 
     <Section title="1. Who we are">
       <p>{COMPANY} ("CALQULUS PMS", "we", "our") operates the CALQULUS PMS property management platform at calqulus.site. We are registered and operate under the laws of {COUNTRY}.</p>
-      <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a></p>
+      <p>Data controller contact: <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a></p>
     </Section>
 
     <Section title="2. What data we collect">
@@ -108,7 +120,7 @@ const PrivacyPolicy: React.FC = () => (
         <li><strong className="text-foreground">Objection:</strong> object to processing of your data for certain purposes</li>
         <li><strong className="text-foreground">Portability:</strong> receive your data in a machine-readable format</li>
       </ul>
-      <p className="mt-2">To exercise these rights, email <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a>. We will respond within 21 days.</p>
+      <p className="mt-2">To exercise these rights, email <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a>. We will respond within 21 days.</p>
     </Section>
 
     <Section title="6. Data retention">
@@ -186,7 +198,7 @@ const TermsOfService: React.FC = () => (
     </Section>
 
     <Section title="9. Contact">
-      <p>Questions about these terms: <a href={`mailto:${EMAIL}`} className="text-amber-600 underline">{EMAIL}</a></p>
+      <p>Questions about these terms: <a href={`mailto:${EMAIL}`} className="text-primary underline">{EMAIL}</a></p>
     </Section>
   </article>
 );

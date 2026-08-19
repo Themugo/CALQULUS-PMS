@@ -17,9 +17,9 @@ const TENANT_PASSWORD = process.env.E2E_TENANT_PASSWORD || "";
 test.describe("CALQULUS RMS E2E Tests", () => {
 
   test.describe("Public pages", () => {
-    test("landing page redirects to landlord auth", async ({ page }) => {
+    test("public homepage presents CALQULUS", async ({ page }) => {
       await page.goto("/");
-      await expect(page).toHaveURL(/\/landlord/, { timeout: 15000 });
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("clarity and control", { timeout: 15000 });
     });
 
     test("auth page loads login form", async ({ page }) => {

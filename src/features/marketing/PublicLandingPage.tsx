@@ -1,454 +1,452 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, type FormEvent, type ReactNode } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Building2, Users, CreditCard, Wrench, BarChart3, ShieldCheck,
-  ArrowRight, Crown, Home, Briefcase, User, Mail, MapPin,
-  Menu, X, KeyRound, LineChart, Lock,
+  ArrowRight,
+  BarChart3,
+  Briefcase,
+  Building2,
+  ChevronDown,
+  CreditCard,
+  FileText,
+  Home,
+  LayoutDashboard,
+  Receipt,
+  ShieldCheck,
+  Users,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { cn } from "@/shared/lib/utils";
-import { BrandMark } from "@/shared/components/branding/BrandMark";
+import { ProductPreview } from "@/features/marketing/components/ProductPreview";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
+import { PublicShell } from "@/features/marketing/components/PublicShell";
 import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
+import { CONTACT_EMAIL, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
-/* ── CALQULUS public landing page ───────────────────────────────────
-   Compact, information-dense executive SaaS landing for the public root.
-   No admin login is exposed. Portal buttons link to the EXISTING
-   authenticated portal/login routes — no new auth systems. */
+const SECTION = "scroll-mt-24 py-14 sm:py-16";
+const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6";
+const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.14em] text-primary";
 
-const CONTACT_EMAIL = "enterprise@calqulusrms.com";
-
-type Accent = "blue" | "green" | "purple" | "amber" | "cyan" | "teal";
-
-const accentMap: Record<Accent, { icon: string; chip: string; line: string; ring: string }> = {
-  blue:   { icon: "text-[hsl(220_87%_51%)]",  chip: "bg-[hsl(220_87%_51%/0.08)] border-[hsl(220_87%_51%/0.2)] text-[hsl(220_87%_45%)]",  line: "bg-[hsl(220_87%_51%)]",  ring: "hover:border-[hsl(220_87%_51%/0.4)]" },
-  green:  { icon: "text-emerald-600",          chip: "bg-emerald-500/8 border-emerald-500/20 text-emerald-700",                              line: "bg-emerald-600",         ring: "hover:border-emerald-500/40" },
-  purple: { icon: "text-purple-600",           chip: "bg-purple-500/8 border-purple-500/20 text-purple-700",                                  line: "bg-purple-600",          ring: "hover:border-purple-500/40" },
-  amber:  { icon: "text-[hsl(32_95%_44%)]",    chip: "bg-[hsl(32_95%_44%/0.08)] border-[hsl(32_95%_44%/0.2)] text-[hsl(28_90%_40%)]",        line: "bg-[hsl(32_95%_44%)]",   ring: "hover:border-[hsl(32_95%_44%/0.4)]" },
-  cyan:   { icon: "text-[hsl(199_89%_40%)]",   chip: "bg-[hsl(199_89%_40%/0.08)] border-[hsl(199_89%_40%/0.2)] text-[hsl(199_89%_36%)]",     line: "bg-[hsl(199_89%_40%)]",  ring: "hover:border-[hsl(199_89%_40%/0.4)]" },
-  teal:   { icon: "text-[hsl(172_80%_30%)]",   chip: "bg-[hsl(172_80%_30%/0.08)] border-[hsl(172_80%_30%/0.2)] text-[hsl(172_80%_26%)]",     line: "bg-[hsl(172_80%_30%)]",  ring: "hover:border-[hsl(172_80%_30%/0.4)]" },
-};
-
-type PortalCard = {
+function SectionIntro({
+  id,
+  eyebrow,
+  title,
+  description,
+}: {
+  id?: string;
+  eyebrow: string;
   title: string;
   description: string;
-  button: string;
-  href: string;
-  icon: React.ElementType;
-  accent: Accent;
-};
+}) {
+  return (
+    <div id={id} className="mb-8 max-w-2xl">
+      <p className={EYEBROW}>{eyebrow}</p>
+      <h2 className="section-title mt-2 text-[1.5rem] sm:text-[1.75rem]">{title}</h2>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">{description}</p>
+    </div>
+  );
+}
 
-const PORTALS: PortalCard[] = [
-  { title: "Property Manager", description: "Run properties, tenants, leases, rent, payments, maintenance, and landlord reporting in one system.", button: "Create manager account", href: "/auth?tab=signup", icon: Briefcase, accent: "blue" },
-  { title: "Landlord",         description: "Monitor your properties, income, leases and performance.",        button: "Landlord Portal", href: "/landlord/login", icon: Home,      accent: "green" },
-  { title: "Agency",           description: "Manage your agency portfolio, clients and property operations.",  button: "Agency Portal",   href: "/agency/login",   icon: Building2, accent: "purple" },
-  { title: "Tenant",           description: "Access your lease, payments, maintenance and property services.", button: "Tenant Portal",   href: "/tenant/login",   icon: User,      accent: "amber" },
-];
+const PILLARS = [
+  {
+    title: "Property",
+    icon: Building2,
+    items: ["Properties", "Units", "Occupancy", "Tenants"],
+  },
+  {
+    title: "Finance",
+    icon: Receipt,
+    items: ["Rent", "Billing", "Payments", "Receipts", "Statements"],
+  },
+  {
+    title: "Operations",
+    icon: Wrench,
+    items: ["Maintenance", "Requests", "Contractors", "Reporting"],
+  },
+] as const;
 
-type Capability = {
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  accent: Accent;
-};
+const WORKFLOW = [
+  { label: "Property", icon: Building2 },
+  { label: "Tenant", icon: Users },
+  { label: "Lease", icon: FileText },
+  { label: "Billing", icon: Receipt },
+  { label: "Payment", icon: CreditCard },
+  { label: "Reporting", icon: BarChart3 },
+] as const;
 
-const CAPABILITIES: Capability[] = [
-  { title: "Properties + units", description: "The buildings you manage, occupancy included.", icon: Building2, accent: "blue" },
-  { title: "Tenants + leases", description: "Who lives where, and on what terms.", icon: Users, accent: "cyan" },
-  { title: "Rent + invoices", description: "Issue rent and keep a clear balance.", icon: CreditCard, accent: "green" },
-  { title: "Payments", description: "Collect through M-Pesa or record a payment.", icon: KeyRound, accent: "teal" },
-  { title: "Maintenance", description: "Track repairs against the same units.", icon: Wrench, accent: "amber" },
-  { title: "Landlord reporting", description: "Share occupancy and revenue — not tenant PII.", icon: LineChart, accent: "purple" },
-];
+const ROLES = [
+  {
+    title: "Property manager",
+    description: "Run daily property operations.",
+    href: PUBLIC_ROUTES.managerSignUp,
+    cta: "Manager portal",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Landlord",
+    description: "Monitor portfolio performance and income.",
+    href: PUBLIC_ROUTES.landlordLogin,
+    cta: "Landlord portal",
+    icon: Home,
+  },
+  {
+    title: "Agency",
+    description: "Manage clients, portfolios and property operations.",
+    href: PUBLIC_ROUTES.agencyLogin,
+    cta: "Agency portal",
+    icon: Briefcase,
+  },
+  {
+    title: "Tenant",
+    description: "Manage leases, payments and property services.",
+    href: PUBLIC_ROUTES.tenantLogin,
+    cta: "Tenant portal",
+    icon: Users,
+  },
+] as const;
 
-const NAV_LINKS = [
-  { label: "Who it's for", href: "#who" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Trust", href: "#trust" },
-  { label: "Contact", href: "#contact" },
-];
+const CAPABILITY_GROUPS = [
+  {
+    title: "Property",
+    icon: Building2,
+    items: ["Properties", "Units", "Occupancy", "Tenants"],
+  },
+  {
+    title: "Finance",
+    icon: CreditCard,
+    items: ["Rent", "Billing", "M-Pesa", "Payments", "Receipts", "Statements"],
+  },
+  {
+    title: "Operations",
+    icon: Wrench,
+    items: ["Maintenance", "Requests", "Contractors", "Water billing"],
+  },
+  {
+    title: "Insight",
+    icon: BarChart3,
+    items: ["Reports", "Collections", "Activity"],
+  },
+  {
+    title: "Security",
+    icon: ShieldCheck,
+    items: ["Roles", "Permissions", "Data isolation", "Activity records"],
+  },
+] as const;
 
-export function PublicLandingPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const { data: tiers = [] } = usePublicTiers();
+function IconWell({ children }: { children: ReactNode }) {
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-soft-blue text-primary">
+      {children}
+    </span>
+  );
+}
 
-  useEffect(() => {
-    if (window.location.pathname === "/pricing") {
-      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
-
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
+function HomeView() {
+  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
     const name = (form.elements.namedItem("contact-name") as HTMLInputElement)?.value ?? "";
     const email = (form.elements.namedItem("contact-email") as HTMLInputElement)?.value ?? "";
     const message = (form.elements.namedItem("contact-message") as HTMLTextAreaElement)?.value ?? "";
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CALQULUS PMS inquiry")}&body=${body}`;
-    setSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen bg-secondary-background text-foreground font-sans">
-      {/* ── HEADER ── */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5" aria-label="CALQULUS PMS home">
-            <BrandMark size="sm" showWordmark fetchPriority="high" />
-          </Link>
-
-          <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-            {NAV_LINKS.map((l) => (
-              <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
-                {l.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Button asChild size="sm" className="hidden sm:inline-flex shadow-sm">
-              <Link to="/auth?tab=signup">
-                Get Started
+    <>
+      <section className={`${CONTAINER} grid items-center gap-10 py-12 lg:grid-cols-2 lg:gap-14 lg:py-16`}>
+        <div>
+          <p className={EYEBROW}>Property operations, connected</p>
+          <h1 className="page-title mt-3 max-w-xl text-[2rem] leading-tight sm:text-[2.5rem] lg:text-[2.75rem]">
+            Run your properties with clarity and control.
+          </h1>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+            CALQULUS brings properties, units, tenants, leases, rent, payments and maintenance
+            into one focused operational system.
+          </p>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button asChild size="lg" className="btn-brand min-h-11">
+              <Link to={PUBLIC_ROUTES.managerSignUp}>
+                Start managing
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <button
-              type="button"
-              aria-label="Toggle menu"
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((v) => !v)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground md:hidden"
-            >
-              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
+            <Button asChild size="lg" variant="outline" className="min-h-11">
+              <a href="#platform">Explore the platform</a>
+            </Button>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Built for property managers, landlords, agencies and tenants.
+          </p>
+        </div>
+        <ProductPreview />
+      </section>
+
+      <section className={`border-t border-border bg-card ${SECTION}`}>
+        <div className={CONTAINER}>
+          <SectionIntro
+            id="platform"
+            eyebrow="The system"
+            title="Everything important, connected."
+            description="CALQULUS brings the core work of property management into one connected operational system."
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            {PILLARS.map((pillar) => (
+              <article key={pillar.title} className="enterprise-card p-6">
+                <IconWell>
+                  <pillar.icon className="h-5 w-5" aria-hidden />
+                </IconWell>
+                <h3 className="card-title-exec mt-4">{pillar.title}</h3>
+                <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+                  {pillar.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Mobile nav */}
-        {menuOpen && (
-          <nav className="border-t border-border bg-card px-4 py-3 md:hidden">
-            <div className="flex flex-col gap-1">
-              {NAV_LINKS.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
-                >
-                  {l.label}
-                </a>
-              ))}
-              <Button asChild size="sm" className="mt-2">
-                <Link to="/auth" onClick={() => setMenuOpen(false)}>
-                  Get Started
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </nav>
-        )}
-      </header>
-
-      <main className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* ── HERO ── */}
-        <section className="grid grid-cols-1 items-center gap-8 py-10 md:grid-cols-2 md:py-14">
-          <div>
-            <span className="status-badge status-info mb-4">
-              <Crown className="h-3 w-3" /> For professional property managers
-            </span>
-            <h1 className="page-title text-3xl sm:text-4xl lg:text-[2.75rem]">
-              Connected rental operations
-              <br />
-              and financial control.
-            </h1>
-            <p className="supporting-text mt-4 max-w-md text-sm sm:text-base">
-              CALQULUS PMS is for professional property managers and growing rental operators
-              who need properties, tenants, leases, rent, payments, maintenance, and landlord
-              reporting in one system — not a pile of disconnected tools.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg" className="btn-brand shadow-sm">
-                <Link to="/auth?tab=signup">
-                  Start as a manager
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href="#pricing">See pricing</a>
-              </Button>
-            </div>
-          </div>
-
-          {/* Compact executive highlight panel */}
-          <div className="enterprise-card hidden p-6 md:block">
-            <div className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-primary" />
-              <span className="card-title-exec">Why it is different</span>
-            </div>
-            <p className="supporting-text mt-2">
-              The same property record drives the tenant, the lease, the invoice, the payment,
-              the repair, and the landlord report. That is the product.
-            </p>
-            <ul className="mt-4 space-y-2.5">
-              {PORTALS.map((p) => (
-                <li key={p.title} className="flex items-center gap-2.5 text-sm">
-                  <span className={cn("flex h-6 w-6 items-center justify-center rounded-md", accentMap[p.accent].chip)}>
-                    <p.icon className={cn("h-3.5 w-3.5", accentMap[p.accent].icon)} />
-                  </span>
-                  <span className="font-medium text-foreground">{p.title}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* ── PORTAL SELECTION ── */}
-        <section id="portals" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">Start in the portal that matches your role</h2>
-            <p className="supporting-text mt-1">
-              Managers buy and run CALQULUS. Landlords, agencies, and tenants use the portals
-              connected to that work.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {PORTALS.map((p) => {
-              const a = accentMap[p.accent];
-              return (
-                <div
-                  key={p.title}
-                  className={cn(
-                    "enterprise-card relative flex flex-col overflow-hidden p-5 transition-all hover:shadow-md",
-                    a.ring
-                  )}
-                >
-                  <div className={cn("absolute left-0 top-0 h-full w-1", a.line)} />
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl border", a.chip)}>
-                      <p.icon className={cn("h-5 w-5", a.icon)} />
-                    </span>
-                    <span className={cn("status-badge border", a.chip)}>{p.title.split(" ")[0]}</span>
-                  </div>
-                  <h3 className="card-title-exec">{p.title}</h3>
-                  <p className="supporting-text mt-1.5 flex-1">{p.description}</p>
-                  <Button asChild size="sm" variant="outline" className="mt-4 w-full justify-center">
-                    <Link to={p.href}>
-                      {p.button}
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="who" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">Who CALQULUS is for</h2>
-            <p className="supporting-text mt-1 max-w-2xl">
-              Professional property managers and growing rental operators who collect rent,
-              house tenants, and report to landlords. If you need those records connected,
-              this is the product.
-            </p>
-          </div>
-        </section>
-
-        {/* ── PLATFORM VALUE ── */}
-        <section id="platform" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">The connected system</h2>
-            <p className="supporting-text mt-1">
-              Properties + tenants + leases + rent + payments + maintenance + landlord reporting.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {CAPABILITIES.map((c) => {
-              const a = accentMap[c.accent];
-              return (
-                <div
-                  key={c.title}
-                  className={cn("enterprise-card flex items-start gap-3 p-4 transition-all hover:shadow-md", a.ring)}
-                >
-                  <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border", a.chip)}>
-                    <c.icon className={cn("h-4 w-4", a.icon)} />
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="card-title-exec">{c.title}</h3>
-                    <p className="supporting-text mt-1">{c.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── HOW IT WORKS ── */}
-        <section id="how-it-works" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">How it works</h2>
-            <p className="supporting-text mt-1">Sign up, set up a property, then collect rent.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            {[
-              { step: "01", title: "Sign up", text: "Create a manager account. Approval is required before billing starts.", icon: KeyRound },
-              { step: "02", title: "Onboard", text: "Add a property, units, and a tenant. Issue the first invoice.", icon: Building2 },
-              { step: "03", title: "Pay", text: "Platform billing is monthly and visible. Pay invoices from your account.", icon: CreditCard },
-              { step: "04", title: "Use", text: "Collect rent, track repairs, and report to landlords from the same records.", icon: LineChart },
-            ].map((s) => (
-              <div key={s.step} className="enterprise-card p-5">
-                <div className="flex items-center justify-between">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[hsl(220_87%_51%/0.1)] border border-[hsl(220_87%_51%/0.2)]">
-                    <s.icon className="h-4 w-4 text-[hsl(220_87%_51%)]" />
-                  </span>
-                  <span className="metric-value text-[hsl(220_87%_51%)]">{s.step}</span>
-                </div>
-                <h3 className="card-title-exec mt-3">{s.title}</h3>
-                <p className="supporting-text mt-1">{s.text}</p>
+      <section id="how-it-works" className={`${CONTAINER} ${SECTION}`}>
+        <SectionIntro
+          eyebrow="Workflow"
+          title="From property to payment."
+          description="CALQULUS connects the operational lifecycle — from the building record through to reporting."
+        />
+        <ol className="relative hidden md:flex">
+          <span
+            className="absolute left-[8%] right-[8%] top-5 h-px bg-border"
+            aria-hidden
+          />
+          {WORKFLOW.map((step, index) => (
+            <li key={step.label} className="relative z-[1] flex flex-1 flex-col items-center bg-secondary-background px-2 text-center">
+              <IconWell>
+                <step.icon className="h-5 w-5" aria-hidden />
+              </IconWell>
+              <p className="mt-3 text-sm font-semibold text-foreground">{step.label}</p>
+              <p className="mt-1 type-meta">{String(index + 1).padStart(2, "0")}</p>
+            </li>
+          ))}
+        </ol>
+        <ol className="relative space-y-3 md:hidden">
+          {WORKFLOW.map((step, index) => (
+            <li key={step.label} className="flex items-start gap-3">
+              <div className="flex flex-col items-center">
+                <IconWell>
+                  <step.icon className="h-5 w-5" aria-hidden />
+                </IconWell>
+                {index < WORKFLOW.length - 1 ? (
+                  <ChevronDown className="mt-1 h-4 w-4 text-border" aria-hidden />
+                ) : null}
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="pricing" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">What it costs</h2>
-            <p className="supporting-text mt-1 max-w-2xl">
-              Price is per property, per month, in Kenyan shillings. Multiply the published
-              rate by the buildings you manage. Custom blocks exist for larger portfolios —
-              we do not hide core operations behind plan walls.
-            </p>
-          </div>
-          <PublicPricing tiers={tiers} />
-        </section>
-
-        <section id="trust" className="scroll-mt-16 py-8">
-          <div className="mb-5">
-            <h2 className="section-title">How we handle your account</h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { title: "Security", text: "Each manager’s data is isolated. Access is role-based. Passwords are not stored in plain text.", icon: ShieldCheck },
-              { title: "Payments", text: "Tenant collections use M-Pesa and recorded receipts. Platform fees are invoiced and paid in the same account.", icon: CreditCard },
-              { title: "Data protection", text: "We collect what is needed to run rentals. We do not sell tenant or landlord data.", icon: Lock },
-              { title: "Support", text: "Email enterprise@calqulusrms.com. In-app help is available after you sign in.", icon: Mail },
-              { title: "Company", text: "CALQULUS PMS operates from Nairobi, Kenya. Legal name is on the privacy and terms pages.", icon: Building2 },
-              { title: "Privacy & terms", text: "Read the policy and terms before you pay. They apply to the live product, not a brochure.", icon: BarChart3 },
-            ].map((item) => (
-              <div key={item.title} className="enterprise-card p-4">
-                <item.icon className="h-4 w-4 text-primary mb-2" />
-                <h3 className="card-title-exec">{item.title}</h3>
-                <p className="supporting-text mt-1">{item.text}</p>
+              <div className="enterprise-card flex-1 px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">{step.label}</p>
+                <p className="type-meta mt-0.5">Step {String(index + 1).padStart(2, "0")}</p>
               </div>
-            ))}
-          </div>
-          <div className="mt-4 flex gap-4 text-sm">
-            <Link to="/legal?tab=privacy" className="text-primary hover:underline">Privacy policy</Link>
-            <Link to="/legal?tab=terms" className="text-primary hover:underline">Terms of service</Link>
-          </div>
-        </section>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        {/* ── CONTACT ── */}
-        <section id="contact" className="scroll-mt-16 border-t border-border py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <div>
-              <h2 className="section-title">Talk to CALQULUS</h2>
-              <p className="supporting-text mt-2 max-w-md">
-                Property management teams, landlords, agencies and property owners can contact us
-                to learn more about CALQULUS PMS.
-              </p>
-
-              <div className="mt-6 space-y-4">
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[hsl(220_87%_51%/0.1)] border border-[hsl(220_87%_51%/0.2)]">
-                    <Mail className="h-4 w-4 text-[hsl(220_87%_51%)]" />
-                  </span>
-                  <div>
-                    <p className="supporting-text">Email us</p>
-                    <p className="text-sm font-semibold text-foreground">{CONTACT_EMAIL}</p>
-                  </div>
-                </a>
-
-                <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                    <MapPin className="h-4 w-4 text-emerald-600" />
-                  </span>
-                  <div>
-                    <p className="supporting-text">Location</p>
-                    <p className="text-sm font-semibold text-foreground">Nairobi, Kenya</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="enterprise-card p-6">
-              {submitted ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                    <Lock className="h-6 w-6 text-emerald-600" />
-                  </span>
-                  <h3 className="card-title-exec mt-4">Inquiry received</h3>
-                  <p className="supporting-text mt-1 max-w-xs">
-                    Thank you for reaching out. Our team will contact you shortly.
-                  </p>
-                  <Button variant="outline" size="sm" className="mt-4" onClick={() => setSubmitted(false)}>
-                    Send another message
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleContactSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="contact-name" className="supporting-text font-medium">Full name</label>
-                    <Input id="contact-name" required placeholder="Jane Doe" className="mt-1" />
-                  </div>
-                  <div>
-                    <label htmlFor="contact-email" className="supporting-text font-medium">Work email</label>
-                    <Input id="contact-email" required type="email" placeholder="jane@propertygroup.com" className="mt-1" />
-                  </div>
-                  <div>
-                    <label htmlFor="contact-message" className="supporting-text font-medium">Message</label>
-                    <Textarea id="contact-message" rows={4} placeholder="Tell us about your property portfolio and key requirements…" className="mt-1" />
-                  </div>
-                  <Button type="submit" className="btn-brand w-full">
-                    Submit inquiry
+      <section id="solutions" className={`border-t border-border bg-card ${SECTION}`}>
+        <div className={CONTAINER}>
+          <SectionIntro
+            eyebrow="Roles"
+            title="One system. Clear experiences."
+            description="Each role gets the information and tools relevant to the work they need to perform."
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            {ROLES.map((role) => (
+              <article key={role.title} className="enterprise-card flex flex-col p-6">
+                <IconWell>
+                  <role.icon className="h-5 w-5" aria-hidden />
+                </IconWell>
+                <h3 className="card-title-exec mt-4">{role.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  {role.description}
+                </p>
+                <Button asChild variant="outline" className="mt-5 min-h-11 w-full sm:w-auto">
+                  <Link to={role.href}>
+                    {role.cta}
                     <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </form>
-              )}
-            </div>
+                  </Link>
+                </Button>
+              </article>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── FOOTER ── */}
-        <footer className="border-t border-border py-8">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-2">
-              <BrandMark size="xs" showWordmark fetchPriority="low" />
+      <section id="capabilities" className={`${CONTAINER} ${SECTION}`}>
+        <SectionIntro
+          eyebrow="Capabilities"
+          title="What the system covers."
+          description="The working records of a rental operation — without a catalogue of competing feature cards."
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {CAPABILITY_GROUPS.map((group) => (
+            <article key={group.title} className="enterprise-card p-5">
+              <div className="flex items-center gap-3">
+                <IconWell>
+                  <group.icon className="h-5 w-5" aria-hidden />
+                </IconWell>
+                <h3 className="card-title-exec">{group.title}</h3>
+              </div>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {group.items.map((item) => (
+                  <li
+                    key={item}
+                    className="rounded-md border border-border bg-secondary-background px-2.5 py-1 text-xs font-medium text-foreground"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={`border-t border-border bg-card ${SECTION}`}>
+        <div className={CONTAINER}>
+          <div className="enterprise-card flex flex-col items-start justify-between gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
+            <div className="max-w-xl">
+              <p className={EYEBROW}>Commercial</p>
+              <h2 className="section-title mt-2">Clear pricing. A clear operating system.</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Published plans are priced per property, per month, in Kenyan shillings.
+              </p>
             </div>
-            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              {NAV_LINKS.map((l) => (
-                <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
-                  {l.label}
-                </a>
-              ))}
-              <Link to="/legal?tab=privacy" className="transition-colors hover:text-foreground">Privacy</Link>
-              <Link to="/legal?tab=terms" className="transition-colors hover:text-foreground">Terms</Link>
-            </nav>
+            <Button asChild className="btn-brand min-h-11 shrink-0">
+              <Link to={PUBLIC_ROUTES.pricing}>
+                View plans
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
-          <p className="supporting-text mt-4 text-center sm:text-left">
-            Property management for Kenya and East Africa.
+        </div>
+      </section>
+
+      <section id="about" className={`${CONTAINER} ${SECTION}`}>
+        <div className="rounded-[0.625rem] bg-navy-primary px-6 py-12 text-center text-white sm:px-10">
+          <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-[1.75rem]">
+            Ready to bring your property operations together?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/75">
+            Start managing your portfolio with a system built around the way property operations
+            actually work.
           </p>
-        </footer>
-      </main>
-    </div>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild size="lg" className="min-h-11 bg-white text-navy-primary hover:bg-white/90">
+              <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="min-h-11 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            >
+              <a href="#contact">Contact us</a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className={`border-t border-border ${SECTION}`}>
+        <div className={`${CONTAINER} grid gap-8 lg:grid-cols-[1fr_22rem]`}>
+          <div>
+            <p className={EYEBROW}>Contact</p>
+            <h2 className="section-title mt-2">Talk to CALQULUS</h2>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+              Property management teams, landlords and agencies can speak with the CALQULUS team
+              about their portfolio and operational needs.
+            </p>
+            <Button asChild className="btn-brand mt-6 min-h-11">
+              <a href={`mailto:${CONTACT_EMAIL}`}>Contact us</a>
+            </Button>
+            <p className="mt-3 text-sm text-muted-foreground">{CONTACT_EMAIL}</p>
+          </div>
+          <form onSubmit={handleContactSubmit} className="enterprise-card space-y-4 p-5">
+            <p className="text-sm font-medium text-foreground">Send an inquiry</p>
+            <div>
+              <label htmlFor="contact-name" className="type-label">
+                Full name
+              </label>
+              <Input id="contact-name" name="contact-name" required autoComplete="name" className="mt-1" />
+            </div>
+            <div>
+              <label htmlFor="contact-email" className="type-label">
+                Work email
+              </label>
+              <Input
+                id="contact-email"
+                name="contact-email"
+                type="email"
+                required
+                autoComplete="email"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-message" className="type-label">
+                Message
+              </label>
+              <Textarea id="contact-message" name="contact-message" rows={3} className="mt-1" />
+            </div>
+            <Button type="submit" variant="outline" className="min-h-11 w-full">
+              Open email
+            </Button>
+          </form>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function PricingView() {
+  const { data: tiers = [] } = usePublicTiers();
+
+  return (
+    <section className={`${CONTAINER} ${SECTION}`}>
+      <div className="mb-8 max-w-2xl">
+        <p className={EYEBROW}>Pricing</p>
+        <h1 className="page-title mt-2 text-[2rem] sm:text-[2.25rem]">
+          Clear pricing. A clear operating system.
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Price is per property, per month, in Kenyan shillings. Custom blocks exist for larger
+          portfolios.
+        </p>
+      </div>
+      <PublicPricing tiers={tiers} />
+    </section>
+  );
+}
+
+export function PublicLandingPage() {
+  const { pathname, hash } = useLocation();
+  const navigate = useNavigate();
+  const isPricing = pathname === PUBLIC_ROUTES.pricing;
+
+  useEffect(() => {
+    const title = isPricing
+      ? "Pricing | CALQULUS PMS"
+      : "CALQULUS PMS | Property Management & Operations Platform";
+    document.title = title;
+  }, [isPricing]);
+
+  useEffect(() => {
+    if (pathname === PUBLIC_ROUTES.home && hash === "#pricing") {
+      navigate(PUBLIC_ROUTES.pricing, { replace: true });
+    }
+  }, [hash, navigate, pathname]);
+
+  return (
+    <PublicShell>
+      {isPricing ? <PricingView /> : <HomeView />}
+    </PublicShell>
   );
 }
 
