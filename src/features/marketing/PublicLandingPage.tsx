@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Building2, Users, CreditCard, Wrench, BarChart3, ShieldCheck,
@@ -10,6 +10,8 @@ import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
+import { PublicPricing } from "@/features/marketing/components/PublicPricing";
+import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
 
 /* ── CALQULUS public landing page ───────────────────────────────────
    Compact, information-dense executive SaaS landing for the public root.
@@ -39,7 +41,7 @@ type PortalCard = {
 };
 
 const PORTALS: PortalCard[] = [
-  { title: "Property Manager", description: "Manage properties, tenants, billing, maintenance and operations.", button: "Manager Portal", href: "/auth",           icon: Briefcase, accent: "blue" },
+  { title: "Property Manager", description: "Run properties, tenants, leases, rent, payments, maintenance, and landlord reporting in one system.", button: "Create manager account", href: "/auth?tab=signup", icon: Briefcase, accent: "blue" },
   { title: "Landlord",         description: "Monitor your properties, income, leases and performance.",        button: "Landlord Portal", href: "/landlord/login", icon: Home,      accent: "green" },
   { title: "Agency",           description: "Manage your agency portfolio, clients and property operations.",  button: "Agency Portal",   href: "/agency/login",   icon: Building2, accent: "purple" },
   { title: "Tenant",           description: "Access your lease, payments, maintenance and property services.", button: "Tenant Portal",   href: "/tenant/login",   icon: User,      accent: "amber" },
@@ -53,27 +55,41 @@ type Capability = {
 };
 
 const CAPABILITIES: Capability[] = [
-  { title: "Property Management",  description: "Properties, units and occupancy in one place.",       icon: Building2,   accent: "blue" },
-  { title: "Tenant Management",    description: "Invitations, leases and tenant lifecycle.",           icon: Users,       accent: "cyan" },
-  { title: "Billing & Payments",   description: "Rent, water billing and M-Pesa collections.",         icon: CreditCard,  accent: "green" },
-  { title: "Maintenance",          description: "Requests, routing and contractor tracking.",          icon: Wrench,       accent: "amber" },
-  { title: "Reporting & Insights", description: "Financial, occupancy and performance reports.",       icon: BarChart3,   accent: "purple" },
-  { title: "Secure Operations",    description: "Role-based access, audit trails and RLS isolation.",   icon: ShieldCheck, accent: "teal" },
+  { title: "Properties + units", description: "The buildings you manage, occupancy included.", icon: Building2, accent: "blue" },
+  { title: "Tenants + leases", description: "Who lives where, and on what terms.", icon: Users, accent: "cyan" },
+  { title: "Rent + invoices", description: "Issue rent and keep a clear balance.", icon: CreditCard, accent: "green" },
+  { title: "Payments", description: "Collect through M-Pesa or record a payment.", icon: KeyRound, accent: "teal" },
+  { title: "Maintenance", description: "Track repairs against the same units.", icon: Wrench, accent: "amber" },
+  { title: "Landlord reporting", description: "Share occupancy and revenue — not tenant PII.", icon: LineChart, accent: "purple" },
 ];
 
 const NAV_LINKS = [
-  { label: "Platform", href: "#platform" },
-  { label: "Solutions", href: "#portals" },
-  { label: "How It Works", href: "#how-it-works" },
+  { label: "Who it's for", href: "#who" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Trust", href: "#trust" },
   { label: "Contact", href: "#contact" },
 ];
 
 export function PublicLandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { data: tiers = [] } = usePublicTiers();
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (window.location.pathname === "/pricing") {
+      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const name = (form.elements.namedItem("contact-name") as HTMLInputElement)?.value ?? "";
+    const email = (form.elements.namedItem("contact-email") as HTMLInputElement)?.value ?? "";
+    const message = (form.elements.namedItem("contact-message") as HTMLTextAreaElement)?.value ?? "";
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CALQULUS PMS inquiry")}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -96,7 +112,7 @@ export function PublicLandingPage() {
 
           <div className="flex items-center gap-2">
             <Button asChild size="sm" className="hidden sm:inline-flex shadow-sm">
-              <Link to="/auth">
+              <Link to="/auth?tab=signup">
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -143,28 +159,27 @@ export function PublicLandingPage() {
         <section className="grid grid-cols-1 items-center gap-8 py-10 md:grid-cols-2 md:py-14">
           <div>
             <span className="status-badge status-info mb-4">
-              <Crown className="h-3 w-3" /> Property management, unified
+              <Crown className="h-3 w-3" /> For professional property managers
             </span>
             <h1 className="page-title text-3xl sm:text-4xl lg:text-[2.75rem]">
-              One Platform.
+              Connected rental operations
               <br />
-              Every Property.
-              <br />
-              <span className="text-primary">Complete Control.</span>
+              and financial control.
             </h1>
             <p className="supporting-text mt-4 max-w-md text-sm sm:text-base">
-              CALQULUS PMS brings property managers, landlords, agencies and tenants together
-              in one intelligent property management platform.
+              CALQULUS PMS is for professional property managers and growing rental operators
+              who need properties, tenants, leases, rent, payments, maintenance, and landlord
+              reporting in one system — not a pile of disconnected tools.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Button asChild size="lg" className="btn-brand shadow-sm">
-                <Link to="/auth">
-                  Get Started
+                <Link to="/auth?tab=signup">
+                  Start as a manager
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a href="#platform">Explore the Platform</a>
+                <a href="#pricing">See pricing</a>
               </Button>
             </div>
           </div>
@@ -173,11 +188,11 @@ export function PublicLandingPage() {
           <div className="enterprise-card hidden p-6 md:block">
             <div className="flex items-center gap-2">
               <Crown className="h-5 w-5 text-primary" />
-              <span className="card-title-exec">One platform, four journeys</span>
+              <span className="card-title-exec">Why it is different</span>
             </div>
             <p className="supporting-text mt-2">
-              A unified property management layer for managers, landlords, agencies and tenants —
-              with role-based access and secure isolation built in.
+              The same property record drives the tenant, the lease, the invoice, the payment,
+              the repair, and the landlord report. That is the product.
             </p>
             <ul className="mt-4 space-y-2.5">
               {PORTALS.map((p) => (
@@ -195,9 +210,10 @@ export function PublicLandingPage() {
         {/* ── PORTAL SELECTION ── */}
         <section id="portals" className="scroll-mt-16 py-8">
           <div className="mb-5">
-            <h2 className="section-title">Choose your CALQULUS experience</h2>
+            <h2 className="section-title">Start in the portal that matches your role</h2>
             <p className="supporting-text mt-1">
-              Four dedicated portals, one connected platform.
+              Managers buy and run CALQULUS. Landlords, agencies, and tenants use the portals
+              connected to that work.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -232,12 +248,23 @@ export function PublicLandingPage() {
           </div>
         </section>
 
+        <section id="who" className="scroll-mt-16 py-8">
+          <div className="mb-5">
+            <h2 className="section-title">Who CALQULUS is for</h2>
+            <p className="supporting-text mt-1 max-w-2xl">
+              Professional property managers and growing rental operators who collect rent,
+              house tenants, and report to landlords. If you need those records connected,
+              this is the product.
+            </p>
+          </div>
+        </section>
+
         {/* ── PLATFORM VALUE ── */}
         <section id="platform" className="scroll-mt-16 py-8">
           <div className="mb-5">
-            <h2 className="section-title">Platform value</h2>
+            <h2 className="section-title">The connected system</h2>
             <p className="supporting-text mt-1">
-              Core capabilities already present across the application.
+              Properties + tenants + leases + rent + payments + maintenance + landlord reporting.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -265,13 +292,14 @@ export function PublicLandingPage() {
         <section id="how-it-works" className="scroll-mt-16 py-8">
           <div className="mb-5">
             <h2 className="section-title">How it works</h2>
-            <p className="supporting-text mt-1">Three steps to get running.</p>
+            <p className="supporting-text mt-1">Sign up, set up a property, then collect rent.</p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {[
-              { step: "01", title: "Choose your portal",  text: "Sign in through the manager, landlord, agency or tenant portal.", icon: KeyRound },
-              { step: "02", title: "Set up your portfolio", text: "Add properties, units, tenants and lease terms.",                icon: Building2 },
-              { step: "03", title: "Run operations",       text: "Collect payments, track maintenance and review reports.",          icon: LineChart },
+              { step: "01", title: "Sign up", text: "Create a manager account. Approval is required before billing starts.", icon: KeyRound },
+              { step: "02", title: "Onboard", text: "Add a property, units, and a tenant. Issue the first invoice.", icon: Building2 },
+              { step: "03", title: "Pay", text: "Platform billing is monthly and visible. Pay invoices from your account.", icon: CreditCard },
+              { step: "04", title: "Use", text: "Collect rent, track repairs, and report to landlords from the same records.", icon: LineChart },
             ].map((s) => (
               <div key={s.step} className="enterprise-card p-5">
                 <div className="flex items-center justify-between">
@@ -284,6 +312,44 @@ export function PublicLandingPage() {
                 <p className="supporting-text mt-1">{s.text}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section id="pricing" className="scroll-mt-16 py-8">
+          <div className="mb-5">
+            <h2 className="section-title">What it costs</h2>
+            <p className="supporting-text mt-1 max-w-2xl">
+              Price is per property, per month, in Kenyan shillings. Multiply the published
+              rate by the buildings you manage. Custom blocks exist for larger portfolios —
+              we do not hide core operations behind plan walls.
+            </p>
+          </div>
+          <PublicPricing tiers={tiers} />
+        </section>
+
+        <section id="trust" className="scroll-mt-16 py-8">
+          <div className="mb-5">
+            <h2 className="section-title">How we handle your account</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { title: "Security", text: "Each manager’s data is isolated. Access is role-based. Passwords are not stored in plain text.", icon: ShieldCheck },
+              { title: "Payments", text: "Tenant collections use M-Pesa and recorded receipts. Platform fees are invoiced and paid in the same account.", icon: CreditCard },
+              { title: "Data protection", text: "We collect what is needed to run rentals. We do not sell tenant or landlord data.", icon: Lock },
+              { title: "Support", text: "Email enterprise@calqulusrms.com. In-app help is available after you sign in.", icon: Mail },
+              { title: "Company", text: "CALQULUS PMS operates from Nairobi, Kenya. Legal name is on the privacy and terms pages.", icon: Building2 },
+              { title: "Privacy & terms", text: "Read the policy and terms before you pay. They apply to the live product, not a brochure.", icon: BarChart3 },
+            ].map((item) => (
+              <div key={item.title} className="enterprise-card p-4">
+                <item.icon className="h-4 w-4 text-primary mb-2" />
+                <h3 className="card-title-exec">{item.title}</h3>
+                <p className="supporting-text mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex gap-4 text-sm">
+            <Link to="/legal?tab=privacy" className="text-primary hover:underline">Privacy policy</Link>
+            <Link to="/legal?tab=terms" className="text-primary hover:underline">Terms of service</Link>
           </div>
         </section>
 

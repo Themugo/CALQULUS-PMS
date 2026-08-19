@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -14,6 +14,7 @@ import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginB
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { trackCommercialEvent } from '@/features/dashboard/lib/commercialMetrics';
 import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
 
 const features: PortalAuthFeature[] = [
@@ -31,6 +32,8 @@ const otherPortals: PortalSwitchLink[] = [
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
   const { user, signIn, signUp, loading } = useAuth();
   const { toast } = useToast();
   const {
@@ -157,6 +160,9 @@ const Auth = () => {
     } else {
       supabase.functions.invoke('send-welcome-email', { body: { email: signupEmail, fullName: signupFullName, userType: 'manager' } })
         .catch(() => {});
+      const { data: sessionData } = await supabase.auth.getUser();
+      trackCommercialEvent('signup', { managerId: sessionData.user?.id });
+      trackCommercialEvent('trial_started', { managerId: sessionData.user?.id });
       toast({ title: 'Account created!', description: 'Check your email for onboarding instructions.' });
       navigate('/');
     }
@@ -207,7 +213,7 @@ const Auth = () => {
         </div>
       )}
 
-      <Tabs defaultValue="login" className="w-full">
+      <Tabs defaultValue={initialTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="login">Sign In</TabsTrigger>
           <TabsTrigger value="signup">Get Started</TabsTrigger>

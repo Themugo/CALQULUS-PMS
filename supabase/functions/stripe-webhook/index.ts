@@ -125,6 +125,13 @@ serve(async (req) => {
             .eq("id", invoiceId);
           if (invErr) throw new Error(`manager_invoices update: ${invErr.message}`);
 
+          const { error: reinstateErr } = await supabase.rpc("reinstate_manager_on_payment", {
+            p_invoice_id: invoiceId,
+          });
+          if (reinstateErr) {
+            log("reinstate_manager_on_payment skipped", { error: reinstateErr.message, invoiceId });
+          }
+
           await supabase
             .from("stripe_processed_events")
             .update({ invoice_id: invoiceId, reference })

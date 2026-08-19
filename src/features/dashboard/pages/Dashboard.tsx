@@ -3,6 +3,7 @@ import { StatCard } from "@/features/dashboard/components/StatCard";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
+import { ManagerBillingRecoveryBanner } from "@/features/payments/components/ManagerPlanStatus";
 import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupStatus";
 import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
 import { OccupancyChart } from "@/features/dashboard/components/OccupancyChart";
@@ -284,6 +285,7 @@ const Dashboard = () => {
     >
       {!isEmptyPortfolio && <PaymentSetupStatus />}
       <ManagerSubscriptionBanner compact />
+      <ManagerBillingRecoveryBanner />
 
       {/* Demo banner */}
       {user?.email?.includes('@calqulusrms.com') && (

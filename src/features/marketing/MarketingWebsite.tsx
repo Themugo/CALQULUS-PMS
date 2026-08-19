@@ -46,22 +46,22 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { Footer } from '@/shared/components/layout/Footer';
+import { PublicPricing } from '@/features/marketing/components/PublicPricing';
+import { usePublicTiers } from '@/features/marketing/hooks/usePublicTiers';
 
 export function MarketingWebsite() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
-  const [unitCount, setUnitCount] = useState<number>(50);
+  const { data: tiers = [] } = usePublicTiers();
   const [activeTab, setActiveTab] = useState<'manager' | 'agency' | 'landlord' | 'tenant'>('manager');
   const [contactSubmitted, setContactSubmitted] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', company: '', message: '' });
 
-  const calculateEstimate = (basePrice: number) => {
-    const mult = billingCycle === 'annual' ? 0.8 : 1.0;
-    return Math.round(basePrice * unitCount * mult);
-  };
-
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.email || !contactForm.name) return;
+    const body = encodeURIComponent(
+      `Name: ${contactForm.name}\nEmail: ${contactForm.email}\nCompany: ${contactForm.company}\n\n${contactForm.message}`,
+    );
+    window.location.href = `mailto:enterprise@calqulusrms.com?subject=${encodeURIComponent("CALQULUS PMS inquiry")}&body=${body}`;
     setContactSubmitted(true);
   };
 
@@ -79,7 +79,7 @@ export function MarketingWebsite() {
                 CALQULUS <span className="text-emerald-400">RMS</span>
               </span>
               <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Enterprise v2.4
+                Property managers
               </span>
             </div>
           </div>
@@ -136,7 +136,7 @@ export function MarketingWebsite() {
             </DropdownMenu>
 
             <Button asChild className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold shadow-lg shadow-emerald-500/25 text-xs sm:text-sm">
-              <a href="#pricing">Get Started Free</a>
+              <a href="/auth?tab=signup">Start as a manager</a>
             </Button>
           </div>
         </div>
@@ -154,25 +154,27 @@ export function MarketingWebsite() {
           </Badge>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-5xl mx-auto leading-tight">
-            Automate Property Operations & <br className="hidden sm:inline" />
+            Connected rental operations and <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-              Maximize Portfolio Yield
+              financial control
             </span>
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            CALQULUS PMS bridges Property Managers, Agencies, Landlords, and Tenants into one intelligent, zero-friction cloud ecosystem with automated water billing, instant M-Pesa STK push, and strict security firewalls.
+            CALQULUS PMS is for professional property managers and growing rental operators.
+            Properties, tenants, leases, rent, payments, maintenance, and landlord reporting
+            stay on the same record.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-8 text-base shadow-xl shadow-emerald-500/20 w-full sm:w-auto">
-              <a href="/tenant/signup">
-                Start 14-Day Free Trial <ArrowRight className="ml-2 h-5 w-5" />
+              <a href="/auth?tab=signup">
+                Create a manager account <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 px-8 text-base w-full sm:w-auto">
-              <a href="#contact">
-                Schedule Enterprise Demo
+              <a href="#pricing">
+                See pricing
               </a>
             </Button>
           </div>
@@ -180,20 +182,20 @@ export function MarketingWebsite() {
           {/* Key Metrics Strip */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto p-6 bg-slate-900/60 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
             <div>
-              <div className="text-3xl font-extrabold text-emerald-400">99.4%</div>
-              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">On-Time Rent Rate</div>
+              <div className="text-3xl font-extrabold text-emerald-400">One system</div>
+              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Properties to payments</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold text-teal-400">100k+</div>
-              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Units Managed</div>
+              <div className="text-3xl font-extrabold text-teal-400">KES pricing</div>
+              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Per property / month</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold text-cyan-400">&lt; 3 mins</div>
-              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Water Billing Run</div>
+              <div className="text-3xl font-extrabold text-cyan-400">M-Pesa</div>
+              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Tenant collections</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold text-emerald-400">$0</div>
-              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Data Leakage Risks</div>
+              <div className="text-3xl font-extrabold text-emerald-400">Role isolation</div>
+              <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">Manager / landlord / tenant</div>
             </div>
           </div>
         </div>
@@ -542,19 +544,19 @@ export function MarketingWebsite() {
               <div className="text-xs font-mono text-emerald-400 uppercase tracking-widest">Compliance Matrix</div>
               <div className="divide-y divide-slate-800 text-sm">
                 <div className="py-3 flex justify-between items-center">
-                  <span className="text-slate-300 font-medium">SOC 2 Type II Certified</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Verified</Badge>
-                </div>
-                <div className="py-3 flex justify-between items-center">
-                  <span className="text-slate-300 font-medium">Data Protection Act Compliance</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">Compliant</Badge>
-                </div>
-                <div className="py-3 flex justify-between items-center">
-                  <span className="text-slate-300 font-medium">Audit Trail Logging</span>
+                  <span className="text-slate-300 font-medium">Role-based access</span>
                   <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
                 </div>
                 <div className="py-3 flex justify-between items-center">
-                  <span className="text-slate-300 font-medium">System Uptime SLA</span>
+                  <span className="text-slate-300 font-medium">Manager data isolation</span>
+                  <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
+                </div>
+                <div className="py-3 flex justify-between items-center">
+                  <span className="text-slate-300 font-medium">Audit trail logging</span>
+                  <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
+                </div>
+                <div className="py-3 flex justify-between items-center">
+                  <span className="text-slate-300 font-medium">Privacy & terms published</span>
                   <Badge className="bg-teal-500/20 text-teal-400">99.99%</Badge>
                 </div>
               </div>
@@ -563,130 +565,20 @@ export function MarketingWebsite() {
         </div>
       </section>
 
-      {/* ── PRICING CALCULATOR & TIERS ── */}
+      {/* ── PRICING ── */}
       <section id="pricing" className="py-24 bg-slate-900/40 border-y border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Transparent Investment</h2>
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Pricing</h2>
             <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-100">
-              Simple Unit-Based Pricing
+              Per property, per month, in KES
             </h3>
             <p className="mt-4 text-slate-400 text-base">
-              Pay only for the active units you manage. Scale up or down anytime with zero setup fees.
+              Multiply the published rate by the buildings you manage. Core operations are not
+              locked behind plan walls. Custom pricing is available for larger portfolios.
             </p>
-
-            {/* Billing Toggle */}
-            <div className="mt-8 inline-flex items-center gap-3 p-1.5 bg-slate-900 border border-slate-800 rounded-full">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all ${
-                  billingCycle === 'monthly' ? 'bg-slate-800 text-slate-100' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Monthly Billing
-              </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all ${
-                  billingCycle === 'annual' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Annual (Save 20%)
-              </button>
-            </div>
-
-            {/* Dynamic Slider */}
-            <div className="mt-8 max-w-md mx-auto bg-slate-900 p-6 rounded-2xl border border-slate-800">
-              <div className="flex justify-between items-center text-xs mb-2">
-                <span className="text-slate-400">Select Your Unit Count:</span>
-                <span className="font-bold text-emerald-400 text-base">{unitCount} Units</span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="500"
-                step="10"
-                value={unitCount}
-                onChange={(e) => setUnitCount(Number(e.target.value))}
-                className="w-full accent-emerald-500 cursor-pointer"
-              />
-            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Lite */}
-            <Card className="bg-slate-900 border-slate-800 relative">
-              <CardHeader>
-                <CardTitle className="text-xl text-slate-100">Starter Lite</CardTitle>
-                <CardDescription className="text-slate-400">For boutique property owners</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-extrabold text-slate-100">${calculateEstimate(1.50)}</span>
-                  <span className="text-slate-400 text-xs ml-2">/ month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2.5 text-xs text-slate-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Up to 50 active units</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Basic rent tracking</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Tenant SMS invitations</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Standard financial reports</li>
-                </ul>
-                <Button asChild className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 mt-4">
-                  <a href="/tenant/signup">Choose Lite Plan</a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Pro */}
-            <Card className="bg-slate-900 border-emerald-500/50 relative shadow-xl shadow-emerald-500/10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-emerald-500 text-slate-950 font-bold text-xs px-3">MOST POPULAR</Badge>
-              </div>
-              <CardHeader>
-                <CardTitle className="text-xl text-slate-100">Professional</CardTitle>
-                <CardDescription className="text-slate-400">For growing property managers</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-extrabold text-emerald-400">${calculateEstimate(2.20)}</span>
-                  <span className="text-slate-400 text-xs ml-2">/ month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2.5 text-xs text-slate-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Unlimited properties & units</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Automated water billing engine</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Landlord portal & PII guard</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Maintenance workflow engine</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Priority 24/7 phone support</li>
-                </ul>
-                <Button asChild className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold mt-4">
-                  <a href="/tenant/signup">Start 14-Day Free Trial</a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Enterprise */}
-            <Card className="bg-slate-900 border-slate-800 relative">
-              <CardHeader>
-                <CardTitle className="text-xl text-slate-100">Agency & Enterprise</CardTitle>
-                <CardDescription className="text-slate-400">For major management firms</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-extrabold text-slate-100">Custom</span>
-                  <span className="text-slate-400 text-xs ml-2">volume rates</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2.5 text-xs text-slate-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Multi-branch submanager RBAC</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Dedicated account manager</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Custom API & ERP integrations</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" /> Tailored SLA guarantees</li>
-                </ul>
-                <Button asChild variant="outline" className="w-full border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 mt-4">
-                  <a href="#contact">Contact Sales Team</a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <PublicPricing tiers={tiers} variant="dark" />
         </div>
       </section>
 

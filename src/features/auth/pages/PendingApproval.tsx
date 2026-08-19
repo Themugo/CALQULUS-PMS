@@ -1,12 +1,13 @@
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Clock, LogOut, Mail, RefreshCw, Building2 } from 'lucide-react';
+import { Clock, LogOut, Mail, RefreshCw, Building2, CreditCard } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { BrandMark } from "@/shared/components/branding/BrandMark";
+import { trackCommercialEvent } from '@/features/dashboard/lib/commercialMetrics';
 
 interface ManagerProfileData {
   approval_status?: string;
@@ -68,12 +69,18 @@ const PendingApproval = () => {
         .eq('manager_user_id', user!.id).maybeSingle();
       return data as ManagerProfileData | null;
     },
-    enabled: !!user?.id && isRejected,
+    enabled: !!user?.id && (isRejected || isSuspended),
   });
 
   const isNonPaymentSuspension = isSuspended || (isRejected && managerProfile?.status === 'suspended_nonpayment');
   const suspensionReason = managerProfile?.suspension_reason;
   const rejectionReason = managerProfile?.rejection_reason;
+
+  useEffect(() => {
+    if (isNonPaymentSuspension) {
+      trackCommercialEvent("churn", { managerId: user?.id, properties: { reason: "nonpayment" } });
+    }
+  }, [isNonPaymentSuspension, user]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -133,11 +140,17 @@ const PendingApproval = () => {
                       <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
                         <p className="text-xs text-primary font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
                         <ol className="text-sm text-amber-200 space-y-1">
-                          <li>1. Pay your outstanding invoice via the Platform Billing page</li>
-                          <li>2. Once payment is confirmed, your account will be reinstated automatically</li>
-                          <li>3. If payment was already made, contact the platform administrator</li>
+                          <li>1. Open Platform Billing and pay the outstanding invoice.</li>
+                          <li>2. Access returns when payment is confirmed — there is no extra approval step.</li>
+                          <li>3. If you already paid, wait a moment and tap Check now.</li>
                         </ol>
                       </div>
+                      <Button asChild className="mt-4 w-full">
+                        <Link to="/platform-billing">
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Pay outstanding invoice
+                        </Link>
+                      </Button>
                     </>
                   ) : (
                     <>
@@ -190,7 +203,7 @@ const PendingApproval = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              {!isRejected && (
+              {(!isRejected || isNonPaymentSuspension) && (
                 <>
                   <div className="text-center text-xs text-muted-foreground">
                     Auto-checking in {countdown}s…

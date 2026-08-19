@@ -94,10 +94,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // top level. We mirror that here so this guard cannot accidentally
   // grant a pending manager access to a manager-only page if App-level
   // routing is ever bypassed (defence in depth).
-  if (effectiveRole === 'manager' && userRole.approval_status === 'pending') {
-    return safeRedirect('/');
-  }
-  if (effectiveRole === 'manager' && userRole.approval_status === 'rejected') {
+  const billingRecoveryPath = currentPath === "/platform-billing" || currentPath === "/my-billing";
+  if (effectiveRole === 'manager' && userRole.approval_status !== 'approved' && !billingRecoveryPath) {
     return safeRedirect('/');
   }
 

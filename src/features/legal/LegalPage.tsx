@@ -23,7 +23,7 @@ const LegalPage: React.FC = () => {
       {/* Header */}
       <div className="border-b border-border bg-muted backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/tenant/login">
+          <Link to="/">
             <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
               <ChevronLeft className="h-4 w-4" />Back
             </Button>

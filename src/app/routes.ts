@@ -92,6 +92,7 @@ export interface RoleRouteConfig {
 export const publicRoutes: RouteDef[] = [
   { path: "/landing", element: MarketingWebsite },
   { path: "/welcome", element: MarketingWebsite },
+  { path: "/pricing", element: PublicLandingPage },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/auth", element: Auth },
@@ -222,6 +223,8 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     fallback: "*",
     routes: [
       { path: "/install", element: InstallApp },
+      { path: "/platform-billing", element: ManagerPlatformBilling, protected: true },
+      { path: "/my-billing", redirect: "/platform-billing" },
       { path: "*", element: PendingApproval },
     ],
   },

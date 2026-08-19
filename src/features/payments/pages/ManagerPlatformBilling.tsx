@@ -5,6 +5,7 @@ import { Navigate, useSearchParams } from "react-router-dom";
 import { openSafely } from "@/shared/lib/safeWindow";
 import { Layout } from "@/shared/components/layout/Layout";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
+import { ManagerPlanStatus } from "@/features/payments/components/ManagerPlanStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -58,6 +59,7 @@ import { useCurrency } from "@/shared/hooks/useCurrency";
 import { format } from "date-fns";
 import { SignatureCanvas } from "@/features/contracts/components/SignatureCanvas";
 import { InvoiceTable } from "@/features/payments/components/InvoiceTable";
+import { trackCommercialEvent } from "@/features/dashboard/lib/commercialMetrics";
 
 // =====================
 // TYPES
@@ -252,13 +254,15 @@ const ManagerPlatformBilling = () => {
         title: 'Payment processing', 
         description: 'Please wait while we confirm your payment.' 
       });
+      trackCommercialEvent('subscription_paid', { managerId: user?.id });
       setTimeout(() => fetchInvoices(), 3000);
       setSearchParams({});
     } else if (payment === 'cancelled') {
       toast({ title: 'Payment cancelled', variant: 'destructive' });
+      trackCommercialEvent('payment_failed', { managerId: user?.id, properties: { reason: 'cancelled' } });
       setSearchParams({});
     }
-  }, [searchParams, fetchInvoices, setSearchParams, toast]);
+  }, [searchParams, fetchInvoices, setSearchParams, toast, user?.id]);
 
   const getInvoiceStatusBadge = (status: string, dueDate: string) => {
     // Overdue: 1+ day AFTER due date
@@ -391,6 +395,10 @@ const ManagerPlatformBilling = () => {
         if (data.status === "success") {
           setPaymentStatus("success");
           toast({ title: "Payment Successful", description: "Your payment has been received." });
+          if (selectedInvoice?.id) {
+            await supabase.rpc("reinstate_manager_on_payment", { p_invoice_id: selectedInvoice.id }).catch(() => undefined);
+            trackCommercialEvent("subscription_paid", { managerId: user?.id });
+          }
           setTimeout(() => {
             fetchInvoices();
             handleClosePaymentDialog();
@@ -400,6 +408,7 @@ const ManagerPlatformBilling = () => {
 
         if (data.status === "failed") {
           setPaymentStatus("idle");
+          trackCommercialEvent("payment_failed", { managerId: user?.id });
           toast({ title: "Payment Failed", description: data.message || "The payment was not completed.", variant: "destructive" });
           return;
         }
@@ -732,6 +741,7 @@ Status: PAID
     >
       <div className="space-y-6">
         {/* Tier + usage overview at the top of billing page */}
+        <ManagerPlanStatus />
         <ManagerSubscriptionBanner />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-card/50 border border-border/50">
@@ -759,7 +769,7 @@ Status: PAID
           </TabsList>
 
           {/* INVOICES TAB */}
-          <TabsContent value="invoices" className="space-y-6">
+          <TabsContent value="invoices" className="space-y-6" id="invoices">
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="bg-card border-border">
@@ -827,7 +837,8 @@ Status: PAID
                 ) : invoices.length === 0 ? (
                   <div className="text-center py-12">
                     <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">No invoices found</p>
+                    <p className="text-muted-foreground">No platform invoices yet.</p>
+                    <p className="text-sm text-muted-foreground mt-1">After approval, monthly invoices show here. You can keep using CALQULUS in the meantime.</p>
                   </div>
                 ) : (
                   <InvoiceTable

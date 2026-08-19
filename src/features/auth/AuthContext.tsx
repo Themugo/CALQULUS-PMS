@@ -429,6 +429,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           body: { managerEmail: email, managerName: fullName, role },
         }).catch((e: unknown) => logWarning('notify-new-signup failed:', e as Error));
       }
+      if (role === 'manager') {
+        const { trackCommercialEvent } = await import('@/features/dashboard/lib/commercialMetrics');
+        trackCommercialEvent('signup', { managerId: data.user.id });
+        trackCommercialEvent('trial_started', { managerId: data.user.id });
+      }
     }
     return { error: null };
   }, []);
