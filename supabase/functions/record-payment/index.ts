@@ -60,12 +60,30 @@ serve(
 
       const { data: tenantOwner } = await ctx.supabase
         .from("tenants")
-        .select("manager_id")
+        .select("manager_id, property_id")
         .eq("id", tenantId)
         .maybeSingle();
 
       if (!tenantOwner || tenantOwner.manager_id !== effectiveManagerId) {
         throw new AuthorizationError("Tenant is not in your managed portfolio");
+      }
+
+      if (ctx.user!.role === "submanager") {
+        const { data: perms } = await ctx.supabase
+          .from("submanager_permissions")
+          .select("restrict_to_assigned_properties")
+          .eq("submanager_user_id", ctx.user!.id)
+          .maybeSingle();
+        if (perms?.restrict_to_assigned_properties) {
+          const { data: assigned } = await ctx.supabase
+            .from("submanager_property_assignments")
+            .select("property_id")
+            .eq("submanager_user_id", ctx.user!.id);
+          const allowed = new Set((assigned ?? []).map((row: { property_id: string }) => row.property_id));
+          if (!tenantOwner.property_id || !allowed.has(tenantOwner.property_id)) {
+            throw new AuthorizationError("Tenant is outside your assigned properties");
+          }
+        }
       }
 
       if (isInstallment && instalmentCount && instalmentCount > 1) {

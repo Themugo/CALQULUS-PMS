@@ -13,21 +13,31 @@ export const isFullUrl = (url: string): boolean => {
  */
 export const parseStoragePath = (storagePath: string): { bucket: string; path: string } | null => {
   if (isFullUrl(storagePath)) {
-    // Extract from public URL format: https://xxx.supabase.co/storage/v1/object/public/bucket/path
-    const match = storagePath.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)/);
+    const match = storagePath.match(/\/storage\/v1\/object\/(?:public|sign|authenticated)\/([^/]+)\/(.+)/);
     if (match) {
-      return { bucket: match[1], path: match[2] };
+      return { bucket: match[1], path: decodeURIComponent(match[2].split("?")[0]) };
     }
     return null;
   }
-  
-  // Storage path format: "bucket-name/path/to/file.ext"
-  const parts = storagePath.split('/');
+
+  const parts = storagePath.split("/");
   if (parts.length < 2) return null;
-  
+
   const bucket = parts[0];
-  const path = parts.slice(1).join('/');
+  const path = parts.slice(1).join("/");
   return { bucket, path };
+};
+
+/** Signed URL for private buckets, or the original URL for external hosts. */
+export const toDisplayUrl = async (
+  storedUrl: string | null | undefined,
+  expiresIn = 3600,
+): Promise<string | null> => {
+  if (!storedUrl) return null;
+  if (isFullUrl(storedUrl) && !storedUrl.includes("supabase.co/storage")) {
+    return storedUrl;
+  }
+  return getSignedUrl(storedUrl, expiresIn);
 };
 
 /**

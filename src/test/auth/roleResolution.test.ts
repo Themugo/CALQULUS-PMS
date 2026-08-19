@@ -72,4 +72,16 @@ describe("evaluateCanAccessProperty", () => {
       }),
     ).toBe(true);
   });
+
+  it("allows a landlord only on linked property ids", () => {
+    expect(
+      evaluateCanAccessProperty("p1", {
+        isManager: false,
+        isLandlord: true,
+        landlordPropertyIds: ["p1"],
+        isSubmanager: false,
+        submanagerPermissions: null,
+      }),
+    ).toBe(true);
+  });
 });

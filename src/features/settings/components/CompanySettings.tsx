@@ -9,6 +9,7 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { logError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
+import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 
 // Helper to get current user ID for manager_user_id
 
@@ -33,6 +34,7 @@ export const CompanySettings = () => {
   const [kraPin, setKraPin] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const displayLogoUrl = useSignedStorageUrl(logoUrl);
 
   useEffect(() => {
     const fetchCompanySettings = async () => {
@@ -322,7 +324,7 @@ export const CompanySettings = () => {
                   {logoUrl ? (
                     <>
                       <img
-                        src={logoUrl}
+                        src={displayLogoUrl}
                         alt="Company logo"
                         className="h-full w-full object-contain"
                       />

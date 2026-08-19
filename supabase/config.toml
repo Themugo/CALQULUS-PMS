@@ -172,7 +172,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.bootstrap-webhost]
-verify_jwt = false
+verify_jwt = true
 
 [functions.calculate-tenant-score]
 verify_jwt = true
@@ -232,10 +232,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.seed-demo-data]
-verify_jwt = false
+verify_jwt = true
 
 [functions.seed-maintenance]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-deposit-refund-notification]
 verify_jwt = false

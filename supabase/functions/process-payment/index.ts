@@ -179,11 +179,16 @@ serve(async (req) => {
     const body: ProcessPaymentRequest = await req.json();
     requestBody = body;
     const {
-      tenantId, managerId, amount, paymentMethod, paymentDate, reference,
+      tenantId, amount, paymentMethod, paymentDate, reference,
       invoiceId, invoiceIds, unitId, propertyId, unitNumber, phone, recordedBy, notes, transactionId,
     } = body;
+    let managerId = body.managerId;
 
-    if (!tenantId || !managerId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !paymentMethod || !paymentDate || !reference) {
+    if (!tenantId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !paymentMethod || !paymentDate || !reference) {
+      return new Response(JSON.stringify({ error: "Missing or invalid required fields" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    if (isServiceCall && !managerId) {
       return new Response(JSON.stringify({ error: "Missing or invalid required fields" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
@@ -201,11 +206,30 @@ serve(async (req) => {
         effectiveManagerId = (rel as any)?.manager_id ?? callerUserId;
       }
       const { data: tenantOwner, error: tenantOwnerErr } = await supabase
-        .from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
+        .from("tenants").select("manager_id, property_id").eq("id", tenantId).maybeSingle();
       if (tenantOwnerErr || !tenantOwner || (tenantOwner as any).manager_id !== effectiveManagerId) {
         return new Response(JSON.stringify({ error: "Forbidden: tenant is not in your managed portfolio" }),
           { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
       }
+      if ((callerRoleRow as any)?.role === "submanager") {
+        const { data: perms } = await supabase.from("submanager_permissions")
+          .select("restrict_to_assigned_properties")
+          .eq("submanager_user_id", callerUserId)
+          .maybeSingle();
+        if ((perms as any)?.restrict_to_assigned_properties) {
+          const { data: assigned } = await supabase.from("submanager_property_assignments")
+            .select("property_id")
+            .eq("submanager_user_id", callerUserId);
+          const allowed = new Set((assigned ?? []).map((row: { property_id: string }) => row.property_id));
+          const tenantPropertyId = (tenantOwner as any).property_id as string | null;
+          if (!tenantPropertyId || !allowed.has(tenantPropertyId)) {
+            return new Response(JSON.stringify({ error: "Forbidden: tenant is outside your assigned properties" }),
+              { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+          }
+        }
+      }
+      // Never persist a caller-supplied managerId on the JWT path.
+      managerId = effectiveManagerId;
     }
 
     log("Processing payment", { tenantId, amount, paymentMethod, reference });

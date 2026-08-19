@@ -1,13 +1,13 @@
 /**
- * Multi-Tenant RLS Certification & Hardening Suite
- * Phase 2 - Verification of multi-tenant boundaries
+ * Multi-tenant query smoke tests against the mocked Supabase client.
+ * These do NOT execute Postgres RLS. Passing here is not isolation certification.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import { generateUUID } from '../setup';
 
-describe('Multi-Tenant RLS Certification', () => {
+describe('Multi-tenant mocked client smoke (not RLS)', () => {
   let managerAUserId: string;
   let managerBUserId: string;
   let propertyAId: string;

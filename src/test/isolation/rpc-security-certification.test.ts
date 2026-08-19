@@ -1,13 +1,13 @@
 /**
- * Security Definer RPC Hardening & Adversarial Certification Suite
- * Phase 3 - Privileged RPC Authorization & Isolation Verification
+ * RPC smoke tests against the mocked Supabase client.
+ * These do NOT prove SECURITY DEFINER authorization. Passing is not certification.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import { generateUUID } from '../setup';
 
-describe('Phase 3 RPC Security Certification', () => {
+describe('RPC mocked client smoke (not authorization)', () => {
   let managerAId: string;
   let managerBId: string;
   let tenantAId: string;

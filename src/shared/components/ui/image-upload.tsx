@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
 import { cn } from "@/shared/lib/utils";
 import { ImageCropper } from "./image-cropper";
+import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 
 interface ImageUploadProps {
   value: string;
@@ -40,6 +41,11 @@ export function ImageUpload({
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+  const previewUrl = useSignedStorageUrl(urlInput);
+
+  useEffect(() => {
+    setUrlInput(value);
+  }, [value]);
 
   const uploadBlob = useCallback(async (blob: Blob, originalFileName?: string) => {
     setIsUploading(true);
@@ -270,7 +276,7 @@ export function ImageUpload({
             {urlInput ? (
               <div className="relative w-full h-24 rounded-md overflow-hidden border border-border bg-muted group">
                 <img
-                  src={urlInput}
+                  src={previewUrl}
                   alt="Preview"
                   className="w-full h-full object-cover"
                   onError={(e) => {

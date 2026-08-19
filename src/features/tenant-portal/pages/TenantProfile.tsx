@@ -7,6 +7,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { logError } from '@/shared/lib/errorLogger';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
+import { useSignedStorageUrl } from '@/shared/hooks/useSignedStorageUrl';
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -64,6 +65,7 @@ const TenantProfile = () => {
   } = useBiometricAuth();
 
   const [profile, setProfile] = useState<TenantProfile | null>(null);
+  const displayPhotoUrl = useSignedStorageUrl(profile?.photo_url);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -433,7 +435,7 @@ const TenantProfile = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="relative">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={profile?.photo_url || undefined} alt={profile?.name} />
+                  <AvatarImage src={displayPhotoUrl || undefined} alt={profile?.name} />
                   <AvatarFallback className="text-2xl bg-warning text-warning">
                     {profile?.name ? getInitials(profile.name) : <User className="h-10 w-10" />}
                   </AvatarFallback>

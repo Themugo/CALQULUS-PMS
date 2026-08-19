@@ -25,6 +25,15 @@ import { createClient } from "supabase/supabase-js@2";
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
+  const envName = (getEnv("ENVIRONMENT") || getEnv("NODE_ENV") || "").toLowerCase();
+  const allowBootstrap = envName === "development" || envName === "dev" || envName === "local";
+  if (!allowBootstrap) {
+    return Response.json(
+      { error: "bootstrap-webhost is disabled outside local development." },
+      { status: 403, headers: getCorsHeaders(req) },
+    );
+  }
+
   const SUPABASE_URL = requireEnv("SUPABASE_URL");
   const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
   const BOOTSTRAP_SECRET = getEnv("BOOTSTRAP_SECRET");
@@ -32,6 +41,14 @@ serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
     auth: { persistSession: false },
   });
+
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (authHeader !== `Bearer ${SERVICE_KEY}`) {
+    return Response.json(
+      { error: "Unauthorized: service role authentication is required." },
+      { status: 401, headers: getCorsHeaders(req) },
+    );
+  }
 
   try {
     const { email, password, fullName, bootstrapSecret } = await req.json();

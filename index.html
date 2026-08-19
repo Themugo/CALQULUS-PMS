@@ -42,36 +42,7 @@
     <meta name="twitter:site" content="@CALQULUSPMS" />
     <meta name="twitter:image" content="https://www.calqulus.site/pwa-512x512.png" />
 
-    <!-- Critical CSS for faster LCP -->
-    <style>
-      /* Prevent layout shift during loading */
-      #root {
-        min-height: 100vh;
-      }
-      /* Loading skeleton styles for instant paint */
-      .initial-loader {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0A1628 0%, #1a2744 100%);
-      }
-      .initial-loader-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid rgba(201, 168, 76, 0.2);
-        border-top-color: #C9A84C;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      /* Hide loading state once React mounts actual content */
-      #root:has(> :not(.initial-loader)) .initial-loader {
-        display: none;
-      }
-    </style>
+    <link rel="stylesheet" href="/critical.css" />
   </head>
 
   <body>

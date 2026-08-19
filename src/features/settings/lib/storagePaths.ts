@@ -9,17 +9,29 @@ export function imageExtension(file: File): string {
 export function publicStoragePath(publicUrl: string | null | undefined, bucket: string): string | null {
   if (!publicUrl) return null;
 
+  const markerPublic = `/object/public/${bucket}/`;
+  const markerSign = `/object/sign/${bucket}/`;
+  const markerAuth = `/object/authenticated/${bucket}/`;
+
+  const indexOfMarker = (pathname: string) => {
+    const publicIdx = pathname.indexOf(markerPublic);
+    if (publicIdx !== -1) return { index: publicIdx, length: markerPublic.length };
+    const signIdx = pathname.indexOf(markerSign);
+    if (signIdx !== -1) return { index: signIdx, length: markerSign.length };
+    const authIdx = pathname.indexOf(markerAuth);
+    if (authIdx !== -1) return { index: authIdx, length: markerAuth.length };
+    return null;
+  };
+
   try {
     const url = new URL(publicUrl);
-    const marker = `/object/public/${bucket}/`;
-    const index = url.pathname.indexOf(marker);
-    if (index === -1) return null;
-    return decodeURIComponent(url.pathname.slice(index + marker.length));
+    const found = indexOfMarker(url.pathname);
+    if (!found) return null;
+    return decodeURIComponent(url.pathname.slice(found.index + found.length));
   } catch {
-    const marker = `/object/public/${bucket}/`;
     const [withoutQuery] = publicUrl.split("?");
-    const index = withoutQuery.indexOf(marker);
-    if (index === -1) return null;
-    return decodeURIComponent(withoutQuery.slice(index + marker.length));
+    const found = indexOfMarker(withoutQuery);
+    if (!found) return null;
+    return decodeURIComponent(withoutQuery.slice(found.index + found.length));
   }
 }

@@ -1,0 +1,30 @@
+#root {
+  min-height: 100vh;
+}
+
+.initial-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);
+}
+
+.initial-loader-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(201, 168, 76, 0.2);
+  border-top-color: #c9a84c;
+  border-radius: 50%;
+  animation: calqulus-spin 1s linear infinite;
+}
+
+@keyframes calqulus-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#root:has(> :not(.initial-loader)) .initial-loader {
+  display: none;
+}

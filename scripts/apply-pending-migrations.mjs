@@ -16,7 +16,14 @@ import { join } from "node:path";
 
 const dryRun = process.argv.includes("--dry-run");
 const migrationsDir = join(process.cwd(), "supabase", "migrations");
-const pendingPrefixes = ["20260812000000", "20260812000001", "20260812000002", "20260819000000"];
+const pendingPrefixes = [
+  "20260812000000",
+  "20260812000001",
+  "20260812000002",
+  "20260819000000",
+  "20260819000001",
+  "20260819000002",
+];
 
 const files = readdirSync(migrationsDir)
   .filter((name) => pendingPrefixes.some((p) => name.startsWith(p)))

@@ -19,4 +19,13 @@ describe("settings storage paths", () => {
       ),
     ).toBeNull();
   });
+
+  it("extracts an owner-scoped path from a signed storage URL", () => {
+    expect(
+      publicStoragePath(
+        "https://project.supabase.co/storage/v1/object/sign/profile-photos/user-123/profile.png?token=abc",
+        "profile-photos",
+      ),
+    ).toBe("user-123/profile.png");
+  });
 });

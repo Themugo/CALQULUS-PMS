@@ -7,13 +7,19 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
-import { requireEnv } from "../_shared/env.ts";
+import { requireEnv, getEnv } from "../_shared/env.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const envName = (getEnv("ENVIRONMENT") || getEnv("NODE_ENV") || "").toLowerCase();
+  if (envName !== "development" && envName !== "dev" && envName !== "local") {
+    return new Response(JSON.stringify({ error: "seed-maintenance is disabled outside local development." }),
+      { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+  }
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 

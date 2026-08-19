@@ -30,6 +30,7 @@ import { CacheManagementSettings } from "@/features/settings/components/CacheMan
 import { PushNotificationSettings } from "@/features/settings/components/PushNotificationSettings";
 import { cn } from "@/shared/lib/utils";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
+import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 
 const settingsTabs = [
   { id: "profile", label: "Profile", icon: User },
@@ -67,6 +68,7 @@ const Settings = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const displayPhotoUrl = useSignedStorageUrl(photoUrl);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -255,7 +257,7 @@ const Settings = () => {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                       <div className="relative flex-shrink-0">
                         <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-                          <AvatarImage src={photoUrl || undefined} />
+                          <AvatarImage src={displayPhotoUrl || undefined} />
                           <AvatarFallback className="bg-amber-400 text-slate-900 text-lg sm:text-xl">
                             {getInitials(fullName)}
                           </AvatarFallback>

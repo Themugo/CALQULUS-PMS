@@ -62,8 +62,10 @@ const DEMO_PASSWORD = "Demo@2026";
  * Demo functionality should be disabled in production.
  */
 function isProduction(): boolean {
-  const env = getEnv("ENVIRONMENT") || getEnv("NODE_ENV");
-  return env === "production" || env === "prod";
+  const env = (getEnv("ENVIRONMENT") || getEnv("NODE_ENV") || "").toLowerCase();
+  if (env === "development" || env === "dev" || env === "local") return false;
+  // Fail closed: unset or unknown environments cannot seed.
+  return true;
 }
 
 serve(async (req) => {
