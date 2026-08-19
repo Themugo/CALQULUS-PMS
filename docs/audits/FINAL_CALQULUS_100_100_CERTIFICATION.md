@@ -2,7 +2,8 @@
 
 > **Superseded for release decisions.** This filename was requested by an earlier phase. It must **not** be read as a literal 100/100 security, SOC, PCI, or “enterprise certified” claim.
 >
-> Current certification: [`PHASE_12_PRODUCTION_CERTIFICATION.md`](./PHASE_12_PRODUCTION_CERTIFICATION.md)
+> Current certification: [`PHASE_12_PRODUCTION_CERTIFICATION.md`](./PHASE_12_PRODUCTION_CERTIFICATION.md)  
+> Independent 30-gate assessment (2026-08-19): [`INDEPENDENT_QUALITY_GATE.md`](./INDEPENDENT_QUALITY_GATE.md) — **55/100**, not 95, not production-ready.
 
 ---
 

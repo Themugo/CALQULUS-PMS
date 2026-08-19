@@ -15,7 +15,7 @@ This is a certification and remediation record. It does **not** claim SOC 2, PCI
 
 No **P0** outage or payment-loss bug was proven. Live **RLS infinite recursion** on `tenants` and `platform_admins` (Postgres `42P17`) is a serious policy defect for unauthenticated REST; authenticated manager `/tenants` still loaded in Playwright. Treat that as **P1 until the 20260812 recursion-fix migrations are applied** (or a manager-authenticated REST probe shows 500).
 
-**Final score: 67 / 100.** Higher than 62 because typecheck now compiles `src/`, restore was executed locally, live schema was probed, and demo-role E2E passed. Still below a ship bar: Edge `health-check` is 404, dashboard RPCs are missing on live, 86 files are `@ts-nocheck`, webhost E2E has no working password, and there was no mutating signup→receipt run.
+**Final score: 67 / 100** on the Phase 12 weighted CI/uptime scorecard. Independent 30-gate assessment: **55 / 100** — [`INDEPENDENT_QUALITY_GATE.md`](./INDEPENDENT_QUALITY_GATE.md). Neither is 95. Still below a ship bar: Edge `health-check` is 404, dashboard RPCs are missing on live, 86 files are `@ts-nocheck`, webhost E2E has no working password, and there was no mutating signup→receipt run.
 
 ### How to apply the live SQL (SQL Editor)
 
