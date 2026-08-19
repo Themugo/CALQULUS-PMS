@@ -342,8 +342,8 @@ const ISO27001ComplianceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">ISO 27001 Compliance</h2>
-          <p className="text-warning/70 text-sm mt-1">Manage ISO 27001 ISMS compliance and risk management</p>
+          <h2 className="text-2xl font-bold text-foreground">ISO 27001 control mock</h2>
+          <p className="text-warning/70 text-sm mt-1">Hardcoded sample rows — not an ISO 27001 certification and not connected to an ISMS API.</p>
         </div>
         <div className="flex gap-2">
           <Button

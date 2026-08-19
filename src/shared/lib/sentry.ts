@@ -11,7 +11,7 @@
  *
  * To enable in production:
  *   1. Add `VITE_SENTRY_DSN=https://xxx@sentry.io/yyy` to env
- *   2. Add `*.sentry.io` to CSP connect-src (already done in netlify.toml)
+ *   2. Add `*.sentry.io` to CSP connect-src (already done in vercel.json)
  *   3. Configure sentry-cli to upload source maps after `vite build` —
  *      see PRODUCTION_CHECKLIST.md for the recommended GitHub Actions step.
  *
@@ -49,8 +49,6 @@ export function initSentry(): Promise<void> {
         tracePropagationTargets: [
           "localhost",
           /^https:\/\/www\.calqulus\.site/,
-          /^https:\/\/app\.calqulusrms\.com/,
-          /^https:\/\/www\.calqulusrms\.com/,
         ],
         
         // Session replay

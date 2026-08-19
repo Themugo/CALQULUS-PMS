@@ -23,6 +23,20 @@ Related prior work: [`PHASE_12_PRODUCTION_CERTIFICATION.md`](./PHASE_12_PRODUCTI
 
 This is not 95. Code volume is high. Production fitness is not. The product is a real Kenya-oriented PMS SPA with working demo logins, not a slide deck — and it is also not a finished commercial system.
 
+### In-repo remediations after this gate (still not live-complete)
+
+Shipped in git, **not** a substitute for applying SQL on the linked project:
+
+- Removed “SOC2 Type II Certified” / ISO claims from `Footer.tsx`; mock compliance screens labeled as mocks; webhost Admin Platform tab unmounted
+- `/landing` and `/welcome` redirect to `/`; specialist `/dashboard/*`, `/communications`, manager `/services` redirect to `/`
+- Published catalog: Starter 400 / Professional 600 / Enterprise **800** KES per property / month
+- `validate_invitation_token` migration returns `invited_by` as text (live 400 type mismatch)
+- Native suite and remaining mock dashboards labeled DEMO / LAB
+- Sentry allowlist no longer includes non-resolving `app.calqulusrms.com`
+- Unused Google Fonts / Analytics preconnects removed from `index.html`
+
+Live still: **42P17** on tenants, **health-check 404**, no mutating payment proof. Overall stays **55** until those land.
+
 | | |
 |--|--|
 | Would I deploy it today as the only ledger for paying tenants? | **No** |
@@ -438,7 +452,7 @@ Phase 12’s 67 is not retracted; it measured a different mix (CI + Vercel 200).
 
 ## 23. Pricing — 44
 
-**Evidence.** `FALLBACK_COMMERCIAL_TIERS`: Starter **400**, Professional **600**, Enterprise **500** KES/property/month (`commercialCatalog.ts`) — Enterprise is **cheaper** than Professional on the published number, with “custom pricing” as the explanation. AGENTS.md still describes **per-unit** prices (Lite 40 / Pro 30 / Enterprise 20 KES/unit). Schema has `price_per_property` on `subscription_tiers`. UI queries the table and falls back if empty.
+**Evidence.** Fallback catalog is now Starter **400** / Professional **600** / Enterprise **800** KES/property/month (`commercialCatalog.ts`). AGENTS.md was updated to the same per-property model. Live `subscription_tiers` rows were not dumped this session — the UI still falls back if the table is empty.
 
 **Problem.** Two pricing models in docs vs code. Fallback order is confusing. Live table contents were not dumped this session.
 

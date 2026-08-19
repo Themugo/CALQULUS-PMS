@@ -28,9 +28,12 @@ export function NativeAppSuite({ className }: { className?: string }) {
         <div>
           <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-primary" /> Native Mobile & Field Ops Experience Suite
+            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+              DEMO / LAB ENVIRONMENT
+            </Badge>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Dedicated mobile PWA interfaces for Tenants, Landlords, Property Managers, Maintenance Technicians, Vendors, and Executives.
+            Simulated PWA frames and a fake STK animation. Not a shipped App Store or Play app. Tenant pay on the web portal is the live path.
           </p>
         </div>
 

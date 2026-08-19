@@ -13,7 +13,7 @@ Do **not** paste:
 Do paste, in order:
 
 1. `apply-live-p1-rls.sql` — stops `user_roles` / `platform_admins` RLS recursion (`42P17`)
-2. `apply-live-p1-rpcs.sql` — landlord + manager dashboard RPCs, leftover hardening, invoice payment functions
+2. `apply-live-p1-rpcs.sql` (includes invitation-token type fix) — landlord + manager dashboard RPCs, leftover hardening, invoice payment functions
 
 `apply-live-p1-fixes.sql` is the same content concatenated. Prefer the two-step paste so a later error cannot undo the RLS fix.
 

@@ -247,8 +247,8 @@ const SOC2ComplianceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">SOC2 Type II Compliance</h2>
-          <p className="text-warning/70 text-sm mt-1">Manage SOC2 compliance controls and evidence</p>
+          <h2 className="text-2xl font-bold text-foreground">SOC 2 control mock</h2>
+          <p className="text-warning/70 text-sm mt-1">Hardcoded sample rows — not a SOC 2 Type II certification and not connected to an audit API.</p>
         </div>
         <div className="flex gap-2">
           <Button

@@ -88,7 +88,7 @@ const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
 ];
 
 const DIRECT_LINKS = [
-  { label: 'Landing Page', path: '/landing', icon: Globe2 },
+  { label: 'Landing Page', path: '/', icon: Globe2 },
   { label: 'Manager Overview', path: '/', icon: Building2 },
   { label: 'Water Billing', path: '/water-billing', icon: Droplet },
   { label: 'Tenant Invites', path: '/invites', icon: Mail },

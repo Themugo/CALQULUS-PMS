@@ -25,6 +25,7 @@ const pendingPrefixes = [
   "20260819000002",
   "20260819000003",
   "20260819000004",
+  "20260819000005",
 ];
 
 const files = readdirSync(migrationsDir)

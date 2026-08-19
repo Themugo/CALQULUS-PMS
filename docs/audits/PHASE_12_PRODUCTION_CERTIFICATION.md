@@ -78,7 +78,7 @@ If a later live check shows unapplied RLS migrations or a payment double-credit 
 5. **Demo / test passwords still exist in source** for local DEV (`devAccess.ts`, `DevPortalSwitcher.tsx` non-prod branch, `scripts/test-demo-auth.mjs`). Gitleaks allowlists them. They must never ship in the production bundle (gated) and should be rotated if they are live production passwords.
 6. **Landing LCP.** Lab Lighthouse (Phase 11, localhost): LCP ~5.7–6.3 s on public pages; 204 KB JPEG logo displayed at 20–56 px. Not re-measured as a before/after in this phase.
 7. **`npm audit` moderate uuid** via Capacitor CLI (dev tooling).
-8. **`/demo` is not a route.** Old smoke hit `/demo`; SPA rewrite still returns `index.html`. `/landing` and `/welcome` still load `MarketingWebsite` while `/` is `PublicLandingPage` (two public marketing surfaces).
+8. **`/demo` is not a route.** Old smoke hit `/demo`; SPA rewrite still returns `index.html`. `/landing` and `/welcome` now redirect to `/` (`PublicLandingPage`).
 9. **Financial “certification” tests are mocked.** They must not be cited as live ledger proof.
 10. **Sentry allowlist still includes `app.calqulusrms.com`**, which AGENTS.md says does not resolve. Harmless but stale.
 11. **Google Fonts preconnect** in `index.html` while fonts are self-hosted Outfit files — extra DNS, not a functional break.
