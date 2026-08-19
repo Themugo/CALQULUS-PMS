@@ -25,13 +25,13 @@ export function PublicFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <BrandMark size="sm" showWordmark subtitle="PMS" fetchPriority="low" inverse imgClassName="ring-white/20" />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/85">
             Property operations for modern rental teams.
           </p>
         </div>
 
         <nav aria-label="Platform">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Platform</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">Platform</p>
           <ul className="mt-3 space-y-2 text-sm">
             {PLATFORM.map((item) => (
               <li key={item.label}>
@@ -47,7 +47,7 @@ export function PublicFooter() {
         </nav>
 
         <nav aria-label="Solutions">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Solutions</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">Solutions</p>
           <ul className="mt-3 space-y-2 text-sm">
             {SOLUTIONS.map((item) => (
               <li key={item.label}>
@@ -61,7 +61,7 @@ export function PublicFooter() {
 
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-1">
           <nav aria-label="Company">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Company</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">Company</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
                 <a href={homeSectionHref("about", pathname)} className="text-white/80 hover:text-white">
@@ -81,7 +81,7 @@ export function PublicFooter() {
             </ul>
           </nav>
           <nav aria-label="Legal">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Legal</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">Legal</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
                 <Link to={PUBLIC_ROUTES.legalPrivacy} className="text-white/80 hover:text-white">
@@ -100,8 +100,8 @@ export function PublicFooter() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p className="text-xs text-white/60">© {year} CALQULUS. All rights reserved.</p>
-          <p className="text-xs text-white/60">Property management for Kenya and East Africa.</p>
+          <p className="text-xs text-white/75">© {year} CALQULUS. All rights reserved.</p>
+          <p className="text-xs text-white/75">Property management for Kenya and East Africa.</p>
         </div>
         <p className="sr-only">Support email {CONTACT_EMAIL}</p>
       </div>

@@ -191,7 +191,7 @@ function HomeView() {
             title="Everything important, connected."
             description="CALQULUS brings the core work of property management into one connected operational system."
           />
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 lg:grid-cols-3">
             {PILLARS.map((pillar) => (
               <article key={pillar.title} className="enterprise-card p-6">
                 <IconWell>
@@ -215,7 +215,7 @@ function HomeView() {
           title="From property to payment."
           description="CALQULUS connects the operational lifecycle — from the building record through to reporting."
         />
-        <ol className="relative hidden md:flex">
+        <ol className="relative hidden lg:flex">
           <span
             className="absolute left-[8%] right-[8%] top-5 h-px bg-border"
             aria-hidden
@@ -230,7 +230,7 @@ function HomeView() {
             </li>
           ))}
         </ol>
-        <ol className="relative space-y-3 md:hidden">
+        <ol className="relative space-y-3 lg:hidden">
           {WORKFLOW.map((step, index) => (
             <li key={step.label} className="flex items-start gap-3">
               <div className="flex flex-col items-center">

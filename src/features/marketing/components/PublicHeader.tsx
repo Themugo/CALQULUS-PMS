@@ -55,7 +55,7 @@ export function PublicHeader() {
           <Button asChild variant="ghost" size="sm" className="hidden min-h-11 sm:inline-flex">
             <Link to={PUBLIC_ROUTES.managerSignIn}>Sign in</Link>
           </Button>
-          <Button asChild size="sm" className="hidden min-h-11 btn-brand sm:inline-flex">
+          <Button asChild size="sm" className="min-h-11 btn-brand">
             <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
           </Button>
 
