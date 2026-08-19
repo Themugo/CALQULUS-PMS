@@ -1,7 +1,11 @@
 import * as React from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { toUserFacingError } from "@/shared/lib/errorLogger";
 import { Button } from "./button";
+
+const DEFAULT_TITLE = "Something went wrong";
+const DEFAULT_MESSAGE = "We could not complete this request. Please try again. If this continues, contact support.";
 
 export interface ErrorStateProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
@@ -11,15 +15,18 @@ export interface ErrorStateProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function ErrorState({
-  title = "Failed to load data",
-  message = "An unexpected error occurred while communicating with the server.",
+  title = DEFAULT_TITLE,
+  message = DEFAULT_MESSAGE,
   onRetry,
-  retryLabel = "Try Again",
+  retryLabel = "Try again",
   className,
   ...props
 }: ErrorStateProps) {
+  const safeMessage = toUserFacingError(message, DEFAULT_MESSAGE);
+
   return (
     <div
+      role="alert"
       className={cn(
         "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center animate-in fade-in-0 duration-200",
         className
@@ -31,10 +38,10 @@ export function ErrorState({
       </div>
       <h3 className="text-sm font-semibold text-foreground mb-1">{title}</h3>
       <p className="text-xs text-muted-foreground max-w-md mb-4 leading-relaxed">
-        {message}
+        {safeMessage}
       </p>
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry} className="gap-2">
+        <Button variant="outline" size="sm" onClick={onRetry} className="gap-2 min-h-10">
           <RefreshCw className="h-3.5 w-3.5" />
           {retryLabel}
         </Button>

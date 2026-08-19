@@ -17,6 +17,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -277,13 +278,13 @@ export function EnterpriseDataTable<T>({
   return (
     <div className={`space-y-4 w-full ${className}`}>
       {/* Header & Toolbars */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-white dark:bg-card p-4 rounded-xl border border-slate-200 dark:border-border shadow-xs">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-card p-4 rounded-xl border border-border shadow-xs">
         {/* Title / Search */}
         <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {(title || description) && (
             <div className="mr-2">
-              {title && <h3 className="font-semibold text-slate-900 dark:text-foreground text-base leading-tight">{title}</h3>}
-              {description && <p className="text-xs text-muted-foreground dark:text-muted-foreground">{description}</p>}
+              {title && <h3 className="font-semibold text-foreground text-base leading-tight">{title}</h3>}
+              {description && <p className="text-xs text-muted-foreground">{description}</p>}
             </div>
           )}
 
@@ -297,12 +298,15 @@ export function EnterpriseDataTable<T>({
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-9 pr-8 h-9 text-xs sm:text-sm bg-slate-50 dark:bg-muted/80 border-slate-200 dark:border-border"
+              className="pl-9 pr-8 h-10 text-xs sm:text-sm bg-muted/50 border-border"
+              aria-label={searchPlaceholder}
             />
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground"
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 h-8 w-8 inline-flex items-center justify-center text-muted-foreground hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -320,9 +324,10 @@ export function EnterpriseDataTable<T>({
               size="sm"
               onClick={onRefresh}
               title="Refresh Data"
-              className="h-9 w-9 p-0"
+              className="h-10 w-10 p-0"
+              aria-label="Refresh data"
             >
-              <RefreshCw className="h-4 w-4 text-muted-foreground dark:text-muted-foreground" />
+              <RefreshCw className="h-4 w-4 text-muted-foreground" />
             </Button>
           )}
 
@@ -403,12 +408,12 @@ export function EnterpriseDataTable<T>({
 
       {/* Bulk Action Bar Banner */}
       {enableSelection && selectedIds.size > 0 && (
-        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 dark:bg-primary/20 dark:border-primary/40 px-4 py-2.5 rounded-lg text-sm text-primary animate-in fade-in slide-in-from-top-2">
+        <div className="flex items-center justify-between bg-primary/10 border border-primary/20 px-4 py-2.5 rounded-lg text-sm text-primary animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-2">
             <Badge variant="default" className="font-semibold rounded-full px-2.5">
               {selectedIds.size} selected
             </Badge>
-            <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Items checked across active dataset
             </span>
           </div>
@@ -431,7 +436,7 @@ export function EnterpriseDataTable<T>({
               size="sm"
               variant="ghost"
               onClick={() => setSelectedIds(new Set())}
-              className="h-8 text-xs text-muted-foreground hover:text-slate-800 dark:hover:text-foreground"
+              className="h-8 text-xs text-muted-foreground hover:text-foreground"
             >
               Clear Selection
             </Button>
@@ -440,11 +445,11 @@ export function EnterpriseDataTable<T>({
       )}
 
       {/* Table Container */}
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-xs">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-xs">
         <div className="overflow-x-auto max-h-[70vh]">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse exec-table">
             {/* Sticky Header */}
-            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-muted/80 backdrop-blur-xs border-b border-slate-200 dark:border-border shadow-2xs">
+            <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur-xs border-b border-border">
               <tr>
                 {enableSelection && (
                   <th className="w-10 px-4 py-3 text-center">
@@ -467,8 +472,8 @@ export function EnterpriseDataTable<T>({
                   return (
                     <th
                       key={col.id}
-                      className={`px-4 py-3 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider select-none ${alignClass} ${
-                        col.sortable !== false ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-muted/80' : ''
+                      className={`px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none ${alignClass} ${
+                        col.sortable !== false ? 'cursor-pointer hover:bg-muted' : ''
                       } ${col.headerClassName || ''}`}
                       onClick={() => col.sortable !== false && handleSort(col.id)}
                     >
@@ -495,18 +500,18 @@ export function EnterpriseDataTable<T>({
             </thead>
 
             {/* Table Body */}
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-card">
+            <tbody className="divide-y divide-border bg-card">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, rIdx) => (
                   <tr key={rIdx} className="animate-pulse">
                     {enableSelection && (
                       <td className="px-4 py-3">
-                        <div className="h-4 w-4 bg-slate-200 dark:bg-muted rounded" />
+                        <div className="h-4 w-4 bg-muted rounded" />
                       </td>
                     )}
                     {visibleColumns.map((c) => (
                       <td key={c.id} className="px-4 py-3">
-                        <div className="h-4 bg-slate-200 dark:bg-muted rounded w-3/4" />
+                        <div className="h-4 bg-muted rounded w-3/4" />
                       </td>
                     ))}
                   </tr>
@@ -515,14 +520,15 @@ export function EnterpriseDataTable<T>({
                 <tr>
                   <td
                     colSpan={visibleColumns.length + (enableSelection ? 1 : 0)}
-                    className="py-12 text-center text-muted-foreground dark:text-muted-foreground"
+                    className="py-6 text-center"
                   >
                     {emptyState || (
-                      <div className="flex flex-col items-center justify-center space-y-2">
-                        <Search className="h-8 w-8 text-muted-foreground dark:text-muted-foreground stroke-[1.5]" />
-                        <p className="text-sm font-medium text-slate-700 dark:text-muted-foreground">No matching records found</p>
-                        <p className="text-xs text-muted-foreground">Try adjusting your filters or search query.</p>
-                      </div>
+                      <EmptyState
+                        icon={Search}
+                        title="No matching records found"
+                        description="Try adjusting your filters or search query."
+                        className="border-0 bg-transparent min-h-[160px]"
+                      />
                     )}
                   </td>
                 </tr>
@@ -534,8 +540,8 @@ export function EnterpriseDataTable<T>({
                   return (
                     <tr
                       key={rowId}
-                      className={`transition-colors hover:bg-slate-50/80 dark:hover:bg-muted/80 ${
-                        isSelected ? 'bg-primary/5 dark:bg-primary/10' : ''
+                      className={`transition-colors hover:bg-muted/50 ${
+                        isSelected ? 'bg-primary/5' : ''
                       }`}
                     >
                       {enableSelection && (
@@ -558,7 +564,7 @@ export function EnterpriseDataTable<T>({
                         return (
                           <td
                             key={col.id}
-                            className={`px-4 ${pyClass} ${alignClass} text-slate-800 dark:text-slate-200 font-normal ${
+                            className={`px-4 ${pyClass} ${alignClass} text-foreground font-normal ${
                               col.className || ''
                             }`}
                           >
@@ -575,18 +581,18 @@ export function EnterpriseDataTable<T>({
         </div>
 
         {/* Footer & Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-border bg-slate-50/50 dark:bg-muted/80 px-4 py-3">
-          <div className="flex items-center gap-4 text-xs text-muted-foreground dark:text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border bg-muted/40 px-4 py-3">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>
               Showing{' '}
-              <strong className="font-semibold text-slate-700 dark:text-foreground">
+              <strong className="font-semibold text-foreground">
                 {sortedData.length === 0 ? 0 : (validCurrentPage - 1) * pageSize + 1}
               </strong>{' '}
               to{' '}
-              <strong className="font-semibold text-slate-700 dark:text-foreground">
+              <strong className="font-semibold text-foreground">
                 {Math.min(validCurrentPage * pageSize, sortedData.length)}
               </strong>{' '}
-              of <strong className="font-semibold text-slate-700 dark:text-foreground">{sortedData.length}</strong> entries
+              of <strong className="font-semibold text-foreground">{sortedData.length}</strong> entries
               {filteredData.length < data.length && ` (filtered from ${data.length} total)`}
             </span>
 
@@ -599,7 +605,7 @@ export function EnterpriseDataTable<T>({
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="h-7 w-[70px] text-xs border-slate-200 dark:border-border">
+                <SelectTrigger className="h-8 w-[70px] text-xs border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -620,12 +626,13 @@ export function EnterpriseDataTable<T>({
               size="sm"
               disabled={validCurrentPage <= 1}
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
+              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <span className="text-xs text-muted-foreground dark:text-muted-foreground px-2 font-medium">
+            <span className="text-xs text-muted-foreground px-2 font-medium">
               Page {validCurrentPage} of {totalPages}
             </span>
 
@@ -634,7 +641,8 @@ export function EnterpriseDataTable<T>({
               size="sm"
               disabled={validCurrentPage >= totalPages}
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
+              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

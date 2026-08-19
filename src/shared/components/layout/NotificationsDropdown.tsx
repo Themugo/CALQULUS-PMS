@@ -211,11 +211,11 @@ export function NotificationsDropdown() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-9 w-9 touch-manipulation"
+          className="relative h-10 w-10 touch-manipulation"
           aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`}
         >
           {unread > 0
-            ? <BellRing className="h-4 w-4 text-amber-500 animate-[wiggle_0.4s_ease-in-out]" />
+            ? <BellRing className="h-4 w-4 text-warning animate-[wiggle_0.4s_ease-in-out]" />
             : <Bell className="h-4 w-4" />
           }
           {unread > 0 && (

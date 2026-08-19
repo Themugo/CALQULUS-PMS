@@ -83,8 +83,10 @@ export function Header({
 
         {/* Global Search & Command Palette Trigger */}
         <button
+          type="button"
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center gap-3 min-h-11 h-11 w-64 lg:w-72 px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all"
+          aria-label="Search or jump to a page"
+          className="hidden md:flex items-center gap-3 min-h-11 h-11 w-64 lg:w-72 px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
           <span className="flex-1 text-left truncate">Search or jump to...</span>
@@ -127,7 +129,7 @@ export function Header({
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Toggle workspace activity panel"
+            aria-label="Toggle workspace activity and context"
             className="hidden sm:flex min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
             onClick={onToggleContextPanel}
             title="Toggle Workspace Activity & Context"

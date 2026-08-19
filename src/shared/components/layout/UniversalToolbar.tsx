@@ -186,8 +186,9 @@ export function UniversalToolbar({
               variant="ghost"
               size="icon"
               onClick={onRefresh}
-              className="h-8 w-8 text-muted-foreground hover:text-foreground shrink-0"
+              className="h-10 w-10 text-muted-foreground hover:text-foreground shrink-0"
               title="Refresh dataset"
+              aria-label="Refresh dataset"
             >
               <RotateCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin text-primary")} />
             </Button>

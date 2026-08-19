@@ -31,6 +31,16 @@ const RAW_DB_PATTERNS = [
   /relation .+ does not exist/i,
   /PGRST/i,
   /\b22P02\b|\b23503\b|\b23505\b|\b42501\b/,
+  /\bJWT\b/i,
+  /TypeError:/i,
+  /ReferenceError:/i,
+  /SyntaxError:/i,
+  /failed to fetch/i,
+  /networkerror/i,
+  /econnrefused/i,
+  /supabase/i,
+  /postgrest/i,
+  /at\s+\S+\s+\(/,
 ];
 
 /**

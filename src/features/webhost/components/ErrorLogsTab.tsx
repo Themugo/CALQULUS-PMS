@@ -2,16 +2,20 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared/components/ui/dialog';
 import { format } from 'date-fns';
 import {
   AlertTriangle, Bug, RefreshCw, Search, Eye, Download, Activity, ShieldAlert, ChevronRight,
 } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
+import { LoadingState } from '@/shared/components/ui/loading-state';
+import { PageHeader } from '@/shared/components/layout/PageHeader';
+import { statusBadgeClass } from '@/shared/lib/statusBadge';
+import { cn } from '@/shared/lib/utils';
 
 interface ErrorLog {
   id: string;
@@ -62,7 +66,7 @@ export default function ErrorLogsTab() {
   const [to, setTo] = useState('');
   const [selected, setSelected] = useState<ErrorLog | null>(null);
 
-  const { data: logs = [], isLoading, isError, error, refetch, dataUpdatedAt } = useQuery<ErrorLog[]>({
+  const { data: logs = [], isLoading, isError, refetch, dataUpdatedAt } = useQuery<ErrorLog[]>({
     queryKey: ['error-logs'],
     queryFn: async () => {
       const { data, error: qErr } = await supabase
@@ -136,55 +140,49 @@ export default function ErrorLogsTab() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <Card className="border-destructive/15 bg-card">
-        <CardHeader>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div>
-              <CardTitle className="flex items-center gap-2 text-foreground">
-                <Bug className="h-5 w-5 text-destructive" />
-                Production Error & Incident Console
-              </CardTitle>
-              <CardDescription className="text-destructive/70">
-                Application errors and warnings recorded in the audit log (last 100). Auto-refreshes every 30 seconds.
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-destructive/20 text-destructive hover:bg-destructive/10">
-                <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
-              </Button>
-              <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0} className="border-destructive/20 text-destructive hover:bg-destructive/10">
-                <Download className="h-3.5 w-3.5 mr-1.5" /> Export
-              </Button>
-            </div>
+      <PageHeader
+        title="Operational issues"
+        description="Application errors and warnings recorded in the audit log (last 100). Refreshes every 30 seconds."
+        className="border-0 px-0 py-0"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => refetch()} className="min-h-10">
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0} className="min-h-10">
+              <Download className="h-3.5 w-3.5 mr-1.5" /> Export
+            </Button>
           </div>
-          {dataUpdatedAt ? (
-            <p className="text-[10px] text-muted-foreground mt-1">Last updated {format(new Date(dataUpdatedAt), 'dd MMM yyyy HH:mm:ss')}</p>
-          ) : null}
-        </CardHeader>
-      </Card>
+        }
+        status={
+          dataUpdatedAt ? (
+            <span className="text-[11px] text-muted-foreground font-medium">
+              Updated {format(new Date(dataUpdatedAt), 'dd MMM yyyy HH:mm')}
+            </span>
+          ) : null
+        }
+      />
 
-      {/* Overview — real counts only */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="border-destructive/20 bg-destructive/5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="enterprise-card">
           <CardContent className="p-4 flex items-center gap-3">
             <Bug className="h-8 w-8 text-destructive" />
             <div>
-              <div className="text-2xl font-bold text-destructive">{errorCount}</div>
-              <div className="text-sm text-destructive/80">Errors (last 100)</div>
+              <div className="text-2xl font-bold text-foreground">{errorCount}</div>
+              <div className="text-sm text-muted-foreground">Errors (last 100)</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-warning/20 bg-warning/5">
+        <Card className="enterprise-card">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-8 w-8 text-warning" />
             <div>
-              <div className="text-2xl font-bold text-warning">{warningCount}</div>
-              <div className="text-sm text-warning/80">Warnings (last 100)</div>
+              <div className="text-2xl font-bold text-foreground">{warningCount}</div>
+              <div className="text-sm text-muted-foreground">Warnings (last 100)</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/20 bg-card">
+        <Card className="enterprise-card">
           <CardContent className="p-4 flex items-center gap-3">
             <Activity className="h-8 w-8 text-muted-foreground" />
             <div>
@@ -195,17 +193,15 @@ export default function ErrorLogsTab() {
         </Card>
       </div>
 
-      {/* Registry */}
-      <Card className="border-destructive/15 bg-card">
+      <Card className="enterprise-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-foreground">
-            <ShieldAlert className="h-5 w-5 text-destructive" />
-            Error Registry
+            <ShieldAlert className="h-5 w-5 text-primary" />
+            Issue registry
           </CardTitle>
-          <CardDescription className="text-destructive/70">
-            Read-only audit records. Severity reflects the error/warning type only — no separate severity classification exists.
+          <CardDescription>
+            Read-only audit records. Severity reflects the error or warning type only.
           </CardDescription>
-          {/* Filters */}
           <div className="grid gap-3 md:grid-cols-4 mt-3">
             <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -213,11 +209,12 @@ export default function ErrorLogsTab() {
                 placeholder="Search message, source, actor…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="pl-10 bg-secondary-background border-destructive/20"
+                aria-label="Search issues"
+                className="pl-10 h-10 bg-secondary-background border-border"
               />
             </div>
             <Select value={typeFilter} onValueChange={v => setTypeFilter(v as TypeFilter)}>
-              <SelectTrigger className="bg-secondary-background border-destructive/20"><SelectValue placeholder="Type" /></SelectTrigger>
+              <SelectTrigger className="h-10 bg-secondary-background border-border" aria-label="Filter by type"><SelectValue placeholder="Type" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="error">Errors</SelectItem>
@@ -225,7 +222,7 @@ export default function ErrorLogsTab() {
               </SelectContent>
             </Select>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="bg-secondary-background border-destructive/20"><SelectValue placeholder="Source" /></SelectTrigger>
+              <SelectTrigger className="h-10 bg-secondary-background border-border" aria-label="Filter by source"><SelectValue placeholder="Source" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All sources</SelectItem>
                 {sources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -234,15 +231,15 @@ export default function ErrorLogsTab() {
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">From</span>
-              <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 bg-secondary-background border-destructive/20" />
+              <label htmlFor="issue-from" className="text-xs text-muted-foreground">From</label>
+              <Input id="issue-from" type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-40 h-10 bg-secondary-background border-border" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">To</span>
-              <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 bg-secondary-background border-destructive/20" />
+              <label htmlFor="issue-to" className="text-xs text-muted-foreground">To</label>
+              <Input id="issue-to" type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40 h-10 bg-secondary-background border-border" />
             </div>
             {(search || typeFilter !== 'all' || sourceFilter !== 'all' || from || to) && (
-              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setTypeFilter('all'); setSourceFilter('all'); setFrom(''); setTo(''); }} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setTypeFilter('all'); setSourceFilter('all'); setFrom(''); setTo(''); }} className="text-muted-foreground hover:text-foreground min-h-10">
                 Clear filters
               </Button>
             )}
@@ -250,57 +247,56 @@ export default function ErrorLogsTab() {
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="space-y-2 p-4">{[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-14 w-full" />)}</div>
+            <LoadingState variant="skeleton" rows={5} label="Loading issues" />
           ) : isError ? (
-            <div className="p-8 text-center">
-              <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
-              <p className="text-sm font-semibold text-destructive">Unable to load error logs.</p>
-              <p className="text-xs text-muted-foreground mt-1 mb-3">{(error as Error)?.message ?? 'Try again.'}</p>
-              <Button variant="outline" size="sm" onClick={() => refetch()} className="border-destructive/40 text-destructive hover:bg-destructive/10">
-                <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Retry
-              </Button>
-            </div>
+            <ErrorState
+              title="Unable to load issues"
+              message="We could not load the audit log. Please try again."
+              onRetry={() => { void refetch(); }}
+              className="m-4"
+            />
           ) : filtered.length === 0 ? (
-            <div className="p-10 text-center text-muted-foreground">
-              <Bug className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">{logs.length === 0 ? 'No application errors recorded.' : 'No errors match the current filters.'}</p>
-              <p className="text-xs text-muted-foreground mt-1">{logs.length === 0 ? 'Application errors and warnings will appear here as they occur.' : 'Adjust filters to see more results.'}</p>
-            </div>
+            <EmptyState
+              icon={Bug}
+              title={logs.length === 0 ? 'No application issues recorded' : 'No issues match the current filters'}
+              description={logs.length === 0 ? 'Errors and warnings will appear here as they occur.' : 'Adjust filters to see more results.'}
+              className="m-4 border-0 bg-transparent"
+            />
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="exec-table w-full text-sm">
                 <thead>
-                  <tr className="border-b border-destructive/10 text-left text-destructive/70">
-                    <th className="py-2 px-4 font-medium">Type</th>
-                    <th className="py-2 px-4 font-medium">Message</th>
-                    <th className="py-2 px-4 font-medium">Source</th>
-                    <th className="py-2 px-4 font-medium">Actor</th>
-                    <th className="py-2 px-4 font-medium">Timestamp</th>
-                    <th className="py-2 px-4 font-medium text-right">View</th>
+                  <tr>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Source</th>
+                    <th>Actor</th>
+                    <th>Timestamp</th>
+                    <th className="text-right">View</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map(l => {
-                    const isError = l.action.startsWith('error:');
+                    const rowIsError = l.action.startsWith('error:');
                     const m = metaOf(l);
+                    const summary = l.entity_label || m.message || 'No message';
                     return (
-                      <tr key={l.id} className="border-b border-destructive/5 hover:bg-destructive/5 cursor-pointer" onClick={() => setSelected(l)}>
-                        <td className="py-2.5 px-4">
-                          <Badge className={isError ? 'bg-destructive/15 text-destructive border border-destructive/30' : 'bg-warning/15 text-warning border border-warning/30'}>
-                            {isError ? 'error' : 'warning'}
-                          </Badge>
+                      <tr key={l.id} className="cursor-pointer" onClick={() => setSelected(l)}>
+                        <td>
+                          <span className={cn(statusBadgeClass(rowIsError ? 'danger' : 'warning'))}>
+                            {rowIsError ? 'error' : 'warning'}
+                          </span>
                         </td>
-                        <td className="py-2.5 px-4">
-                          <p className="font-medium text-foreground max-w-[320px] truncate" title={l.entity_label ?? m.message ?? ''}>
-                            {l.entity_label || m.message || 'No message'}
+                        <td>
+                          <p className="font-medium text-foreground max-w-[320px] truncate" title={summary}>
+                            {summary}
                           </p>
-                          <p className="text-xs text-muted-foreground font-mono">{stripPrefix(l.action)}</p>
                         </td>
-                        <td className="py-2.5 px-4 text-muted-foreground">{m.context ?? '—'}</td>
-                        <td className="py-2.5 px-4 text-muted-foreground text-xs truncate max-w-[160px]" title={l.actor_email ?? ''}>{l.actor_email ?? 'system'}</td>
-                        <td className="py-2.5 px-4 text-xs text-muted-foreground whitespace-nowrap">{format(new Date(l.created_at), 'dd MMM HH:mm:ss')}</td>
-                        <td className="py-2.5 px-4 text-right">
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:bg-secondary-background" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
+                        <td className="text-muted-foreground">{m.context ?? '—'}</td>
+                        <td className="text-muted-foreground text-xs truncate max-w-[160px]" title={l.actor_email ?? ''}>{l.actor_email ?? 'system'}</td>
+                        <td className="text-xs text-muted-foreground whitespace-nowrap">{format(new Date(l.created_at), 'dd MMM HH:mm')}</td>
+                        <td className="text-right">
+                          <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-muted-foreground hover:bg-secondary-background" onClick={e => { e.stopPropagation(); setSelected(l); }} aria-label="View detail">
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
                         </td>
@@ -312,65 +308,67 @@ export default function ErrorLogsTab() {
             </div>
           )}
           {filtered.length > 0 && (
-            <p className="p-4 text-xs text-muted-foreground border-t border-destructive/5">
+            <p className="p-4 text-xs text-muted-foreground border-t border-border">
               Showing {filtered.length} of {logs.length} records{logs.length === 100 ? ' (limited to last 100)' : ''}
             </p>
           )}
         </CardContent>
       </Card>
 
-      {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
-        <DialogContent className="max-w-2xl bg-card border-destructive/15">
+        <DialogContent className="max-w-2xl bg-card">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-foreground">
-              <ChevronRight className="h-4 w-4 text-destructive" />
-              Error Detail
+              <ChevronRight className="h-4 w-4 text-primary" />
+              Issue detail
             </DialogTitle>
+            <DialogDescription>
+              Redacted diagnostic metadata for this audit record.
+            </DialogDescription>
           </DialogHeader>
           {selected && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Badge className={selected.action.startsWith('error:') ? 'bg-destructive/15 text-destructive border border-destructive/30' : 'bg-warning/15 text-warning border border-warning/30'}>
+                <span className={cn(statusBadgeClass(selected.action.startsWith('error:') ? 'danger' : 'warning'))}>
                   {selected.action.startsWith('error:') ? 'error' : 'warning'}
-                </Badge>
+                </span>
                 <span className="font-mono text-xs text-muted-foreground">{stripPrefix(selected.action)}</span>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Message</p>
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Message</p>
                   <p className="text-sm text-foreground break-words">{selected.entity_label || metaOf(selected).message || 'No message'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Source / module</p>
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Source / module</p>
                   <p className="text-sm text-foreground">{metaOf(selected).context ?? '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Timestamp</p>
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Timestamp</p>
                   <p className="text-sm text-foreground">{format(new Date(selected.created_at), "dd MMM yyyy HH:mm:ss")}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Actor</p>
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Actor</p>
                   <p className="text-sm text-foreground">{selected.actor_email ?? 'system'}{selected.actor_role ? ` (${selected.actor_role})` : ''}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-destructive/70">Reference ID</p>
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Reference ID</p>
                   <p className="text-xs text-muted-foreground font-mono">{selected.id}</p>
                 </div>
                 {metaOf(selected).url && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-destructive/70">URL / path</p>
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">URL / path</p>
                     <p className="text-xs text-muted-foreground font-mono break-all">{metaOf(selected).url}</p>
                   </div>
                 )}
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-destructive/70 mb-1">Context / metadata</p>
-                <pre className="bg-secondary-background p-3 rounded-md text-xs overflow-x-auto border border-destructive/10 text-muted-foreground">{safeMetaString(selected)}</pre>
+                <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Context / metadata</p>
+                <pre className="bg-secondary-background p-3 rounded-md text-xs overflow-x-auto border border-border text-muted-foreground">{safeMetaString(selected)}</pre>
               </div>
               <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <ShieldAlert className="h-3 w-3" />
-                Audit records are append-only. No resolution lifecycle or status is stored — this is a diagnostic view, not an incident tracker.
+                Audit records are append-only. This is a diagnostic view, not an incident tracker.
               </p>
             </div>
           )}
@@ -379,3 +377,4 @@ export default function ErrorLogsTab() {
     </div>
   );
 }
+
