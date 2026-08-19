@@ -18,9 +18,9 @@ export const PUBLIC_ROUTES = {
 } as const;
 
 export const PUBLIC_NAV = [
-  { label: "Platform", hash: "platform" },
-  { label: "How it works", hash: "how-it-works" },
-  { label: "Solutions", hash: "solutions" },
+  { label: "Workspace", hash: "platform" },
+  { label: "Portals", hash: "solutions" },
+  { label: "Workflow", hash: "how-it-works" },
 ] as const;
 
 export function homeSectionHref(hash: string, pathname: string): string {

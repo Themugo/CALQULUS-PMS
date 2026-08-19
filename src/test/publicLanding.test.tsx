@@ -19,11 +19,13 @@ function renderAt(path: string) {
 }
 
 describe("PublicLandingPage", () => {
-  it("renders the executive homepage with a single h1", () => {
+  it("renders the operational homepage with a single h1", () => {
     renderAt("/");
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Run your properties with clarity and control.");
+    expect(headings[0]).toHaveTextContent(
+      "One workspace for properties, tenants, rent, and repairs.",
+    );
   });
 
   it("keeps working portal routes on role cards", () => {
@@ -53,9 +55,9 @@ describe("PublicLandingPage", () => {
   it("uses restrained primary navigation without Contact dominating", () => {
     renderAt("/");
     const primary = screen.getByRole("navigation", { name: "Primary" });
-    expect(primary).toHaveTextContent("Platform");
-    expect(primary).toHaveTextContent("How it works");
-    expect(primary).toHaveTextContent("Solutions");
+    expect(primary).toHaveTextContent("Workspace");
+    expect(primary).toHaveTextContent("Portals");
+    expect(primary).toHaveTextContent("Workflow");
     expect(primary).toHaveTextContent("Pricing");
     expect(primary).not.toHaveTextContent("Contact");
     const header = screen.getByRole("banner");
@@ -76,8 +78,15 @@ describe("PublicLandingPage", () => {
   it("renders the pricing page without duplicating the homepage h1", () => {
     renderAt("/pricing");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Clear pricing. A clear operating system.",
+      "Per property, per month, in Kenyan shillings.",
     );
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
+  });
+
+  it("stays on a light public canvas without navy page chrome", () => {
+    const { container } = renderAt("/");
+    expect(container.querySelector(".public-canvas")).toBeTruthy();
+    expect(container.querySelector(".bg-navy-primary")).toBeNull();
+    expect(container.querySelector(".bg-slate-950")).toBeNull();
   });
 });

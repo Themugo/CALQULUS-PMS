@@ -578,7 +578,7 @@ export function MarketingWebsite() {
               locked behind plan walls. Custom pricing is available for larger portfolios.
             </p>
           </div>
-          <PublicPricing tiers={tiers} variant="dark" />
+          <PublicPricing tiers={tiers} />
         </div>
       </section>
 
