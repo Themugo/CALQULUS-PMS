@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FileText, Wrench, MessageSquare, FolderOpen, User, Store, Receipt } from 'lucide-react';
+import { Home, Wrench, MessageSquare, FolderOpen, User, Receipt } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
 interface NavItem {
@@ -12,8 +12,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Invoices',
-    icon: FileText,
+    label: 'Home',
+    icon: Home,
     href: '/portal',
     activeMatch: ['/portal'],
   },

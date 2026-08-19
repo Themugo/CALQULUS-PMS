@@ -212,7 +212,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-success" />
-            Pay via M-Pesa
+            Pay now — M-Pesa
           </DialogTitle>
           <DialogDescription>
             {isCombined

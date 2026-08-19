@@ -3,7 +3,6 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { formatDate, formatDateTime12h } from '@/shared/lib/dateFormat';
 import { Building2, ArrowLeft, CreditCard, Receipt, ExternalLink, Wallet, CheckCircle, LogOut, AlertCircle, RefreshCw } from 'lucide-react';
@@ -12,7 +11,7 @@ import { useCurrency } from '@/shared/hooks/useCurrency';
 import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
+import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
 interface Payment {
   id: string;
@@ -61,11 +60,14 @@ const PaymentHistory = () => {
   };
 
   const totalPaid = safePayments.reduce((acc, p) => acc + p.amount, 0);
+  const successfulCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'success').length;
+  const pendingCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'warning').length;
+  const failedCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'danger').length;
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal"></div>
       </div>
     );
   }
@@ -76,8 +78,8 @@ const PaymentHistory = () => {
       <header className="border-b border-border bg-card sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-amber-400 flex items-center justify-center">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-primary-foreground" />
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-teal flex items-center justify-center">
+              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
             </div>
             <div>
               <h1 className="font-semibold text-base md:text-lg">CALQULUS PMS</h1>
@@ -158,12 +160,19 @@ const PaymentHistory = () => {
           <Card className="col-span-2 md:col-span-1">
             <CardContent className="pt-4 md:pt-6">
               <div className="flex items-center gap-3 md:gap-4">
-                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-success/10 flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">All Payments</p>
-                  <p className="text-xl md:text-2xl font-bold">Successful</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Successful</p>
+                  <p className="text-xl md:text-2xl font-bold">{successfulCount}</p>
+                  {(pendingCount > 0 || failedCount > 0) && (
+                    <p className="text-xs text-muted-foreground">
+                      {pendingCount > 0 ? `${pendingCount} pending` : ''}
+                      {pendingCount > 0 && failedCount > 0 ? ' · ' : ''}
+                      {failedCount > 0 ? `${failedCount} failed` : ''}
+                    </p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -212,10 +221,9 @@ const PaymentHistory = () => {
                           <span className="capitalize">{payment.paymentMethod}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="default" className="text-xs py-0">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Paid
-                          </Badge>
+                          <span className={statusBadgeClass(invoiceStatusTone(payment.status))}>
+                            {invoiceStatusLabel(payment.status)}
+                          </span>
                           {payment.receiptUrl && (
                             <Button variant="ghost" size="sm" asChild className="h-7 px-2">
                               <a href={payment.receiptUrl} target="_blank" rel="noopener noreferrer">
@@ -267,10 +275,9 @@ const PaymentHistory = () => {
                           {formatCurrency(payment.amount, payment.currency)}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="default" className="flex items-center gap-1 w-fit">
-                            <CheckCircle className="h-3 w-3" />
-                            Paid
-                          </Badge>
+                          <span className={statusBadgeClass(invoiceStatusTone(payment.status))}>
+                            {invoiceStatusLabel(payment.status)}
+                          </span>
                         </TableCell>
                         <TableCell className="text-right">
                           {payment.receiptUrl ? (

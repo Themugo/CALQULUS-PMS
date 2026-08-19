@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from '@/shared/components/ui/dialog';
 import { formatDate, formatDateTime12h } from '@/shared/lib/dateFormat';
+import { maintenancePriorityTone, maintenanceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 import {
   MAINTENANCE_CATEGORIES,
   getCategoryLabel,
@@ -37,7 +38,6 @@ import {
   AlertCircle,
   Loader2,
   MessageSquare,
-  Calendar,
   ChevronRight,
   Camera,
 } from 'lucide-react';
@@ -79,7 +79,6 @@ const statusConfig: Record<
     variant: 'default' | 'secondary' | 'destructive' | 'outline';
     icon: typeof Clock;
     color: string;
-    badgeClass: string;
   }
 > = {
   open: {
@@ -87,36 +86,32 @@ const statusConfig: Record<
     variant: 'secondary',
     icon: Clock,
     color: 'text-warning',
-    badgeClass: 'bg-warning text-white',
   },
   in_progress: {
     label: 'In Progress',
     variant: 'default',
     icon: Wrench,
-    color: 'text-warning',
-    badgeClass: 'bg-primary text-white',
+    color: 'text-info',
   },
   completed: {
     label: 'Completed',
     variant: 'outline',
     icon: CheckCircle,
     color: 'text-success',
-    badgeClass: 'bg-success text-white',
   },
   cancelled: {
     label: 'Cancelled',
     variant: 'destructive',
     icon: AlertCircle,
-    color: 'text-destructive',
-    badgeClass: 'bg-muted text-white',
+    color: 'text-muted-foreground',
   },
 };
 
-const priorityConfig: Record<RequestPriority, { label: string; color: string }> = {
-  low: { label: 'Low', color: 'bg-muted text-white' },
-  medium: { label: 'Medium', color: 'bg-blue-500 text-white' },
-  high: { label: 'High', color: 'bg-orange-500 text-white' },
-  urgent: { label: 'Urgent', color: 'bg-destructive text-white' },
+const priorityConfig: Record<RequestPriority, { label: string }> = {
+  low: { label: 'Low' },
+  medium: { label: 'Medium' },
+  high: { label: 'High' },
+  urgent: { label: 'Urgent' },
 };
 
 const TenantMaintenance = () => {
@@ -547,13 +542,13 @@ const TenantMaintenance = () => {
           {selectedRequest && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant={statusConfig[selectedRequest.status].variant}>
+                <span className={statusBadgeClass(maintenanceStatusTone(selectedRequest.status))}>
                   {statusConfig[selectedRequest.status].label}
-                </Badge>
-                <Badge className={priorityConfig[selectedRequest.priority].color}>
-                  {priorityConfig[selectedRequest.priority].label} Priority
-                </Badge>
-                <Badge variant="outline" className="bg-warning text-warning border-warning/40">
+                </span>
+                <span className={statusBadgeClass(maintenancePriorityTone(selectedRequest.priority))}>
+                  {priorityConfig[selectedRequest.priority].label} priority
+                </span>
+                <Badge variant="outline">
                   {getCategoryLabel(selectedRequest.category)}
                 </Badge>
               </div>
@@ -694,37 +689,36 @@ function RequestCard({ request, onClick }: RequestCardProps) {
   const status = statusConfig[request.status];
   const priority = priorityConfig[request.priority];
   const StatusIcon = status.icon;
+  const submitted = request.requested_date || request.created_at;
+  const hasUpdate = request.updated_at && request.updated_at !== request.created_at;
 
   return (
-    <Card className="cursor-pointer hover:bg-warning transition-colors" onClick={onClick}>
+    <Card className="cursor-pointer hover:bg-muted/40 transition-colors" onClick={onClick}>
       <CardContent className="pt-4 pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h4 className="font-medium truncate">{request.title}</h4>
-              <Badge variant="outline" className="text-xs bg-warning text-warning border-warning/40">
+              <Badge variant="outline" className="text-xs">
                 {getCategoryLabel(request.category)}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground line-clamp-1 mb-2">{request.description}</p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              <Calendar className="h-3 w-3" />
-              <span>Requested: {formatDate(request.requested_date)}</span>
-              {request.expected_completion_date && (
-                <span>• Expected: {formatDate(request.expected_completion_date)}</span>
-              )}
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant={status.variant} className="text-xs">
-                <StatusIcon className="h-3 w-3 mr-1" />
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <span className={`${statusBadgeClass(maintenanceStatusTone(request.status))} gap-1`}>
+                <StatusIcon className="h-3 w-3" />
                 {status.label}
-              </Badge>
-              <Badge className={`text-xs ${priority.color}`}>{priority.label}</Badge>
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {formatDate(request.created_at)}
               </span>
+              <span className={statusBadgeClass(maintenancePriorityTone(request.priority))}>{priority.label}</span>
             </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              <span>Submitted {formatDate(submitted)}</span>
+              {hasUpdate && <span>Updated {formatDate(request.updated_at)}</span>}
+              {request.completion_date && <span>Resolved {formatDate(request.completion_date)}</span>}
+            </div>
+            {request.resolution_notes && (
+              <p className="text-xs text-success mt-1.5 line-clamp-1">Resolution: {request.resolution_notes}</p>
+            )}
           </div>
           <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
         </div>
