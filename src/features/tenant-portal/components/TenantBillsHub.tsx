@@ -7,12 +7,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { chargeMeta } from '@/shared/constants/chargeTypes';
-import { Receipt, Smartphone, Layers, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
-import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
+import { Receipt, Smartphone, Layers, CheckCircle2 } from 'lucide-react';
+import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
 interface TenantBillsHubProps {
   tenantId: string;
@@ -38,7 +37,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
         .from('invoices')
         .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description')
         .eq('tenant_id', tenantId)
-        .in('status', ['pending', 'overdue'])
+        .in('status', ['pending', 'overdue', 'partially_paid'])
         .order('due_date', { ascending: true });
 
       if (error) throw error;
@@ -108,7 +107,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
 
   if (payable.length === 0) {
     return (
-      <Card className="border-success/30 bg-success/50">
+      <Card className="border-success/30 bg-success/10">
         <CardContent className="py-10 text-center">
           <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
           <p className="font-semibold text-success">All caught up</p>
@@ -161,14 +160,13 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                       : 'rent',
                 );
             const Icon = meta.icon;
-            const isOverdue = bill.status === 'overdue';
             const isChecked = selected.has(bill.id);
 
             return (
               <div
                 key={bill.id}
                 className={`rounded-xl border p-4 transition-colors ${
-                  isChecked ? 'border-warning/40 bg-warning' : 'border-border bg-card'
+                  isChecked ? 'border-warning/40 bg-warning/10' : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -188,19 +186,10 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                           ? bill.lineItems.map((l) => l.charge_label).join(' · ')
                           : bill.description || meta.label}
                       </p>
-                      <Badge variant={isOverdue ? 'destructive' : 'secondary'} className="text-xs">
-                        {isOverdue ? (
-                          <>
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Overdue
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="h-3 w-3 mr-1" />
-                            Due {format(new Date(bill.due_date), 'dd MMM')}
-                          </>
-                        )}
-                      </Badge>
+                      <span className={statusBadgeClass(invoiceStatusTone(bill.status))}>
+                        {invoiceStatusLabel(bill.status)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">Due {format(new Date(bill.due_date), 'dd MMM')}</span>
                     </div>
                     <p className="text-xs text-muted-foreground font-mono mt-0.5">{bill.invoice_number}</p>
                     {bill.lineItems.length > 1 && (
@@ -241,18 +230,19 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
             {selected.size > 0 && <p className="text-xl font-bold mt-0.5">{fmt(selectedTotal)}</p>}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
+            <Button size="lg" className="bg-teal hover:bg-teal/90 text-white gap-2 h-11" onClick={() => onPay(payable)}>
+              <Smartphone className="h-4 w-4" />
+              Pay now — {fmt(totalDue)}
+            </Button>
             <Button
               size="lg"
-              className="bg-success hover:bg-success text-white gap-2 h-11"
+              variant="secondary"
+              className="gap-2 h-11"
               disabled={selected.size === 0}
               onClick={() => onPay(selectedBills)}
             >
               <Layers className="h-4 w-4" />
               Pay selected ({selected.size || 0})
-            </Button>
-            <Button size="lg" variant="secondary" className="gap-2 h-11" onClick={() => onPay(payable)}>
-              <Smartphone className="h-4 w-4" />
-              Pay everything — {fmt(totalDue)}
             </Button>
           </div>
         </div>

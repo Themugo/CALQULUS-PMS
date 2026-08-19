@@ -187,7 +187,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-success" />
-            Pay via M-Pesa
+            Pay now — M-Pesa
           </DialogTitle>
           <DialogDescription>
             {isCombined
@@ -244,7 +244,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
                 className="w-full h-12 text-base bg-success hover:bg-success text-white gap-2"
               >
                 <Smartphone className="h-5 w-5" />
-                Send M-Pesa Request — {fmt(amountDue)}
+                Pay now — {fmt(amountDue)}
               </Button>
 
               <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

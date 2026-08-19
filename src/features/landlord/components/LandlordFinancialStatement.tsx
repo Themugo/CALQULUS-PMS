@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Label } from '@/shared/components/ui/label';
 import { Input } from '@/shared/components/ui/input';
-import {
-  TrendingUp, TrendingDown, DollarSign,
-  AlertTriangle, Banknote
-} from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
+import { AlertTriangle } from 'lucide-react';
+import { occupancyRateColor } from '@/shared/lib/statusBadge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
@@ -115,54 +114,99 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
         </div>
       </div>
 
-      {/* Summary cards */}
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+        <div className="space-y-3">
+          <Skeleton className="h-48 w-full" />
+          <div className="grid grid-cols-3 gap-3">
+            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+          </div>
         </div>
       ) : !financials ? null : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: 'Gross rent collected',  value: fmt(financials.gross_rent_collected), icon: TrendingUp,  color: 'text-teal',  bg: 'bg-teal/10' },
-              { label: `Management fee (${mgmtFee}%)`, value: fmt(financials.management_fee), icon: TrendingDown, color: 'text-muted-foreground', bg: 'bg-muted/50' },
-              { label: 'Your net revenue',       value: fmt(financials.net_to_landlord),    icon: Banknote,    color: 'text-success', bg: 'bg-success/10' },
-              { label: 'Payout pending',         value: fmt(financials.payout_pending),     icon: DollarSign,  color: 'text-warning', bg: 'bg-warning/10' },
-            ].map(s => (
-              <Card key={s.label}>
-                <CardContent className="p-4">
-                  <div className={`h-8 w-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>
-                    <s.icon className={`h-4 w-4 ${s.color}`} />
+          {(() => {
+            const collected = Number(financials.gross_rent_collected ?? 0);
+            const expense = Number(financials.management_fee ?? 0);
+            const net = Number(financials.net_to_landlord ?? 0);
+            const outstanding = Number(financials.arrears_total ?? 0);
+            const pending = Number(financials.payout_pending ?? 0);
+            const periodLabel = format(new Date(periodStart), 'dd/MM/yyyy');
+            const statementRows = [
+              { date: periodLabel, description: 'Collected — rent received', income: collected, expense: 0, balance: collected },
+              { date: periodLabel, description: `Expense — management fee (${mgmtFee}%)`, income: 0, expense, balance: net },
+              { date: periodLabel, description: 'Net to you', income: 0, expense: 0, balance: net, emphasize: true },
+            ];
+            return (
+              <Card className="enterprise-card overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="section-title">Statement — {format(new Date(periodStart), 'MMMM yyyy')}</CardTitle>
+                  <CardDescription>
+                    Collected is rent received. Expense is the management fee. Net is what remains for you.
+                    Outstanding is uncollected arrears. Pending is payout not yet paid out.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Income</TableHead>
+                        <TableHead className="text-right">Expense</TableHead>
+                        <TableHead className="text-right">Balance</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {statementRows.map((row) => (
+                        <TableRow key={row.description} className={row.emphasize ? 'bg-muted/40' : undefined}>
+                          <TableCell className="whitespace-nowrap text-sm">{row.date}</TableCell>
+                          <TableCell className={row.emphasize ? 'font-semibold' : undefined}>{row.description}</TableCell>
+                          <TableCell className="text-right tabular-nums">{row.income ? fmt(row.income) : '—'}</TableCell>
+                          <TableCell className="text-right tabular-nums text-muted-foreground">{row.expense ? fmt(row.expense) : '—'}</TableCell>
+                          <TableCell className={`text-right tabular-nums ${row.emphasize ? 'font-bold text-success' : 'font-medium'}`}>
+                            {fmt(row.balance)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <div className="grid grid-cols-2 gap-3 p-4 border-t border-border">
+                    <div className="rounded-lg border border-border bg-muted/20 p-3">
+                      <p className="text-xs text-muted-foreground mb-0.5">Outstanding</p>
+                      <p className={`text-lg font-semibold ${outstanding > 0 ? 'text-destructive' : 'text-foreground'}`}>{fmt(outstanding)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Uncollected arrears</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3">
+                      <p className="text-xs text-muted-foreground mb-0.5">Pending</p>
+                      <p className={`text-lg font-semibold ${pending > 0 ? 'text-warning' : 'text-foreground'}`}>{fmt(pending)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Payout not yet paid</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-0.5">{s.label}</p>
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            );
+          })()}
 
           {/* Occupancy */}
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Total units',    value: String(financials.total_units) },
               { label: 'Occupied',       value: String(financials.occupied_units) },
-              { label: 'Occupancy rate', value: `${financials.occupancy_rate}%` },
+              { label: 'Occupancy', value: `${financials.occupancy_rate}%`, className: occupancyRateColor(Number(financials.occupancy_rate ?? 0)) },
             ].map(s => (
               <div key={s.label} className="rounded-lg border border-border p-3 bg-muted/20 text-center">
                 <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
-                <p className="text-xl font-semibold">{s.value}</p>
+                <p className={`text-xl font-semibold ${s.className ?? ''}`}>{s.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Arrears warning */}
           {Number(financials.arrears_total) > 0 && (
             <div className="flex items-start gap-3 p-4 rounded-xl border border-warning/30 bg-warning/10">
               <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-foreground">Outstanding arrears</p>
-                <p className="text-xs text-warning mt-0.5">
-                  {fmt(financials.arrears_total)} in unpaid invoices across your property. Your manager is working to collect.
+                <p className="text-sm font-semibold text-foreground">Outstanding</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {fmt(Number(financials.arrears_total))} uncollected. Your manager is working to collect — this is not yet income.
                 </p>
               </div>
             </div>
@@ -181,8 +225,8 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                       <tr className="text-left text-xs text-muted-foreground border-b">
                         <th className="pb-2 font-medium">Unit</th>
                         <th className="pb-2 font-medium">Status</th>
-                        <th className="pb-2 font-medium text-right">Monthly rent</th>
-                        <th className="pb-2 font-medium text-right">Total collected</th>
+                        <th className="pb-2 font-medium text-right">Billed / month</th>
+                        <th className="pb-2 font-medium text-right">Collected</th>
                         <th className="pb-2 font-medium text-right">Payments</th>
                       </tr>
                     </thead>
@@ -212,24 +256,24 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
           {/* Revenue breakdown */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Revenue breakdown — {format(new Date(periodStart), 'MMMM yyyy')}</CardTitle>
+              <CardTitle className="text-sm">Net performance — {format(new Date(periodStart), 'MMMM yyyy')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Gross rent collected</span>
-                  <span className="font-semibold">{fmt(financials.gross_rent_collected)}</span>
+                  <span className="text-muted-foreground">Collected</span>
+                  <span className="font-semibold">{fmt(Number(financials.gross_rent_collected))}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">
-                    Management fee ({mgmtFee}% — {property?.manager_name ?? 'Manager'})
+                    Expense — management fee ({mgmtFee}%{property?.manager_name ? ` · ${property.manager_name}` : ''})
                   </span>
-                  <span className="text-muted-foreground">– {fmt(financials.management_fee)}</span>
+                  <span className="text-muted-foreground">– {fmt(Number(financials.management_fee))}</span>
                 </div>
                 <div className="h-px bg-border" />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Net to you ({property?.revenue_share_pct}%)</span>
-                  <span className="text-xl font-bold text-success">{fmt(financials.net_to_landlord)}</span>
+                  <span className="text-xl font-bold text-success">{fmt(Number(financials.net_to_landlord))}</span>
                 </div>
               </div>
             </CardContent>
@@ -241,7 +285,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
       {trend.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">6-month revenue trend (your net)</CardTitle>
+            <CardTitle className="text-sm">6-month net to you</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>

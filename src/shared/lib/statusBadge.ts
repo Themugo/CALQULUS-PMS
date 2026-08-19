@@ -39,13 +39,60 @@ export function leaseStatusTone(status: string): StatusTone {
 export function invoiceStatusTone(status: string): StatusTone {
   switch (status) {
     case "paid":
+    case "succeeded":
+    case "success":
+    case "complete":
       return "success";
     case "partially_paid":
       return "info";
     case "pending":
+    case "processing":
       return "warning";
     case "overdue":
     case "failed":
+      return "danger";
+    case "cancelled":
+    case "canceled":
+      return "neutral";
+    default:
+      return "neutral";
+  }
+}
+
+/** Tenant-facing payment/invoice labels — Pending, Successful, Failed, Cancelled, Partially paid. */
+export function invoiceStatusLabel(status: string): string {
+  switch (status) {
+    case "paid":
+    case "succeeded":
+    case "success":
+    case "complete":
+      return "Successful";
+    case "partially_paid":
+      return "Partially paid";
+    case "pending":
+    case "processing":
+      return "Pending";
+    case "overdue":
+      return "Overdue";
+    case "failed":
+      return "Failed";
+    case "cancelled":
+    case "canceled":
+      return "Cancelled";
+    default:
+      return status.replace(/_/g, " ");
+  }
+}
+
+export function payoutStatusTone(status: string): StatusTone {
+  switch (status) {
+    case "paid":
+      return "success";
+    case "approved":
+      return "info";
+    case "pending":
+      return "warning";
+    case "rejected":
       return "danger";
     default:
       return "neutral";

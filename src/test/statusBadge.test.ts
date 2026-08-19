@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  invoiceStatusLabel,
   invoiceStatusTone,
   leaseStatusTone,
   maintenancePriorityTone,
   maintenanceStatusTone,
   occupancyRateColor,
   occupancyTone,
+  payoutStatusTone,
   requestAgeLabel,
   statusBadgeClass,
   tenantStatusTone,
@@ -26,6 +28,17 @@ describe("statusBadge helpers", () => {
     expect(invoiceStatusTone("paid")).toBe("success");
     expect(invoiceStatusTone("overdue")).toBe("danger");
     expect(invoiceStatusTone("partially_paid")).toBe("info");
+    expect(invoiceStatusTone("failed")).toBe("danger");
+    expect(invoiceStatusTone("cancelled")).toBe("neutral");
+    expect(invoiceStatusTone("pending")).toBe("warning");
+    expect(invoiceStatusLabel("paid")).toBe("Successful");
+    expect(invoiceStatusLabel("partially_paid")).toBe("Partially paid");
+    expect(invoiceStatusLabel("failed")).toBe("Failed");
+    expect(invoiceStatusLabel("cancelled")).toBe("Cancelled");
+    expect(invoiceStatusLabel("pending")).toBe("Pending");
+    expect(payoutStatusTone("paid")).toBe("success");
+    expect(payoutStatusTone("pending")).toBe("warning");
+    expect(payoutStatusTone("rejected")).toBe("danger");
   });
 
   it("maps maintenance priority and status without bright one-off colors", () => {

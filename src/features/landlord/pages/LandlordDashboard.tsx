@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -23,7 +23,7 @@ import {
   LogOut, TrendingUp, Building2, FileText,
   Clock, CheckCircle, AlertCircle,
   Banknote, PieChart, MessageSquare,
-  Settings, BarChart3, Users, CheckSquare, DollarSign, Activity, RefreshCw,
+  Settings, BarChart3, Users, Activity, RefreshCw,
   AlertTriangle, Wrench, ArrowRight
 } from 'lucide-react';
 import LandlordBankDetails from '@/features/landlord/components/LandlordBankDetails';
@@ -34,6 +34,8 @@ import LandlordNotificationPreferences from '@/features/landlord/components/Land
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { StatCard } from '@/features/dashboard/components/StatCard';
+import { occupancyRateColor, occupancyTone, payoutStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
 interface PropertySummary {
   id: string;
@@ -79,11 +81,12 @@ interface LandlordActivity {
 const fmt = (n: number, currency = 'KES') =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency, minimumFractionDigits: 0 }).format(n);
 
-const statusColors: Record<string, string> = {
-  pending: 'bg-warning/15 text-warning border-warning/30',
-  approved: 'bg-info/15 text-info border-info/30',
-  paid: 'bg-success/15 text-success border-success/30',
-  rejected: 'bg-destructive/15 text-destructive border-destructive/30',
+const occupancyBarClass = (pct: number) => {
+  const tone = occupancyTone(pct);
+  if (tone === 'success') return 'bg-success';
+  if (tone === 'info') return 'bg-primary';
+  if (tone === 'warning') return 'bg-warning';
+  return 'bg-destructive';
 };
 
 const LandlordDashboard = () => {
@@ -358,8 +361,8 @@ const LandlordDashboard = () => {
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <BrandMark size="md" showWordmark subtitle="Landlord" />
-            <Badge variant="outline" className="ml-1 text-xs border-teal/30 text-teal bg-teal/10">
-              Property Owner
+            <Badge variant="outline" className="ml-1 text-xs border-border text-muted-foreground">
+              Portfolio
             </Badge>
           </div>
           <div className="flex items-center gap-3">
@@ -372,7 +375,7 @@ const LandlordDashboard = () => {
               size="sm"
               onClick={() => queryClient.invalidateQueries()}
               className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground"
-              title="Refresh Portfolio"
+              title="Refresh"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -409,256 +412,140 @@ const LandlordDashboard = () => {
           </div>
         )}
 
-        {/* ── EXECUTIVE KPI MATRIX ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* 1. Portfolio — teal */}
-          <Card className="border-l-4 border-l-teal border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 shrink-0" />
-                  Portfolio
-                </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
-                  {portfolioData?.totalProperties ?? 0} Props
-                </Badge>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Units:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalUnits ?? 0} units`}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Occupied Units:</span>
-                  <span className="font-semibold text-success">{propertiesLoading ? "…" : `${portfolioData?.totalOccupied ?? 0} units`}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Vacant Units:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalVacant ?? 0} units`}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 2. Occupancy / Health — green/success */}
-          <Card className="border-l-4 border-l-success border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                  <PieChart className="h-3.5 w-3.5 shrink-0" />
-                  Occupancy
-                </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                  {portfolioData?.occupancyRate ?? 0}% Occupied
-                </Badge>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Active Leases:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.activeLeasesCount ?? 0} active`}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Collection Rate:</span>
-                  <span className="font-semibold text-success">
-                    {propertiesLoading || !portfolioData?.totalExpectedRent ? "…" : `${Math.min(100, Math.round(((portfolioData?.totalCollectedRent ?? 0) / (portfolioData?.totalExpectedRent || 1)) * 100))}%`}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Open Repairs:</span>
-                  <span className="font-medium text-foreground">{propertiesLoading ? "…" : `${portfolioData?.openMaintenanceCount ?? 0} open`}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 3. Revenue — green/success */}
-          <Card className="border-l-4 border-l-success border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                  <DollarSign className="h-3.5 w-3.5 shrink-0" />
-                  Revenue (MTD)
-                </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                  MTD
-                </Badge>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Collected:</span>
-                  <span className="font-bold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalCollectedRent ?? 0)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Net Landlord Share:</span>
-                  <span className="font-bold text-success">{propertiesLoading ? "…" : fmt(portfolioData?.netLandlordShareMTD ?? 0)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Paid Out:</span>
-                  <span className="font-semibold text-foreground">{payoutsLoading ? "…" : fmt(totalPaidOut)}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 4. Outstanding — red/destructive */}
-          <Card className="border-l-4 border-l-destructive border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  Outstanding
-                </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-destructive/30 text-destructive">
-                  Arrears
-                </Badge>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Arrears:</span>
-                  <span className="font-bold text-destructive">{propertiesLoading ? "…" : fmt(portfolioData?.totalArrears ?? 0)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Expected Rent:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalExpectedRent ?? 0)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Uncollected Balance:</span>
-                  <span className="font-semibold text-warning">
-                    {propertiesLoading ? "…" : fmt(Math.max(0, (portfolioData?.totalExpectedRent ?? 0) - (portfolioData?.totalCollectedRent ?? 0)))}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 5. Attention — amber/warning */}
-          <Card className="border-l-4 border-l-warning border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                  <CheckSquare className="h-3.5 w-3.5 shrink-0" />
-                  Attention
-                </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-warning/30 text-warning">
-                  {pendingPayouts + (portfolioData?.expiringLeasesCount ?? 0) + (portfolioData?.urgentMaintenanceCount ?? 0)} Alerts
-                </Badge>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Pending Payouts:</span>
-                  <span className="font-semibold text-warning">{pendingPayouts} awaiting review</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Expiring Leases (30d):</span>
-                  <span className="font-medium text-foreground">{portfolioData?.expiringLeasesCount ?? 0} leases</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Urgent Repairs:</span>
-                  <span className="font-medium text-foreground">{portfolioData?.urgentMaintenanceCount ?? 0} requests</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div>
+          <h1 className="page-title">How are my properties performing?</h1>
+          <p className="supporting-text mt-1">
+            Collected is rent received this month. Outstanding is uncollected arrears. Net is your share after revenue split.
+          </p>
         </div>
 
-        {/* ── STATS CARDS ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {[
-            {
-              label: 'Portfolio Properties',
-              value: propertiesLoading ? '—' : String(portfolioData?.totalProperties ?? 0),
-              sub: propertiesLoading ? '' : `${portfolioData?.totalUnits ?? 0} total units (${portfolioData?.totalVacant ?? 0} vacant)`,
-              icon: Building2,
-              iconBg: 'bg-gradient-to-br from-teal/15 to-teal/5 border-teal/20',
-              iconColor: 'text-teal',
-              accent: 'via-teal/60',
-            },
-            {
-              label: 'Portfolio Occupancy',
-              value: propertiesLoading ? '—' : `${portfolioData?.occupancyRate ?? 0}%`,
-              sub: propertiesLoading ? '' : `${portfolioData?.totalOccupied ?? 0} of ${portfolioData?.totalUnits ?? 0} occupied`,
-              icon: PieChart,
-              iconBg: 'bg-gradient-to-br from-success/15 to-success/5 border-success/20',
-              iconColor: 'text-success',
-              accent: 'via-success/60',
-              progress: propertiesLoading ? undefined : portfolioData?.occupancyRate,
-            },
-            {
-              label: 'Net Share MTD',
-              value: propertiesLoading ? '—' : fmt(portfolioData?.netLandlordShareMTD ?? 0),
-              sub: 'Your portion of collected rent',
-              icon: TrendingUp,
-              iconBg: 'bg-gradient-to-br from-success/15 to-success/5 border-success/25',
-              iconColor: 'text-success',
-              accent: 'via-success/60',
-            },
-            {
-              label: 'Total Paid Out',
-              value: payoutsLoading ? '—' : fmt(totalPaidOut),
-              sub: payoutsLoading ? '' : `${pendingPayouts} request${pendingPayouts !== 1 ? 's' : ''} pending`,
-              icon: Banknote,
-              iconBg: 'bg-gradient-to-br from-teal/15 to-teal/5 border-teal/20',
-              iconColor: 'text-teal',
-              accent: 'via-teal/60',
-            },
-          ].map(stat => (
-            <div
-              key={stat.label}
-              className="group relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-teal/20"
-            >
-              <div className={`absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent ${stat.accent} to-transparent`} />
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-1.5 min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest truncate">{stat.label}</p>
-                  {propertiesLoading || payoutsLoading ? (
-                    <Skeleton className="h-7 w-24" />
-                  ) : (
-                    <p className="font-heading text-2xl font-bold text-card-foreground tracking-tight truncate">{stat.value}</p>
-                  )}
-                  {stat.sub && !propertiesLoading && !payoutsLoading && (
-                    <p className="text-xs text-muted-foreground truncate">{stat.sub}</p>
-                  )}
-                </div>
-                <div className={`rounded-xl border p-2.5 flex-shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110 ${stat.iconBg}`}>
-                  <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
-                </div>
-              </div>
-              {stat.progress !== undefined && !propertiesLoading && (
-                <div className="mt-3 pt-3 border-t border-border/40">
-                  <div className="h-1.5 w-full rounded-full bg-muted/60 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-success transition-all duration-700 ease-out"
-                      style={{ width: `${Math.min(100, Math.max(0, stat.progress))}%` }}
-                    />
-                  </div>
-                </div>
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-5">
+          {propertiesLoading ? (
+            Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+          ) : (
+            <>
+              <StatCard
+                title="Collected"
+                value={fmt(portfolioData?.totalCollectedRent ?? 0)}
+                change={`Billed ${fmt(portfolioData?.totalExpectedRent ?? 0)}`}
+                changeType={(portfolioData?.totalCollectedRent ?? 0) >= (portfolioData?.totalExpectedRent ?? 0) ? 'positive' : 'neutral'}
+                icon={Banknote}
+                iconColor="success"
+              />
+              <StatCard
+                title="Outstanding"
+                value={fmt(portfolioData?.totalArrears ?? 0)}
+                change={(portfolioData?.totalArrears ?? 0) > 0 ? 'Uncollected arrears' : 'No arrears'}
+                changeType={(portfolioData?.totalArrears ?? 0) > 0 ? 'negative' : 'positive'}
+                icon={AlertCircle}
+                iconColor={(portfolioData?.totalArrears ?? 0) > 0 ? 'destructive' : 'success'}
+              />
+              <StatCard
+                title="Occupancy"
+                value={`${portfolioData?.occupancyRate ?? 0}%`}
+                change={`${portfolioData?.totalOccupied ?? 0} occupied · ${portfolioData?.totalVacant ?? 0} vacant`}
+                changeType={(portfolioData?.occupancyRate ?? 0) >= 90 ? 'positive' : (portfolioData?.occupancyRate ?? 0) >= 70 ? 'neutral' : 'negative'}
+                icon={PieChart}
+                iconColor={(portfolioData?.occupancyRate ?? 0) >= 90 ? 'success' : (portfolioData?.occupancyRate ?? 0) >= 70 ? 'primary' : 'warning'}
+                progressValue={portfolioData?.occupancyRate ?? 0}
+              />
+              <StatCard
+                title="Net to you"
+                value={fmt(portfolioData?.netLandlordShareMTD ?? 0)}
+                change="Your share of collected rent"
+                changeType="positive"
+                icon={TrendingUp}
+                iconColor="success"
+              />
+              <StatCard
+                title="Portfolio"
+                value={String(portfolioData?.totalProperties ?? 0)}
+                change={`${portfolioData?.totalUnits ?? 0} units · ${payoutsLoading ? '…' : fmt(totalPaidOut)} paid out`}
+                changeType="neutral"
+                icon={Building2}
+                iconColor="primary"
+              />
+            </>
+          )}
+        </div>
+
+        {!propertiesLoading && portfolioData && (
+          (portfolioData.totalArrears > 0 ||
+            portfolioData.urgentMaintenanceCount > 0 ||
+            portfolioData.openMaintenanceCount > 0 ||
+            pendingPayouts > 0 ||
+            portfolioData.expiringLeasesCount > 0) && (
+          <div className="enterprise-card p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="section-title">Needs attention</h2>
+              <span className="meta-text">
+                {(portfolioData.totalArrears > 0 ? 1 : 0) +
+                  (portfolioData.urgentMaintenanceCount > 0 || portfolioData.openMaintenanceCount > 0 ? 1 : 0) +
+                  (pendingPayouts > 0 ? 1 : 0) +
+                  (portfolioData.expiringLeasesCount > 0 ? 1 : 0)} items
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {portfolioData.totalArrears > 0 && (
+                <button type="button" className="text-left rounded-lg border border-destructive/20 bg-destructive/5 p-3" onClick={() => setActiveTab('financials')}>
+                  <p className="text-xs text-muted-foreground">Outstanding</p>
+                  <p className="text-sm font-semibold text-destructive mt-0.5">{fmt(portfolioData.totalArrears)}</p>
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">Statements <ArrowRight className="h-3 w-3" /></p>
+                </button>
+              )}
+              {(portfolioData.urgentMaintenanceCount > 0 || portfolioData.openMaintenanceCount > 0) && (
+                <button type="button" className="text-left rounded-lg border border-warning/20 bg-warning/5 p-3" onClick={() => setActiveTab('properties')}>
+                  <p className="text-xs text-muted-foreground">Maintenance</p>
+                  <p className="text-sm font-semibold mt-0.5">
+                    {portfolioData.urgentMaintenanceCount > 0
+                      ? `${portfolioData.urgentMaintenanceCount} urgent`
+                      : `${portfolioData.openMaintenanceCount} open`}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">Portfolio <ArrowRight className="h-3 w-3" /></p>
+                </button>
+              )}
+              {pendingPayouts > 0 && (
+                <button type="button" className="text-left rounded-lg border border-warning/20 bg-warning/5 p-3" onClick={() => setActiveTab('payouts')}>
+                  <p className="text-xs text-muted-foreground">Pending payouts</p>
+                  <p className="text-sm font-semibold text-warning mt-0.5">{pendingPayouts} awaiting review</p>
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">Payouts <ArrowRight className="h-3 w-3" /></p>
+                </button>
+              )}
+              {portfolioData.expiringLeasesCount > 0 && (
+                <button type="button" className="text-left rounded-lg border border-border bg-muted/20 p-3" onClick={() => setActiveTab('properties')}>
+                  <p className="text-xs text-muted-foreground">Leases expiring (30d)</p>
+                  <p className="text-sm font-semibold mt-0.5">{portfolioData.expiringLeasesCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">Portfolio <ArrowRight className="h-3 w-3" /></p>
+                </button>
               )}
             </div>
-          ))}
-        </div>
+          </div>
+          )
+        )}
 
-        {/* ── ARREARS URGENT ALERT BAR ── */}
-        {!propertiesLoading && portfolioData && portfolioData.totalArrears > 0 && (
-          <div className="flex items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-destructive">
-                  {fmt(portfolioData.totalArrears)} in outstanding arrears across your portfolio
-                </p>
-                <p className="supporting-text text-destructive/80 mt-0.5">
-                  Your property manager is handling collection efforts for these accounts.
-                </p>
-              </div>
+        {!propertiesLoading && (portfolioData?.activities?.length ?? 0) > 0 && (
+          <div className="enterprise-card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="section-title">Recent activity</h2>
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setActiveTab('activity')}>
+                View all <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-destructive/30 text-destructive hover:bg-destructive/10 shrink-0"
-              onClick={() => setActiveTab('financials')}
-            >
-              View Financial Breakdown <ArrowRight className="h-3.5 w-3.5 ml-1" />
-            </Button>
+            <div className="space-y-2">
+              {portfolioData!.activities.slice(0, 3).map((act) => (
+                <div key={act.id} className="flex items-start gap-3 py-1.5">
+                  <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center shrink-0">
+                    {act.type === 'maintenance' ? <Wrench className="h-3.5 w-3.5 text-muted-foreground" /> : <FileText className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-foreground truncate">{act.description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {act.propertyName ?? 'Property'} · {format(new Date(act.timestamp), 'dd/MM/yyyy')}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -666,29 +553,30 @@ const LandlordDashboard = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex-wrap h-auto gap-1 p-1 bg-muted/60 border border-border/60">
             <TabsTrigger value="properties" className="gap-1.5 text-xs">
-              <Building2 className="h-3.5 w-3.5" />My Properties
+              <Building2 className="h-3.5 w-3.5" />Portfolio
             </TabsTrigger>
             <TabsTrigger value="financials" className="gap-1.5 text-xs">
-              <BarChart3 className="h-3.5 w-3.5" />Financial Performance
+              <BarChart3 className="h-3.5 w-3.5" />Statements
             </TabsTrigger>
             <TabsTrigger value="payouts" className="gap-1.5 text-xs">
               <Banknote className="h-3.5 w-3.5" />
-              Payout Requests
+              Payouts
               {pendingPayouts > 0 && (
-                <Badge className="ml-1 h-4 min-w-4 text-xs px-1 bg-warning/15 text-warning border-warning/30">{pendingPayouts}</Badge>
+                <span className={`${statusBadgeClass('warning')} ml-1`}>{pendingPayouts}</span>
               )}
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="gap-1.5 text-xs">
-              <Activity className="h-3.5 w-3.5" />Recent Activity
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="gap-1.5 text-xs">
-              <MessageSquare className="h-3.5 w-3.5" />Messages
             </TabsTrigger>
             <TabsTrigger value="documents" className="gap-1.5 text-xs">
               <FileText className="h-3.5 w-3.5" />Documents
             </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-1.5 text-xs">
-              <Settings className="h-3.5 w-3.5" />Bank & Settings
+            <span className="hidden sm:inline-block w-px h-5 bg-border mx-1 self-center" aria-hidden />
+            <TabsTrigger value="activity" className="gap-1.5 text-xs text-muted-foreground data-[state=active]:text-foreground">
+              <Activity className="h-3.5 w-3.5" />Activity
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="gap-1.5 text-xs text-muted-foreground data-[state=active]:text-foreground">
+              <MessageSquare className="h-3.5 w-3.5" />Messages
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-1.5 text-xs text-muted-foreground data-[state=active]:text-foreground">
+              <Settings className="h-3.5 w-3.5" />Account
             </TabsTrigger>
           </TabsList>
 
@@ -720,8 +608,8 @@ const LandlordDashboard = () => {
             ) : (
               properties.map(prop => {
                 const occRate = prop.units > 0 ? Math.round((prop.occupied / prop.units) * 100) : 0;
-                const barColor = occRate >= 80 ? 'bg-success' : occRate >= 50 ? 'bg-warning' : 'bg-destructive';
-                const textColor = occRate >= 80 ? 'text-success' : occRate >= 50 ? 'text-warning' : 'text-destructive';
+                const barColor = occupancyBarClass(occRate);
+                const textColor = occupancyRateColor(occRate);
                 return (
                   <React.Fragment key={prop.id}>
                     <Card className="border-border/60 hover:shadow-md transition-shadow">
@@ -740,7 +628,7 @@ const LandlordDashboard = () => {
                             <div className="mb-3">
                               <div className="flex items-center justify-between text-xs mb-1">
                                 <span className="text-muted-foreground flex items-center gap-1">
-                                  <Users className="h-3 w-3" /> Occupancy Rate
+                                  <Users className="h-3 w-3" /> Occupancy
                                 </span>
                                 <span className={`font-semibold ${textColor}`}>{occRate}% ({prop.occupied} of {prop.units} units occupied)</span>
                               </div>
@@ -762,23 +650,23 @@ const LandlordDashboard = () => {
 
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-border/40">
                               <div>
-                                <p className="text-xs text-muted-foreground">Units Status</p>
-                                <p className="font-medium text-sm text-foreground">{prop.occupied} filled / {prop.vacant} vacant</p>
+                                <p className="text-xs text-muted-foreground">Billed</p>
+                                <p className="font-medium text-sm text-foreground">{fmt(prop.expectedRent)}</p>
                               </div>
                               <div>
-                                <p className="text-xs text-muted-foreground">Collected Rent (MTD)</p>
+                                <p className="text-xs text-muted-foreground">Collected</p>
                                 <p className="font-medium text-sm text-foreground">{fmt(prop.collectedRent)}</p>
                               </div>
                               <div>
-                                <p className="text-xs text-muted-foreground">Your Share (MTD)</p>
-                                <p className="font-semibold text-sm text-success">
-                                  {fmt(prop.collectedRent * prop.revenue_share_pct / 100)}
+                                <p className="text-xs text-muted-foreground">Outstanding</p>
+                                <p className={`font-medium text-sm ${prop.outstandingArrears > 0 ? 'text-destructive font-semibold' : 'text-foreground'}`}>
+                                  {fmt(prop.outstandingArrears)}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-xs text-muted-foreground">Arrears</p>
-                                <p className={`font-medium text-sm ${prop.outstandingArrears > 0 ? 'text-destructive font-semibold' : 'text-foreground'}`}>
-                                  {fmt(prop.outstandingArrears)}
+                                <p className="text-xs text-muted-foreground">Net to you</p>
+                                <p className="font-semibold text-sm text-success">
+                                  {fmt(prop.collectedRent * prop.revenue_share_pct / 100)}
                                 </p>
                               </div>
                             </div>
@@ -793,22 +681,22 @@ const LandlordDashboard = () => {
                             )}
                             <div className="flex flex-col gap-2">
                               <Button
-                                variant="outline"
                                 size="sm"
+                                className="btn-brand"
                                 onClick={() => setDetailPropertyId(detailPropertyId === prop.id ? null : prop.id)}
                               >
-                                {detailPropertyId === prop.id ? 'Hide Details' : 'View Property Details'}
+                                {detailPropertyId === prop.id ? 'Hide details' : 'View details'}
                               </Button>
                               <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="sm"
-                                className="border-teal/30 text-teal hover:bg-teal/10"
+                                className="text-muted-foreground"
                                 onClick={() => {
                                   setSelectedProperty(prop.id);
                                   setPayoutDialogOpen(true);
                                 }}
                               >
-                                Request Payout
+                                Request payout
                               </Button>
                             </div>
                           </div>
@@ -996,7 +884,7 @@ const LandlordDashboard = () => {
                         </TableCell>
                         <TableCell className="font-semibold text-foreground">{fmt(payout.amount)}</TableCell>
                         <TableCell>
-                          <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border ${statusColors[payout.status]}`}>
+                          <span className={`inline-flex items-center gap-1 ${statusBadgeClass(payoutStatusTone(payout.status))}`}>
                             {payout.status === 'paid' && <CheckCircle className="h-3 w-3" />}
                             {payout.status === 'pending' && <Clock className="h-3 w-3" />}
                             {payout.status === 'rejected' && <AlertCircle className="h-3 w-3" />}

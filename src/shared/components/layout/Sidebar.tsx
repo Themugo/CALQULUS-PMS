@@ -136,7 +136,7 @@ const landlordNavGroups: NavGroup[] = [
   {
     title: "PROPERTY OWNER",
     items: [
-      { name: "Landlord Dashboard", href: "/landlord/dashboard", icon: Building2 },
+      { name: "Portfolio", href: "/landlord/dashboard", icon: Building2 },
     ],
   },
 ];
@@ -145,8 +145,8 @@ const tenantNavGroups: NavGroup[] = [
   {
     title: "TENANT PORTAL",
     items: [
-      { name: "Overview", href: "/portal", icon: Home },
-      { name: "Rent Payments", href: "/portal/payments", icon: CreditCard },
+      { name: "Home", href: "/portal", icon: Home },
+      { name: "Payments", href: "/portal/payments", icon: CreditCard },
       { name: "Maintenance", href: "/portal/maintenance", icon: Wrench },
       { name: "Documents", href: "/portal/documents", icon: FileText },
       { name: "Vacation Notice", href: "/portal/vacation-notices", icon: Calendar },

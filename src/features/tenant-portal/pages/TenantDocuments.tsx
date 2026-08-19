@@ -47,6 +47,8 @@ import UnitInspectionChecklist from '@/features/units/components/UnitInspectionC
 import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { onActivateKey } from '@/shared/lib/a11y';
+import { useNavigate } from 'react-router-dom';
+import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -92,6 +94,7 @@ interface UnitInspection {
 
 const TenantDocuments: React.FC = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const { user, userRole } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -274,7 +277,9 @@ const TenantDocuments: React.FC = () => {
   });
 
   return (
-    <div className="space-y-4">
+    <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
+      <MobilePageHeader title="Documents" onBack={() => navigate('/portal')} />
+      <main className="p-4 max-w-3xl mx-auto space-y-4">
       {/* Lease renewal banner */}
       {renewalNotices.filter((n) => !n.tenant_acknowledged).length > 0 && (
         <div className="p-4 rounded-xl border-2 border-success/40 bg-success/20">
@@ -809,6 +814,7 @@ const TenantDocuments: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </main>
       {isMobile && <MobileBottomNav />}
     </div>
   );
