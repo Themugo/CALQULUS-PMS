@@ -13,7 +13,7 @@ const actions = [
   { label: "Leases", icon: FileText, href: "/leases", description: "Agreements and expiry" },
   { label: "Invoices", icon: CreditCard, href: "/billing", description: "Bill and collect" },
   { label: "Payments", icon: Wallet, href: "/payments", description: "Payment history" },
-  { label: "Receipts", icon: Receipt, href: "/billing", description: "Paid invoice receipts" },
+          { label: "Receipts", icon: Receipt, href: "/billing?tab=receipts", description: "Paid invoice receipts" },
 ];
 
 export function ManagerQuickActions({ hasProperties: _hasProperties }: ManagerQuickActionsProps) {

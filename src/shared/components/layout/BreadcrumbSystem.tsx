@@ -75,7 +75,10 @@ export function BreadcrumbSystem() {
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           const isLast = index === pathnames.length - 1;
-          const label = ROUTE_LABELS[value.toLowerCase()] || decodeURIComponent(value);
+          const label = ROUTE_LABELS[value.toLowerCase()]
+            || (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+              ? "Details"
+              : decodeURIComponent(value));
 
           return (
             <div key={to} className="inline-flex items-center gap-1.5">

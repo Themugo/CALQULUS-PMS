@@ -1,12 +1,11 @@
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { FileText, Calendar } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { Link } from "react-router-dom";
+import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 
 interface Lease {
   id: string;
@@ -24,17 +23,16 @@ interface Tenant {
   name: string;
 }
 
-const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  expired: "bg-red-500/10 text-red-600 border-red-500/20",
-  terminated: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  expiring: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-};
-
 interface PropertyLeasesTabProps {
   leases: Lease[];
   tenants: Tenant[];
+}
+
+function nextLeaseAction(status: string): { href: string; label: string } {
+  if (status === "active" || status === "expiring") {
+    return { href: "/billing", label: "Invoice / collect" };
+  }
+  return { href: "/leases", label: "Manage lease" };
 }
 
 export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
@@ -54,7 +52,7 @@ export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="h-5 w-5 text-amber-500" />
+            <FileText className="h-5 w-5 text-muted-foreground" />
             Leases
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -78,38 +76,43 @@ export function PropertyLeasesTab({ leases, tenants }: PropertyLeasesTabProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Unit</TableHead>
-                <TableHead>Tenant</TableHead>
-                <TableHead>Rent</TableHead>
-                <TableHead>Deposit</TableHead>
-                <TableHead>Period</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Tenant</TableHead>
+                <TableHead>Unit</TableHead>
+                <TableHead>Rent</TableHead>
+                <TableHead>Expiry</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leases.map((lease) => (
-                <TableRow key={lease.id}>
-                  <TableCell className="font-medium">{lease.unit}</TableCell>
-                  <TableCell>{getTenantName(lease.tenant_id)}</TableCell>
-                  <TableCell className="font-medium text-emerald-600">
-                    {formatCurrency(lease.monthly_rent)}/mo
-                  </TableCell>
-                  <TableCell>
-                    {lease.deposit ? formatCurrency(lease.deposit) : "—"}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {format(new Date(lease.start_date), 'dd/MM/yy')} - {format(new Date(lease.end_date), 'dd/MM/yy')}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={cn("capitalize", statusStyles[lease.status] || "")}>
-                      {lease.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {leases.map((lease) => {
+                const next = nextLeaseAction(lease.status);
+                return (
+                  <TableRow key={lease.id}>
+                    <TableCell>
+                      <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
+                        {lease.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium">{getTenantName(lease.tenant_id)}</TableCell>
+                    <TableCell>{lease.unit}</TableCell>
+                    <TableCell className="font-medium text-foreground">
+                      {formatCurrency(lease.monthly_rent)}/mo
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {format(new Date(lease.start_date), "dd/MM/yy")} – {format(new Date(lease.end_date), "dd/MM/yy")}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link to={next.href} className="text-sm text-primary hover:underline">
+                        {next.label}
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}

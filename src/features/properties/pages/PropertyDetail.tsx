@@ -22,7 +22,7 @@ import {
 } from "@/shared/components/ui/table";
 import {
   ArrowLeft, Building2, MapPin, Users, Home, Mail, Phone, Calendar,
-  Plus, UserPlus, DollarSign, Pencil, X, Layers, History, Hash,
+  Plus, UserPlus, DollarSign, X, Layers, History, Hash,
   Wrench, CreditCard, FileText, Droplets, FileSignature, CalendarX, Settings2,
   FileSpreadsheet, User,
 } from "lucide-react";
@@ -31,6 +31,7 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
+import { occupancyRateColor, statusBadgeClass } from "@/shared/lib/statusBadge";
 import { UnitManagement } from "@/features/units/components/UnitManagement";
 import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import { PropertyHistory } from "@/features/properties/components/PropertyHistory";
@@ -83,17 +84,17 @@ interface Lease {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  inactive: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  expiring: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-  expired: "bg-red-500/10 text-red-600 border-red-500/20",
+  active: statusBadgeClass("success"),
+  pending: statusBadgeClass("warning"),
+  inactive: statusBadgeClass("neutral"),
+  expiring: statusBadgeClass("warning"),
+  expired: statusBadgeClass("danger"),
 };
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
   const { can, is } = useRBAC();
@@ -104,8 +105,12 @@ const PropertyDetail = () => {
   const canSendNotices     = is('manager') || can('send_notices');
   const canCreateInvoices  = is('manager') || can('create_invoices');
   const canApproveMoveouts = is('manager') || can('approve_moveouts');
-    // Get initial tab from URL query param
-  const initialTab = searchParams.get('tab') || 'units';
+  const activeTab = searchParams.get("tab") || "units";
+  const setActiveTab = (tab: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", tab);
+    setSearchParams(next, { replace: true });
+  };
 
   const [property, setProperty] = useState<Property | null>(null);
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -365,6 +370,21 @@ const PropertyDetail = () => {
 
   const occupancyRate = property.units > 0 ? Math.round((property.occupied / property.units) * 100) : 0;
   const unitsData = getUnitsWithTenants();
+  const occupants = tenants.map((t) => {
+    const lease = leases.find((l) => l.tenant_id === t.id);
+    return {
+      unitNumber: (t.unit || lease?.unit || "").trim(),
+      tenantName: t.name,
+      leaseStatus: lease?.status ?? null,
+    };
+  }).filter((o) => o.unitNumber);
+
+  const GOLDEN_PATH = [
+    { id: "units", label: "Unit" },
+    { id: "tenants", label: "Tenant" },
+    { id: "leases", label: "Lease" },
+    { id: "billing", label: "Invoice & payment" },
+  ] as const;
 
   return (
     <Layout
@@ -461,12 +481,7 @@ const PropertyDetail = () => {
                   <Building2 className="h-4 w-4" />
                   <span className="text-xs font-medium">Occupancy</span>
                 </div>
-                <p className={cn(
-                  "text-2xl font-bold",
-                  occupancyRate >= 90 && "text-emerald-600",
-                  occupancyRate >= 70 && occupancyRate < 90 && "text-amber-600",
-                  occupancyRate < 70 && "text-red-600"
-                )}>
+                <p className={cn("text-2xl font-bold", occupancyRateColor(occupancyRate))}>
                   {occupancyRate}%
                 </p>
               </div>
@@ -475,7 +490,7 @@ const PropertyDetail = () => {
                   <DollarSign className="h-4 w-4" />
                   <span className="text-xs font-medium">Revenue</span>
                 </div>
-                <p className="text-2xl font-bold text-emerald-600">
+                <p className="text-2xl font-bold text-foreground">
                   {formatCurrency(property.revenue)}
                 </p>
               </div>
@@ -486,32 +501,32 @@ const PropertyDetail = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
-              Quick Stats
+              <Users className="h-5 w-5 text-muted-foreground" />
+              Occupancy snapshot
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Active Tenants</span>
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+              <Badge variant="outline" className={statusBadgeClass("success")}>
                 {tenants.filter((t) => t.status === "active").length}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Active Leases</span>
-              <Badge variant="outline" className="bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]">
+              <Badge variant="outline" className={statusBadgeClass("info")}>
                 {leases.filter((l) => l.status === "active").length}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Vacant Units</span>
-              <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20">
+              <Badge variant="outline" className={statusBadgeClass("warning")}>
                 {property.units - property.occupied}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Expiring Leases</span>
-              <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
+              <Badge variant="outline" className={statusBadgeClass("warning")}>
                 {leases.filter((l) => l.status === "expiring").length}
               </Badge>
             </div>
@@ -520,8 +535,28 @@ const PropertyDetail = () => {
       </div>
 
       {/* Tabs for Property Details */}
-      <Tabs defaultValue={initialTab} className="w-full">
-        <TabsList className="mb-4 flex-wrap h-auto gap-1">
+      <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+        <span className="font-semibold text-foreground mr-1">Path</span>
+        {GOLDEN_PATH.map((step, index) => (
+          <span key={step.id} className="inline-flex items-center gap-1.5">
+            {index > 0 && <span className="text-border">→</span>}
+            <button
+              type="button"
+              onClick={() => setActiveTab(step.id)}
+              className={cn(
+                "rounded-full px-2.5 py-1 border transition-colors",
+                activeTab === step.id
+                  ? "bg-primary/10 text-primary border-primary/20 font-semibold"
+                  : "bg-card border-border hover:border-primary/30"
+              )}
+            >
+              {step.label}
+            </button>
+          </span>
+        ))}
+      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-2 flex-wrap h-auto gap-1">
           <TabsTrigger value="units" className="flex items-center gap-2">
             <Layers className="h-4 w-4" />
             Houses
@@ -538,36 +573,38 @@ const PropertyDetail = () => {
             <CreditCard className="h-4 w-4" />
             Billing
           </TabsTrigger>
-          <TabsTrigger value="agreements" className="flex items-center gap-2">
-            <FileSignature className="h-4 w-4" />
+        </TabsList>
+        <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-transparent p-0">
+          <TabsTrigger value="agreements" className="flex items-center gap-2 h-8 text-xs">
+            <FileSignature className="h-3.5 w-3.5" />
             Agreements
           </TabsTrigger>
-          <TabsTrigger value="maintenance" className="flex items-center gap-2">
-            <Wrench className="h-4 w-4" />
+          <TabsTrigger value="maintenance" className="flex items-center gap-2 h-8 text-xs">
+            <Wrench className="h-3.5 w-3.5" />
             Maintenance
           </TabsTrigger>
-          <TabsTrigger value="vacation" className="flex items-center gap-2">
-            <CalendarX className="h-4 w-4" />
+          <TabsTrigger value="vacation" className="flex items-center gap-2 h-8 text-xs">
+            <CalendarX className="h-3.5 w-3.5" />
             Vacation
           </TabsTrigger>
-          <TabsTrigger value="water" className="flex items-center gap-2">
-            <Droplets className="h-4 w-4" />
+          <TabsTrigger value="water" className="flex items-center gap-2 h-8 text-xs">
+            <Droplets className="h-3.5 w-3.5" />
             Water
           </TabsTrigger>
-          <TabsTrigger value="statement" className="flex items-center gap-2">
-            <FileSpreadsheet className="h-4 w-4" />
+          <TabsTrigger value="statement" className="flex items-center gap-2 h-8 text-xs">
+            <FileSpreadsheet className="h-3.5 w-3.5" />
             Statement
           </TabsTrigger>
-          <TabsTrigger value="landlord" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
+          <TabsTrigger value="landlord" className="flex items-center gap-2 h-8 text-xs">
+            <User className="h-3.5 w-3.5" />
             Landlord
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Settings2 className="h-4 w-4" />
+          <TabsTrigger value="settings" className="flex items-center gap-2 h-8 text-xs">
+            <Settings2 className="h-3.5 w-3.5" />
             Settings
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-2">
-            <History className="h-4 w-4" />
+          <TabsTrigger value="history" className="flex items-center gap-2 h-8 text-xs">
+            <History className="h-3.5 w-3.5" />
             History
           </TabsTrigger>
         </TabsList>
@@ -578,6 +615,8 @@ const PropertyDetail = () => {
             propertyName={property.name}
             houseLabelPrefix={(property as {house_label_prefix?: string}).house_label_prefix || ""}
             onUnitsChange={fetchPropertyData}
+            occupants={occupants}
+            onOpenTab={setActiveTab}
           />
         </TabsContent>
 
@@ -611,9 +650,9 @@ const PropertyDetail = () => {
                     <TableRow>
                       <TableHead>Unit</TableHead>
                       <TableHead>Tenant</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Lease Status</TableHead>
+                      <TableHead>Lease</TableHead>
                       <TableHead>Rent</TableHead>
+                      <TableHead>Next</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -636,17 +675,14 @@ const PropertyDetail = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={signedUrls[tenant.id]} alt={tenant.name} />
-                                <AvatarFallback className="bg-amber-400/10 text-amber-600 text-xs">
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
                                   {getInitials(tenant.name)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-medium text-sm">{tenant.name}</p>
-                                {tenant.move_in_date && (
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Since {format(new Date(tenant.move_in_date), 'dd/MM/yy')}
-                                  </p>
+                                {tenant.email && (
+                                  <p className="text-xs text-muted-foreground truncate max-w-[180px]">{tenant.email}</p>
                                 )}
                               </div>
                             </div>
@@ -655,63 +691,58 @@ const PropertyDetail = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          {tenant ? (
-                            <div className="space-y-1">
-                              <p className="text-xs flex items-center gap-1 text-muted-foreground">
-                                <Mail className="h-3 w-3" />
-                                {tenant.email}
-                              </p>
-                              {tenant.phone && (
-                                <p className="text-xs flex items-center gap-1 text-muted-foreground">
-                                  <Phone className="h-3 w-3" />
-                                  {tenant.phone}
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
                           {lease ? (
-                            <Badge
-                              variant="outline"
-                              className={cn("capitalize", statusStyles[lease.status] || statusStyles.inactive)}
-                            >
+                            <span className={cn("capitalize", statusStyles[lease.status] || statusStyles.inactive)}>
                               {lease.status}
-                            </Badge>
+                            </span>
                           ) : tenant ? (
-                            <Badge variant="outline" className="text-amber-600 border-amber-500/20 bg-amber-500/10">
-                              No Lease
-                            </Badge>
+                            <span className={statusBadgeClass("warning")}>No lease</span>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
                         </TableCell>
                         <TableCell>
                           {lease ? (
-                            <span className="font-medium text-emerald-600">
+                            <span className="font-medium text-foreground">
                               {formatCurrency(lease.monthly_rent)}/mo
                             </span>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
                         </TableCell>
+                        <TableCell>
+                          {!tenant ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-primary"
+                              onClick={() => {
+                                setAssignUnit(unit);
+                                setIsAssignDialogOpen(true);
+                              }}
+                            >
+                              Assign tenant
+                            </Button>
+                          ) : !lease ? (
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-primary" onClick={() => setActiveTab("leases")}>
+                              Create lease
+                            </Button>
+                          ) : (
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-primary" onClick={() => setActiveTab("billing")}>
+                              Invoice / collect
+                            </Button>
+                          )}
+                        </TableCell>
                         <TableCell className="text-right">
                           {tenant ? (
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="sm">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => handleRemoveTenant(tenant.id)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => handleRemoveTenant(tenant.id)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
                           ) : (
                             <Button
                               variant="ghost"
