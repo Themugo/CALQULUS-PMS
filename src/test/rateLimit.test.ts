@@ -19,6 +19,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const SENSITIVE_FUNCTIONS = new Set<string>([
   "initiate-mpesa-stk-push",
+  "initiate-paystack-payment",
+  "initiate-manager-paystack-payment",
   "initiate-mpesa-payment",
   "initiate-manager-mpesa-payment",
   "initiate-subscription-mpesa",
@@ -63,6 +65,7 @@ async function checkRateLimit(
 describe("isSensitive", () => {
   it("marks M-Pesa init as sensitive", () => {
     expect(isSensitive("initiate-mpesa-stk-push")).toBe(true);
+    expect(isSensitive("initiate-paystack-payment")).toBe(true);
     expect(isSensitive("initiate-mpesa-payment")).toBe(true);
   });
 

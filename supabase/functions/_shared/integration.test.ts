@@ -150,6 +150,8 @@ Deno.test("isSensitive: returns false for non-sensitive functions", () => {
 Deno.test("SENSITIVE_FUNCTIONS contains all money-path functions", () => {
   const expected = [
     "initiate-mpesa-stk-push",
+    "initiate-paystack-payment",
+    "initiate-manager-paystack-payment",
     "initiate-mpesa-payment",
     "initiate-manager-mpesa-payment",
     "initiate-subscription-mpesa",

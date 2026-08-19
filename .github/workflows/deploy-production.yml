@@ -179,6 +179,12 @@ jobs:
       E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
       E2E_TENANT_EMAIL: ${{ secrets.E2E_TENANT_EMAIL }}
       E2E_TENANT_PASSWORD: ${{ secrets.E2E_TENANT_PASSWORD }}
+      E2E_LANDLORD_EMAIL: ${{ secrets.E2E_LANDLORD_EMAIL }}
+      E2E_LANDLORD_PASSWORD: ${{ secrets.E2E_LANDLORD_PASSWORD }}
+      E2E_AGENCY_EMAIL: ${{ secrets.E2E_AGENCY_EMAIL }}
+      E2E_AGENCY_PASSWORD: ${{ secrets.E2E_AGENCY_PASSWORD }}
+      E2E_WEBHOST_EMAIL: ${{ secrets.E2E_WEBHOST_EMAIL }}
+      E2E_WEBHOST_PASSWORD: ${{ secrets.E2E_WEBHOST_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

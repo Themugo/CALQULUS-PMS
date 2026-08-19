@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 
 // Extend ServiceWorkerRegistration to include pushManager
 declare global {
@@ -38,7 +38,7 @@ export const usePushNotifications = () => {
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!isSupported) {
-      toast.error("Push notifications are not supported on this device");
+      toast({ title: "Push notifications are not supported on this device", variant: "destructive" });
       return false;
     }
 
@@ -48,15 +48,15 @@ export const usePushNotifications = () => {
       setPermission(result);
 
       if (result === "granted") {
-        toast.success("Notifications enabled!");
+        toast({ title: "Notifications enabled!" });
         return true;
       } else if (result === "denied") {
-        toast.error("Notification permission denied");
+        toast({ title: "Notification permission denied", variant: "destructive" });
         return false;
       }
       return false;
     } catch (error) {
-      toast.error("Failed to request notification permission");
+      toast({ title: "Failed to request notification permission", variant: "destructive" });
       return false;
     } finally {
       setIsLoading(false);
@@ -107,10 +107,10 @@ export const usePushNotifications = () => {
       }
 
       setIsSubscribed(true);
-      toast.success("Push notifications enabled!");
+      toast({ title: "Push notifications enabled!" });
       return true;
     } catch (error) {
-      toast.error("Failed to enable push notifications");
+      toast({ title: "Failed to enable push notifications", variant: "destructive" });
       return false;
     } finally {
       setIsLoading(false);
@@ -137,10 +137,10 @@ export const usePushNotifications = () => {
       }
 
       setIsSubscribed(false);
-      toast.success("Push notifications disabled");
+      toast({ title: "Push notifications disabled" });
       return true;
     } catch (error) {
-      toast.error("Failed to disable push notifications");
+      toast({ title: "Failed to disable push notifications", variant: "destructive" });
       return false;
     } finally {
       setIsLoading(false);

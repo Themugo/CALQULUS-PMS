@@ -344,7 +344,7 @@ const ManagerPlatformBilling = () => {
     setPaymentStatus("pending");
 
     try {
-      const { data, error } = await supabase.functions.invoke("initiate-manager-mpesa-payment", {
+      const { data, error } = await supabase.functions.invoke("initiate-manager-paystack-payment", {
         body: {
           invoiceId: selectedInvoice.id,
           amount: selectedInvoice.amount,
@@ -356,7 +356,7 @@ const ManagerPlatformBilling = () => {
       if (error) throw error;
 
       if (data.success) {
-        toast({ title: "STK Push Sent", description: "Check your phone and enter your M-Pesa PIN." });
+        toast({ title: "STK Push Sent", description: "Paystack will send an M-Pesa PIN prompt to this number." });
         setPaymentStatus("verifying");
         pollPaymentStatus(data.reference);
       } else {

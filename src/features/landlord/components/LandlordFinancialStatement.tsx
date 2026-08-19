@@ -38,7 +38,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
     queryKey: ['landlord-financials', selectedPropertyId, period, user?.id],
     queryFn: async () => {
       if (!selectedPropertyId) return null;
-      const { data, error } = await supabase.rpc('get_landlord_revenue' as unknown as string, {
+      const { data, error } = await supabase.rpc('get_landlord_revenue', {
         p_property_id:      selectedPropertyId,
         p_landlord_user_id: user!.id,
         p_period_start:     periodStart,
@@ -80,7 +80,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
       });
 
       const results = await Promise.all(months.map(async m => {
-        const { data } = await supabase.rpc('get_landlord_revenue' as unknown as string, {
+        const { data } = await supabase.rpc('get_landlord_revenue', {
           p_property_id:      selectedPropertyId,
           p_landlord_user_id: user!.id,
           p_period_start:     m.start,

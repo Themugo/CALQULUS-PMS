@@ -676,7 +676,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
 
     setIsProcessingPayment(true);
     try {
-      const { data, error } = await supabase.functions.invoke('initiate-manager-mpesa-payment', {
+      const { data, error } = await supabase.functions.invoke('initiate-manager-paystack-payment', {
         body: {
           invoiceId: selectedInvoice.id,
           amount: selectedInvoice.amount,
@@ -688,7 +688,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       if (error) throw error;
       
       toast({
-        title: 'M-Pesa payment initiated',
+        title: 'Paystack M-Pesa charge initiated',
         description: data.display_text || 'Check your phone for the STK push prompt',
       });
       

@@ -15,7 +15,8 @@ serve(async (req) => {
 
     // ── Caller authentication ─────────────────────────────────────────
     // CRITICAL, and also factually broken: previously unauthenticated,
-    // AND it called `initiate-mpesa-payment` with a payout-shaped body
+    // AND it called `initiate-mpesa-payment` (Paystack collection alias;
+    // canonical name: initiate-paystack-payment) with a payout-shaped body
     // (phone/amount/reference) — but that function is actually a
     // Paystack invoice-COLLECTION endpoint expecting invoiceId/
     // invoiceNumber/email (collecting rent FROM a tenant), not a

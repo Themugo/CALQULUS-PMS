@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/shared/hooks/use-toast';
 import {
   Zap,
   Building2,
@@ -118,7 +118,7 @@ export function DevPortalSwitcher() {
 
   const handlePresetLogin = async (preset: AccountPreset) => {
     setSwitching(true);
-    toast.loading(`Signing into ${preset.label}…`, { id: 'dev-switch' });
+    toast({ title: `Signing into ${preset.label}…` });
     try {
       if (user) {
         await supabase.auth.signOut();
@@ -129,14 +129,14 @@ export function DevPortalSwitcher() {
       });
 
       if (error) {
-        toast.error(`Login error: ${error.message}`, { id: 'dev-switch' });
+        toast({ title: `Login error: ${error.message}`, variant: 'destructive' });
       } else if (data.user) {
-        toast.success(`Logged in as ${preset.label}`, { id: 'dev-switch' });
+        toast({ title: `Logged in as ${preset.label}` });
         navigate(preset.defaultPath);
         setIsOpen(false);
       }
     } catch (err: unknown) {
-      toast.error('Switch failed. Check network.', { id: 'dev-switch' });
+      toast({ title: 'Switch failed. Check network.', variant: 'destructive' });
     } finally {
       setSwitching(false);
     }

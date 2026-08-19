@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 import { Loader2, Eye, EyeOff, Check, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
@@ -73,7 +73,7 @@ const ActivateAccount = () => {
     e.preventDefault();
 
     if (!allRequirementsMet) {
-      toast.error("Please meet all password requirements");
+      toast({ title: "Please meet all password requirements", variant: "destructive" });
       return;
     }
 
@@ -90,13 +90,13 @@ const ActivateAccount = () => {
 
       if (data?.success) {
         setIsActivated(true);
-        toast.success("Account activated successfully!");
+        toast({ title: "Account activated successfully!" });
       } else {
         throw new Error(data?.error || "Activation failed");
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to activate account";
-      toast.error(errorMessage);
+      toast({ title: errorMessage, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

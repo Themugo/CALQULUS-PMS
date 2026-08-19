@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 import { formatDate } from "@/shared/lib/dateFormat";
 import {
   CalendarX,
@@ -88,7 +88,7 @@ const VacationNotices = () => {
       if (error) throw error;
       setNotices(data || []);
     } catch (error) {
-      toast.error("Failed to load vacation notices");
+      toast({ title: "Failed to load vacation notices", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -139,11 +139,11 @@ const VacationNotices = () => {
 
       if (error) throw error;
 
-      toast.success(`Notice ${status} successfully`);
+      toast({ title: `Notice ${status} successfully` });
       setViewDialogOpen(false);
       fetchNotices();
     } catch (error) {
-      toast.error("Failed to update notice");
+      toast({ title: "Failed to update notice", variant: "destructive" });
     } finally {
       setUpdating(false);
     }

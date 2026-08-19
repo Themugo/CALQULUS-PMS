@@ -6,7 +6,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Switch } from "@/shared/components/ui/switch";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 import { Loader2, Eye, EyeOff, CreditCard, Store, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
@@ -109,7 +109,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
       const data = await fetchMpesaSettings(propertyId ?? null);
       if (data) setSettings(data);
     } catch {
-      toast.error('Failed to load M-Pesa settings');
+      toast({ title: 'Failed to load M-Pesa settings', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -172,9 +172,9 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
         });
       }
 
-      toast.success('M-Pesa settings saved successfully');
+      toast({ title: 'M-Pesa settings saved successfully' });
     } catch (error) {
-      toast.error('Failed to save M-Pesa settings');
+      toast({ title: 'Failed to save M-Pesa settings', variant: 'destructive' });
     } finally {
       setIsSaving(false);
     }

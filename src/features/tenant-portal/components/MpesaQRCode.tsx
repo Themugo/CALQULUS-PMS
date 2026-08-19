@@ -2,7 +2,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Smartphone, Download } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/shared/hooks/use-toast';
 import { downloadQrCodeAsPng } from '@/shared/lib/downloadQrCode';
 
 interface MpesaQRCodeProps {
@@ -35,9 +35,9 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
     if (!paybillNumber) return;
     const ok = downloadQrCodeAsPng('mpesa-paybill-qr-code', `mpesa-paybill-${paybillNumber}.png`);
     if (ok) {
-      toast.success('Paybill QR code downloaded as PNG!');
+      toast({ title: 'Paybill QR code downloaded as PNG!' });
     } else {
-      toast.error('Failed to download Paybill QR code');
+      toast({ title: 'Failed to download Paybill QR code', variant: 'destructive' });
     }
   };
 
@@ -45,9 +45,9 @@ export const MpesaQRCode = ({ paybillNumber, tillNumber, accountNumber, amount }
     if (!tillNumber) return;
     const ok = downloadQrCodeAsPng('mpesa-till-qr-code', `mpesa-till-${tillNumber}.png`);
     if (ok) {
-      toast.success('Till QR code downloaded as PNG!');
+      toast({ title: 'Till QR code downloaded as PNG!' });
     } else {
-      toast.error('Failed to download Till QR code');
+      toast({ title: 'Failed to download Till QR code', variant: 'destructive' });
     }
   };
 

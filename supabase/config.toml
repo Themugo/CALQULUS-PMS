@@ -21,6 +21,12 @@ verify_jwt = true
 [functions.initiate-mpesa-payment]
 verify_jwt = true
 
+[functions.initiate-paystack-payment]
+verify_jwt = true
+
+[functions.initiate-manager-paystack-payment]
+verify_jwt = true
+
 [functions.verify-mpesa-payment]
 verify_jwt = true
 
@@ -248,9 +254,6 @@ verify_jwt = false
 
 [functions.send-overdue-maintenance-notifications]
 verify_jwt = false
-
-[functions.send-tenant-notice]
-verify_jwt = true
 
 [functions.send-payment-reminders]
 verify_jwt = false

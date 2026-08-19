@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Download, Smartphone, CheckCircle, Share, Plus, MoreVertical, QrCode, Copy, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 import { downloadQrCodeAsPng } from "@/shared/lib/downloadQrCode";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -27,19 +27,19 @@ const InstallApp = () => {
     try {
       await navigator.clipboard.writeText(appUrl);
       setCopied(true);
-      toast.success("Application URL copied to clipboard!");
+      toast({ title: "Application URL copied to clipboard!" });
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy URL");
+      toast({ title: "Failed to copy URL", variant: "destructive" });
     }
   };
 
   const handleDownloadQrCode = () => {
     const success = downloadQrCodeAsPng("install-app-qr-code", "calqulus-rms-app-qr.png");
     if (success) {
-      toast.success("QR code downloaded as PNG!");
+      toast({ title: "QR code downloaded as PNG!" });
     } else {
-      toast.error("Failed to download QR code");
+      toast({ title: "Failed to download QR code", variant: "destructive" });
     }
   };
 

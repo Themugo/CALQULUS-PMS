@@ -1,3 +1,7 @@
+/**
+ * Generated types plus hand-patched RPCs that exist in migrations
+ * but are not yet in `supabase gen types` output (landlord finance, dashboard, log_activity).
+ */
 export type Json =
   | string
   | number
@@ -5048,6 +5052,28 @@ export type Database = {
     Functions: {
       get_admin_level: { Args: { _user_id: string }; Returns: string }
       get_auth_user_email: { Args: { _user_id: string }; Returns: string }
+      get_landlord_portfolio_stats: { Args: Record<PropertyKey, never>; Returns: Json }
+      get_landlord_property_ops: { Args: { p_property_id: string }; Returns: Json }
+      get_landlord_revenue: {
+        Args: {
+          p_landlord_user_id: string
+          p_period_end?: string
+          p_period_start?: string
+          p_property_id: string
+        }
+        Returns: {
+          arrears_total: number
+          gross_rent_collected: number
+          management_fee: number
+          net_to_landlord: number
+          occupancy_rate: number
+          occupied_units: number
+          payout_pending: number
+          revenue_share_pct: number
+          total_units: number
+        }[]
+      }
+      get_manager_dashboard_stats: { Args: { p_manager_id: string }; Returns: Json }
       get_manager_property_count: {
         Args: { _user_id: string }
         Returns: number
@@ -5073,6 +5099,18 @@ export type Database = {
       }
       is_manager: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_activity: {
+        Args: {
+          p_action: string
+          p_entity_id?: string
+          p_entity_label?: string
+          p_entity_type?: string
+          p_manager_id?: string
+          p_metadata?: Json
+          p_property_id?: string
+        }
+        Returns: undefined
+      }
       log_audit_event: {
         Args: {
           _action: string

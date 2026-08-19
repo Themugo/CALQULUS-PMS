@@ -1,6 +1,5 @@
 import { Suspense, useCallback, useEffect } from "react";
 import { Toaster } from "@/shared/components/ui/toaster";
-import { Toaster as Sonner } from "@/shared/components/ui/sonner";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DesktopInstallBanner } from "@/shared/components/ui/desktop-install-banner";
@@ -257,9 +256,6 @@ const App = () => (
       <TooltipProvider>
         <ErrorBoundary fallback={null}>
           <Toaster />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <Sonner />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
           <DesktopInstallBanner />

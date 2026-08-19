@@ -33,6 +33,8 @@ import { getCorsHeaders } from "./cors.ts";
  */
 export const SENSITIVE_FUNCTIONS = new Set<string>([
   "initiate-mpesa-stk-push",
+  "initiate-paystack-payment",
+  "initiate-manager-paystack-payment",
   "initiate-mpesa-payment",
   "initiate-manager-mpesa-payment",
   "initiate-subscription-mpesa",
@@ -121,6 +123,7 @@ export const RATE_LIMITS = {
   "send-invoice-notification":   20,
   "send-tenant-invitation":      10,
   "initiate-mpesa-stk-push":     5,
+  "initiate-paystack-payment":   5,
   "initiate-mpesa-payment":      5,
   "send-overdue-notifications":  5,
   "create-dispute":              5,

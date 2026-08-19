@@ -9,7 +9,7 @@ import { CalendarX, Check, Clock, Eye, X, Download, User, Home, MapPin, AlertCir
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { formatDate } from "@/shared/lib/dateFormat";
-import { toast } from "sonner";
+import { toast } from "@/shared/hooks/use-toast";
 import { cn } from "@/shared/lib/utils";
 
 interface VacationNotice {
@@ -79,9 +79,9 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
       .eq("id", noticeId);
 
     if (error) {
-      toast.error("Failed to update notice");
+      toast({ title: "Failed to update notice", variant: "destructive" });
     } else {
-      toast.success(`Notice ${status}`);
+      toast({ title: `Notice ${status}` });
       setSelectedNotice(null);
       fetchNotices();
     }
