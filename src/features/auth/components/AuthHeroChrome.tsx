@@ -1,16 +1,19 @@
+import type { ComponentType, ReactNode } from "react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Link } from "react-router-dom";
 import { cn } from "@/shared/lib/utils";
+import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
 /**
- * Shared decorative chrome for the role-specific auth screens
- * (AgencyAuth, WebhostAuth, LandlordPortalAuth). These pages previously
- * each carried their own copy of this markup verbatim.
+ * Shared chrome for role-specific auth screens.
+ * Light operational desk — no navy, black, or marketing-hero slogans required.
  */
 
 export interface PortalAuthFeature {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   text: string;
+  detail?: string;
+  tint?: string;
 }
 
 export interface PortalSwitchLink {
@@ -19,139 +22,155 @@ export interface PortalSwitchLink {
 }
 
 export interface PortalAuthShellProps {
-  /** Portal name, e.g. "Landlord Portal" */
   portalName: string;
-  /** Short badge label, e.g. "Property Owner Access" */
   badgeLabel: string;
-  /** Icon for the badge + hero */
-  icon: React.ComponentType<{ className?: string }>;
-  /** One-line portal identity, e.g. "Monitor your portfolio and property performance." */
+  icon: ComponentType<{ className?: string }>;
   tagline: string;
-  /** Hero headline lines (rendered top-to-bottom). */
-  heroLines: { text: string; tone: "default" | "gradient" | "muted" }[];
-  /** Hero supporting paragraph. */
+  heroLines?: { text: string; tone: "default" | "gradient" | "muted" }[];
+  /** Preferred over stacked slogan lines when the portal should read as a desk. */
+  heroTitle?: string;
   heroDescription: string;
-  /** Feature list for the left hero panel. */
   features: PortalAuthFeature[];
-  /** Other portal entry points to switch to (NO admin/webhost — keep dev/internal out of public UI). */
   otherPortals: PortalSwitchLink[];
-  /** Right-panel form header subtitle, e.g. "Sign in to your agency account". */
   formSubtitle: string;
-  /** Submit button label, e.g. "Sign in to Landlord Portal". */
+  formTitle?: string;
   submitLabel: string;
-  /** Optional notice shown below the form (portal guidance). */
   notice?: string;
-  /**
-   * Visual variant. Default is the light executive surface. "hero" is
-   * retained for compatibility and now renders the same light chrome.
-   */
+  aside?: ReactNode;
   variant?: "hero" | "light";
-  /** Form + any auxiliary controls rendered inside the right card. */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-/**
- * Consistent two-panel portal login layout shared across the four public
- * portals (Manager, Landlord, Agency, Tenant). Provides the same visual
- * language — light surface, CALQULUS primary actions, restrained
- * accents, consistent spacing, fields, buttons and focus states — while
- * letting each portal identify itself via portalName/tagline/icon.
- */
 export function PortalAuthShell({
   portalName,
   badgeLabel,
   icon: Icon,
   tagline,
-  heroLines,
+  heroLines = [],
+  heroTitle,
   heroDescription,
   features,
   otherPortals,
   formSubtitle,
+  formTitle = "Welcome back",
   submitLabel: _submitLabel,
   notice,
+  aside,
   variant = "light",
   children,
 }: PortalAuthShellProps) {
   const isLight = variant === "light";
   return (
-    <div className={cn(
-      "min-h-screen flex bg-background text-foreground",
-      isLight ? "surface-subtle" : "hero-gradient"
-    )}>
-      {/* ── Left hero panel ── */}
-      <div className={cn(
-        "hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden",
-        isLight && "border-r border-border"
-      )}>
-        <AuthGridOverlay />
+    <div className={cn("public-canvas min-h-screen text-foreground", !isLight && "hero-gradient")}>
+      <div className="mx-auto flex min-h-screen max-w-6xl">
+        <div className="relative hidden overflow-hidden lg:flex lg:w-[54%] lg:flex-col">
+          <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
+          <AuthGridOverlay />
 
-        <div className="relative z-10 flex flex-col h-full p-12">
-          <div className="flex items-center gap-4 mb-16">
-            <BrandMark size="hero" showWordmark subtitle={portalName} />
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 mb-6 self-start">
-              <Icon className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs text-primary font-semibold">{badgeLabel}</span>
+          <div className="relative z-10 flex h-full flex-col p-10 xl:p-12">
+            <div className="mb-10 flex items-center justify-between gap-4">
+              <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
+                <BrandMark size="nav" showWordmark subtitle={portalName} fetchPriority="high" />
+              </Link>
+              <Link
+                to={PUBLIC_ROUTES.home}
+                className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Back to home
+              </Link>
             </div>
 
-            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              {heroLines.map((line, i) => (
-                <span key={i} className={`block ${line.tone === "gradient" ? "text-gradient" : line.tone === "muted" ? "text-muted-foreground" : "text-foreground"}`}>
-                  {line.text}
-                </span>
-              ))}
-            </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">{heroDescription}</p>
+            <div className="flex flex-1 flex-col justify-center">
+              <div className="mb-5 inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-soft-blue px-3 py-1.5">
+                <Icon className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold text-primary">{badgeLabel}</span>
+              </div>
 
-            <div className="space-y-4">
-              {features.map((f, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground text-sm font-medium">{f.text}</p>
-                </div>
-              ))}
+              <h1 className="page-title max-w-lg text-[2rem] leading-tight xl:text-[2.35rem]">
+                {heroTitle ? (
+                  heroTitle
+                ) : (
+                  heroLines.map((line, i) => (
+                    <span
+                      key={i}
+                      className={`block ${line.tone === "gradient" ? "text-gradient" : line.tone === "muted" ? "text-muted-foreground" : "text-foreground"}`}
+                    >
+                      {line.text}
+                    </span>
+                  ))
+                )}
+              </h1>
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {heroDescription}
+              </p>
+
+              <div className={cn(
+                "mt-8",
+                features.some((f) => f.detail) ? "grid grid-cols-2 gap-3" : "space-y-3",
+              )}>
+                {features.map((f) => (
+                  f.detail ? (
+                    <article key={f.text} className="enterprise-card p-4">
+                      <span
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-lg",
+                          f.tint ?? "bg-soft-blue text-primary",
+                        )}
+                      >
+                        <f.icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <p className="mt-3 text-sm font-semibold text-foreground">{f.text}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{f.detail}</p>
+                    </article>
+                  ) : (
+                    <div key={f.text} className="flex items-center gap-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-soft-blue text-primary">
+                        <f.icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <p className="text-sm font-medium text-muted-foreground">{f.text}</p>
+                    </div>
+                  )
+                ))}
+              </div>
+
+              {aside ? <div className="mt-5">{aside}</div> : null}
             </div>
-          </div>
-
-          <div className="flex items-center gap-6 pt-8 border-t border-border">
-            <p className="text-muted-foreground text-xs">calqulus.site</p>
-            <Link to="/" className="text-muted-foreground hover:text-primary text-xs transition-colors">Back to home</Link>
           </div>
         </div>
-      </div>
 
-      {/* ── Right form panel ── */}
-      <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden flex justify-center mb-8">
-            <BrandMark size="hero" />
-          </div>
-
-          <div className="rounded-[var(--radius)] border border-border bg-card p-6 sm:p-8 card-shadow">
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
-                <Icon className="h-3 w-3 text-primary" />
-                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">{portalName}</span>
-              </div>
-              <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Welcome back</h2>
-              <p className="text-muted-foreground text-sm">{formSubtitle}</p>
-              <p className="text-muted-foreground/80 text-xs mt-1.5">{tagline}</p>
+        <div className="flex w-full items-center justify-center px-4 py-10 sm:px-8 lg:w-[46%]">
+          <div className="w-full max-w-md">
+            <div className="mb-6 flex items-center justify-between lg:hidden">
+              <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
+                <BrandMark size="nav" showWordmark subtitle={portalName} />
+              </Link>
+              <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-muted-foreground hover:text-primary">
+                Home
+              </Link>
             </div>
 
-            {children}
-
-            {notice && (
-              <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
-                <p className="text-xs text-muted-foreground leading-relaxed">{notice}</p>
+            <div className="enterprise-card p-6 sm:p-8">
+              <div className="mb-6">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-soft-blue px-2.5 py-1">
+                  <Icon className="h-3 w-3 text-primary" />
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">{portalName}</span>
+                </div>
+                <h2 className="font-heading text-2xl font-bold text-foreground">{formTitle}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{formSubtitle}</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">{tagline}</p>
               </div>
-            )}
 
-            <OtherPortalsGrid portals={otherPortals} />
-            <AuthLegalFooterLinks />
+              {children}
+
+              {notice && (
+                <div className="mt-5 rounded-lg border border-primary/20 bg-soft-blue p-3.5">
+                  <p className="text-xs leading-relaxed text-muted-foreground">{notice}</p>
+                </div>
+              )}
+
+              <OtherPortalsGrid portals={otherPortals} />
+              <AuthLegalFooterLinks />
+            </div>
           </div>
         </div>
       </div>
@@ -159,20 +178,21 @@ export function PortalAuthShell({
   );
 }
 
-/** Full-screen branded loading state shown while auth state is resolving. */
 export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "light" }) {
   return (
-    <div className={cn(
-      "min-h-screen flex items-center justify-center bg-background text-foreground",
-      variant === "light" ? "surface-subtle" : "hero-gradient"
-    )}>
+    <div
+      className={cn(
+        "flex min-h-screen items-center justify-center text-foreground",
+        variant === "light" ? "public-canvas" : "hero-gradient",
+      )}
+    >
       <div className="flex flex-col items-center gap-4">
         <BrandMark size="hero" className="animate-pulse-soft" />
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-primary/10 animate-pulse-soft"
+              className="h-2 w-2 rounded-full bg-primary/20 animate-pulse-soft"
               style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}
@@ -182,51 +202,48 @@ export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "l
   );
 }
 
-/** Grid + radial-gradient decorative background for the left hero panel (light). */
 export function AuthGridOverlay() {
   return (
-    <>
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `linear-gradient(hsl(221 83% 53% / 0.5) 1px, transparent 1px),
-                            linear-gradient(90deg, hsl(221 83% 53% / 0.5) 1px, transparent 1px)`,
-          backgroundSize: "48px 48px",
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(circle at 20% 80%, hsl(221 83% 53% / 0.10) 0%, transparent 60%),
-                       radial-gradient(circle at 80% 20%, hsl(210 40% 96% / 0.8) 0%, transparent 50%)`,
-        }}
-      />
-    </>
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background:
+          "radial-gradient(circle at 18% 88%, hsl(220 87% 51% / 0.10) 0%, transparent 55%), radial-gradient(circle at 88% 12%, hsl(173 70% 42% / 0.08) 0%, transparent 50%)",
+      }}
+    />
   );
 }
 
-/** Bottom-of-form legal links, identical across the role auth screens. */
 export function AuthLegalFooterLinks() {
   return (
-    <div className="flex justify-center gap-4 mt-4">
-      <Link to="/legal?tab=privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium">Privacy</Link>
-      <span className="text-muted-foreground text-xs">·</span>
-      <Link to="/legal?tab=terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium">Terms</Link>
+    <div className="mt-4 flex justify-center gap-4">
+      <Link
+        to={PUBLIC_ROUTES.legalPrivacy}
+        className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
+        Privacy
+      </Link>
+      <span className="text-xs text-muted-foreground">·</span>
+      <Link
+        to={PUBLIC_ROUTES.legalTerms}
+        className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
+        Terms
+      </Link>
     </div>
   );
 }
 
-/** "Other portals" 3-up quick-switch grid, identical layout across role auth screens (data varies per page). */
 export function OtherPortalsGrid({ portals }: { portals: { label: string; href: string }[] }) {
   return (
-    <div className="mt-5 pt-5 border-t border-border">
-      <p className="text-muted-foreground text-[11px] text-center font-medium mb-3">Other portals</p>
+    <div className="mt-5 border-t border-border pt-5">
+      <p className="mb-3 text-center text-[11px] font-medium text-muted-foreground">Other portals</p>
       <div className="grid grid-cols-3 gap-2">
         {portals.map((p) => (
           <Link
             key={p.href}
             to={p.href}
-            className="flex items-center justify-center py-2 px-2 rounded-lg border border-border bg-muted hover:bg-primary/10 hover:border-primary/30 transition-all text-muted-foreground hover:text-primary text-xs font-semibold"
+            className="flex items-center justify-center rounded-lg border border-border bg-secondary-background px-2 py-2 text-xs font-semibold text-muted-foreground transition-all hover:border-primary/30 hover:bg-soft-blue hover:text-primary"
           >
             {p.label}
           </Link>

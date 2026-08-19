@@ -7,7 +7,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CheckCircle, XCircle, Eye, EyeOff, ChevronRight, Building2, Users, CreditCard, Wrench } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, EyeOff, Building2, Users, CreditCard, Wrench } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
@@ -16,24 +16,26 @@ import { supabase } from '@/integrations/supabase/client';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { trackCommercialEvent } from '@/features/dashboard/lib/commercialMetrics';
 import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
+import { ManagerDeskPreview } from '@/features/auth/components/ManagerDeskPreview';
+import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
-  { icon: Building2, text: 'Manage properties, units and occupancy in one place' },
-  { icon: Users,      text: 'Tenant invitations, leases and lifecycle' },
-  { icon: CreditCard, text: 'Rent, water billing and M-Pesa collections' },
-  { icon: Wrench,     text: 'Maintenance requests and contractor tracking' },
+  { icon: Building2, text: 'Properties & units', detail: 'Occupancy lives on the building record.', tint: 'bg-soft-blue text-primary' },
+  { icon: Users, text: 'Tenants & leases', detail: 'Invites, terms, deposits, and move-in.', tint: 'bg-indigo-bg text-indigo' },
+  { icon: CreditCard, text: 'Rent & M-Pesa', detail: 'Invoices, receipts, and water billing.', tint: 'bg-gold-bg text-primary' },
+  { icon: Wrench, text: 'Repairs', detail: 'Tickets against the same units.', tint: 'bg-teal-bg text-teal' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [
-  { label: 'Landlord', href: '/landlord/login' },
-  { label: 'Agency', href: '/agency/login' },
-  { label: 'Tenant', href: '/tenant/login' },
+  { label: 'Landlord', href: PUBLIC_ROUTES.landlordLogin },
+  { label: 'Agency', href: PUBLIC_ROUTES.agencyLogin },
+  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
 ];
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
   const { user, signIn, signUp, loading } = useAuth();
   const { toast } = useToast();
   const {
@@ -76,6 +78,12 @@ const Auth = () => {
       navigate('/');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    document.title = activeTab === 'signup'
+      ? 'Create manager account | CALQULUS PMS'
+      : 'Manager sign-in | CALQULUS PMS';
+  }, [activeTab]);
 
   const handleBiometricLogin = async () => {
     setIsBiometricLoggingIn(true);
@@ -185,20 +193,22 @@ const Auth = () => {
 
   return (
     <PortalAuthShell
-      portalName="Manager Portal"
-      badgeLabel="Property Management Access"
+      portalName="Manager"
+      badgeLabel="Manager desk"
       icon={Building2}
-      tagline="Manage your properties and operations."
-      heroLines={[
-        { text: 'Manage properties.', tone: 'default' },
-        { text: 'Empower tenants.', tone: 'gradient' },
-        { text: 'Run operations.', tone: 'muted' },
-      ]}
-      heroDescription="The complete property management platform — properties, tenants, billing, maintenance and reporting in one place."
+      tagline="This account runs the portfolio — properties, tenants, rent, and repairs."
+      heroTitle="Open the manager desk."
+      heroDescription="The same records you work after sign-in: properties, units, tenants, leases, invoices, M-Pesa receipts, maintenance, and landlord reports. Approval is required before platform billing starts."
       features={features}
       otherPortals={otherPortals}
-      formSubtitle="Sign in or create your manager account"
-      submitLabel="Sign in to Manager Portal"
+      formTitle={activeTab === 'signup' ? 'Create account' : 'Sign in'}
+      formSubtitle={
+        activeTab === 'signup'
+          ? 'Creates a manager account. You can add a property after approval.'
+          : 'Use the email for this management account.'
+      }
+      submitLabel="Sign in"
+      aside={<ManagerDeskPreview />}
       variant="light"
     >
       {biometricAvailable && hasStoredCredentials && !biometricLoading && (
@@ -213,10 +223,17 @@ const Auth = () => {
         </div>
       )}
 
-      <Tabs defaultValue={initialTab} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          if (value === 'signup') setSearchParams({ tab: 'signup' }, { replace: true });
+          else setSearchParams({}, { replace: true });
+        }}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="login">Sign In</TabsTrigger>
-          <TabsTrigger value="signup">Get Started</TabsTrigger>
+          <TabsTrigger value="signup">Create account</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login" className="space-y-4 mt-2">
@@ -251,14 +268,14 @@ const Auth = () => {
                 </label>
               </div>
             )}
-            <Button type="submit" className="w-full btn-brand h-11 font-bold" disabled={isSubmitting}>
+            <Button type="submit" className="w-full btn-brand h-11 font-semibold" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   Signing in…
                 </span>
               ) : (
-                <span className="flex items-center gap-2">Sign in to Manager Portal <ChevronRight className="h-4 w-4" /></span>
+                'Sign in'
               )}
             </Button>
           </form>
@@ -304,30 +321,29 @@ const Auth = () => {
                 </div>
               )}
             </div>
-            <Button type="submit" className="w-full btn-brand h-11 font-bold" disabled={isSubmitting}>
+            <Button type="submit" className="w-full btn-brand h-11 font-semibold" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   Creating account…
                 </span>
               ) : (
-                <span className="flex items-center gap-2">Create Account <ChevronRight className="h-4 w-4" /></span>
+                'Create manager account'
               )}
             </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              Approval is required before platform billing starts.
+            </p>
           </form>
         </TabsContent>
       </Tabs>
 
-      <div className="mt-6 space-y-2 text-center">
-        <p className="text-sm text-muted-foreground">
-          Are you a tenant?{' '}
-          <Link to="/tenant/signup" className="text-primary hover:text-primary-hover font-medium transition-colors">Register here</Link>
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Are you a landlord?{' '}
-          <Link to="/landlord/login" className="text-primary hover:text-primary-hover font-medium transition-colors">Sign in here</Link>
-        </p>
-      </div>
+      <p className="mt-5 text-center text-sm text-muted-foreground">
+        Invited tenant?{' '}
+        <Link to="/tenant/signup" className="font-medium text-primary hover:text-primary-hover">
+          Accept invitation
+        </Link>
+      </p>
     </PortalAuthShell>
   );
 };

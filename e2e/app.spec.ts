@@ -24,9 +24,9 @@ test.describe("CALQULUS PMS E2E Tests", () => {
 
     test("auth page loads login form", async ({ page }) => {
       await page.goto("/auth");
-      await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible({ timeout: 15000 });
-      await expect(page.locator("input[type='email']")).toBeVisible({ timeout: 15000 });
-      await expect(page.locator("input[type='password']")).toBeVisible({ timeout: 15000 });
+      await expect(page.getByRole("heading", { name: /^sign in$/i })).toBeVisible({ timeout: 15000 });
+      await expect(page.locator("#login-email")).toBeVisible();
+      await expect(page.locator("#login-password")).toBeVisible();
     });
 
     test("tenant login page loads", async ({ page }) => {
