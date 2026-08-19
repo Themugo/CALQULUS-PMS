@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -38,7 +38,6 @@ interface Props {
 }
 
 const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, revenueSharePct }) => {
-  const [period] = useState(new Date().toISOString().slice(0, 7));
 
   // Units — no tenant personal data (name/email/phone) — only unit facts
   const { data: units = [], isLoading: unitsLoading } = useQuery({
@@ -58,75 +57,32 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
     },
   });
 
-  // Revenue by unit (from invoices — no tenant name) 
-  const { data: unitRevenue = [] } = useQuery({
-    queryKey: ['landlord-unit-revenue', propertyId, period],
+  const { data: ops, isLoading: opsLoading } = useQuery({
+    queryKey: ['landlord-property-ops', propertyId],
     queryFn: async () => {
-      const start = `${period}-01`;
-      const end = new Date(start);
-      end.setMonth(end.getMonth() + 1);
-      const endStr = end.toISOString().slice(0, 10);
-      const { data } = await supabase
-        .from('invoices')
-        .select('unit_id, amount, paid_amount, status')
-        .eq('property_id', propertyId)
-        .gte('due_date', start)
-        .lt('due_date', endStr);
-      // Group by unit_id
-      const map: Record<string, { billed: number; collected: number }> = {};
-      for (const inv of (data || []) as Array<{ unit_id: string; amount: number; paid_amount: number | null }>) {
-        if (!map[inv.unit_id]) map[inv.unit_id] = { billed: 0, collected: 0 };
-        map[inv.unit_id].billed += Number(inv.amount);
-        map[inv.unit_id].collected += Number(inv.paid_amount ?? 0);
-      }
-      return map;
+      const { data, error } = await supabase.rpc('get_landlord_property_ops', { p_property_id: propertyId });
+      if (error) throw error;
+      const payload = (data ?? {}) as {
+        unit_revenue?: Record<string, { billed: number; collected: number }>;
+        trend?: Array<{ month: string; gross: number }>;
+        maintenance?: Array<{
+          id: string; unit_number: string; unit_id: string | null; category: string;
+          priority: string; status: string; requested_date: string; completion_date: string | null;
+          budget: number | null; deposit_deduction_amount: number | null; created_at: string;
+        }>;
+      };
+      return payload;
     },
   });
 
-  // Maintenance requests — only unit/category/status/cost, NO tenant PII
-  const { data: maintenance = [], isLoading: maintLoading } = useQuery({
-    queryKey: ['landlord-maintenance', propertyId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('maintenance_requests')
-        .select(`
-          id, unit_number, unit_id, title, category,
-          priority, status, requested_date, completion_date,
-          budget, deposit_deduction_amount, created_at
-        `)
-        .eq('property_name', propertyName)
-        .neq('status', 'cancelled')
-        .order('created_at', { ascending: false })
-        .limit(30);
-      return (data || []) as Array<{ id: string; unit_number: string; unit_id: string | null; title: string; category: string; priority: string; status: string; requested_date: string; completion_date: string | null; budget: number | null; deposit_deduction_amount: number | null; created_at: string }>;
-    },
-  });
-
-  // 6-month revenue trend
-  const { data: trend = [] } = useQuery({
-    queryKey: ['landlord-property-trend', propertyId],
-    queryFn: async () => {
-      const months = Array.from({ length: 6 }, (_, i) => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - (5 - i));
-        return d.toISOString().slice(0, 7);
-      });
-      const rows = await Promise.all(months.map(async (m) => {
-        const start = `${m}-01`;
-        const endD = new Date(start); endD.setMonth(endD.getMonth() + 1);
-        const { data } = await supabase
-          .from('invoices')
-          .select('paid_amount, status')
-          .eq('property_id', propertyId)
-          .gte('due_date', start)
-          .lt('due_date', endD.toISOString().slice(0, 10))
-          .in('status', ['paid', 'partially_paid']);
-        const total = (data || []).reduce((s: number, i: { paid_amount: number | null }) => s + Number(i.paid_amount ?? 0), 0);
-        return { month: m.slice(5), gross: total, net: Math.round(total * revenueSharePct / 100) };
-      }));
-      return rows;
-    },
-  });
+  const unitRevenue = ops?.unit_revenue ?? {};
+  const maintenance = ops?.maintenance ?? [];
+  const trend = (ops?.trend ?? []).map((row) => ({
+    month: row.month,
+    gross: Number(row.gross),
+    net: Math.round(Number(row.gross) * revenueSharePct / 100),
+  }));
+  const maintLoading = opsLoading;
 
   const totalUnits = units.length;
   const occupiedUnits = units.filter(u => u.status === 'occupied').length;
@@ -301,7 +257,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {m.title}
+                            {m.category || 'Maintenance'} · Unit {m.unit_number || '—'}
                             {m.category && ` · ${m.category}`}
                             {m.requested_date && ` · ${format(new Date(m.requested_date), 'dd/MM/yy')}`}
                           </p>

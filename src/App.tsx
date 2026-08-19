@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000, // 10 minutes cache
       retry: 1,
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Only refetch if stale
+      refetchOnMount: true, // refetch when a view remounts and the query is stale
     },
     mutations: {
       retry: 1,

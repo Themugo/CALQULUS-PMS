@@ -356,37 +356,9 @@ const TenantPortal = () => {
           throw new Error('No checkout URL received');
         }
       } else {
-        // M-Pesa payment via Paystack
-        const { data, error } = await supabase.functions.invoke('initiate-mpesa-payment', {
-          body: {
-            invoiceId: selectedInvoice.id,
-            invoiceNumber: selectedInvoice.invoice_number,
-            amount: Number(selectedInvoice.amount),
-            phoneNumber: phoneNumber,
-            email: tenantInfo?.email || user?.email,
-            description: selectedInvoice.description || 'Monthly Rent Payment',
-          },
-        });
-
-        if (error) throw error;
-
-        if (data?.success) {
-          toast({
-            title: 'M-Pesa Request Sent',
-            description: data.message || 'Please check your phone and enter your M-Pesa PIN to complete payment.',
-          });
-          // Store reference for verification
-          if (data.reference) {
-            setPendingPaymentRef(data.reference);
-            setPendingInvoiceId(selectedInvoice.id);
-            setVerifyDialogOpen(true);
-          }
-          setPayDialogOpen(false);
-          setSelectedInvoice(null);
-          setPhoneNumber('');
-        } else {
-          throw new Error(data?.error || 'Failed to initiate M-Pesa payment');
-        }
+        openStkPay([selectedInvoice as PayableInvoice]);
+        setPayDialogOpen(false);
+        setSelectedInvoice(null);
         setIsProcessing(false);
       }
     } catch (error) {

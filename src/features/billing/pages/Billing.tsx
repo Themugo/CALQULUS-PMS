@@ -34,6 +34,7 @@ import { InvoiceTable } from "@/features/billing/components/InvoiceTable";
 import { ExpendituresTab } from "@/features/billing/components/ExpendituresTab";
 import { ReceiptsTab } from "@/features/billing/components/ReceiptsTab";
 import { useToast } from "@/shared/hooks/use-toast";
+import { toUserFacingError, logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import {
@@ -107,7 +108,7 @@ const Billing = () => {
       logActivity({ action: "generate_monthly_invoices", entityType: "invoice", metadata: { count: data.count ?? null } });
       invalidateInvoices();
     } catch (err: unknown) {
-      toast({ title: "Error", description: (err as Error).message ?? "Unknown error", variant: "destructive" });
+      toast({ title: "Error", description: toUserFacingError(err, "Could not generate invoices. Please try again."), variant: "destructive" });
     } finally {
       setIsGenerating(false);
     }
@@ -126,7 +127,7 @@ const Billing = () => {
       if (!data?.success) throw new Error(data?.error ?? "Failed to send notifications");
       toast({ title: "Notifications Sent", description: data.message || `Sent ${data.sent} reminders.` });
     } catch (err: unknown) {
-      toast({ title: "Error", description: (err as Error).message, variant: "destructive" });
+      toast({ title: "Error", description: toUserFacingError(err, "Could not send overdue reminders."), variant: "destructive" });
     } finally {
       setIsSendingNotifications(false);
     }
@@ -157,6 +158,7 @@ const Billing = () => {
         return;
       }
 
+      const lease = leases.find((row) => row.id === leaseId);
       const { data: inserted, error } = await supabase
         .from("invoices")
         .insert({
@@ -168,12 +170,15 @@ const Billing = () => {
           description: data.description || "Invoice",
           status: "pending",
           manager_id: user.id,
+          property_id: lease?.property_id ?? null,
+          unit_id: lease?.unit_id ?? null,
         })
         .select("*, tenants(id,name,email,phone,photo_url), leases(property,unit)")
         .single();
 
       if (error) {
-        toast({ title: "Error", description: error.message || "Failed to create invoice", variant: "destructive" });
+        logError("billing.handleCreateInvoice", error);
+        toast({ title: "Error", description: toUserFacingError(error, "Failed to create invoice"), variant: "destructive" });
         return;
       }
 
@@ -182,7 +187,7 @@ const Billing = () => {
       if (data.send_notification && inserted?.tenants?.email) {
         const { data: co } = await supabase
           .from("company_settings").select("company_name").limit(1).maybeSingle();
-        await supabase.functions.invoke("send-invoice-notification", {
+        const { data: notifyResult, error: notifyError } = await supabase.functions.invoke("send-invoice-notification", {
           body: {
             tenantEmail:   inserted.tenants.email,
             tenantName:    inserted.tenants.name,
@@ -195,6 +200,13 @@ const Billing = () => {
             description:   inserted.description,
           },
         });
+        if (notifyError || notifyResult?.emailSent === false || notifyResult?.success === false) {
+          toast({
+            title: "Invoice saved, email not sent",
+            description: "The invoice is on file. Tell the tenant manually or resend from billing.",
+            variant: "destructive",
+          });
+        }
       }
 
       setIsDialogOpen(false);
@@ -228,10 +240,10 @@ const Billing = () => {
               )
               .catch(() => {/* silent – payment already recorded */});
           }
-          toast({ title: "Invoice Updated", description: "Invoice marked as paid." });
+          toast({ title: "Payment recorded", description: "Invoice closed through the payment ledger." });
         },
-        onError: () =>
-          toast({ title: "Error", description: "Failed to update invoice", variant: "destructive" }),
+        onError: (err) =>
+          toast({ title: "Error", description: toUserFacingError(err, "Failed to record payment"), variant: "destructive" }),
       },
     );
   };

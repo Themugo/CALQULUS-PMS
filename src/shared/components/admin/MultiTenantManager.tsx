@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Building2, ShieldCheck, Users, Globe, Filter, Search, Plus, ExternalLink, Settings, Layers, Lock } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
@@ -37,6 +38,12 @@ export function MultiTenantManager({ className }: { className?: string }) {
 
   return (
     <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
+      <Alert variant="warning" className="rounded-none border-x-0 border-t-0">
+        <AlertTitle>Preview layout — not live organizations</AlertTitle>
+        <AlertDescription>
+          This catalogue is a UI mock. Platform admin users and permissions are managed in Platform Admins, not here.
+        </AlertDescription>
+      </Alert>
       <CardHeader className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, Fragment } from "react";
-import { logError } from "@/shared/lib/errorLogger";
+import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Link } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -247,11 +247,10 @@ const Properties = () => {
     });
 
     if (error) {
-      const detail = error.details ? ` (${error.details})` : '';
-      const hint = error.hint ? ` Hint: ${error.hint}` : '';
+      logError("properties.create", error);
       toast({
         title: "Property creation failed",
-        description: `${error.message}${detail}${hint}`,
+        description: toUserFacingError(error, "Could not add this property. Check your plan limits and try again."),
         variant: "destructive",
       });
     } else {

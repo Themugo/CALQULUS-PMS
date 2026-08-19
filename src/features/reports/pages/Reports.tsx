@@ -56,7 +56,8 @@ const Reports: React.FC = () => {
             .eq('manager_id', user!.id)
             .gte('due_date', start)
             .lte('due_date', end)
-            .then(({ data }) => {
+            .then(({ data, error }) => {
+              if (error) throw error;
               const billed    = (data || []).reduce((s, i) => s + Number(i.amount), 0);
               const collected = (data || []).reduce((s, i) => s + Number(i.paid_amount ?? 0), 0);
               const arrears   = (data || []).filter(i => i.status === 'overdue').reduce((s, i) => s + Number(i.amount), 0);

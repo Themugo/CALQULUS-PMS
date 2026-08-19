@@ -249,6 +249,9 @@ verify_jwt = false
 [functions.send-overdue-maintenance-notifications]
 verify_jwt = false
 
+[functions.send-tenant-notice]
+verify_jwt = true
+
 [functions.send-payment-reminders]
 verify_jwt = false
 

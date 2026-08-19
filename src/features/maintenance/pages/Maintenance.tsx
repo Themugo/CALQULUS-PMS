@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
-import { logError } from "@/shared/lib/errorLogger";
+import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Layout } from "@/shared/components/layout/Layout";
 import ServiceMarketplace from "@/features/services/components/ServiceMarketplace";
 import { Button } from "@/shared/components/ui/button";
@@ -247,12 +247,13 @@ export default function Maintenance() {
       budget: formData.budget ? parseFloat(formData.budget) : null,
       created_by_role: 'manager',
       manager_id: user.id,
+      property_id: formData.property_id || null,
     });
 
     if (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to submit maintenance request",
+        description: toUserFacingError(error, "Failed to submit maintenance request"),
         variant: "destructive",
       });
     } else {

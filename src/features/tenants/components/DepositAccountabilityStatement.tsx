@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
+import { toUserFacingError } from '@/shared/lib/errorLogger';
 import { useCurrency } from '@/shared/hooks/useCurrency';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -163,7 +164,11 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       const totalDeducted = deductions.reduce((s, d) => s + Number(d.amount), 0) + Number(form.amount);
       const original = Number(tenant.deposit_amount ?? 0);
       const newBalance = Math.max(0, original - totalDeducted);
-      await supabase.from('tenants').update({ deposit_balance: newBalance }).eq('id', tenant.id);
+      const { error: balanceError } = await supabase
+        .from('tenants')
+        .update({ deposit_balance: newBalance })
+        .eq('id', tenant.id);
+      if (balanceError) throw balanceError;
 
       // Record in the deposit ledger too, so there's an itemized audit
       // trail rather than just an overwritten balance number.
@@ -190,7 +195,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       setForm(p => ({ ...p, description: '', amount: '', evidence_url: '', notes: '' }));
       refetch();
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => toast({ title: 'Failed', description: toUserFacingError(err, 'Could not update the deposit record.'), variant: 'destructive' }),
   });
 
   // Remove deduction
@@ -201,7 +206,11 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       const { error } = await supabase.from('deposit_deductions').delete().eq('id', id);
       if (error) throw error;
       const newBalance = (tenant.deposit_balance ?? 0) + Number(ded.amount);
-      await supabase.from('tenants').update({ deposit_balance: newBalance }).eq('id', tenant.id);
+      const { error: balanceError } = await supabase
+        .from('tenants')
+        .update({ deposit_balance: newBalance })
+        .eq('id', tenant.id);
+      if (balanceError) throw balanceError;
 
       if (unitId) {
         const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -224,7 +233,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       refetch();
       toast({ title: 'Deduction removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => toast({ title: 'Failed', description: toUserFacingError(err, 'Could not update the deposit record.'), variant: 'destructive' }),
   });
 
   // Generate PDF statement

@@ -21,6 +21,36 @@ const sanitize = (e: unknown): string => {
   try { return JSON.stringify(e); } catch { return 'Unknown error'; }
 };
 
+const RAW_DB_PATTERNS = [
+  /violates (check|foreign key|unique|not-null) constraint/i,
+  /duplicate key value/i,
+  /permission denied for (table|schema|relation)/i,
+  /row-level security/i,
+  /column .+ does not exist/i,
+  /relation .+ does not exist/i,
+  /PGRST/i,
+  /\b22P02\b|\b23503\b|\b23505\b|\b42501\b/,
+];
+
+/**
+ * User-facing copy for toasts. Logs the raw error; never surfaces PostgREST/SQL.
+ */
+export function toUserFacingError(error: unknown, fallback: string): string {
+  const raw =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error !== null && 'message' in error
+        ? String((error as { message: unknown }).message)
+        : typeof error === 'string'
+          ? error
+          : '';
+
+  if (!raw) return fallback;
+  if (RAW_DB_PATTERNS.some((re) => re.test(raw))) return fallback;
+  if (raw.length > 180) return fallback;
+  return raw;
+}
+
 export const logError = (context: string, error: unknown): void => {
   const msg = sanitize(error);
   if (isDev) console.error('[ERROR] ' + context + ':', error);

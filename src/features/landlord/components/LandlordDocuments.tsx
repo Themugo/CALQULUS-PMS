@@ -29,12 +29,13 @@ const LandlordDocuments: React.FC = () => {
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ['landlord-documents', user?.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('landlord_documents')
         .select('*, properties(name)')
         .eq('landlord_user_id', user!.id)
         .eq('is_visible', true)
         .order('created_at', { ascending: false });
+      if (error) throw error;
       return (data || []) as Array<{ id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; created_at: string }>;
     },
     enabled: !!user?.id,

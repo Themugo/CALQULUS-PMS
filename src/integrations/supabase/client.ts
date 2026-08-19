@@ -105,12 +105,22 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
     abortSignal(...args: unknown[]): NoopBuilder;
   }
 
-  // Chainable noop query builder — every method returns `this`, and
-  // when awaited it resolves to { data: [], error: null }.
-  function createNoopBuilder(): NoopBuilder {
+  // Chainable noop query builder.
+  // Reads resolve to empty data so preview UI can render.
+  // Writes resolve with an error so the UI cannot claim a successful persist.
+  function createNoopBuilder(kind: 'read' | 'write' = 'read'): NoopBuilder {
+    const notConfigured = { message: "Supabase is not configured" };
+    const writeOps = new Set(['insert', 'update', 'upsert', 'delete']);
     const builder: NoopBuilder = {
-      then<R>(resolve: (value: { data: never[]; error: null }) => R) { return Promise.resolve({ data: [], error: null }).then(resolve); },
-      catch<R>(fn: (reason: unknown) => R) { return Promise.resolve({ data: [], error: null }).catch(fn); },
+      then<R>(resolve: (value: { data: never[]; error: null } | { data: null; error: { message: string } }) => R) {
+        if (kind === 'write') {
+          return Promise.resolve({ data: null, error: notConfigured }).then(resolve as (value: { data: null; error: { message: string } }) => R);
+        }
+        return Promise.resolve({ data: [], error: null }).then(resolve as (value: { data: never[]; error: null }) => R);
+      },
+      catch<R>(fn: (reason: unknown) => R) {
+        return Promise.resolve({ data: [], error: null }).catch(fn);
+      },
     } as NoopBuilder;
     const chainMethods = [
       'select', 'insert', 'update', 'upsert', 'delete',
@@ -121,20 +131,20 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
       'csv', 'returns', 'throwOnError', 'abortSignal',
     ];
     for (const m of chainMethods) {
-      builder[m] = () => builder;
+      builder[m] = () => createNoopBuilder(writeOps.has(m) || kind === 'write' ? 'write' : 'read');
     }
     return builder;
   }
 
   const noopFunctions = {
-    invoke: () => Promise.resolve({ data: null, error: null }),
+    invoke: () => Promise.resolve({ data: null, error: { message: "Supabase is not configured" } }),
   };
 
   const noopStorage = {
     from: () => ({
-      upload: () => Promise.resolve({ data: null, error: null }),
-      download: () => Promise.resolve({ data: null, error: null }),
-      remove: () => Promise.resolve({ data: [], error: null }),
+      upload: () => Promise.resolve({ data: null, error: { message: "Supabase is not configured" } }),
+      download: () => Promise.resolve({ data: null, error: { message: "Supabase is not configured" } }),
+      remove: () => Promise.resolve({ data: [], error: { message: "Supabase is not configured" } }),
       list: () => Promise.resolve({ data: [], error: null }),
       getPublicUrl: (path: string) => ({ data: { publicUrl: path } }),
     }),
@@ -146,8 +156,11 @@ function createNoopProxy(): ReturnType<typeof createClient<Database>> {
       if (prop === 'auth') return noopAuth;
       if (prop === 'functions') return noopFunctions;
       if (prop === 'storage') return noopStorage;
-      if (prop === 'from' || prop === 'rpc') {
-        return () => createNoopBuilder();
+      if (prop === 'from') {
+        return () => createNoopBuilder('read');
+      }
+      if (prop === 'rpc') {
+        return () => createNoopBuilder('write');
       }
       if (prop === 'channel') {
         return () => {

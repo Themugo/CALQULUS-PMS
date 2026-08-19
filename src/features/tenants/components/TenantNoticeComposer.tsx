@@ -159,9 +159,8 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
               unit:           tenant.unit,
             },
           });
-          // Non-blocking for the record itself (the notice is already saved), but we
-          // must not tell the manager it was delivered when it wasn't.
-          if (sendError || sendResult?.sent === false) {
+          const delivered = sendResult?.sent === true || sendResult?.data?.sent === true;
+          if (sendError || !delivered) {
             emailDelivered = false;
             console.error('[TenantNoticeComposer] send-tenant-notice failed:', sendError ?? sendResult);
           }

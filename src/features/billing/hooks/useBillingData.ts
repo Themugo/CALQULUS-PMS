@@ -59,8 +59,8 @@ export type BillingExpenditure = ExpenditureRow;
 // ── Query keys — centralised so invalidation is consistent ──────────────────
 
 export const billingKeys = {
-  invoices:     ["billing", "invoices"]     as const,
-  leases:       ["billing", "leases"]       as const,
+  invoices:     (managerId: string) => ["billing", "invoices", managerId] as const,
+  leases:       (managerId: string) => ["billing", "leases", managerId] as const,
   tenants:      (managerId: string) => ["billing", "tenants", managerId] as const,
   expenditures: (managerId: string, month: string) =>
                   ["billing", "expenditures", managerId, month] as const,
@@ -90,7 +90,7 @@ async function fetchLeases(managerId: string): Promise<BillingLease[]> {
   const { data, error } = await supabase
     .from("leases")
     .select(`
-      id, property, unit, monthly_rent, tenant_id,
+      id, property, unit, monthly_rent, tenant_id, property_id, unit_id,
       tenants ( id, name, email, photo_url )
     `)
     .eq("manager_id", managerId)
@@ -145,14 +145,14 @@ export function useBillingData(selectedMonth: string) {
   const queryClient = useQueryClient();
 
   const invoicesQuery = useQuery({
-    queryKey: billingKeys.invoices,
+    queryKey: billingKeys.invoices(user?.id ?? ""),
     queryFn: () => fetchInvoices(user!.id),
     enabled: !!user?.id,
-    staleTime: 2 * 60 * 1000, // treat as fresh for 2 min
+    staleTime: 15 * 1000,
   });
 
   const leasesQuery = useQuery({
-    queryKey: billingKeys.leases,
+    queryKey: billingKeys.leases(user?.id ?? ""),
     queryFn: () => fetchLeases(user!.id),
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
@@ -173,8 +173,9 @@ export function useBillingData(selectedMonth: string) {
 
   /** Call after any mutation that changes invoices to get fresh data. */
   const invalidateInvoices = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: billingKeys.invoices });
-  }, [queryClient]);
+    if (!user?.id) return;
+    queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
+  }, [queryClient, user?.id]);
 
   /** Call after saving an expenditure. */
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -204,7 +205,7 @@ export function useBillingData(selectedMonth: string) {
 
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
-/** Mark an invoice as paid and trigger auto-send receipt. */
+/** Record a payment that closes the invoice (never a status-only write). */
 export function useMarkInvoicePaid() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -215,31 +216,52 @@ export function useMarkInvoicePaid() {
     }: {
       invoiceId: string;
     }) => {
-      const paidDate = new Date().toISOString().split("T")[0];
-      const { error } = await supabase
+      if (!user?.id) throw new Error("Not authenticated");
+
+      const { data: invoice, error: loadError } = await supabase
         .from("invoices")
-        .update({ status: "paid", paid_date: paidDate })
-        .eq("id", invoiceId);
+        .select("id, tenant_id, amount, balance_due, invoice_number")
+        .eq("id", invoiceId)
+        .single();
+      if (loadError) throw loadError;
+      if (!invoice?.tenant_id) throw new Error("Invoice is missing a tenant");
 
-      if (error) throw error;
-
-      // Fire-and-forget: auto-send receipt
-      if (user) {
-        supabase.functions
-          .invoke("auto-send-receipt", { body: { invoiceId, managerId: user.id } })
-          .catch(() => {/* silent – auto-send is best-effort */});
+      const amount = Number(invoice.balance_due ?? invoice.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        throw new Error("Invoice has no remaining balance to record");
       }
+
+      const paidDate = new Date().toISOString().split("T")[0];
+      const { data, error } = await supabase.functions.invoke("record-payment", {
+        body: {
+          tenantId: invoice.tenant_id,
+          invoiceId,
+          amount,
+          paymentMethod: "receipt_upload",
+          reference: `MANUAL-${invoice.invoice_number || invoiceId.slice(0, 8)}-${Date.now()}`,
+          paymentDate: paidDate,
+          notes: "Recorded via Mark paid",
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      supabase.functions
+        .invoke("auto-send-receipt", { body: { invoiceId, managerId: user.id } })
+        .catch(() => {/* receipt email is best-effort after payment is recorded */});
 
       return { invoiceId, paidDate };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: billingKeys.invoices });
+      if (!user?.id) return;
+      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
     },
   });
 }
 
 /** Update invoice amount, due_date, description. */
 export function useUpdateInvoice() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -262,7 +284,8 @@ export function useUpdateInvoice() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: billingKeys.invoices });
+      if (!user?.id) return;
+      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
     },
   });
 }

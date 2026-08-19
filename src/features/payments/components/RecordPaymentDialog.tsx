@@ -5,6 +5,8 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { useRBAC } from '@/shared/hooks/useRBAC';
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
 import { useToast } from '@/shared/hooks/use-toast';
+import { queryKeys } from '@/shared/hooks/useOptimizedQuery';
+import { toUserFacingError } from '@/shared/lib/errorLogger';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -166,11 +168,15 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
       queryClient.invalidateQueries({ queryKey: ['tenant-invoices'] });
       queryClient.invalidateQueries({ queryKey: ['manager-payments'] });
       queryClient.invalidateQueries({ queryKey: ['payment-history'] });
+      queryClient.invalidateQueries({ queryKey: ['billing'] });
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(user.id) });
+      }
       onSuccess?.();
       onOpenChange(false);
     },
     onError: (err: Error) => {
-      toast({ title: 'Failed to record payment', description: err.message, variant: 'destructive' });
+      toast({ title: 'Failed to record payment', description: toUserFacingError(err, 'Could not record this payment.'), variant: 'destructive' });
     },
   });
 

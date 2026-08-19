@@ -135,37 +135,40 @@ const LandlordDashboard = () => {
 
       const propertyIds = links.map((l: { property_id: string }) => l.property_id);
 
-      // Dates for current month
-      const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-      const endOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
-      const thirtyDaysAhead = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
-
       // Parallel data fetching for landlord's properties
       const [
         propsResult,
         unitsResult,
-        invoicesThisMonthResult,
-        overdueInvoicesResult,
-        leasesResult,
-        maintenanceResult,
-        profilesResult
+        profilesResult,
+        portfolioStatsResult,
       ] = await Promise.all([
         supabase.from('properties').select('id, name, address, units, occupied, revenue').in('id', propertyIds),
         supabase.from('units').select('id, property_id, status, rent_amount').in('property_id', propertyIds),
-        supabase.from('invoices').select('property_id, amount, status, paid_date, due_date').in('property_id', propertyIds).gte('due_date', firstOfThisMonth).lte('due_date', endOfThisMonth),
-        supabase.from('invoices').select('property_id, balance_due, amount').in('property_id', propertyIds).eq('status', 'overdue'),
-        supabase.from('leases').select('id, property_id, status, end_date, rent_amount').in('property_id', propertyIds).eq('status', 'active'),
-        supabase.from('maintenance_requests').select('id, property_id, status, priority, title, created_at').in('property_id', propertyIds).in('status', ['open', 'pending', 'in_progress']),
-        supabase.from('profiles').select('id, full_name, email').in('id', links.filter((l: { manager_id: string | null }) => l.manager_id).map((l: { manager_id: string }) => l.manager_id))
+        supabase.from('profiles').select('id, full_name, email').in('id', links.filter((l: { manager_id: string | null }) => l.manager_id).map((l: { manager_id: string }) => l.manager_id)),
+        supabase.rpc('get_landlord_portfolio_stats'),
       ]);
+
+      if (propsResult.error) throw propsResult.error;
+      if (unitsResult.error) throw unitsResult.error;
+      if (portfolioStatsResult.error) throw portfolioStatsResult.error;
 
       const props = propsResult.data || [];
       const units = unitsResult.data || [];
-      const invoicesThisMonth = invoicesThisMonthResult.data || [];
-      const overdueInvoices = overdueInvoicesResult.data || [];
-      const leases = leasesResult.data || [];
-      const maintenance = maintenanceResult.data || [];
       const profiles = profilesResult.data || [];
+      const stats = (portfolioStatsResult.data ?? {}) as {
+        properties?: Array<{
+          id: string;
+          expected_rent: number;
+          collected_rent: number;
+          arrears: number;
+          open_maintenance: number;
+          urgent_maintenance: number;
+        }>;
+        active_leases?: number;
+        expiring_leases?: number;
+        activities?: LandlordActivity[];
+      };
+      const financeByProperty = new Map((stats.properties ?? []).map((row) => [row.id, row]));
 
       // Per-property aggregation maps
       const unitStatsMap: Record<string, { total: number; occupied: number; vacant: number }> = {};
@@ -176,43 +179,20 @@ const LandlordDashboard = () => {
         else unitStatsMap[u.property_id].vacant++;
       });
 
-      const collectedMap: Record<string, number> = {};
-      const expectedMap: Record<string, number> = {};
-      invoicesThisMonth.forEach(inv => {
-        if (inv.status === 'paid') {
-          collectedMap[inv.property_id] = (collectedMap[inv.property_id] || 0) + Number(inv.amount || 0);
-        }
-        expectedMap[inv.property_id] = (expectedMap[inv.property_id] || 0) + Number(inv.amount || 0);
-      });
-
-      const arrearsMap: Record<string, number> = {};
-      overdueInvoices.forEach(inv => {
-        arrearsMap[inv.property_id] = (arrearsMap[inv.property_id] || 0) + Number(inv.balance_due || 0);
-      });
-
-      const maintCountMap: Record<string, number> = {};
-      maintenance.forEach(m => {
-        maintCountMap[m.property_id] = (maintCountMap[m.property_id] || 0) + 1;
-      });
-
       // Construct property summary list
       const propertiesList: PropertySummary[] = props.map(p => {
         const link = links.find((l: { property_id: string }) => l.property_id === p.id) as { revenue_share_pct: number; manager_id: string | null; assigned_at: string };
         const mgr = profiles.find((pr: { id: string }) => pr.id === link?.manager_id);
         const uStats = unitStatsMap[p.id];
-        
+        const fin = financeByProperty.get(p.id);
+
         const totalUnits = uStats?.total ?? p.units;
         const totalOccupied = uStats?.occupied ?? p.occupied;
         const totalVacant = uStats?.vacant ?? Math.max(0, totalUnits - totalOccupied);
 
-        // Fallback expected rent from active leases if invoice query is 0
-        let expRent = expectedMap[p.id] || 0;
-        if (expRent === 0) {
-          expRent = leases.filter(l => l.property_id === p.id).reduce((s, l) => s + Number(l.rent_amount || 0), 0);
-        }
-
-        const collRent = collectedMap[p.id] || Number(p.revenue || 0);
-        const arrears = arrearsMap[p.id] || 0;
+        const expRent = Number(fin?.expected_rent ?? 0);
+        const collRent = Number(fin?.collected_rent ?? 0);
+        const arrears = Number(fin?.arrears ?? 0);
 
         return {
           id: p.id,
@@ -230,7 +210,7 @@ const LandlordDashboard = () => {
           manager_name: mgr?.full_name ?? null,
           manager_email: mgr?.email ?? null,
           assigned_at: link?.assigned_at,
-          openMaintenance: maintCountMap[p.id] || 0,
+          openMaintenance: Number(fin?.open_maintenance ?? 0),
         };
       });
 
@@ -245,30 +225,18 @@ const LandlordDashboard = () => {
       const totalArrears = propertiesList.reduce((s, p) => s + p.outstandingArrears, 0);
       const netLandlordShareMTD = propertiesList.reduce((s, p) => s + (p.collectedRent * p.revenue_share_pct / 100), 0);
 
-      const activeLeasesCount = leases.length;
-      const expiringLeasesCount = leases.filter(l => l.end_date && l.end_date <= thirtyDaysAhead).length;
+      const activeLeasesCount = Number(stats.active_leases ?? 0);
+      const expiringLeasesCount = Number(stats.expiring_leases ?? 0);
+      const openMaintenanceCount = propertiesList.reduce((s, p) => s + p.openMaintenance, 0);
+      const urgentMaintenanceCount = (stats.properties ?? []).reduce((s, row) => s + Number(row.urgent_maintenance ?? 0), 0);
 
-      const openMaintenanceCount = maintenance.length;
-      const urgentMaintenanceCount = maintenance.filter(m => m.priority === 'high' || m.priority === 'urgent').length;
-
-      // Activity events for landlord properties
-      const propNameMap = new Map(props.map(p => [p.id, p.name]));
-      const activities: LandlordActivity[] = [
-        ...maintenance.slice(0, 5).map(m => ({
-          id: `maint-${m.id}`,
-          type: 'maintenance',
-          description: `Maintenance request: ${m.title}`,
-          timestamp: m.created_at,
-          propertyName: propNameMap.get(m.property_id),
-        })),
-        ...leases.slice(0, 5).map(l => ({
-          id: `lease-${l.id}`,
-          type: 'lease',
-          description: `Active lease ending ${l.end_date ? format(new Date(l.end_date), 'dd/MM/yyyy') : 'N/A'}`,
-          timestamp: new Date().toISOString(),
-          propertyName: propNameMap.get(l.property_id),
-        })),
-      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 8);
+      const activities: LandlordActivity[] = (stats.activities ?? []).map((a) => ({
+        id: a.id,
+        type: a.type,
+        description: a.description,
+        timestamp: a.timestamp,
+        propertyName: a.propertyName ?? (a as { property_name?: string }).property_name,
+      }));
 
       return {
         properties: propertiesList,
