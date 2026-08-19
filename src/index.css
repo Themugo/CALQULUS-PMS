@@ -82,6 +82,12 @@
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-danger: var(--destructive);
 
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -251,6 +257,8 @@
 
     --card: hsl(0 0% 100%);                  /* #FFFFFF white cards */
     --card-foreground: hsl(224 45% 16%);
+    --surface: hsl(0 0% 100%);
+    --surface-elevated: hsl(216 42% 97%);    /* #F4F7FB */
 
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(224 45% 16%);
@@ -258,7 +266,8 @@
     /* Primary = executive blue #155EEF */
     --primary: hsl(220 87% 51%);
     --primary-foreground: hsl(0 0% 100%);
-    --primary-hover: hsl(222 83% 45%);       /* #0E4FCC deeper hover */
+    --primary-hover: hsl(222 83% 45%);       /* #0E4FCC */
+    --primary-active: hsl(223 87% 35%);      /* #0C3FA8 */
 
     /* Navy executive surfaces (headers, emphasis) */
     --navy-primary: hsl(230 71% 15%);        /* #0B1440 */
@@ -305,9 +314,9 @@
     --teal: hsl(173 83% 32%);                /* #0E9384 */
     --teal-foreground: hsl(0 0% 100%);
     --teal-bg: hsl(173 83% 96%);
-    --gold: hsl(44 66% 50%);                 /* #D4A72C */
-    --gold-foreground: hsl(0 0% 100%);
-    --gold-bg: hsl(44 66% 96%);
+    --gold: var(--primary);
+    --gold-foreground: var(--primary-foreground);
+    --gold-bg: hsl(220 87% 96%);
 
     --border: hsl(216 41% 88%);              /* #D5DDEA subtle navy border */
     --input: hsl(216 41% 88%);
@@ -373,9 +382,9 @@
     --teal: hsl(173 83% 32%);
     --teal-foreground: hsl(0 0% 100%);
     --teal-bg: hsl(173 83% 96%);
-    --gold: hsl(44 66% 50%);
-    --gold-foreground: hsl(0 0% 100%);
-    --gold-bg: hsl(44 66% 96%);
+    --gold: var(--primary);
+    --gold-foreground: var(--primary-foreground);
+    --gold-bg: hsl(220 87% 96%);
     --border: hsl(216 41% 88%);
     --input: hsl(216 41% 88%);
     --ring: hsl(220 87% 51%);
@@ -398,6 +407,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -570,6 +580,22 @@
     line-height: 1.4;
     color: hsl(219 20% 45%);
     font-weight: 500;
+  }
+  .type-page-title { @apply page-title; }
+  .type-section-title { @apply section-title; }
+  .type-card-title { @apply card-title-exec; }
+  .type-metric { @apply metric-value; }
+  .type-body {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: hsl(224 45% 16%);
+  }
+  .type-meta { @apply meta-text; }
+  .type-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: hsl(219 20% 45%);
   }
   /* Light cool-blue secondary surface for grouped panels. */
   .surface-subtle {
