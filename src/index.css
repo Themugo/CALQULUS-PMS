@@ -542,7 +542,9 @@
      Strong, deliberate scale so page titles dominate, section titles are
      medium/strong, supporting text recedes, and metrics stand out.
      Headings use Outfit (installed) for a professional enterprise feel. */
-  .page-title {
+  /* Tailwind v4 @apply only accepts real utilities — alias type-* by grouping. */
+  .page-title,
+  .type-page-title {
     font-family: 'Outfit', sans-serif;
     font-size: 1.75rem;
     line-height: 1.2;
@@ -551,9 +553,11 @@
     letter-spacing: -0.02em;
   }
   @media (min-width: 768px) {
-    .page-title { font-size: 2rem; }
+    .page-title,
+    .type-page-title { font-size: 2rem; }
   }
-  .section-title {
+  .section-title,
+  .type-section-title {
     font-family: 'Outfit', sans-serif;
     font-size: 1.375rem;
     line-height: 1.35;
@@ -561,7 +565,8 @@
     color: hsl(224 45% 16%);
     letter-spacing: -0.01em;
   }
-  .card-title-exec {
+  .card-title-exec,
+  .type-card-title {
     font-family: 'Outfit', sans-serif;
     font-size: 1.0625rem;
     line-height: 1.4;
@@ -573,7 +578,8 @@
     line-height: 1.5;
     color: hsl(219 20% 45%);
   }
-  .metric-value {
+  .metric-value,
+  .type-metric {
     font-family: 'Outfit', sans-serif;
     font-size: 1.875rem;
     line-height: 1.1;
@@ -581,22 +587,18 @@
     color: hsl(224 45% 16%);
     letter-spacing: -0.02em;
   }
-  .meta-text {
+  .meta-text,
+  .type-meta {
     font-size: 0.6875rem;
     line-height: 1.4;
     color: hsl(219 20% 45%);
     font-weight: 500;
   }
-  .type-page-title { @apply page-title; }
-  .type-section-title { @apply section-title; }
-  .type-card-title { @apply card-title-exec; }
-  .type-metric { @apply metric-value; }
   .type-body {
     font-size: 0.875rem;
     line-height: 1.5;
     color: hsl(224 45% 16%);
   }
-  .type-meta { @apply meta-text; }
   .type-label {
     font-size: 0.75rem;
     font-weight: 600;
