@@ -54,6 +54,7 @@ import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
 import TenantDashboardStats from '@/features/tenant-portal/components/TenantDashboardStats';
 import { ManagerBankDetails } from '@/features/tenant-portal/components/ManagerBankDetails';
+import calqulusLogo from '@/assets/calqulus-logo-new.jpg';
 import { ReceiptUpload } from '@/features/tenant-portal/components/ReceiptUpload';
 import { ReceiptHistory } from '@/features/tenant-portal/components/ReceiptHistory';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
@@ -492,15 +493,13 @@ const TenantPortal = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
+      <header className="border-b border-border bg-card/90 backdrop-blur-md sticky top-0 z-40 shadow-xs">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-teal to-primary flex items-center justify-center shadow-sm shadow-teal/20">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS PMS</h1>
-              <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Tenant Portal</p>
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className="font-heading font-semibold text-base md:text-lg text-foreground leading-none">CALQULUS PMS</h1>
+              <p className="text-[10px] md:text-xs text-muted-foreground font-medium tracking-wider uppercase mt-1">Tenant Portal</p>
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
@@ -510,7 +509,7 @@ const TenantPortal = () => {
               variant="outline"
               size="sm"
               onClick={signOut}
-              className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
+              className="h-8 px-2 md:px-3 rounded-md border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
             >
               <LogOut className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Sign Out</span>
@@ -631,31 +630,31 @@ const TenantPortal = () => {
                 {/* ── Status at a glance ── */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
                   {/* 1. My Home */}
-                  <Card className="border-l-4 border-l-teal border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
-                          <Building2 className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="status-badge status-neutral">
+                          <Building2 className="h-3 w-3 shrink-0" />
                           My Home
                         </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
+                        <span className="meta-text font-semibold">
                           Unit {tenantInfo?.unit || '—'}
-                        </Badge>
+                        </span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Property:</span>
+                          <span className="supporting-text">Property</span>
                           <span
-                            className="font-bold text-foreground truncate max-w-[100px]"
+                            className="supporting-text font-bold text-foreground truncate max-w-[100px]"
                             title={tenantInfo?.property || '—'}
                           >
                             {tenantInfo?.property || '—'}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Manager:</span>
+                          <span className="supporting-text">Manager</span>
                           <span
-                            className="font-semibold text-foreground truncate max-w-[100px]"
+                            className="supporting-text font-semibold text-foreground truncate max-w-[100px]"
                             title={managerProfile?.full_name || 'Property Manager'}
                           >
                             {managerProfile?.full_name || 'Property Manager'}
@@ -666,65 +665,63 @@ const TenantPortal = () => {
                   </Card>
 
                   {/* 2. Balance Due */}
-                  <Card className="border-l-4 border-l-warning border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="status-badge status-warning">
+                          <AlertCircle className="h-3 w-3 shrink-0" />
                           Balance Due
                         </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${stats.overdueCount > 0 ? 'border-destructive/30 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
+                        <span
+                          className={`meta-text font-semibold ${stats.overdueCount > 0 ? 'text-destructive' : 'text-warning'}`}
                         >
-                          {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : `${stats.pendingCount} Pending`}
-                        </Badge>
+                          {stats.overdueCount > 0 ? `${stats.overdueCount} overdue` : `${stats.pendingCount} pending`}
+                        </span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Balance:</span>
-                          <span className={`font-bold ${stats.totalDue > 0 ? 'text-warning' : 'text-success'}`}>
+                          <span className="supporting-text">Total balance</span>
+                          <span className={`supporting-text font-bold ${stats.totalDue > 0 ? 'text-warning' : 'text-success'}`}>
                             {formatCurrency(stats.totalDue)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Pending Bills:</span>
-                          <span className="font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
+                          <span className="supporting-text">Pending bills</span>
+                          <span className="supporting-text font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* 3. Next Payment */}
-                  <Card className="border-l-4 border-l-destructive border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                          <Clock className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`status-badge ${urgentInvoices[0]?.status === 'overdue' ? 'status-danger' : 'status-warning'}`}>
+                          <Clock className="h-3 w-3 shrink-0" />
                           Next Payment
                         </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${urgentInvoices[0]?.status === 'overdue' ? 'border-destructive/40 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
+                        <span
+                          className={`meta-text font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-destructive' : 'text-warning'}`}
                         >
                           {urgentInvoices[0]
                             ? urgentInvoices[0].status === 'overdue'
-                              ? 'OVERDUE'
-                              : 'DUE SOON'
-                            : 'PAID'}
-                        </Badge>
+                              ? 'Overdue'
+                              : 'Due soon'
+                            : 'Paid'}
+                        </span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Next Due Date:</span>
-                          <span className="font-bold text-foreground">
+                          <span className="supporting-text">Next due date</span>
+                          <span className="supporting-text font-bold text-foreground">
                             {urgentInvoices[0] ? formatDate(urgentInvoices[0].due_date) : 'All paid'}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Status:</span>
+                          <span className="supporting-text">Status</span>
                           <span
-                            className={`font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-destructive' : 'text-success'}`}
+                            className={`supporting-text font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-destructive' : 'text-success'}`}
                           >
                             {urgentInvoices[0]
                               ? urgentInvoices[0].status === 'overdue'
@@ -738,26 +735,24 @@ const TenantPortal = () => {
                   </Card>
 
                   {/* 4. Paid This Year */}
-                  <Card className="border-l-4 border-l-success border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                          <CreditCard className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="status-badge status-success">
+                          <CreditCard className="h-3 w-3 shrink-0" />
                           Paid This Year
                         </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                          YTD Paid
-                        </Badge>
+                        <span className="meta-text font-semibold text-success">YTD paid</span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Paid:</span>
-                          <span className="font-bold text-success">{formatCurrency(stats.paidThisYear)}</span>
+                          <span className="supporting-text">Total paid</span>
+                          <span className="supporting-text font-bold text-success">{formatCurrency(stats.paidThisYear)}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Last Receipt:</span>
+                          <span className="supporting-text">Last receipt</span>
                           <span
-                            className="font-semibold text-foreground truncate max-w-[100px]"
+                            className="supporting-text font-semibold text-foreground truncate max-w-[100px]"
                             title={recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
                           >
                             {recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
@@ -768,27 +763,27 @@ const TenantPortal = () => {
                   </Card>
 
                   {/* 5. My Lease */}
-                  <Card className="border-l-4 border-l-primary border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                          <FileText className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="status-badge status-info">
+                          <FileText className="h-3 w-3 shrink-0" />
                           My Lease
                         </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-primary/30 text-primary capitalize">
+                        <span className="meta-text font-semibold text-primary capitalize">
                           {lease?.status || 'Active'}
-                        </Badge>
+                        </span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Monthly Rent:</span>
-                          <span className="font-bold text-foreground">
+                          <span className="supporting-text">Monthly rent</span>
+                          <span className="supporting-text font-bold text-foreground">
                             {lease ? formatCurrency(lease.monthly_rent) : '—'}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Lease End:</span>
-                          <span className="font-semibold text-foreground">
+                          <span className="supporting-text">Lease end</span>
+                          <span className="supporting-text font-semibold text-foreground">
                             {lease ? formatDate(lease.end_date) : '—'}
                           </span>
                         </div>
@@ -797,29 +792,28 @@ const TenantPortal = () => {
                   </Card>
 
                   {/* 6. Maintenance */}
-                  <Card className="border-l-4 border-l-info border-border bg-card hover:shadow-md transition-all">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-info flex items-center gap-1.5">
-                          <Wrench className="h-3.5 w-3.5" />
+                  <Card className="enterprise-card hover:shadow-md transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`status-badge ${maintenanceSummary.openCount > 0 ? 'status-warning' : 'status-info'}`}>
+                          <Wrench className="h-3 w-3 shrink-0" />
                           Maintenance
                         </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${maintenanceSummary.openCount > 0 ? 'border-warning/30 text-warning bg-warning/10' : 'border-info/30 text-info'}`}
+                        <span
+                          className={`meta-text font-semibold ${maintenanceSummary.openCount > 0 ? 'text-warning' : 'text-info'}`}
                         >
-                          {maintenanceSummary.openCount} Open
-                        </Badge>
+                          {maintenanceSummary.openCount} open
+                        </span>
                       </div>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Open Repairs:</span>
-                          <span className="font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
+                          <span className="supporting-text">Open repairs</span>
+                          <span className="supporting-text font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Urgent Issues:</span>
+                          <span className="supporting-text">Urgent issues</span>
                           <span
-                            className={`font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-destructive' : 'text-success'}`}
+                            className={`supporting-text font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-destructive' : 'text-success'}`}
                           >
                             {maintenanceSummary.urgentCount > 0 ? `${maintenanceSummary.urgentCount} urgent` : 'None'}
                           </span>

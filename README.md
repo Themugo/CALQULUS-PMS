@@ -1,6 +1,6 @@
 # CALQULUS PMS
 
-A modern property management platform for Kenya and East Africa, built with React, TypeScript, Supabase, and Tailwind CSS.
+A modern property management platform for Kenya and East Africa, built with React, TypeScript, Supabase, and Tailwind CSS. It helps managers, landlords, and tenants handle properties, rent collection, billing, and maintenance in one place.
 
 ## Tech Stack
 
@@ -89,7 +89,7 @@ npm run verify
 
 ## Project Structure
 
-```
+```text
 src/
 ├── features/          # Feature-based modules
 │   ├── webhost/       # Webhost dashboard
@@ -107,7 +107,7 @@ src/
 
 - [Architecture Overview](ARCHITECTURE_DIAGRAMS.md)
 - [API Documentation](API_DOCUMENTATION.md)
-- [Database Schema](supabase/migrations/)
+- [Database Schema (SQL migrations)](supabase/migrations/)
 - [User Manuals](docs/)
   - [Manager Manual](docs/MANAGER_USER_MANUAL.md)
   - [Landlord Manual](docs/LANDLORD_USER_MANUAL.md)
@@ -129,11 +129,11 @@ For deployment instructions, see the [deployment documentation](deployment/app-a
 
 ## Demo Accounts
 
-| Role      | Email                         | Password         |
-|-----------|-------------------------------|------------------|
-| Manager   | demo.manager@calqulusrms.com  | Demo@2026        |
-| Landlord  | demo.landlord@calqulusrms.com | Demo@2026        |
-| Test User | jimmythemugo@gmail.com        | CALQULUS RMS@2026!|
+| Role      | Email                         | Password          |
+|-----------|-------------------------------|-------------------|
+| Manager   | demo.manager@calqulusrms.com  | Demo@2026         |
+| Landlord  | demo.landlord@calqulusrms.com | Demo@2026         |
+| Test User | jimmythemugo@gmail.com        | CALQULUS RMS@2026! |
 
 ## License
 

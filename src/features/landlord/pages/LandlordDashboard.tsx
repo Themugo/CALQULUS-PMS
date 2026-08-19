@@ -354,13 +354,13 @@ const LandlordDashboard = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-card/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md shadow-xs">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-auto object-contain flex-shrink-0" />
             <div className="min-w-0">
               <div className="font-heading font-bold text-sm text-gradient leading-none">CALQULUS PMS</div>
-              <div className="text-[10px] text-muted-foreground tracking-wider uppercase">Landlord Workspace</div>
+              <div className="text-[10px] text-muted-foreground tracking-wider uppercase mt-1">Landlord Workspace</div>
             </div>
             <Badge variant="outline" className="ml-1 text-xs border-teal/30 text-teal bg-teal/10">
               Property Owner
@@ -380,7 +380,7 @@ const LandlordDashboard = () => {
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground border border-border/60">
+            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground border border-border hover:bg-muted hover:text-foreground">
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sign out</span>
             </Button>
@@ -415,119 +415,115 @@ const LandlordDashboard = () => {
 
         {/* ── EXECUTIVE KPI MATRIX ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* 1. Portfolio — teal */}
-          <Card className="border-l-4 border-l-teal border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 shrink-0" />
+          {/* 1. Portfolio — neutral/info */}
+          <Card className="enterprise-card hover:shadow-md transition-all">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="status-badge status-neutral">
+                  <Building2 className="h-3 w-3 shrink-0" />
                   Portfolio
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
-                  {portfolioData?.totalProperties ?? 0} Props
-                </Badge>
+                <span className="meta-text font-semibold">
+                  {portfolioData?.totalProperties ?? 0} props
+                </span>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Units:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalUnits ?? 0} units`}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Total units</span>
+                  <span className="supporting-text font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalUnits ?? 0} units`}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Occupied Units:</span>
-                  <span className="font-semibold text-success">{propertiesLoading ? "…" : `${portfolioData?.totalOccupied ?? 0} units`}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Occupied units</span>
+                  <span className="supporting-text font-semibold text-success">{propertiesLoading ? "…" : `${portfolioData?.totalOccupied ?? 0} units`}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Vacant Units:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalVacant ?? 0} units`}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Vacant units</span>
+                  <span className="supporting-text font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.totalVacant ?? 0} units`}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 2. Occupancy / Health — green/success */}
-          <Card className="border-l-4 border-l-success border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                  <PieChart className="h-3.5 w-3.5 shrink-0" />
+          {/* 2. Occupancy / Health — success */}
+          <Card className="enterprise-card hover:shadow-md transition-all">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="status-badge status-success">
+                  <PieChart className="h-3 w-3 shrink-0" />
                   Occupancy
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                  {portfolioData?.occupancyRate ?? 0}% Occupied
-                </Badge>
+                <span className="meta-text font-semibold text-success">
+                  {portfolioData?.occupancyRate ?? 0}% occupied
+                </span>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Active Leases:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.activeLeasesCount ?? 0} active`}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Active leases</span>
+                  <span className="supporting-text font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.activeLeasesCount ?? 0} active`}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Collection Rate:</span>
-                  <span className="font-semibold text-success">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Collection rate</span>
+                  <span className="supporting-text font-semibold text-success">
                     {propertiesLoading || !portfolioData?.totalExpectedRent ? "…" : `${Math.min(100, Math.round(((portfolioData?.totalCollectedRent ?? 0) / (portfolioData?.totalExpectedRent || 1)) * 100))}%`}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Open Repairs:</span>
-                  <span className="font-medium text-foreground">{propertiesLoading ? "…" : `${portfolioData?.openMaintenanceCount ?? 0} open`}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Open repairs</span>
+                  <span className="supporting-text font-semibold text-foreground">{propertiesLoading ? "…" : `${portfolioData?.openMaintenanceCount ?? 0} open`}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 3. Revenue — green/success */}
-          <Card className="border-l-4 border-l-success border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                  <DollarSign className="h-3.5 w-3.5 shrink-0" />
+          {/* 3. Revenue — success */}
+          <Card className="enterprise-card hover:shadow-md transition-all">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="status-badge status-success">
+                  <DollarSign className="h-3 w-3 shrink-0" />
                   Revenue (MTD)
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                  MTD
-                </Badge>
+                <span className="meta-text font-semibold">MTD</span>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Collected:</span>
-                  <span className="font-bold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalCollectedRent ?? 0)}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Total collected</span>
+                  <span className="supporting-text font-bold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalCollectedRent ?? 0)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Net Landlord Share:</span>
-                  <span className="font-bold text-success">{propertiesLoading ? "…" : fmt(portfolioData?.netLandlordShareMTD ?? 0)}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Net landlord share</span>
+                  <span className="supporting-text font-bold text-success">{propertiesLoading ? "…" : fmt(portfolioData?.netLandlordShareMTD ?? 0)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Paid Out:</span>
-                  <span className="font-semibold text-foreground">{payoutsLoading ? "…" : fmt(totalPaidOut)}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Total paid out</span>
+                  <span className="supporting-text font-semibold text-foreground">{payoutsLoading ? "…" : fmt(totalPaidOut)}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 4. Outstanding — red/destructive */}
-          <Card className="border-l-4 border-l-destructive border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          {/* 4. Outstanding — destructive */}
+          <Card className="enterprise-card hover:shadow-md transition-all">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="status-badge status-danger">
+                  <AlertCircle className="h-3 w-3 shrink-0" />
                   Outstanding
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-destructive/30 text-destructive">
-                  Arrears
-                </Badge>
+                <span className="meta-text font-semibold text-destructive">Arrears</span>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Total Arrears:</span>
-                  <span className="font-bold text-destructive">{propertiesLoading ? "…" : fmt(portfolioData?.totalArrears ?? 0)}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Total arrears</span>
+                  <span className="supporting-text font-bold text-destructive">{propertiesLoading ? "…" : fmt(portfolioData?.totalArrears ?? 0)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Expected Rent:</span>
-                  <span className="font-semibold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalExpectedRent ?? 0)}</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Expected rent</span>
+                  <span className="supporting-text font-semibold text-foreground">{propertiesLoading ? "…" : fmt(portfolioData?.totalExpectedRent ?? 0)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Uncollected Balance:</span>
-                  <span className="font-semibold text-warning">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Uncollected balance</span>
+                  <span className="supporting-text font-semibold text-warning">
                     {propertiesLoading ? "…" : fmt(Math.max(0, (portfolioData?.totalExpectedRent ?? 0) - (portfolioData?.totalCollectedRent ?? 0)))}
                   </span>
                 </div>
@@ -535,30 +531,30 @@ const LandlordDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* 5. Attention — amber/warning */}
-          <Card className="border-l-4 border-l-warning border-border/70 bg-card hover:shadow-md transition-all">
-            <CardContent className="p-3.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                  <CheckSquare className="h-3.5 w-3.5 shrink-0" />
+          {/* 5. Attention — warning */}
+          <Card className="enterprise-card hover:shadow-md transition-all">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="status-badge status-warning">
+                  <CheckSquare className="h-3 w-3 shrink-0" />
                   Attention
                 </span>
-                <Badge variant="outline" className="text-[10px] h-4 border-warning/30 text-warning">
-                  {pendingPayouts + (portfolioData?.expiringLeasesCount ?? 0) + (portfolioData?.urgentMaintenanceCount ?? 0)} Alerts
-                </Badge>
+                <span className="meta-text font-semibold text-warning">
+                  {pendingPayouts + (portfolioData?.expiringLeasesCount ?? 0) + (portfolioData?.urgentMaintenanceCount ?? 0)} alerts
+                </span>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Pending Payouts:</span>
-                  <span className="font-semibold text-warning">{pendingPayouts} awaiting review</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Pending payouts</span>
+                  <span className="supporting-text font-semibold text-warning">{pendingPayouts} awaiting review</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Expiring Leases (30d):</span>
-                  <span className="font-medium text-foreground">{portfolioData?.expiringLeasesCount ?? 0} leases</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Expiring leases (30d)</span>
+                  <span className="supporting-text font-semibold text-foreground">{portfolioData?.expiringLeasesCount ?? 0} leases</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground truncate">Urgent Repairs:</span>
-                  <span className="font-medium text-foreground">{portfolioData?.urgentMaintenanceCount ?? 0} requests</span>
+                <div className="flex items-center justify-between">
+                  <span className="supporting-text truncate">Urgent repairs</span>
+                  <span className="supporting-text font-semibold text-foreground">{portfolioData?.urgentMaintenanceCount ?? 0} requests</span>
                 </div>
               </div>
             </CardContent>
