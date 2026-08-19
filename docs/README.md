@@ -1,6 +1,8 @@
-# CALQULUS RMS Documentation
+# CALQULUS PMS Documentation
 
-Welcome to the CALQULUS RMS documentation. This is the structured documentation system for the property management platform.
+Welcome to the CALQULUS PMS documentation. This describes the **current** production system (React 19 + Vite + Supabase + Vercel), not theoretical future platforms.
+
+Infrastructure classification: [INFRASTRUCTURE.md](./INFRASTRUCTURE.md). Historical audits live in [audits/](./audits/) and [archive/](./archive/).
 
 ## Quick Links
 

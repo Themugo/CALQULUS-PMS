@@ -1,5 +1,5 @@
 /**
- * Shared chart color palette for CALQULUS RMS.
+ * Shared chart color palette for CALQULUS PMS.
  *
  * Mirrors the documented brand palette in src/index.css ("CALQULUS PMS
  * Design Tokens" comment block) so that recharts/visx-style data series

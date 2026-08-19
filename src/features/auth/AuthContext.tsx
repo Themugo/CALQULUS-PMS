@@ -7,6 +7,13 @@ import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { signupRedirectPath } from '@/features/auth/lib/authFlow';
 import { isDevAccessEnabled, getDevDefaultAccount } from '@/features/auth/lib/devAccess';
+import { pickRoleForPath } from '@/features/auth/lib/roleResolution';
+import {
+  evaluateCanAccessProperty,
+  evaluateCanSubmanager,
+  evaluateCanWrite,
+  evaluateHasWebhostPermission,
+} from '@/features/auth/lib/permissions';
 
 export type AppRole = 'manager' | 'tenant' | 'webhost' | 'submanager' | 'landlord' | 'agency';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
@@ -172,44 +179,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const authTimeoutMs = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS ?? 8000);
   const devAccessEnabled = isDevAccessEnabled();
 
-  const pickRoleForPath = useCallback((roles: UserRole[], pathname: string, fallbackUserId?: string): UserRole => {
-    const uId = fallbackUserId || (roles[0]?.user_id ?? '');
-
-    // Case 1: User has actual database roles — MUST ONLY pick among assigned roles
-    if (roles && roles.length > 0) {
-      const byRole = new Map<AppRole, UserRole>();
-      for (const r of roles) byRole.set(r.role, r);
-
-      if (pathname.startsWith('/landlord/dashboard') && byRole.has('landlord')) return byRole.get('landlord')!;
-      if (pathname.startsWith('/webhost') && byRole.has('webhost')) return byRole.get('webhost')!;
-      if (pathname.startsWith('/agency') && byRole.has('agency')) return byRole.get('agency')!;
-      if ((pathname.startsWith('/portal') || pathname.startsWith('/tenant')) && byRole.has('tenant')) return byRole.get('tenant')!;
-
-      const managerPaths = ['/', '/properties', '/tenants', '/billing', '/settings',
-        '/maintenance', '/contracts', '/leases', '/vacation-notices', '/payments',
-        '/platform-billing', '/water-billing', '/reports',
-        '/communications', '/landlord', '/invites', '/statements', '/services'];
-      if (managerPaths.some(p => pathname === p || pathname.startsWith(p + '/'))) {
-        if (byRole.has('manager')) return byRole.get('manager')!;
-        if (byRole.has('submanager')) return byRole.get('submanager')!;
-      }
-
-      const priority: AppRole[] = ['webhost', 'manager', 'submanager', 'agency', 'landlord', 'tenant'];
-      const sorted = [...roles].sort((a, b) => priority.indexOf(a.role) - priority.indexOf(b.role));
-      return sorted[0];
-    }
-
-    // Case 2: No database roles found
-    if (devAccessEnabled) {
-      if (pathname.startsWith('/landlord/dashboard')) return { id: 'synthetic-landlord', user_id: uId, role: 'landlord', approval_status: 'approved', created_at: '' };
-      if (pathname.startsWith('/webhost')) return { id: 'synthetic-webhost', user_id: uId, role: 'webhost', approval_status: 'approved', created_at: '' };
-      if (pathname.startsWith('/agency')) return { id: 'synthetic-agency', user_id: uId, role: 'agency', approval_status: 'approved', created_at: '' };
-      if (pathname.startsWith('/portal') || pathname.startsWith('/tenant')) return { id: 'synthetic-tenant', user_id: uId, role: 'tenant', approval_status: 'approved', created_at: '' };
-      return { id: 'synthetic-manager', user_id: uId, role: 'manager', approval_status: 'approved', created_at: '' };
-    }
-
-    return { id: 'unassigned', user_id: uId, role: 'tenant', approval_status: 'pending', created_at: '' };
-  }, [devAccessEnabled]);
+  const resolveRole = useCallback(
+    (roles: UserRole[], pathname: string, fallbackUserId?: string): UserRole =>
+      pickRoleForPath(roles, pathname, fallbackUserId || "", devAccessEnabled),
+    [devAccessEnabled],
+  );
 
   const fetchWebhostPermissions = useCallback(async (userId: string): Promise<WebhostPermissions | null> => {
     const { data } = await supabase
@@ -300,13 +274,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!data || data.length === 0) {
       setUserRolesList([]);
       const pathname = pathnameOverride ?? window.location.pathname ?? '/';
-      const picked = pickRoleForPath([], pathname, userId);
+      const picked = resolveRole([], pathname, userId);
       return picked;
     }
     const roles = data as UserRole[];
     setUserRolesList(roles);
     const pathname = pathnameOverride ?? window.location.pathname ?? '/';
-    const picked = pickRoleForPath(roles, pathname, userId);
+    const picked = resolveRole(roles, pathname, userId);
     if (picked.role === 'webhost') {
       fetchWebhostPermissions(userId).then(setWebhostPermissions);
       fetchPlatformAdminInfo(userId).then(setPlatformAdminInfo);
@@ -322,7 +296,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLandlordPropertyIds([]);
     }
     return picked;
-  }, [pickRoleForPath, fetchWebhostPermissions, fetchSubmanagerPermissions, fetchLandlordPropertyIds, fetchPlatformAdminInfo]);
+  }, [fetchWebhostPermissions, fetchSubmanagerPermissions, fetchLandlordPropertyIds, fetchPlatformAdminInfo, resolveRole]);
 
   const fetchUserRoleRef = useRef(fetchUserRole);
   useEffect(() => {
@@ -411,7 +385,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const userRolesKey = userRolesList.map(r => r.role).join(',');
   useEffect(() => {
     if (!user?.id) return;
-    const newlyPicked = pickRoleForPath(userRolesList, location.pathname, user.id);
+    const newlyPicked = resolveRole(userRolesList, location.pathname, user.id);
     if (newlyPicked && newlyPicked.role !== currentRoleName) {
       setUserRole(newlyPicked);
       if (newlyPicked.role === 'webhost') {
@@ -430,7 +404,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, user?.id, currentRoleName, userRolesKey, pickRoleForPath, fetchWebhostPermissions, fetchPlatformAdminInfo, fetchSubmanagerPermissions, fetchLandlordPropertyIds]);
+  }, [location.pathname, user?.id, currentRoleName, userRolesKey, resolveRole, fetchWebhostPermissions, fetchPlatformAdminInfo, fetchSubmanagerPermissions, fetchLandlordPropertyIds]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -484,31 +458,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isPlatformAdmin = isWebhost && platformAdminInfo?.admin_type === 'admin';
 
   const hasWebhostPermission = useCallback((key: keyof WebhostPermissions): boolean => {
-    if (!isWebhost || !webhostPermissions) return false;
-    if (isSuperAdmin) return true;
-    return !!webhostPermissions[key];
+    return evaluateHasWebhostPermission(isWebhost, isSuperAdmin, webhostPermissions, key);
   }, [isWebhost, webhostPermissions, isSuperAdmin]);
 
   const canSubmanager = useCallback((key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
-    if (!isSubmanager || !submanagerPermissions) return false;
-    return !!submanagerPermissions[key];
+    return evaluateCanSubmanager(isSubmanager, submanagerPermissions, key);
   }, [isSubmanager, submanagerPermissions]);
 
-  // canWrite: managers always true; submanagers check write flags
   const canWrite = useCallback((key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>): boolean => {
-    if (isManager) return true;
-    if (!isSubmanager || !submanagerPermissions) return false;
-    return !!submanagerPermissions[key];
+    return evaluateCanWrite(isManager, isSubmanager, submanagerPermissions, key);
   }, [isManager, isSubmanager, submanagerPermissions]);
 
   const canAccessProperty = useCallback((propertyId: string): boolean => {
-    if (isManager) return true;
-    if (isLandlord && landlordPropertyIds.length > 0) {
-      return landlordPropertyIds.includes(propertyId);
-    }
-    if (!isSubmanager || !submanagerPermissions) return false;
-    if (!submanagerPermissions.restrict_to_assigned_properties) return true;
-    return submanagerPermissions.assigned_property_ids.includes(propertyId);
+    return evaluateCanAccessProperty(propertyId, {
+      isManager,
+      isLandlord,
+      landlordPropertyIds,
+      isSubmanager,
+      submanagerPermissions,
+    });
   }, [isManager, isLandlord, landlordPropertyIds, isSubmanager, submanagerPermissions]);
 
   const value = useMemo(() => ({

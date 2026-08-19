@@ -8,7 +8,7 @@ A modern property management platform for Kenya and East Africa, built with Reac
 - **Backend**: Supabase (PostgreSQL, Edge Functions, Auth, Realtime)
 - **Mobile**: Capacitor (iOS/Android)
 - **Testing**: Vitest (unit), Playwright (E2E)
-- **Monitoring**: OpenTelemetry, Sentry
+- **Monitoring**: Sentry (optional `VITE_SENTRY_DSN`)
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ A modern property management platform for Kenya and East Africa, built with Reac
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/Themugo/CALQULUS-RMS.git
+git clone https://github.com/Themugo/CALQULUS-PMS.git
 cd CALQULUS-PMS
 npm install
 ```
@@ -39,7 +39,7 @@ Required environment variables:
 
 ```env
 VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
 ## Development
@@ -50,7 +50,7 @@ Start the development server:
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`.
+The app will be available at `http://localhost:3000`.
 
 ### Running Tests
 

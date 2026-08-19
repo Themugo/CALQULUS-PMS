@@ -235,19 +235,10 @@
 @utility slide-out-to-left { --tw-exit-translate-x: -100%; }
 @utility slide-out-to-right { --tw-exit-translate-x: 100%; }
 
-/* ── CALQULUS PMS Design Tokens (Enterprise SaaS) ─────────────────────── */
-/* Primary Colors:
-   Deep Indigo: #304FFE (hsl 231 100% 59%)
-   Slate Blue:  #546E7A (hsl 201 18% 41%)
-   Emerald:     #00A878 (hsl 163 100% 33%)
-   Sky Blue:    #039BE5 (hsl 199 97% 45%)
-   Soft Orange: #F57C00 (hsl 30 100% 48%)
-   Background:  #F6F8FB (hsl 216 43% 97%)
-   Surface:     #FFFFFF (hsl 0 0% 100%)
-   Borders:     #E5E7EB (hsl 220 13% 91%)
-   Text:        #1F2937 (hsl 215 25% 17%)
-   Muted:       #6B7280 (hsl 215 9% 46%)
-*/
+/* ── CALQULUS PMS Design Tokens ──────────────────────────────────────── */
+/* Live :root primary is executive blue #155EEF. Navy/gold/teal/indigo
+   role palettes are defined below. Do not treat the old indigo #304FFE
+   comment as source of truth. */
 
 @layer base {
   :root {

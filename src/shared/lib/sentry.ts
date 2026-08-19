@@ -48,6 +48,7 @@ export function initSentry(): Promise<void> {
         tracesSampleRate: 0.1, // 10% of transactions for performance monitoring
         tracePropagationTargets: [
           "localhost",
+          /^https:\/\/www\.calqulus\.site/,
           /^https:\/\/app\.calqulusrms\.com/,
           /^https:\/\/www\.calqulusrms\.com/,
         ],

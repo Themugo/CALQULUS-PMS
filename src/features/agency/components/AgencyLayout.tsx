@@ -61,7 +61,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <img src={calqulusLogo} alt="CALQULUS RMS" className="h-9 w-9 rounded-lg object-cover ring-1 ring-border/80 shadow-2xs flex-shrink-0" />
+            <img src={calqulusLogo} alt="CALQULUS PMS" className="h-9 w-9 rounded-lg object-cover ring-1 ring-border/80 shadow-2xs flex-shrink-0" />
             <div className="min-w-0">
               <p className="font-heading font-bold text-sm text-foreground leading-none truncate">CALQULUS</p>
               <p className="text-[9px] text-indigo font-semibold tracking-[0.2em] uppercase mt-0.5">Agency Portal</p>

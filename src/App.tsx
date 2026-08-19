@@ -34,8 +34,6 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       refetchOnMount: false, // Only refetch if stale
-      // Optimize for concurrent requests
-      staleWhileRevalidate: true,
     },
     mutations: {
       retry: 1,

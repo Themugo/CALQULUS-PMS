@@ -1,16 +1,16 @@
-# CALQULUS RMS â€“ Agent Memory
+# CALQULUS PMS — Agent Memory
 
 ## Goal
 Realign all dashboards to the new role architecture (Webhost, Manager, Landlord, Tenant, Submanager) and implement the UI patterns shown in the HTML mockup files.
 
 ## Constraints & Preferences
-- Local folder: `C:\Users\hp\Desktop\Rentflow-FINAL-main`
-- Repo: `https://github.com/Themugo/CALQULUS-RMS.git` â€” auto-deploys Vercel from `main`
+- Local folder: `C:\Users\hp\Desktop\CALQULUS-PMS`
+- Repo: `https://github.com/Themugo/CALQULUS-PMS.git` — auto-deploys Vercel from `main`
 - Production: `https://www.calqulus.site` / Supabase `aelzsqxllkypbzslxyju.supabase.co`
 - Test accounts: `jimmythemugo@gmail.com` (manager), `kamauwamakena@gmail.com` (tenant), `mugo.james27@gmail.com` (webhost) â€” all pw `CALQULUS RMS@2026!`
 - Demo accounts: `demo.manager@calqulusrms.com`, `demo.landlord@calqulusrms.com` â€” pw `Demo@2026`
 - Edge functions deployed: `send-tenant-invitation`, `create-tenant-account`, `notify-manager-tenant-signup`
-- 45 migrations in `supabase/migrations/`
+- 69 migrations in `supabase/migrations/`
 
 ## Build & Verify
 - `npm run build` â€” production build (Vite/Rolldown)

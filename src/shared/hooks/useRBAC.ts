@@ -55,6 +55,7 @@ type RoleCheck =
   | 'webhost'
   | 'submanager'
   | 'landlord'
+  | 'agency'
   | 'super_admin'     // webhost with admin_level = super_admin
   | 'admin'           // webhost with admin_level = admin
   | 'limited_admin'   // webhost with admin_level = limited_admin
@@ -102,7 +103,7 @@ const WEBHOST_MAP: Record<WebhostCan, WebhostPermissionField> = {
 export const useRBAC = () => {
   const {
     userRole,
-    isManager, isTenant, isWebhost, isSubmanager, isLandlord, isSuperAdmin,
+    isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
     platformAdminInfo,
     webhostPermissions, submanagerPermissions,
@@ -155,6 +156,7 @@ export const useRBAC = () => {
       case 'webhost':       return isWebhost;
       case 'submanager':    return isSubmanager;
       case 'landlord':      return isLandlord;
+      case 'agency':        return isAgency;
       case 'super_admin':   return isSuperAdmin;
       case 'admin':         return isWebhost && webhostPermissions?.admin_level === 'admin';
       case 'limited_admin': return isWebhost && webhostPermissions?.admin_level === 'limited_admin';
@@ -163,7 +165,7 @@ export const useRBAC = () => {
       case 'platform_admin':   return isPlatformAdmin;
       default:              return false;
     }
-  }, [isManager, isTenant, isWebhost, isSubmanager, isLandlord, isSuperAdmin, webhostPermissions?.admin_level, isPlatformOwner, isPlatformBusiness, isPlatformAdmin]);
+  }, [isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin, webhostPermissions?.admin_level, isPlatformOwner, isPlatformBusiness, isPlatformAdmin]);
 
   const assignedPropertyIds = submanagerPermissions?.assigned_property_ids ?? EMPTY_ARRAY;
 

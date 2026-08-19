@@ -161,7 +161,7 @@ export function MarketingWebsite() {
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            CALQULUS RMS bridges Property Managers, Agencies, Landlords, and Tenants into one intelligent, zero-friction cloud ecosystem with automated water billing, instant M-Pesa STK push, and strict security firewalls.
+            CALQULUS PMS bridges Property Managers, Agencies, Landlords, and Tenants into one intelligent, zero-friction cloud ecosystem with automated water billing, instant M-Pesa STK push, and strict security firewalls.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -208,7 +208,7 @@ export function MarketingWebsite() {
               Built for Every Real Estate Ownership Model
             </h3>
             <p className="mt-4 text-slate-400 text-base">
-              Choose the exact operational framework matching your business model. CALQULUS RMS enforces strict role isolation with purpose-built portals.
+              Choose the exact operational framework matching your business model. CALQULUS PMS enforces strict role isolation with purpose-built portals.
             </p>
           </div>
 
@@ -703,7 +703,7 @@ export function MarketingWebsite() {
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1" className="border border-slate-800 bg-slate-900/60 rounded-xl px-4">
               <AccordionTrigger className="text-slate-200 hover:text-emerald-400 text-sm font-semibold">
-                How does CALQULUS RMS isolate landlord data from tenant PII?
+                How does CALQULUS PMS isolate landlord data from tenant PII?
               </AccordionTrigger>
               <AccordionContent className="text-xs text-slate-400 leading-relaxed">
                 Landlords access a dedicated portal view focused purely on aggregate property metrics, monthly collection totals, and occupancy percentages. Individual tenant names, phone numbers, and identifying credentials are programmatically scrubbed at the database security policy level.
@@ -733,7 +733,7 @@ export function MarketingWebsite() {
                 Is M-Pesa STK push and payment reconciliation supported?
               </AccordionTrigger>
               <AccordionContent className="text-xs text-slate-400 leading-relaxed">
-                Yes. CALQULUS RMS supports direct M-Pesa STK push prompts, feature phone Paybill payments, and bank transfer receipts with automated instant SMS and email confirmation delivery.
+                Yes. CALQULUS PMS supports direct M-Pesa STK push prompts, feature phone Paybill payments, and bank transfer receipts with automated instant SMS and email confirmation delivery.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
