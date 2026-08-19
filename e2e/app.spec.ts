@@ -14,12 +14,13 @@ const MANAGER_PASSWORD = process.env.E2E_MANAGER_PASSWORD || "";
 const TENANT_EMAIL = process.env.E2E_TENANT_EMAIL || "";
 const TENANT_PASSWORD = process.env.E2E_TENANT_PASSWORD || "";
 
-test.describe("CALQULUS RMS E2E Tests", () => {
+test.describe("CALQULUS PMS E2E Tests", () => {
 
   test.describe("Public pages", () => {
-    test("landing page redirects to landlord auth", async ({ page }) => {
+    test("landing page loads the public product home", async ({ page }) => {
       await page.goto("/");
-      await expect(page).toHaveURL(/\/landlord/, { timeout: 15000 });
+      await expect(page.locator("body")).toBeVisible();
+      await expect(page.getByRole("link", { name: /CALQULUS PMS home/i })).toBeVisible({ timeout: 15000 });
     });
 
     test("auth page loads login form", async ({ page }) => {

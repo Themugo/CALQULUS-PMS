@@ -1,5 +1,12 @@
 # CALQULUS PMS — Final Production Certification Report
 
+> **Superseded for release decisions.** This filename was requested by an earlier phase. It must **not** be read as a literal 100/100 security, SOC, PCI, or “enterprise certified” claim.
+>
+> Current certification: [`PHASE_12_PRODUCTION_CERTIFICATION.md`](./PHASE_12_PRODUCTION_CERTIFICATION.md)
+
+---
+
+
 > **Scope:** Phase 13 final verification and certification of the CALQULUS RMS application
 > **Date:** 2026-08-11
 > **Branch:** `main` (commit `547347c` + uncommitted Phase 13 remediation)

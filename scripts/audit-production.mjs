@@ -306,6 +306,13 @@ console.log(`- Tables with policies: ${policyTables.size}`);
 console.log(`- Edge functions discovered: ${functionNames.length}`);
 console.log(`- Edge functions without explicit config.toml entry: ${unconfiguredFunctions.length}`);
 
+const tsconfig = JSON.parse(read(join(root, "tsconfig.json")));
+if (Array.isArray(tsconfig.files) && tsconfig.files.length === 0) {
+  console.log(
+    "- WARNING: root tsconfig.json has files:[] so `npm run typecheck` does not compile src/. Use `npm run typecheck:app`.",
+  );
+}
+
 if (unconfiguredFunctions.length > 0) {
   console.log(`  ${unconfiguredFunctions.join(", ")}`);
 }

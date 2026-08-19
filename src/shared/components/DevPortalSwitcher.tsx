@@ -37,7 +37,9 @@ interface AccountPreset {
   badgeColor: string;
 }
 
-const PRESET_ACCOUNTS: AccountPreset[] = [
+const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
+  ? []
+  : [
   {
     role: 'manager',
     label: 'Manager (Full Ops)',
