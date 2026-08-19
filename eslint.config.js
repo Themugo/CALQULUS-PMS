@@ -35,6 +35,8 @@ export default tseslint.config(
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      // Phase 12 typecheck exemptions use file-level @ts-nocheck (see docs/audits/TYPECHECK_EXEMPTIONS.txt)
+      "@typescript-eslint/ban-ts-comment": ["error", { "ts-nocheck": false, "ts-ignore": true, "ts-expect-error": "allow-with-description" }],
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-fallthrough": "off",
       "no-empty": ["error", { allowEmptyCatch: true }],

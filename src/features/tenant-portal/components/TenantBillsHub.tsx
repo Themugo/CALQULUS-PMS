@@ -12,6 +12,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { chargeMeta } from '@/shared/constants/chargeTypes';
 import { Receipt, Smartphone, Layers, CheckCircle2 } from 'lucide-react';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
+import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 
 interface TenantBillsHubProps {
   tenantId: string;
@@ -47,7 +48,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         invoices = (data ?? []) as PayableInvoice[];
       }
 
-      const payableSeed = invoices.filter((i) => i.status === 'pending' || i.status === 'overdue');
+      const payableSeed = invoices.filter((i) => i.status === 'pending' || i.status === 'overdue' || i.status === 'partially_paid');
       if (!payableSeed.length) return [];
 
       const ids = payableSeed.map((i) => i.id);

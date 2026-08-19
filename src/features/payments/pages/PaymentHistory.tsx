@@ -11,6 +11,7 @@ import { useCurrency } from '@/shared/hooks/useCurrency';
 import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
+import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
 interface Payment {

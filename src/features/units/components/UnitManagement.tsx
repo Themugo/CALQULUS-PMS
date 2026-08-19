@@ -59,6 +59,7 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import UnitHistoryPanel from "@/features/units/components/UnitHistoryPanel";
+import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import UnitPhotoGallery from "@/features/units/components/UnitPhotoGallery";
 import UnitAmenitiesManager from "@/features/units/components/UnitAmenitiesManager";
 import UnitUtilityMeters from "@/features/units/components/UnitUtilityMeters";
