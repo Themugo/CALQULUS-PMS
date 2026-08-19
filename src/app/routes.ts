@@ -11,7 +11,6 @@ const PropertyDetail = lazy(() => import("@/features/properties/pages/PropertyDe
 const Maintenance = lazy(() => import("@/features/maintenance/pages/Maintenance"));
 const Settings = lazy(() => import("@/features/settings/pages/Settings"));
 const Auth = lazy(() => import("@/features/auth/pages/Auth"));
-const LandlordAuth = lazy(() => import("@/features/auth/pages/LandlordAuth"));
 const WebhostAuth = lazy(() => import("@/features/auth/pages/WebhostAuth"));
 const TenantAuth = lazy(() => import("@/features/auth/pages/TenantAuth"));
 const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
@@ -90,7 +89,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/auth", element: Auth },
-  { path: "/landlord", element: LandlordAuth },
+  { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/landlord/invitation", element: LandlordInvitationAccept },
   { path: "/tenant/login", element: TenantLogin },
@@ -267,7 +266,8 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
 export const authOnlyRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
-  { path: "/landlord", element: LandlordAuth },
+  { path: "/landlord", redirect: "/landlord/login" },
+  { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
   { path: "/webhost/login", element: WebhostAuth },
   { path: "/webhost", element: PageLoaderStub },
@@ -285,7 +285,8 @@ export const authOnlyRoutes: RouteDef[] = [
 export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/auth", element: Auth },
-  { path: "/landlord", element: LandlordAuth },
+  { path: "/landlord", redirect: "/landlord/login" },
+  { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/webhost/login", element: WebhostAuth },
   { path: "/agency/login", element: AgencyAuth },
   { path: "/tenant/login", element: TenantLogin },
@@ -293,7 +294,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/activate", element: ActivateAccount },
   { path: "/reset-password", element: ResetPassword },
-  { path: "*", redirect: "/landlord" },
+  { path: "*", redirect: "/landlord/login" },
 ];
 
 // Stub for PageLoader used in route config (actual PageLoader is rendered directly in AppRoutes)

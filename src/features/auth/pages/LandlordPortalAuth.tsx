@@ -5,22 +5,24 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Home, Eye, EyeOff, ChevronRight, TrendingUp, FileText, Building2, Shield } from 'lucide-react';
+import { Home, Eye, EyeOff, TrendingUp, FileText, Building2, Shield } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
+import { LandlordDeskPreview } from '@/features/auth/components/LandlordDeskPreview';
+import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
-  { icon: Building2,  text: 'Portfolio overview — all your properties in one place' },
-  { icon: TrendingUp, text: 'Revenue tracking with landlord-to-manager revenue splits' },
-  { icon: FileText,   text: 'Monthly statements, lease summaries & occupancy reports' },
-  { icon: Shield,     text: 'Secure access to your investment performance data' },
+  { icon: Building2, text: 'Properties', detail: 'Occupancy per building. No tenant names.', tint: 'bg-soft-blue text-primary' },
+  { icon: TrendingUp, text: 'Your share', detail: 'Collected rent after the revenue split.', tint: 'bg-gold-bg text-primary' },
+  { icon: FileText, text: 'Statements', detail: 'Monthly occupancy and revenue, not a tenant ledger.', tint: 'bg-indigo-bg text-indigo' },
+  { icon: Shield, text: 'Guarded view', detail: 'This portal never shows tenant PII.', tint: 'bg-teal-bg text-teal' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [
-  { label: 'Manager', href: '/auth' },
-  { label: 'Agency', href: '/agency/login' },
-  { label: 'Tenant', href: '/tenant/login' },
+  { label: 'Manager', href: PUBLIC_ROUTES.managerSignIn },
+  { label: 'Agency', href: PUBLIC_ROUTES.agencyLogin },
+  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
 ];
 
 const LandlordPortalAuth = () => {
@@ -41,6 +43,10 @@ const LandlordPortalAuth = () => {
     }
   }, [user, loading, userRole, navigate]);
 
+  useEffect(() => {
+    document.title = 'Landlord sign-in | CALQULUS PMS';
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
@@ -58,38 +64,36 @@ const LandlordPortalAuth = () => {
 
   return (
     <PortalAuthShell
-      portalName="Landlord Portal"
-      badgeLabel="Property Owner Access"
+      portalName="Landlord"
+      badgeLabel="Landlord desk"
       icon={Home}
-      tagline="Monitor your portfolio and property performance."
-      heroLines={[
-        { text: 'Your portfolio.', tone: 'default' },
-        { text: 'Your returns.', tone: 'gradient' },
-        { text: 'Full visibility.', tone: 'muted' },
-      ]}
-      heroDescription="Track revenue, occupancy and statements for all your properties managed through CALQULUS PMS."
+      tagline="Occupancy, collections, and your share — never tenant PII."
+      heroTitle="How are my properties performing?"
+      heroDescription="Collected rent, occupancy, and net to you after the revenue split. Tenant names, phones, and payment breakdowns stay with the manager."
       features={features}
       otherPortals={otherPortals}
-      formSubtitle="Sign in to view your property portfolio"
-      submitLabel="Sign in to Landlord Portal"
-      notice="This portal is for property owners. Your property manager will invite you by email. If you haven't received an invitation, contact your property manager."
+      formTitle="Sign in"
+      formSubtitle="Use the email your property manager invited."
+      submitLabel="Sign in"
+      notice="This portal is for property owners. Your manager invites you by email. If you have not received an invitation, contact them — this page does not create a landlord account."
+      aside={<LandlordDeskPreview />}
       variant="light"
     >
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">Email address</Label>
           <Input
             id="email" type="email" placeholder="owner@example.com"
             value={email} onChange={e => setEmail(e.target.value)} required
-            className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11"
+            className="h-11 border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
             <ForgotPasswordDialog
               trigger={
-                <button type="button" className="text-primary hover:text-primary text-xs font-semibold">
+                <button type="button" className="text-xs font-semibold text-primary hover:text-primary-hover">
                   Forgot password?
                 </button>
               }
@@ -99,10 +103,10 @@ const LandlordPortalAuth = () => {
             <Input
               id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••"
               value={password} onChange={e => setPassword(e.target.value)} required
-              className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
+              className="h-11 border-border bg-card pr-11 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20"
             />
             <button type="button" onClick={() => setShowPassword(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-2.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -110,14 +114,14 @@ const LandlordPortalAuth = () => {
           </div>
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
+        <Button type="submit" disabled={isSubmitting} className="btn-brand mt-2 h-11 w-full text-sm font-semibold">
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               Signing in…
             </span>
           ) : (
-            <span className="flex items-center gap-2">Sign in to Landlord Portal <ChevronRight className="h-4 w-4" /></span>
+            'Sign in'
           )}
         </Button>
       </form>

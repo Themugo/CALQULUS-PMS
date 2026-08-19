@@ -43,7 +43,11 @@ test.describe("CALQULUS PMS E2E Tests", () => {
   test.describe("Navigation", () => {
     test("landlord login page loads", async ({ page }) => {
       await page.goto("/landlord/login");
-      await expect(page).toHaveURL(/\/landlord/);
+      await expect(page).toHaveURL(/\/landlord\/login/);
+      await expect(page.getByRole("heading", { name: /how are my properties performing/i })).toBeVisible({
+        timeout: 15000,
+      });
+      await expect(page.locator("#email")).toBeVisible();
     });
 
     test("legal page loads", async ({ page }) => {
