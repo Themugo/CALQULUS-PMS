@@ -4,44 +4,45 @@ import {
   CHART_STATUS_COLORS,
   brandChartColor,
 } from "@/shared/lib/chartColors";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 describe("BRAND_CHART_COLORS", () => {
-  it("leads with the gold primary brand accent", () => {
-    expect(BRAND_CHART_COLORS[0]).toBe("#C9A84C");
+  it("leads with the executive-blue primary token", () => {
+    expect(BRAND_CHART_COLORS[0]).toBe(CALQULUS_COLOR.primary);
   });
 
-  it("places the blue secondary accent second", () => {
-    expect(BRAND_CHART_COLORS[1]).toBe("#1E6FD9");
+  it("places the info accent second", () => {
+    expect(BRAND_CHART_COLORS[1]).toBe(CALQULUS_COLOR.info);
   });
 
   it("contains a fixed palette of 8 colors", () => {
     expect(BRAND_CHART_COLORS).toHaveLength(8);
   });
 
-  it("reserves emerald for positive values", () => {
-    expect(BRAND_CHART_COLORS).toContain("#10b981");
+  it("reserves success for positive values", () => {
+    expect(BRAND_CHART_COLORS).toContain(CALQULUS_COLOR.success);
   });
 
-  it("reserves red for negative values", () => {
-    expect(BRAND_CHART_COLORS).toContain("#ef4444");
+  it("reserves danger for negative values", () => {
+    expect(BRAND_CHART_COLORS).toContain(CALQULUS_COLOR.danger);
   });
 });
 
 describe("CHART_STATUS_COLORS", () => {
-  it("maps positive to emerald", () => {
-    expect(CHART_STATUS_COLORS.positive).toBe("#10b981");
+  it("maps positive to the success token", () => {
+    expect(CHART_STATUS_COLORS.positive).toBe(CALQULUS_COLOR.success);
   });
 
-  it("maps warning to amber", () => {
-    expect(CHART_STATUS_COLORS.warning).toBe("#f59e0b");
+  it("maps warning to the warning token", () => {
+    expect(CHART_STATUS_COLORS.warning).toBe(CALQULUS_COLOR.warning);
   });
 
-  it("maps negative to red", () => {
-    expect(CHART_STATUS_COLORS.negative).toBe("#ef4444");
+  it("maps negative to the danger token", () => {
+    expect(CHART_STATUS_COLORS.negative).toBe(CALQULUS_COLOR.danger);
   });
 
-  it("maps neutral to slate", () => {
-    expect(CHART_STATUS_COLORS.neutral).toBe("#94a3b8");
+  it("maps neutral to muted text", () => {
+    expect(CHART_STATUS_COLORS.neutral).toBe(CALQULUS_COLOR.textMuted);
   });
 });
 
