@@ -150,7 +150,7 @@ function HomeView() {
     const email = (form.elements.namedItem("contact-email") as HTMLInputElement)?.value ?? "";
     const message = (form.elements.namedItem("contact-message") as HTMLTextAreaElement)?.value ?? "";
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CALQULUS PMS inquiry")}&body=${body}`;
+    window.location.assign(`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CALQULUS PMS inquiry")}&body=${body}`);
   };
 
   return (

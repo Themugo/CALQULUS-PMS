@@ -185,7 +185,7 @@ serve(async (req) => {
       invoiceId, invoiceIds, unitId, propertyId, unitNumber, phone, recordedBy, notes, transactionId,
     } = body;
     let managerId = body.managerId;
-    let amount = roundMoney(Number(body.amount));
+    const amount = roundMoney(Number(body.amount));
     if (!tenantId || !isPositiveMoney(amount) || !paymentMethod || !paymentDate || !reference) {
       return new Response(JSON.stringify({ error: "Missing or invalid required fields" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });

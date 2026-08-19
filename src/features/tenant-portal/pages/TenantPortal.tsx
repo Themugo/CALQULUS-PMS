@@ -351,7 +351,7 @@ const TenantPortal = () => {
         if (error) throw error;
 
         if (data?.url) {
-          window.location.href = data.url;
+          window.location.assign(data.url);
         } else {
           throw new Error('No checkout URL received');
         }
