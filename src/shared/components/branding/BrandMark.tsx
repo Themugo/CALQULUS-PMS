@@ -17,6 +17,7 @@ interface BrandMarkProps {
   subtitle?: string;
   className?: string;
   imgClassName?: string;
+  fetchPriority?: "high" | "low" | "auto";
 }
 
 /** Shared CALQULUS mark for login, header, sidebar, footer, and mobile chrome. */
@@ -26,13 +27,19 @@ export function BrandMark({
   subtitle = "PMS",
   className,
   imgClassName,
+  fetchPriority,
 }: BrandMarkProps) {
   const square = size !== "hero";
+  const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");
   return (
     <div className={cn("flex items-center gap-2.5 min-w-0", className)}>
       <img
         src={calqulusLogo}
         alt={CALQULUS_BRAND.product}
+        width={56}
+        height={56}
+        decoding="async"
+        fetchPriority={priority}
         className={cn(
           MARK_SIZE[size],
           "object-cover flex-shrink-0",

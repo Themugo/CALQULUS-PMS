@@ -86,7 +86,8 @@ export function QuickActions() {
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"
-          className="h-8 gap-1.5 bg-primary text-primary-foreground font-semibold px-3 shadow-sm hover:bg-primary/90 transition-all text-xs"
+          aria-label="Quick actions"
+          className="min-h-11 h-11 gap-1.5 bg-primary text-primary-foreground font-semibold px-3 shadow-sm hover:bg-primary/90 transition-all text-xs"
         >
           <Plus className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Quick Action</span>

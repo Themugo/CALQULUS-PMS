@@ -7,7 +7,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Building2, ArrowRight, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
-import { logError } from "@/shared/lib/errorLogger";
+import { LazyImage } from "@/shared/components/LazyImage";
 
 interface Property {
   id: string;
@@ -146,10 +146,10 @@ export function PropertiesOverview() {
               >
                 <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-amber-400/18 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-400/15 group-hover:shadow-md transition-all duration-300">
                   {property.image_url ? (
-                    <img 
-                      src={property.image_url} 
+                    <LazyImage
+                      src={property.image_url}
                       alt={property.name}
-                      className="h-full w-full rounded-xl object-cover"
+                      className="h-full w-full rounded-xl"
                     />
                   ) : (
                     <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-amber-500" />

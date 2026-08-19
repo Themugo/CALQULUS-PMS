@@ -28,7 +28,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
       {isOffline ? (
         <>
           <WifiOff className="h-4 w-4" />
-          <span>You're offline. Showing cached data.</span>
+          <span>You're offline. Showing cached data. Payments cannot be completed until you reconnect.</span>
         </>
       ) : isFromCache ? (
         <>
@@ -54,7 +54,7 @@ export const OfflineBanner = React.forwardRef<
     >
       <div className="bg-warning text-warning-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium">
         <WifiOff className="h-4 w-4" />
-        <span>No internet connection</span>
+        <span>No internet connection. Payments and other actions need a connection.</span>
       </div>
     </div>
   );

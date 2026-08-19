@@ -60,7 +60,7 @@ const MobileBottomNav: React.FC = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden safe-area-bottom">
+    <nav aria-label="Tenant portal" className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden safe-area-bottom">
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
           const active = isActive(item);
@@ -70,8 +70,9 @@ const MobileBottomNav: React.FC = () => {
             <Link
               key={item.label}
               to={item.href}
+              aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
+                'flex flex-col items-center justify-center flex-1 h-full min-h-11 gap-1 transition-colors',
                 active ? 'text-teal' : 'text-muted-foreground hover:text-foreground',
               )}
             >

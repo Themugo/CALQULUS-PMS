@@ -9,7 +9,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
-import { Smartphone, CheckCircle, XCircle, Loader2, Clock, RefreshCw, Shield, Layers } from 'lucide-react';
+import { Smartphone, CheckCircle, XCircle, Loader2, Clock, RefreshCw, Shield, Layers, WifiOff } from 'lucide-react';
+import { canInitiateOnlinePayment } from '@/features/tenant-portal/lib/onlinePaymentGuard';
 
 export interface PayableInvoice {
   id: string;
@@ -49,6 +50,9 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
   const [mpesaReceipt, setMpesaReceipt] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [countdown, setCountdown] = useState(0);
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== 'undefined' ? !navigator.onLine : false,
+  );
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -56,6 +60,17 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
   const amountDue = useMemo(() => invoices.reduce((sum, inv) => sum + balanceOf(inv), 0), [invoices]);
   const isCombined = invoices.length > 1;
   const primary = invoices[0];
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -88,6 +103,16 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
   };
 
   const initiatePayment = async () => {
+    const onlineCheck = canInitiateOnlinePayment(!isOffline && navigator.onLine);
+    if (!onlineCheck.allowed) {
+      toast({
+        title: 'You are offline',
+        description: onlineCheck.message ?? 'Connect to the internet to pay.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const normalizedPhone = normalizePhone(phone);
     if (normalizedPhone.length !== 12 || !normalizedPhone.startsWith('254')) {
       toast({
@@ -241,11 +266,17 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
 
               <Button
                 onClick={initiatePayment}
-                className="w-full h-12 text-base bg-success hover:bg-success text-white gap-2"
+                disabled={isOffline}
+                className="w-full min-h-12 h-12 text-base bg-success hover:bg-success text-white gap-2"
               >
-                <Smartphone className="h-5 w-5" />
-                Send M-Pesa Request — {fmt(amountDue)}
+                {isOffline ? <WifiOff className="h-5 w-5" /> : <Smartphone className="h-5 w-5" />}
+                {isOffline ? 'Connect to pay' : `Send M-Pesa Request — ${fmt(amountDue)}`}
               </Button>
+              {isOffline && (
+                <p className="text-xs text-center text-warning" role="status">
+                  Payments cannot be completed offline. This payment was not sent.
+                </p>
+              )}
 
               <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                 <Shield className="h-3.5 w-3.5" />

@@ -5,8 +5,6 @@ import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerA
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
 import { ManagerBillingRecoveryBanner } from "@/features/payments/components/ManagerPlanStatus";
 import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupStatus";
-import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
-import { OccupancyChart } from "@/features/dashboard/components/OccupancyChart";
 import { PendingDepositRefunds } from "@/features/dashboard/components/PendingDepositRefunds";
 import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
 import { UpcomingPayments } from "@/features/dashboard/components/UpcomingPayments";
@@ -19,7 +17,7 @@ import {
   BarChart3, ShieldCheck, AlertTriangle, PieChart,
   DollarSign, Activity, CheckSquare, Calendar,
 } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -29,39 +27,22 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/sha
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { useCurrency } from "@/shared/hooks/useCurrency";
-import { toast } from "@/shared/hooks/use-toast";
-import { logError } from "@/shared/lib/errorLogger";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { useLeaseExpiryReminders } from "@/shared/hooks/useLeaseExpiryReminders";
 import { useManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { fetchManagerDashboardStats } from "@/features/dashboard/lib/dashboardStats";
+import { queryKeys, STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
 
-interface DashboardStats {
-  totalTenants: number;
-  activeTenants: number;
-  inactiveTenants: number;
-  newTenantsThisMonth: number;
-  activeLeases: number;
-  expiringLeases: number;
-  revenueMTD: number;
-  revenueChange: number;
-  expectedRent: number;
-  collectedRent: number;
-  outstandingRent: number;
-  collectionRate: number;
-  totalProperties: number;
-  totalUnits: number;
-  occupiedUnits: number;
-  vacantUnits: number;
-  occupancyRate: number;
-  pendingInvoices: number;
-  overdueInvoices: number;
-  arrearsTotal: number;
-  openMaintenanceCount: number;
-  urgentMaintenanceCount: number;
-  pendingDepositRefundsCount: number;
-}
+const RevenueChart = lazy(() =>
+  import("@/features/dashboard/components/RevenueChart").then((m) => ({ default: m.RevenueChart })),
+);
+const OccupancyChart = lazy(() =>
+  import("@/features/dashboard/components/OccupancyChart").then((m) => ({ default: m.OccupancyChart })),
+);
+
+const ChartFallback = () => <Skeleton className="h-72 w-full rounded-xl" />;
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -70,10 +51,6 @@ const Dashboard = () => {
   const { isEmptyPortfolio, progress } = useManagerActivation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [statsError, setStatsError] = useState(false);
-  const [userName, setUserName] = useState("there");
   const { currency, setCurrency, currencies, formatCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -86,134 +63,46 @@ const Dashboard = () => {
 
   const userId = user?.id;
 
-  const fetchStats = useCallback(async () => {
-    if (!managerId || !userId) return;
-    try {
-      setLoading(true);
-      setStatsError(false);
+  const {
+    data: stats = null,
+    isPending: loading,
+    isError: statsError,
+    refetch: refetchStats,
+  } = useQuery({
+    queryKey: queryKeys.dashboard.stats(managerId ?? ''),
+    queryFn: () => fetchManagerDashboardStats(managerId!),
+    enabled: !!managerId,
+    staleTime: STALE_TIMES.frequentlyChanging,
+    gcTime: 5 * 60 * 1000,
+  });
 
-      const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-      const endOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
-      const firstOfPrevMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().split('T')[0];
-      const endOfPrevMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0];
+  const { data: profile } = useQuery({
+    queryKey: queryKeys.profile.detail(userId ?? ''),
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+    staleTime: STALE_TIMES.profile,
+  });
 
-      const [
-        profileResult,
-        tenantsResult,
-        activeTenantsResult,
-        inactiveTenantsResult,
-        newTenantsResult,
-        activeLeasesResult,
-        expiringLeasesResult,
-        paidInvoicesResult,
-        prevMonthResult,
-        thisMonthInvoicesResult,
-        pendingInvoicesResult,
-        overdueInvoicesResult,
-        overdueAmountResult,
-        propertiesResult,
-        maintenanceResult,
-        urgentMaintenanceResult,
-        depositRefundsResult
-      ] = await Promise.all([
-        supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle(),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'inactive'),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).gte('created_at', firstOfThisMonth),
-        supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
-        supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active')
-          .lte('end_date', new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]),
-        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfThisMonth),
-        supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfPrevMonth).lte('paid_date', endOfPrevMonth),
-        supabase.from('invoices').select('amount, status').eq('manager_id', managerId).gte('due_date', firstOfThisMonth).lte('due_date', endOfThisMonth),
-        supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
-        supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'overdue'),
-        supabase.from('invoices').select('balance_due').eq('manager_id', managerId).eq('status', 'overdue'),
-        supabase.from('properties').select('id, units, occupied').eq('manager_id', managerId),
-        supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']),
-        supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).in('priority', ['high', 'urgent']),
-        supabase.from('deposit_refunds').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
-      ]);
-
-      if (profileResult.data?.full_name) {
-        setUserName(profileResult.data.full_name.split(' ')[0]);
-      }
-
-      const revenueMTD = ((paidInvoicesResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
-      const revenuePrev = ((prevMonthResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
-      const revenueChange = revenuePrev > 0 ? Math.round(((revenueMTD - revenuePrev) / revenuePrev) * 100) : 0;
-
-      const thisMonthInvoices = (thisMonthInvoicesResult.data as { amount: number; status: string }[]) ?? [];
-      let expectedRent = thisMonthInvoices.reduce((s, i) => s + Number(i.amount || 0), 0);
-
-      // Fallback: if no invoices generated yet this month, query active leases sum
-      if (expectedRent === 0) {
-        const { data: activeLeaseRows } = await supabase
-          .from('leases')
-          .select('rent_amount')
-          .eq('manager_id', managerId)
-          .eq('status', 'active');
-        expectedRent = (activeLeaseRows || []).reduce((s, l) => s + Number(l.rent_amount || 0), 0);
-      }
-
-      const collectedRent = revenueMTD;
-      const collectionRate = expectedRent > 0 ? Math.min(100, Math.round((collectedRent / expectedRent) * 100)) : 0;
-
-      const allProps = (propertiesResult.data as { id: string; units: number; occupied: number }[]) ?? [];
-      const totalUnits = allProps.reduce((s, p) => s + (Number(p.units) || 0), 0);
-      const totalOccupied = allProps.reduce((s, p) => s + (Number(p.occupied) || 0), 0);
-      const vacantUnits = Math.max(0, totalUnits - totalOccupied);
-      const occupancyRate = totalUnits > 0 ? Math.round((totalOccupied / totalUnits) * 100) : 0;
-
-      const arrearsTotal = ((overdueAmountResult.data as { balance_due: number }[]) ?? []).reduce((s, i) => s + Number(i.balance_due || 0), 0);
-
-      setStats({
-        totalTenants: tenantsResult.count || 0,
-        activeTenants: activeTenantsResult.count || 0,
-        inactiveTenants: inactiveTenantsResult.count || 0,
-        newTenantsThisMonth: newTenantsResult.count || 0,
-        activeLeases: activeLeasesResult.count || 0,
-        expiringLeases: expiringLeasesResult.count || 0,
-        revenueMTD,
-        revenueChange,
-        expectedRent,
-        collectedRent,
-        outstandingRent: arrearsTotal,
-        collectionRate,
-        totalProperties: allProps.length,
-        totalUnits,
-        occupiedUnits: totalOccupied,
-        vacantUnits,
-        occupancyRate,
-        pendingInvoices: pendingInvoicesResult.count || 0,
-        overdueInvoices: overdueInvoicesResult.count || 0,
-        arrearsTotal,
-        openMaintenanceCount: maintenanceResult.count || 0,
-        urgentMaintenanceCount: urgentMaintenanceResult.count || 0,
-        pendingDepositRefundsCount: depositRefundsResult.count || 0,
-      });
-    } catch (err) {
-      logError('Dashboard.fetchStats', err);
-      setStatsError(true);
-      toast({ title: "Error loading stats", description: "Please refresh the page.", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  }, [managerId, userId]);
+  const userName = profile?.full_name?.split(' ')[0] || 'there';
 
   useEffect(() => {
-    fetchStats();
+    if (!managerId) return;
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId) });
+    };
     const channels = [
-      supabase.channel('dash-tenants').on('postgres_changes', { event: '*', schema: 'public', table: 'tenants' }, fetchStats).subscribe(),
-      supabase.channel('dash-leases').on('postgres_changes', { event: '*', schema: 'public', table: 'leases' }, fetchStats).subscribe(),
-      supabase.channel('dash-invoices').on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, fetchStats).subscribe(),
-      supabase.channel('dash-properties').on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, fetchStats).subscribe(),
-      supabase.channel('dash-maint').on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_requests' }, fetchStats).subscribe(),
-      supabase.channel('dash-refunds').on('postgres_changes', { event: '*', schema: 'public', table: 'deposit_refunds' }, fetchStats).subscribe(),
+      supabase.channel('dash-tenants').on('postgres_changes', { event: '*', schema: 'public', table: 'tenants' }, invalidate).subscribe(),
+      supabase.channel('dash-leases').on('postgres_changes', { event: '*', schema: 'public', table: 'leases' }, invalidate).subscribe(),
+      supabase.channel('dash-invoices').on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, invalidate).subscribe(),
+      supabase.channel('dash-properties').on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, invalidate).subscribe(),
+      supabase.channel('dash-maint').on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_requests' }, invalidate).subscribe(),
+      supabase.channel('dash-refunds').on('postgres_changes', { event: '*', schema: 'public', table: 'deposit_refunds' }, invalidate).subscribe(),
     ];
     return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
-  }, [fetchStats]);
+  }, [managerId, queryClient]);
 
   const { data: leaseExpiryData } = useQuery({
     queryKey: ['lease-expiry-4w', managerId],
@@ -264,9 +153,10 @@ const Dashboard = () => {
         <div className="flex items-center gap-2">
           <Button
             variant="ghost" size="sm"
-            onClick={() => { queryClient.invalidateQueries(); fetchStats(); }}
-            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            onClick={() => { queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId ?? '') }); refetchStats(); }}
+            className="min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
             title="Refresh operational stats"
+            aria-label="Refresh operational stats"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -310,8 +200,8 @@ const Dashboard = () => {
             </div>
           </div>
           <Button
-            onClick={() => { queryClient.invalidateQueries(); fetchStats(); }}
-            className="btn-brand h-9 shrink-0"
+            onClick={() => { queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId ?? '') }); refetchStats(); }}
+            className="btn-brand min-h-11 h-11 shrink-0"
           >
             <RefreshCw className="h-4 w-4 mr-1.5" /> Retry
           </Button>
@@ -614,12 +504,16 @@ const Dashboard = () => {
 
               <TabsContent value="overview" className="mt-0">
                 <ErrorBoundary compact label="Revenue chart">
-                  <RevenueChart />
+                  <Suspense fallback={<ChartFallback />}>
+                    <RevenueChart />
+                  </Suspense>
                 </ErrorBoundary>
               </TabsContent>
               <TabsContent value="occupancy" className="mt-0">
                 <ErrorBoundary compact label="Occupancy chart">
-                  <OccupancyChart />
+                  <Suspense fallback={<ChartFallback />}>
+                    <OccupancyChart />
+                  </Suspense>
                 </ErrorBoundary>
               </TabsContent>
             </Tabs>

@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000, // 10 minutes cache
       retry: 1,
       refetchOnWindowFocus: false,
-      refetchOnMount: true, // refetch when a view remounts and the query is stale
+      refetchOnMount: false,
     },
     mutations: {
       retry: 1,
@@ -60,7 +60,7 @@ const RoutePrefetcher = () => {
           const { supabase } = await import("@/integrations/supabase/client");
           const { data } = await supabase
             .from('properties')
-            .select('*')
+            .select('id, name, address, units, occupied, revenue, image_url, status, created_at')
             .eq('manager_id', managerId)
             .neq('status', 'inactive');
           return data ?? [];

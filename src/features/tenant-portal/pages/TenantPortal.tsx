@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,7 +58,7 @@ import { ReceiptUpload } from '@/features/tenant-portal/components/ReceiptUpload
 import { ReceiptHistory } from '@/features/tenant-portal/components/ReceiptHistory';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
-import { TenantStatsCards } from '@/features/tenant-portal/components/TenantStatsCards';
+import { TENANT_INVOICE_COLUMNS } from '@/features/tenant-portal/lib/tenantInvoiceSelect';
 
 interface Invoice {
   id: string;
@@ -192,7 +192,7 @@ const TenantPortal = () => {
     if (!userRole?.tenant_id) return [];
     const { data, error } = await supabase
       .from('invoices')
-      .select('*')
+      .select(TENANT_INVOICE_COLUMNS)
       .eq('tenant_id', userRole.tenant_id)
       .order('due_date', { ascending: false });
     if (error) throw error;
@@ -491,6 +491,12 @@ const TenantPortal = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+      >
+        Skip to main content
+      </a>
       {/* Header */}
       <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
@@ -510,7 +516,8 @@ const TenantPortal = () => {
               variant="outline"
               size="sm"
               onClick={signOut}
-              className="h-8 px-2 md:px-3 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
+              className="min-h-11 h-11 px-3 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
+              aria-label="Sign out"
             >
               <LogOut className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Sign Out</span>
@@ -519,7 +526,7 @@ const TenantPortal = () => {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 space-y-6">
+      <main id="main-content" tabIndex={-1} className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 space-y-6 outline-none">
         {/* Offline indicator */}
         {(isOffline || isFromCache) && (
           <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
@@ -618,9 +625,9 @@ const TenantPortal = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Button
-                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm"
+                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm min-h-11 h-11"
                       onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                      disabled={urgentInvoices.length === 0}
+                      disabled={urgentInvoices.length === 0 || isOffline}
                     >
                       <Smartphone className="h-4 w-4 mr-2" />
                       Quick Pay M-Pesa
@@ -1065,7 +1072,11 @@ const TenantPortal = () => {
                 {/* Bills hub — rent, water, security, amenities */}
                 {userRole?.tenant_id && (
                   <div className="mb-8">
-                    <TenantBillsHub tenantId={userRole.tenant_id} onPay={openStkPay} />
+                    <TenantBillsHub
+                      tenantId={userRole.tenant_id}
+                      onPay={openStkPay}
+                      invoices={urgentInvoices as PayableInvoice[]}
+                    />
                   </div>
                 )}
 
@@ -1215,8 +1226,9 @@ const TenantPortal = () => {
                                   {(invoice.status === 'pending' || invoice.status === 'overdue') && (
                                     <Button
                                       size="sm"
-                                      className="bg-teal hover:bg-teal/90 text-white gap-1.5"
+                                      className="bg-teal hover:bg-teal/90 text-white gap-1.5 min-h-11 h-11"
                                       onClick={() => openStkPay([invoice as PayableInvoice])}
+                                      disabled={isOffline}
                                     >
                                       <Smartphone className="h-3.5 w-3.5" />
                                       Pay Now

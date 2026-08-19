@@ -103,7 +103,7 @@ export function useOptimizedProperties(managerId: string | null) {
       
       const { data, error } = await supabase
         .from('properties')
-        .select('*')
+        .select('id, name, address, units, occupied, revenue, image_url, status, created_at')
         .eq('manager_id', managerId)
         .neq('status', 'inactive')
         .order('created_at', { ascending: false });
@@ -153,67 +153,16 @@ export function useOptimizedDashboardStats(managerId: string | null) {
     queryKey: queryKeys.dashboard.stats(managerId ?? ''),
     queryFn: async () => {
       if (!managerId) {
-        return {
-          totalTenants: 0,
-          activeTenants: 0,
-          totalProperties: 0,
-          totalUnits: 0,
-          occupiedUnits: 0,
-          occupancyRate: 0,
-          revenueMTD: 0,
-          pendingInvoices: 0,
-          overdueInvoices: 0,
-        };
+        const { EMPTY_DASHBOARD_STATS } = await import('@/features/dashboard/lib/dashboardStats');
+        return EMPTY_DASHBOARD_STATS;
       }
-      
-      // Use a single RPC call to get all stats at once
-      const { data, error } = await supabase.rpc('get_manager_dashboard_stats', {
-        p_manager_id: managerId,
-      });
-      
-      if (error) {
-        logError('useOptimizedDashboardStats', error);
-        // Fallback to individual queries if RPC fails
-        return fetchStatsFallback(managerId);
-      }
-      
-      return data;
+      const { fetchManagerDashboardStats } = await import('@/features/dashboard/lib/dashboardStats');
+      return fetchManagerDashboardStats(managerId);
     },
     enabled: !!managerId,
     staleTime: STALE_TIMES.frequentlyChanging,
     gcTime: 5 * 60 * 1000,
-    refetchInterval: 60 * 1000, // Refresh every minute for real-time feel
   });
-}
-
-// Fallback stats fetching (used when RPC fails)
-async function fetchStatsFallback(managerId: string) {
-  const [
-    tenantsResult,
-    propertiesResult,
-    invoicesResult,
-  ] = await Promise.all([
-    supabase.from('tenants').select('id, status', { count: 'exact' }).eq('manager_id', managerId),
-    supabase.from('properties').select('units, occupied_units', { count: 'exact' }).eq('manager_id', managerId),
-    supabase.from('invoices').select('status', { count: 'exact' }).eq('manager_id', managerId),
-  ]);
-  
-  const tenants = tenantsResult.data ?? [];
-  const properties = propertiesResult.data ?? [];
-  const totalUnits = properties.reduce((sum, p) => sum + (p.units ?? 0), 0);
-  const occupiedUnits = properties.reduce((sum, p) => sum + (p.occupied_units ?? 0), 0);
-  
-  return {
-    totalTenants: tenantsResult.count ?? 0,
-    activeTenants: tenants.filter(t => t.status === 'active').length,
-    totalProperties: propertiesResult.count ?? 0,
-    totalUnits,
-    occupiedUnits,
-    occupancyRate: totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0,
-    revenueMTD: 0,
-    pendingInvoices: 0,
-    overdueInvoices: 0,
-  };
 }
 
 // Prefetch helper hook
@@ -227,7 +176,7 @@ export function usePrefetch() {
         queryFn: async () => {
           const { data } = await supabase
             .from('properties')
-            .select('*')
+            .select('id, name, address, units, occupied, revenue, image_url, status, created_at')
             .eq('manager_id', managerId)
             .neq('status', 'inactive');
           return data ?? [];

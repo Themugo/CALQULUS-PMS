@@ -17,6 +17,8 @@ import type { PayableInvoice } from '@/features/tenant-portal/components/TenantP
 interface TenantBillsHubProps {
   tenantId: string;
   onPay: (invoices: PayableInvoice[]) => void;
+  /** When the portal already loaded invoices, skip the duplicate list fetch. */
+  invoices?: PayableInvoice[];
 }
 
 interface InvoiceRow extends PayableInvoice {
@@ -28,23 +30,28 @@ const fmt = (n: number) =>
 
 const balanceOf = (inv: PayableInvoice) => Number(inv.balance_due ?? inv.amount);
 
-const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
+const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoices: seedInvoices }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const { data: bills = [], isLoading } = useQuery({
-    queryKey: ['tenant-bills-hub', tenantId],
+    queryKey: ['tenant-invoices', tenantId, 'bills-hub', seedInvoices?.map((i) => i.id).join(',') ?? 'fetch'],
     queryFn: async (): Promise<InvoiceRow[]> => {
-      const { data: invoices, error } = await supabase
-        .from('invoices')
-        .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description')
-        .eq('tenant_id', tenantId)
-        .in('status', ['pending', 'overdue'])
-        .order('due_date', { ascending: true });
+      let invoices = seedInvoices;
+      if (!invoices) {
+        const { data, error } = await supabase
+          .from('invoices')
+          .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description')
+          .eq('tenant_id', tenantId)
+          .in('status', ['pending', 'overdue'])
+          .order('due_date', { ascending: true });
+        if (error) throw error;
+        invoices = (data ?? []) as PayableInvoice[];
+      }
 
-      if (error) throw error;
-      if (!invoices?.length) return [];
+      const payableSeed = invoices.filter((i) => i.status === 'pending' || i.status === 'overdue');
+      if (!payableSeed.length) return [];
 
-      const ids = invoices.map((i) => i.id);
+      const ids = payableSeed.map((i) => i.id);
       const { data: lines } = await supabase
         .from('invoice_line_items')
         .select('invoice_id, charge_type, charge_label, amount')
@@ -57,7 +64,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
         linesByInv.set(line.invoice_id, list);
       }
 
-      return invoices.map((inv) => ({
+      return payableSeed.map((inv) => ({
         ...inv,
         status: inv.status as PayableInvoice['status'],
         lineItems: (linesByInv.get(inv.id) ?? []).map((l) => ({
@@ -219,7 +226,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="mt-2 h-8 text-xs border-success/40 text-success hover:bg-success/20"
+                      className="mt-2 min-h-11 h-11 text-xs border-success/40 text-success hover:bg-success/20"
                       onClick={() => onPay([bill])}
                     >
                       Pay only
@@ -243,14 +250,14 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay }) => {
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               size="lg"
-              className="bg-success hover:bg-success text-white gap-2 h-11"
+              className="bg-success hover:bg-success text-white gap-2 min-h-11 h-11"
               disabled={selected.size === 0}
               onClick={() => onPay(selectedBills)}
             >
               <Layers className="h-4 w-4" />
               Pay selected ({selected.size || 0})
             </Button>
-            <Button size="lg" variant="secondary" className="gap-2 h-11" onClick={() => onPay(payable)}>
+            <Button size="lg" variant="secondary" className="gap-2 min-h-11 h-11" onClick={() => onPay(payable)}>
               <Smartphone className="h-4 w-4" />
               Pay everything — {fmt(totalDue)}
             </Button>

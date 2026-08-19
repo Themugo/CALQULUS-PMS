@@ -45,7 +45,7 @@ export function ManagerQuickActions() {
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               <Button
                 size="sm"
-                className="min-h-10"
+                className="min-h-11"
                 onClick={() => navigate(progress.nextAction!.href)}
               >
                 {progress.nextAction.cta}
@@ -55,7 +55,7 @@ export function ManagerQuickActions() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="min-h-10"
+                  className="min-h-11"
                   onClick={() => skipStep(current.id)}
                 >
                   Skip for now

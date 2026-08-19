@@ -99,7 +99,7 @@ export function PublicLandingPage() {
       <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5" aria-label="CALQULUS PMS home">
-            <BrandMark size="sm" showWordmark />
+            <BrandMark size="sm" showWordmark fetchPriority="high" />
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
@@ -431,7 +431,7 @@ export function PublicLandingPage() {
         <footer className="border-t border-border py-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
-              <BrandMark size="xs" showWordmark />
+              <BrandMark size="xs" showWordmark fetchPriority="low" />
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               {NAV_LINKS.map((l) => (

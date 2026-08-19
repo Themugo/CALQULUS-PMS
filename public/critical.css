@@ -25,6 +25,9 @@
   }
 }
 
-#root:has(> :not(.initial-loader)) .initial-loader {
-  display: none;
+@media (prefers-reduced-motion: reduce) {
+  .initial-loader-spinner {
+    animation: none;
+    border-top-color: #155EEF;
+  }
 }

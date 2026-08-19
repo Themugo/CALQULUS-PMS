@@ -435,6 +435,37 @@ export function initWebVitals(): void {
       });
     }
   }).observe({ type: 'navigation', buffered: true });
+
+  // Interaction to Next Paint (INP) — replaces FID as the responsiveness vital
+  try {
+    const inpObserver = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        const eventEntry = entry as PerformanceEventTiming;
+        metrics.record({
+          name: 'webvital_inp',
+          value: eventEntry.duration,
+          unit: 'ms',
+          tags: {
+            name: eventEntry.name,
+          },
+        });
+        if (eventEntry.duration > 200) {
+          kpi.track({
+            name: 'inp_degraded',
+            value: eventEntry.duration,
+            unit: 'ms',
+          });
+        }
+      }
+    });
+    inpObserver.observe({
+      type: 'event',
+      buffered: true,
+      durationThreshold: 40,
+    } as PerformanceObserverInit);
+  } catch {
+    // Event Timing API is not available in this browser
+  }
 }
 
 // ── Health Checks ─────────────────────────────────────────────────────

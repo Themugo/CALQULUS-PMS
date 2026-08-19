@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { initGlobalErrorCatcher } from "@/shared/lib/errorLogger";
 import { initSentry } from "@/shared/lib/sentry";
+import { initObservability } from "@/shared/lib/observability";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { ProductionDiagnostics } from "@/shared/components/ProductionDiagnostics";
 
@@ -15,6 +16,9 @@ initGlobalErrorCatcher();
 // is set at build time; otherwise this resolves immediately to a no-op.
 // We deliberately do NOT await it so it never blocks first paint.
 initSentry();
+
+// Web Vitals (LCP, INP, CLS, TTFB) + session correlation. Never blocks paint.
+initObservability();
 
 const rootEl = document.getElementById("root")!;
 
