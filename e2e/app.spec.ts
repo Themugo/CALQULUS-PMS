@@ -19,7 +19,7 @@ test.describe("CALQULUS PMS E2E Tests", () => {
   test.describe("Public pages", () => {
     test("public homepage presents CALQULUS", async ({ page }) => {
       await page.goto("/");
-      await expect(page.getByRole("heading", { level: 1 })).toContainText("clarity and control", { timeout: 15000 });
+      await expect(page.locator("#main-content h1")).toContainText("clarity and control", { timeout: 15000 });
     });
 
     test("auth page loads login form", async ({ page }) => {
@@ -126,9 +126,10 @@ test.describe("CALQULUS PMS E2E Tests", () => {
   });
 
   test.describe("404 handling", () => {
-    test("unknown route shows not found", async ({ page }) => {
+    test("unknown public route returns to the homepage", async ({ page }) => {
       await page.goto("/this-page-does-not-exist");
-      await expect(page).toHaveURL(/\/landlord/, { timeout: 15000 });
+      await expect(page).toHaveURL(/\/$/, { timeout: 15000 });
+      await expect(page.locator("#main-content h1")).toContainText("clarity and control", { timeout: 15000 });
     });
   });
 });

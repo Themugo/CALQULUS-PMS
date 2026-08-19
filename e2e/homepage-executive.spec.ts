@@ -13,7 +13,7 @@ const VIEWPORTS = [
 test.describe("Executive homepage", () => {
   test("presents the Phase 1 positioning and live portal routes", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    await expect(page.locator("#main-content h1")).toHaveText(
       "Run your properties with clarity and control.",
       { timeout: 15000 },
     );
@@ -38,7 +38,7 @@ test.describe("Executive homepage", () => {
     test(`does not overflow horizontally at ${viewport.width}px`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto("/");
-      await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 15000 });
+      await expect(page.locator("#main-content h1")).toBeVisible({ timeout: 15000 });
       const overflow = await page.evaluate(() => {
         return document.documentElement.scrollWidth - document.documentElement.clientWidth;
       });

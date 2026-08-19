@@ -43,6 +43,7 @@ export default defineConfig({
           VITE_SUPABASE_PUBLISHABLE_KEY: process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "ci-placeholder-anon-key",
           VITE_ENABLE_PUBLIC_DEMO: process.env.VITE_ENABLE_PUBLIC_DEMO || "false",
           VITE_ENABLE_DEMO_SEED: process.env.VITE_ENABLE_DEMO_SEED || "false",
+          VITE_ENABLE_DEV_ACCESS: "false",
           VITE_AUTH_TIMEOUT_MS: process.env.VITE_AUTH_TIMEOUT_MS || "1000",
         },
       },

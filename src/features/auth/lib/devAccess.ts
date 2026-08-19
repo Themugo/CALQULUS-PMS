@@ -26,7 +26,8 @@ export interface DevAccessEnv {
 /** Pure gate used by tests. Production (`PROD`) always wins. */
 export function isDevAccessEnabledFromEnv(env: DevAccessEnv): boolean {
   if (env.PROD) return false;
-  if (env.VITE_ENABLE_DEV_ACCESS === 'true') return true;
+  if (env.VITE_ENABLE_DEV_ACCESS === "false") return false;
+  if (env.VITE_ENABLE_DEV_ACCESS === "true") return true;
   return env.DEV;
 }
 

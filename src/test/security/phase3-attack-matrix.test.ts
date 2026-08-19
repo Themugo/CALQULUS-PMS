@@ -33,6 +33,16 @@ describe("Phase 3 — production bypass (attack 13)", () => {
     expect(isDevAccessEnabledFromEnv({ PROD: false, DEV: true })).toBe(true);
   });
 
+  it("honors an explicit VITE_ENABLE_DEV_ACCESS=false opt-out in local DEV", () => {
+    expect(
+      isDevAccessEnabledFromEnv({
+        PROD: false,
+        DEV: true,
+        VITE_ENABLE_DEV_ACCESS: "false",
+      }),
+    ).toBe(false);
+  });
+
   it("does not invent portal roles when bypass is off and the user has no roles", () => {
     const picked = pickRoleForPath([], "/webhost", "u1", false);
     expect(picked.role).toBe("tenant");
