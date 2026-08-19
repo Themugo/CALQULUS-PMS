@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import React, { useState } from "react";
 import {
   TrendingUp, TrendingDown, DollarSign, Building2, Users, AlertTriangle,

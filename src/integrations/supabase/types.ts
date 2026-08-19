@@ -5045,6 +5045,1614 @@ export type Database = {
           updated_at?: string
         }
       }
+      ,
+      // BEGIN PHASE12_MIGRATION_TABLES
+      api_rate_limits: {
+        Row: {
+          id: string | null
+          user_id: string
+          function_name: string
+          window_start: string
+          call_count: number
+        }
+        Insert: {
+          id?: string | null
+          user_id: string
+          function_name: string
+          window_start?: string
+          call_count?: number
+        }
+        Update: {
+          id?: string | null
+          user_id?: string
+          function_name?: string
+          window_start?: string
+          call_count?: number
+        }
+        Relationships: []
+      },
+      billing_events: {
+        Row: {
+          id: string | null
+          event_type: string
+          client_type: string
+          client_user_id: string
+          invoice_id: string | null
+          amount: number | null
+          notes: string | null
+          performed_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          event_type: string
+          client_type: string
+          client_user_id: string
+          invoice_id?: string | null
+          amount?: number | null
+          notes?: string | null
+          performed_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          event_type?: string
+          client_type?: string
+          client_user_id?: string
+          invoice_id?: string | null
+          amount?: number | null
+          notes?: string | null
+          performed_by?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      commission_configs: {
+        Row: {
+          id: string | null
+          tier_key: string
+          platform_rate: number
+          stripe_rate: number
+          mpesa_rate: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          tier_key: string
+          platform_rate?: number
+          stripe_rate?: number
+          mpesa_rate?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          tier_key?: string
+          platform_rate?: number
+          stripe_rate?: number
+          mpesa_rate?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      commissions: {
+        Row: {
+          id: string | null
+          invoice_id: string | null
+          manager_id: string | null
+          amount: number
+          rate_applied: number
+          status: string
+          created_at: string
+          collected_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          invoice_id?: string | null
+          manager_id?: string | null
+          amount: number
+          rate_applied: number
+          status?: string
+          created_at?: string
+          collected_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          invoice_id?: string | null
+          manager_id?: string | null
+          amount?: number
+          rate_applied?: number
+          status?: string
+          created_at?: string
+          collected_at?: string | null
+        }
+        Relationships: []
+      },
+      contractor_bids: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      contractors: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      customer_billing_blocks: {
+        Row: {
+          id: string | null
+          customer_id: string
+          customer_type: string
+          agency_id: string | null
+          price_per_unit: number | null
+          unit_count_locked: boolean
+          registration_fee_waived: boolean
+          registration_fee_amount: number | null
+          monthly_discount_pct: number | null
+          monthly_discount_flat: number | null
+          discount_label: string | null
+          discount_expires_at: string | null
+          zero_registration: boolean
+          custom_block_name: string | null
+          custom_block_price: number | null
+          custom_block_units: number | null
+          custom_block_notes: string | null
+          approved_by: string | null
+          approved_at: string | null
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string | null
+          customer_id: string
+          customer_type: string
+          agency_id?: string | null
+          price_per_unit?: number | null
+          unit_count_locked?: boolean
+          registration_fee_waived?: boolean
+          registration_fee_amount?: number | null
+          monthly_discount_pct?: number | null
+          monthly_discount_flat?: number | null
+          discount_label?: string | null
+          discount_expires_at?: string | null
+          zero_registration?: boolean
+          custom_block_name?: string | null
+          custom_block_price?: number | null
+          custom_block_units?: number | null
+          custom_block_notes?: string | null
+          approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string | null
+          customer_id?: string
+          customer_type?: string
+          agency_id?: string | null
+          price_per_unit?: number | null
+          unit_count_locked?: boolean
+          registration_fee_waived?: boolean
+          registration_fee_amount?: number | null
+          monthly_discount_pct?: number | null
+          monthly_discount_flat?: number | null
+          discount_label?: string | null
+          discount_expires_at?: string | null
+          zero_registration?: boolean
+          custom_block_name?: string | null
+          custom_block_price?: number | null
+          custom_block_units?: number | null
+          custom_block_notes?: string | null
+          approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      },
+      dead_letter_queue: {
+        Row: {
+          id: string | null
+          notification_id: string | null
+          channel: string
+          recipient: string
+          payload: Json
+          error_message: string | null
+          failed_at: string
+          retry_count: number
+          last_retry_at: string | null
+          max_retries: number
+          status: string
+        }
+        Insert: {
+          id?: string | null
+          notification_id?: string | null
+          channel: string
+          recipient: string
+          payload?: Json
+          error_message?: string | null
+          failed_at?: string
+          retry_count?: number
+          last_retry_at?: string | null
+          max_retries?: number
+          status?: string
+        }
+        Update: {
+          id?: string | null
+          notification_id?: string | null
+          channel?: string
+          recipient?: string
+          payload?: Json
+          error_message?: string | null
+          failed_at?: string
+          retry_count?: number
+          last_retry_at?: string | null
+          max_retries?: number
+          status?: string
+        }
+        Relationships: []
+      },
+      disputes: {
+        Row: {
+          id: string | null
+          invoice_id: string | null
+          tenant_id: string | null
+          reason: string
+          status: string
+          evidence_urls: string[] | null
+          filed_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+          resolution_note: string | null
+        }
+        Insert: {
+          id?: string | null
+          invoice_id?: string | null
+          tenant_id?: string | null
+          reason: string
+          status?: string
+          evidence_urls?: string[] | null
+          filed_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolution_note?: string | null
+        }
+        Update: {
+          id?: string | null
+          invoice_id?: string | null
+          tenant_id?: string | null
+          reason?: string
+          status?: string
+          evidence_urls?: string[] | null
+          filed_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolution_note?: string | null
+        }
+        Relationships: []
+      },
+      financial_partners: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      fraud_flags: {
+        Row: {
+          id: string | null
+          invoice_id: string | null
+          tenant_id: string | null
+          flag_reason: string
+          flag_severity: string
+          flagged_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+          resolution_note: string | null
+        }
+        Insert: {
+          id?: string | null
+          invoice_id?: string | null
+          tenant_id?: string | null
+          flag_reason: string
+          flag_severity?: string
+          flagged_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolution_note?: string | null
+        }
+        Update: {
+          id?: string | null
+          invoice_id?: string | null
+          tenant_id?: string | null
+          flag_reason?: string
+          flag_severity?: string
+          flagged_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolution_note?: string | null
+        }
+        Relationships: []
+      },
+      insurance_claims: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      insurance_policies: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      insurance_providers: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      invoice_counters: {
+        Row: {
+          manager_user_id: string | null
+          last_number: number
+          updated_at: string
+        }
+        Insert: {
+          manager_user_id?: string | null
+          last_number?: number
+          updated_at?: string
+        }
+        Update: {
+          manager_user_id?: string | null
+          last_number?: number
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      invoice_line_items: {
+        Row: {
+          id: string | null
+          invoice_id: string
+          unit_charge_id: string | null
+          charge_type: string
+          charge_label: string
+          quantity: number
+          unit_price: number
+          amount: number
+          is_manual: boolean
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          invoice_id: string
+          unit_charge_id?: string | null
+          charge_type: string
+          charge_label: string
+          quantity?: number
+          unit_price: number
+          amount: number
+          is_manual?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          invoice_id?: string
+          unit_charge_id?: string | null
+          charge_type?: string
+          charge_label?: string
+          quantity?: number
+          unit_price?: number
+          amount?: number
+          is_manual?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      landlord_mpesa_settings: {
+        Row: {
+          id: string | null
+          landlord_user_id: string
+          property_id: string | null
+          unit_id: string | null
+          consumer_key: string | null
+          consumer_secret: string | null
+          is_live: boolean
+          paybill_enabled: boolean
+          paybill_shortcode: string | null
+          paybill_passkey: string | null
+          paybill_account_reference: string | null
+          till_enabled: boolean
+          till_shortcode: string | null
+          till_passkey: string | null
+          use_unit_as_account_ref: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          landlord_user_id: string
+          property_id?: string | null
+          unit_id?: string | null
+          consumer_key?: string | null
+          consumer_secret?: string | null
+          is_live?: boolean
+          paybill_enabled?: boolean
+          paybill_shortcode?: string | null
+          paybill_passkey?: string | null
+          paybill_account_reference?: string | null
+          till_enabled?: boolean
+          till_shortcode?: string | null
+          till_passkey?: string | null
+          use_unit_as_account_ref?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          landlord_user_id?: string
+          property_id?: string | null
+          unit_id?: string | null
+          consumer_key?: string | null
+          consumer_secret?: string | null
+          is_live?: boolean
+          paybill_enabled?: boolean
+          paybill_shortcode?: string | null
+          paybill_passkey?: string | null
+          paybill_account_reference?: string | null
+          till_enabled?: boolean
+          till_shortcode?: string | null
+          till_passkey?: string | null
+          use_unit_as_account_ref?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      landlord_team_members: {
+        Row: {
+          id: string | null
+          landlord_user_id: string
+          member_user_id: string
+          member_label: string | null
+          can_view_properties: boolean
+          can_view_tenants: boolean
+          can_view_leases: boolean
+          can_view_invoices: boolean
+          can_view_maintenance: boolean
+          can_view_contracts: boolean
+          can_view_activity_logs: boolean
+          can_record_payments: boolean
+          can_edit_tenants: boolean
+          can_manage_maintenance: boolean
+          can_create_invoices: boolean
+          can_approve_moveouts: boolean
+          can_send_notices: boolean
+          can_upload_documents: boolean
+          assigned_property_ids: string[]
+          restrict_to_assigned_properties: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          landlord_user_id: string
+          member_user_id: string
+          member_label?: string | null
+          can_view_properties?: boolean
+          can_view_tenants?: boolean
+          can_view_leases?: boolean
+          can_view_invoices?: boolean
+          can_view_maintenance?: boolean
+          can_view_contracts?: boolean
+          can_view_activity_logs?: boolean
+          can_record_payments?: boolean
+          can_edit_tenants?: boolean
+          can_manage_maintenance?: boolean
+          can_create_invoices?: boolean
+          can_approve_moveouts?: boolean
+          can_send_notices?: boolean
+          can_upload_documents?: boolean
+          assigned_property_ids?: string[]
+          restrict_to_assigned_properties?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          landlord_user_id?: string
+          member_user_id?: string
+          member_label?: string | null
+          can_view_properties?: boolean
+          can_view_tenants?: boolean
+          can_view_leases?: boolean
+          can_view_invoices?: boolean
+          can_view_maintenance?: boolean
+          can_view_contracts?: boolean
+          can_view_activity_logs?: boolean
+          can_record_payments?: boolean
+          can_edit_tenants?: boolean
+          can_manage_maintenance?: boolean
+          can_create_invoices?: boolean
+          can_approve_moveouts?: boolean
+          can_send_notices?: boolean
+          can_upload_documents?: boolean
+          assigned_property_ids?: string[]
+          restrict_to_assigned_properties?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      landlord_wallets: {
+        Row: {
+          id: string | null
+          landlord_user_id: string
+          balance: number
+          currency: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          landlord_user_id: string
+          balance?: number
+          currency?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          landlord_user_id?: string
+          balance?: number
+          currency?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      loan_applications: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      manager_notification_settings: {
+        Row: {
+          id: string | null
+          manager_user_id: string
+          notify_email: boolean
+          notify_sms: boolean
+          notify_whatsapp: boolean
+          whatsapp_provider: string | null
+          whatsapp_from_number: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          manager_user_id: string
+          notify_email?: boolean
+          notify_sms?: boolean
+          notify_whatsapp?: boolean
+          whatsapp_provider?: string | null
+          whatsapp_from_number?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          manager_user_id?: string
+          notify_email?: boolean
+          notify_sms?: boolean
+          notify_whatsapp?: boolean
+          whatsapp_provider?: string | null
+          whatsapp_from_number?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      notification_failures: {
+        Row: {
+          id: string | null
+          transaction_id: string | null
+          tenant_id: string | null
+          manager_id: string | null
+          channel: string
+          error: string | null
+          payload: Json | null
+          status: string
+          attempts: number
+          created_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string | null
+          transaction_id?: string | null
+          tenant_id?: string | null
+          manager_id?: string | null
+          channel: string
+          error?: string | null
+          payload?: Json | null
+          status?: string
+          attempts?: number
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          id?: string | null
+          transaction_id?: string | null
+          tenant_id?: string | null
+          manager_id?: string | null
+          channel?: string
+          error?: string | null
+          payload?: Json | null
+          status?: string
+          attempts?: number
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: []
+      },
+      payment_allocations: {
+        Row: {
+          id: string | null
+          transaction_id: string
+          invoice_id: string
+          tenant_id: string | null
+          manager_id: string | null
+          allocated_amount: number
+          closes_invoice: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          transaction_id: string
+          invoice_id: string
+          tenant_id?: string | null
+          manager_id?: string | null
+          allocated_amount: number
+          closes_invoice?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          transaction_id?: string
+          invoice_id?: string
+          tenant_id?: string | null
+          manager_id?: string | null
+          allocated_amount?: number
+          closes_invoice?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      },
+      payment_logs: {
+        Row: {
+          id: string | null
+          payment_id: string | null
+          event_type: string
+          event_data: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          payment_id?: string | null
+          event_type: string
+          event_data?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          payment_id?: string | null
+          event_type?: string
+          event_data?: Json | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      payment_processing: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      platform_admins: {
+        Row: {
+          id: string | null
+          user_id: string
+          admin_type: string
+          display_name: string
+          email: string
+          can_create_admins: boolean
+          can_manage_managers: boolean
+          can_manage_billing: boolean
+          can_manage_properties: boolean
+          can_manage_landlords: boolean
+          can_view_activity_logs: boolean
+          can_manage_platform_settings: boolean
+          is_immutable: boolean
+          suspended: boolean
+          suspended_at: string | null
+          suspended_by: string | null
+          suspension_reason: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+          admin_level: string | null
+        }
+        Insert: {
+          id?: string | null
+          user_id: string
+          admin_type: string
+          display_name: string
+          email: string
+          can_create_admins?: boolean
+          can_manage_managers?: boolean
+          can_manage_billing?: boolean
+          can_manage_properties?: boolean
+          can_manage_landlords?: boolean
+          can_view_activity_logs?: boolean
+          can_manage_platform_settings?: boolean
+          is_immutable?: boolean
+          suspended?: boolean
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          admin_level?: string | null
+        }
+        Update: {
+          id?: string | null
+          user_id?: string
+          admin_type?: string
+          display_name?: string
+          email?: string
+          can_create_admins?: boolean
+          can_manage_managers?: boolean
+          can_manage_billing?: boolean
+          can_manage_properties?: boolean
+          can_manage_landlords?: boolean
+          can_view_activity_logs?: boolean
+          can_manage_platform_settings?: boolean
+          is_immutable?: boolean
+          suspended?: boolean
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          admin_level?: string | null
+        }
+        Relationships: []
+      },
+      platform_billing_rules: {
+        Row: {
+          id: string | null
+          rule_name: string
+          client_type: string
+          billing_model: string
+          rate_amount: number
+          rate_pct: number | null
+          applies_to_tier: string | null
+          registration_fee: number | null
+          free_trial_days: number | null
+          is_active: boolean
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          rule_name: string
+          client_type: string
+          billing_model?: string
+          rate_amount?: number
+          rate_pct?: number | null
+          applies_to_tier?: string | null
+          registration_fee?: number | null
+          free_trial_days?: number | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          rule_name?: string
+          client_type?: string
+          billing_model?: string
+          rate_amount?: number
+          rate_pct?: number | null
+          applies_to_tier?: string | null
+          registration_fee?: number | null
+          free_trial_days?: number | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      provider_reviews: {
+        Row: {
+          id: string | null
+          provider_id: string
+          reviewer_id: string | null
+          reviewer_role: string | null
+          maintenance_id: string | null
+          rating: number
+          title: string | null
+          comment: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          provider_id: string
+          reviewer_id?: string | null
+          reviewer_role?: string | null
+          maintenance_id?: string | null
+          rating: number
+          title?: string | null
+          comment?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          provider_id?: string
+          reviewer_id?: string | null
+          reviewer_role?: string | null
+          maintenance_id?: string | null
+          rating?: number
+          title?: string | null
+          comment?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      rent_report_schedules: {
+        Row: {
+          id: string | null
+          manager_id: string
+          recipients: string[]
+          enabled: boolean
+          send_day: number
+          last_sent_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          manager_id: string
+          recipients?: string[]
+          enabled?: boolean
+          send_day?: number
+          last_sent_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          manager_id?: string
+          recipients?: string[]
+          enabled?: boolean
+          send_day?: number
+          last_sent_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      security_audit_log: {
+        Row: {
+          id: string | null
+          user_id: string | null
+          event_type: string
+          ip_address: string | null
+          user_agent: string | null
+          resource_type: string | null
+          resource_id: string | null
+          details: Json | null
+          severity: string
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          user_id?: string | null
+          event_type: string
+          ip_address?: string | null
+          user_agent?: string | null
+          resource_type?: string | null
+          resource_id?: string | null
+          details?: Json | null
+          severity?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          user_id?: string | null
+          event_type?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          resource_type?: string | null
+          resource_id?: string | null
+          details?: Json | null
+          severity?: string
+          created_at?: string
+        }
+        Relationships: []
+      },
+      stripe_processed_events: {
+        Row: {
+          event_id: string | null
+          event_type: string
+          processed_at: string
+          invoice_id: string | null
+          reference: string | null
+        }
+        Insert: {
+          event_id?: string | null
+          event_type: string
+          processed_at?: string
+          invoice_id?: string | null
+          reference?: string | null
+        }
+        Update: {
+          event_id?: string | null
+          event_type?: string
+          processed_at?: string
+          invoice_id?: string | null
+          reference?: string | null
+        }
+        Relationships: []
+      },
+      tenant_blacklist: {
+        Row: {
+          id: string | null
+          tenant_id: string | null
+          manager_id: string
+          property_id: string | null
+          tenant_name: string | null
+          tenant_email: string | null
+          tenant_phone: string | null
+          national_id: string | null
+          reason: string
+          category: string | null
+          severity: string | null
+          incident_date: string | null
+          amount_owed: number | null
+          evidence_urls: string[] | null
+          notes: string | null
+          is_active: boolean
+          expires_at: string | null
+          removed_at: string | null
+          removed_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          tenant_id?: string | null
+          manager_id: string
+          property_id?: string | null
+          tenant_name?: string | null
+          tenant_email?: string | null
+          tenant_phone?: string | null
+          national_id?: string | null
+          reason: string
+          category?: string | null
+          severity?: string | null
+          incident_date?: string | null
+          amount_owed?: number | null
+          evidence_urls?: string[] | null
+          notes?: string | null
+          is_active?: boolean
+          expires_at?: string | null
+          removed_at?: string | null
+          removed_reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          tenant_id?: string | null
+          manager_id?: string
+          property_id?: string | null
+          tenant_name?: string | null
+          tenant_email?: string | null
+          tenant_phone?: string | null
+          national_id?: string | null
+          reason?: string
+          category?: string | null
+          severity?: string | null
+          incident_date?: string | null
+          amount_owed?: number | null
+          evidence_urls?: string[] | null
+          notes?: string | null
+          is_active?: boolean
+          expires_at?: string | null
+          removed_at?: string | null
+          removed_reason?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      tenant_invites: {
+        Row: {
+          id: string | null
+          email: string
+          token: string
+          property_id: string | null
+          unit_id: string | null
+          status: string
+          invited_by: string | null
+          created_at: string
+          expires_at: string
+          accepted_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          email: string
+          token: string
+          property_id?: string | null
+          unit_id?: string | null
+          status?: string
+          invited_by?: string | null
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          email?: string
+          token?: string
+          property_id?: string | null
+          unit_id?: string | null
+          status?: string
+          invited_by?: string | null
+          created_at?: string
+          expires_at?: string
+          accepted_at?: string | null
+        }
+        Relationships: []
+      },
+      tenant_transfer_log: {
+        Row: {
+          id: string | null
+          tenant_id: string
+          from_manager_id: string | null
+          to_manager_id: string | null
+          transfer_type: string
+          transferred_by: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          tenant_id: string
+          from_manager_id?: string | null
+          to_manager_id?: string | null
+          transfer_type?: string
+          transferred_by: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          tenant_id?: string
+          from_manager_id?: string | null
+          to_manager_id?: string | null
+          transfer_type?: string
+          transferred_by?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      unit_amenities: {
+        Row: {
+          id: string | null
+          unit_id: string
+          property_id: string
+          manager_id: string
+          amenity_type: string
+          amenity_label: string
+          is_included: boolean
+          extra_charge: number | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          unit_id: string
+          property_id: string
+          manager_id: string
+          amenity_type: string
+          amenity_label: string
+          is_included?: boolean
+          extra_charge?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          unit_id?: string
+          property_id?: string
+          manager_id?: string
+          amenity_type?: string
+          amenity_label?: string
+          is_included?: boolean
+          extra_charge?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      unit_deposit_ledger: {
+        Row: {
+          id: string | null
+          unit_id: string
+          tenant_id: string | null
+          manager_id: string | null
+          deposit_type: string
+          entry_type: string
+          amount: number
+          balance_after: number
+          description: string | null
+          reference: string | null
+          transaction_date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          unit_id: string
+          tenant_id?: string | null
+          manager_id?: string | null
+          deposit_type: string
+          entry_type: string
+          amount: number
+          balance_after: number
+          description?: string | null
+          reference?: string | null
+          transaction_date?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          unit_id?: string
+          tenant_id?: string | null
+          manager_id?: string | null
+          deposit_type?: string
+          entry_type?: string
+          amount?: number
+          balance_after?: number
+          description?: string | null
+          reference?: string | null
+          transaction_date?: string
+          created_at?: string
+        }
+        Relationships: []
+      },
+      unit_photos: {
+        Row: {
+          id: string | null
+          unit_id: string
+          property_id: string | null
+          manager_id: string | null
+          photo_url: string
+          caption: string | null
+          photo_type: string | null
+          display_order: number | null
+          is_cover: boolean | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          unit_id: string
+          property_id?: string | null
+          manager_id?: string | null
+          photo_url: string
+          caption?: string | null
+          photo_type?: string | null
+          display_order?: number | null
+          is_cover?: boolean | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          unit_id?: string
+          property_id?: string | null
+          manager_id?: string | null
+          photo_url?: string
+          caption?: string | null
+          photo_type?: string | null
+          display_order?: number | null
+          is_cover?: boolean | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      unit_utility_meters: {
+        Row: {
+          id: string | null
+          unit_id: string
+          property_id: string | null
+          manager_id: string | null
+          tenant_id: string | null
+          utility_type: string
+          meter_number: string
+          meter_label: string | null
+          provider: string | null
+          account_number: string | null
+          billing_method: string | null
+          rate_per_unit: number | null
+          current_reading: number | null
+          last_read_date: string | null
+          installation_date: string | null
+          is_active: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string | null
+          unit_id: string
+          property_id?: string | null
+          manager_id?: string | null
+          tenant_id?: string | null
+          utility_type: string
+          meter_number: string
+          meter_label?: string | null
+          provider?: string | null
+          account_number?: string | null
+          billing_method?: string | null
+          rate_per_unit?: number | null
+          current_reading?: number | null
+          last_read_date?: string | null
+          installation_date?: string | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string | null
+          unit_id?: string
+          property_id?: string | null
+          manager_id?: string | null
+          tenant_id?: string | null
+          utility_type?: string
+          meter_number?: string
+          meter_label?: string | null
+          provider?: string | null
+          account_number?: string | null
+          billing_method?: string | null
+          rate_per_unit?: number | null
+          current_reading?: number | null
+          last_read_date?: string | null
+          installation_date?: string | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      user_devices: {
+        Row: {
+          id: string | null
+          user_id: string
+          device_name: string
+          device_type: string
+          device_identifier: string
+          user_agent: string | null
+          ip_address: string | null
+          last_used_at: string | null
+          is_trusted: boolean | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          user_id: string
+          device_name: string
+          device_type: string
+          device_identifier: string
+          user_agent?: string | null
+          ip_address?: string | null
+          last_used_at?: string | null
+          is_trusted?: boolean | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          user_id?: string
+          device_name?: string
+          device_type?: string
+          device_identifier?: string
+          user_agent?: string | null
+          ip_address?: string | null
+          last_used_at?: string | null
+          is_trusted?: boolean | null
+          created_at?: string | null
+        }
+        Relationships: []
+      },
+      user_mfa_secrets: {
+        Row: {
+          id: string | null
+          user_id: string
+          totp_secret: string
+          backup_codes: string[]
+          enabled: boolean | null
+          verified_at: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          user_id: string
+          totp_secret: string
+          backup_codes: string[]
+          enabled?: boolean | null
+          verified_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          user_id?: string
+          totp_secret?: string
+          backup_codes?: string[]
+          enabled?: boolean | null
+          verified_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      },
+      user_sessions: {
+        Row: {
+          id: string | null
+          user_id: string
+          device_id: string | null
+          session_token: string
+          mfa_verified: boolean | null
+          ip_address: string | null
+          expires_at: string
+          created_at: string | null
+          last_accessed_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          user_id: string
+          device_id?: string | null
+          session_token: string
+          mfa_verified?: boolean | null
+          ip_address?: string | null
+          expires_at: string
+          created_at?: string | null
+          last_accessed_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          user_id?: string
+          device_id?: string | null
+          session_token?: string
+          mfa_verified?: boolean | null
+          ip_address?: string | null
+          expires_at?: string
+          created_at?: string | null
+          last_accessed_at?: string | null
+        }
+        Relationships: []
+      },
+      utility_bills: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      utility_connections: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      utility_providers: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      wallet_transactions: {
+        Row: {
+          id: string | null
+          wallet_id: string
+          amount: number
+          type: string
+          reference_type: string | null
+          reference_id: string | null
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string | null
+          wallet_id: string
+          amount: number
+          type: string
+          reference_type?: string | null
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string | null
+          wallet_id?: string
+          amount?: number
+          type?: string
+          reference_type?: string | null
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      },
+      water_invoices: {
+        Row: {
+          id: string | null
+          unit_id: string | null
+          tenant_id: string | null
+          billing_period: string
+          amount: number
+          previous_reading: number | null
+          current_reading: number | null
+          consumption: number | null
+          status: string
+          issued_at: string
+          paid_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          unit_id?: string | null
+          tenant_id?: string | null
+          billing_period: string
+          amount: number
+          previous_reading?: number | null
+          current_reading?: number | null
+          consumption?: number | null
+          status?: string
+          issued_at?: string
+          paid_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          unit_id?: string | null
+          tenant_id?: string | null
+          billing_period?: string
+          amount?: number
+          previous_reading?: number | null
+          current_reading?: number | null
+          consumption?: number | null
+          status?: string
+          issued_at?: string
+          paid_at?: string | null
+        }
+        Relationships: []
+      },
+      webhook_dead_letter: {
+        Row: {
+          id: string | null
+          source: string
+          external_ref: string | null
+          payload: Json | null
+          error: string | null
+          status: string
+          created_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+          notes: string | null
+        }
+        Insert: {
+          id?: string | null
+          source: string
+          external_ref?: string | null
+          payload?: Json | null
+          error?: string | null
+          status?: string
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          notes?: string | null
+        }
+        Update: {
+          id?: string | null
+          source?: string
+          external_ref?: string | null
+          payload?: Json | null
+          error?: string | null
+          status?: string
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          notes?: string | null
+        }
+        Relationships: []
+      },
+      webhook_secrets: {
+        Row: {
+          id: string | null
+          manager_id: string | null
+          webhook_type: string
+          secret_hash: string
+          is_active: boolean
+          created_at: string
+          rotated_at: string | null
+        }
+        Insert: {
+          id?: string | null
+          manager_id?: string | null
+          webhook_type: string
+          secret_hash: string
+          is_active?: boolean
+          created_at?: string
+          rotated_at?: string | null
+        }
+        Update: {
+          id?: string | null
+          manager_id?: string | null
+          webhook_type?: string
+          secret_hash?: string
+          is_active?: boolean
+          created_at?: string
+          rotated_at?: string | null
+        }
+        Relationships: []
+      },
+      work_orders: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      workflow_automations: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      workflow_instances: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      workflow_steps: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      },
+      workflow_templates: {
+        Row: Record<string, Json | null>
+        Insert: Record<string, Json | null>
+        Update: Record<string, Json | null>
+        Relationships: []
+      }
+      // END PHASE12_MIGRATION_TABLES
     }
     Views: {
       [_ in never]: never
@@ -5166,6 +6774,27 @@ export type Database = {
           unit: string
         }[]
       }
+      ,
+      // BEGIN PHASE12_MIGRATION_FUNCTIONS
+      approve_manager_account: { Args: { p_manager_user_id?: string }; Returns: string }
+      bulk_create_units: { Args: { p_property_id?: string; p_manager_id?: string; p_prefix?: string; p_start_number?: number; p_count?: number; p_monthly_rent?: number; p_unit_type?: string; p_bedrooms?: number; p_floor_number?: number }; Returns: number }
+      check_rate_limit: { Args: { p_user_id?: string; p_function?: string; p_max_per_hour?: number }; Returns: boolean }
+      check_tier_allows_property: { Args: { p_manager_id?: string; p_category_key?: string }; Returns: boolean }
+      complete_unit_moveout: { Args: { p_unit_id?: string; p_tenant_id?: string; p_manager_id?: string; p_move_out_date?: string; p_reason?: string; p_notes?: string; p_notice_id?: string; p_grant_portal_days?: number }; Returns: string }
+      create_account_activation: { Args: { p_user_id?: string; p_token?: string; p_expires_at?: string }; Returns: string }
+      escalate_overdue_manager_invoices: { Args: never; Returns: string }
+      get_landlord_property_revenue_summary: { Args: { p_property_id?: string }; Returns: string }
+      get_manager_recent_activity: { Args: { p_manager_id?: string; p_limit?: number }; Returns: string }
+      get_tenant_balance: { Args: { p_tenant_id?: string }; Returns: string }
+      get_tenants_with_properties: { Args: { p_manager_id?: string }; Returns: string }
+      lock_invoices_for_update: { Args: { p_invoice_ids?: string[] }; Returns: string }
+      process_invoice_payment: { Args: { p_invoice_id?: string; p_transaction_id?: string; p_amount?: number }; Returns: number }
+      process_payment_atomic: { Args: { p_tenant_id?: string; p_manager_id?: string; p_amount?: number; p_payment_method?: string; p_payment_date?: string; p_reference?: string; p_invoice_id?: string; p_invoice_ids?: string[]; p_unit_id?: string; p_property_id?: string; p_unit_number?: string; p_phone?: string; p_recorded_by?: string; p_notes?: string; p_existing_transaction_id?: string }; Returns: Json }
+      refresh_manager_stats: { Args: { p_manager_id?: string }; Returns: string }
+      reinstate_manager_on_payment: { Args: { p_invoice_id?: string }; Returns: string }
+      suspend_manager_account: { Args: { p_manager_user_id?: string; p_reason?: string }; Returns: string }
+      sync_tenant_payment_details: { Args: { p_tenant_id?: string; p_manager_id?: string; p_property_id?: string; p_unit_id?: string; p_monthly_rent?: number; p_house_deposit?: number; p_water_deposit?: number; p_other_charges?: number; p_other_charges_desc?: string; p_payment_day?: number; p_paybill?: string; p_account_ref?: string; p_tenancy_type?: string }; Returns: string }
+      // END PHASE12_MIGRATION_FUNCTIONS
     }
     Enums: {
       admin_level: "super_admin" | "admin" | "limited_admin"

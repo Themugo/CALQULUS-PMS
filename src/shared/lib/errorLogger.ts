@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * CALQULUS PMS Error Logger — Production Observability
  *

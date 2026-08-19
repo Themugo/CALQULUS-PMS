@@ -5,7 +5,7 @@ if (!baseUrl) {
   process.exit(1);
 }
 
-const routes = ["/", "/legal", "/install", "/pricing", "/auth"];
+const routes = ["/", "/legal", "/install", "/pricing", "/auth", "/health"];
 const requiredHeaders = [
   "x-content-type-options",
   "x-frame-options",

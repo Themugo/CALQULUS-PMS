@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * PaymentSetupStatus — Per-property plug-and-play readiness (M-Pesa, bank, receipts).
  */

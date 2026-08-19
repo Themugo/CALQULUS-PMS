@@ -61,6 +61,7 @@ const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatem
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const MarketingWebsite = lazy(() => import("@/features/marketing/MarketingWebsite"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
+const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // Specialized Operational Command Center Dashboards
@@ -93,6 +94,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landing", element: MarketingWebsite },
   { path: "/welcome", element: MarketingWebsite },
   { path: "/pricing", element: PublicLandingPage },
+  { path: "/health", element: HealthPage },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/auth", element: Auth },

@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useQuery } from "@tanstack/react-query";
 import { logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";

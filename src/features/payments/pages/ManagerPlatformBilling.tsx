@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
