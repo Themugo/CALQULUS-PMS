@@ -17,6 +17,17 @@ No **P0** outage or payment-loss bug was proven. Live **RLS infinite recursion**
 
 **Final score: 67 / 100.** Higher than 62 because typecheck now compiles `src/`, restore was executed locally, live schema was probed, and demo-role E2E passed. Still below a ship bar: Edge `health-check` is 404, dashboard RPCs are missing on live, 86 files are `@ts-nocheck`, webhost E2E has no working password, and there was no mutating signup→receipt run.
 
+### How to apply the live SQL (SQL Editor)
+
+The Dashboard SQL Editor executes **SQL**, not English and not repository paths. Pasting `supabase/migrations/20260812000001_....sql` is what produced `ERROR 42601 syntax error at or near "supabase"`.
+
+1. Open `supabase/sql/apply-live-p1-rls.sql` → copy **all** of it → SQL Editor → Run.
+2. Then paste `supabase/sql/apply-live-p1-rpcs.sql` the same way.
+3. Recheck from the API (SQL Editor bypasses RLS, so it cannot prove `42P17` is gone):
+   - anon `GET /rest/v1/tenants?select=id&limit=1` must not return `42P17` (empty `[]` / 200 is OK)
+   - authenticated `POST /rest/v1/rpc/get_manager_dashboard_stats` with `{ "p_manager_id": "<uuid>" }` must not be `PGRST202`
+4. Deploy Edge Function `health-check` separately (Dashboard or `npx supabase functions deploy health-check --no-verify-jwt`). Not SQL.
+
 ---
 
 ## What was actually run (this session)
@@ -49,7 +60,7 @@ If a later live check shows unapplied RLS migrations or a payment double-credit 
 ## P1 — must resolve before calling the product production-ready
 
 1. **Typecheck (partially remediations).** `npm run typecheck` now compiles `src/`. **86 files** are still `@ts-nocheck` because `createClient<Database>` does not match supabase-js `GenericSchema` (queries were `never`) and local interfaces are stale. Remove exemptions after `supabase gen types` from live.
-2. **Live migrations incomplete.** `get_manager_dashboard_stats` and `get_landlord_portfolio_stats` are **not** in the live PostgREST cache (PGRST202). `20260812000001` / `0002` recursion fixes are **not** effective: anon `tenants` and `platform_admins` return `42P17`. Apply those SQL files with a DB role. `log_activity` and `validate_invitation_token` **are** live.
+2. **Live migrations incomplete.** `get_manager_dashboard_stats` and `get_landlord_portfolio_stats` are **not** in the live PostgREST cache (PGRST202). `20260812000001` / `0002` recursion fixes are **not** effective: anon `tenants` and `platform_admins` return `42P17`. **SQL Editor accepts SQL only** — pasting `supabase/migrations/...sql` (a path) produces `syntax error at or near "supabase"`. Paste the contents of `supabase/sql/apply-live-p1-rls.sql` first, then `supabase/sql/apply-live-p1-rpcs.sql`. Confirm with anon `GET /rest/v1/tenants?select=id&limit=1` (must not be `42P17`) and authenticated `POST /rest/v1/rpc/get_manager_dashboard_stats` (must not be PGRST202). `log_activity` and `validate_invitation_token` **are** live. Health-check is **not** SQL: Dashboard → Edge Functions → deploy `health-check` with JWT verification off (`verify_jwt = false` in `supabase/config.toml`).
 3. **Backup restore (local only).** `npm run restore:drill` dump/restored 127 tables. Production PITR was **not** run (no DB password).
 4. **`health-check` Edge Function still 404.** Needs `SUPABASE_ACCESS_TOKEN` to deploy. Repo now has SPA `/health` as a Vercel-side probe after this PR ships.
 5. **E2E (partial).** Manager/landlord/tenant demo logins passed. AGENTS.md `CALQULUS RMS@2026!` accounts are **invalid** on live Auth. Webhost not certified. Mutating signup→invoice→receipt was **not** run (would write production data).
@@ -231,7 +242,7 @@ API/DB latency: not measured against the live project (would need authenticated 
 Call the product production-ready only after:
 
 1. `typecheck` compiles `src` (or CI is rewritten so it cannot pretend) **and** error count is an accepted, tracked number — not thousands of ignored `strict` failures.
-2. Confirm live `schema_migrations` (or equivalent) includes the 20260812 and 20260819 files you rely on.
+2. Confirm live `schema_migrations` (or equivalent) includes the 20260812 and 20260819 files you rely on. Apply by pasting **SQL file contents** into the SQL Editor — never paste file paths or English runbook lines.
 3. Execute one backup restore in staging.
 4. Deploy or remove `health-check` from runbooks.
 5. Run credentialed Playwright (or equivalent) for manager collect, tenant pay, landlord statement, webhost login.
