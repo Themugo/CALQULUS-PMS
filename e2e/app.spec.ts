@@ -17,10 +17,9 @@ const TENANT_PASSWORD = process.env.E2E_TENANT_PASSWORD || "";
 test.describe("CALQULUS PMS E2E Tests", () => {
 
   test.describe("Public pages", () => {
-    test("landing page loads the public product home", async ({ page }) => {
+    test("public homepage presents CALQULUS", async ({ page }) => {
       await page.goto("/");
-      await expect(page.locator("body")).toBeVisible();
-      await expect(page.getByRole("link", { name: /CALQULUS PMS home/i })).toBeVisible({ timeout: 15000 });
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("clarity and control", { timeout: 15000 });
     });
 
     test("auth page loads login form", async ({ page }) => {

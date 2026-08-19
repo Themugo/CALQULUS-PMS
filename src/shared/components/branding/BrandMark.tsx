@@ -18,6 +18,8 @@ interface BrandMarkProps {
   className?: string;
   imgClassName?: string;
   fetchPriority?: "high" | "low" | "auto";
+  /** Use on navy/dark public surfaces so the wordmark stays readable. */
+  inverse?: boolean;
 }
 
 /** Shared CALQULUS mark for login, header, sidebar, footer, and mobile chrome. */
@@ -28,6 +30,7 @@ export function BrandMark({
   className,
   imgClassName,
   fetchPriority,
+  inverse = false,
 }: BrandMarkProps) {
   const square = size !== "hero";
   const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");
@@ -50,12 +53,20 @@ export function BrandMark({
       />
       {showWordmark && (
         <div className="min-w-0">
-          <p className="font-heading font-bold text-sm tracking-tight text-foreground leading-none truncate">
+          <p className={cn(
+            "font-heading font-bold text-sm tracking-tight leading-none truncate",
+            inverse ? "text-white" : "text-foreground",
+          )}>
             {CALQULUS_BRAND.name}
           </p>
-          <p className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase mt-1 truncate">
-            {subtitle}
-          </p>
+          {subtitle ? (
+            <p className={cn(
+              "text-[10px] font-medium tracking-wider uppercase mt-1 truncate",
+              inverse ? "text-white/60" : "text-muted-foreground",
+            )}>
+              {subtitle}
+            </p>
+          ) : null}
         </div>
       )}
     </div>
