@@ -21,6 +21,8 @@ No **P0** outage or payment-loss bug was proven. Live **RLS infinite recursion**
 
 The Dashboard SQL Editor executes **SQL**, not English and not repository paths. Pasting `supabase/migrations/20260812000001_....sql` is what produced `ERROR 42601 syntax error at or near "supabase"`.
 
+Do **not** paste `20230101000000_base_schema.sql` (the long `CREATE TABLE IF NOT EXISTS` dump). Production already has those tables; its `DELETE FROM` orphan-cleanup can destroy live rows. It does not fix `42P17` or `PGRST202`.
+
 1. Open `supabase/sql/apply-live-p1-rls.sql` → copy **all** of it → SQL Editor → Run.
 2. Then paste `supabase/sql/apply-live-p1-rpcs.sql` the same way.
 3. Recheck from the API (SQL Editor bypasses RLS, so it cannot prove `42P17` is gone):
