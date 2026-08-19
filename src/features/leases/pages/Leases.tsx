@@ -1,5 +1,6 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
 import { openSafely } from "@/shared/lib/safeWindow";
 import { Button } from "@/shared/components/ui/button";
@@ -66,6 +67,17 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { LeaseCard } from "@/features/leases/components/LeaseCard";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
+import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
+import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
+import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
 type LeaseStatus = "active" | "expiring" | "expired" | "pending" | "terminated";
 
@@ -189,6 +201,9 @@ const Leases = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeaseStatus | "all">("all");
+  const [leasePage, setLeasePage] = useState(1);
+  const [leaseSortKey, setLeaseSortKey] = useState("expiry");
+  const [leaseSortDir, setLeaseSortDir] = useState<SortDir>("asc");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedLease, setSelectedLease] = useState<Lease | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -646,6 +661,32 @@ const Leases = () => {
     return matchesSearch && matchesStatus;
   });
 
+  useEffect(() => {
+    setLeasePage(1);
+  }, [searchQuery, statusFilter]);
+
+  const sortedLeases = useMemo(() => {
+    const getter = (lease: Lease) => {
+      switch (leaseSortKey) {
+        case "status": return lease.status;
+        case "tenant": return lease.tenants?.name ?? "";
+        case "property": return `${lease.property} ${lease.unit}`;
+        case "rent": return lease.monthly_rent;
+        default: return lease.end_date;
+      }
+    };
+    return sortBy(filteredLeases, getter, leaseSortDir);
+  }, [filteredLeases, leaseSortKey, leaseSortDir]);
+
+  const leaseSlice = useMemo(() => paginate(sortedLeases, leasePage, 25), [sortedLeases, leasePage]);
+
+  const handleLeaseSort = (key: string) => {
+    const next = toggleSort(leaseSortKey, key, leaseSortDir);
+    setLeaseSortKey(next.key);
+    setLeaseSortDir(next.dir);
+    setLeasePage(1);
+  };
+
   // Stats calculation
   const leaseStats = {
     total: leases.length,
@@ -1054,8 +1095,74 @@ const Leases = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {filteredLeases.map((lease) => (
+        <>
+        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-border">
+                <TableHead className="w-10" />
+                <SortableHead label="Status" sortKey="status" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Tenant" sortKey="tenant" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Property / Unit" sortKey="property" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Rent" sortKey="rent" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Expiry" sortKey="expiry" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {leaseSlice.items.map((lease) => (
+                <TableRow key={lease.id} className="hover:bg-muted/30 border-border">
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedLeases.has(lease.id)}
+                      onCheckedChange={() => toggleLeaseSelection(lease.id)}
+                      aria-label={`Select lease for ${lease.tenants?.name}`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
+                      {lease.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={lease.tenants?.photo_url || undefined} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          {lease.tenants?.name?.split(" ").map((n) => n[0]).join("") || "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium truncate">{lease.tenants?.name || "No Tenant"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm truncate">{lease.property}</p>
+                    <p className="text-xs text-muted-foreground">{lease.unit}</p>
+                  </TableCell>
+                  <TableCell className="font-medium">{formatCurrency(lease.monthly_rent)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                    {formatDate(lease.end_date)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="ghost" size="sm" className="h-8" onClick={() => { setSelectedLease(lease); setIsViewDialogOpen(true); }}>
+                        View
+                      </Button>
+                      {(lease.status === "active" || lease.status === "expiring") && (
+                        <Button variant="ghost" size="sm" className="h-8 text-primary" asChild>
+                          <Link to="/billing">Invoice</Link>
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePager page={leaseSlice} onPageChange={setLeasePage} noun="leases" />
+        </div>
+        <div className="grid gap-3 grid-cols-1 md:hidden">
+          {leaseSlice.items.map((lease) => (
             <LeaseCard
               key={lease.id}
               lease={lease}
@@ -1066,6 +1173,10 @@ const Leases = () => {
             />
           ))}
         </div>
+        <div className="md:hidden">
+          <TablePager page={leaseSlice} onPageChange={setLeasePage} noun="leases" />
+        </div>
+        </>
       )}
 
       {/* View Lease Dialog */}
@@ -1287,6 +1398,15 @@ const Leases = () => {
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="pt-4 border-t border-border">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Next step
+                </p>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/billing">Create invoice / collect rent</Link>
+                </Button>
               </div>
 
               <div className="pt-4 border-t border-border">

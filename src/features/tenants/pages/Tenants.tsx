@@ -1,7 +1,7 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { format } from "date-fns";
 import { logError } from "@/shared/lib/errorLogger";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -57,6 +57,8 @@ import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
+import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
+import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
 interface Property {
   id: string;
@@ -113,7 +115,40 @@ interface TenantTableProps {
   onMoveOut: (tenant: TenantData) => void;
 }
 
+const TENANT_PAGE_SIZE = 25;
+
 function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
+  const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState("name");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const listKey = `${tenantList.length}:${tenantList[0]?.id ?? ""}:${searchQuery}`;
+
+  useEffect(() => {
+    setPage(1);
+  }, [listKey]);
+
+  const sorted = useMemo(() => {
+    const getter = (tenant: TenantData) => {
+      switch (sortKey) {
+        case "status": return tenant.status;
+        case "property": return `${tenant.property ?? ""} ${tenant.unit ?? ""}`;
+        case "rent": return tenant.monthly_rent ?? 0;
+        case "move_in": return tenant.move_in_date ?? "";
+        default: return tenant.name;
+      }
+    };
+    return sortBy(tenantList, getter, sortDir);
+  }, [tenantList, sortKey, sortDir]);
+
+  const slice = useMemo(() => paginate(sorted, page, TENANT_PAGE_SIZE), [sorted, page]);
+
+  const handleSort = (key: string) => {
+    const next = toggleSort(sortKey, key, sortDir);
+    setSortKey(next.key);
+    setSortDir(next.dir);
+    setPage(1);
+  };
+
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       {isLoading ? (
@@ -129,20 +164,21 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
           description={searchQuery ? "Try a different name, unit, or property." : "Invite a tenant to a property to start the lease and billing path."}
         />
       ) : (
+        <>
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border">
-              <TableHead>Status</TableHead>
-              <TableHead>Tenant</TableHead>
-              <TableHead>Property / Unit</TableHead>
-              <TableHead>Rent</TableHead>
-              <TableHead className="hidden lg:table-cell">Move-in</TableHead>
+              <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <SortableHead label="Tenant" sortKey="name" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <SortableHead label="Property / Unit" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <SortableHead label="Rent" sortKey="rent" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <SortableHead label="Move-in" sortKey="move_in" currentKey={sortKey} dir={sortDir} onSort={handleSort} className="hidden lg:table-cell" />
               <TableHead className="hidden md:table-cell">Contact</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tenantList.map((tenant) => (
+            {slice.items.map((tenant) => (
               <TableRow
                 key={tenant.id}
                 className="hover:bg-muted/30 border-border"
@@ -233,6 +269,8 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
             ))}
           </TableBody>
         </Table>
+        <TablePager page={slice} onPageChange={setPage} noun="tenants" />
+        </>
       )}
     </div>
   );
@@ -242,7 +280,6 @@ const Tenants = () => {
   const { toast } = useToast();
   const { can } = useRBAC();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
   const [tenants, setTenants] = useState<TenantData[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -406,12 +443,15 @@ const Tenants = () => {
               ))}
             </SelectContent>
           </Select>
-          <Input
-            placeholder="Search tenants..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-56 h-9 pl-8 text-sm bg-card border-border"
-          />
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search tenants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-56 h-9 pl-8 text-sm bg-card border-border"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -442,8 +482,7 @@ const Tenants = () => {
       </div>
 
       <Tabs value={statusTab} onValueChange={(v) => setStatusTab(v as "active" | "pending" | "inactive")} className="w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-          <TabsList className="w-full sm:w-auto">
+        <TabsList className="w-full sm:w-auto mb-4">
             <TabsTrigger value="active" className="flex items-center gap-1.5 flex-1 sm:flex-none text-xs sm:text-sm">
               <UserCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Current
@@ -459,18 +498,7 @@ const Tenants = () => {
               Deactivated
               <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">{inactiveTenants.length}</Badge>
             </TabsTrigger>
-          </TabsList>
-
-          <div className="relative flex-1 sm:flex-none sm:w-64">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search tenants..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9 text-sm bg-card border-border"
-            />
-          </div>
-        </div>
+        </TabsList>
 
         <TabsContent value="active" className="mt-0">
           <TenantTable

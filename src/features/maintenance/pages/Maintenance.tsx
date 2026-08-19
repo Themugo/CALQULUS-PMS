@@ -1,5 +1,5 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
@@ -60,6 +60,8 @@ import {
   requestAgeLabel,
   statusBadgeClass,
 } from "@/shared/lib/statusBadge";
+import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
+import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
 type RequestStatus = "open" | "in_progress" | "completed" | "cancelled";
 type RequestPriority = "low" | "medium" | "high" | "urgent";
@@ -117,6 +119,8 @@ function nextMaintenanceAction(status: RequestStatus, assignedTo: string | null)
   return "—";
 }
 
+const PRIORITY_RANK: Record<RequestPriority, number> = { urgent: 4, high: 3, medium: 2, low: 1 };
+
 const statusIcons: Record<RequestStatus, React.ReactNode> = {
   open: <AlertTriangle className="h-4 w-4" />,
   in_progress: <Clock className="h-4 w-4" />,
@@ -138,6 +142,9 @@ export default function Maintenance() {
 
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const { formatCurrency } = useCurrency();
+  const [requestPage, setRequestPage] = useState(1);
+  const [requestSortKey, setRequestSortKey] = useState("priority");
+  const [requestSortDir, setRequestSortDir] = useState<SortDir>("desc");
 
   // Properties and units for dropdowns
   const [properties, setProperties] = useState<Property[]>([]);
@@ -370,6 +377,33 @@ export default function Maintenance() {
     return matchesSearch && matchesCategory && request.status === activeTab;
   });
 
+  useEffect(() => {
+    setRequestPage(1);
+  }, [searchQuery, activeTab, categoryFilter]);
+
+  const sortedRequests = useMemo(() => {
+    const getter = (request: MaintenanceRequest) => {
+      switch (requestSortKey) {
+        case "status": return request.status;
+        case "property": return `${request.property_name} ${request.unit_number ?? ""}`;
+        case "tenant": return request.tenant_name;
+        case "age": return request.created_at;
+        case "assigned": return request.assigned_to ?? "";
+        default: return PRIORITY_RANK[request.priority] ?? 0;
+      }
+    };
+    return sortBy(filteredRequests, getter, requestSortDir);
+  }, [filteredRequests, requestSortKey, requestSortDir]);
+
+  const requestSlice = useMemo(() => paginate(sortedRequests, requestPage, 25), [sortedRequests, requestPage]);
+
+  const handleRequestSort = (key: string) => {
+    const next = toggleSort(requestSortKey, key, requestSortDir);
+    setRequestSortKey(next.key);
+    setRequestSortDir(next.dir);
+    setRequestPage(1);
+  };
+
   const stats = {
     total: requests.length,
     open: requests.filter((r) => r.status === "open").length,
@@ -438,15 +472,20 @@ export default function Maintenance() {
         </Card>
       </div>
 
-      {/* Active Report Section */}
-      <MaintenanceActiveReport
-        requests={requests}
-        onStartRequest={(id) => updateRequestStatus(id, "in_progress", "open")}
-        onCompleteRequest={(id) => updateRequestStatus(id, "completed", "in_progress")}
-      />
-
-      {/* Budget Dashboard */}
-      <MaintenanceBudgetDashboard requests={requests} />
+      <details className="mb-4 rounded-xl border border-border bg-card">
+        <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-foreground flex items-center justify-between">
+          Reports and budget
+          <span className="text-xs font-normal text-muted-foreground">Optional context</span>
+        </summary>
+        <div className="px-4 pb-4 space-y-4 border-t border-border pt-3">
+          <MaintenanceActiveReport
+            requests={requests}
+            onStartRequest={(id) => updateRequestStatus(id, "in_progress", "open")}
+            onCompleteRequest={(id) => updateRequestStatus(id, "completed", "in_progress")}
+          />
+          <MaintenanceBudgetDashboard requests={requests} />
+        </div>
+      </details>
 
       {/* Actions Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4 sm:mb-6">
@@ -704,19 +743,19 @@ export default function Maintenance() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-border">
-                      <TableHead>Priority</TableHead>
-                      <TableHead>Status</TableHead>
+                      <SortableHead label="Priority" sortKey="priority" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} />
+                      <SortableHead label="Status" sortKey="status" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} />
                       <TableHead>Issue</TableHead>
-                      <TableHead className="hidden md:table-cell">Property / Unit</TableHead>
-                      <TableHead className="hidden lg:table-cell">Tenant</TableHead>
-                      <TableHead>Age</TableHead>
-                      <TableHead className="hidden xl:table-cell">Assigned</TableHead>
-                      <TableHead className="hidden lg:table-cell">Next</TableHead>
+                      <SortableHead label="Property / Unit" sortKey="property" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} className="hidden sm:table-cell" />
+                      <SortableHead label="Tenant" sortKey="tenant" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} className="hidden md:table-cell" />
+                      <SortableHead label="Age" sortKey="age" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} />
+                      <SortableHead label="Assigned" sortKey="assigned" currentKey={requestSortKey} dir={requestSortDir} onSort={handleRequestSort} className="hidden lg:table-cell" />
+                      <TableHead className="hidden md:table-cell">Next</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredRequests.map((request) => (
+                    {requestSlice.items.map((request) => (
                       <TableRow key={request.id} className="border-border">
                         <TableCell>
                           <span className={priorityColors[request.priority]}>
@@ -731,26 +770,27 @@ export default function Maintenance() {
                         <TableCell>
                           <div>
                             <p className="font-medium text-foreground">{request.title}</p>
-                            <p className="text-xs text-muted-foreground md:hidden">
+                            <p className="text-xs text-muted-foreground sm:hidden">
                               {request.property_name}
                               {request.unit_number && ` · ${request.unit_number}`}
+                              {request.tenant_name && ` · ${request.tenant_name}`}
                             </p>
                           </div>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
+                        <TableCell className="hidden sm:table-cell">
                           <p className="text-sm text-foreground">{request.property_name}</p>
                           <p className="text-xs text-muted-foreground">{request.unit_number || "—"}</p>
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell">
+                        <TableCell className="hidden md:table-cell">
                           <span className="text-sm text-foreground">{request.tenant_name}</span>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                           {requestAgeLabel(request.created_at)}
                         </TableCell>
-                        <TableCell className="hidden xl:table-cell text-sm text-muted-foreground">
+                        <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
                           {request.assigned_to || "Unassigned"}
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                           {nextMaintenanceAction(request.status, request.assigned_to)}
                         </TableCell>
                         <TableCell className="text-right">
@@ -801,11 +841,13 @@ export default function Maintenance() {
                     ))}
                   </TableBody>
                 </Table>
+                <TablePager page={requestSlice} onPageChange={setRequestPage} noun="requests" />
               </CardContent>
             </Card>
           ) : (
+            <>
             <div className="grid gap-4">
-              {filteredRequests.map((request) => (
+              {requestSlice.items.map((request) => (
                 <Card key={request.id} className="bg-card border-border">
                   <CardContent className="p-5">
                     <div className="flex flex-col lg:flex-row lg:items-start gap-4">
@@ -914,6 +956,8 @@ export default function Maintenance() {
                 </Card>
               ))}
             </div>
+            <TablePager page={requestSlice} onPageChange={setRequestPage} noun="requests" />
+            </>
           )}
         </TabsContent>
       </Tabs>

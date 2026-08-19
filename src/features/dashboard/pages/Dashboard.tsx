@@ -240,7 +240,7 @@ const Dashboard = () => {
                 change={stats.overdueInvoices > 0 ? `${stats.overdueInvoices} overdue invoices` : "All invoices clear"}
                 changeType={stats.overdueInvoices > 0 ? "negative" : "positive"}
                 icon={AlertTriangle}
-                iconColor={stats.arrearsTotal > 0 ? "destructive" : "success"}
+                iconColor="neutral"
               />
               <StatCard
                 title="Occupancy"
@@ -248,7 +248,7 @@ const Dashboard = () => {
                 change={`${stats.occupiedUnits} occupied · ${stats.vacantUnits} vacant`}
                 changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
                 icon={Home}
-                iconColor={stats.occupancyRate >= 90 ? "success" : stats.occupancyRate >= 70 ? "primary" : stats.occupancyRate >= 50 ? "warning" : "destructive"}
+                iconColor="neutral"
                 progressValue={stats.occupancyRate}
               />
               <StatCard
@@ -265,7 +265,7 @@ const Dashboard = () => {
                 change="Next 30 days"
                 changeType={stats.expiringLeases > 0 ? "negative" : "positive"}
                 icon={Calendar}
-                iconColor={stats.expiringLeases > 0 ? "warning" : "neutral"}
+                iconColor="neutral"
                 sparkData={leaseExpiryData?.counts}
                 sparkLabels={leaseExpiryData?.labels}
                 sparkUnit="lease"
@@ -279,175 +279,60 @@ const Dashboard = () => {
       <div className="mb-2 flex items-center justify-between">
         <div>
           <h2 className="section-title">Needs action today</h2>
-          <p className="supporting-text hidden sm:block">Overdue rent, approvals, vacancies, and open repairs</p>
+          <p className="supporting-text hidden sm:block">Overdue rent, vacancies, expiring leases, and open repairs</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        {/* 1. Critical — What requires attention? */}
-        <div className="enterprise-card p-4 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="status-badge status-danger">
-              <AlertCircle className="h-3 w-3 shrink-0" />
-              Requires Attention
-            </span>
-            <span className="meta-text font-semibold">
-              {loading ? <Skeleton className="h-4 w-10" /> : `${(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0) + (stats?.openMaintenanceCount ?? 0)} issues`}
-            </span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Overdue arrears</span>
-              <span className="supporting-text font-bold text-destructive">
-                {loading ? <Skeleton className="h-4 w-16" /> : formatCurrency(stats?.arrearsTotal ?? 0)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Expiring leases (30d)</span>
-              <span className="supporting-text font-semibold text-warning">
-                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.expiringLeases ?? 0} leases`}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Vacant units</span>
-              <span className="supporting-text font-semibold">
-                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.vacantUnits ?? 0} units`}
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/billing?filter=overdue")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-destructive hover:bg-destructive/10"
+      <div className="enterprise-card mb-5 divide-y divide-border">
+        {([
+          {
+            label: "Overdue invoices",
+            detail: loading ? "…" : `${stats?.overdueInvoices ?? 0} · ${formatCurrency(stats?.arrearsTotal ?? 0)}`,
+            href: "/billing?filter=overdue",
+            tone: (stats?.overdueInvoices ?? 0) > 0 ? "status-danger" : "status-success",
+            cta: "Collect",
+          },
+          {
+            label: "Vacant units",
+            detail: loading ? "…" : `${stats?.vacantUnits ?? 0} of ${stats?.totalUnits ?? 0}`,
+            href: "/properties",
+            tone: (stats?.vacantUnits ?? 0) > 0 ? "status-warning" : "status-success",
+            cta: "Fill",
+          },
+          {
+            label: "Leases expiring in 30 days",
+            detail: loading ? "…" : `${stats?.expiringLeases ?? 0}`,
+            href: "/leases",
+            tone: (stats?.expiringLeases ?? 0) > 0 ? "status-warning" : "status-neutral",
+            cta: "Review",
+          },
+          {
+            label: "Open maintenance",
+            detail: loading ? "…" : `${stats?.openMaintenanceCount ?? 0} open · ${stats?.urgentMaintenanceCount ?? 0} urgent`,
+            href: "/maintenance",
+            tone: (stats?.urgentMaintenanceCount ?? 0) > 0 ? "status-danger" : (stats?.openMaintenanceCount ?? 0) > 0 ? "status-warning" : "status-success",
+            cta: "Work orders",
+          },
+          {
+            label: "Deposit refunds",
+            detail: loading ? "…" : `${stats?.pendingDepositRefundsCount ?? 0} pending`,
+            href: "/tenants",
+            tone: (stats?.pendingDepositRefundsCount ?? 0) > 0 ? "status-warning" : "status-neutral",
+            cta: "Approve",
+          },
+        ] as const).map((row) => (
+          <button
+            key={row.label}
+            type="button"
+            onClick={() => navigate(row.href)}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors"
           >
-            <span>Resolve arrears ({stats?.overdueInvoices ?? 0})</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-
-        {/* 2. Warning — What needs approval? */}
-        <div className="enterprise-card p-4 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="status-badge status-warning">
-              <CheckSquare className="h-3 w-3 shrink-0" />
-              Needs Approval
-            </span>
-            <span className="meta-text font-semibold">
-              {loading ? <Skeleton className="h-4 w-12" /> : `${(stats?.pendingDepositRefundsCount ?? 0) + (stats?.openMaintenanceCount ?? 0)} pending`}
-            </span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Deposit refunds</span>
-              <span className="supporting-text font-semibold">
-                {stats?.pendingDepositRefundsCount ?? 0} pending
-              </span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground">{row.label}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{row.detail}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Open maintenance</span>
-              <span className="supporting-text font-semibold">
-                {stats?.openMaintenanceCount ?? 0} requests
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Pending invoices</span>
-              <span className="supporting-text font-semibold">
-                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.pendingInvoices ?? 0} due`}
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/maintenance")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-warning hover:bg-warning/10"
-          >
-            <span>Manage approvals</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-
-        {/* 3. Success — What generates revenue? */}
-        <div className="enterprise-card p-4 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="status-badge status-success">
-              <DollarSign className="h-3 w-3 shrink-0" />
-              Revenue
-            </span>
-            <span className="status-badge status-success">
-              {stats?.occupancyRate ?? 0}% Occupied
-            </span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Collected rent (MTD)</span>
-              <span className="supporting-text font-bold text-success">
-                {loading ? <Skeleton className="h-4 w-20" /> : formatCurrency(stats?.revenueMTD ?? 0)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Collection rate</span>
-              <span className="supporting-text font-semibold">
-                {loading ? <Skeleton className="h-4 w-12" /> : `${stats?.collectionRate ?? 0}%`}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Occupied / total units</span>
-              <span className="supporting-text font-semibold">
-                {loading ? <Skeleton className="h-4 w-14" /> : `${stats?.occupiedUnits ?? 0} / ${stats?.totalUnits ?? 0}`}
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/reports")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-success hover:bg-success/10"
-          >
-            <span>Financial reports</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-
-        {/* 4. Info — What happened today? */}
-        <div className="enterprise-card p-4 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="status-badge status-info">
-              <Activity className="h-3 w-3 shrink-0" />
-              Recent Activity
-            </span>
-            <span className="status-badge status-neutral">Live feed</span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">New tenants MTD</span>
-              <span className="supporting-text font-semibold text-primary">
-                +{stats?.newTenantsThisMonth ?? 0} joined
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Active leases</span>
-              <span className="supporting-text font-semibold">
-                {stats?.activeLeases ?? 0} active
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="supporting-text">Properties monitored</span>
-              <span className="supporting-text font-semibold">
-                {stats?.totalProperties ?? 0} total
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/tenants")}
-            className="mt-3 w-full h-8 supporting-text font-semibold justify-between text-primary hover:bg-primary/10"
-          >
-            <span>View roster</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+            <span className={`status-badge ${row.tone} shrink-0`}>{row.cta}</span>
+          </button>
+        ))}
       </div>
 
 

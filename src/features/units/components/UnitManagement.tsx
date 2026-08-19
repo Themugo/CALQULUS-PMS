@@ -3,7 +3,6 @@ import { useState, useEffect, Fragment, useCallback } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -41,19 +40,24 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import {
   Home,
   Plus,
   Pencil,
   Trash2,
   Layers,
-  Ruler,
   History,
   Settings2,
   Images,
   ListChecks,
   Gauge,
+  MoreHorizontal,
 } from "lucide-react";
-import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import UnitHistoryPanel from "@/features/units/components/UnitHistoryPanel";
 import UnitPhotoGallery from "@/features/units/components/UnitPhotoGallery";
 import UnitAmenitiesManager from "@/features/units/components/UnitAmenitiesManager";
@@ -66,6 +70,7 @@ import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { toUserFacingError } from "@/shared/lib/errorLogger";
+import { statusBadgeClass } from "@/shared/lib/statusBadge";
 
 interface Unit {
   id: string;
@@ -87,11 +92,19 @@ interface Unit {
   updated_at: string;
 }
 
+interface OccupantHint {
+  unitNumber: string;
+  tenantName: string | null;
+  leaseStatus: string | null;
+}
+
 interface UnitManagementProps {
   propertyId: string;
   propertyName: string;
   houseLabelPrefix?: string;
   onUnitsChange?: () => void;
+  occupants?: OccupantHint[];
+  onOpenTab?: (tab: string) => void;
 }
 
 const unitStatuses = [
@@ -102,13 +115,13 @@ const unitStatuses = [
 ];
 
 const statusStyles: Record<string, string> = {
-  vacant: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  occupied: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]",
-  maintenance: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  reserved: "bg-[hsl(218_58%_38%/0.1)] text-[hsl(218_58%_38%)] border-[hsl(218_58%_38%/0.2)]",
+  vacant: statusBadgeClass("success"),
+  occupied: statusBadgeClass("info"),
+  maintenance: statusBadgeClass("warning"),
+  reserved: statusBadgeClass("neutral"),
 };
 
-export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onUnitsChange }: UnitManagementProps) {
+export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onUnitsChange, occupants = [], onOpenTab }: UnitManagementProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
@@ -413,7 +426,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Layers className="h-5 w-5 text-amber-500" />
+            <Layers className="h-5 w-5 text-muted-foreground" />
             House Management
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -448,17 +461,25 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>House No.</TableHead>
-                <TableHead>Bedrooms</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Rent</TableHead>
+                <TableHead>House</TableHead>
+                <TableHead>Tenant</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>Rent</TableHead>
+                <TableHead>Next</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {units.map((unit) => (
+              {units.map((unit) => {
+                const occupant = occupants.find(
+                  (o) => o.unitNumber.toLowerCase() === unit.unit_number.toLowerCase()
+                );
+                const next = !occupant?.tenantName
+                  ? { label: "Assign tenant", tab: "tenants" }
+                  : !occupant.leaseStatus
+                    ? { label: "Create lease", tab: "leases" }
+                    : { label: "Invoice / collect", tab: "billing" };
+                return (
                 <Fragment key={unit.id}>
                   <TableRow>
                     <TableCell>
@@ -470,12 +491,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                             className="h-8 w-8 rounded-lg object-cover shrink-0"
                           />
                         ) : (
-                          <div className={cn(
-                            "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium",
-                            unit.status === "occupied" ? "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)]" :
-                            unit.status === "vacant" ? "bg-emerald-500/10 text-emerald-600" :
-                            "bg-muted text-muted-foreground"
-                          )}>
+                          <div className="h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium bg-muted text-muted-foreground">
                             <Home className="h-4 w-4" />
                           </div>
                         )}
@@ -483,25 +499,20 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                       </div>
                     </TableCell>
                     <TableCell>
-                      {unit.bedrooms ? (
-                        <span className="text-sm">{unit.bedrooms} BR / {unit.bathrooms || 1} BA</span>
+                      {occupant?.tenantName ? (
+                        <span className="text-sm font-medium text-foreground">{occupant.tenantName}</span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-sm text-muted-foreground italic">Vacant</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      {unit.square_feet ? (
-                        <span className="text-sm flex items-center gap-1">
-                          <Ruler className="h-3 w-3 text-muted-foreground" />
-                          {unit.square_feet.toLocaleString()} sqft
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                      <span className={cn("capitalize", statusStyles[unit.status] || statusStyles.vacant)}>
+                        {unit.status}
+                      </span>
                     </TableCell>
                     <TableCell>
                       {unit.monthly_rent ? (
-                        <span className="font-medium text-emerald-600 flex items-center gap-1">
+                        <span className="font-medium text-foreground">
                           {formatCurrency(unit.monthly_rent)}/mo
                         </span>
                       ) : (
@@ -509,121 +520,68 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn("capitalize", statusStyles[unit.status] || statusStyles.vacant)}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 text-primary"
+                        onClick={() => onOpenTab?.(next.tab)}
                       >
-                        {unit.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {unit.description ? (
-                        <span className="text-sm text-muted-foreground line-clamp-1 max-w-[150px]">
-                          {unit.description}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                        {next.label}
+                      </Button>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Unit history"
-                          onClick={() => {
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Unit actions">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {
                             setExpandedHistoryUnitId(expandedHistoryUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
                             setExpandedPhotosUnitId(null);
                             setExpandedAmenitiesUnitId(null);
                             setExpandedMetersUnitId(null);
-                          }}
-                          className={expandedHistoryUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
-                        >
-                          <History className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Photos"
-                          onClick={() => {
+                          }}>History</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
                             setExpandedPhotosUnitId(expandedPhotosUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
                             setExpandedHistoryUnitId(null);
                             setExpandedAmenitiesUnitId(null);
                             setExpandedMetersUnitId(null);
                             fetchCoverPhotos();
-                          }}
-                          className={expandedPhotosUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
-                        >
-                          <Images className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Amenities"
-                          onClick={() => {
+                          }}>Photos</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
                             setExpandedAmenitiesUnitId(expandedAmenitiesUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
                             setExpandedHistoryUnitId(null);
                             setExpandedPhotosUnitId(null);
                             setExpandedMetersUnitId(null);
-                          }}
-                          className={expandedAmenitiesUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
-                        >
-                          <ListChecks className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Utility meters"
-                          onClick={() => {
+                          }}>Amenities</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
                             setExpandedMetersUnitId(expandedMetersUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
                             setExpandedHistoryUnitId(null);
                             setExpandedPhotosUnitId(null);
                             setExpandedAmenitiesUnitId(null);
-                          }}
-                          className={expandedMetersUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
-                        >
-                          <Gauge className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Configure charges"
-                          onClick={() => {
+                          }}>Utility meters</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
                             setExpandedBillingUnitId(expandedBillingUnitId === unit.id ? null : unit.id);
                             setExpandedHistoryUnitId(null);
                             setExpandedPhotosUnitId(null);
                             setExpandedAmenitiesUnitId(null);
                             setExpandedMetersUnitId(null);
-                          }}
-                          className={expandedBillingUnitId === unit.id ? 'text-amber-600 bg-amber-400/10' : ''}
-                        >
-                          <Settings2 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEditDialog(unit)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => openDeleteDialog(unit)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                          }}>Charges</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEditDialog(unit)}>Edit</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => openDeleteDialog(unit)}>Deactivate</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                   {expandedBillingUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={8} className="p-3 bg-muted/20">
+                      <TableCell colSpan={6} className="p-3 bg-muted/20">
                         <UnitBillingConfig
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -635,7 +593,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedHistoryUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                      <TableCell colSpan={6} className="p-3 bg-muted/10">
                         <UnitHistoryPanel
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -646,7 +604,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedPhotosUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                      <TableCell colSpan={6} className="p-3 bg-muted/10">
                         <UnitPhotoGallery
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -657,7 +615,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedAmenitiesUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                      <TableCell colSpan={6} className="p-3 bg-muted/10">
                         <UnitAmenitiesManager
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -668,7 +626,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedMetersUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={8} className="p-3 bg-muted/10">
+                      <TableCell colSpan={6} className="p-3 bg-muted/10">
                         <UnitUtilityMeters
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -678,7 +636,8 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                     </TableRow>
                   )}
                 </Fragment>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         )}

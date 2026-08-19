@@ -10,8 +10,9 @@
  * Mutations use useMarkInvoicePaid, useUpdateInvoice (typed, cache-invalidating).
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthContext";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -28,7 +29,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import {
   Plus, FileText, CheckCircle2, ClipboardCheck,
-  Receipt, Save, Loader2,
+  Receipt, Save, Loader2, Search,
 } from "lucide-react";
 import { MpesaPaymentDialog } from "@/features/billing/components/MpesaPaymentDialog";
 import TenantInvoiceForm from "@/features/billing/components/TenantInvoiceForm";
@@ -64,6 +65,7 @@ const Billing = () => {
 
   // ── UI state (data state has moved to the hook) ──────────────────────────
 
+  const [searchParams] = useSearchParams();
   const [mainTab,       setMainTab]       = useState<MainTab>("invoices");
   const [activeTab,     setActiveTab]     = useState("all");
   const [searchQuery,   setSearchQuery]   = useState("");
@@ -88,6 +90,15 @@ const Billing = () => {
 
   const { invoices, leases, tenants, expenditures, isLoading, invalidateInvoices } =
     useBillingData(selectedMonth);
+
+  useEffect(() => {
+    const filter = searchParams.get("filter");
+    if (filter) setActiveTab(filter);
+    const tab = searchParams.get("tab");
+    if (tab === "receipts" || tab === "invoices" || tab === "expenditures" || tab === "verify") {
+      setMainTab(tab);
+    }
+  }, [searchParams]);
 
   const markPaidMutation   = useMarkInvoicePaid();
   const updateMutation     = useUpdateInvoice();
@@ -320,6 +331,7 @@ const Billing = () => {
           {/* Actions bar */}
           <div className="flex flex-col gap-3 sm:gap-4">
             <div className="relative flex-1 sm:flex-none sm:w-80">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search invoices…"
                 value={searchQuery}
@@ -368,6 +380,29 @@ const Billing = () => {
 
           {/* Status filter tabs + table */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">Lifecycle</span>
+              {(["pending", "partially_paid", "overdue", "paid"] as const).map((step, i) => (
+                <span key={step} className="inline-flex items-center gap-1.5">
+                  {i > 0 && <span className="text-border">→</span>}
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(step)}
+                    className={`rounded-full px-2 py-0.5 border ${activeTab === step ? "bg-primary/10 text-primary border-primary/20 font-semibold" : "border-border hover:border-primary/30"}`}
+                  >
+                    {step === "partially_paid" ? "Partial" : step.charAt(0).toUpperCase() + step.slice(1)}
+                  </button>
+                </span>
+              ))}
+              <span className="text-border">→</span>
+              <button
+                type="button"
+                onClick={() => setMainTab("receipts")}
+                className="rounded-full px-2 py-0.5 border border-border hover:border-primary/30"
+              >
+                Receipt
+              </button>
+            </div>
             <TabsList className="bg-card border border-border flex-wrap h-auto">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="pending">Pending</TabsTrigger>
