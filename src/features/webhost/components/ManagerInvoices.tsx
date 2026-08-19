@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

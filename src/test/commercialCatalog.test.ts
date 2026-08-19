@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   displayNameForTier,
+  FALLBACK_COMMERCIAL_TIERS,
   formatKes,
   mergeLiveTiers,
   monthlyPropertyCost,
@@ -68,5 +69,14 @@ describe("commercialCatalog", () => {
     expect(merged[0].pricePerProperty).toBe(450);
     expect(merged[1].tierKey).toBe("pro");
     expect(merged[2].displayName).toBe("Enterprise");
+  });
+
+  it("publishes Enterprise at or above Professional (per-property / month)", () => {
+    const lite = FALLBACK_COMMERCIAL_TIERS.find((t) => t.tierKey === "lite")!;
+    const pro = FALLBACK_COMMERCIAL_TIERS.find((t) => t.tierKey === "pro")!;
+    const enterprise = FALLBACK_COMMERCIAL_TIERS.find((t) => t.tierKey === "enterprise")!;
+    expect(lite.pricePerProperty).toBe(400);
+    expect(pro.pricePerProperty).toBe(600);
+    expect(enterprise.pricePerProperty).toBeGreaterThanOrEqual(pro.pricePerProperty);
   });
 });

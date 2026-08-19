@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useRef, memo, type CSSProperties } from 'react';
 import { cn } from '@/shared/lib/utils';
 

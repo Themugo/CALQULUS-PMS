@@ -59,6 +59,7 @@ import { ReceiptHistory } from '@/features/tenant-portal/components/ReceiptHisto
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
 import { TENANT_INVOICE_COLUMNS } from '@/features/tenant-portal/lib/tenantInvoiceSelect';
+import { redirectBrowser } from '@/shared/lib/redirectBrowser';
 
 interface Invoice {
   id: string;
@@ -351,7 +352,7 @@ const TenantPortal = () => {
         if (error) throw error;
 
         if (data?.url) {
-          window.location.href = data.url;
+          redirectBrowser(data.url);
         } else {
           throw new Error('No checkout URL received');
         }

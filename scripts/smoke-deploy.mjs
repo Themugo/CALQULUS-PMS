@@ -5,7 +5,7 @@ if (!baseUrl) {
   process.exit(1);
 }
 
-const routes = ["/", "/legal", "/install", "/demo"];
+const routes = ["/", "/legal", "/install", "/pricing", "/auth", "/health"];
 const requiredHeaders = [
   "x-content-type-options",
   "x-frame-options",
@@ -29,7 +29,7 @@ for (const route of routes) {
     failures.push(`${route} returned ${response.status}`);
     continue;
   }
-  if (!body.includes('<div id="root"></div>')) {
+  if (!body.includes('id="root"')) {
     failures.push(`${route} did not return the SPA shell`);
   }
 }

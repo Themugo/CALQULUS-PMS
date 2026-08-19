@@ -3,6 +3,8 @@
 ## Goal
 Realign all dashboards to the new role architecture (Webhost, Manager, Landlord, Tenant, Submanager) and implement the UI patterns shown in the HTML mockup files.
 
+**Current production truth (2026-08-19):** independent 30-gate score **55/100** — `docs/audits/INDEPENDENT_QUALITY_GATE.md`. Not SOC 2 / ISO / PCI certified. Live anon `tenants` REST still `42P17` until `supabase/sql/apply-live-p1-rls.sql` is pasted. Edge `health-check` is 404 until deployed. Published catalog is **KES per property / month** (Starter 400 / Professional 600 / Enterprise 800). Demo logins: `demo.manager@calqulusrms.com` / `Demo@2026`. AGENTS.md `CALQULUS RMS@2026!` accounts are invalid on live Auth.
+
 ## Constraints & Preferences
 - Local folder: `C:\Users\hp\Desktop\CALQULUS-PMS`
 - Repo: `https://github.com/Themugo/CALQULUS-PMS.git` — auto-deploys Vercel from `main`
@@ -10,7 +12,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 - Test accounts: `jimmythemugo@gmail.com` (manager), `kamauwamakena@gmail.com` (tenant), `mugo.james27@gmail.com` (webhost) â€” all pw `CALQULUS RMS@2026!`
 - Demo accounts: `demo.manager@calqulusrms.com`, `demo.landlord@calqulusrms.com` â€” pw `Demo@2026`
 - Edge functions deployed: `send-tenant-invitation`, `create-tenant-account`, `notify-manager-tenant-signup`
-- 69 migrations in `supabase/migrations/`
+- 74 migrations in `supabase/migrations/`
 
 ## Build & Verify
 - `npm run build` â€” production build (Vite/Rolldown)
@@ -170,7 +172,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 
 ## Supabase
 - URL: `https://aelzsqxllkypbzslxyju.supabase.co`
-- 45 migrations in `supabase/migrations/`
+- 74 migrations in `supabase/migrations/`
 - Service role key in `scripts/fix-roles.mjs`
 
 ## Performance Optimizations
@@ -246,7 +248,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 
 ## Customer Billing Blocks
 - `customer_billing_blocks` table: per-unit pricing overrides, waivers, discounts
-- `price_per_unit` added to `subscription_tiers` (Lite: 40, Pro: 30, Enterprise: 20 KES/unit)
+- Published commercial catalog is **KES per property / month** (Starter 400, Professional 600, Enterprise 800). Custom billing blocks remain for negotiated accounts. Do not quote the old per-unit 40/30/20 list as the public price.
 - UI: Webhost Dashboard â†’ "Billing Blocks" tab (owner/business only)
 - Supports: per-unit pricing, registration fee waiver, %/flat discounts, custom negotiated blocks
 
@@ -360,16 +362,11 @@ Tier 3: Tenants
 - `calqulus_full_platform_v2.html`: exact Manager sidebar layout (Dashboard, Leases, Tenants, Invites, Vacation Notices, Billing, Water Billing, Statements, Maintenance, Reports, Settings) + Tenant portal nav (Home, Pay Rent, Maintenance, Documents, Vacation Notice).
 
 ## Next Steps
-1. Complete Agency portal pages: properties, tenants, leases, billing, maintenance, landlords, reports, settings under `/agency/*` routes.
-2. Rebuild `WebhostDashboard.tsx`: remove tenant references, add Unlinked Landlords tab, align tabs to mockup (Overview, Managers, Properties, Billing, Tiers, Contracts, Security, Error Logs).
-3. Rebuild `LandlordDashboard.tsx`: replace raw tenant payment table with property cards showing occupancy bars, revenue share %, "Your share" per property. No tenant PII at all.
-4. Trim manager sidebar to match `calqulus_full_platform_v2.html`: Dashboard, Leases, Tenants, Invites, Vacation Notices, Billing, Water Billing, Statements, Maintenance, Reports, Settings.
-5. Remove `can_manage_tenants` from `admin_permissions` table and `WebhostPermissions` type.
-6. Block all `/tenants`, `/portal` routes for webhost role in route config.
-7. Add `manager_id IS NULL` filter to webhost's landlord queries.
-8. Apply pending DB migrations from Supabase Dashboard SQL Editor.
-9. Re-deploy edge functions with latest `send-tenant-invitation` (phone support).
-10. Remove `agency_id` column from `property_landlords` via migration.
+1. Paste `supabase/sql/apply-live-p1-rls.sql` then `apply-live-p1-rpcs.sql` into the live SQL Editor (file contents, never `_base_schema.sql`).
+2. Deploy Edge Function `health-check` with `verify_jwt = false`.
+3. Prove one invoice → payment → receipt on a demo account.
+4. Confirm PITR is on before further live DDL.
+5. Do not add lab/SOC2/ISO product surfaces.
 
 ## Relevant Files
 - `src/features/webhost/pages/WebhostDashboard.tsx`: needs full rebuild â€” remove tenants, add unlinked landlords, match sidebar mockup.

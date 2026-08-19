@@ -40,7 +40,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
           <div className="flex items-center gap-4 text-[11px]">
             <span className="flex items-center gap-1">
               <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-              SOC2 & ISO-27001
+              TLS in transit
             </span>
             <span className="text-muted-foreground/40">•</span>
             <Link to="/legal?tab=terms" className="hover:text-foreground transition-colors">
@@ -75,9 +75,9 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
 
               {/* System Live Status & Regional Anchor */}
               <div className="flex flex-wrap items-center gap-3 pt-1">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-success/10 border border-success/20 text-[11px] font-medium text-success">
-                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                  All Systems Operational
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-muted border border-border text-[11px] font-medium text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  Web application
                 </div>
 
                 <div className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground px-2 py-0.5">
@@ -163,13 +163,13 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                 <li>
                   <span className="flex items-center gap-1.5 text-muted-foreground">
                     <ShieldCheck className="h-3.5 w-3.5 text-success" />
-                    <span>SOC2 Type II Certified</span>
+                    <span>No SOC 2 / ISO certification claimed</span>
                   </span>
                 </li>
                 <li>
                   <span className="flex items-center gap-1.5 text-muted-foreground">
                     <Lock className="h-3.5 w-3.5 text-primary/80" />
-                    <span>256-Bit Data Encryption</span>
+                    <span>HTTPS (TLS) in transit</span>
                   </span>
                 </li>
               </ul>

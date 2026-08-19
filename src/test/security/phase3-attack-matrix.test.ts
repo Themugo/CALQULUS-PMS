@@ -201,6 +201,12 @@ describe("Phase 3 — secrets scan (repo source, not node_modules)", () => {
     expect(src).toContain("import.meta.env.PROD");
     expect(src).toContain("if (env.PROD) return false");
   });
+
+  it("gates DevPortalSwitcher preset passwords the same way", () => {
+    const src = readRepo("src/shared/components/DevPortalSwitcher.tsx");
+    expect(src).toContain("import.meta.env.PROD");
+    expect(src).toMatch(/PRESET_ACCOUNTS[\s\S]*import\.meta\.env\.PROD/);
+  });
 });
 
 describe("Phase 3 — vitest env note", () => {

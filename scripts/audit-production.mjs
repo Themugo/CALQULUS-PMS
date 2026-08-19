@@ -306,6 +306,17 @@ console.log(`- Tables with policies: ${policyTables.size}`);
 console.log(`- Edge functions discovered: ${functionNames.length}`);
 console.log(`- Edge functions without explicit config.toml entry: ${unconfiguredFunctions.length}`);
 
+const tsconfig = JSON.parse(read(join(root, "tsconfig.json")));
+const pkg = JSON.parse(read(join(root, "package.json")));
+if (!String(pkg.scripts?.typecheck || "").includes("tsconfig.app.json")) {
+  failures.push("package.json typecheck must compile src via tsconfig.app.json (root tsconfig is a Vite stub with files:[]).");
+}
+if (Array.isArray(tsconfig.files) && tsconfig.files.length === 0) {
+  console.log(
+    "- Note: root tsconfig.json is a Vite project-references stub; npm run typecheck compiles tsconfig.app.json.",
+  );
+}
+
 if (unconfiguredFunctions.length > 0) {
   console.log(`  ${unconfiguredFunctions.join(", ")}`);
 }

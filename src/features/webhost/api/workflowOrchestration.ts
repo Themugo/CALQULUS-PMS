@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
 

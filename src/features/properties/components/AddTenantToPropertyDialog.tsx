@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";

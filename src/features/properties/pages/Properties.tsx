@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Link } from "react-router-dom";

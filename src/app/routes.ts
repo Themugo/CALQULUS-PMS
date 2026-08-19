@@ -9,7 +9,6 @@ const Billing = lazy(() => import("@/features/billing/pages/Billing"));
 const Properties = lazy(() => import("@/features/properties/pages/Properties"));
 const PropertyDetail = lazy(() => import("@/features/properties/pages/PropertyDetail"));
 const Maintenance = lazy(() => import("@/features/maintenance/pages/Maintenance"));
-const Communications = lazy(() => import("@/features/communications/CommunicationsPage"));
 const Settings = lazy(() => import("@/features/settings/pages/Settings"));
 const Auth = lazy(() => import("@/features/auth/pages/Auth"));
 const LandlordAuth = lazy(() => import("@/features/auth/pages/LandlordAuth"));
@@ -59,15 +58,9 @@ const AgencyWaterBilling = lazy(() => import("@/features/agency/pages/AgencyWate
 const AgencyInvites = lazy(() => import("@/features/agency/pages/AgencyInvites"));
 const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatements"));
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
-const MarketingWebsite = lazy(() => import("@/features/marketing/MarketingWebsite"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
+const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
-
-// Specialized Operational Command Center Dashboards
-const AccountantDashboard = lazy(() => import("@/features/dashboard/pages/AccountantDashboard"));
-const MaintenanceDashboard = lazy(() => import("@/features/dashboard/pages/MaintenanceDashboard"));
-const LeasingDashboard = lazy(() => import("@/features/dashboard/pages/LeasingDashboard"));
-const SupportDashboard = lazy(() => import("@/features/dashboard/pages/SupportDashboard"));
 
 // ── Route definition types ──────────────────────────────────────────
 export interface RouteDef {
@@ -90,9 +83,10 @@ export interface RoleRouteConfig {
 
 // ── Shared public routes (available when not logged in) ─────────────
 export const publicRoutes: RouteDef[] = [
-  { path: "/landing", element: MarketingWebsite },
-  { path: "/welcome", element: MarketingWebsite },
+  { path: "/landing", redirect: "/" },
+  { path: "/welcome", redirect: "/" },
   { path: "/pricing", element: PublicLandingPage },
+  { path: "/health", element: HealthPage },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/auth", element: Auth },
@@ -142,19 +136,19 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/auth", redirect: "/" },
       { path: "/landlord", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
-      { path: "/dashboard/accountant", element: AccountantDashboard, protected: true },
-      { path: "/dashboard/maintenance", element: MaintenanceDashboard, protected: true },
-      { path: "/dashboard/leasing", element: LeasingDashboard, protected: true },
-      { path: "/dashboard/support", element: SupportDashboard, protected: true },
+      { path: "/dashboard/accountant", redirect: "/" },
+      { path: "/dashboard/maintenance", redirect: "/" },
+      { path: "/dashboard/leasing", redirect: "/" },
+      { path: "/dashboard/support", redirect: "/" },
       { path: "/payments", element: ManagerPaymentHistory, protected: true },
-      { path: "/communications", element: Communications, protected: true },
+      { path: "/communications", redirect: "/" },
       { path: "/properties", element: Properties, protected: true },
       { path: "/properties/:id", element: PropertyDetail, protected: true },
       { path: "/tenants", element: Tenants, protected: true },
       { path: "/tenant-screening", element: TenantScreening, protected: true },
       { path: "/billing", element: Billing, protected: true },
       { path: "/maintenance", element: Maintenance, protected: true },
-      { path: "/services", element: ServicesPage, protected: true },
+      { path: "/services", redirect: "/" },
       { path: "/contracts", element: Contracts, protected: true },
       { path: "/leases", element: Leases, protected: true },
       { path: "/landlords", element: ManagerLandlords, protected: true },
@@ -239,12 +233,12 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/tenant/signup", redirect: "/" },
       { path: "/portal/*", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
-      { path: "/dashboard/accountant", element: AccountantDashboard, protected: true },
-      { path: "/dashboard/maintenance", element: MaintenanceDashboard, protected: true },
-      { path: "/dashboard/leasing", element: LeasingDashboard, protected: true },
-      { path: "/dashboard/support", element: SupportDashboard, protected: true },
+      { path: "/dashboard/accountant", redirect: "/" },
+      { path: "/dashboard/maintenance", redirect: "/" },
+      { path: "/dashboard/leasing", redirect: "/" },
+      { path: "/dashboard/support", redirect: "/" },
       { path: "/payments", element: ManagerPaymentHistory, protected: true },
-      { path: "/communications", element: Communications, protected: true },
+      { path: "/communications", redirect: "/" },
       { path: "/platform-billing", element: ManagerPlatformBilling, protected: true },
       { path: "/my-billing", redirect: "/platform-billing" },
       { path: "/my-contracts", redirect: "/platform-billing" },
@@ -254,7 +248,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/tenant-screening", element: TenantScreening, protected: true },
       { path: "/billing", element: Billing, protected: true },
       { path: "/maintenance", element: Maintenance, protected: true },
-      { path: "/services", element: ServicesPage, protected: true },
+      { path: "/services", redirect: "/" },
       { path: "/contracts", element: Contracts, protected: true },
       { path: "/leases", element: Leases, protected: true },
       { path: "/landlords", element: ManagerLandlords, protected: true },

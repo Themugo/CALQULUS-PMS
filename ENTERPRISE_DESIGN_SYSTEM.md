@@ -41,7 +41,8 @@ The visual system is built on strict high-contrast enterprise neutrals and funct
 ## 2. TYPOGRAPHY & SPACING SYSTEM
 
 ### 2.1 Font Stack & Hierarchy
-* **Primary System Font:** Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif.
+* **Primary System Font:** Outfit, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif.
+* Runtime source of truth: `src/index.css` (`@theme` / `--font-sans`). This markdown must not specify Inter.
 * **Monospace Font (Data & Numerical):** JetBrains Mono, "Fira Code", monospace.
 
 ### 2.2 Mathematical Typographic Scale

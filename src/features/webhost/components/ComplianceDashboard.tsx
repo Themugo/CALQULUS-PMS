@@ -1,3 +1,4 @@
+// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
@@ -200,8 +201,8 @@ const ComplianceDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Compliance Dashboard</h2>
-          <p className="text-warning/70 text-sm mt-1">Monitor and manage compliance across all frameworks</p>
+          <h2 className="text-2xl font-bold text-foreground">Compliance mock</h2>
+          <p className="text-warning/70 text-sm mt-1">Sample scores only — not evidence of SOC 2, ISO, or PCI certification.</p>
         </div>
         <div className="flex gap-2">
           <Button

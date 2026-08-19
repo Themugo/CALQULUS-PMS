@@ -23,7 +23,6 @@ import CustomerBillingBlocks from '@/features/webhost/components/CustomerBilling
 import WebhookDeadLetterPanel from '@/features/webhost/components/WebhookDeadLetterPanel';
 import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccountSecurity';
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
-import { EnterpriseAdminPlatform } from '@/shared/components/admin';
 import { supabase } from '@/integrations/supabase/client';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 
@@ -132,8 +131,8 @@ const WebhostDashboard = () => {
 
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
-              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">System operational</span>
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Admin console</span>
             </div>
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
               <div className="h-2 w-2 rounded-full bg-primary" />
@@ -172,9 +171,6 @@ const WebhostDashboard = () => {
               <TabsList className="bg-card border border-border h-auto p-1.5 gap-1.5 flex-nowrap inline-flex min-w-max rounded-xl shadow-sm">
                 <TabsTrigger value="overview" className={tabCls}>
                   <Globe className="h-3.5 w-3.5 mr-1.5" />Overview
-                </TabsTrigger>
-                <TabsTrigger value="admin-suite" className={tabCls}>
-                  <Crown className="h-3.5 w-3.5 mr-1.5" />Admin Platform
                 </TabsTrigger>
                 {canViewManagers && (
                   <TabsTrigger value="managers" className={tabCls}>
@@ -241,7 +237,6 @@ const WebhostDashboard = () => {
             <TabsContent value="overview">
               <WebhostOverview onNavigateTab={setActiveTab} />
             </TabsContent>
-            <TabsContent value="admin-suite"><EnterpriseAdminPlatform /></TabsContent>
             {canViewManagers && <TabsContent value="managers"><ManagerManagement /></TabsContent>}
             {canViewProperties && <TabsContent value="properties"><PropertyAssignment /></TabsContent>}
             {canViewLandlords && <TabsContent value="unlinked-landlords"><SystemLandlordManagement /></TabsContent>}
