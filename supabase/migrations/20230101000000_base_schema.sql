@@ -1,3 +1,10 @@
+-- ⚠ DO NOT paste this file into a live production SQL Editor.
+-- Production already has these tables. CREATE TABLE IF NOT EXISTS is a no-op on
+-- existing relations, but the DELETE FROM blocks below will remove rows that
+-- fail the orphan check (including user_roles). This file does NOT fix 42P17
+-- RLS recursion or missing RPCs (PGRST202).
+-- For live P1: paste supabase/sql/apply-live-p1-rls.sql then apply-live-p1-rpcs.sql.
+
 -- Base Schema: ONLY tables NOT created by any migration
 
 CREATE TABLE IF NOT EXISTS public.account_activations (

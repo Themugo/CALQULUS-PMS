@@ -1,5 +1,7 @@
 # Live P1 SQL (paste into SQL Editor)
 
+**Wrong file:** `supabase/migrations/20230101000000_base_schema.sql` (the long `CREATE TABLE IF NOT EXISTS` dump). That is a bootstrap schema. On a live project it is mostly a no-op until the `DELETE FROM` orphan-cleanup, which **destroys rows**. It does not fix `42P17` or `PGRST202`.
+
 The Supabase SQL Editor runs **SQL only**.
 
 Do **not** paste:
