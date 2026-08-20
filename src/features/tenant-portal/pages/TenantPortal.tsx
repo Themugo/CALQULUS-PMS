@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';

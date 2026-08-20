@@ -36,9 +36,13 @@ export function BrandMark({
   inverse = false,
   forcePlatform = false,
 }: BrandMarkProps) {
-  const { brand } = useWhiteLabel();
+  const { brand, config } = useWhiteLabel();
   const resolved = forcePlatform ? PLATFORM_BRAND : brand;
-  const logoSrc = resolved.logoUrl || calqulusLogo;
+  const orgLogo =
+    !forcePlatform && resolved.source === "organization"
+      ? (inverse && config.identity.logoDark) || resolved.logoUrl
+      : null;
+  const logoSrc = orgLogo || calqulusLogo;
   const wordmark = resolved.name;
   const square = size !== "hero";
   const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");

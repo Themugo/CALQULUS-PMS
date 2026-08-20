@@ -3,19 +3,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { Textarea } from "@/shared/components/ui/textarea";
 import { Loader2, Building2, Upload, X, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import type { Json } from "@/integrations/supabase/types";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 import { Switch } from "@/shared/components/ui/switch";
 import { useFeatureAccess } from "@/shared/hooks/useFeatureAccess";
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { ALLOWED_FONTS, type AllowedFont } from "@/core/brand/BrandConfig";
+import { compactBrandOverlay } from "@/core/brand/parseOrgRecord";
 import { isHexColor } from "@/core/brand/resolve";
+
+function nestedString(root: unknown, path: string[]): string {
+  let cur: unknown = root;
+  for (const key of path) {
+    if (!cur || typeof cur !== "object") return "";
+    cur = (cur as Record<string, unknown>)[key];
+  }
+  return typeof cur === "string" ? cur : "";
+}
+
+function asAllowedFont(value: string): AllowedFont {
+  return (ALLOWED_FONTS as readonly string[]).includes(value) ? (value as AllowedFont) : "Outfit";
+}
 
 // Helper to get current user ID for manager_user_id
 
@@ -43,8 +60,25 @@ export const CompanySettings = () => {
   const [kraPin, setKraPin] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [brandPrimaryHex, setBrandPrimaryHex] = useState(CALQULUS_COLOR.primary);
+  const [brandPrimaryHex, setBrandPrimaryHex] = useState<string>(CALQULUS_COLOR.primary);
   const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(false);
+  const [legalName, setLegalName] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [faviconUrl, setFaviconUrl] = useState("");
+  const [logoDarkUrl, setLogoDarkUrl] = useState("");
+  const [headingFont, setHeadingFont] = useState<AllowedFont>("Outfit");
+  const [emailFromName, setEmailFromName] = useState("");
+  const [smsSenderId, setSmsSenderId] = useState("");
+  const [customDomain, setCustomDomain] = useState("");
+  const [legalFooter, setLegalFooter] = useState("");
+  const [privacyUrl, setPrivacyUrl] = useState("");
+  const [termsUrl, setTermsUrl] = useState("");
+  const [termProperty, setTermProperty] = useState("");
+  const [termTenant, setTermTenant] = useState("");
+  const [termLandlord, setTermLandlord] = useState("");
+  const [termManager, setTermManager] = useState("");
+  const [invoiceTitle, setInvoiceTitle] = useState("");
+  const [receiptFooter, setReceiptFooter] = useState("");
   const displayLogoUrl = useSignedStorageUrl(logoUrl);
 
   useEffect(() => {
@@ -81,6 +115,24 @@ export const CompanySettings = () => {
               : CALQULUS_COLOR.primary,
           );
           setWhiteLabelEnabled(data.white_label_enabled === true);
+          const overlay = data.brand_config;
+          setLegalName(nestedString(overlay, ["identity", "legalName"]));
+          setTagline(nestedString(overlay, ["identity", "tagline"]));
+          setFaviconUrl(nestedString(overlay, ["identity", "favicon"]));
+          setLogoDarkUrl(nestedString(overlay, ["identity", "logoDark"]));
+          setHeadingFont(asAllowedFont(nestedString(overlay, ["typography", "heading"])));
+          setEmailFromName(nestedString(overlay, ["communications", "email", "fromName"]));
+          setSmsSenderId(nestedString(overlay, ["communications", "sms", "senderId"]));
+          setCustomDomain(nestedString(overlay, ["domains", "customDomain"]));
+          setLegalFooter(nestedString(overlay, ["legal", "footer"]));
+          setPrivacyUrl(nestedString(overlay, ["legal", "privacyUrl"]));
+          setTermsUrl(nestedString(overlay, ["legal", "termsUrl"]));
+          setTermProperty(nestedString(overlay, ["terminology", "property"]));
+          setTermTenant(nestedString(overlay, ["terminology", "tenant"]));
+          setTermLandlord(nestedString(overlay, ["terminology", "landlord"]));
+          setTermManager(nestedString(overlay, ["terminology", "manager"]));
+          setInvoiceTitle(nestedString(overlay, ["documents", "invoices", "title"]));
+          setReceiptFooter(nestedString(overlay, ["documents", "receipts", "footerNote"]));
         }
 
         // Load extended fields from agencies table (migration 014)
@@ -264,6 +316,31 @@ export const CompanySettings = () => {
         logo_url: logoUrl,
         brand_primary_hex: isHexColor(brandPrimaryHex) ? brandPrimaryHex : null,
         white_label_enabled: whiteLabelOnPlan ? whiteLabelEnabled : false,
+        brand_config: compactBrandOverlay({
+          identity: {
+            legalName,
+            tagline,
+            favicon: faviconUrl,
+            logoDark: logoDarkUrl,
+          },
+          typography: { heading: headingFont },
+          communications: {
+            email: { fromName: emailFromName },
+            sms: { senderId: smsSenderId },
+          },
+          domains: { customDomain },
+          legal: { footer: legalFooter, privacyUrl, termsUrl },
+          terminology: {
+            property: termProperty,
+            tenant: termTenant,
+            landlord: termLandlord,
+            manager: termManager,
+          },
+          documents: {
+            invoices: { title: invoiceTitle },
+            receipts: { footerNote: receiptFooter },
+          },
+        }) as Json,
       };
 
       if (companyId) {
@@ -405,6 +482,33 @@ export const CompanySettings = () => {
             </div>
 
             <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
+              <p className="text-sm font-medium">Documents</p>
+              <p className="text-xs text-muted-foreground">
+                Invoices and receipts always use this company as the issuer, even when desk chrome stays CALQULUS.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="invoiceTitle">Invoice title</Label>
+                  <Input
+                    id="invoiceTitle"
+                    value={invoiceTitle}
+                    onChange={(e) => setInvoiceTitle(e.target.value)}
+                    placeholder="INVOICE"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="receiptFooter">Receipt footer</Label>
+                  <Input
+                    id="receiptFooter"
+                    value={receiptFooter}
+                    onChange={(e) => setReceiptFooter(e.target.value)}
+                    placeholder="Thank you for your payment."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium">White-label desks</p>
@@ -442,6 +546,152 @@ export const CompanySettings = () => {
                     className="font-mono w-32"
                     placeholder={CALQULUS_COLOR.primary}
                   />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="legalName">Legal name</Label>
+                  <Input
+                    id="legalName"
+                    value={legalName}
+                    onChange={(e) => setLegalName(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="Ridgeview Estates Ltd"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="headingFont">Heading font</Label>
+                  <select
+                    id="headingFont"
+                    value={headingFont}
+                    onChange={(e) => setHeadingFont(asAllowedFont(e.target.value))}
+                    disabled={!whiteLabelOnPlan}
+                    className="flex h-10 w-full rounded-md border border-input bg-surface px-3 py-2 text-sm"
+                  >
+                    {ALLOWED_FONTS.map((font) => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tagline">Tagline</Label>
+                <Input
+                  id="tagline"
+                  value={tagline}
+                  onChange={(e) => setTagline(e.target.value)}
+                  disabled={!whiteLabelOnPlan}
+                  placeholder="Property operations for your portfolio"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="logoDark">Logo for dark chrome (URL)</Label>
+                  <Input
+                    id="logoDark"
+                    value={logoDarkUrl}
+                    onChange={(e) => setLogoDarkUrl(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="https://…"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="faviconUrl">Favicon (URL)</Label>
+                  <Input
+                    id="faviconUrl"
+                    value={faviconUrl}
+                    onChange={(e) => setFaviconUrl(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="https://…/favicon.ico"
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="emailFromName">Email from-name</Label>
+                  <Input
+                    id="emailFromName"
+                    value={emailFromName}
+                    onChange={(e) => setEmailFromName(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="Ridgeview Estates"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smsSenderId">SMS sender ID</Label>
+                  <Input
+                    id="smsSenderId"
+                    value={smsSenderId}
+                    onChange={(e) => setSmsSenderId(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="RIDGEVIEW"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customDomain">Custom domain</Label>
+                <Input
+                  id="customDomain"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  disabled={!whiteLabelOnPlan}
+                  placeholder="app.ridgeview.co.ke"
+                />
+                <p className="text-xs text-muted-foreground">Stored on the brand record. DNS and TLS provisioning are not applied from this screen.</p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="privacyUrl">Privacy URL</Label>
+                  <Input
+                    id="privacyUrl"
+                    value={privacyUrl}
+                    onChange={(e) => setPrivacyUrl(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="/legal?tab=privacy"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="termsUrl">Terms URL</Label>
+                  <Input
+                    id="termsUrl"
+                    value={termsUrl}
+                    onChange={(e) => setTermsUrl(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    placeholder="/legal?tab=terms"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="legalFooter">Footer line</Label>
+                <Textarea
+                  id="legalFooter"
+                  value={legalFooter}
+                  onChange={(e) => setLegalFooter(e.target.value)}
+                  disabled={!whiteLabelOnPlan}
+                  placeholder="© Ridgeview Estates"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">Terminology</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="termProperty">Property</Label>
+                    <Input id="termProperty" value={termProperty} onChange={(e) => setTermProperty(e.target.value)} disabled={!whiteLabelOnPlan} placeholder="Property" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="termTenant">Tenant</Label>
+                    <Input id="termTenant" value={termTenant} onChange={(e) => setTermTenant(e.target.value)} disabled={!whiteLabelOnPlan} placeholder="Tenant" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="termLandlord">Landlord</Label>
+                    <Input id="termLandlord" value={termLandlord} onChange={(e) => setTermLandlord(e.target.value)} disabled={!whiteLabelOnPlan} placeholder="Landlord" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="termManager">Manager</Label>
+                    <Input id="termManager" value={termManager} onChange={(e) => setTermManager(e.target.value)} disabled={!whiteLabelOnPlan} placeholder="Manager" />
+                  </div>
                 </div>
               </div>
             </div>

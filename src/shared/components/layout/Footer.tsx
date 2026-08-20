@@ -10,6 +10,36 @@ import {
 } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { HelpCenterModal } from "./HelpCenterModal";
+import { useWhiteLabel } from "@/core/whiteLabel/WhiteLabelProvider";
+import { term } from "@/core/brand/terms";
+
+function copyrightLine(footer: string, year: number): string {
+  const stripped = footer.replace(/^©\s*/, "").trim();
+  return `© ${year} ${stripped}`;
+}
+
+function LegalHref({
+  href,
+  className,
+  children,
+}: {
+  href: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (href.startsWith("http://") || href.startsWith("https://")) {
+    return (
+      <a href={href} className={className} target="_blank" rel="noreferrer">
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link to={href} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export interface FooterProps {
   variant?: "default" | "compact" | "agency" | "landlord" | "tenant" | "webhost";
@@ -19,6 +49,10 @@ export interface FooterProps {
 export function Footer({ variant = "default", className = "" }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const [helpOpen, setHelpOpen] = useState(false);
+  const { config } = useWhiteLabel();
+  const managerLabel = term(config, "manager");
+  const landlordLabel = term(config, "landlord");
+  const tenantLabel = term(config, "tenant");
 
   // Compact variant for embedded screens or minimal layouts
   if (variant === "compact") {
@@ -27,7 +61,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
         <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <BrandMark size="xs" />
-            <span className="font-semibold text-foreground tracking-tight">CALQULUS PMS</span>
+            <span className="font-semibold text-foreground tracking-tight">{config.identity.product}</span>
             <span className="text-muted-foreground/40">•</span>
             <span className="font-mono text-[11px] text-muted-foreground">v2.4.0</span>
             <span className="text-muted-foreground/40">•</span>
@@ -43,11 +77,11 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
               TLS in transit
             </span>
             <span className="text-muted-foreground/40">•</span>
-            <Link to="/legal?tab=terms" className="hover:text-foreground transition-colors">
+            <LegalHref href={config.legal.termsUrl} className="hover:text-foreground transition-colors">
               Terms & Privacy
-            </Link>
+            </LegalHref>
             <span className="text-muted-foreground/40">•</span>
-            <span>© {currentYear} CALQULUS Technologies</span>
+            <span>{copyrightLine(config.legal.footer, currentYear)}</span>
           </div>
         </div>
       </footer>
@@ -70,7 +104,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
               </div>
 
               <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-sm">
-                Next-generation real estate operations platform powering property managers, agencies, landlords, and tenants with automated billing, M-Pesa reconciliation, and multi-tier authority.
+                {config.identity.tagline}
               </p>
 
               {/* System Live Status & Regional Anchor */}
@@ -98,7 +132,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                     to="/"
                     className="hover:text-primary transition-colors flex items-center gap-1.5 group"
                   >
-                    <span>Manager Dashboard</span>
+                    <span>{managerLabel} Dashboard</span>
                   </Link>
                 </li>
                 <li>
@@ -114,7 +148,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                     to="/landlord/dashboard"
                     className="hover:text-primary transition-colors flex items-center gap-1.5 group"
                   >
-                    <span>Landlord View</span>
+                    <span>{landlordLabel} View</span>
                   </Link>
                 </li>
                 <li>
@@ -122,7 +156,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                     to="/portal"
                     className="hover:text-primary transition-colors flex items-center gap-1.5 group"
                   >
-                    <span>Tenant Portal</span>
+                    <span>{tenantLabel} Portal</span>
                   </Link>
                 </li>
                 <li>
@@ -182,30 +216,30 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <Link
-                    to="/legal?tab=terms"
+                  <LegalHref
+                    href={config.legal.termsUrl}
                     className="hover:text-primary transition-colors flex items-center gap-1.5"
                   >
                     <FileText className="h-3.5 w-3.5 text-muted-foreground/70" />
                     <span>Terms of Service</span>
-                  </Link>
+                  </LegalHref>
                 </li>
                 <li>
-                  <Link
-                    to="/legal?tab=privacy"
+                  <LegalHref
+                    href={config.legal.privacyUrl}
                     className="hover:text-primary transition-colors flex items-center gap-1.5"
                   >
                     <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/70" />
                     <span>Privacy Policy</span>
-                  </Link>
+                  </LegalHref>
                 </li>
                 <li>
-                  <Link
-                    to="/legal?tab=privacy"
+                  <LegalHref
+                    href={config.legal.privacyUrl}
                     className="hover:text-primary transition-colors flex items-center gap-1.5"
                   >
                     <span>Data Protection Policy</span>
-                  </Link>
+                  </LegalHref>
                 </li>
                 <li>
                   <span className="text-[11px] text-muted-foreground/70 flex items-center gap-1">
@@ -221,25 +255,25 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
         <div className="border-t border-border/80 bg-background/50 px-4 sm:px-6 lg:px-8 py-4">
           <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-muted-foreground">
-              <span>© {currentYear} CALQULUS Technologies Ltd. All rights reserved.</span>
+              <span>{copyrightLine(config.legal.footer, currentYear)}. All rights reserved.</span>
               <span className="hidden sm:inline text-muted-foreground/40">•</span>
               <span className="font-mono text-muted-foreground/80">v2.4.0-enterprise</span>
             </div>
 
             <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-5 text-muted-foreground">
-              <Link
-                to="/legal?tab=terms"
+              <LegalHref
+                href={config.legal.termsUrl}
                 className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
               >
                 Terms
-              </Link>
+              </LegalHref>
               <span className="text-muted-foreground/30">•</span>
-              <Link
-                to="/legal?tab=privacy"
+              <LegalHref
+                href={config.legal.privacyUrl}
                 className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
               >
                 Privacy
-              </Link>
+              </LegalHref>
               <span className="text-muted-foreground/30">•</span>
               <button
                 onClick={() => setHelpOpen(true)}

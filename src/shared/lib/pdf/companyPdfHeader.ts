@@ -20,6 +20,9 @@ export interface CompanySettings {
   phone: string | null;
   website: string | null;
   logo_url: string | null;
+  brand_primary_hex?: string | null;
+  white_label_enabled?: boolean | null;
+  brand_config?: unknown;
 }
 
 export const createCurrencyFormatter = (currency: CurrencyCode = "KES") => {

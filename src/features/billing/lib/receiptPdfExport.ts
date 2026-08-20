@@ -5,6 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
 import { createCurrencyFormatter, fetchCompanySettings, drawCompanyPdfHeader } from "@/shared/lib/pdf/companyPdfHeader";
+import { composeBrandConfig } from "@/core/brand/composeBrandConfig";
+import { documentAccent, documentFooter, documentShowLogo, documentTitle } from "@/core/brand/pdfCompany";
+import type { OrgBrandRecord } from "@/core/brand/parseOrgRecord";
 
 interface LineItem {
   description: string;
@@ -93,6 +96,7 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
   const pageWidth = doc.internal.pageSize.getWidth();
   const formatCurrency = createCurrencyFormatter(currency);
   const companySettings = await fetchCompanySettings();
+  const brand = composeBrandConfig((companySettings as OrgBrandRecord | null) ?? null);
   const receiptSettings = userId ? await fetchReceiptSettings(userId) : null;
   
   // Parse line items from description if not provided directly
@@ -101,10 +105,10 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
   const effectiveDescription = displayText || receipt.description;
   
   // Get colors from settings or use defaults
-  const primaryColor = hexToRgb(receiptSettings?.primary_color || "#22c55e");
+  const primaryColor = hexToRgb(receiptSettings?.primary_color || documentAccent(brand, "receipts"));
   const secondaryColor = hexToRgb(receiptSettings?.secondary_color || "#1e293b");
-  const footerMessage = receiptSettings?.footer_message || "Thank you for your payment!";
-  const includeLogo = receiptSettings?.include_logo ?? true;
+  const footerMessage = receiptSettings?.footer_message || documentFooter(brand, "receipts");
+  const includeLogo = receiptSettings?.include_logo ?? documentShowLogo(brand, "receipts");
 
   let yPos = await drawCompanyPdfHeader(doc, companySettings, 14, { includeLogo });
 
@@ -120,7 +124,7 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
 
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
-  doc.text("PAYMENT RECEIPT", pageWidth / 2, yPos, { align: "center" });
+  doc.text(documentTitle(brand, "receipts"), pageWidth / 2, yPos, { align: "center" });
   yPos += 8;
 
   doc.setFontSize(10);

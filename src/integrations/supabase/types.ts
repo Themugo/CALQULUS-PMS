@@ -284,6 +284,7 @@ export type Database = {
           zip_code: string | null
           brand_primary_hex: string | null
           white_label_enabled: boolean
+          brand_config: Json
         }
         Insert: {
           address?: string | null
@@ -301,6 +302,7 @@ export type Database = {
           zip_code?: string | null
           brand_primary_hex?: string | null
           white_label_enabled?: boolean
+          brand_config?: Json
         }
         Update: {
           address?: string | null
@@ -318,6 +320,7 @@ export type Database = {
           zip_code?: string | null
           brand_primary_hex?: string | null
           white_label_enabled?: boolean
+          brand_config?: Json
         }
         Relationships: []
       }

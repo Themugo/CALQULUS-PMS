@@ -3,6 +3,9 @@ import autoTable from "jspdf-autotable";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
 import { createCurrencyFormatter, fetchCompanySettings, drawCompanyPdfHeader } from "@/shared/lib/pdf/companyPdfHeader";
+import { composeBrandConfig } from "@/core/brand/composeBrandConfig";
+import { documentFooter, documentShowLogo, documentTitle } from "@/core/brand/pdfCompany";
+import type { OrgBrandRecord } from "@/core/brand/parseOrgRecord";
 
 interface JsPDFWithAutoTable extends jsPDF {
   lastAutoTable?: { finalY: number };
@@ -32,13 +35,16 @@ export const generateInvoicePDF = async (invoice: InvoiceData, currency: Currenc
   const formatCurrency = createCurrencyFormatter(currency);
   const pageWidth = doc.internal.pageSize.getWidth();
   const companySettings = await fetchCompanySettings();
+  const brand = composeBrandConfig((companySettings as OrgBrandRecord | null) ?? null);
 
-  let yPos = await drawCompanyPdfHeader(doc, companySettings, 14);
+  let yPos = await drawCompanyPdfHeader(doc, companySettings, 14, {
+    includeLogo: documentShowLogo(brand, "invoices"),
+  });
 
   // Invoice Title
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
-  doc.text("INVOICE", pageWidth / 2, yPos, { align: "center" });
+  doc.text(documentTitle(brand, "invoices"), pageWidth / 2, yPos, { align: "center" });
   yPos += 10;
 
   // Invoice Number and Date
@@ -154,6 +160,10 @@ export const generateInvoicePDF = async (invoice: InvoiceData, currency: Currenc
       .filter(Boolean)
       .join(" | ");
     doc.text(footerText, pageWidth / 2, pageHeight - 10, { align: "center" });
+    const note = documentFooter(brand, "invoices");
+    if (note) {
+      doc.text(note, pageWidth / 2, pageHeight - 6, { align: "center" });
+    }
     doc.setTextColor(0, 0, 0);
   }
 
