@@ -1,20 +1,17 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 13 remaining in-git gaps (authorization scoping, token leftovers,
-one `@ts-nocheck` removal). Do not restart the redesign. Visual direction,
-RLS, auth contracts, and routes are unchanged.
+Phase 13 remaining in-git gaps landed on GitHub `main`.
+Do not restart the redesign. Visual direction, RLS, auth contracts, and
+routes are unchanged.
 
 ## CURRENT TASK
-Checkpoint on `cursor/phase-13-remaining-gaps-1e5d`. JWT report/receipt
-callers are scoped to themselves; leftover amber/yellow utilities map to
-`warning` tokens; receipt/notify email chrome uses locked interactive
-navy. Operator deploy/SQL still out of git.
+Operator-owned live deploy and SQL apply.
 
 ## COMPLETED TASKS
 - Phase 13 audit (`a6f1adc`) + CRITICAL/HIGH (`2bb9f70`) on `main` (`f650a5a`)
 - Continuation leftover HIGH/MEDIUM on `main` (`51538fc` / `851ae2b`)
-- Remaining-gap pass (this branch):
+- Remaining-gap pass (`2c31c08`) pushed to GitHub `main`
   - JWT `managerId` / payment ownership scoped after the caller check
     (`scopedActorId`, landlord-statement manager link, commission 403,
     auto-receipt invoice filtered by `manager_id`)
@@ -34,7 +31,7 @@ still in tree; E2E still credential-gated; some gated functions still
 use the service role after a scoped caller check (by design for cron).
 
 ## IN PROGRESS FILES
-`cursor/phase-13-remaining-gaps-1e5d` — checkpointing this turn.
+None. Remaining-gap pass is on GitHub `main` (`2c31c08` and this docs note).
 
 ## KNOWN ISSUES
 - Live `health-check` 404 until function deploy (not claimed fixed)
@@ -50,8 +47,10 @@ use the service role after a scoped caller check (by design for cron).
 - Live `health-check` / RLS not re-probed this session
 
 ### Next exact action
-Review PR vs `main`. Do not merge unless asked. Operator deploys Edge
-Functions and applies `20260820000000_tenants_select_role_in.sql`.
+On the Windows machine (`C:\Users\hp\Desktop\CALQULUS-PMS`):
+`git checkout main && git pull origin main`.
+Then operator deploys Edge Functions and applies
+`20260820000000_tenants_select_role_in.sql`.
 Do not restart the redesign.
 
 ### Phase 13 continuation (already on main) — files changed
