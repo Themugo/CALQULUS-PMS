@@ -115,18 +115,18 @@ const webhostNavGroups: NavGroup[] = [
 
 const agencyNavGroups: NavGroup[] = [
   {
-    title: "AGENCY WORKSPACE",
+    title: "AGENCY BOOK",
     items: [
-      { name: "Agency Portal", href: "/agency", icon: Handshake },
-      { name: "Properties", href: "/agency/properties", icon: Building2 },
+      { name: "Dashboard", href: "/agency", icon: LayoutDashboard },
+      { name: "Clients", href: "/agency/clients", icon: Handshake },
+      { name: "Portfolio", href: "/agency/portfolio", icon: Building2 },
+    ],
+  },
+  {
+    title: "OPERATIONS",
+    items: [
       { name: "Tenants", href: "/agency/tenants", icon: Users },
-      { name: "Leases", href: "/agency/leases", icon: FileText },
       { name: "Billing", href: "/agency/billing", icon: CreditCard },
-      { name: "Water Billing", href: "/agency/water-billing", icon: Droplets },
-      { name: "Statements", href: "/agency/statements", icon: FileSpreadsheet },
-      { name: "Invites", href: "/agency/invites", icon: Mail },
-      { name: "Maintenance", href: "/agency/maintenance", icon: Wrench },
-      { name: "Landlords", href: "/agency/landlords", icon: Users },
       { name: "Reports", href: "/agency/reports", icon: BarChart3 },
       { name: "Settings", href: "/agency/settings", icon: Settings },
     ],

@@ -115,12 +115,14 @@ export const useRBAC = () => {
    * Check whether the current user has a given permission.
    *
    * - Managers always return true for submanager permissions (they have full access).
+   * - Agencies have the same manager-scope operations on their own book.
    * - Super admins always return true for webhost permissions.
    * - For unknown keys, returns false.
    */
   const can = useCallback((permission: PermissionKey): boolean => {
     // Managers have all permissions in their scope
     if (isManager) return true;
+    if (isAgency && permission in SUBMANAGER_MAP) return true;
 
     if (isTenant) return false;
 
@@ -141,7 +143,7 @@ export const useRBAC = () => {
     }
 
     return false;
-  }, [isManager, isTenant, isLandlord, isWebhost, isSuperAdmin, webhostPermissions, isSubmanager, submanagerPermissions]);
+  }, [isManager, isAgency, isTenant, isLandlord, isWebhost, isSuperAdmin, webhostPermissions, isSubmanager, submanagerPermissions]);
 
   /**
    * Check if the current user is a given role (or admin level).

@@ -51,6 +51,9 @@ const LandlordDocumentsPage = lazy(() => import("@/features/landlord/pages/Landl
 const LandlordSettings = lazy(() => import("@/features/landlord/pages/LandlordSettings"));
 const LandlordInvitationAccept = lazy(() => import("@/features/landlord/pages/LandlordInvitationAccept"));
 const AgencyDashboard = lazy(() => import("@/features/agency/pages/AgencyDashboard"));
+const AgencyClients = lazy(() => import("@/features/agency/pages/AgencyClients"));
+const AgencyPortfolio = lazy(() => import("@/features/agency/pages/AgencyPortfolio"));
+const AgencyPropertyPage = lazy(() => import("@/features/agency/pages/AgencyPropertyPage"));
 const AgencyProperties = lazy(() => import("@/features/agency/pages/AgencyProperties"));
 const AgencyTenants = lazy(() => import("@/features/agency/pages/AgencyTenants"));
 const AgencyLeases = lazy(() => import("@/features/agency/pages/AgencyLeases"));
@@ -219,6 +222,9 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/auth", redirect: "/agency" },
       { path: "/landlord", redirect: "/agency" },
       { path: "/agency", element: AgencyDashboard, protected: true },
+      { path: "/agency/clients", element: AgencyClients, protected: true },
+      { path: "/agency/portfolio", element: AgencyPortfolio, protected: true },
+      { path: "/agency/properties/:id", element: AgencyPropertyPage, protected: true },
       { path: "/agency/properties", element: AgencyProperties, protected: true },
       { path: "/agency/tenants", element: AgencyTenants, protected: true },
       { path: "/agency/leases", element: AgencyLeases, protected: true },

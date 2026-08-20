@@ -1,18 +1,6 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
-import AgencyLayout from '@/features/agency/components/AgencyLayout';
-import ManagerLandlords from '@/features/landlord/pages/ManagerLandlords';
+import { Navigate } from "react-router-dom";
+import { AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
 
-const AgencyLandlords = () => {
-  const { user, userRole, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" /></div>;
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return <Navigate to="/agency/login" replace />;
-  return (
-    <AgencyLayout title="Landlords">
-      <ManagerLandlords />
-    </AgencyLayout>
-  );
-};
+const AgencyLandlords = () => <Navigate to={AGENCY_ROUTES.clients} replace />;
 
 export default AgencyLandlords;

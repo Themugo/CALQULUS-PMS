@@ -1,241 +1,114 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { useEffect } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/shared/components/ui/button';
-import { Skeleton } from '@/shared/components/ui/skeleton';
-import AgencyLayout from '@/features/agency/components/AgencyLayout';
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import {
-  Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { ArrowRight } from 'lucide-react';
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import AgencyLayout from "@/features/agency/components/AgencyLayout";
+import { useAgencyPortfolio } from "@/features/agency/lib/useAgencyPortfolio";
+import { AGENCY_OPS_ROUTES, AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
+import { formatKes } from "@/features/landlord/lib/formatKes";
+import { Button } from "@/shared/components/ui/button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { ErrorState } from "@/shared/components/ui/error-state";
+import { occupancyRateColor } from "@/shared/lib/statusBadge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 
-const fmt = (n: number) =>
-  new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 const fmtCompact = (n: number) =>
-  new Intl.NumberFormat('en-KE', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+  new Intl.NumberFormat("en-KE", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 
-interface MonthPoint { month: string; paid: number; pending: number; }
-interface OccupancyRow { name: string; occupied: number; units: number; rate: number; }
+export default function AgencyDashboard() {
+  const { data, isLoading, isError, refetch } = useAgencyPortfolio();
 
-const AgencyDashboard = () => {
-  const { user, userRole, loading } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['agency-dashboard-stats', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const now = new Date();
-      const mtdStart = startOfMonth(now).toISOString().split('T')[0];
-      const lastStart = startOfMonth(subMonths(now, 1)).toISOString().split('T')[0];
-      const lastEnd = endOfMonth(subMonths(now, 1)).toISOString().split('T')[0];
-      const seriesStart = startOfMonth(subMonths(now, 5)).toISOString().split('T')[0];
-
-      const [
-        { count: totalProperties },
-        { data: propRows },
-        { count: totalTenants },
-        { count: activeTenants },
-        { count: activeLeases },
-        { count: expiringLeases },
-        { count: pendingInvoices },
-        { count: overdueInvoices },
-        { data: overdueRows },
-        { data: paidSeries },
-        { data: pendingSeries },
-      ] = await Promise.all([
-        supabase.from('properties').select('id', { count: 'exact', head: true }).eq('manager_id', user.id),
-        supabase.from('properties').select('name, units, occupied').eq('manager_id', user.id).order('name'),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', user.id),
-        supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', user.id).eq('status', 'active'),
-        supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', user.id).eq('status', 'active'),
-        supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', user.id).eq('status', 'expiring'),
-        supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', user.id).eq('status', 'pending'),
-        supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', user.id).eq('status', 'overdue'),
-        supabase.from('invoices').select('balance_due').eq('manager_id', user.id).eq('status', 'overdue'),
-        supabase.from('invoices').select('amount, paid_date').eq('manager_id', user.id).eq('status', 'paid').gte('paid_date', seriesStart),
-        supabase.from('invoices').select('amount, due_date').eq('manager_id', user.id).in('status', ['pending', 'overdue']).gte('due_date', seriesStart),
-      ]);
-
-      const props = (propRows || []) as { name: string; units: number; occupied: number }[];
-      const totalUnits = props.reduce((s, p) => s + Number(p.units ?? 0), 0);
-      const occupiedUnits = props.reduce((s, p) => s + Number(p.occupied ?? 0), 0);
-      const occupancyRate = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0;
-      const occupancyByProperty: OccupancyRow[] = props
-        .map(p => ({
-          name: p.name,
-          occupied: Number(p.occupied ?? 0),
-          units: Number(p.units ?? 0),
-          rate: p.units > 0 ? Math.round((Number(p.occupied ?? 0) / Number(p.units)) * 100) : 0,
-        }))
-        .sort((a, b) => b.units - a.units)
-        .slice(0, 5);
-
-      const inMonth = (d: string | null, start: string, end?: string) =>
-        !!d && d >= start && (!end || d <= end);
-      const paid = (paidSeries || []) as { amount: number | string | null; paid_date: string | null }[];
-      const revenueMTD = paid.filter(r => inMonth(r.paid_date, mtdStart)).reduce((s, r) => s + Number(r.amount ?? 0), 0);
-      const revenueLastMonth = paid.filter(r => inMonth(r.paid_date, lastStart, lastEnd)).reduce((s, r) => s + Number(r.amount ?? 0), 0);
-      const revenueChange = revenueLastMonth > 0
-        ? Math.round(((revenueMTD - revenueLastMonth) / revenueLastMonth) * 100)
-        : 0;
-
-      const pend = (pendingSeries || []) as { amount: number | string | null; due_date: string | null }[];
-      const series: MonthPoint[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const m = subMonths(now, i);
-        const ms = startOfMonth(m).toISOString().split('T')[0];
-        const me = endOfMonth(m).toISOString().split('T')[0];
-        const paidMonth = paid.filter(r => inMonth(r.paid_date, ms, me)).reduce((s, r) => s + Number(r.amount ?? 0), 0);
-        const pendMonth = pend.filter(r => inMonth(r.due_date, ms, me)).reduce((s, r) => s + Number(r.amount ?? 0), 0);
-        series.push({ month: format(m, 'MMM'), paid: paidMonth, pending: pendMonth });
-      }
-
-      const arrearsTotal = ((overdueRows || []) as { balance_due: number | string | null }[])
-        .reduce((s, r) => s + Number(r.balance_due ?? 0), 0);
-
-      return {
-        totalProperties: totalProperties ?? 0,
-        totalUnits,
-        occupiedUnits,
-        occupancyRate,
-        occupancyByProperty,
-        totalTenants: totalTenants ?? 0,
-        activeTenants: activeTenants ?? 0,
-        activeLeases: activeLeases ?? 0,
-        expiringLeases: expiringLeases ?? 0,
-        pendingInvoices: pendingInvoices ?? 0,
-        overdueInvoices: overdueInvoices ?? 0,
-        invoicesDue: (pendingInvoices ?? 0) + (overdueInvoices ?? 0),
-        arrearsTotal,
-        revenueMTD,
-        revenueChange,
-        series,
-      };
-    },
-    enabled: !!user && userRole?.role === 'agency',
-  });
-
-  useEffect(() => {
-    if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return;
-    const invalidate = () => queryClient.invalidateQueries({ queryKey: ['agency-dashboard-stats', user.id] });
-    const channels = [
-      supabase.channel('agency-dash-properties').on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, invalidate).subscribe(),
-      supabase.channel('agency-dash-tenants').on('postgres_changes', { event: '*', schema: 'public', table: 'tenants' }, invalidate).subscribe(),
-      supabase.channel('agency-dash-leases').on('postgres_changes', { event: '*', schema: 'public', table: 'leases' }, invalidate).subscribe(),
-      supabase.channel('agency-dash-invoices').on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, invalidate).subscribe(),
-    ];
-    return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
-  }, [user, userRole?.role, queryClient]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) {
-    return <Navigate to="/agency/login" replace />;
-  }
-
-  const issueCount = (stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0);
-  const hasAttention = (stats?.arrearsTotal ?? 0) > 0 || issueCount > 0;
+  const attention = [
+    data && data.outstanding > 0
+      ? { label: "Arrears", value: formatKes(data.outstanding), detail: `${data.overdueInvoices} overdue invoice${data.overdueInvoices === 1 ? "" : "s"}`, href: AGENCY_ROUTES.billing }
+      : null,
+    data && data.expiringLeases > 0
+      ? { label: "Leases", value: `${data.expiringLeases} expiring`, detail: "Review before they lapse", href: AGENCY_OPS_ROUTES.leases }
+      : null,
+    data && data.unlinkedCount > 0
+      ? { label: "Unlinked buildings", value: `${data.unlinkedCount} without a client`, detail: "Link a landlord to the property", href: AGENCY_ROUTES.clients }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
     <AgencyLayout
-      title="Dashboard"
-      description="Properties, occupancy, collections, and what needs attention"
+      title="How are our clients and portfolios performing?"
+      description="Clients are landlords you run buildings for. Collections are rent received this month. Occupancy is occupied units across the book."
     >
+      {isError ? <ErrorState title="Couldn't load the agency book" onRetry={() => void refetch()} className="mb-6" /> : null}
+
+      <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-5">
+        {isLoading || !data
+          ? Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="bg-card p-4">
+                <Skeleton className="h-4 w-16 mb-2" />
+                <Skeleton className="h-7 w-20" />
+              </div>
+            ))
+          : [
+              { label: "Clients", value: String(data.clientCount), hint: data.unlinkedCount > 0 ? `${data.unlinkedCount} unlinked` : "Linked landlords" },
+              { label: "Properties", value: String(data.totalProperties), hint: "Buildings on the book" },
+              { label: "Units", value: String(data.totalUnits), hint: `${data.totalOccupied} occupied` },
+              { label: "Occupancy", value: `${data.occupancyRate}%`, hint: `${data.totalOccupied}/${data.totalUnits} units` },
+              { label: "Collections", value: formatKes(data.collectedMtd), hint: "Received this month" },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{stat.label}</p>
+                <p className="mt-1 font-heading text-lg font-bold sm:text-2xl">{stat.value}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{stat.hint}</p>
+              </div>
+            ))}
+      </div>
+
       <section className="mb-6">
-        <div className="mb-3">
-          <h2 className="section-title">Needs attention</h2>
-        </div>
+        <h2 className="section-title mb-3">Needs attention</h2>
         {isLoading ? (
           <Skeleton className="h-16 w-full" />
-        ) : !hasAttention ? (
-          <p className="text-sm text-muted-foreground">No overdue invoices or expiring leases right now.</p>
+        ) : attention.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No overdue invoices, expiring leases, or unlinked buildings right now.</p>
         ) : (
-          <div className="rounded-lg border border-border bg-card divide-y divide-border">
-            {(stats?.arrearsTotal ?? 0) > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
+          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+            {attention.map((item) => (
+              <div key={item.label} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-foreground">{fmt(stats!.arrearsTotal)} in arrears</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {stats!.overdueInvoices} overdue invoice{stats!.overdueInvoices !== 1 ? 's' : ''}
-                  </p>
+                  <p className="text-sm font-semibold">{item.value}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{item.detail}</p>
                 </div>
-                <Button size="sm" className="min-h-11 shrink-0" onClick={() => navigate('/agency/billing')}>
-                  Open billing
-                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                <Button size="sm" variant="outline" className="min-h-11 shrink-0" asChild>
+                  <Link to={item.href}>
+                    Open {item.label.toLowerCase()}
+                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  </Link>
                 </Button>
               </div>
-            )}
-            {(stats?.expiringLeases ?? 0) > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-foreground">{stats!.expiringLeases} lease{stats!.expiringLeases !== 1 ? 's' : ''} expiring</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Review before they lapse</p>
-                </div>
-                <Button size="sm" variant="outline" className="min-h-11 shrink-0" onClick={() => navigate('/agency/leases')}>
-                  Open leases
-                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
-                </Button>
-              </div>
-            )}
+            ))}
           </div>
         )}
       </section>
 
-      <section className="mb-6">
-        <div className="mb-3">
-          <h2 className="section-title">Portfolio</h2>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : '—', sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units` },
-            { label: 'Collected MTD', value: stats ? fmt(stats.revenueMTD) : '—', sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last month` : 'vs last month' },
-            { label: 'Invoices due', value: stats?.invoicesDue ?? '—', sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'None overdue' },
-            { label: 'Properties', value: stats?.totalProperties ?? '—', sub: `${stats?.activeTenants ?? 0} active tenants` },
-          ].map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
-              {isLoading ? (
-                <Skeleton className="h-7 w-20 mt-2" />
-              ) : (
-                <>
-                  <p className="text-xl font-semibold text-foreground mt-1">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{stat.sub}</p>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
-        <div className="lg:col-span-7 rounded-lg border border-border bg-card p-5">
-          <h3 className="text-sm font-semibold text-foreground">Collections</h3>
-          <p className="text-xs text-muted-foreground mb-4">Paid versus pending over six months</p>
+      <div className="mb-6 grid grid-cols-1 gap-5 xl:grid-cols-12">
+        <section className="rounded-lg border border-border bg-card p-5 xl:col-span-7">
+          <h2 className="text-sm font-semibold">Portfolio activity</h2>
+          <p className="mb-4 text-xs text-muted-foreground">Collected versus outstanding invoices over six months</p>
           {isLoading ? (
             <Skeleton className="h-[220px] w-full" />
           ) : (
             <div className="h-[230px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
+                <AreaChart data={data?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
                   <Tooltip
-                    contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
-                    formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
+                    contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                    formatter={(value, name) => [formatKes(Number(value ?? 0)), name === "paid" ? "Collected" : "Pending"]}
                   />
                   <Area type="monotone" dataKey="paid" stroke="hsl(var(--navy-mid))" strokeWidth={2} fill="transparent" />
                   <Area type="monotone" dataKey="pending" stroke="hsl(var(--warning))" strokeWidth={2} fill="transparent" />
@@ -243,59 +116,54 @@ const AgencyDashboard = () => {
               </ResponsiveContainer>
             </div>
           )}
-        </div>
+        </section>
 
-        <div className="lg:col-span-5 rounded-lg border border-border bg-card p-5">
-          <h3 className="text-sm font-semibold text-foreground">Occupancy by property</h3>
-          <p className="text-xs text-muted-foreground mb-4">Largest properties first</p>
+        <section className="rounded-lg border border-border bg-card p-5 xl:col-span-5">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">Client portfolio performance</h2>
+              <p className="text-xs text-muted-foreground">Collected this month by landlord</p>
+            </div>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to={AGENCY_ROUTES.clients}>Clients</Link>
+            </Button>
+          </div>
           {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-            </div>
-          ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
-            <div className="py-8">
-              <p className="text-sm text-muted-foreground">No properties yet</p>
-              <Button size="sm" className="mt-3" onClick={() => navigate('/agency/properties')}>
-                Add a property
-              </Button>
-            </div>
+            <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}</div>
+          ) : (data?.clients.length ?? 0) === 0 ? (
+            <p className="py-8 text-sm text-muted-foreground">No clients linked yet. Link a landlord to a building.</p>
           ) : (
-            <div className="space-y-3">
-              {stats!.occupancyByProperty.map(p => (
-                <div key={p.name}>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-foreground font-medium truncate pr-2">{p.name}</span>
-                    <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className={`h-full ${p.rate >= 90 ? 'bg-success' : p.rate >= 70 ? 'bg-warning' : 'bg-destructive'}`}
-                      style={{ width: `${Math.min(p.rate, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Client</TableHead>
+                  <TableHead className="text-right">Occ.</TableHead>
+                  <TableHead className="text-right">Collected</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data!.clients.slice(0, 6).map((client) => (
+                  <TableRow key={client.id}>
+                    <TableCell>
+                      <p className="font-medium truncate">{client.name}</p>
+                      <p className="text-xs text-muted-foreground">{client.propertyCount} propert{client.propertyCount === 1 ? "y" : "ies"}</p>
+                    </TableCell>
+                    <TableCell className={`text-right text-sm ${occupancyRateColor(client.occupancyRate)}`}>{client.occupancyRate}%</TableCell>
+                    <TableCell className="text-right text-sm font-medium">{formatKes(client.collectedMtd)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-        </div>
+        </section>
       </div>
 
-      <nav aria-label="Agency shortcuts" className="flex flex-wrap gap-2">
-        {[
-          { label: 'Properties', href: '/agency/properties' },
-          { label: 'Tenants', href: '/agency/tenants' },
-          { label: 'Billing', href: '/agency/billing' },
-          { label: 'Landlords', href: '/agency/landlords' },
-          { label: 'Maintenance', href: '/agency/maintenance' },
-          { label: 'Reports', href: '/agency/reports' },
-        ].map((item) => (
-          <Button key={item.href} variant="outline" size="sm" className="min-h-11" onClick={() => navigate(item.href)}>
-            {item.label}
-          </Button>
-        ))}
-      </nav>
+      {(data?.properties.length ?? 0) > 0 && (
+        <p className="text-xs text-muted-foreground">
+          Open a building from{" "}
+          <Link className="underline" to={AGENCY_ROUTES.portfolio}>Portfolio</Link>.
+        </p>
+      )}
     </AgencyLayout>
   );
-};
-
-export default AgencyDashboard;
+}

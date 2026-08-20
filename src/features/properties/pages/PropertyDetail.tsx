@@ -44,6 +44,7 @@ import { PropertyVacationNoticesTab } from "@/features/properties/components/Pro
 import { PropertySettingsTab } from "@/features/properties/components/PropertySettingsTab";
 import PropertyBillingConfig from "@/features/properties/components/PropertyBillingConfig";
 import { AddTenantToPropertyDialog } from "@/features/properties/components/AddTenantToPropertyDialog";
+import { useDeskEmbed } from "@/shared/components/layout/DeskEmbed";
 
 import { WaterBillingManager } from "@/features/water/components/WaterBillingManager";
 import { PropertyStatementTab } from "@/features/properties/components/PropertyStatementTab";
@@ -98,6 +99,8 @@ const PropertyDetail = () => {
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
   const { can, is } = useRBAC();
+  const { recordsHome } = useDeskEmbed();
+  const propertyListPath = recordsHome ?? "/properties";
   // Permission gates for submanagers
   const canWrite           = is('manager') || can('edit_tenants');
   const canRecordPayments  = is('manager') || can('record_payments');
@@ -170,7 +173,7 @@ const PropertyDetail = () => {
         description: "Property not found",
         variant: "destructive",
       });
-      navigate("/properties");
+      navigate(propertyListPath);
       return;
     }
 
@@ -216,7 +219,7 @@ const PropertyDetail = () => {
     }
 
     setIsLoading(false);
-  }, [id, toast, navigate]);
+  }, [id, toast, navigate, propertyListPath]);
 
   useEffect(() => {
     fetchPropertyData();
@@ -414,9 +417,9 @@ const PropertyDetail = () => {
       subtitle="Property → units → tenants. Open a building to manage occupancy, leases, and billing."
       headerActions={
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate("/properties")}>
+          <Button variant="outline" onClick={() => navigate(propertyListPath)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Properties
+            {propertyListPath.endsWith("/portfolio") ? "Portfolio" : "Back to Properties"}
           </Button>
           <Button onClick={() => setIsAddTenantOpen(true)}>
             <UserPlus className="h-4 w-4 mr-2" />

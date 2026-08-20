@@ -1,6 +1,53 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 6 — Agency portal. James issued the agency desk brief: white / navy /
+amber-orange accent, core question “How are our clients and portfolios
+performing?”, named pages Dashboard, Clients, Portfolio, Property Detail,
+Tenants, Billing, Reports, Settings. Agency must feel portfolio-oriented,
+client-oriented, and operational — not Manager with an orange colour.
+
+## CURRENT TASK
+Phase 6 agency portal complete on this branch: preview on `/design-preview`,
+then production pages. Auth prefix `/agency` unchanged. Existing landlord-link,
+property, tenant, billing, and report backends reused. Nested Manager chrome
+is skipped via `DeskEmbedProvider`. Property links stay on
+`/agency/properties/:id`.
+
+### Phase 6 findings (before any changes)
+- Agency already had a dedicated layout and `/agency/*` routes, but every
+  operations page wrapped a Manager screen (`Properties`, `Tenants`,
+  `Billing`, `Reports`, `Settings`, `ManagerLandlords`) inside **and** that
+  screen’s own `Layout`. Result: Manager chrome with an amber stripe.
+- Nav was a 13-item clone of Manager (Properties, Leases, Water Billing,
+  Invites, Statements, Maintenance, Landlords, Vacation Notices).
+- Dashboard already queried properties/invoices/leases as `manager_id =
+  auth.uid()`, plus occupancy and a six-month collections series. It did
+  **not** count clients (`property_landlords`) or show client rollups.
+- Opening a building from the wrapped Properties page went to
+  `/properties/:id` (manager route). Agency-only users would leave the desk.
+- `useRBAC().can()` treated managers as full-ops but not agency, even though
+  the product rule is that agency has the same tenant/billing operations
+  in its own book.
+
+### Phase 6 implementation
+- Nav trimmed to the eight named pages. Extra existing routes stay reachable
+  (leases, maintenance, water billing, invites, statements, vacation notices,
+  building CRUD at `/agency/properties`). `/agency/landlords` redirects to
+  Clients.
+- Dashboard answers the client/portfolio question with Clients, Properties,
+  Units, Occupancy, Collections, attention, client performance, and the
+  existing six-month activity series. Data from properties +
+  `property_landlords` + invoices + expiring leases.
+- Clients = landlord rollup (occupancy/collections) plus the existing
+  link/invite UI. Portfolio = per-building client, occupancy, collections.
+  Property detail = existing `PropertyDetail` at `/agency/properties/:id`.
+- Agency layout: white desk, navy chrome, 2px amber accent. Selected nav is
+  `bg-primary/10`, not an orange-filled item. `DeskEmbedProvider` stops
+  nested Manager `Layout` chrome. `can()` grants agency the manager-scope
+  operations permissions already documented.
+
+## PREVIOUS PHASE
 Phase 4E — Manager operations. James issued the manager operations brief:
 redesign Maintenance, Reports, and Settings. Maintenance lanes: New,
 Assigned, In Progress, Awaiting, Completed. Reports filters: Period,
@@ -8,8 +55,8 @@ Property, Report type — existing reports only, charts only where useful.
 Settings groups: Organization, Users, Roles, Notifications, Billing,
 Integrations, Security, Branding. Do not invent functionality.
 
-## CURRENT TASK
-Just finished: Phase 4E manager operations (this entry). Preview first on
+## PREVIOUS TASK
+Phase 4E manager operations. Preview first on
 `/design-preview`, then production pages. Auth, RLS, APIs, and existing
 settings/report/maintenance backends unchanged.
 

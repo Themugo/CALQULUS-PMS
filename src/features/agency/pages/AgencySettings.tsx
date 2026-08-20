@@ -1,18 +1,10 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
-import AgencyLayout from '@/features/agency/components/AgencyLayout';
-import Settings from '@/features/settings/pages/Settings';
+import AgencyLayout from "@/features/agency/components/AgencyLayout";
+import Settings from "@/features/settings/pages/Settings";
 
-const AgencySettings = () => {
-  const { user, userRole, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" /></div>;
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return <Navigate to="/agency/login" replace />;
-  return (
-    <AgencyLayout title="Settings">
-      <Settings />
-    </AgencyLayout>
-  );
-};
+const AgencySettings = () => (
+  <AgencyLayout title="Settings" description="Organization, users, notifications, and billing for this agency.">
+    <Settings />
+  </AgencyLayout>
+);
 
 export default AgencySettings;

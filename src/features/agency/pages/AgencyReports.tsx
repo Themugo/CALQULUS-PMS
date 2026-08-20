@@ -1,18 +1,10 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
-import AgencyLayout from '@/features/agency/components/AgencyLayout';
-import Reports from '@/features/reports/pages/Reports';
+import AgencyLayout from "@/features/agency/components/AgencyLayout";
+import Reports from "@/features/reports/pages/Reports";
 
-const AgencyReports = () => {
-  const { user, userRole, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" /></div>;
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return <Navigate to="/agency/login" replace />;
-  return (
-    <AgencyLayout title="Reports">
-      <Reports />
-    </AgencyLayout>
-  );
-};
+const AgencyReports = () => (
+  <AgencyLayout title="Reports" description="Period, property, and collection reports for the book.">
+    <Reports />
+  </AgencyLayout>
+);
 
 export default AgencyReports;

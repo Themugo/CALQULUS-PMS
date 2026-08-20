@@ -20,6 +20,17 @@ test.describe("Design preview", () => {
     await expect(page.getByRole("heading", { name: "Portfolio", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Statements", exact: true })).toBeVisible();
     await expect(page.getByText("No tenant PII")).toBeVisible();
+    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Agency" }).click();
+    await expect(page.getByText("Agency is a client-and-portfolio desk")).toBeVisible();
+    const agencyPreview = page.locator("[data-preview='agency-pages']");
+    await expect(agencyPreview.getByText("Clients", { exact: true }).first()).toBeVisible();
+    await expect(agencyPreview.getByText("Properties", { exact: true }).first()).toBeVisible();
+    await expect(agencyPreview.getByText("Units", { exact: true }).first()).toBeVisible();
+    await expect(agencyPreview.getByText("Occupancy", { exact: true }).first()).toBeVisible();
+    await expect(agencyPreview.getByText("Collections", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Clients", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Portfolio", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Property detail", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Maintenance" }).click();
     await expect(page.getByRole("tab", { name: "New" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Assigned" })).toBeVisible();

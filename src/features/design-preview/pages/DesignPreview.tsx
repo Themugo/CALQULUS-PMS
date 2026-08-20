@@ -172,6 +172,7 @@ export default function DesignPreview() {
           {active === "homepage" && <HomepagePreview />}
           {isPortal(active) && <PortalHierarchyPreview portal={active} />}
           {active === "landlord" && <LandlordPagesPreview />}
+          {active === "agency" && <AgencyPagesPreview />}
           {active === "login" && <LoginPreview />}
           {active === "properties" && <RecordPreview title="Properties" icon={Building2} attention="Occupancy" action="Add property" inspect="Units" />}
           {active === "tenants" && <RecordPreview title="Tenants" icon={Home} attention="Invites" action="Invite" inspect="Lease" />}
@@ -362,6 +363,108 @@ function LandlordPagesPreview() {
               <PreviewStat label="Needs attention" value={page.attention} />
               <PreviewStat label="Can do next" value={page.next} />
               <PreviewStat label="Not shown" value="Tenant names, invoices, invites" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AgencyPagesPreview() {
+  const pages = [
+    {
+      title: "Dashboard",
+      where: "Agency desk",
+      matters: "Clients, properties, units, occupancy, collections",
+      attention: "Arrears, expiring leases, unlinked buildings",
+      next: "Open a client or the portfolio",
+    },
+    {
+      title: "Clients",
+      where: "Landlords you operate for",
+      matters: "Occupancy and collections per client",
+      attention: "Invitation pending, unlinked buildings",
+      next: "Link a landlord to a property",
+    },
+    {
+      title: "Portfolio",
+      where: "The book of buildings",
+      matters: "Client, occupancy, collections per property",
+      attention: "Vacant units and outstanding",
+      next: "Open a property",
+    },
+    {
+      title: "Property detail",
+      where: "One building",
+      matters: "Units, occupancy, tenants, billing",
+      attention: "Open maintenance and arrears",
+      next: "Operate the building",
+    },
+    {
+      title: "Tenants",
+      where: "People in client units",
+      matters: "Lease and occupancy",
+      attention: "Invites and arrears",
+      next: "Open a tenancy",
+    },
+    {
+      title: "Billing",
+      where: "Collections across the book",
+      matters: "Billed, collected, outstanding, overdue",
+      attention: "Overdue invoices",
+      next: "Issue or record payment",
+    },
+    {
+      title: "Reports",
+      where: "Period performance",
+      matters: "Revenue, occupancy, arrears",
+      attention: "Property and period filters",
+      next: "Choose a report type",
+    },
+    {
+      title: "Settings",
+      where: "Agency account",
+      matters: "Organization, users, billing, branding",
+      attention: "Missing payment setup",
+      next: "Update details",
+    },
+  ];
+
+  return (
+    <div className="space-y-4" data-preview="agency-pages">
+      <p className="type-body text-muted-foreground">
+        Agency is a client-and-portfolio desk, not Manager with an orange stripe. White surface, navy chrome, 2px amber accent. The question is how clients and portfolios are performing.
+      </p>
+      {pages.map((page) => (
+        <div key={page.title} className="rounded-lg border border-border overflow-hidden bg-background">
+          <div {...portalSurfaceProps("agency")}>
+            <PortalAccentBar />
+            <PageHeader
+              title={page.title === "Dashboard" ? "How are our clients and portfolios performing?" : page.title}
+              description={`${page.where} · ${page.matters}`}
+              className="px-4 py-4"
+            />
+            {page.title === "Dashboard" ? (
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border-y border-border bg-border">
+                {[
+                  { label: "Clients", value: "12" },
+                  { label: "Properties", value: "18" },
+                  { label: "Units", value: "142" },
+                  { label: "Occupancy", value: "91%" },
+                  { label: "Collections", value: "KES 2.4M" },
+                ].map((stat) => (
+                  <div key={stat.label} className="bg-card p-3">
+                    <p className="type-label">{stat.label}</p>
+                    <p className="text-lg font-semibold mt-1">{stat.value}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <div className="grid gap-3 sm:grid-cols-3 p-4">
+              <PreviewStat label="Needs attention" value={page.attention} />
+              <PreviewStat label="Can do next" value={page.next} />
+              <PreviewStat label="Not a copy of" value="Manager operations chrome" />
             </div>
           </div>
         </div>

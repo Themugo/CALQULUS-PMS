@@ -12,6 +12,7 @@ import {
 import { Building2, Eye, Layers, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { CATEGORY_BY_KEY } from "@/shared/constants/propertyTypes";
 import { occupancyRateColor } from "@/shared/lib/statusBadge";
+import { deskPropertyPath, useDeskEmbed } from "@/shared/components/layout/DeskEmbed";
 
 export interface Property {
   id: string;
@@ -82,6 +83,9 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
   const vacantUnits = Math.max(0, property.units - property.occupied);
   const categoryLabel = useMemo(() => getCategoryLabel(property), [property]);
   const occupancyColor = occupancyRateColor(occupancyRate);
+  const { propertyBase } = useDeskEmbed();
+  const detailHref = deskPropertyPath(property.id, { propertyBase });
+  const unitsHref = deskPropertyPath(property.id, { propertyBase, query: "tab=units" });
 
   return (
     <TableRow data-testid="property-row">
@@ -96,7 +100,7 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
           </div>
           <div className="min-w-0">
             <Link
-              to={`/properties/${property.id}`}
+              to={detailHref}
               className="font-medium text-foreground text-sm hover:text-primary transition-colors truncate block"
             >
               {property.name}
@@ -137,12 +141,12 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>
-              <Link to={`/properties/${property.id}`} className="flex items-center gap-2">
+              <Link to={detailHref} className="flex items-center gap-2">
                 <Eye className="h-4 w-4" /> View Details
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/properties/${property.id}?tab=units`} className="flex items-center gap-2">
+              <Link to={unitsHref} className="flex items-center gap-2">
                 <Layers className="h-4 w-4" /> Manage Houses
               </Link>
             </DropdownMenuItem>

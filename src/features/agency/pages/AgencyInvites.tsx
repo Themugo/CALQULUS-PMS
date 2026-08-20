@@ -1,18 +1,10 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
-import AgencyLayout from '@/features/agency/components/AgencyLayout';
-import Invites from '@/features/tenants/pages/Invites';
+import AgencyLayout from "@/features/agency/components/AgencyLayout";
+import Invites from "@/features/tenants/pages/Invites";
 
-const AgencyInvites = () => {
-  const { user, userRole, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" /></div>;
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== 'agency')) return <Navigate to="/agency/login" replace />;
-  return (
-    <AgencyLayout title="Invites">
-      <Invites />
-    </AgencyLayout>
-  );
-};
+const AgencyInvites = () => (
+  <AgencyLayout title="Invites" description="Tenant invitations for client buildings.">
+    <Invites />
+  </AgencyLayout>
+);
 
 export default AgencyInvites;

@@ -12,6 +12,7 @@ import {
 import { MapPin, ChevronDown, ChevronRight, Eye, Layers, Pencil, Trash2 } from "lucide-react";
 import { CATEGORY_BY_KEY } from "@/shared/constants/propertyTypes";
 import { occupancyRateColor } from "@/shared/lib/statusBadge";
+import { deskPropertyPath, useDeskEmbed } from "@/shared/components/layout/DeskEmbed";
 
 export interface Property {
   id: string;
@@ -100,6 +101,10 @@ export const PropertyCard = memo<PropertyCardProps>(({
   const occupancyColor = useMemo(() => getOccupancyColor(occupancyRate), [occupancyRate]);
   
   // Memoize handlers
+  const { propertyBase } = useDeskEmbed();
+  const detailHref = deskPropertyPath(property.id, { propertyBase });
+  const unitsHref = deskPropertyPath(property.id, { propertyBase, query: "tab=units" });
+
   const handleEdit = useCallback(() => onEdit(property), [onEdit, property]);
   const handleDelete = useCallback(() => onDelete(property), [onDelete, property]);
   
@@ -125,7 +130,7 @@ export const PropertyCard = memo<PropertyCardProps>(({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <Link 
-                  to={`/properties/${property.id}`} 
+                  to={detailHref}
                   className="font-heading font-semibold text-foreground text-sm hover:text-primary transition-colors truncate block"
                 >
                   {property.name}
@@ -143,12 +148,12 @@ export const PropertyCard = memo<PropertyCardProps>(({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuItem asChild>
-                    <Link to={`/properties/${property.id}`} className="flex items-center gap-2">
+                    <Link to={detailHref} className="flex items-center gap-2">
                       <Eye className="h-4 w-4" /> View Details
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/properties/${property.id}?tab=units`} className="flex items-center gap-2">
+                    <Link to={unitsHref} className="flex items-center gap-2">
                       <Layers className="h-4 w-4" /> Manage Houses
                     </Link>
                   </DropdownMenuItem>

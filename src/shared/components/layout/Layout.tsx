@@ -11,6 +11,7 @@ import { HelpCenterModal } from "./HelpCenterModal";
 import { useKeyboardShortcuts } from "@/shared/hooks/useKeyboardShortcuts";
 import { TopMobileInstallBanner } from "@/shared/components/ui/top-mobile-install-banner";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
+import { useDeskEmbed } from "./DeskEmbed";
 import { AlertCircle } from "lucide-react";
 
 interface LayoutProps {
@@ -35,10 +36,22 @@ export function Layout({
   const [contextPanelOpen, setContextPanelOpen] = useState(false);
   const [helpCenterOpen, setHelpCenterOpen] = useState(false);
   const { isViewOnly } = useViewOnly();
+  const { embedded } = useDeskEmbed();
 
   const { showShortcutsModal, setShowShortcutsModal, keySequence } = useKeyboardShortcuts(
     () => setCommandPaletteOpen(true)
   );
+
+  if (embedded) {
+    return (
+      <div>
+        {headerActions ? (
+          <div className="mb-4 flex flex-wrap items-center justify-end gap-2">{headerActions}</div>
+        ) : null}
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans" {...portalSurfaceProps("manager")}>
