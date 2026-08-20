@@ -6,7 +6,7 @@ import ActivityLog from "@/features/webhost/components/ActivityLog";
 export default function AdminAuditLog() {
   return (
     <WebhostLayout
-      title="Audit log"
+      title="Audit Log"
       description="Platform-sensitive access and changes. Tenant entity rows are hidden."
     >
       <WebhostPermissionGate permission="can_view_activity_logs">
