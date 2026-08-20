@@ -50,10 +50,10 @@ live desks. No new features.
   tenant Pay rent / amount / due date / shortcuts, maintenance Property
   column, inset dialog, login paths.
 - `npm run build` — pass
-- Merged to `main`.
+- Merged to `main` as `a1e23d1`.
 
 ## CHECKPOINT
-Phase 11 responsive certification merged to `main`. PR #60.
+Phase 11 responsive certification merged to `main` (`a1e23d1`). PR #60.
 
 ## PREVIOUS PHASE
 Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
