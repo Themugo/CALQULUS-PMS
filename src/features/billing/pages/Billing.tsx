@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * Billing.tsx  (refactored)
  *
@@ -247,9 +246,14 @@ const Billing = () => {
         onSuccess: ({ paidDate }) => {
           const invoice = invoices.find(i => i.id === invoiceId);
           if (invoice?.tenants?.email) {
-            supabase.from("company_settings").select("company_name").limit(1).maybeSingle()
-              .then(({ data: co }) =>
-                supabase.functions.invoke("send-payment-confirmation", {
+            void (async () => {
+              try {
+                const { data: co } = await supabase
+                  .from("company_settings")
+                  .select("company_name")
+                  .limit(1)
+                  .maybeSingle();
+                await supabase.functions.invoke("send-payment-confirmation", {
                   body: {
                     tenantEmail:   invoice.tenants!.email,
                     tenantName:    invoice.tenants!.name,
@@ -260,9 +264,11 @@ const Billing = () => {
                     property:      invoice.leases?.property ?? "N/A",
                     unit:          invoice.leases?.unit ?? "N/A",
                   },
-                }),
-              )
-              .catch(() => {/* silent – payment already recorded */});
+                });
+              } catch {
+                /* silent – payment already recorded */
+              }
+            })();
           }
           trackTimeToFirst("payment", { managerId: user?.id, signupAt: user?.created_at });
           invalidateManagerActivation(queryClient);

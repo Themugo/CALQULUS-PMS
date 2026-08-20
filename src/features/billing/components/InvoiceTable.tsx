@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * InvoiceTable.tsx
  *
@@ -194,12 +193,9 @@ export function InvoiceTable({
                 </TableCell>
 
                 <TableCell className="font-semibold text-foreground">
+                  {/* The invoices table has no balance_due/partial-payment columns
+                      yet, so there's nothing to show beyond the full amount. */}
                   <div>{formatCurrency(invoice.amount)}</div>
-                  {(status === "partially_paid" || Number(invoice.balance_due ?? 0) > 0) && status !== "paid" && (
-                    <div className="text-xs font-normal text-muted-foreground">
-                      Due {formatCurrency(Number(invoice.balance_due ?? invoice.amount))}
-                    </div>
-                  )}
                 </TableCell>
 
                 <TableCell className="text-muted-foreground">

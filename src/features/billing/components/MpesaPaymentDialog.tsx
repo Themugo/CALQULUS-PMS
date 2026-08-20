@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * MpesaPaymentDialog.tsx — Fixed
  *
@@ -120,13 +119,17 @@ export function MpesaPaymentDialog({
       }
 
       // Use unit_number from units table if available (more authoritative)
+      // leases.unit_id is a forward FK (lease -> unit), so PostgREST embeds
+      // it as a single object at runtime; the generated types conservatively
+      // type it as an array, so cast through unknown rather than `any`.
       const resolvedUnit =
-        (leaseData.units as { unit_number: string } | null)?.unit_number ??
+        (leaseData.units as unknown as { unit_number: string } | null)?.unit_number ??
         unitNum;
       setUnitNumber(resolvedUnit);
 
+      // Same forward-FK single-object case as leaseData.units above.
       const managerId = (
-        leaseData.properties as { manager_id: string | null } | null
+        leaseData.properties as unknown as { manager_id: string | null } | null
       )?.manager_id;
 
       if (!managerId) {
@@ -291,7 +294,6 @@ export function MpesaPaymentDialog({
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error ?? "STK push failed");
 
-      setCheckoutRequestId(data.checkoutRequestId);
       setPaymentStatus("verifying");
 
       toast({

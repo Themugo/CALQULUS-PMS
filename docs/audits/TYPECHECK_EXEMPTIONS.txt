@@ -3,12 +3,6 @@ These files still have local TypeScript errors and start with // @ts-nocheck.
 CI typecheck compiles the rest of src/ via tsconfig.app.json.
 
 src/features/agency/pages/AgencyDashboard.tsx
-src/features/billing/components/BillingStatsBar.tsx
-src/features/billing/components/InvoiceTable.tsx
-src/features/billing/components/MpesaPaymentDialog.tsx
-src/features/billing/hooks/useBillingData.ts
-src/features/billing/lib/receiptPdfExport.ts
-src/features/billing/pages/Billing.tsx
 src/features/communications/BroadcastCenter.tsx
 src/features/communications/PhysicalDocumentEntry.tsx
 src/features/contracts/components/ContractsTable.tsx
@@ -78,13 +72,9 @@ src/features/webhost/components/WebhostContracts.tsx
 src/features/webhost/components/WebhostManagement.tsx
 src/features/webhost/components/WebhostPaymentSettings.tsx
 src/features/webhost/components/WorkflowOrchestration.tsx
-src/integrations/supabase/client.ts
 src/shared/components/LazyImage.tsx
 src/shared/components/bi/ExecutiveAnalyticsWorkspace.tsx
 src/shared/components/ui/chart.tsx
-src/shared/hooks/useKeyboardShortcuts.ts
 src/shared/hooks/useOptimizedQuery.ts
-src/shared/lib/errorLogger.ts
-src/shared/lib/observability.ts
 src/shared/types/common.ts
 src/sw.ts

@@ -140,3 +140,13 @@ export const drawCompanyPdfHeader = async (
 
   return yPos;
 };
+
+/**
+ * jspdf-autotable augments a jsPDF instance with `lastAutoTable` at runtime,
+ * but doesn't ship a type augmentation for it. Casting through `unknown`
+ * (rather than casting directly, or falling back to `any`) is the safe way
+ * to read it without disabling type-checking for the whole call site.
+ */
+export function getAutoTableFinalY(doc: import("jspdf").default): number {
+  return (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+}

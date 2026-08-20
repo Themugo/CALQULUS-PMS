@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { getAutoTableFinalY } from "@/shared/lib/pdf/companyPdfHeader";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
 
@@ -367,7 +368,7 @@ export const generatePropertyStatementPDF = async (
     },
   });
 
-  const tableEndY = (doc as any).lastAutoTable.finalY;
+  const tableEndY = getAutoTableFinalY(doc);
 
   // ── Summary box (bottom-left) ───────────────────────────────────────────────
   const summaryX = 10;

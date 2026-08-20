@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * BillingStatsBar.tsx
  *
@@ -20,11 +19,15 @@ interface Props {
 export function BillingStatsBar({ invoices, isLoading = false }: Props) {
   const { formatCurrency } = useCurrency();
 
+  // Note: the invoices table only tracks a binary paid/pending/overdue/cancelled
+  // status today (no partial-payment columns exist in the schema yet), so "paid"
+  // is simply the sum of fully-paid invoices, and "pending"/"overdue" are the
+  // full invoice amount rather than a remaining balance.
   const stats = {
     total:   roundMoney(invoices.reduce((s, i) => s + Number(i.amount ?? 0), 0)),
-    paid:    roundMoney(invoices.reduce((s, i) => s + Number(i.paid_amount ?? (i.status === "paid" ? i.amount : 0)), 0)),
-    pending: roundMoney(invoices.filter(i => i.status === "pending" || i.status === "partially_paid").reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0)),
-    overdue: roundMoney(invoices.filter(i => i.status === "overdue").reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0)),
+    paid:    roundMoney(invoices.filter(i => i.status === "paid").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
+    pending: roundMoney(invoices.filter(i => i.status === "pending").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
+    overdue: roundMoney(invoices.filter(i => i.status === "overdue").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
   };
 
   const cards = [

@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * useBillingData.ts
  *
@@ -45,7 +44,11 @@ export interface BillingInvoice extends InvoiceRow {
   } | null;
 }
 
-export interface BillingLease extends LeaseRow {
+// fetchLeases() below only selects a handful of columns (not every LeaseRow
+// column), so BillingLease reflects exactly that projection rather than
+// falsely claiming to be a full lease row.
+export interface BillingLease
+  extends Pick<LeaseRow, "id" | "property" | "unit" | "monthly_rent" | "tenant_id" | "property_id" | "unit_id"> {
   tenants: {
     id: string;
     name: string;
@@ -131,7 +134,24 @@ async function fetchLeases(managerId: string, assignedPropertyIds?: string[]): P
     logError("billing.fetchLeases", error);
     throw error;
   }
-  return (data ?? []) as BillingLease[];
+  // leases.tenant_id/unit_id/property_id are forward FKs from leases, so
+  // PostgREST embeds each as a single object at runtime - but the generated
+  // types conservatively infer the embed as an array. Normalize explicitly
+  // instead of casting past the mismatch.
+  return (data ?? []).map((row) => {
+    const tenantRow = Array.isArray(row.tenants) ? row.tenants[0] ?? null : row.tenants;
+    return {
+      ...row,
+      tenants: tenantRow
+        ? {
+            id: tenantRow.id,
+            name: tenantRow.name,
+            email: tenantRow.email,
+            photo_url: tenantRow.photo_url,
+          }
+        : null,
+    };
+  }) as BillingLease[];
 }
 
 async function fetchTenants(managerId: string, assignedPropertyIds?: string[]): Promise<BillingTenant[]> {

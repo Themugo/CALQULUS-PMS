@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * CALQULUS PMS - Structured Observability Library
  * 
@@ -220,7 +219,7 @@ export function createLogger(component: string): StructuredLogger {
 // ── Application Metrics ──────────────────────────────────────────────
 class MetricsCollector {
   private metrics: AppMetric[] = [];
-  private flushInterval: NodeJS.Timeout | null = null;
+  private flushInterval: ReturnType<typeof setInterval> | null = null;
   private readonly BATCH_SIZE = 50;
   private readonly FLUSH_INTERVAL = 30000; // 30 seconds
 
@@ -532,7 +531,13 @@ export function measure(name: string, startMark: string, endMark?: string, metad
     const measurement = performance.measure(name, startMark, endMark);
     const duration = measurement.duration;
     
-    metrics.timing(`perf_measure_${name}`, duration, { ...metadata });
+    // timing() tags must be string-valued (they're forwarded to the metrics
+    // backend as-is); metadata here is arbitrary, so stringify each value
+    // rather than casting past the mismatch.
+    const tags = metadata
+      ? Object.fromEntries(Object.entries(metadata).map(([k, v]) => [k, String(v)]))
+      : undefined;
+    metrics.timing(`perf_measure_${name}`, duration, tags);
     
     return duration;
   } catch {

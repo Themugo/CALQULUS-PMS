@@ -1,10 +1,9 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import jsPDF from "jspdf";
 import autoTable, { type UserOptions } from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { CurrencyCode } from "@/shared/hooks/useCurrency";
-import { createCurrencyFormatter, fetchCompanySettings, drawCompanyPdfHeader } from "@/shared/lib/pdf/companyPdfHeader";
+import { createCurrencyFormatter, fetchCompanySettings, drawCompanyPdfHeader, getAutoTableFinalY } from "@/shared/lib/pdf/companyPdfHeader";
 import { composeBrandConfig } from "@/core/brand/composeBrandConfig";
 import { documentAccent, documentFooter, documentShowLogo, documentTitle } from "@/core/brand/pdfCompany";
 import type { OrgBrandRecord } from "@/core/brand/parseOrgRecord";
@@ -235,7 +234,7 @@ export const generateReceiptPDF = async (receipt: ReceiptData, userId?: string, 
     ...(tableFoot ? { foot: tableFoot, footStyles: tableFootStyles } : {}),
   });
 
-  const finalY = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
+  const finalY = getAutoTableFinalY(doc) + 10;
 
   // Total Paid Box using primary color
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);

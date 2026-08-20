@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
  * CALQULUS PMS Error Logger — Production Observability
  *
@@ -74,7 +73,7 @@ export const logError = (context: string, error: unknown): void => {
     p_entity_label: msg.slice(0, 200),
     p_metadata: { context, message: msg, timestamp: new Date().toISOString(),
       url: typeof window !== 'undefined' ? window.location.pathname : null },
-  }).then().catch(() => {});
+  }).then(() => {}, () => {});
 };
 
 export const logWarning = (context: string, message: unknown): void => {
@@ -88,7 +87,7 @@ export const logWarning = (context: string, message: unknown): void => {
     p_entity_type: 'warning',
     p_entity_label: msg.slice(0, 200),
     p_metadata: { context, message: msg, timestamp: new Date().toISOString() },
-  }).then().catch(() => {});
+  }).then(() => {}, () => {});
 };
 
 export const logDebug = (context: string, data: unknown): void => {
@@ -108,7 +107,7 @@ export const logAudit = (params: {
     p_manager_id: params.managerId ?? null,
     p_property_id: params.propertyId ?? null,
     p_metadata: params.metadata ?? null,
-  }).then().catch(() => {});
+  }).then(() => {}, () => {});
 };
 
 export const initGlobalErrorCatcher = (): void => {

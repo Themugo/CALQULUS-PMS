@@ -46,6 +46,7 @@ import {
 import { useToast } from "@/shared/hooks/use-toast";
 import { useAuth } from "@/features/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getAutoTableFinalY } from "@/shared/lib/pdf/companyPdfHeader";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { format, startOfMonth, endOfMonth, subMonths, parseISO } from "date-fns";
 import jsPDF from "jspdf";
@@ -488,7 +489,7 @@ const ManagerPaymentHistory = () => {
       margin: { left: 14, right: 14 },
     });
     
-    yPos = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15;
+    yPos = getAutoTableFinalY(doc) + 15;
     
     // Monthly Revenue Chart (as a table representation)
     doc.setTextColor(0, 0, 0);
@@ -526,7 +527,7 @@ const ManagerPaymentHistory = () => {
       margin: { left: 14, right: 14 },
     });
     
-    yPos = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15;
+    yPos = getAutoTableFinalY(doc) + 15;
     
     // Top Properties Section
     if (propertyRevenueData.length > 0) {
@@ -612,7 +613,7 @@ const ManagerPaymentHistory = () => {
       margin: { left: 14, right: 14 },
     });
     
-    yPos = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15;
+    yPos = getAutoTableFinalY(doc) + 15;
     
     // Transactions list
     doc.setTextColor(0, 0, 0);
