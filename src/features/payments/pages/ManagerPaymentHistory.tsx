@@ -456,7 +456,7 @@ const ManagerPaymentHistory = () => {
     const reportDate = format(new Date(), "dd/MM/yy");
     
     // Header
-    doc.setFillColor(16, 185, 129); // Emerald color
+    doc.setFillColor(21, 94, 239); // Navy blue
     doc.rect(0, 0, pageWidth, 40, "F");
     
     doc.setTextColor(255, 255, 255);
@@ -734,7 +734,7 @@ const ManagerPaymentHistory = () => {
               <Clock className="h-4 w-4" />
               Pending
               {pendingInvoices.length > 0 && (
-                <Badge className="ml-1 h-5 min-w-5 text-xs bg-amber-100 text-amber-800 border-amber-200">
+                <Badge className="ml-1 h-5 min-w-5 text-xs bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]">
                   {pendingInvoices.length}
                 </Badge>
               )}
@@ -754,7 +754,7 @@ const ManagerPaymentHistory = () => {
           </TabsList>
 
           <Button
-            className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            className="bg-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_42%)] text-white gap-2"
             onClick={() => {
               if (tenantsWithBalances.length > 0) {
                 setRecordTenant(tenantsWithBalances[0]);
@@ -825,7 +825,7 @@ const ManagerPaymentHistory = () => {
                           {inv.leases?.property ?? inv.tenants?.property ?? "—"}{" "}
                           {inv.leases?.unit ?? inv.tenants?.unit ? `· Unit ${inv.leases?.unit ?? inv.tenants?.unit}` : ""}
                         </TableCell>
-                        <TableCell className={`text-sm ${isOverdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
+                        <TableCell className={`text-sm ${isOverdue ? "text-[hsl(0_72%_51%)] font-medium" : "text-muted-foreground"}`}>
                           {inv.due_date ? format(new Date(inv.due_date), "dd/MM/yy") : "—"}
                           {isOverdue && <span className="ml-1 text-xs">(overdue)</span>}
                         </TableCell>
@@ -848,8 +848,8 @@ const ManagerPaymentHistory = () => {
                           <Badge
                             variant="outline"
                             className={isOverdue
-                              ? "border-red-300 text-red-700 bg-red-50"
-                              : "border-amber-300 text-warning bg-amber-50"
+                              ? "border-[hsl(0_72%_51%/0.3)] text-[hsl(0_72%_51%)] bg-[hsl(0_72%_51%/0.05)]"
+                              : "border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_48%)] bg-[hsl(214_73%_48%/0.05)]"
                             }
                           >
                             {isOverdue ? <AlertTriangle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
@@ -859,7 +859,7 @@ const ManagerPaymentHistory = () => {
                         <TableCell className="text-right">
                           <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs gap-1"
+                            className="bg-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_42%)] text-white h-7 text-xs gap-1"
                             onClick={() => {
                               const tenant = inv.tenants ?? {};
                               // collect all invoices for this tenant
@@ -914,20 +914,20 @@ const ManagerPaymentHistory = () => {
           chart colors on the page every manager lands on first isn't the
           "trustworthy, professional" look finance pages need. */}
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
-        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Collected</p>
-          <p className="mt-1 text-2xl font-bold text-success">{formatCurrency(stats.totalAmount)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Matches current filters</p>
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">Total Collected</p>
+          <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(stats.totalAmount)}</p>
+          <p className="text-xs text-[hsl(215_20%_45%)] mt-1">Matches current filters</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Transactions</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">{stats.totalTransactions}</p>
-          <p className="text-xs text-muted-foreground mt-1">Completed payments</p>
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">Transactions</p>
+          <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{stats.totalTransactions}</p>
+          <p className="text-xs text-[hsl(215_20%_45%)] mt-1">Completed payments</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">This Month</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">{formatCurrency(stats.thisMonth)}</p>
-          <p className="text-xs text-muted-foreground mt-1">All completed payments, unfiltered</p>
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">This Month</p>
+          <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(stats.thisMonth)}</p>
+          <p className="text-xs text-[hsl(215_20%_45%)] mt-1">All completed payments, unfiltered</p>
         </div>
       </div>
 
@@ -1022,7 +1022,7 @@ const ManagerPaymentHistory = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Total Paid</p>
-                      <p className="font-semibold text-success">{formatCurrency(tenant.totalAmount)}</p>
+                      <p className="font-semibold text-[hsl(214_73%_48%)]">{formatCurrency(tenant.totalAmount)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Transactions</p>

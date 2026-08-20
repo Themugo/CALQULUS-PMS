@@ -104,12 +104,12 @@ interface ManagerContract {
 }
 
 const contractStatusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
-  pending: { label: "Pending Review", styles: "bg-warning text-warning-foreground border-warning", icon: Clock },
-  approved: { label: "Ready to Sign", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: CheckCircle },
-  rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
-  signed: { label: "Signed", styles: "bg-success text-white border-success", icon: ShieldCheck },
-  expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
-  cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-slate-700", icon: XCircle },
+  pending: { label: "Pending Review", styles: "bg-[hsl(38_92%_50%/0.1)] text-[hsl(38_92%_40%)] border-[hsl(38_92%_50%/0.2)]", icon: Clock },
+  approved: { label: "Ready to Sign", styles: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]", icon: CheckCircle },
+  rejected: { label: "Rejected", styles: "bg-[hsl(0_72%_51%/0.08)] text-[hsl(0_72%_51%)] border-[hsl(0_72%_51%/0.15)]", icon: XCircle },
+  signed: { label: "Signed", styles: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]", icon: ShieldCheck },
+  expired: { label: "Expired", styles: "bg-[hsl(220_9%_46%/0.1)] text-[hsl(220_9%_46%)] border-[hsl(220_9%_46%/0.15)]", icon: XCircle },
+  cancelled: { label: "Cancelled", styles: "bg-[hsl(220_9%_46%/0.1)] text-[hsl(220_9%_46%)] border-[hsl(220_9%_46%/0.15)]", icon: XCircle },
 };
 
 // =====================
@@ -664,7 +664,7 @@ const ManagerPlatformBilling = () => {
     return (
       <Layout title="Platform Billing" subtitle="Invoices & Contracts with CALQULUS PMS">
         <div className="flex items-center justify-center py-20">
-          <RefreshCw className="h-8 w-8 animate-spin text-warning" />
+          <RefreshCw className="h-8 w-8 animate-spin text-[hsl(214_73%_48%)]" />
         </div>
       </Layout>
     );
@@ -677,8 +677,10 @@ const ManagerPlatformBilling = () => {
   const paidInvoices = invoices.filter(i => i.status === "paid");
   
   const invoiceStats = {
-    totalPending: invoices.filter(i => i.status === "pending").reduce((sum, i) => sum + Number(i.amount), 0),
-    totalPaid: paidInvoices.reduce((sum, i) => sum + Number(i.amount), 0),
+    totalBilled: invoices.reduce((sum, i) => sum + Number(i.amount), 0),
+    totalCollected: paidInvoices.reduce((sum, i) => sum + Number(i.amount), 0),
+    totalOutstanding: invoices.filter(i => i.status === "pending").reduce((sum, i) => sum + Number(i.amount), 0),
+    totalOverdue: invoices.filter(i => i.status === "pending" && new Date(i.due_date) < new Date()).reduce((sum, i) => sum + Number(i.amount), 0),
     pendingCount: invoices.filter(i => i.status === "pending").length,
     overdueCount: invoices.filter(i => i.status === "pending" && new Date(i.due_date) < new Date()).length,
   };
@@ -745,79 +747,91 @@ Status: PAID
         <ManagerPlanStatus />
         <ManagerSubscriptionBanner />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-card/50 border border-border/50">
-            <TabsTrigger value="invoices" className="flex items-center gap-2">
+          <TabsList className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
+            <TabsTrigger value="invoices" className="flex items-center gap-2 data-[state=active]:bg-[hsl(214_73%_48%)] data-[state=active]:text-white">
               <Receipt className="h-4 w-4" />
               Invoices
               {invoiceStats.pendingCount > 0 && (
-                <Badge variant="secondary" className="ml-1">{invoiceStats.pendingCount}</Badge>
+                <Badge variant="secondary" className="ml-1 bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]">{invoiceStats.pendingCount}</Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="receipts" className="flex items-center gap-2">
+            <TabsTrigger value="receipts" className="flex items-center gap-2 data-[state=active]:bg-[hsl(214_73%_48%)] data-[state=active]:text-white">
               <FileCheck className="h-4 w-4" />
               Receipts
               {paidInvoices.length > 0 && (
-                <Badge className="ml-1 bg-success text-white">{paidInvoices.length}</Badge>
+                <Badge className="ml-1 bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]">{paidInvoices.length}</Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="contracts" className="flex items-center gap-2">
+            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-[hsl(214_73%_48%)] data-[state=active]:text-white">
               <FileSignature className="h-4 w-4" />
               Platform Contracts
               {approvedContracts.length > 0 && (
-                <Badge className="ml-1 bg-[hsl(214_73%_48%)] text-white">{approvedContracts.length}</Badge>
+                <Badge className="ml-1 bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]">{approvedContracts.length}</Badge>
               )}
             </TabsTrigger>
           </TabsList>
 
           {/* INVOICES TAB */}
           <TabsContent value="invoices" className="space-y-6" id="invoices">
-            {/* Stats */}
+            {/* Stats — Billed / Collected / Outstanding / Overdue */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="bg-card border-border">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
-                      <Clock className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground font-medium">Pending Amount</p>
-                      <p className="text-xl font-bold text-foreground">{formatCurrency(invoiceStats.totalPending)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <StatCard
-                icon={CheckCircle}
-                iconBgClass="bg-success/10"
-                iconColorClass="text-success"
-                label="Total Paid"
-                value={formatCurrency(invoiceStats.totalPaid)}
-              />
-
-              <Card className="bg-card border-border">
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(214_73%_48%/0.08)] border border-[hsl(214_73%_48%/0.15)] flex items-center justify-center text-[hsl(214_73%_48%)] shrink-0">
                       <Receipt className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium">Pending Invoices</p>
-                      <p className="text-xl font-bold text-foreground">{invoiceStats.pendingCount}</p>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Total Billed</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(invoiceStats.totalBilled)}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(214_73%_48%/0.08)] border border-[hsl(214_73%_48%/0.15)] flex items-center justify-center text-[hsl(214_73%_48%)] shrink-0">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Collected</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(invoiceStats.totalCollected)}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(220_9%_46%/0.08)] border border-[hsl(220_9%_46%/0.15)] flex items-center justify-center text-[hsl(220_9%_46%)] shrink-0">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Outstanding</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(invoiceStats.totalOutstanding)}</p>
+                      {invoiceStats.pendingCount > 0 && (
+                        <p className="text-[11px] text-[hsl(220_9%_46%)] mt-0.5">{invoiceStats.pendingCount} invoice{invoiceStats.pendingCount === 1 ? '' : 's'}</p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(0_72%_51%/0.06)] border border-[hsl(0_72%_51%/0.12)] flex items-center justify-center text-[hsl(0_72%_51%)] shrink-0">
                       <AlertCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium">Overdue</p>
-                      <p className="text-xl font-bold text-foreground">{invoiceStats.overdueCount}</p>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Overdue</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(invoiceStats.totalOverdue)}</p>
+                      {invoiceStats.overdueCount > 0 && (
+                        <p className="text-[11px] text-[hsl(0_72%_51%)] mt-0.5">{invoiceStats.overdueCount} overdue</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -860,39 +874,45 @@ Status: PAID
 
           {/* RECEIPTS TAB */}
           <TabsContent value="receipts" className="space-y-6">
-            {/* Receipt Stats */}
+            {/* Receipt Stats — Navy/Blue trustworthy */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-card border-border">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-success/10 border border-success/20 flex items-center justify-center text-success shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(214_73%_48%/0.08)] border border-[hsl(214_73%_48%/0.15)] flex items-center justify-center text-[hsl(214_73%_48%)] shrink-0">
                       <FileCheck className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium">Total Receipts</p>
-                      <p className="text-xl font-bold text-foreground">{paidInvoices.length}</p>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Total Receipts</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{paidInvoices.length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <StatCard
-                icon={CheckCircle}
-                iconBgClass="bg-success/10"
-                iconColorClass="text-success"
-                label="Total Paid"
-                value={formatCurrency(invoiceStats.totalPaid)}
-              />
-
-              <Card className="bg-card border-border">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(214_73%_48%/0.08)] border border-[hsl(214_73%_48%/0.15)] flex items-center justify-center text-[hsl(214_73%_48%)] shrink-0">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Total Paid</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(invoiceStats.totalCollected)}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-lg bg-[hsl(220_9%_46%/0.08)] border border-[hsl(220_9%_46%/0.15)] flex items-center justify-center text-[hsl(220_9%_46%)] shrink-0">
                       <Calendar className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium">Latest Payment</p>
-                      <p className="text-xl font-bold text-foreground">
+                      <p className="text-xs font-medium text-[hsl(215_20%_45%)]">Latest Payment</p>
+                      <p className="text-xl font-bold text-[hsl(222_47%_11%)]">
                         {paidInvoices.length > 0 && paidInvoices[0].paid_date 
                           ? format(new Date(paidInvoices[0].paid_date), "dd/MM")
                           : "N/A"
@@ -946,7 +966,7 @@ Status: PAID
                               </div>
                             </TableCell>
                             <TableCell>{invoice.description || "Platform subscription fee"}</TableCell>
-                            <TableCell className="font-semibold text-success">{formatCurrency(invoice.amount)}</TableCell>
+                            <TableCell className="font-semibold text-[hsl(214_73%_48%)]">{formatCurrency(invoice.amount)}</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -977,7 +997,7 @@ Status: PAID
                                   variant="ghost"
                                   onClick={() => handleSendWhatsApp(invoice, 'receipt')}
                                   disabled={isSendingWhatsApp === invoice.id}
-                                  className="text-green-500 hover:bg-green-500/10"
+                                  className="text-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_48%/0.1)]"
                                   title="Send to WhatsApp/SMS"
                                 >
                                   {isSendingWhatsApp === invoice.id ? (
@@ -990,7 +1010,7 @@ Status: PAID
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleDownloadReceipt(invoice)}
-                                  className="border-success/30 text-success hover:bg-success/10"
+                                  className="border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_48%/0.1)]"
                                 >
                                   <DownloadIcon className="h-4 w-4 mr-1" />
                                   Download
@@ -1009,38 +1029,38 @@ Status: PAID
 
           {/* CONTRACTS TAB */}
           <TabsContent value="contracts" className="space-y-6">
-            {/* Stats */}
+            {/* Stats — Navy/Blue trustworthy */}
             <div className="grid gap-4 md:grid-cols-4">
-              <Card className="bg-card/50 border-border/50">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Contracts</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[hsl(215_20%_45%)]">Total Contracts</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{contracts.length}</div>
+                  <div className="text-2xl font-bold text-[hsl(222_47%_11%)]">{contracts.length}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-card/50 border-border/50">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Pending Review</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[hsl(215_20%_45%)]">Pending Review</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-warning">{contracts.filter(c => c.status === "pending").length}</div>
+                  <div className="text-2xl font-bold text-[hsl(38_92%_40%)]">{contracts.filter(c => c.status === "pending").length}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-card/50 border-border/50">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Ready to Sign</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[hsl(215_20%_45%)]">Ready to Sign</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-[hsl(214_73%_48%)]">{approvedContracts.length}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-card/50 border-border/50">
+              <Card className="bg-white border border-[hsl(214_73%_48%/0.15)] shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Signed</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[hsl(215_20%_45%)]">Signed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-success">{signedContracts.length}</div>
+                  <div className="text-2xl font-bold text-[hsl(214_73%_48%)]">{signedContracts.length}</div>
                 </CardContent>
               </Card>
             </div>
@@ -1097,7 +1117,7 @@ Status: PAID
               />
             </div>
             {paymentStatus === "verifying" && (
-              <div className="flex items-center gap-2 text-warning">
+              <div className="flex items-center gap-2 text-[hsl(214_73%_48%)]">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm">Waiting for M-Pesa confirmation...</span>
               </div>
