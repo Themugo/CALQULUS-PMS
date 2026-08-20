@@ -45,10 +45,21 @@ system. Authorized administrators are the manager or agency that owns
 - Platform Admin Brand Studio remains a CALQULUS structural preview.
 
 ### Phase 9 verification
-- Pending this turn.
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — 0 errors; 1 pre-existing warning
+  (`CompanySettings` `useEffect` missing `user` dep)
+- `npx vitest run` — 853 passed; 1 skipped; 1 pre-existing fail
+  (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
+- Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
+  — 32 passed, 5 skipped (credential-gated auth)
+  Brand Studio preview: Identity, Colours, Portal themes, Communications,
+  Documents, Domain, and live frames (Login / Header / Sidebar / Dashboard /
+  Buttons / Document) — pass
+- `npm run build` — pass
+- Draft PR #58 on `cursor/phase-9-brand-studio-1e5d`. Not merged to `main`.
 
 ## CHECKPOINT
-Phase 9 Brand Studio is on `cursor/phase-9-brand-studio-1e5d`.
+Phase 9 Brand Studio is on `cursor/phase-9-brand-studio-1e5d`, draft PR #58.
 Do not merge to `main` until James asks.
 
 ## PREVIOUS PHASE
