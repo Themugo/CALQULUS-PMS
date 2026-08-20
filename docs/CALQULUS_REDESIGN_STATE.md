@@ -56,11 +56,10 @@ health). Preview before claiming done.
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
   — 32 passed, 5 skipped (credential-gated auth)
 - `npm run build` — pass
-- Draft PR #59 on `cursor/phase-10-product-wide-polish-1e5d`. Not merged to `main`.
+- Draft PR #59 on `cursor/phase-10-product-wide-polish-1e5d`. James asked to merge to `main`.
 
 ## CHECKPOINT
-Phase 10 polish is on `cursor/phase-10-product-wide-polish-1e5d`, draft PR #59.
-Do not merge to `main` until James asks.
+Phase 10 polish merging to `main` this turn (PR #59).
 
 ## PREVIOUS PHASE
 Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:
