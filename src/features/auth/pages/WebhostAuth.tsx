@@ -8,7 +8,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from 'lucide-react';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
-import { AuthLoadingScreen, AuthGridOverlay } from '@/features/auth/components/AuthHeroChrome';
+import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
 import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 
 const isRecommendedWebhostHost = () => {
@@ -71,8 +71,6 @@ const WebhostAuth = () => {
       <PortalAccentBar className="absolute top-0 left-0 right-0 z-20" />
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
-        <AuthGridOverlay />
-
         <div className="relative z-10 flex flex-col h-full p-12">
           <div className="flex items-center gap-4 mb-16">
             <BrandMark size="hero" forcePlatform />

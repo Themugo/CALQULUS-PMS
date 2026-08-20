@@ -507,14 +507,10 @@
   color: var(--foreground);
 }
 
-/* Marketing canvas — mid navy, cyan glow, faint circuit. Light desks stay light. */
+/* Public website — same light workspace as desks. Navy is header/footer chrome only. */
 @utility public-canvas {
-  background-color: var(--navy-primary);
-  color: #F4FBFD;
-  background-image:
-    radial-gradient(ellipse 820px 480px at 8% -8%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 58%),
-    radial-gradient(ellipse 640px 420px at 100% 0%, color-mix(in srgb, var(--glow) 18%, transparent), transparent 55%),
-    linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-mid) 46%, var(--navy-primary) 100%);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 @utility public-hero-grid {
@@ -565,15 +561,6 @@
     scrollbar-width: none;
   }
 
-  /* Marketing night canvas — invert executive type so navy stays readable. */
-  .public-canvas .page-title,
-  .public-canvas .type-page-title,
-  .public-canvas .section-title,
-  .public-canvas .type-section-title,
-  .public-canvas .card-title-exec,
-  .public-canvas .type-card-title {
-    color: #F4FBFD;
-  }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

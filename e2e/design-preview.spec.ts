@@ -5,6 +5,7 @@ test.describe("Design preview", () => {
     await page.goto("/design-preview");
     await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/improves hierarchy, clarity, navigation/)).toBeVisible();
+    await expect(page.getByText(/workflows, not a property website/)).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Design preview screens" })).toContainText("Brand Studio");
     await expect(page.locator("[data-preview='design']")).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Brand Studio" }).click();

@@ -22,7 +22,7 @@ export function PublicHeader() {
   const onPricing = pathname === PUBLIC_ROUTES.pricing;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-primary/92 shadow-[0_1px_0_0_rgb(26_212_228_/_0.45)] backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-primary backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to={PUBLIC_ROUTES.home}

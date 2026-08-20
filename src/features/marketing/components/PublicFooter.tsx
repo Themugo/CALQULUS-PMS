@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { Globe } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import {
   COMPANY_LINKS,
@@ -17,19 +16,12 @@ export function PublicFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-primary text-white">
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wide sm:px-6 lg:px-8">
-          <Globe className="h-3.5 w-3.5" aria-hidden />
-          <span>www.calqulus.site</span>
-        </div>
-      </div>
-
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] lg:px-8">
+    <footer className="bg-navy-deep text-white">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] lg:px-8">
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
           <BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform />
           <p className="mt-3 text-sm leading-6 text-white/68">
-            Property operations for modern rental teams.
+            The operating system for property work — properties, leases, rent, payments, and repairs.
           </p>
         </div>
 
@@ -95,7 +87,7 @@ export function PublicFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3.5 text-xs text-white/48 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>© {year} CALQULUS. All rights reserved.</p>
-          <p>Property management for Kenya and East Africa.</p>
+          <p>Built for operators in Kenya and East Africa.</p>
         </div>
       </div>
     </footer>

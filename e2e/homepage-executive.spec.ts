@@ -31,7 +31,9 @@ test.describe("Executive homepage", () => {
       "/landlord/login",
     );
     await expect(page.getByRole("link", { name: /view plans/i })).toHaveAttribute("href", "/pricing");
-    await expect(page.locator("footer")).toContainText("Property operations for modern rental teams.");
+    await expect(page.locator("footer")).toContainText(
+      "The operating system for property work",
+    );
   });
 
   for (const viewport of VIEWPORTS) {

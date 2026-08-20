@@ -140,7 +140,7 @@ export default function DesignPreview() {
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
-              One product: white desks, mid-navy chrome, cyan interaction. Add a visual only if it improves hierarchy, clarity, navigation, a decision, or a workflow. Live branding is Settings → Company.
+              One product: white desks, mid-navy chrome, cyan interaction. Design for Linear, Stripe, Notion, Arc, and Ramp — workflows, not a property website. Add a visual only if it improves hierarchy, clarity, navigation, a decision, or a workflow. Live branding is Settings → Company.
             </p>
             {liveDesk ? (
               <div className="mt-3">
@@ -186,13 +186,21 @@ function HomepagePreview() {
     <Card>
       <CardHeader>
         <CardTitle className={CALQULUS_TYPE.cardTitle}>Public website</CardTitle>
-        <CardDescription>Mid-navy marketing canvas. Operational desks stay light. Live page is the source.</CardDescription>
+        <CardDescription>
+          Light workspace. Navy header and footer. The desk is the hero — not a property brochure.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="bg-navy-primary text-white px-4 py-6">
-            <p className="text-xs uppercase tracking-wider text-white/70">CALQULUS</p>
-            <p className="font-heading font-bold text-xl mt-1">Run your properties with clarity and control.</p>
+        <div className="overflow-hidden rounded-lg border border-border">
+          <div className="bg-navy-primary px-4 py-2 text-xs font-medium text-white">CALQULUS</div>
+          <div className="bg-card px-4 py-6">
+            <p className="text-xs uppercase tracking-wider text-primary">Property operations, connected</p>
+            <p className="mt-1 font-heading text-xl font-bold text-foreground">
+              Run your properties with clarity and control.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Opening this page should feel like opening an enterprise operating system.
+            </p>
             <Button className="mt-4" asChild>
               <Link to={PUBLIC_ROUTES.managerSignUp}>Start managing</Link>
             </Button>

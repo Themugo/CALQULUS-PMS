@@ -24,6 +24,7 @@ describe("PublicLandingPage", () => {
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
     expect(headings[0]).toHaveTextContent("Run your properties with clarity and control.");
+    expect(screen.getByText(/feel like opening an operating system/i)).toBeInTheDocument();
   });
 
   it("keeps working portal routes on role cards", () => {
@@ -92,7 +93,7 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("uses a mid-navy canvas with cyan chrome and a compact close", () => {
+  it("uses a light workspace with navy header and footer chrome", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
@@ -104,6 +105,7 @@ describe("PublicLandingPage", () => {
     expect(container.querySelector("#solutions")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
+    expect(container.querySelector(".public-hero-grid")).toBeNull();
   });
 
   it("exposes the operational flow from property to reporting", () => {

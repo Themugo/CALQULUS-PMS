@@ -72,9 +72,6 @@ export function PortalAuthShell({
       {portal ? <PortalAccentBar /> : null}
       <div className="mx-auto flex min-h-screen max-w-6xl">
         <div className="relative hidden overflow-hidden lg:flex lg:w-[54%] lg:flex-col">
-          <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
-          <AuthGridOverlay />
-
           <div className="relative z-10 flex h-full flex-col p-10 xl:p-12">
             <div className="mb-10 flex items-center justify-between gap-4">
               <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
@@ -207,18 +204,6 @@ export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "l
         </div>
       </div>
     </div>
-  );
-}
-
-export function AuthGridOverlay() {
-  return (
-    <div
-      className="pointer-events-none absolute inset-0"
-      style={{
-        background:
-          "radial-gradient(circle at 18% 88%, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 55%), radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--glow) 10%, transparent) 0%, transparent 50%)",
-      }}
-    />
   );
 }
 

@@ -3,15 +3,14 @@
  * Keep hex values in sync with CSS variables in src/index.css.
  *
  * Palette is taken from the Frameworks / CALQULUS identity card:
- *   Navy  — mid-navy chrome (nav, sidebar, footer, marketing canvas)
+ *   Navy  — mid-navy chrome (nav, sidebar, footer)
  *   Cyan  — interaction (buttons, links, focus, active nav)
- *   White — type on navy; card surfaces in the operational app
+ *   White / mist — desks and the public website canvas
  *   Royal — atmospheric glow only, never body text
- *   Spark — city-light flecks on marketing only, never chrome
  *   Green / amber / red — success / warning / danger only
  *
- * Marketing chrome is mid navy, not near-black. Operational desks stay
- * light so tables, forms, and invoices remain readable.
+ * The public site is a light operating system, not a navy marketing poster.
+ * Header and footer stay navy. Operational desks stay light.
  */
 
 export const CALQULUS_BRAND = {
@@ -41,7 +40,7 @@ export const CALQULUS_COLOR = {
 
   /** Royal blue glow — atmosphere on navy surfaces only. */
   glow: "#1B4FBF",
-  /** Warm city-light fleck — marketing sparkle only. */
+  /** Reserved spark — not used on the public website. */
   spark: "#F5A524",
 
   background: "#F3F7FB",
