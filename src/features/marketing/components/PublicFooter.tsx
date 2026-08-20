@@ -17,7 +17,7 @@ export function PublicFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-deep text-white">
+    <footer className="bg-navy-primary text-white">
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wide sm:px-6 lg:px-8">
           <Globe className="h-3.5 w-3.5" aria-hidden />

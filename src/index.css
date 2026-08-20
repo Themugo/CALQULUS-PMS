@@ -267,17 +267,17 @@
 
     /* Electric cyan — interaction */
     --primary: #1AD4E4;
-    --primary-foreground: #040B16;
+    --primary-foreground: #123056;
     --primary-hover: #3DDBF0;
     --primary-active: #12B8C8;
 
-    /* Navy identity */
-    --navy-primary: #0A1A32;
-    --navy-deep: #040B16;
-    --navy-mid: #123056;
-    --navy-surface: #173A5C;
-    --secondary-navy: #123056;
-    --soft-blue: color-mix(in srgb, var(--primary) 12%, #FFFFFF);
+    /* Mid-navy identity — no near-black floor */
+    --navy-primary: #164272;
+    --navy-deep: #123056;
+    --navy-mid: #1E558C;
+    --navy-surface: #2668A8;
+    --secondary-navy: #1E558C;
+    --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
     --glow: #1B4FBF;
     --spark: #F5A524;
 
@@ -288,7 +288,7 @@
     --muted-foreground: #5A6E82;
 
     --accent: #1AD4E4;
-    --accent-foreground: #040B16;
+    --accent-foreground: #123056;
 
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
@@ -303,7 +303,7 @@
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
 
     --info: #1AD4E4;
-    --info-foreground: #040B16;
+    --info-foreground: #123056;
     --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
 
     /* Legacy class aliases — identity or interaction, never a second palette */
@@ -326,15 +326,15 @@
 
     --radius: 0.625rem;
 
-    --sidebar-background: #0A1A32;
+    --sidebar-background: #164272;
     --sidebar-foreground: #F4FBFD;
     --sidebar-primary: #1AD4E4;
-    --sidebar-primary-foreground: #040B16;
-    --sidebar-accent: #123056;
+    --sidebar-primary-foreground: #123056;
+    --sidebar-accent: #1E558C;
     --sidebar-accent-foreground: #1AD4E4;
-    --sidebar-border: #1A3A5C;
+    --sidebar-border: #2A6498;
     --sidebar-ring: #1AD4E4;
-    --sidebar-muted: #8BA3B8;
+    --sidebar-muted: #B4C9DC;
   }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
@@ -351,15 +351,15 @@
     --popover: #FFFFFF;
     --popover-foreground: #0E1C2E;
     --primary: #1AD4E4;
-    --primary-foreground: #040B16;
+    --primary-foreground: #123056;
     --primary-hover: #3DDBF0;
     --primary-active: #12B8C8;
-    --navy-primary: #0A1A32;
-    --navy-deep: #040B16;
-    --navy-mid: #123056;
-    --navy-surface: #173A5C;
-    --secondary-navy: #123056;
-    --soft-blue: color-mix(in srgb, var(--primary) 12%, #FFFFFF);
+    --navy-primary: #164272;
+    --navy-deep: #123056;
+    --navy-mid: #1E558C;
+    --navy-surface: #2668A8;
+    --secondary-navy: #1E558C;
+    --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
     --glow: #1B4FBF;
     --spark: #F5A524;
     --secondary: #F3F7FB;
@@ -367,7 +367,7 @@
     --muted: #F3F7FB;
     --muted-foreground: #5A6E82;
     --accent: #1AD4E4;
-    --accent-foreground: #040B16;
+    --accent-foreground: #123056;
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
     --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
@@ -378,7 +378,7 @@
     --warning-foreground: #FFFFFF;
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
     --info: #1AD4E4;
-    --info-foreground: #040B16;
+    --info-foreground: #123056;
     --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
     --purple: var(--navy-mid);
     --purple-foreground: #FFFFFF;
@@ -395,15 +395,15 @@
     --border: #D7E2EC;
     --input: #D7E2EC;
     --ring: #1AD4E4;
-    --sidebar-background: #0A1A32;
+    --sidebar-background: #164272;
     --sidebar-foreground: #F4FBFD;
     --sidebar-primary: #1AD4E4;
-    --sidebar-primary-foreground: #040B16;
-    --sidebar-accent: #123056;
+    --sidebar-primary-foreground: #123056;
+    --sidebar-accent: #1E558C;
     --sidebar-accent-foreground: #1AD4E4;
-    --sidebar-border: #1A3A5C;
+    --sidebar-border: #2A6498;
     --sidebar-ring: #1AD4E4;
-    --sidebar-muted: #8BA3B8;
+    --sidebar-muted: #B4C9DC;
   }
 }
 
@@ -452,14 +452,14 @@
 }
 
 @utility card-shadow {
-  box-shadow: 0 1px 2px 0 rgb(4 11 22 / 0.05), 0 1px 1px -1px rgb(4 11 22 / 0.04);
+  box-shadow: 0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 1px -1px rgb(18 48 86 / 0.04);
 }
 
 @utility enterprise-card {
   background-color: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px 0 rgb(4 11 22 / 0.05), 0 1px 3px 0 rgb(4 11 22 / 0.04);
+  box-shadow: 0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 3px 0 rgb(18 48 86 / 0.04);
   position: relative;
   background-image: linear-gradient(var(--primary), var(--primary));
   background-repeat: no-repeat;
@@ -468,10 +468,10 @@
 }
 
 @utility night-card {
-  background-color: color-mix(in srgb, var(--navy-mid) 46%, var(--navy-deep));
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  background-color: color-mix(in srgb, var(--navy-surface) 42%, var(--navy-primary));
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
   border-radius: var(--radius);
-  box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--glow) 55%, transparent);
+  box-shadow: 0 12px 28px -18px color-mix(in srgb, var(--glow) 40%, transparent);
   position: relative;
   background-image: linear-gradient(var(--primary), var(--primary));
   background-repeat: no-repeat;
@@ -484,23 +484,23 @@
   color: var(--foreground);
 }
 
-/* Marketing night canvas — card navy, cyan glow, faint circuit. */
+/* Marketing canvas — mid navy, cyan glow, faint circuit. Light desks stay light. */
 @utility public-canvas {
-  background-color: var(--navy-deep);
+  background-color: var(--navy-primary);
   color: #F4FBFD;
   background-image:
-    radial-gradient(ellipse 820px 480px at 8% -8%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 58%),
-    radial-gradient(ellipse 640px 420px at 100% 0%, color-mix(in srgb, var(--glow) 28%, transparent), transparent 55%),
-    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-primary) 48%, var(--navy-deep) 100%);
+    radial-gradient(ellipse 820px 480px at 8% -8%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 58%),
+    radial-gradient(ellipse 640px 420px at 100% 0%, color-mix(in srgb, var(--glow) 18%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-mid) 46%, var(--navy-primary) 100%);
 }
 
 @utility public-hero-grid {
   background-image:
-    linear-gradient(color-mix(in srgb, var(--primary) 18%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--primary) 14%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--primary) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--primary) 10%, transparent) 1px, transparent 1px);
   background-size: 36px 36px;
   mask-image: radial-gradient(ellipse 90% 75% at 18% 0%, #000 10%, transparent 78%);
-  opacity: 0.55;
+  opacity: 0.4;
 }
 
 @utility btn-brand {

@@ -128,7 +128,7 @@ export default defineConfig(({ mode }) => ({
         name: "CALQULUS PMS — Property Management",
         short_name: "CALQULUS",
         description: "The complete property management platform for East Africa. Manage properties, collect rent, track tenants, and grow your portfolio.",
-        theme_color: "#0A1A32",
+        theme_color: "#164272",
         background_color: "#F3F7FB",
         display: "standalone",
         orientation: "portrait",

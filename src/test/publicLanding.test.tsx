@@ -92,7 +92,7 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("uses a navy night canvas with cyan chrome and a compact close", () => {
+  it("uses a mid-navy canvas with cyan chrome and a compact close", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
