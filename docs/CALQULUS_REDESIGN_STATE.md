@@ -56,10 +56,10 @@ system. Authorized administrators are the manager or agency that owns
   Documents, Domain, and live frames (Login / Header / Sidebar / Dashboard /
   Buttons / Document) — pass
 - `npm run build` — pass
-- Draft PR #58 on `cursor/phase-9-brand-studio-1e5d`. James asked to merge to `main`.
+- Merged to `main` as `39422fb`.
 
 ## CHECKPOINT
-Phase 9 Brand Studio merging to `main` this turn (PR #58).
+Phase 9 Brand Studio merged to `main` (`39422fb`). PR #58.
 
 ## PREVIOUS PHASE
 Phase 8 — Platform Admin. James issued the control-tower brief: white / navy /
