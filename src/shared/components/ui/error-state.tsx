@@ -2,6 +2,7 @@ import * as React from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { toUserFacingError } from "@/shared/lib/errorLogger";
+import { CALQULUS_ICON, CALQULUS_TYPE } from "@/shared/theme/tokens";
 import { Button } from "./button";
 
 const DEFAULT_TITLE = "Something went wrong";
@@ -28,16 +29,16 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center animate-in fade-in-0 duration-200",
+        "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center",
         className
       )}
       {...props}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-3">
-        <AlertCircle className="h-5 w-5" />
+      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-destructive/10 text-destructive mb-3">
+        <AlertCircle className={CALQULUS_ICON.lg} />
       </div>
-      <h3 className="text-sm font-semibold text-foreground mb-1">{title}</h3>
-      <p className="text-xs text-muted-foreground max-w-md mb-4 leading-relaxed">
+      <h3 className={cn(CALQULUS_TYPE.cardTitle, "text-foreground mb-1")}>{title}</h3>
+      <p className="type-body text-muted-foreground max-w-md mb-4">
         {safeMessage}
       </p>
       {onRetry && (

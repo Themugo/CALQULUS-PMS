@@ -1,19 +1,67 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:
-Identity (company name, logo, favicon, tagline), Colours (primary, secondary,
-accent), Portal themes (Manager, Landlord, Agency, Tenant), Communications
-(email, notifications), Documents (invoices, receipts, statements, reports),
-Domain if the existing record supports it, and live preview of Login, Header,
-Sidebar, Dashboard, Buttons, Document. Configuration-driven. No CSS injection.
-Contrast validated. Semantic status colours preserved. Preview before save.
+Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
+spacing, typography, colour, buttons, cards, tables, forms, icons, charts,
+navigation, headers, footers, modals, badges, empty states, loading, errors,
+and success. Remove random colours, unnecessary cards, black backgrounds,
+excessive gradients, inconsistent radii, oversized headings, inconsistent
+buttons, poor spacing, misleading icons, and portal colour leakage. Do not
+introduce features or change business logic.
 
 ## CURRENT TASK
-Phase 9 Brand Studio: audit the existing BrandConfig / company_settings
-architecture and put a premium editor on it. Do not invent a second brand
-system. Authorized administrators are the manager or agency that owns
-`company_settings` (`manager_user_id = auth.uid()`).
+Phase 10 polish: reuse the existing token and chrome contracts. Align selected
+nav to `bg-primary/10`. Keep portal colour as the 2px stripe. Map leftover
+palette classes to semantic tokens. Quiet desks (compact footer, no fake
+health). Preview before claiming done.
+
+### Phase 10 findings (before any changes)
+- Selected nav on Manager (`Sidebar`) and Landlord still filled with
+  `--portal-accent-muted`. Agency, Tenant, and Platform Admin already use
+  `bg-primary/10`. Design preview already shows the correct selected wash.
+- App desks rendered the full five-column `Footer` (portal marketing links,
+  fake compact “Operational” pulse). Compact footer existed but was unused
+  except as a variant name.
+- `MarketingWebsite.tsx` is unrouted leftover chrome: black canvas,
+  emerald/teal/sky classes. It is the `noDefaultPalette` fail. Live homepage
+  is `PublicLandingPage`.
+- Tenant auth screens used `from-accent/20` gradients and amber links.
+  Landlord/tenant forgot-password dialog used `#0F1E36`.
+- Shared `DialogTitle` was `text-lg` instead of `type-subtitle`. Empty/error
+  icon wells used `rounded-full`. LazyImage placeholders were slate-800/900.
+- Leftover Tailwind greens/ambers/oranges on live badges and deactivate
+  buttons. Gold/amber gradient wells on dashboard overview widgets and
+  property detail. Occupancy bars used `to-teal` gradients.
+
+### Phase 10 implementation
+- Shared `deskNavClass` / `sidebarNavClass`: selected item is `bg-primary/10`.
+  Portal colour stays the 2px `PortalAccentBar`. Manager and Landlord rails
+  no longer fill with `--portal-accent-muted`.
+- Authenticated desks use the compact footer. Removed the fake “Operational”
+  pulse and the Sparkles “contact” icon.
+- `DialogTitle` uses `type-subtitle`. Empty/error wells use `rounded-md` and
+  type tokens. LazyImage placeholders are muted, not slate-900.
+- Unrouted `MarketingWebsite` re-exports `PublicLandingPage` (kills the black
+  emerald canvas). Tenant/landlord auth lost accent gradients and `#0F1E36`.
+- Leftover green/amber/orange/red utility classes on live badges and buttons
+  mapped to success/warning/destructive/primary. Deactivate actions use warning.
+  Occupancy bars are solid primary, not teal gradients.
+
+### Phase 10 verification
+- Pending this turn.
+
+## CHECKPOINT
+Phase 10 polish is on `cursor/phase-10-product-wide-polish-1e5d`.
+Do not merge to `main` until James asks.
+
+## PREVIOUS PHASE
+Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:
+Identity, Colours, Portal themes, Communications, Documents, Domain, live
+preview. Configuration-driven. No CSS injection. Merged to `main` (`ba1ee05`).
+
+## PREVIOUS TASK
+Phase 9 Brand Studio complete and merged to `main`. Live editor is Settings →
+Brand Studio. Platform Admin `/webhost/brand` stays CALQULUS preview.
 
 ### Phase 9 findings (before any changes)
 - Live branding already lives on `company_settings` (name, logo, contact,
@@ -57,9 +105,6 @@ system. Authorized administrators are the manager or agency that owns
   Buttons / Document) — pass
 - `npm run build` — pass
 - Merged to `main` as `39422fb`.
-
-## CHECKPOINT
-Phase 9 Brand Studio merged to `main` (`39422fb`). PR #58.
 
 ## PREVIOUS PHASE
 Phase 8 — Platform Admin. James issued the control-tower brief: white / navy /

@@ -19,7 +19,7 @@ import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
-import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
+import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { supabase } from "@/integrations/supabase/client";
 import { WEBHOST_LOGIN, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
 import { cn } from "@/shared/lib/utils";
@@ -144,10 +144,8 @@ export default function WebhostLayout({ children, title, description, actions }:
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "group flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "border-border bg-primary/10 text-foreground"
-                    : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+                  "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  deskNavClass(active),
                 )}
               >
                 <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -200,7 +198,7 @@ export default function WebhostLayout({ children, title, description, actions }:
           {children}
         </main>
 
-        <Footer variant="webhost" />
+        <Footer variant="compact" />
       </div>
     </div>
   );

@@ -50,14 +50,14 @@ const NOTICE_ICONS: Record<string, NoticeIconConfig> = {
   eviction_warning: { icon: Home, color: 'text-destructive', bg: 'bg-destructive/20', label: 'Eviction warning' },
   entry_notice: { icon: Home, color: 'text-primary', bg: 'bg-primary/10', label: 'Entry notice' },
   lease_renewal: { icon: FileText, color: 'text-success', bg: 'bg-success/20', label: 'Lease renewal' },
-  rule_violation: { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-50', label: 'Rule violation' },
+  rule_violation: { icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning/10', label: 'Rule violation' },
   general: { icon: MessageSquare, color: 'text-muted-foreground', bg: 'bg-muted/20', label: 'Notice' },
   announcement: { icon: Megaphone, color: 'text-primary', bg: 'bg-primary/10', label: 'Announcement' },
   payment_reminder: { icon: Bell, color: 'text-warning', bg: 'bg-warning/20', label: 'Payment reminder' },
   maintenance_update: {
     icon: Wrench,
-    color: 'text-[hsl(218_58%_38%)]',
-    bg: 'bg-[hsl(218_58%_38%/0.08)]',
+    color: 'text-primary',
+    bg: 'bg-primary/10',
     label: 'Maintenance update',
   },
 };
@@ -205,7 +205,7 @@ const TenantInbox: React.FC = () => {
                   <Badge className="text-xs bg-primary/20 text-primary border-primary/30">New</Badge>
                 )}
                 {notice.status === 'disputed' && (
-                  <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200">Disputed</Badge>
+                  <Badge className="text-xs" variant="warning">Disputed</Badge>
                 )}
                 {isUrgent && (
                   <Badge className="text-xs bg-destructive/20 text-destructive border-destructive/30">
@@ -397,7 +397,7 @@ const TenantInbox: React.FC = () => {
                     {!selectedNotice.tenant_acknowledged && (
                       <Button
                         variant="outline"
-                        className="gap-2 border-orange-300 text-orange-700 hover:bg-orange-50"
+                        className="gap-2"
                         onClick={() => setDisputeOpen(true)}
                       >
                         <MessageCircle className="h-4 w-4" />
@@ -435,7 +435,8 @@ const TenantInbox: React.FC = () => {
               Cancel
             </Button>
             <Button
-              className="bg-orange-600 hover:bg-orange-700 text-white gap-2"
+              variant="destructive"
+              className="gap-2"
               onClick={() => selectedNotice && disputeNotice.mutate({ id: selectedNotice.id, reason: disputeText })}
               disabled={!disputeText.trim() || disputeNotice.isPending}
             >

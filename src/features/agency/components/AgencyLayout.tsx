@@ -19,7 +19,7 @@ import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { DeskEmbedProvider } from "@/shared/components/layout/DeskEmbed";
-import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
+import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { AGENCY_LOGIN, AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
 
 const NAV = [
@@ -115,11 +115,7 @@ export default function AgencyLayout({ children, title, description, actions }: 
                   key={item.href}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`group flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "border-border bg-primary/10 text-foreground"
-                      : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                  className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${deskNavClass(active)}`}
                 >
                   <item.icon className="h-4 w-4 flex-shrink-0" />
                   <span className="flex-1 truncate">{item.label}</span>
@@ -176,7 +172,7 @@ export default function AgencyLayout({ children, title, description, actions }: 
             {children}
           </main>
 
-          <Footer variant="agency" />
+          <Footer variant="compact" />
         </div>
       </div>
     </DeskEmbedProvider>

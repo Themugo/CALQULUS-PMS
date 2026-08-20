@@ -15,7 +15,7 @@ import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
-import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
+import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { TENANT_LOGIN, TENANT_ROUTES } from "@/features/tenant-portal/lib/tenantPaths";
 import { cn } from "@/shared/lib/utils";
 
@@ -97,10 +97,8 @@ export default function TenantLayout({
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium",
-                  active
-                    ? "border-border bg-primary/10 text-foreground"
-                    : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+                  "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                  deskNavClass(active),
                 )}
               >
                 <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -157,7 +155,7 @@ export default function TenantLayout({
           {children}
         </main>
 
-        <Footer variant="tenant" className="hidden md:block" />
+        <Footer variant="compact" className="hidden md:block" />
       </div>
 
       <nav

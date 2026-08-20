@@ -96,7 +96,7 @@ const PendingApproval = () => {
           <div className="flex justify-center mb-4">
             <BrandMark size="lg" />
           </div>
-          <div className="flex items-center justify-center gap-2 text-amber-500 mb-2">
+          <div className="flex items-center justify-center gap-2 text-warning mb-2">
             <Building2 className="h-5 w-5" />
             <span className="text-sm font-medium">Property Manager Portal</span>
           </div>
@@ -106,7 +106,7 @@ const PendingApproval = () => {
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
-                <Clock className={`h-8 w-8 ${isSuspended ? 'text-orange-500' : isRejected ? 'text-red-500' : 'text-amber-500'}`} />
+                <Clock className={`h-8 w-8 ${isSuspended ? 'text-warning' : isRejected ? 'text-destructive' : 'text-warning'}`} />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">
@@ -139,7 +139,7 @@ const PendingApproval = () => {
                       )}
                       <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
                         <p className="text-xs text-primary font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
-                        <ol className="text-sm text-amber-200 space-y-1">
+                        <ol className="text-sm text-muted-foreground space-y-1">
                           <li>1. Open Platform Billing and pay the outstanding invoice.</li>
                           <li>2. Access returns when payment is confirmed — there is no extra approval step.</li>
                           <li>3. If you already paid, wait a moment and tap Check now.</li>

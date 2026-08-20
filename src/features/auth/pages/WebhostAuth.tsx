@@ -75,7 +75,7 @@ const WebhostAuth = () => {
           <div className="flex items-center gap-4 mb-16">
             <BrandMark size="hero" forcePlatform />
             <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
+              <p className="font-heading font-bold text-xl text-foreground leading-none">CALQULUS</p>
               <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
             </div>
           </div>
@@ -86,10 +86,8 @@ const WebhostAuth = () => {
               <span className="text-xs text-destructive font-semibold">Restricted Access — Authorized Personnel Only</span>
             </div>
 
-            <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
-              <span className="text-foreground">Control the</span>
-              <br />
-              <span className="text-gradient">entire platform.</span>
+            <h1 className="page-title mb-6">
+              <span className="text-foreground">Control the entire platform.</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               Super-admin access for platform-wide management, billing enforcement, security, and compliance.
@@ -120,7 +118,7 @@ const WebhostAuth = () => {
             <BrandMark size="hero" forcePlatform />
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
                 <Globe className="h-3 w-3 text-primary" />

@@ -24,3 +24,11 @@ export {
   type DerivedBrandPalette,
 } from "./deriveBrandPalette";
 export { PortalAccentBar } from "./PortalAccentBar";
+export {
+  DESK_NAV_ACTIVE,
+  DESK_NAV_IDLE,
+  SIDEBAR_NAV_ACTIVE,
+  SIDEBAR_NAV_IDLE,
+  deskNavClass,
+  sidebarNavClass,
+} from "./deskNav";

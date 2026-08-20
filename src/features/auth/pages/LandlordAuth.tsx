@@ -150,7 +150,7 @@ const LandlordAuth = () => {
           <div className="flex items-center gap-4 pb-8 mb-12 border-b border-border">
             <BrandMark size="hero" />
             <div>
-              <p className="font-heading font-bold text-xl text-gradient leading-none tracking-tight">CALQULUS</p>
+              <p className="font-heading font-bold text-xl text-foreground leading-none tracking-tight">CALQULUS</p>
               <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1.5">Property Management System</p>
             </div>
           </div>
@@ -158,12 +158,8 @@ const LandlordAuth = () => {
           {/* Main headline */}
           <div className="flex-1 flex flex-col justify-center">
             <p className="text-primary text-sm font-semibold tracking-[0.2em] uppercase mb-5">Elevating Property Management</p>
-            <h1 className="font-heading text-[3.4rem] font-bold leading-[1.08] tracking-tight mb-6">
-              <span className="text-foreground">Manage smarter.</span>
-              <br />
-              <span className="text-gradient">Collect faster.</span>
-              <br />
-              <span className="text-muted-foreground">Grow bigger.</span>
+            <h1 className="page-title mb-6">
+              <span className="text-foreground">Manage smarter. Collect faster. Grow bigger.</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               The complete property management platform for East Africa — from single units to full portfolios.
@@ -253,7 +249,7 @@ const LandlordAuth = () => {
                   <ForgotPasswordDialog
                     variant="landlord"
                     trigger={
-                      <button type="button" className="text-primary hover:text-amber-200 text-xs font-semibold">
+                      <button type="button" className="text-primary hover:text-primary-hover text-xs font-semibold">
                         Forgot password?
                       </button>
                     }

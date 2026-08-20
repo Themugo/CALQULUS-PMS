@@ -24,12 +24,12 @@ const resourceTypeIcons: Record<string, React.ReactNode> = {
 const webhostVisibleResourceTypes = ['contract', 'payment', 'invoice', 'mpesa_settings'];
 
 const actionColors: Record<string, string> = {
-  create: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  update: 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] dark:bg-[hsl(214_73%_25%)] dark:text-[hsl(214_73%_80%)]',
-  delete: 'bg-destructive/15 text-destructive dark:bg-destructive dark:text-destructive',
-  view: 'bg-secondary-background text-foreground dark:bg-secondary-foreground dark:text-foreground',
-  export: 'bg-warning/15 text-warning dark:bg-[hsl(218_58%_16%)] dark:text-warning/80',
-  download: 'bg-warning/10 text-warning dark:bg-warning dark:text-orange-200',
+  create: 'bg-success/10 text-success',
+  update: 'bg-primary/10 text-primary',
+  delete: 'bg-destructive/15 text-destructive',
+  view: 'bg-muted text-muted-foreground',
+  export: 'bg-warning/15 text-warning',
+  download: 'bg-warning/10 text-warning',
 };
 
 export function SecurityAuditLogs() {

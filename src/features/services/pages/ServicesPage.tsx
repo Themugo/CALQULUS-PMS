@@ -18,10 +18,10 @@ import ServiceMarketplace from '../components/ServiceMarketplace';
 import ServiceProviderProfile from '../components/ServiceProviderProfile';
 
 const STATUS_COLORS: Record<string, string> = {
-  open:        'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  in_progress: 'bg-amber-100 text-amber-800 border-amber-200',
-  completed:   'bg-green-100 text-green-800 border-green-200',
-  cancelled:   'bg-slate-100 text-slate-600 border-slate-200',
+  open:        'bg-primary/10 text-primary border-primary/25',
+  in_progress: 'bg-warning/10 text-warning border-warning/30',
+  completed:   'bg-success/10 text-success border-success/30',
+  cancelled:   'bg-muted text-muted-foreground border-border',
 };
 
 const ServicesPage: React.FC = () => {
@@ -71,7 +71,7 @@ const ServicesPage: React.FC = () => {
             <TabsTrigger value="my-profile" className="gap-1.5">
               <Briefcase className="h-4 w-4" />
               Provider profile
-              <Badge variant="outline" className="ml-1 text-xs bg-green-100 text-green-800 border-green-300">Active</Badge>
+              <Badge variant="success" className="ml-1 text-xs">Active</Badge>
             </TabsTrigger>
           )}
           {myProvider && (
@@ -104,9 +104,9 @@ const ServicesPage: React.FC = () => {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: 'Active jobs',    value: activeJobs.length,     color: 'text-amber-600' },
-                  { label: 'Completed',      value: completedJobs.length,  color: 'text-green-700' },
-                  { label: 'Rating',         value: myProvider.rating_count > 0 ? `${Number(myProvider.rating_avg).toFixed(1)}★` : '—', color: 'text-amber-500' },
+                  { label: 'Active jobs',    value: activeJobs.length,     color: 'text-warning' },
+                  { label: 'Completed',      value: completedJobs.length,  color: 'text-success' },
+                  { label: 'Rating',         value: myProvider.rating_count > 0 ? `${Number(myProvider.rating_avg).toFixed(1)}★` : '—', color: 'text-foreground' },
                 ].map(k => (
                   <div key={k.label} className="rounded-xl border border-border p-3 text-center">
                     <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
@@ -126,7 +126,7 @@ const ServicesPage: React.FC = () => {
               ) : (
                 <div className="space-y-3">
                   {assignedJobs.map(job => (
-                    <Card key={job.id} className="border border-border hover:border-amber-400/40 transition-colors">
+                    <Card key={job.id} className="border border-border">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ const ServicesPage: React.FC = () => {
                                 {job.status?.replace('_', ' ')}
                               </Badge>
                               {job.priority === 'urgent' && (
-                                <Badge className="text-xs bg-red-100 text-red-800 border-red-200">Urgent</Badge>
+                                <Badge variant="danger" className="text-xs">Urgent</Badge>
                               )}
                             </div>
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -152,12 +152,12 @@ const ServicesPage: React.FC = () => {
                                 {format(new Date(job.requested_date), 'dd/MM/yy')}
                               </span>
                               {job.agreed_amount && (
-                                <span className="text-green-700 font-medium">
+                                <span className="text-success font-medium">
                                   Agreed: KES {Number(job.agreed_amount).toLocaleString()}
                                 </span>
                               )}
                               {job.quoted_amount && !job.agreed_amount && (
-                                <span className="text-amber-700">
+                                <span className="text-warning">
                                   Quoted: KES {Number(job.quoted_amount).toLocaleString()}
                                 </span>
                               )}
@@ -165,7 +165,7 @@ const ServicesPage: React.FC = () => {
                           </div>
                           <div className="shrink-0">
                             {job.status === 'open' && (
-                              <Button size="sm" className="h-8 text-xs gap-1 bg-amber-600 hover:bg-amber-700 text-white"
+                              <Button size="sm" className="h-8 text-xs gap-1"
                                 onClick={async () => {
                                   try {
                                     const { error } = await supabase.from('maintenance_requests')
@@ -181,7 +181,7 @@ const ServicesPage: React.FC = () => {
                               </Button>
                             )}
                             {job.status === 'in_progress' && (
-                              <Button size="sm" className="h-8 text-xs gap-1 bg-green-600 hover:bg-green-700 text-white"
+                              <Button size="sm" className="h-8 text-xs gap-1"
                                 onClick={async () => {
                                   try {
                                     const { error } = await supabase.from('maintenance_requests')

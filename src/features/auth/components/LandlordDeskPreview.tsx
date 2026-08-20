@@ -38,7 +38,7 @@ export function LandlordDeskPreview() {
             </div>
             <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-soft-blue">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-teal"
+                className="h-full rounded-full bg-primary"
                 style={{ width: `${property.occupancy}%` }}
               />
             </div>

@@ -38,23 +38,23 @@ const ENTITY_ICONS: Record<string, React.ElementType> = {
 };
 
 const ROLE_BADGE: Record<string, string> = {
-  manager:    'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
-  submanager: 'bg-secondary-background text-secondary-foreground border-border',
-  webhost:    'bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_32%)] border-[hsl(38_52%_42%/0.25)]',
-  landlord:   'bg-warning/10 text-warning border-amber-200',
-  system:     'bg-green-100 text-green-700 border-green-200',
+  manager:    'bg-primary/10 text-primary border-primary/25',
+  submanager: 'bg-muted text-muted-foreground border-border',
+  webhost:    'bg-navy-mid/10 text-navy-mid border-navy-mid/25',
+  landlord:   'bg-warning/10 text-warning border-warning/30',
+  system:     'bg-success/10 text-success border-success/30',
 };
 
 const ACTION_COLOR = (action: string): string => {
   const a = action.toLowerCase();
-  if (a.includes('create') || a.includes('add') || a.includes('invite')) return 'bg-green-100 text-green-800';
-  if (a.includes('update') || a.includes('edit') || a.includes('change')) return 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)]';
+  if (a.includes('create') || a.includes('add') || a.includes('invite')) return 'bg-success/10 text-success';
+  if (a.includes('update') || a.includes('edit') || a.includes('change')) return 'bg-primary/10 text-primary';
   if (a.includes('delete') || a.includes('remove') || a.includes('archive')) return 'bg-destructive/15 text-destructive';
   if (a.includes('approve') || a.includes('complete')) return 'bg-success/15 text-success';
   if (a.includes('reject') || a.includes('deny') || a.includes('fail')) return 'bg-warning/10 text-warning';
   if (a.includes('sign') || a.includes('contract')) return 'bg-warning/15 text-warning';
-  if (a.includes('pay') || a.includes('invoice')) return 'bg-[hsl(195_60%_42%/0.12)] text-[hsl(195_60%_28%)]';
-  return 'bg-secondary-background text-secondary-foreground';
+  if (a.includes('pay') || a.includes('invoice')) return 'bg-primary/10 text-primary';
+  return 'bg-muted text-muted-foreground';
 };
 
 const ActivityLog: React.FC = () => {

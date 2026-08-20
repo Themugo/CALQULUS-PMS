@@ -822,7 +822,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-amber-600 text-white hover:bg-amber-700"
+              className="bg-warning text-warning-foreground hover:bg-warning/90"
             >
               Deactivate
             </AlertDialogAction>

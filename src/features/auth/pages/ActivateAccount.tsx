@@ -107,7 +107,7 @@ const ActivateAccount = () => {
       <div className="min-h-screen flex items-center justify-center bg-background dark:hero-gradient">
         <Card className="w-full max-w-md mx-4">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-amber-500 mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground">Validating activation link...</p>
           </CardContent>
         </Card>
@@ -173,7 +173,7 @@ const ActivateAccount = () => {
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
-            <ShieldCheck className="h-8 w-8 text-amber-500" />
+            <ShieldCheck className="h-8 w-8 text-primary" />
           </div>
           <CardTitle>Activate Your Account</CardTitle>
           <CardDescription>

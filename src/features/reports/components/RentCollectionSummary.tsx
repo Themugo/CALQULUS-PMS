@@ -71,9 +71,9 @@ const fmtKES = (n: number) =>
 
 const STATUS_BADGE: Record<string, string> = {
   paid:      'bg-success/10 text-success',
-  pending:   'bg-amber-100 text-amber-700',
-  overdue:   'bg-red-100 text-red-700',
-  cancelled: 'bg-slate-100 text-slate-500',
+  pending:   'bg-warning/10 text-warning',
+  overdue:   'bg-destructive/10 text-destructive',
+  cancelled: 'bg-muted text-muted-foreground',
 };
 
 const MONTHS = [

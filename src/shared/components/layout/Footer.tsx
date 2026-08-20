@@ -6,7 +6,7 @@ import {
   HelpCircle,
   FileText,
   Lock,
-  Sparkles,
+  Mail,
 } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { HelpCenterModal } from "./HelpCenterModal";
@@ -64,11 +64,6 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
             <span className="font-semibold text-foreground tracking-tight">{config.identity.product}</span>
             <span className="text-muted-foreground/40">•</span>
             <span className="font-mono text-[11px] text-muted-foreground">v2.4.0</span>
-            <span className="text-muted-foreground/40">•</span>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
-              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-              Operational
-            </span>
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
@@ -190,7 +185,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
                     onClick={() => setHelpOpen(true)}
                     className="hover:text-primary transition-colors flex items-center gap-1.5 text-left"
                   >
-                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <Mail className="h-3.5 w-3.5 text-primary" />
                     <span>Contact Operations Desk</span>
                   </button>
                 </li>

@@ -436,7 +436,7 @@ const PropertyDetail = () => {
         <Card className="lg:col-span-2">
           <CardHeader className="pb-4">
             <div className="flex items-start gap-4">
-              <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-amber-400/15 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="h-20 w-20 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {property.image_url ? (
                   <img
                     src={property.image_url}
@@ -444,7 +444,7 @@ const PropertyDetail = () => {
                     className="h-20 w-20 object-cover"
                   />
                 ) : (
-                  <Building2 className="h-10 w-10 text-amber-500" />
+                  <Building2 className="h-10 w-10 text-muted-foreground" />
                 )}
               </div>
               <div className="flex-1">
@@ -652,7 +652,7 @@ const PropertyDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Home className="h-5 w-5 text-amber-500" />
+                <Home className="h-5 w-5 text-muted-foreground" />
                 Tenants & Leases
               </CardTitle>
             </CardHeader>

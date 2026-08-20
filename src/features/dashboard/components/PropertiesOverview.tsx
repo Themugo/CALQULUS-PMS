@@ -75,13 +75,13 @@ export function PropertiesOverview() {
 
   const getOccupancyColor = (rate: number) => {
     if (rate >= 90) return "bg-success";
-    if (rate >= 70) return "bg-amber-500";
-    return "bg-red-500";
+    if (rate >= 70) return "bg-warning";
+    return "bg-destructive";
   };
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-white via-white to-slate-50/50 p-4 sm:p-6 shadow-sm animate-fade-in backdrop-blur-sm">
+      <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <Skeleton className="h-5 sm:h-6 w-32 sm:w-40 rounded-lg" />
           <Skeleton className="h-7 sm:h-8 w-20 sm:w-24 rounded-lg" />
@@ -103,37 +103,32 @@ export function PropertiesOverview() {
   }
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-white via-white to-slate-50/50 p-4 sm:p-6 shadow-sm animate-fade-in backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-4 sm:mb-5">
-        <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground flex items-center gap-2">
-          <div className="rounded-lg bg-gradient-to-br from-amber-400/18 to-amber-400/8 p-2">
-            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
-          </div>
+    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="type-card-title flex items-center gap-2">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
           Properties
         </h3>
         <Link to="/properties">
-          <Button variant="ghost" size="sm" className="text-amber-600 hover:text-amber-500 hover:bg-amber-400/8 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm rounded-xl transition-all duration-200">
+          <Button variant="ghost" size="sm">
             View All
-            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
+            <ArrowRight className="h-3.5 w-3.5 ml-1" />
           </Button>
         </Link>
       </div>
 
       {properties.length === 0 ? (
-        <div className="text-center py-8 sm:py-10">
-          <div className="rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 p-4 sm:p-6 inline-block mb-3 sm:mb-4">
-            <Building2 className="h-12 w-12 sm:h-14 sm:w-14 text-muted-foreground/50" />
-          </div>
-          <p className="text-muted-foreground text-sm sm:text-base font-medium mb-3 sm:mb-4">No properties yet</p>
+        <div className="text-center py-8">
+          <p className="text-muted-foreground text-sm mb-3">No properties yet</p>
           <Link to="/properties">
-            <Button variant="outline" size="sm" className="h-9 sm:h-10 text-xs sm:text-sm rounded-xl border-2 hover:bg-amber-400 hover:text-slate-900 hover:border-amber-400 transition-all duration-200">
+            <Button variant="outline" size="sm">
               Add Property
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="space-y-2.5 sm:space-y-3">
-          {properties.map((property, index) => {
+        <div className="space-y-2">
+          {properties.map((property) => {
             const occupancyRate = property.units > 0 
               ? Math.round((property.occupied / property.units) * 100) 
               : 0;
@@ -142,18 +137,17 @@ export function PropertiesOverview() {
               <Link
                 key={property.id}
                 to={`/properties/${property.id}`}
-                className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/20 hover:from-muted/50 hover:to-muted/40 border border-border/30 hover:border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 animate-slide-in touch-manipulation"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="group flex items-center gap-3 p-3 rounded-md bg-muted/40 hover:bg-muted border border-border"
               >
-                <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-amber-400/18 to-amber-400/8 flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-400/15 group-hover:shadow-md transition-all duration-300">
+                <div className="relative h-12 w-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
                   {property.image_url ? (
                     <LazyImage
                       src={property.image_url}
                       alt={property.name}
-                      className="h-full w-full rounded-xl"
+                      className="h-full w-full rounded-md"
                     />
                   ) : (
-                    <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-amber-500" />
+                    <Building2 className="h-6 w-6 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
@@ -171,8 +165,8 @@ export function PropertiesOverview() {
                     className={cn(
                       "text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg font-semibold border-2",
                       occupancyRate >= 90 && "border-success/50 text-success bg-success/5",
-                      occupancyRate >= 70 && occupancyRate < 90 && "border-amber-500/50 text-amber-600 bg-amber-500/5",
-                      occupancyRate < 70 && "border-red-500/50 text-red-600 bg-red-500/5"
+                      occupancyRate >= 70 && occupancyRate < 90 && "border-warning/50 text-warning bg-warning/5",
+                      occupancyRate < 70 && "border-destructive/50 text-destructive bg-destructive/5"
                     )}
                   >
                     {property.occupied}/{property.units}

@@ -114,7 +114,7 @@ export function Layout({
         </main>
 
         {/* Universal Enterprise Footer */}
-        <Footer />
+        <Footer variant="compact" />
       </div>
 
       {/* Reusable Context Panel Side Drawer */}

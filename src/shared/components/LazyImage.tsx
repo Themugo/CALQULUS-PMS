@@ -283,14 +283,11 @@ function PropertyImage({
     <div
       ref={containerRef}
       className={cn(
-        'relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900',
+        'relative overflow-hidden bg-muted',
         aspectRatioClasses[aspectRatio],
         className
       )}
     >
-      {/* Gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-
       {/* Blur placeholder */}
       {blurDataUrl && !isLoaded && (
         <img
@@ -303,7 +300,7 @@ function PropertyImage({
 
       {/* Skeleton for when no blur available */}
       {!blurDataUrl && !isLoaded && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-slate-800 to-slate-900" />
+        <div className="absolute inset-0 animate-pulse bg-muted" />
       )}
 
       {/* Actual image */}

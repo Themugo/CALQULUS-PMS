@@ -162,7 +162,7 @@ export default function DesignPreview() {
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
-              One product: white desks, navy chrome, interactive blue. Outfit stays. Portal colour is a 2px accent, not a second system. Every page answers where you are, what matters, what needs attention, and what to do next. Live branding is Settings → Company.
+              One product: white desks, navy chrome, interactive blue. Outfit stays. Portal colour is a 2px accent, not a second system. Selected navigation is bg-primary/10. Status green / amber / red stay semantic. Every page answers where you are, what matters, what needs attention, and what to do next. Live branding is Settings → Brand Studio.
             </p>
             {liveDesk ? (
               <div className="mt-3">

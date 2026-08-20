@@ -39,7 +39,7 @@ import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
-import { PortalAccentBar } from "@/core/design";
+import { PortalAccentBar, sidebarNavClass } from "@/core/design";
 
 interface NavItem {
   name: string;
@@ -298,12 +298,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     onClick={handleNavClick}
                     className={cn(
                       "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
-                      active
-                        ? "bg-[var(--portal-accent-muted)] text-[var(--portal-accent)] font-semibold border-l-2 border-[var(--portal-accent)]"
-                        : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-2 border-transparent"
+                      sidebarNavClass(active),
                     )}
                   >
-                    <Star className={cn("h-3.5 w-3.5 shrink-0", active ? "text-[var(--portal-accent)]" : "text-sidebar-muted group-hover:text-sidebar-foreground")} />
+                    <Star className={cn("h-3.5 w-3.5 shrink-0", active ? "text-primary" : "text-sidebar-muted group-hover:text-sidebar-foreground")} />
                     <span className="flex-1 truncate">{fav.name}</span>
                   </Link>
                 );
@@ -330,9 +328,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     className={cn(
                       "group relative flex items-center gap-3 rounded-md text-xs font-medium transition-all duration-150 touch-manipulation",
                       collapsed ? "justify-center p-2.5" : "px-3 py-2",
-                      active
-                        ? "bg-[var(--portal-accent-muted)] text-[var(--portal-accent)] font-semibold border-l-2 border-[var(--portal-accent)]"
-                        : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-2 border-transparent"
+                      sidebarNavClass(active),
                     )}
                     title={collapsed ? item.name : undefined}
                   >
@@ -340,7 +336,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                       className={cn(
                         "h-4 w-4 flex-shrink-0 transition-colors",
                         active
-                          ? "text-[var(--portal-accent)]"
+                          ? "text-primary"
                           : "text-sidebar-muted group-hover:text-sidebar-foreground"
                       )}
                     />

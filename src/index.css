@@ -343,8 +343,8 @@
     --radius: 0.75rem;
 
     /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
-       sidebar is a desk surface now, not chrome. Portal identity comes
-       from --portal-accent on active nav items, not from a dark fill. */
+       sidebar is a desk surface now, not chrome. Selected nav uses
+       interactive blue wash (bg-primary/10). Portal identity is the 2px stripe. */
     --sidebar-background: #FFFFFF;
     --sidebar-foreground: #102033;
     --sidebar-primary: #2F6FED;
@@ -423,8 +423,8 @@
     --input: #E5EAF0;
     --ring: #2F6FED;
     /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
-       sidebar is a desk surface now, not chrome. Portal identity comes
-       from --portal-accent on active nav items, not from a dark fill. */
+       sidebar is a desk surface now, not chrome. Selected nav uses
+       interactive blue wash (bg-primary/10). Portal identity is the 2px stripe. */
     --sidebar-background: #FFFFFF;
     --sidebar-foreground: #102033;
     --sidebar-primary: #2F6FED;

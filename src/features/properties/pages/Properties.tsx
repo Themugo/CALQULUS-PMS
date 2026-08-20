@@ -647,7 +647,7 @@ const Properties = () => {
                             <div className="flex items-center justify-between w-full gap-3">
                               <span>{cat.name}</span>
                               {cat.requiresTier !== 'lite' && (
-                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${cat.requiresTier === 'enterprise' ? 'bg-amber-100 text-amber-800' : 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)]'}`}>
+                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${cat.requiresTier === 'enterprise' ? 'bg-warning/10 text-warning' : 'bg-primary/10 text-primary'}`}>
                                   {cat.requiresTier === 'enterprise' ? 'Enterprise' : 'Pro+'}
                                 </span>
                               )}
@@ -868,7 +868,7 @@ const Properties = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteProperty} disabled={isDeleting} className="bg-amber-600 text-white hover:bg-amber-700">
+            <AlertDialogAction onClick={handleDeleteProperty} disabled={isDeleting} className="bg-warning text-warning-foreground hover:bg-warning/90">
               {isDeleting ? "Deactivating..." : "Deactivate"}
             </AlertDialogAction>
           </AlertDialogFooter>

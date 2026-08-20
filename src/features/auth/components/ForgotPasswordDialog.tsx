@@ -44,34 +44,29 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     setTimeout(() => { setEmail(''); setEmailSent(false); }, 300);
   };
 
-  // All variants now use the same clean CALQULUS design system
-  const isDark = variant !== 'default';
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <button type="button" className="text-amber-600 hover:text-amber-500 text-sm font-medium">
+          <button type="button" className="text-primary hover:text-primary-hover text-sm font-medium">
             Forgot password?
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className={isDark
-        ? 'border-white/10 bg-[#0F1E36] backdrop-blur-xl text-white'
-        : ''}>
+      <DialogContent>
         <DialogHeader>
           <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm">
+            <div className="h-12 w-12 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center">
               {emailSent
                 ? <CheckCircle className="h-6 w-6 text-success" />
-                : <Mail className="h-6 w-6 text-amber-400" />
+                : <Mail className="h-6 w-6 text-primary" />
               }
             </div>
           </div>
-          <DialogTitle className={`text-center ${isDark ? 'text-white' : ''}`}>
+          <DialogTitle className="text-center">
             {emailSent ? 'Check your email' : 'Reset your password'}
           </DialogTitle>
-          <DialogDescription className={`text-center ${isDark ? 'text-white/50' : ''}`}>
+          <DialogDescription className="text-center">
             {emailSent
               ? `We sent a reset link to ${email}`
               : "Enter your email and we'll send a link to reset your password."
@@ -81,15 +76,15 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
 
         {emailSent ? (
           <div className="space-y-4 py-2">
-            <p className={`text-sm text-center ${isDark ? 'text-white/40' : 'text-muted-foreground'}`}>
+            <p className="text-sm text-center text-muted-foreground">
               Didn't receive it? Check your spam folder or try again.
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" className={`flex-1 ${isDark ? 'border-white/15 text-white/70 hover:bg-white/8' : ''}`}
+              <Button variant="outline" className="flex-1"
                 onClick={() => setEmailSent(false)}>
                 Try again
               </Button>
-              <Button className="flex-1 btn-brand font-semibold" onClick={handleClose}>
+              <Button className="flex-1" onClick={handleClose}>
                 Close
               </Button>
             </div>
@@ -97,28 +92,25 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
         ) : (
           <form onSubmit={handleResetRequest} className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="reset-email" className={isDark ? 'text-white/70' : ''}>
+              <Label htmlFor="reset-email">
                 Email address
               </Label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-white/30' : 'text-muted-foreground/50'}`} />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="reset-email" type="email" placeholder="you@example.com"
                   value={email} onChange={e => setEmail(e.target.value)} required
-                  className={`pl-9 ${isDark
-                    ? 'bg-white/8 border-white/15 text-white placeholder:text-white/30 focus:border-amber-400/60 focus:ring-amber-400/20'
-                    : ''
-                  }`}
+                  className="pl-9"
                 />
               </div>
             </div>
             <div className="flex gap-2">
               <Button type="button" variant="outline"
-                className={`flex-1 ${isDark ? 'border-white/15 text-white/70 hover:bg-white/8' : ''}`}
+                className="flex-1"
                 onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1 btn-brand font-semibold" disabled={isSubmitting}>
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? 'Sending…' : 'Send reset link'}
               </Button>
             </div>
