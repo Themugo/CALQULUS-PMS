@@ -69,7 +69,7 @@ const Dashboard = () => {
       restrictToAssignedProperties,
       assignedPropertyIds,
     }),
-    [restrictToAssignedProperties, assignedPropertyIds, assignedKey],
+    [restrictToAssignedProperties, assignedPropertyIds],
   );
 
   const {

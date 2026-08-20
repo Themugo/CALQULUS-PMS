@@ -211,14 +211,12 @@ export function useBillingData(selectedMonth: string) {
   });
 
   /** Call after any mutation that changes invoices to get fresh data. */
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateInvoices = useCallback(() => {
     if (!managerId) return;
     queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId) });
   }, [queryClient, managerId]);
 
   /** Call after saving an expenditure. */
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateExpenditures = useCallback(() => {
     if (!managerId) return;
     queryClient.invalidateQueries({

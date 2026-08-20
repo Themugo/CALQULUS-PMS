@@ -42,8 +42,8 @@ describe("buildAttentionItems", () => {
     expect(items.map((item) => item.id)).toEqual([
       "overdue",
       "urgent-maintenance",
-      "expiring-leases",
       "open-maintenance",
+      "expiring-leases",
       "vacant",
     ]);
     expect(items.find((item) => item.id === "refunds")).toBeUndefined();
