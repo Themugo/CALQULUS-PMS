@@ -211,15 +211,15 @@ export function ImageUpload({
           className={cn(
             "relative rounded-lg border-2 border-dashed transition-colors",
             isDragging
-              ? "border-amber-400/50 bg-amber-400/8"
+              ? "border-primary/50 bg-primary/10"
               : "border-border hover:border-muted-foreground/50",
             isUploading && "pointer-events-none opacity-50"
           )}
         >
           {/* Drop overlay */}
           {isDragging && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-amber-400/10">
-              <div className="flex flex-col items-center gap-2 text-amber-500">
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex flex-col items-center gap-2 text-primary">
                 <Upload className="h-8 w-8" />
                 <span className="text-sm font-medium">Drop image here</span>
               </div>

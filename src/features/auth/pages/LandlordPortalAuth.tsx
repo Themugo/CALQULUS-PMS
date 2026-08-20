@@ -14,9 +14,9 @@ import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
   { icon: Building2, text: 'Properties', detail: 'Occupancy per building. No tenant names.', tint: 'bg-soft-blue text-primary' },
-  { icon: TrendingUp, text: 'Your share', detail: 'Collected rent after the revenue split.', tint: 'bg-gold-bg text-primary' },
-  { icon: FileText, text: 'Statements', detail: 'Monthly occupancy and revenue, not a tenant ledger.', tint: 'bg-indigo-bg text-indigo' },
-  { icon: Shield, text: 'Guarded view', detail: 'This portal never shows tenant PII.', tint: 'bg-teal-bg text-teal' },
+  { icon: TrendingUp, text: 'Your share', detail: 'Collected rent after the revenue split.', tint: 'bg-primary/10 text-primary' },
+  { icon: FileText, text: 'Statements', detail: 'Monthly occupancy and revenue, not a tenant ledger.', tint: 'bg-navy-mid/10 text-navy-mid' },
+  { icon: Shield, text: 'Guarded view', detail: 'This portal never shows tenant PII.', tint: 'bg-navy-mid/10 text-navy-mid' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [

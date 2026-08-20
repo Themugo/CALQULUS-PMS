@@ -115,7 +115,7 @@ export function FilterFramework({
           {presets.length > 0 && (
             <div className="space-y-2">
               <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Bookmark className="h-3.5 w-3.5 text-amber-500" />
+                <Bookmark className="h-3.5 w-3.5 text-primary" />
                 Saved Filter Presets
               </p>
               <div className="flex flex-wrap gap-1.5">

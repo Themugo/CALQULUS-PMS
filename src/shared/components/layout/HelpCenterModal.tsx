@@ -122,8 +122,8 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
                 </DialogDescription>
               </div>
             </div>
-            <Badge variant="outline" className="hidden sm:inline-flex items-center gap-1 text-[11px] text-emerald-600 border-emerald-300 dark:text-emerald-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <Badge variant="outline" className="hidden sm:inline-flex items-center gap-1 text-[11px] text-success border-success/40">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               v2.4.0 Operational
             </Badge>
           </div>
@@ -213,7 +213,7 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
                 {faqs.map((faq, idx) => (
                   <div key={idx} className="p-3.5 rounded-lg border border-border/80 bg-card space-y-1.5">
                     <p className="text-xs font-bold text-foreground flex items-center gap-2">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                      <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
                       {faq.q}
                     </p>
                     <p className="text-xs text-muted-foreground leading-relaxed pl-5">{faq.a}</p>
@@ -252,8 +252,8 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
           {/* Tab 4: Support Ticket */}
           <TabsContent value="support" className="p-4 sm:p-6 m-0 focus-visible:outline-hidden">
             {ticketSubmitted ? (
-              <div className="p-8 text-center space-y-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
+              <div className="p-8 text-center space-y-3 bg-success/10 border border-success/20 rounded-xl">
+                <CheckCircle2 className="h-10 w-10 text-success mx-auto" />
                 <h3 className="text-sm font-bold text-foreground">Support Ticket Dispatched</h3>
                 <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                   Our engineering support desk has received your ticket. A response will be dispatched to your email shortly.
@@ -293,35 +293,35 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
             <div className="space-y-3 text-xs">
               <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
                   <div>
                     <p className="font-bold text-foreground">PostgreSQL & Supabase Auth</p>
                     <p className="text-[11px] text-muted-foreground">Operational (99.99% Uptime)</p>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-emerald-600 border-emerald-300">Healthy</Badge>
+                <Badge variant="outline" className="text-success border-success/40">Healthy</Badge>
               </div>
 
               <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
                   <div>
                     <p className="font-bold text-foreground">M-Pesa Express & Paybill Gateway</p>
                     <p className="text-[11px] text-muted-foreground">Connected (Latency: 140ms)</p>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-emerald-600 border-emerald-300">Active</Badge>
+                <Badge variant="outline" className="text-success border-success/40">Active</Badge>
               </div>
 
               <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
                   <div>
                     <p className="font-bold text-foreground">Edge Functions & Notification Engine</p>
                     <p className="text-[11px] text-muted-foreground">3 Deployed Functions Online</p>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-emerald-600 border-emerald-300">Online</Badge>
+                <Badge variant="outline" className="text-success border-success/40">Online</Badge>
               </div>
             </div>
           </TabsContent>

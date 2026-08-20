@@ -100,11 +100,11 @@ export const TopMobileInstallBanner = () => {
   if (!isVisible || isDismissed) return null;
 
   return (
-    <div className="w-full bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-emerald-500/15 border-b border-amber-400/20 text-foreground px-3 py-2.5 sm:px-4 sm:py-3 transition-all animate-in slide-in-from-top-2 duration-300">
+    <div className="w-full bg-gradient-to-r from-primary/15 via-primary/10 to-navy-mid/10 border-b border-primary/20 text-foreground px-3 py-2.5 sm:px-4 sm:py-3 transition-all animate-in slide-in-from-top-2 duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div className="relative flex-shrink-0">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md text-slate-900 font-bold text-xs">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-md text-primary-foreground font-bold text-xs">
               <Smartphone className="h-5 w-5 text-slate-950" />
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 bg-emerald-500 rounded-full flex items-center justify-center ring-2 ring-background">
@@ -117,7 +117,7 @@ export const TopMobileInstallBanner = () => {
               <p className="font-semibold text-xs sm:text-sm truncate">
                 Install CALQULUS PMS App
               </p>
-              <span className="hidden xs:inline-block px-1.5 py-0.5 text-[10px] font-semibold bg-amber-400/20 text-amber-600 dark:text-amber-400 rounded-full">
+              <span className="hidden xs:inline-block px-1.5 py-0.5 text-[10px] font-semibold bg-primary/10 text-primary dark:text-primary rounded-full">
                 Mobile
               </span>
             </div>
@@ -133,7 +133,7 @@ export const TopMobileInstallBanner = () => {
           <Button
             size="sm"
             onClick={handleInstallClick}
-            className="h-8 px-3 text-xs font-medium bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-sm"
+            className="h-8 px-3 text-xs font-medium bg-primary hover:bg-primary-hover text-primary-foreground shadow-sm"
           >
             {isIOS ? (
               <>
@@ -161,9 +161,9 @@ export const TopMobileInstallBanner = () => {
       </div>
 
       {showIOSGuide && (
-        <div className="mt-2.5 p-2.5 bg-background/80 backdrop-blur-md rounded-xl border border-amber-400/30 text-xs text-foreground flex items-center justify-between gap-2 max-w-7xl mx-auto animate-in fade-in duration-200">
+        <div className="mt-2.5 p-2.5 bg-background/80 backdrop-blur-md rounded-xl border border-primary/30 text-xs text-foreground flex items-center justify-between gap-2 max-w-7xl mx-auto animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
-            <Share className="h-4 w-4 text-amber-500 flex-shrink-0" />
+            <Share className="h-4 w-4 text-primary flex-shrink-0" />
             <span>
               Tap <strong>Share</strong> in your browser menu, then select <strong>"Add to Home Screen"</strong>.
             </span>

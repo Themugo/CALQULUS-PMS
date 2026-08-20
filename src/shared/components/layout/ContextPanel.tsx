@@ -88,7 +88,7 @@ export function ContextPanel({ open, onClose, title = "Workspace Context", child
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="h-7 w-7 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 font-semibold text-[11px]">
+                    <div className="h-7 w-7 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0 font-semibold text-[11px]">
                       LEA
                     </div>
                     <div className="space-y-1">
@@ -99,7 +99,7 @@ export function ContextPanel({ open, onClose, title = "Workspace Context", child
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="h-7 w-7 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-semibold text-[11px]">
+                    <div className="h-7 w-7 rounded-full bg-navy-mid/10 text-navy-mid flex items-center justify-center shrink-0 font-semibold text-[11px]">
                       MNT
                     </div>
                     <div className="space-y-1">
@@ -120,7 +120,7 @@ export function ContextPanel({ open, onClose, title = "Workspace Context", child
                       <p className="font-medium text-foreground">Review Water Meter Billing</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">Verify July sub-meter readings for Block C.</p>
                     </div>
-                    <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">High</Badge>
+                    <Badge variant="warning" className="text-[10px]">High</Badge>
                   </div>
 
                   <div className="p-2.5 rounded-lg border border-border/70 bg-card hover:border-border transition-colors flex items-start justify-between gap-2">

@@ -21,9 +21,9 @@ import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
   { icon: Building2, text: 'Properties & units', detail: 'Occupancy lives on the building record.', tint: 'bg-soft-blue text-primary' },
-  { icon: Users, text: 'Tenants & leases', detail: 'Invites, terms, deposits, and move-in.', tint: 'bg-indigo-bg text-indigo' },
-  { icon: CreditCard, text: 'Rent & M-Pesa', detail: 'Invoices, receipts, and water billing.', tint: 'bg-gold-bg text-primary' },
-  { icon: Wrench, text: 'Repairs', detail: 'Tickets against the same units.', tint: 'bg-teal-bg text-teal' },
+  { icon: Users, text: 'Tenants & leases', detail: 'Invites, terms, deposits, and move-in.', tint: 'bg-navy-mid/10 text-navy-mid' },
+  { icon: CreditCard, text: 'Rent & M-Pesa', detail: 'Invoices, receipts, and water billing.', tint: 'bg-primary/10 text-primary' },
+  { icon: Wrench, text: 'Repairs', detail: 'Tickets against the same units.', tint: 'bg-navy-mid/10 text-navy-mid' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [

@@ -20,25 +20,36 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_BRAND.iconFamily).toBe("lucide-react");
   });
 
-  it("uses executive blue as primary, not gold", () => {
-    expect(CALQULUS_COLOR.primary).toBe("#155EEF");
-    expect(CALQULUS_COLOR.primaryHover).toBe("#0E4FCC");
-    expect(CALQULUS_COLOR.primaryActive).toBe("#0C3FA8");
+  it("uses interactive blue as primary, not gold", () => {
+    expect(CALQULUS_COLOR.primary).toBe("#2F6FED");
+    expect(CALQULUS_COLOR.primaryHover).toBe("#2560D4");
+    expect(CALQULUS_COLOR.primaryActive).toBe("#1E4FBA");
+    expect(CALQULUS_COLOR.accent).toBe(CALQULUS_COLOR.primary);
     expect(CALQULUS_COLOR.primary).not.toBe("#C9A84C");
+    expect(CALQULUS_COLOR.primary).not.toBe("#155EEF");
+  });
+
+  it("establishes navy as the identity scale", () => {
+    expect(CALQULUS_COLOR.navyDeep).toBe("#081A2E");
+    expect(CALQULUS_COLOR.navyPrimary).toBe("#0D2744");
+    expect(CALQULUS_COLOR.navySecondary).toBe("#173F67");
   });
 
   it("keeps light surfaces as the production background", () => {
-    expect(CALQULUS_COLOR.background).toBe("#EEF2F8");
+    expect(CALQULUS_COLOR.background).toBe("#F7F9FC");
     expect(CALQULUS_COLOR.surface).toBe("#FFFFFF");
-    expect(CALQULUS_COLOR.surfaceElevated).toBe("#F4F7FB");
+    expect(CALQULUS_COLOR.surfaceElevated).toBe("#F7F9FC");
+    expect(CALQULUS_COLOR.white).toBe("#FFFFFF");
   });
 
   it("defines the full semantic palette", () => {
-    expect(CALQULUS_COLOR.success).toBe("#12B76A");
-    expect(CALQULUS_COLOR.warning).toBe("#F59E0B");
-    expect(CALQULUS_COLOR.danger).toBe("#F04438");
-    expect(CALQULUS_COLOR.info).toBe("#0EA5E9");
-    expect(CALQULUS_COLOR.border).toBe("#D5DDEA");
+    expect(CALQULUS_COLOR.success).toBe("#23856B");
+    expect(CALQULUS_COLOR.warning).toBe("#B7791F");
+    expect(CALQULUS_COLOR.danger).toBe("#C84B4B");
+    expect(CALQULUS_COLOR.info).toBe(CALQULUS_COLOR.primary);
+    expect(CALQULUS_COLOR.border).toBe("#E5EAF0");
+    expect(CALQULUS_COLOR.textPrimary).toBe("#102033");
+    expect(CALQULUS_COLOR.textMuted).toBe("#637286");
     expect(CALQULUS_COLOR.focus).toBe(CALQULUS_COLOR.primary);
   });
 
@@ -58,7 +69,7 @@ describe("CALQULUS design tokens", () => {
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
     expect(CALQULUS_SPACE[4]).toBe("1rem");
     expect(CALQULUS_RADIUS.card).toBe("0.625rem");
-    expect(CALQULUS_SHADOW.card).toContain("23 33 61");
+    expect(CALQULUS_SHADOW.card).toContain("16 32 51");
     expect(CALQULUS_TYPE.pageTitle).toBe("type-page-title");
     expect(CALQULUS_FIELD.error).toContain("text-destructive");
     expect(CALQULUS_ICON.md).toBe("h-4 w-4");
@@ -68,6 +79,11 @@ describe("CALQULUS design tokens", () => {
 describe("chart palette follows tokens", () => {
   it("leads with primary blue", () => {
     expect(BRAND_CHART_COLORS[0]).toBe(CALQULUS_COLOR.primary);
+  });
+
+  it("does not introduce decorative indigo or sky leftovers", () => {
+    expect(BRAND_CHART_COLORS).not.toContain("#4F46E5");
+    expect(BRAND_CHART_COLORS).not.toContain("#7DD3FC");
   });
 
   it("maps status colors to semantic tokens", () => {
@@ -85,5 +101,22 @@ describe("index.css Tailwind v4 production safety", () => {
     for (const name of ["page-title", "section-title", "card-title-exec", "metric-value", "meta-text"]) {
       expect(css).not.toMatch(new RegExp(`@apply\\s+${name}\\b`));
     }
+  });
+
+  it("keeps CSS variables in lockstep with the TypeScript palette", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const css = readFileSync(join(process.cwd(), "src/index.css"), "utf8");
+    expect(css).toContain(`--primary: ${CALQULUS_COLOR.primary}`);
+    expect(css).toContain(`--navy-deep: ${CALQULUS_COLOR.navyDeep}`);
+    expect(css).toContain(`--navy-primary: ${CALQULUS_COLOR.navyPrimary}`);
+    expect(css).toContain(`--navy-mid: ${CALQULUS_COLOR.navySecondary}`);
+    expect(css).toContain(`--success: ${CALQULUS_COLOR.success}`);
+    expect(css).toContain(`--warning: ${CALQULUS_COLOR.warning}`);
+    expect(css).toContain(`--destructive: ${CALQULUS_COLOR.danger}`);
+    expect(css).toContain(`--background: ${CALQULUS_COLOR.background}`);
+    expect(css).toContain(`--border: ${CALQULUS_COLOR.border}`);
+    expect(css).toContain(`--foreground: ${CALQULUS_COLOR.textPrimary}`);
+    expect(css).toContain(`--muted-foreground: ${CALQULUS_COLOR.textMuted}`);
   });
 });

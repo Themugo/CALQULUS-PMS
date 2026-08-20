@@ -308,10 +308,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                           e.stopPropagation();
                           toggleFavorite(page);
                         }}
-                        className="p-1 text-muted-foreground hover:text-amber-500"
+                        className="p-1 text-muted-foreground hover:text-primary"
                         title={fav ? "Unpin module" : "Pin module"}
                       >
-                        <Star className={cn("h-3.5 w-3.5", fav && "text-amber-500 fill-amber-500")} />
+                        <Star className={cn("h-3.5 w-3.5", fav && "text-primary fill-primary")} />
                       </button>
                       <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>

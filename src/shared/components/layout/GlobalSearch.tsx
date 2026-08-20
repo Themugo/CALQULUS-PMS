@@ -15,11 +15,11 @@ interface SearchResult {
 }
 
 const typeConfig = {
-  property: { icon: Building2, color: "text-sky-500", label: "Property" },
-  tenant: { icon: Users, color: "text-emerald-500", label: "Tenant" },
-  invoice: { icon: CreditCard, color: "text-amber-500", label: "Invoice" },
-  lease: { icon: FileText, color: "text-indigo-500", label: "Lease" },
-  maintenance: { icon: Wrench, color: "text-red-500", label: "Maintenance" },
+  property: { icon: Building2, color: "text-navy-mid", label: "Property" },
+  tenant: { icon: Users, color: "text-navy-mid", label: "Tenant" },
+  invoice: { icon: CreditCard, color: "text-primary", label: "Invoice" },
+  lease: { icon: FileText, color: "text-navy-mid", label: "Lease" },
+  maintenance: { icon: Wrench, color: "text-navy-mid", label: "Maintenance" },
 };
 
 export function GlobalSearch() {

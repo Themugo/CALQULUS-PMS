@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { PenTool, RotateCcw, Check, Download, Lock } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { cn } from "@/shared/lib/utils";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export interface DigitalSignaturePadProps {
   onSave?: (dataUrl: string) => void;
@@ -28,7 +28,7 @@ export function DigitalSignaturePad({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.strokeStyle = "#17213D";
+    ctx.strokeStyle = CALQULUS_COLOR.textPrimary;
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";

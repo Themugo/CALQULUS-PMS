@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 
 interface StatCardProps {
   icon: LucideIcon;
-  /** Tailwind classes for the icon's circular background, e.g. "bg-emerald-500/10" */
+  /** Tailwind classes for the icon's circular background, e.g. "bg-success/10" */
   iconBgClass: string;
-  /** Tailwind classes for the icon color, e.g. "text-emerald-500" */
+  /** Tailwind classes for the icon color, e.g. "text-success" */
   iconColorClass: string;
   label: string;
   value: React.ReactNode;

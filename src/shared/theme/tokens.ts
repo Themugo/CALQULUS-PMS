@@ -2,6 +2,16 @@
  * CALQULUS PMS design tokens — TypeScript source of truth.
  * Keep hex values in sync with CSS variables in src/index.css.
  *
+ * This is the one visual language. Do not add a parallel palette,
+ * theme file, or decorative colour set.
+ *
+ * Colour roles (do not use semantic colours as decoration):
+ *   Navy  — identity (headers, chrome, marketing close)
+ *   Blue  — interaction (buttons, links, focus, selected controls)
+ *   Green — success only
+ *   Amber — attention / warning only
+ *   Red   — danger only
+ *
  * Production experience is light. Dark-mode CSS exists only as a
  * classified dormant mirror of these light tokens.
  */
@@ -13,26 +23,35 @@ export const CALQULUS_BRAND = {
 } as const;
 
 export const CALQULUS_COLOR = {
-  primary: "#155EEF",
-  primaryHover: "#0E4FCC",
-  primaryActive: "#0C3FA8",
-  secondary: "#F4F7FB",
-  accent: "#155EEF",
-  success: "#12B76A",
-  warning: "#F59E0B",
-  danger: "#F04438",
-  info: "#0EA5E9",
+  /** Interactive blue — buttons, links, focus, selected controls. */
+  primary: "#2F6FED",
+  primaryHover: "#2560D4",
+  primaryActive: "#1E4FBA",
+  accent: "#2F6FED",
 
-  background: "#EEF2F8",
+  /** Navy identity scale. */
+  navyDeep: "#081A2E",
+  navyPrimary: "#0D2744",
+  navySecondary: "#173F67",
+
+  white: "#FFFFFF",
+  secondary: "#F7F9FC",
+  success: "#23856B",
+  warning: "#B7791F",
+  danger: "#C84B4B",
+  /** Informational tone — same family as interaction, not a sixth brand colour. */
+  info: "#2F6FED",
+
+  background: "#F7F9FC",
   surface: "#FFFFFF",
-  surfaceElevated: "#F4F7FB",
+  surfaceElevated: "#F7F9FC",
 
-  textPrimary: "#17213D",
-  textSecondary: "#5B6B88",
-  textMuted: "#5B6B88",
+  textPrimary: "#102033",
+  textSecondary: "#637286",
+  textMuted: "#637286",
 
-  border: "#D5DDEA",
-  focus: "#155EEF",
+  border: "#E5EAF0",
+  focus: "#2F6FED",
 } as const;
 
 /** PWA / native chrome must match the live light brand, not legacy gold/navy. */
@@ -72,10 +91,11 @@ export const CALQULUS_RADIUS = {
   card: "0.625rem",
 } as const;
 
+/** Shadows tint with primary text navy, not pure black. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 1px -1px rgb(23 33 61 / 0.03)",
-  elevated: "0 4px 12px -2px rgb(23 33 61 / 0.06)",
+  card: "0 1px 2px 0 rgb(16 32 51 / 0.04), 0 1px 1px -1px rgb(16 32 51 / 0.03)",
+  elevated: "0 4px 12px -2px rgb(16 32 51 / 0.06)",
 } as const;
 
 export const CALQULUS_ICON = {

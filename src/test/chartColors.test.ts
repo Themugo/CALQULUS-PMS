@@ -7,12 +7,12 @@ import {
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 describe("BRAND_CHART_COLORS", () => {
-  it("leads with the executive-blue primary token", () => {
+  it("leads with the interactive-blue primary token", () => {
     expect(BRAND_CHART_COLORS[0]).toBe(CALQULUS_COLOR.primary);
   });
 
-  it("places the info accent second", () => {
-    expect(BRAND_CHART_COLORS[1]).toBe(CALQULUS_COLOR.info);
+  it("places secondary navy second for identity series", () => {
+    expect(BRAND_CHART_COLORS[1]).toBe(CALQULUS_COLOR.navySecondary);
   });
 
   it("contains a fixed palette of 8 colors", () => {

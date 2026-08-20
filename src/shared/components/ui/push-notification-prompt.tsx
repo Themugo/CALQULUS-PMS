@@ -57,15 +57,15 @@ export const PushNotificationPrompt = () => {
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm animate-in slide-in-from-top-5 fade-in duration-300">
-      <div className="bg-gradient-to-br from-amber-400/10 via-card to-card border border-amber-400/20 rounded-xl shadow-xl p-4 backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-xl shadow-xl p-4 backdrop-blur-sm">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0 animate-pulse">
-            <Bell className="h-5 w-5 text-amber-500" />
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 animate-pulse">
+            <Bell className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h4 className="font-semibold text-sm text-foreground">Stay Updated</h4>
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               Get instant alerts for payments, maintenance updates, and important notices
@@ -151,10 +151,10 @@ export const NotificationSettingsCard = () => {
     <div className="flex items-center justify-between p-4 bg-card border rounded-lg">
       <div className="flex items-center gap-3">
         <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-          isSubscribed ? "bg-amber-400/10" : "bg-muted"
+          isSubscribed ? "bg-primary/10" : "bg-muted"
         }`}>
           {isSubscribed ? (
-            <Bell className="h-5 w-5 text-amber-500" />
+            <Bell className="h-5 w-5 text-primary" />
           ) : (
             <BellOff className="h-5 w-5 text-muted-foreground" />
           )}

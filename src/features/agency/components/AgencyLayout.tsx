@@ -87,14 +87,14 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
                   group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                   transition-all duration-200 border touch-manipulation
                   ${active
-                    ? 'bg-indigo/10 border-indigo/20 text-indigo'
+                    ? 'bg-primary/10 border-primary/20 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground border-transparent'}
                 `}
               >
                 <item.icon className={`h-4 w-4 flex-shrink-0 transition-colors
-                  ${active ? 'text-indigo' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                  ${active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 <span className="flex-1 truncate">{item.label}</span>
-                {active && <div className="w-1 h-4 rounded-full bg-indigo flex-shrink-0" />}
+                {active && <div className="w-1 h-4 rounded-full bg-primary flex-shrink-0" />}
               </Link>
             );
           })}
@@ -103,8 +103,8 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         {/* Footer */}
         <div className="flex-shrink-0 p-3 border-t border-border">
           {user && (
-            <div className="px-3 py-2 mb-2 rounded-lg bg-indigo/5 border border-indigo/10">
-              <p className="text-[9px] text-indigo uppercase tracking-wider font-semibold mb-0.5">Agency</p>
+            <div className="px-3 py-2 mb-2 rounded-lg bg-navy-mid/5 border border-navy-mid/10">
+              <p className="text-[9px] text-navy-mid uppercase tracking-wider font-semibold mb-0.5">Agency</p>
               <p className="text-xs text-foreground/70 truncate font-medium">{user.email}</p>
             </div>
           )}
@@ -118,7 +118,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             <span>Sign Out</span>
           </button>
         </div>
-        <div className="h-0.5 w-full bg-gradient-to-r from-indigo/0 via-indigo/30 to-indigo/0 flex-shrink-0" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 flex-shrink-0" />
       </aside>
 
       {/* Main content area */}
@@ -137,7 +137,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             {title && (
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="text-indigo font-medium hidden sm:inline">Agency</span>
+                  <span className="text-navy-mid font-medium hidden sm:inline">Agency</span>
                   <ChevronRight className="h-3.5 w-3.5 hidden sm:inline text-muted-foreground/50" />
                   <h1 className="font-heading font-semibold text-foreground truncate">{title}</h1>
                 </div>
@@ -146,7 +146,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[160px]">{user?.email}</span>
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo to-purple flex items-center justify-center text-white text-xs font-bold">
+            <div className="h-8 w-8 rounded-full bg-navy-primary flex items-center justify-center text-white text-xs font-bold">
               {(user?.email || 'A')[0].toUpperCase()}
             </div>
           </div>

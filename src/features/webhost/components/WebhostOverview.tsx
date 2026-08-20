@@ -18,7 +18,7 @@ import {
   ServerCog, MapPin, Bug, Receipt,
 } from 'lucide-react';
 import { HEALTH_COPY, usePlatformHealth } from '@/features/webhost/hooks/usePlatformHealth';
-import { EmptyState } from '@/shared/components/ui/empty-state';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 
 type ManagerInvoiceRow = { amount: number | null };
 type PropertyRow = { id: string; name: string; address: string | null; manager_id: string | null; created_at: string };
@@ -193,21 +193,21 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
                 <AreaChart data={trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="blueRevenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#155EEF" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#155EEF" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.35} />
+                      <stop offset="95%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#D5DDEA" opacity={0.7} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CALQULUS_COLOR.border} opacity={0.7} vertical={false} />
                   <XAxis 
                     dataKey="month" 
-                    stroke="#5B6B88" 
-                    tick={{ fontSize: 11, fill: '#5B6B88', fontWeight: 600 }}
+                    stroke={CALQULUS_COLOR.textMuted} 
+                    tick={{ fontSize: 11, fill: CALQULUS_COLOR.textMuted, fontWeight: 600 }}
                     tickLine={false}
-                    axisLine={{ stroke: '#D5DDEA' }}
+                    axisLine={{ stroke: CALQULUS_COLOR.border }}
                   />
                   <YAxis 
-                    stroke="#5B6B88" 
-                    tick={{ fontSize: 10, fill: '#5B6B88' }}
+                    stroke={CALQULUS_COLOR.textMuted} 
+                    tick={{ fontSize: 10, fill: CALQULUS_COLOR.textMuted }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : `${val}`}
@@ -216,11 +216,11 @@ const PlatformRevenueTrend: React.FC<{ onNavigateTab?: (tab: string) => void }> 
                   <Area 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#155EEF" 
+                    stroke={CALQULUS_COLOR.primary} 
                     strokeWidth={2.5}
                     fillOpacity={1} 
                     fill="url(#blueRevenueGradient)" 
-                    activeDot={{ r: 6, fill: '#155EEF', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: CALQULUS_COLOR.primary, stroke: CALQULUS_COLOR.white, strokeWidth: 2 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>

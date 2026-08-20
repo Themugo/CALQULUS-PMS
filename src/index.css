@@ -243,165 +243,161 @@
 @utility slide-out-to-right { --tw-exit-translate-x: 100%; }
 
 /* ── CALQULUS PMS Design Tokens ──────────────────────────────────────── */
-/* Live :root primary is executive blue #155EEF. Navy/gold/teal/indigo
-   role palettes are defined below. Do not treat the old indigo #304FFE
-   comment as source of truth. */
+/* One visual language. Hex values match src/shared/theme/tokens.ts.
+   Navy = identity. Blue = interaction. Green/amber/red = success /
+   attention / danger only. Decorative purple/indigo/teal/gold aliases
+   resolve to navy or interactive blue so leftover classes cannot
+   introduce a second palette. */
 
 @layer base {
   :root {
-    /* ── CALQULUS Super Admin design system ───────────────────────────
-       Executive enterprise palette. No pure black anywhere; subtle
-       navy-tinted page/section surfaces with white cards on top. */
-    --background: hsl(216 42% 95%);          /* #EEF2F8 light navy bg */
-    --secondary-background: hsl(216 42% 97%);/* #F4F7FB section surfaces */
-    --foreground: hsl(224 45% 16%);          /* #17213D primary text */
+    --background: #F7F9FC;
+    --secondary-background: #F7F9FC;
+    --foreground: #102033;
 
-    --card: hsl(0 0% 100%);                  /* #FFFFFF white cards */
-    --card-foreground: hsl(224 45% 16%);
-    --surface: hsl(0 0% 100%);
-    --surface-elevated: hsl(216 42% 97%);    /* #F4F7FB */
+    --card: #FFFFFF;
+    --card-foreground: #102033;
+    --surface: #FFFFFF;
+    --surface-elevated: #F7F9FC;
 
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(224 45% 16%);
+    --popover: #FFFFFF;
+    --popover-foreground: #102033;
 
-    /* Primary = executive blue #155EEF */
-    --primary: hsl(220 87% 51%);
-    --primary-foreground: hsl(0 0% 100%);
-    --primary-hover: hsl(222 83% 45%);       /* #0E4FCC */
-    --primary-active: hsl(223 87% 35%);      /* #0C3FA8 */
+    /* Interactive blue */
+    --primary: #2F6FED;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #2560D4;
+    --primary-active: #1E4FBA;
 
-    /* Navy executive surfaces (headers, emphasis) */
-    --navy-primary: hsl(230 71% 15%);        /* #0B1440 */
-    --navy-deep: hsl(230 79% 9%);            /* #050B2A */
-    --navy-mid: hsl(228 54% 19%);            /* #16204A */
-    --navy-surface: hsl(228 46% 23%);        /* #202B56 soft navy surface */
-    --secondary-navy: hsl(225 56% 32%);      /* #243B80 */
-    --soft-blue: hsl(214 100% 97%);          /* #EFF6FF */
+    /* Navy identity */
+    --navy-primary: #0D2744;
+    --navy-deep: #081A2E;
+    --navy-mid: #173F67;
+    --navy-surface: #1E4A72;
+    --secondary-navy: #173F67;
+    --soft-blue: color-mix(in srgb, var(--primary) 8%, #FFFFFF);
 
-    /* Secondary = cool slate light */
-    --secondary: hsl(216 42% 97%);           /* #F4F7FB */
-    --secondary-foreground: hsl(219 20% 45%);/* #5B6B88 soft text */
+    --secondary: #F7F9FC;
+    --secondary-foreground: #637286;
 
-    --muted: hsl(216 42% 97%);
-    --muted-foreground: hsl(219 20% 45%);    /* #5B6B88 muted/soft text */
+    --muted: #F7F9FC;
+    --muted-foreground: #637286;
 
-    /* Accent = CALQULUS blue */
-    --accent: hsl(220 87% 51%);
-    --accent-foreground: hsl(0 0% 100%);
+    --accent: #2F6FED;
+    --accent-foreground: #FFFFFF;
 
-    --destructive: hsl(4 86% 58%);           /* #F04438 */
-    --destructive-foreground: hsl(0 0% 100%);
-    --destructive-bg: hsl(4 86% 96%);        /* soft red tint */
+    --destructive: #C84B4B;
+    --destructive-foreground: #FFFFFF;
+    --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
 
-    --success: hsl(152 82% 39%);             /* #12B76A */
-    --success-foreground: hsl(0 0% 100%);
-    --success-bg: hsl(152 82% 96%);          /* soft green tint */
+    --success: #23856B;
+    --success-foreground: #FFFFFF;
+    --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
 
-    --warning: hsl(38 92% 50%);              /* #F59E0B */
-    --warning-foreground: hsl(0 0% 100%);
-    --warning-bg: hsl(38 92% 96%);           /* soft amber tint */
+    --warning: #B7791F;
+    --warning-foreground: #FFFFFF;
+    --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
 
-    --info: hsl(199 89% 48%);                /* #0EA5E9 sky information */
-    --info-foreground: hsl(0 0% 100%);
-    --info-bg: hsl(199 89% 96%);             /* soft sky tint */
+    --info: #2F6FED;
+    --info-foreground: #FFFFFF;
+    --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
 
-    /* Extended semantic accents (used for icon containers / emphasis) */
-    --purple: hsl(252 92% 66%);              /* #7A5AF8 */
-    --purple-foreground: hsl(0 0% 100%);
-    --purple-bg: hsl(252 92% 96%);
-    --indigo: hsl(239 84% 67%);              /* #6366F1 agency primary accent */
-    --indigo-foreground: hsl(0 0% 100%);
-    --indigo-bg: hsl(239 84% 97%);           /* #EEF2FF soft indigo tint */
-    --teal: hsl(173 83% 32%);                /* #0E9384 */
-    --teal-foreground: hsl(0 0% 100%);
-    --teal-bg: hsl(173 83% 96%);
+    /* Legacy class aliases — identity or interaction, never a second palette */
+    --purple: var(--navy-mid);
+    --purple-foreground: #FFFFFF;
+    --purple-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
+    --indigo: var(--navy-mid);
+    --indigo-foreground: #FFFFFF;
+    --indigo-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
+    --teal: var(--primary);
+    --teal-foreground: #FFFFFF;
+    --teal-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
     --gold: var(--primary);
     --gold-foreground: var(--primary-foreground);
-    --gold-bg: hsl(220 87% 96%);
+    --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
 
-    --border: hsl(216 41% 88%);              /* #D5DDEA subtle navy border */
-    --input: hsl(216 41% 88%);
-    --ring: hsl(220 87% 51%);
+    --border: #E5EAF0;
+    --input: #E5EAF0;
+    --ring: #2F6FED;
 
-    --radius: 0.625rem;                        /* restrained radius */
+    --radius: 0.625rem;
 
-    /* Sidebar = LIGHT navigation (white background, subtle border) */
-    --sidebar-background: hsl(0 0% 100%);    /* white */
-    --sidebar-foreground: hsl(224 45% 16%);   /* navy readable text */
-    --sidebar-primary: hsl(220 87% 51%);      /* blue active */
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(216 42% 95%);       /* soft navy hover */
-    --sidebar-accent-foreground: hsl(220 87% 40%);
-    --sidebar-border: hsl(216 41% 88%);       /* subtle border */
-    --sidebar-ring: hsl(220 87% 51%);
-    --sidebar-muted: hsl(219 20% 45%);        /* neutral inactive text */
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #102033;
+    --sidebar-primary: #2F6FED;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #F7F9FC;
+    --sidebar-accent-foreground: #2560D4;
+    --sidebar-border: #E5EAF0;
+    --sidebar-ring: #2F6FED;
+    --sidebar-muted: #637286;
   }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
      leftover `dark:` utilities cannot reintroduce a heavy dashboard.
      Production experience is always light. */
   .dark {
-    --background: hsl(216 42% 95%);
-    --secondary-background: hsl(216 42% 97%);
-    --foreground: hsl(224 45% 16%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(224 45% 16%);
-    --surface: hsl(0 0% 100%);
-    --surface-elevated: hsl(216 42% 97%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(224 45% 16%);
-    --primary: hsl(220 87% 51%);
-    --primary-foreground: hsl(0 0% 100%);
-    --primary-hover: hsl(222 83% 45%);
-    --primary-active: hsl(223 87% 35%);
-    --navy-primary: hsl(230 71% 15%);
-    --navy-deep: hsl(230 79% 9%);
-    --navy-mid: hsl(228 54% 19%);
-    --navy-surface: hsl(228 46% 23%);
-    --secondary-navy: hsl(225 56% 32%);
-    --soft-blue: hsl(214 100% 97%);
-    --secondary: hsl(216 42% 97%);
-    --secondary-foreground: hsl(219 20% 45%);
-    --muted: hsl(216 42% 97%);
-    --muted-foreground: hsl(219 20% 45%);
-    --accent: hsl(220 87% 51%);
-    --accent-foreground: hsl(0 0% 100%);
-    --destructive: hsl(4 86% 58%);
-    --destructive-foreground: hsl(0 0% 100%);
-    --destructive-bg: hsl(4 86% 96%);
-    --success: hsl(152 82% 39%);
-    --success-foreground: hsl(0 0% 100%);
-    --success-bg: hsl(152 82% 96%);
-    --warning: hsl(38 92% 50%);
-    --warning-foreground: hsl(0 0% 100%);
-    --warning-bg: hsl(38 92% 96%);
-    --info: hsl(199 89% 48%);
-    --info-foreground: hsl(0 0% 100%);
-    --info-bg: hsl(199 89% 96%);
-    --purple: hsl(252 92% 66%);
-    --purple-foreground: hsl(0 0% 100%);
-    --purple-bg: hsl(252 92% 96%);
-    --indigo: hsl(239 84% 67%);
-    --indigo-foreground: hsl(0 0% 100%);
-    --indigo-bg: hsl(239 84% 97%);
-    --teal: hsl(173 83% 32%);
-    --teal-foreground: hsl(0 0% 100%);
-    --teal-bg: hsl(173 83% 96%);
+    --background: #F7F9FC;
+    --secondary-background: #F7F9FC;
+    --foreground: #102033;
+    --card: #FFFFFF;
+    --card-foreground: #102033;
+    --surface: #FFFFFF;
+    --surface-elevated: #F7F9FC;
+    --popover: #FFFFFF;
+    --popover-foreground: #102033;
+    --primary: #2F6FED;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #2560D4;
+    --primary-active: #1E4FBA;
+    --navy-primary: #0D2744;
+    --navy-deep: #081A2E;
+    --navy-mid: #173F67;
+    --navy-surface: #1E4A72;
+    --secondary-navy: #173F67;
+    --soft-blue: color-mix(in srgb, var(--primary) 8%, #FFFFFF);
+    --secondary: #F7F9FC;
+    --secondary-foreground: #637286;
+    --muted: #F7F9FC;
+    --muted-foreground: #637286;
+    --accent: #2F6FED;
+    --accent-foreground: #FFFFFF;
+    --destructive: #C84B4B;
+    --destructive-foreground: #FFFFFF;
+    --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
+    --success: #23856B;
+    --success-foreground: #FFFFFF;
+    --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
+    --warning: #B7791F;
+    --warning-foreground: #FFFFFF;
+    --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
+    --info: #2F6FED;
+    --info-foreground: #FFFFFF;
+    --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
+    --purple: var(--navy-mid);
+    --purple-foreground: #FFFFFF;
+    --purple-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
+    --indigo: var(--navy-mid);
+    --indigo-foreground: #FFFFFF;
+    --indigo-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
+    --teal: var(--primary);
+    --teal-foreground: #FFFFFF;
+    --teal-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
     --gold: var(--primary);
     --gold-foreground: var(--primary-foreground);
-    --gold-bg: hsl(220 87% 96%);
-    --border: hsl(216 41% 88%);
-    --input: hsl(216 41% 88%);
-    --ring: hsl(220 87% 51%);
-    --sidebar-background: hsl(0 0% 100%);
-    --sidebar-foreground: hsl(224 45% 16%);
-    --sidebar-primary: hsl(220 87% 51%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(216 42% 95%);
-    --sidebar-accent-foreground: hsl(220 87% 40%);
-    --sidebar-border: hsl(216 41% 88%);
-    --sidebar-ring: hsl(220 87% 51%);
-    --sidebar-muted: hsl(219 20% 45%);
+    --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
+    --border: #E5EAF0;
+    --input: #E5EAF0;
+    --ring: #2F6FED;
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #102033;
+    --sidebar-primary: #2F6FED;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #F7F9FC;
+    --sidebar-accent-foreground: #2560D4;
+    --sidebar-border: #E5EAF0;
+    --sidebar-ring: #2F6FED;
+    --sidebar-muted: #637286;
   }
 }
 
@@ -428,16 +424,16 @@
 /* Production chrome is light. navy-executive-gradient is dormant (non-product). */
 .hero-gradient,
 .auth-gradient {
-  background-color: hsl(216 42% 95%) !important;
-  color: hsl(224 45% 16%) !important;
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
 .sidebar-gradient {
-  background-color: hsl(0 0% 100%) !important;
+  background-color: var(--sidebar-background) !important;
 }
 
 @utility text-gradient {
-  background: linear-gradient(135deg, hsl(224 45% 16%) 0%, hsl(220 87% 51%) 100%);
+  background: linear-gradient(135deg, var(--navy-primary) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
@@ -445,62 +441,62 @@
 
 /* Dormant decorative surface — do not use on production dashboards. */
 @utility navy-executive-gradient {
-  background: linear-gradient(135deg, hsl(230 79% 9%) 0%, hsl(230 71% 15%) 100%);
-  color: hsl(0 0% 100%);
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-primary) 100%);
+  color: var(--primary-foreground);
 }
 
 @utility card-shadow {
-  box-shadow: 0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 1px -1px rgb(23 33 61 / 0.03);
+  box-shadow: 0 1px 2px 0 rgb(16 32 51 / 0.04), 0 1px 1px -1px rgb(16 32 51 / 0.03);
 }
 
 @utility enterprise-card {
-  background-color: hsl(0 0% 100%);
-  border: 1px solid hsl(216 41% 88%);
-  border-radius: 0.625rem;
-  box-shadow: 0 1px 2px 0 rgb(23 33 61 / 0.04), 0 1px 3px 0 rgb(23 33 61 / 0.03);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px 0 rgb(16 32 51 / 0.04), 0 1px 3px 0 rgb(16 32 51 / 0.03);
 }
 
 /* Public pages: light canvas. Navy is reserved for footer and closing CTA. */
 @utility public-canvas {
-  background-color: hsl(216 42% 96.5%);
+  background-color: var(--background);
   background-image:
-    radial-gradient(ellipse 920px 560px at 6% -12%, hsl(220 87% 51% / 0.10), transparent 58%),
-    radial-gradient(ellipse 720px 480px at 100% -10%, hsl(230 71% 15% / 0.045), transparent 56%),
-    linear-gradient(180deg, hsl(210 50% 98.5%) 0%, hsl(216 42% 97%) 52%, hsl(216 36% 96%) 100%);
+    radial-gradient(ellipse 920px 560px at 6% -12%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 58%),
+    radial-gradient(ellipse 720px 480px at 100% -10%, color-mix(in srgb, var(--navy-primary) 4.5%, transparent), transparent 56%),
+    linear-gradient(180deg, #FBFCFE 0%, var(--background) 52%, var(--background) 100%);
 }
 
 @utility public-hero-grid {
   background-image:
-    linear-gradient(hsl(220 40% 70% / 0.10) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(220 40% 70% / 0.10) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse 85% 70% at 50% 0%, #000 18%, transparent 78%);
 }
 
 @utility btn-brand {
-  background-color: hsl(220 87% 51%);
-  color: #FFFFFF;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   font-weight: 600;
   transition: all 0.15s ease-in-out;
 }
 
 @utility hero-gradient {
-  background-color: hsl(216 42% 95%);
-  color: hsl(224 45% 16%);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 @utility auth-gradient {
-  background-color: hsl(216 42% 95%);
-  color: hsl(224 45% 16%);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 @utility sidebar-gradient {
-  background-color: hsl(0 0% 100%);
+  background-color: var(--sidebar-background);
 }
 
 @layer utilities {
   .btn-brand:hover {
-    background-color: hsl(222 83% 45%);
+    background-color: var(--primary-hover);
   }
 
   .safe-area-bottom {
@@ -531,11 +527,11 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(216 41% 88%);
+    background: var(--border);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(219 20% 45%);
+    background: var(--muted-foreground);
   }
 
   *:focus-visible {
@@ -548,12 +544,12 @@
   .prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 600; margin-top: 1.25em; margin-bottom: 0.5em; }
   .prose ul, .prose ol { padding-left: 1.25em; margin-top: 0.5em; margin-bottom: 0.5em; }
   .prose li { margin-top: 0.25em; margin-bottom: 0.25em; }
-  .prose a { color: hsl(220 87% 51%); text-decoration: underline; }
+  .prose a { color: var(--primary); text-decoration: underline; }
   .prose strong { font-weight: 600; }
-  .prose code { font-size: 0.875em; background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 4px; }
-  .prose blockquote { border-left: 3px solid hsl(220 87% 51%); padding-left: 1em; color: hsl(var(--muted-foreground)); }
+  .prose code { font-size: 0.875em; background: var(--muted); padding: 0.2em 0.4em; border-radius: 4px; }
+  .prose blockquote { border-left: 3px solid var(--primary); padding-left: 1em; color: var(--muted-foreground); }
   .prose img { max-width: 100%; border-radius: var(--radius); }
-  .dark .prose { color: hsl(var(--foreground)); }
+  .dark .prose { color: var(--foreground); }
 
   /* ── Executive typography hierarchy ────────────────────────────────
      Strong, deliberate scale so page titles dominate, section titles are
@@ -566,7 +562,7 @@
     font-size: 1.75rem;
     line-height: 1.2;
     font-weight: 700;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
     letter-spacing: -0.02em;
   }
   @media (min-width: 768px) {
@@ -579,7 +575,7 @@
     font-size: 1.375rem;
     line-height: 1.35;
     font-weight: 700;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
     letter-spacing: -0.01em;
   }
   .card-title-exec,
@@ -588,12 +584,12 @@
     font-size: 1.0625rem;
     line-height: 1.4;
     font-weight: 650;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
   }
   .supporting-text {
     font-size: 0.8125rem;
     line-height: 1.5;
-    color: hsl(219 20% 45%);
+    color: var(--muted-foreground);
   }
   .metric-value,
   .type-metric {
@@ -601,33 +597,33 @@
     font-size: 1.875rem;
     line-height: 1.1;
     font-weight: 700;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
     letter-spacing: -0.02em;
   }
   .meta-text,
   .type-meta {
     font-size: 0.6875rem;
     line-height: 1.4;
-    color: hsl(219 20% 45%);
+    color: var(--muted-foreground);
     font-weight: 500;
   }
   .type-body {
     font-size: 0.875rem;
     line-height: 1.5;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
   }
   .type-label {
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    color: hsl(219 20% 45%);
+    color: var(--muted-foreground);
   }
   /* Light cool-blue secondary surface for grouped panels. */
   .surface-subtle {
-    background-color: hsl(216 42% 97%);
+    background-color: var(--surface-elevated);
   }
   .dark .surface-subtle {
-    background-color: hsl(216 42% 97%);
+    background-color: var(--surface-elevated);
   }
 
   /* ── Semantic status badges ─────────────────────────────────────────
@@ -645,55 +641,55 @@
     line-height: 1.4;
   }
   .status-success {
-    background-color: hsl(152 82% 96%);
-    color: hsl(152 82% 30%);
-    border-color: hsl(152 82% 70%);
+    background-color: var(--success-bg);
+    color: var(--success);
+    border-color: color-mix(in srgb, var(--success) 35%, #FFFFFF);
   }
   .status-warning {
-    background-color: hsl(38 92% 96%);
-    color: hsl(38 92% 38%);
-    border-color: hsl(38 92% 70%);
+    background-color: var(--warning-bg);
+    color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 35%, #FFFFFF);
   }
   .status-danger {
-    background-color: hsl(4 86% 96%);
-    color: hsl(4 86% 46%);
-    border-color: hsl(4 86% 70%);
+    background-color: var(--destructive-bg);
+    color: var(--destructive);
+    border-color: color-mix(in srgb, var(--destructive) 35%, #FFFFFF);
   }
   .status-info {
-    background-color: hsl(199 89% 96%);
-    color: hsl(199 89% 36%);
-    border-color: hsl(199 89% 70%);
+    background-color: var(--info-bg);
+    color: var(--info);
+    border-color: color-mix(in srgb, var(--info) 35%, #FFFFFF);
   }
   .status-neutral {
-    background-color: hsl(216 42% 97%);
-    color: hsl(219 20% 45%);
-    border-color: hsl(216 41% 88%);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
   }
 
   /* ── Executive table system ─────────────────────────────────────────
      Soft navy-tinted header, white rows, subtle borders, generous row height. */
   .exec-table { width: 100%; border-collapse: collapse; }
   .exec-table thead th {
-    background-color: hsl(216 42% 97%);
-    color: hsl(219 20% 45%);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
     font-size: 0.6875rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     text-align: left;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid hsl(216 41% 88%);
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
   }
   .exec-table tbody td {
     padding: 0.875rem 1rem;
-    border-bottom: 1px solid hsl(216 41% 88%);
+    border-bottom: 1px solid var(--border);
     font-size: 0.875rem;
-    color: hsl(224 45% 16%);
+    color: var(--foreground);
     vertical-align: middle;
   }
   .exec-table tbody tr:hover td {
-    background-color: hsl(216 42% 97%);
+    background-color: var(--muted);
   }
   .exec-table tbody tr:last-child td {
     border-bottom: none;

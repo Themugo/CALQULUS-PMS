@@ -207,7 +207,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-navy-deep/70 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={() => onClose?.()}
         />
       )}

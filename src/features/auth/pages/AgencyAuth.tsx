@@ -14,9 +14,9 @@ import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
   { icon: Building2, text: 'Client properties', detail: 'Buildings you run on behalf of landlords.', tint: 'bg-soft-blue text-primary' },
-  { icon: Users, text: 'Tenants & leases', detail: 'Invites, occupancy, and rent on those units.', tint: 'bg-indigo-bg text-indigo' },
-  { icon: Percent, text: 'Revenue share', detail: 'Configurable split per property.', tint: 'bg-gold-bg text-primary' },
-  { icon: CreditCard, text: 'Collections', detail: 'M-Pesa, statements, and payouts.', tint: 'bg-teal-bg text-teal' },
+  { icon: Users, text: 'Tenants & leases', detail: 'Invites, occupancy, and rent on those units.', tint: 'bg-navy-mid/10 text-navy-mid' },
+  { icon: Percent, text: 'Revenue share', detail: 'Configurable split per property.', tint: 'bg-primary/10 text-primary' },
+  { icon: CreditCard, text: 'Collections', detail: 'M-Pesa, statements, and payouts.', tint: 'bg-navy-mid/10 text-navy-mid' },
 ];
 
 const otherPortals: PortalSwitchLink[] = [

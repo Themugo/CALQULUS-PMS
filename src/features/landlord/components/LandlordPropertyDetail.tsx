@@ -23,7 +23,7 @@ const STATUS_BADGE: Record<string, string> = {
   occupied:    'bg-success/15 text-success border-success/30',
   vacant:      'bg-warning/15 text-warning border-warning/30',
   maintenance: 'bg-destructive/15 text-destructive border-destructive/30',
-  reserved:    'bg-teal/15 text-teal border-teal/30',
+  reserved:    'bg-primary/15 text-primary border-primary/30',
 };
 
 interface Props {
@@ -293,7 +293,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex gap-4 justify-center mt-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-teal inline-block" />Collected</span>
+                <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-success inline-block" />Collected</span>
                 <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-success inline-block" />Net to you ({revenueSharePct}%)</span>
               </div>
             </CardContent>

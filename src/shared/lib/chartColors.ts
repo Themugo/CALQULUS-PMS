@@ -1,19 +1,19 @@
 /**
  * Shared chart color palette for CALQULUS PMS.
- * Series colors come from src/shared/theme/tokens.ts so charts match
- * the live primary (executive blue) instead of obsolete gold/navy chrome.
+ * Series colors come from src/shared/theme/tokens.ts.
+ * Semantic colours appear only for positive / warning / negative series.
  */
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export const BRAND_CHART_COLORS = [
   CALQULUS_COLOR.primary,
-  CALQULUS_COLOR.info,
+  CALQULUS_COLOR.navySecondary,
   CALQULUS_COLOR.success,
+  CALQULUS_COLOR.navyPrimary,
   CALQULUS_COLOR.danger,
-  "#4F46E5",
-  "#17213D",
-  "#7DD3FC",
-  "#94A3B8",
+  CALQULUS_COLOR.navyDeep,
+  CALQULUS_COLOR.textMuted,
+  CALQULUS_COLOR.border,
 ] as const;
 
 export const CHART_STATUS_COLORS = {

@@ -20,9 +20,9 @@ import { TenantDeskPreview } from '@/features/auth/components/TenantDeskPreview'
 import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
 
 const features: PortalAuthFeature[] = [
-  { icon: CreditCard, text: 'Rent & water', detail: 'Pay your invoices. Receipts stay on this tenancy.', tint: 'bg-gold-bg text-primary' },
-  { icon: Wrench, text: 'Repairs', detail: 'Submit and track requests for your unit.', tint: 'bg-teal-bg text-teal' },
-  { icon: FileText, text: 'Lease & documents', detail: 'Your agreement and files — not other tenants.', tint: 'bg-indigo-bg text-indigo' },
+  { icon: CreditCard, text: 'Rent & water', detail: 'Pay your invoices. Receipts stay on this tenancy.', tint: 'bg-primary/10 text-primary' },
+  { icon: Wrench, text: 'Repairs', detail: 'Submit and track requests for your unit.', tint: 'bg-navy-mid/10 text-navy-mid' },
+  { icon: FileText, text: 'Lease & documents', detail: 'Your agreement and files — not other tenants.', tint: 'bg-navy-mid/10 text-navy-mid' },
   { icon: Building2, text: 'Vacation notice', detail: 'Give notice against the same lease record.', tint: 'bg-soft-blue text-primary' },
 ];
 

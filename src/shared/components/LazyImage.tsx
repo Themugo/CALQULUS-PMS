@@ -190,7 +190,7 @@ function LazyAvatar({
     <div
       ref={containerRef}
       className={cn(
-        'relative rounded-full overflow-hidden bg-amber-400 flex items-center justify-center',
+        'relative rounded-full overflow-hidden bg-navy-primary flex items-center justify-center',
         sizeClasses[size],
         className
       )}

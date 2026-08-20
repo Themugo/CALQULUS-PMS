@@ -196,7 +196,7 @@ function generateEmailTemplate(variables: {
   
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #155EEF;">Welcome to CALQULUS PMS</h1>
+      <h1 style="color: #2F6FED;">Welcome to CALQULUS PMS</h1>
       <p>Hello ${variables.tenant_name},</p>
       <p>You've been invited by ${variables.manager_name} to join our property management platform.</p>
       <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -206,7 +206,7 @@ function generateEmailTemplate(variables: {
         <p><strong>Monthly Rent:</strong> KES ${variables.monthly_rent.toLocaleString()}</p>
         <p><strong>Move-in Date:</strong> ${variables.move_in_date}</p>
       </div>
-      <a href="${variables.invitation_link}" style="background-color: #155EEF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+      <a href="${variables.invitation_link}" style="background-color: #2F6FED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
         Accept Invitation
       </a>
       <p style="color: #666; font-size: 12px; margin-top: 20px;">

@@ -45,19 +45,19 @@ interface MaintenanceInsert {
 }
 
 const TYPE_ICON: Record<string, { icon: LucideIcon; bg: string }> = {
-  payment:     { icon: CreditCard,     bg: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400" },
-  maintenance: { icon: Wrench,         bg: "bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_45%)] dark:bg-[hsl(214_73%_25%/0.3)] dark:text-[hsl(214_73%_65%)]" },
-  notice:      { icon: FileText,       bg: "bg-[hsl(218_58%_38%/0.12)] text-[hsl(218_58%_38%)] dark:bg-[hsl(218_58%_25%/0.3)] dark:text-[hsl(218_58%_65%)]" },
-  alert:       { icon: AlertTriangle,  bg: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400" },
-  reminder:    { icon: Clock,          bg: "bg-slate-100 text-slate-600 dark:bg-muted dark:text-slate-400" },
-  broadcast:   { icon: MessageSquare,  bg: "bg-[hsl(38_52%_42%/0.12)] text-[hsl(38_52%_36%)] dark:bg-[hsl(38_52%_25%/0.3)] dark:text-[hsl(38_52%_60%)]" },
-  tenant:      { icon: UserPlus,       bg: "bg-teal-100 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400" },
-  info:        { icon: Bell,           bg: "bg-slate-100 text-slate-600 dark:bg-muted dark:text-slate-400" },
+  payment:     { icon: CreditCard,     bg: "bg-success/10 text-success" },
+  maintenance: { icon: Wrench,         bg: "bg-primary/10 text-primary" },
+  notice:      { icon: FileText,       bg: "bg-navy-mid/10 text-navy-mid" },
+  alert:       { icon: AlertTriangle,  bg: "bg-warning/10 text-warning" },
+  reminder:    { icon: Clock,          bg: "bg-muted text-muted-foreground" },
+  broadcast:   { icon: MessageSquare,  bg: "bg-primary/10 text-primary" },
+  tenant:      { icon: UserPlus,       bg: "bg-navy-mid/10 text-navy-mid" },
+  info:        { icon: Bell,           bg: "bg-muted text-muted-foreground" },
 };
 
 const PRIORITY_RING: Record<string, string> = {
-  urgent: "ring-2 ring-red-400",
-  high:   "ring-2 ring-amber-400",
+  urgent: "ring-2 ring-destructive",
+  high:   "ring-2 ring-warning",
 };
 
 const QUERY_KEY = "manager-notifications";
@@ -269,7 +269,7 @@ export function NotificationsDropdown() {
                     "group flex items-start gap-3 px-3 py-3 border-b border-border/50 last:border-0 transition-colors",
                     notif.is_read
                       ? "hover:bg-muted/40"
-                      : "bg-amber-400/6 hover:bg-amber-400/10 dark:bg-amber-400/[0.04]",
+                      : "bg-warning/5 hover:bg-warning/10",
                     notif.action_url ? "cursor-pointer" : "cursor-default",
                   )}
                   role="button"
@@ -296,7 +296,7 @@ export function NotificationsDropdown() {
                         {notif.title}
                       </p>
                       {!notif.is_read && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-warning shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
@@ -307,7 +307,7 @@ export function NotificationsDropdown() {
                         {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true })}
                       </p>
                       {notif.action_label && (
-                        <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                        <span className="text-[10px] font-medium text-warning">
                           {notif.action_label} →
                         </span>
                       )}
