@@ -31,9 +31,11 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("establishes navy as the identity scale", () => {
-    expect(CALQULUS_COLOR.navyDeep).toBe("#040B16");
-    expect(CALQULUS_COLOR.navyPrimary).toBe("#0A1A32");
-    expect(CALQULUS_COLOR.navySecondary).toBe("#123056");
+    expect(CALQULUS_COLOR.navyDeep).toBe("#123056");
+    expect(CALQULUS_COLOR.navyPrimary).toBe("#164272");
+    expect(CALQULUS_COLOR.navySecondary).toBe("#1E558C");
+    expect(CALQULUS_COLOR.navyDeep).not.toBe("#040B16");
+    expect(CALQULUS_COLOR.navyPrimary).not.toBe("#0A1A32");
   });
 
   it("keeps light surfaces as the production background", () => {
@@ -66,14 +68,14 @@ describe("CALQULUS design tokens", () => {
   it("classifies dark mode as dormant light-mirror", () => {
     expect(CALQULUS_DARK_MODE.status).toBe("dormant");
     expect(CALQULUS_DARK_MODE.productionExperience).toBe("light-desk");
-    expect(CALQULUS_DARK_MODE.marketingChrome).toBe("navy-night");
+    expect(CALQULUS_DARK_MODE.marketingChrome).toBe("navy-mid");
     expect(CALQULUS_DARK_MODE.cssStrategy).toBe("light-mirror");
   });
 
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
     expect(CALQULUS_SPACE[4]).toBe("1rem");
     expect(CALQULUS_RADIUS.card).toBe("0.625rem");
-    expect(CALQULUS_SHADOW.card).toContain("4 11 22");
+    expect(CALQULUS_SHADOW.card).toContain("18 48 86");
     expect(CALQULUS_TYPE.pageTitle).toBe("type-page-title");
     expect(CALQULUS_FIELD.error).toContain("text-destructive");
     expect(CALQULUS_ICON.md).toBe("h-4 w-4");

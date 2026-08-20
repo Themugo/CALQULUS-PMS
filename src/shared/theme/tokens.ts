@@ -3,15 +3,15 @@
  * Keep hex values in sync with CSS variables in src/index.css.
  *
  * Palette is taken from the Frameworks / CALQULUS identity card:
- *   Navy  — night chrome (nav, sidebar, footer, marketing close)
+ *   Navy  — mid-navy chrome (nav, sidebar, footer, marketing canvas)
  *   Cyan  — interaction (buttons, links, focus, active nav)
  *   White — type on navy; card surfaces in the operational app
  *   Royal — atmospheric glow only, never body text
  *   Spark — city-light flecks on marketing only, never chrome
  *   Green / amber / red — success / warning / danger only
  *
- * Marketing and app chrome are navy. Operational desks stay light
- * so tables, forms, and invoices remain readable.
+ * Marketing chrome is mid navy, not near-black. Operational desks stay
+ * light so tables, forms, and invoices remain readable.
  */
 
 export const CALQULUS_BRAND = {
@@ -27,10 +27,10 @@ export const CALQULUS_COLOR = {
   primaryActive: "#12B8C8",
   accent: "#1AD4E4",
 
-  /** Navy identity scale from the card. */
-  navyDeep: "#040B16",
-  navyPrimary: "#0A1A32",
-  navySecondary: "#123056",
+  /** Mid-navy identity scale — no near-black floor. */
+  navyDeep: "#123056",
+  navyPrimary: "#164272",
+  navySecondary: "#1E558C",
 
   white: "#FFFFFF",
   secondary: "#F3F7FB",
@@ -70,7 +70,7 @@ export const CALQULUS_PWA = {
 export const CALQULUS_DARK_MODE = {
   status: "dormant",
   productionExperience: "light-desk",
-  marketingChrome: "navy-night",
+  marketingChrome: "navy-mid",
   cssStrategy: "light-mirror",
 } as const;
 
@@ -96,8 +96,8 @@ export const CALQULUS_RADIUS = {
 /** Shadows tint with navy, with a faint cyan lift on elevated cards. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px 0 rgb(4 11 22 / 0.05), 0 1px 1px -1px rgb(4 11 22 / 0.04)",
-  elevated: "0 8px 24px -12px rgb(4 11 22 / 0.18), 0 0 0 1px rgb(26 212 228 / 0.08)",
+  card: "0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 1px -1px rgb(18 48 86 / 0.04)",
+  elevated: "0 8px 24px -12px rgb(18 48 86 / 0.16), 0 0 0 1px rgb(26 212 228 / 0.10)",
 } as const;
 
 export const CALQULUS_ICON = {
