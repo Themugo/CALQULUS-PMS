@@ -145,6 +145,8 @@ export const CALQULUS_TYPE = {
   pageTitle: "type-page-title",
   sectionTitle: "type-section-title",
   cardTitle: "type-card-title",
+  /** H4 (16-18px) - a subsection heading nested inside a card/section. */
+  subTitle: "type-subtitle",
   metric: "type-metric",
   body: "type-body",
   meta: "type-meta",

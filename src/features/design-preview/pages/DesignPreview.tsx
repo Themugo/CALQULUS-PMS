@@ -2,9 +2,11 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Building2,
+  CheckCircle2,
   CreditCard,
   FileText,
   Home,
+  Info,
   LayoutDashboard,
   TriangleAlert,
   Wrench,
@@ -19,6 +21,8 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { LoadingState } from "@/shared/components/ui/loading-state";
@@ -43,10 +47,15 @@ type PreviewId =
   | "reports"
   | "tables"
   | "forms"
+  | "buttons"
+  | "badges"
+  | "alerts"
+  | "tabs"
   | "dialogs"
   | "loading"
   | "empty"
   | "error"
+  | "success"
   | "brand";
 
 const LIVE_DESK: Partial<Record<PreviewId, { href: string; label: string }>> = {
@@ -89,10 +98,15 @@ const NAV: { id: PreviewId; label: string }[] = [
   { id: "reports", label: "Reports" },
   { id: "tables", label: "Tables" },
   { id: "forms", label: "Forms" },
+  { id: "buttons", label: "Buttons" },
+  { id: "badges", label: "Badges" },
+  { id: "alerts", label: "Alerts" },
+  { id: "tabs", label: "Tabs" },
   { id: "dialogs", label: "Dialogs" },
   { id: "loading", label: "Loading" },
   { id: "empty", label: "Empty" },
   { id: "error", label: "Error" },
+  { id: "success", label: "Success" },
   { id: "brand", label: "Brand Studio" },
 ];
 
@@ -160,6 +174,10 @@ export default function DesignPreview() {
           {active === "reports" && <RecordPreview title="Reports" icon={FileText} attention="Period" action="Export" inspect="Filters" />}
           {active === "tables" && <TablesPreview />}
           {active === "forms" && <FormsPreview />}
+          {active === "buttons" && <ButtonsPreview />}
+          {active === "badges" && <BadgesPreview />}
+          {active === "alerts" && <AlertsPreview />}
+          {active === "tabs" && <TabsPreview />}
           {active === "dialogs" && <DialogsPreview />}
           {active === "loading" && <LoadingState label="Loading records…" variant="skeleton" rows={5} />}
           {active === "empty" && (
@@ -168,6 +186,7 @@ export default function DesignPreview() {
           {active === "error" && (
             <ErrorState title="Could not load this desk" message="Keep the layout. Show a retry. Do not invent numbers." />
           )}
+          {active === "success" && <SuccessPreview />}
           {active === "brand" && (
             <BrandStudioPreview trialHex={trialHex} onTrialHex={setTrialHex} trial={trial} />
           )}
@@ -451,6 +470,155 @@ function BrandStudioPreview({
         </CardContent>
       </Card>
       <PortalPreviewCanvas primaryColor={trial.approved ? trial.hex : CALQULUS_COLOR.primary} />
+    </div>
+  );
+}
+
+function ButtonsPreview() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className={CALQULUS_TYPE.cardTitle}>Buttons</CardTitle>
+        <CardDescription>
+          One hierarchy: primary action is interactive blue, everything else recedes. No portal colour on buttons.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <p className="type-label">Variant</p>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button">Default</Button>
+            <Button type="button" variant="secondary">Secondary</Button>
+            <Button type="button" variant="outline">Outline</Button>
+            <Button type="button" variant="ghost">Ghost</Button>
+            <Button type="button" variant="link">Link</Button>
+            <Button type="button" variant="destructive">Destructive</Button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="type-label">Size</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" size="sm">Small</Button>
+            <Button type="button" size="default">Default</Button>
+            <Button type="button" size="lg">Large</Button>
+            <Button type="button" size="icon" aria-label="Icon action"><Wrench className="h-4 w-4" /></Button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="type-label">State</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" loading>Loading</Button>
+            <Button type="button" disabled>Disabled</Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BadgesPreview() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className={CALQULUS_TYPE.cardTitle}>Badges</CardTitle>
+        <CardDescription>
+          Status colour is semantic only - success / warning / danger / info. Never used to fake a second palette.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-wrap gap-2">
+        <Badge>Default</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge variant="outline">Outline</Badge>
+        <Badge variant="success">Success</Badge>
+        <Badge variant="warning">Warning</Badge>
+        <Badge variant="danger">Danger</Badge>
+        <Badge variant="info">Info</Badge>
+        <Badge variant="destructive">Destructive</Badge>
+        <Badge variant="slate">Slate</Badge>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AlertsPreview() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className={CALQULUS_TYPE.cardTitle}>Alerts</CardTitle>
+        <CardDescription>Inline, dismissible-by-context. Not a modal, not a toast.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Alert variant="info">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Heads up</AlertTitle>
+          <AlertDescription>This is informational only - no action required.</AlertDescription>
+        </Alert>
+        <Alert variant="success">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertTitle>Saved</AlertTitle>
+          <AlertDescription>Your changes were recorded.</AlertDescription>
+        </Alert>
+        <Alert variant="warning">
+          <TriangleAlert className="h-4 w-4" />
+          <AlertTitle>Needs attention</AlertTitle>
+          <AlertDescription>Something needs a decision before it can proceed.</AlertDescription>
+        </Alert>
+        <Alert variant="destructive">
+          <TriangleAlert className="h-4 w-4" />
+          <AlertTitle>Could not save</AlertTitle>
+          <AlertDescription>Keep the form data. Let the person retry.</AlertDescription>
+        </Alert>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TabsPreview() {
+  return (
+    <Card className="max-w-lg">
+      <CardHeader>
+        <CardTitle className={CALQULUS_TYPE.cardTitle}>Tabs</CardTitle>
+        <CardDescription>For switching views within one record, not for primary navigation.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="type-body text-muted-foreground pt-3">
+            Summary content for the record lives here.
+          </TabsContent>
+          <TabsContent value="activity" className="type-body text-muted-foreground pt-3">
+            A chronological log of what happened.
+          </TabsContent>
+          <TabsContent value="documents" className="type-body text-muted-foreground pt-3">
+            Attached files and generated statements.
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SuccessPreview() {
+  return (
+    <div className="space-y-4 max-w-lg">
+      <Alert variant="success">
+        <CheckCircle2 className="h-4 w-4" />
+        <AlertTitle>Payment recorded</AlertTitle>
+        <AlertDescription>The invoice is closed and the tenant has been notified.</AlertDescription>
+      </Alert>
+      <div className="flex items-center gap-2">
+        <Badge variant="success">Paid</Badge>
+        <Badge variant="success">Active</Badge>
+        <Badge variant="success">Verified</Badge>
+      </div>
+      <Button type="button" disabled className="opacity-100">
+        <CheckCircle2 className="h-4 w-4" />
+        Saved
+      </Button>
     </div>
   );
 }

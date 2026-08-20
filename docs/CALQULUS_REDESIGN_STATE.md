@@ -7,15 +7,78 @@
 > best-effort reconstruction, not first-hand agent notes.
 
 ## CURRENT PHASE
-Post-Phase-12 stabilization / audit. The master brief's phases (homepage → shell →
-per-portal → white-label) have each been touched at least once. No phase is
-independently verified against the brief line-by-line yet. James chose
-`@ts-nocheck` remediation as the next focus (over portal-by-portal verification,
-responsive/a11y QA, or white-label config UI) — in progress, see below.
+James issued a new, separate instruction: "CALQULUS PHASE 1 — DESIGN SYSTEM
+FOUNDATION" — audit and establish the reusable design system (tokens, component
+hierarchy, a preview route) without redesigning individual pages yet. This is
+now done (see below). The `@ts-nocheck` remediation from the previous session
+is still open and paused, not abandoned - resume it whenever James asks to
+continue that instead.
 
 ## CURRENT TASK
-Removing `@ts-nocheck` from the 86 files in `docs/audits/TYPECHECK_EXEMPTIONS.txt`
-and fixing the real type errors underneath (not suppressing with `any`).
+Just finished: Phase 1 design system foundation audit + implementation (this
+entry). Nothing actively in progress as of this write-up.
+
+### Phase 1 audit findings (before any changes)
+Read `AGENTS.md` (no `CLAUDE.md` exists in the repo - AGENTS.md is the closest
+match to "CLAUDE master instructions") and this file, then inspected
+`src/index.css`, `src/shared/theme/tokens.ts`, and the shared `ui/` components
+before touching anything, per the brief's "inspect before redesign" instruction.
+
+**The foundation was already substantially built** (Tailwind v4 CSS-first
+config, no `tailwind.config.ts`). Specifically already solid, no changes made:
+- Full semantic colour system in `src/index.css` `@theme`/`:root` - primary,
+  secondary, success/warning/destructive/info with `-bg` tints via
+  `color-mix()`, portal accents per `[data-portal]`, legacy purple/indigo/teal/
+  gold aliases deliberately resolved to navy/blue so they can't reintroduce a
+  second palette. Mirrored 1:1 in `src/shared/theme/tokens.ts`
+  (`CALQULUS_COLOR`) as the TypeScript source of truth.
+- Spacing (`CALQULUS_SPACE`), radius (`CALQULUS_RADIUS`, `--radius: 0.75rem`),
+  shadows (`CALQULUS_SHADOW` - card/elevated, tinted navy not black, no
+  decorative glow), a global `*:focus-visible` ring, and an icon size scale
+  (`CALQULUS_ICON` xs/sm/md/lg) already existed and are used consistently in
+  `button.tsx`/`badge.tsx`/`input.tsx`.
+- `button.tsx`: full variant hierarchy (default/destructive/outline/secondary/
+  ghost/link) x size hierarchy (sm/default/lg/icon) x state (loading via
+  `aria-busy`, disabled), all through one `cva()` definition.
+- `badge.tsx`: default/secondary/outline/destructive + full semantic set
+  (success/warning/danger/info) + legacy aliases resolved to navy/primary.
+- `alert.tsx`: default/destructive/success/warning/info - already existed,
+  wasn't in the design-preview page yet.
+- `card.tsx`, `table.tsx`, `dialog.tsx`: consistent with the token system,
+  no changes needed.
+- A `/design-preview` route **already existed**
+  (`src/features/design-preview/pages/DesignPreview.tsx`) - more ambitious
+  than the brief asked for, since it previews full page hierarchies per portal
+  (homepage/manager/landlord/agency/tenant/platform_admin/login/properties/
+  tenants/billing/payments/maintenance/reports), not just isolated components.
+
+**Two real gaps found and fixed this session:**
+1. **Typography scale was measurably smaller than the brief's spec.**
+   `.type-page-title` was 28px mobile / 32px desktop against a spec of
+   36-44px; `.type-section-title` was 22px against 26-32px; `.type-card-title`
+   was 17px against 20-24px. Bumped all three to the low end of each range
+   (36px/40px responsive, 26px, 20px) in `src/index.css` - deliberately the
+   floor of each range rather than the ceiling, since this is a data-dense
+   operational product, not a marketing site, and a smaller bump is lower-risk
+   for existing tight layouts. Added a new `.type-subtitle` (17px, H4's
+   16-18px range) using the exact value `.type-card-title` vacated, and
+   exposed it as `CALQULUS_TYPE.subTitle` in `tokens.ts` - no H4-equivalent
+   existed before.
+2. **Design preview page was missing several items the brief explicitly asked
+   for as isolated component swatches**: buttons, badges, alerts, tabs,
+   success. (It had tables/forms/dialogs/loading/empty/error already, just
+   folded into fuller page-hierarchy mockups rather than standalone swatches.)
+   Added five new tabs to the existing preview page rather than building a
+   second route: Buttons (all variant x size x state combinations), Badges
+   (all 9 variants), Alerts (info/success/warning/destructive using the
+   existing `alert.tsx`), Tabs (a 3-tab example using the existing
+   `tabs.tsx`), and Success (a success alert + success badges + a "saved"
+   button state, since no dedicated `SuccessState` component exists
+   alongside `EmptyState`/`ErrorState` - a success alert/badge is the honest
+   equivalent rather than inventing a new component for a one-off).
+
+No business logic, backend, or routing architecture touched. No individual
+page redesigned - only shared tokens/components and the preview route.
 
 **Done this session (10 of 86 files, now permanently clean, no longer in the
 exemptions list):**
@@ -113,7 +176,21 @@ files were. That review is the next step.
 ## IN PROGRESS
 Nothing actively mid-edit as of this entry.
 
-## NEXT TASK
+## NEXT TASK (Phase 1 design system - James's most recent instruction)
+Phase 1 as scoped is done. Natural continuations, not yet started:
+- Now that the type scale changed globally, spot-check a few dense screens
+  (Properties table, Billing invoice list, Manager dashboard) for any heading
+  that now wraps awkwardly or crowds a card - the brief explicitly asked to
+  test across 1440/1280/1024/768/480/390/360, which hasn't been done for this
+  specific change.
+- Consider whether `DialogTitle` (currently hardcoded `text-lg font-semibold`
+  in `dialog.tsx`) should adopt `CALQULUS_TYPE.subTitle` instead, for full
+  consistency - left alone this session since it wasn't broken, just slightly
+  off-pattern.
+- James may want the `/design-preview` page's new tabs cross-linked from
+  `docs/audits/` or `AGENTS.md` so future contributors know it's the reference.
+
+## NEXT TASK (older, paused - resume when asked)
 Continue `@ts-nocheck` remediation: pick up the remaining 76 files listed in
 `docs/audits/TYPECHECK_EXEMPTIONS.txt`. Suggested approach (same one used this
 session, it works and stays within sandbox time limits): strip `@ts-nocheck` from
@@ -179,15 +256,19 @@ Exhaustive list not reconstructed — refer to git history per-commit.
    remediation commit (`709d19e`). Current score not re-verified.
 
 ## TEST STATUS
-`npm run build`: clean (verified this session).
-`npm run test` (vitest, default suite): no failures observed in partial runs;
-not run to completion in one sandbox call due to suite size/time.
-`npm run test:e2e` (Playwright): not run this session (requires a browser + longer
-runtime than available per sandbox call).
+Phase 1 session: `designTokens.test.ts` (15/15) and `publicLanding.test.tsx`
+(8/8) re-run after the typography/preview-page changes - both still green, so
+the global heading-size bump didn't break the homepage's "single h1"/layout
+assertions. Scoped `tsc --noEmit` on `src/features/design-preview/**` - zero
+errors. Full-suite vitest run still not completed end-to-end in one sandbox
+call (same limitation as before, suite is large); no evidence of breakage in
+what was run.
+`npm run test:e2e` (Playwright): not run this session (requires a browser +
+longer runtime than available per sandbox call).
 
 ## BUILD STATUS
-Clean. `npm run build` succeeds, PWA service worker builds, no new type errors
-introduced relative to files not already under `@ts-nocheck`.
+Clean. `npm run build` succeeds, PWA service worker builds (256 precache
+entries, up from 255 - the new design-preview bundle is marginally bigger).
 
 ## DESIGN DECISIONS
 (Reconstructed from commit messages, not first-hand)
