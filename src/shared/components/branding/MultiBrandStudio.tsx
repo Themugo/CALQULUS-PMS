@@ -13,7 +13,7 @@ export function MultiBrandStudio({ className }: { className?: string }) {
 
   const [themeConfig, setThemeConfig] = useState<BrandThemeConfig>({
     primaryColorHex: CALQULUS_COLOR.primary,
-    secondaryColorHex: CALQULUS_COLOR.textPrimary,
+    secondaryColorHex: CALQULUS_COLOR.navyPrimary,
     accentColorHex: CALQULUS_COLOR.info,
     fontFamilyHeading: "Outfit",
     fontFamilyBody: "system-ui",
@@ -25,13 +25,13 @@ export function MultiBrandStudio({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4", className)}>
       {/* Top Banner */}
-      <div className="p-4 rounded-xl border bg-gradient-to-r from-emerald-500/10 via-primary/5 to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-lg border border-border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Multi-Brand SaaS & White-Label Theme Engine
+            <Sparkles className="h-5 w-5 text-primary" /> Brand configuration
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Live org branding is Settings → Company (Enterprise white-label). Login and Platform Admin always stay CALQULUS.
+            Live org branding is Settings → Company (Enterprise white-label). This canvas is structural preview only.
           </p>
         </div>
       </div>
@@ -71,7 +71,7 @@ export function MultiBrandStudio({ className }: { className?: string }) {
           <PortalPreviewCanvas
             primaryColor={themeConfig.primaryColorHex}
             secondaryColor={themeConfig.secondaryColorHex}
-            companyName="CALQULUS PROPERTY MANAGEMENT"
+            companyName={CALQULUS_BRAND.product}
           />
         </div>
       </div>

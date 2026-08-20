@@ -172,6 +172,16 @@ describe("BrandConfig layer", () => {
     expect(config.typography.body).toBe("system-ui");
   });
 
+  it("rejects a high-key yellow so it cannot become active brand colour", () => {
+    const config = composeBrandConfig({
+      company_name: "Ridgeview",
+      logo_url: null,
+      brand_primary_hex: "#FFFF00",
+      white_label_enabled: true,
+    });
+    expect(config.colors.primary).toBe(CALQULUS_COLOR.primary);
+  });
+
   it("compacts empty overlay fields so jsonb stays sparse", () => {
     expect(compactBrandOverlay({
       identity: { legalName: "", tagline: "Keep me" },

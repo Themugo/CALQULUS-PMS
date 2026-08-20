@@ -272,6 +272,20 @@
     --primary-active: #12B8C8;
     /* Organization accent. Design-system --primary stays CALQULUS. */
     --brand-primary: var(--primary);
+    --brand-primary-hover: var(--primary-hover);
+    --brand-primary-active: var(--primary-active);
+    --brand-primary-muted: color-mix(in srgb, var(--brand-primary) 18%, #FFFFFF);
+    --brand-primary-border: color-mix(in srgb, var(--brand-primary) 45%, #FFFFFF);
+    --brand-primary-surface: color-mix(in srgb, var(--brand-primary) 10%, #FFFFFF);
+    --brand-primary-focus: var(--brand-primary);
+    --brand-primary-foreground: #123056;
+
+    /* Portal identity stripe — overridden by [data-portal] */
+    --portal-accent: var(--navy-mid);
+    --portal-accent-foreground: #FFFFFF;
+    --portal-accent-muted: color-mix(in srgb, var(--portal-accent) 18%, #FFFFFF);
+    --portal-accent-border: color-mix(in srgb, var(--portal-accent) 28%, transparent);
+    --portal-accent-surface: color-mix(in srgb, var(--portal-accent) 10%, #FFFFFF);
 
     /* Mid-navy identity — no near-black floor */
     --navy-primary: #164272;
@@ -338,6 +352,12 @@
     --sidebar-ring: #1AD4E4;
     --sidebar-muted: #B4C9DC;
   }
+
+  [data-portal="manager"] { --portal-accent: #1E558C; }
+  [data-portal="landlord"] { --portal-accent: #23856B; }
+  [data-portal="agency"] { --portal-accent: #9A5A16; }
+  [data-portal="tenant"] { --portal-accent: #5C4A8A; }
+  [data-portal="platform_admin"] { --portal-accent: #3E4C94; }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
      leftover `dark:` utilities cannot reintroduce a heavy dashboard.

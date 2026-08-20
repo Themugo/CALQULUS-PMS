@@ -3,6 +3,8 @@ import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Link } from "react-router-dom";
 import { cn } from "@/shared/lib/utils";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import type { PortalId } from "@/core/product/portals";
+import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
 
 /**
  * Shared chrome for role-specific auth screens.
@@ -38,6 +40,7 @@ export interface PortalAuthShellProps {
   notice?: string;
   aside?: ReactNode;
   variant?: "hero" | "light";
+  portal?: PortalId;
   children: ReactNode;
 }
 
@@ -57,11 +60,16 @@ export function PortalAuthShell({
   notice,
   aside,
   variant = "light",
+  portal,
   children,
 }: PortalAuthShellProps) {
   const isLight = variant === "light";
   return (
-    <div className={cn("desk-canvas min-h-screen text-foreground", !isLight && "hero-gradient")}>
+    <div
+      className={cn("desk-canvas min-h-screen text-foreground", !isLight && "hero-gradient")}
+      {...(portal ? portalSurfaceProps(portal) : {})}
+    >
+      {portal ? <PortalAccentBar /> : null}
       <div className="mx-auto flex min-h-screen max-w-6xl">
         <div className="relative hidden overflow-hidden lg:flex lg:w-[54%] lg:flex-col">
           <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />

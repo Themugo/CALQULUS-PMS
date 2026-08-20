@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
@@ -487,13 +488,14 @@ const TenantPortal = () => {
       : 'View and manage your invoices below.';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" {...portalSurfaceProps("tenant")}>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Skip to main content
       </a>
+      <PortalAccentBar />
       {/* Header */}
       <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">

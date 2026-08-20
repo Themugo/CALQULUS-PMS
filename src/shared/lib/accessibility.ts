@@ -9,6 +9,8 @@
  * - Focus management
  */
 
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
+
 // Color contrast ratios
 export const CONTRAST_RATIOS = {
   // WCAG AA requires 4.5:1 for normal text
@@ -28,16 +30,16 @@ export const RECOMMENDED_TOUCH_TARGET_SIZE = 44; // pixels (Apple HIG / WCAG 2.5
 // Focus ring styles
 export const FOCUS_RING_STYLES = {
   default: {
-    outline: '2px solid #2563eb',
-    outlineOffset: '2px',
+    outline: `2px solid ${CALQULUS_COLOR.focus}`,
+    outlineOffset: "2px",
   },
   highContrast: {
-    outline: '3px solid #000',
-    outlineOffset: '2px',
+    outline: `3px solid ${CALQULUS_COLOR.navyDeep}`,
+    outlineOffset: "2px",
   },
   custom: (color: string) => ({
     outline: `2px solid ${color}`,
-    outlineOffset: '2px',
+    outlineOffset: "2px",
   }),
 };
 
@@ -118,9 +120,9 @@ export function getAccessibleColorPair(
  */
 export function getAccessibleFocusStyles(): React.CSSProperties {
   return {
-    outline: '2px solid #2563eb',
-    outlineOffset: '2px',
-    borderRadius: '2px',
+    outline: `2px solid ${CALQULUS_COLOR.focus}`,
+    outlineOffset: "2px",
+    borderRadius: "2px",
   };
 }
 

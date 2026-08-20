@@ -1,4 +1,4 @@
-import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { CALQULUS_BRAND, CALQULUS_COLOR, CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import type { BrandConfig } from "./BrandConfig";
 
@@ -19,11 +19,11 @@ export const PLATFORM_BRAND_CONFIG: BrandConfig = {
     secondary: CALQULUS_COLOR.navyPrimary,
     accent: CALQULUS_COLOR.accent,
     portalAccents: {
-      manager: CALQULUS_COLOR.primary,
-      landlord: CALQULUS_COLOR.primary,
-      agency: CALQULUS_COLOR.primary,
-      tenant: CALQULUS_COLOR.primary,
-      platformAdmin: CALQULUS_COLOR.primary,
+      manager: CALQULUS_PORTAL_ACCENT.manager.hex,
+      landlord: CALQULUS_PORTAL_ACCENT.landlord.hex,
+      agency: CALQULUS_PORTAL_ACCENT.agency.hex,
+      tenant: CALQULUS_PORTAL_ACCENT.tenant.hex,
+      platformAdmin: CALQULUS_PORTAL_ACCENT.platform_admin.hex,
     },
   },
   typography: {

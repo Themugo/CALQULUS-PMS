@@ -1,166 +1,133 @@
-import React, { useState } from "react";
-import { Monitor, Smartphone, FileText, Building, Users, ShieldCheck, CheckCircle2, DollarSign, Download, ExternalLink } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Monitor, Building2, Home, Handshake, User, Shield } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { cn } from "@/shared/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { CALQULUS_PORTALS, type PortalId } from "@/core/product/portals";
+import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
+import { deriveBrandPalette } from "@/core/design/deriveBrandPalette";
+import { cn } from "@/shared/lib/utils";
 
+/**
+ * Structural portal mock — not live financial data.
+ * Hierarchy only: identity stripe, navy rail, white desk.
+ */
 export function PortalPreviewCanvas({
   primaryColor = CALQULUS_COLOR.primary,
-  secondaryColor = CALQULUS_COLOR.textPrimary,
   companyName = CALQULUS_BRAND.product,
+  portal,
   className,
 }: {
   primaryColor?: string;
   secondaryColor?: string;
   companyName?: string;
+  portal?: PortalId;
   className?: string;
 }) {
-  const [activePortal, setActivePortal] = useState<"tenant" | "landlord" | "login" | "pdf">("tenant");
+  const [internalPortal, setInternalPortal] = useState<PortalId>("manager");
+  const activePortal = portal ?? internalPortal;
+  const tabsLocked = portal !== undefined;
+  const palette = useMemo(() => deriveBrandPalette(primaryColor), [primaryColor]);
+  const accent = palette.approved ? palette.hex : CALQULUS_COLOR.primary;
 
   return (
-    <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
+    <Card className={cn("border-border bg-card shadow-sm", className)}>
       <CardHeader className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <Monitor className="h-4 w-4 text-primary" />
-            <CardTitle className="text-base font-bold text-foreground">Multi-Portal Live Brand Canvas</CardTitle>
+            <CardTitle className="type-card-title">Portal structure</CardTitle>
           </div>
-          <CardDescription className="text-xs text-muted-foreground">
-            Preview how your custom theme, typography, and logos render live across tenant, landlord, and agency portals.
+          <CardDescription className="text-xs">
+            White desk, navy rail, portal accent stripe. Preview chrome — not live balances.
           </CardDescription>
         </div>
-
-        <Tabs value={activePortal} onValueChange={(v) => setActivePortal(v as any)} className="w-full sm:w-auto">
-          <TabsList className="h-8 text-xs p-1">
-            <TabsTrigger value="tenant" className="text-xs font-bold px-2 py-0.5">Tenant Portal</TabsTrigger>
-            <TabsTrigger value="landlord" className="text-xs font-bold px-2 py-0.5">Landlord Dashboard</TabsTrigger>
-            <TabsTrigger value="login" className="text-xs font-bold px-2 py-0.5">Agency Login</TabsTrigger>
-            <TabsTrigger value="pdf" className="text-xs font-bold px-2 py-0.5">PDF Receipt</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {tabsLocked ? (
+          <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+            {CALQULUS_PORTALS[activePortal].label}
+          </Badge>
+        ) : (
+          <Tabs value={activePortal} onValueChange={(value) => setInternalPortal(value as PortalId)}>
+            <TabsList className="h-8 text-xs p-1">
+              {(Object.keys(CALQULUS_PORTALS) as PortalId[]).map((id) => (
+                <TabsTrigger key={id} value={id} className="text-xs px-2 py-0.5">
+                  {CALQULUS_PORTALS[id].label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        )}
       </CardHeader>
-
       <CardContent className="p-4">
-        {/* Render Live Dynamic Mock Canvas */}
-        <div className="p-4 rounded-xl border bg-slate-950 text-slate-100 font-sans shadow-lg min-h-[300px]">
-          {/* Tenant Portal View */}
-          {activePortal === "tenant" && (
-            <div className="space-y-4">
-              <div className="p-3 rounded-lg flex items-center justify-between" style={{ backgroundColor: secondaryColor }}>
-                <span className="font-extrabold text-sm text-white tracking-wide flex items-center gap-2">
-                  <span className="h-6 w-6 rounded bg-white text-slate-900 flex items-center justify-center font-black text-xs">C</span>
-                  {companyName}
-                </span>
-                <Badge className="bg-white/20 text-white border-none text-[10px]">TENANT PORTAL</Badge>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Current Rent Balance</span>
-                  <strong className="text-xl font-extrabold text-white">KES 45,000</strong>
-                  <div className="pt-2">
-                    <button
-                      className="w-full py-2 rounded font-bold text-xs text-slate-950 transition-all shadow-sm"
-                      style={{ backgroundColor: primaryColor }}
-                    >
-                      PAY RENT NOW (M-PESA)
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Active Lease Info</span>
-                  <span className="font-bold text-white block">Unit 3B • Kilimani Heights</span>
-                  <span className="text-[11px] text-slate-400 block">Due Day: 5th of every month</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Landlord Portal View */}
-          {activePortal === "landlord" && (
-            <div className="space-y-4">
-              <div className="p-3 rounded-lg flex items-center justify-between" style={{ backgroundColor: secondaryColor }}>
-                <span className="font-extrabold text-sm text-white tracking-wide flex items-center gap-2">
-                  <Building className="h-4 w-4" /> {companyName} • LANDLORD PORTAL
-                </span>
-                <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[10px]">REVENUE ONLY</Badge>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Monthly Gross Rent</span>
-                  <strong className="text-lg font-bold text-emerald-400">KES 1,240,000</strong>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Management Share</span>
-                  <strong className="text-lg font-bold text-slate-200">10% (KES 124,000)</strong>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Net Landlord Payout</span>
-                  <strong className="text-lg font-bold text-white">KES 1,116,000</strong>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Agency Login Page View */}
-          {activePortal === "login" && (
-            <div className="flex flex-col items-center justify-center py-6 space-y-4 max-w-sm mx-auto text-center">
-              <div className="h-10 w-10 rounded-xl flex items-center justify-center text-slate-950 font-black text-lg" style={{ backgroundColor: primaryColor }}>
-                C
-              </div>
-              <div>
-                <h3 className="font-extrabold text-white text-base">{companyName}</h3>
-                <p className="text-xs text-slate-400 mt-1">Sign in to your agency portal</p>
-              </div>
-              <div className="w-full space-y-2 text-left">
-                <input
-                  type="email"
-                  defaultValue="agency.admin@calqulus.com"
-                  readOnly
-                  className="w-full h-8 px-3 text-xs bg-slate-900 border border-slate-800 rounded text-slate-200"
-                />
-                <button
-                  className="w-full py-2 rounded font-bold text-xs text-slate-950"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  SIGN IN TO AGENCY PORTAL
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* PDF Receipt View */}
-          {activePortal === "pdf" && (
-            <div className="bg-white text-slate-900 p-6 rounded-xl space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b pb-3">
-                <div>
-                  <h4 className="font-extrabold text-sm" style={{ color: secondaryColor }}>{companyName}</h4>
-                  <p className="text-[10px] text-slate-500">Official Rent Payment Receipt #REC-9812</p>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 border border-emerald-500 px-2 py-0.5 rounded-full uppercase">
-                  PAID IN FULL
-                </span>
-              </div>
-
-              <div className="flex justify-between text-xs pt-1">
-                <div>
-                  <span className="text-[10px] text-slate-500 block">Received From:</span>
-                  <span className="font-bold text-slate-800">James Makena (APT 3B)</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-slate-500 block">Amount Paid:</span>
-                  <strong className="text-base font-extrabold" style={{ color: primaryColor }}>KES 45,000.00</strong>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <DeskFrame portal={activePortal} companyName={companyName} brandHex={accent} />
       </CardContent>
     </Card>
   );
 }
+
+function DeskFrame({
+  portal,
+  companyName,
+  brandHex,
+}: {
+  portal: PortalId;
+  companyName: string;
+  brandHex: string;
+}) {
+  const meta = CALQULUS_PORTALS[portal];
+  const Icon = PORTAL_ICONS[portal];
+  return (
+    <div
+      {...portalSurfaceProps(portal)}
+      className="rounded-lg border border-border overflow-hidden bg-background min-h-[280px]"
+    >
+      <PortalAccentBar />
+      <div className="flex min-h-[272px]">
+        <div className="hidden sm:flex w-16 flex-col items-center gap-3 bg-navy-primary text-white py-3">
+          <BrandMark size="xs" inverse forcePlatform />
+          <Icon className="h-4 w-4 text-primary" aria-hidden />
+        </div>
+        <div className="flex-1 p-4 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-heading font-bold text-foreground truncate">{companyName}</p>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+              {meta.label}
+            </Badge>
+          </div>
+          <p className="type-meta">What needs attention · What they can do · What they can inspect</p>
+          <div className="grid grid-cols-2 gap-2">
+            <PreviewTile label="Attention" value="Status" />
+            <PreviewTile label="Action" value="Primary control" swatch={brandHex} />
+          </div>
+          <div className="rounded-md border border-border bg-card p-3">
+            <p className="type-label mb-2">Records</p>
+            <div className="h-2 w-full rounded bg-muted" />
+            <div className="h-2 w-2/3 rounded bg-muted mt-2" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreviewTile({ label, value, swatch }: { label: string; value: string; swatch?: string }) {
+  return (
+    <div className="rounded-md border border-border bg-card p-3">
+      <p className="type-label">{label}</p>
+      <p className="text-sm font-semibold text-foreground mt-1">{value}</p>
+      {swatch ? (
+        <span className="mt-2 inline-block h-1.5 w-8 rounded-full" style={{ backgroundColor: swatch }} aria-hidden />
+      ) : null}
+    </div>
+  );
+}
+
+const PORTAL_ICONS: Record<PortalId, typeof Building2> = {
+  manager: Building2,
+  landlord: Home,
+  agency: Handshake,
+  tenant: User,
+  platform_admin: Shield,
+};

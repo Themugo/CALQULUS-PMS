@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { portalSurfaceProps } from "@/core/design";
 import { PageHeader } from "./PageHeader";
 import { ContextPanel } from "./ContextPanel";
 import { CommandPalette } from "./CommandPalette";
@@ -40,7 +41,7 @@ export function Layout({
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans" {...portalSurfaceProps("manager")}>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:shadow-md"

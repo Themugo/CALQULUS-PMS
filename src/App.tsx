@@ -14,6 +14,8 @@ import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { PageLoader } from "@/shared/components/PageLoader";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import {
+  DESIGN_PREVIEW_PATH,
+  designPreviewRoute,
   roleRouteConfigs,
   publicRoutes,
   adminDomainRoutes,
@@ -176,6 +178,10 @@ const AppRoutes = () => {
   }
 
   if (loading) return <PageLoader />;
+
+  if (location.pathname === DESIGN_PREVIEW_PATH) {
+    return <Routes>{renderRoute(designPreviewRoute)}</Routes>;
+  }
 
   // Open-access dev mode: route by URL path so every portal renders
   // directly with no login wall. The auto-login and account switcher

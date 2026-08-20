@@ -64,6 +64,7 @@ const LandlordPortalAuth = () => {
 
   return (
     <PortalAuthShell
+      portal="landlord"
       portalName="Landlord"
       badgeLabel="Landlord desk"
       icon={Home}

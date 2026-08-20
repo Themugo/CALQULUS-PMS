@@ -59,6 +59,7 @@ const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatem
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
 const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
+const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // ── Route definition types ──────────────────────────────────────────
@@ -80,6 +81,12 @@ export interface RoleRouteConfig {
   wrapper?: "viewOnly";
 }
 
+export const DESIGN_PREVIEW_PATH = "/design-preview";
+export const designPreviewRoute: RouteDef = {
+  path: DESIGN_PREVIEW_PATH,
+  element: DesignPreview,
+};
+
 // ── Shared public routes (available when not logged in) ─────────────
 export const publicRoutes: RouteDef[] = [
   { path: "/landing", redirect: "/" },
@@ -88,6 +95,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/health", element: HealthPage },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
+  { path: "/design-preview", element: DesignPreview },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
@@ -266,6 +274,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
 export const authOnlyRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
+  { path: "/design-preview", element: DesignPreview },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
@@ -284,6 +293,7 @@ export const authOnlyRoutes: RouteDef[] = [
 // ── Fallback routes (unknown state) ─────────────────────────────────
 export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
+  { path: "/design-preview", element: DesignPreview },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },

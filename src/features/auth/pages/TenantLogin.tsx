@@ -167,6 +167,7 @@ const TenantLogin = () => {
 
   return (
     <PortalAuthShell
+      portal="tenant"
       portalName="Tenant"
       badgeLabel="Your unit"
       icon={User}

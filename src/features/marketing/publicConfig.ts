@@ -10,6 +10,7 @@ export const PUBLIC_ROUTES = {
   pricing: "/pricing",
   legalPrivacy: "/legal?tab=privacy",
   legalTerms: "/legal?tab=terms",
+  designPreview: "/design-preview",
   managerSignIn: "/auth",
   managerSignUp: "/auth?tab=signup",
   landlordLogin: "/landlord/login",

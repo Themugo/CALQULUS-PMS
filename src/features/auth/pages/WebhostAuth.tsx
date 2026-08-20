@@ -9,6 +9,7 @@ import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { AuthLoadingScreen, AuthGridOverlay } from '@/features/auth/components/AuthHeroChrome';
+import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 
 const isRecommendedWebhostHost = () => {
   const host = window.location.hostname;
@@ -66,14 +67,15 @@ const WebhostAuth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground hero-gradient">
+    <div className="relative min-h-screen flex bg-background text-foreground hero-gradient" {...portalSurfaceProps("platform_admin")}>
+      <PortalAccentBar className="absolute top-0 left-0 right-0 z-20" />
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden">
         <AuthGridOverlay />
 
         <div className="relative z-10 flex flex-col h-full p-12">
           <div className="flex items-center gap-4 mb-16">
-            <BrandMark size="hero" />
+            <BrandMark size="hero" forcePlatform />
             <div>
               <p className="font-heading font-bold text-xl text-gradient leading-none">CALQULUS</p>
               <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
@@ -81,9 +83,9 @@ const WebhostAuth = () => {
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-500/30 bg-red-500/15 mb-6 self-start">
-              <Shield className="h-3.5 w-3.5 text-red-600" />
-              <span className="text-xs text-red-600 font-semibold">Restricted Access — Authorized Personnel Only</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-destructive/30 bg-destructive/15 mb-6 self-start">
+              <Shield className="h-3.5 w-3.5 text-destructive" />
+              <span className="text-xs text-destructive font-semibold">Restricted Access — Authorized Personnel Only</span>
             </div>
 
             <h1 className="font-heading text-5xl font-bold leading-tight mb-6">
@@ -117,7 +119,7 @@ const WebhostAuth = () => {
       <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-8 py-12">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex justify-center mb-8">
-            <BrandMark size="hero" />
+            <BrandMark size="hero" forcePlatform />
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">

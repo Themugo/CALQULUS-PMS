@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -20,6 +20,7 @@ import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 import { ALLOWED_FONTS, type AllowedFont } from "@/core/brand/BrandConfig";
 import { compactBrandOverlay } from "@/core/brand/parseOrgRecord";
 import { isHexColor } from "@/core/brand/resolve";
+import { deriveBrandPalette } from "@/core/design/deriveBrandPalette";
 
 function nestedString(root: unknown, path: string[]): string {
   let cur: unknown = root;
@@ -80,6 +81,7 @@ export const CompanySettings = () => {
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [receiptFooter, setReceiptFooter] = useState("");
   const displayLogoUrl = useSignedStorageUrl(logoUrl);
+  const brandPalette = useMemo(() => deriveBrandPalette(brandPrimaryHex), [brandPrimaryHex]);
 
   useEffect(() => {
     const fetchCompanySettings = async () => {
@@ -314,7 +316,7 @@ export const CompanySettings = () => {
         phone: companyPhone,
         website: companyWebsite,
         logo_url: logoUrl,
-        brand_primary_hex: isHexColor(brandPrimaryHex) ? brandPrimaryHex : null,
+        brand_primary_hex: brandPalette.approved ? brandPalette.hex : null,
         white_label_enabled: whiteLabelOnPlan ? whiteLabelEnabled : false,
         brand_config: compactBrandOverlay({
           identity: {
@@ -547,6 +549,9 @@ export const CompanySettings = () => {
                     placeholder={CALQULUS_COLOR.primary}
                   />
                 </div>
+                {!brandPalette.approved && (
+                  <p className="text-xs text-destructive">{brandPalette.reasons[0]}</p>
+                )}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">

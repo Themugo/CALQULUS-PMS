@@ -193,6 +193,7 @@ const Auth = () => {
 
   return (
     <PortalAuthShell
+      portal="manager"
       portalName="Manager"
       badgeLabel="Manager desk"
       icon={Building2}

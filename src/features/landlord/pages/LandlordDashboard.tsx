@@ -34,6 +34,7 @@ import LandlordNotificationPreferences from '@/features/landlord/components/Land
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { StatCard } from '@/features/dashboard/components/StatCard';
 import { occupancyRateColor, occupancyTone, payoutStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
@@ -342,7 +343,7 @@ const LandlordDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background" {...portalSurfaceProps("landlord")}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal" />
       </div>
     );
@@ -355,7 +356,8 @@ const LandlordDashboard = () => {
   const landlordName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Landlord';
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground" {...portalSurfaceProps("landlord")}>
+      <PortalAccentBar />
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border/60 bg-card/90 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">

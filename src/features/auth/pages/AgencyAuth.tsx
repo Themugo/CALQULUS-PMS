@@ -65,6 +65,7 @@ const AgencyAuth = () => {
 
   return (
     <PortalAuthShell
+      portal="agency"
       portalName="Agency"
       badgeLabel="Agency desk"
       icon={Handshake}

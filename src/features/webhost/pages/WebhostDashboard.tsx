@@ -30,6 +30,7 @@ import WebhostAccountSecurity from '@/features/webhost/components/WebhostAccount
 import SystemLandlordManagement from '@/features/webhost/components/SystemLandlordManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { HEALTH_COPY, usePlatformHealth } from '@/features/webhost/hooks/usePlatformHealth';
 
 // NOTE: TenantManagement is intentionally NOT imported.
@@ -195,13 +196,14 @@ const WebhostDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white flex flex-col">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white flex flex-col" {...portalSurfaceProps("platform_admin")}>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Skip to content
       </a>
+      <PortalAccentBar />
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
           <BrandMark size="md" showWordmark subtitle="Admin" className="min-w-0" forcePlatform />

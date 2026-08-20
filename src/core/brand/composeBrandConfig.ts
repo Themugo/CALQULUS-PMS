@@ -2,7 +2,7 @@ import type { BrandConfig } from "./BrandConfig";
 import { mergeBrandConfig } from "./mergeBrandConfig";
 import { parseOrgBrandRecord, parseWhiteLabelEnabled, type OrgBrandRecord } from "./parseOrgRecord";
 import { PLATFORM_BRAND_CONFIG } from "./platformBrand";
-import { isHexColor } from "./hex";
+import { approvedBrandHex } from "@/core/design/deriveBrandPalette";
 
 /**
  * Compose the runtime BrandConfig.
@@ -46,9 +46,20 @@ export function composeBrandConfig(row: OrgBrandRecord | null): BrandConfig {
     };
   }
 
-  const primary = isHexColor(merged.colors.primary)
-    ? merged.colors.primary
-    : PLATFORM_BRAND_CONFIG.colors.primary;
+  const primary = approvedBrandHex(
+    merged.colors.primary,
+    PLATFORM_BRAND_CONFIG.colors.primary,
+  );
+  const portalAccents = {
+    manager: approvedBrandHex(merged.colors.portalAccents.manager, PLATFORM_BRAND_CONFIG.colors.portalAccents.manager),
+    landlord: approvedBrandHex(merged.colors.portalAccents.landlord, PLATFORM_BRAND_CONFIG.colors.portalAccents.landlord),
+    agency: approvedBrandHex(merged.colors.portalAccents.agency, PLATFORM_BRAND_CONFIG.colors.portalAccents.agency),
+    tenant: approvedBrandHex(merged.colors.portalAccents.tenant, PLATFORM_BRAND_CONFIG.colors.portalAccents.tenant),
+    platformAdmin: approvedBrandHex(
+      merged.colors.portalAccents.platformAdmin,
+      PLATFORM_BRAND_CONFIG.colors.portalAccents.platformAdmin,
+    ),
+  };
 
   const chromeName = merged.identity.name || PLATFORM_BRAND_CONFIG.identity.name;
 
@@ -65,6 +76,9 @@ export function composeBrandConfig(row: OrgBrandRecord | null): BrandConfig {
     colors: {
       ...merged.colors,
       primary,
+      secondary: approvedBrandHex(merged.colors.secondary, PLATFORM_BRAND_CONFIG.colors.secondary),
+      accent: approvedBrandHex(merged.colors.accent, PLATFORM_BRAND_CONFIG.colors.accent),
+      portalAccents,
     },
   };
 }

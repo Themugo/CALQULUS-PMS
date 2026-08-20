@@ -2,8 +2,8 @@ import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 import type { BrandConfig } from "@/core/brand/BrandConfig";
 import type { ResolvedBrand } from "@/core/brand/resolve";
 import { PLATFORM_BRAND_CONFIG } from "@/core/brand/platformBrand";
+import { BRAND_PRIMARY_VARS, deriveBrandPalette } from "@/core/design/deriveBrandPalette";
 
-const BRAND_PRIMARY_VAR = "--brand-primary";
 const FONT_HEADING_VAR = "--font-heading";
 const DEFAULT_FAVICON = "/favicon.ico";
 
@@ -11,7 +11,8 @@ let originalFavicon: string | null = null;
 
 /**
  * Apply organization brand without spraying the design-system palette.
- * Only `--brand-primary` (and heading font / favicon when set) change.
+ * Sets derived `--brand-primary*` tokens only after contrast validation.
+ * Never writes `--primary`, `--ring`, or sidebar tokens.
  */
 export function applyBrandConfig(config: BrandConfig): void {
   if (typeof document === "undefined") return;
@@ -22,10 +23,18 @@ export function applyBrandConfig(config: BrandConfig): void {
     return;
   }
 
-  if (config.colors.primary !== CALQULUS_COLOR.primary) {
-    root.style.setProperty(BRAND_PRIMARY_VAR, config.colors.primary);
+  const palette = deriveBrandPalette(config.colors.primary);
+  if (!palette.approved || palette.hex === CALQULUS_COLOR.primary) {
+    clearBrandColorVars();
   } else {
-    root.style.removeProperty(BRAND_PRIMARY_VAR);
+    root.style.setProperty(BRAND_PRIMARY_VARS.primary, palette.hex);
+    root.style.setProperty(BRAND_PRIMARY_VARS.hover, palette.hover);
+    root.style.setProperty(BRAND_PRIMARY_VARS.active, palette.active);
+    root.style.setProperty(BRAND_PRIMARY_VARS.muted, palette.muted);
+    root.style.setProperty(BRAND_PRIMARY_VARS.border, palette.border);
+    root.style.setProperty(BRAND_PRIMARY_VARS.surface, palette.surface);
+    root.style.setProperty(BRAND_PRIMARY_VARS.focus, palette.focus);
+    root.style.setProperty(BRAND_PRIMARY_VARS.foreground, palette.onColor);
   }
 
   if (config.typography.heading === "system-ui") {
@@ -45,19 +54,27 @@ export function applyBrandConfig(config: BrandConfig): void {
 /** @deprecated Use applyBrandConfig. Kept for the ResolvedBrand adapter. */
 export function applyResolvedBrand(brand: ResolvedBrand): void {
   if (typeof document === "undefined") return;
-  if (brand.source !== "organization" || brand.primaryHex === CALQULUS_COLOR.primary) {
+  const palette = deriveBrandPalette(brand.primaryHex);
+  if (brand.source !== "organization" || !palette.approved || palette.hex === CALQULUS_COLOR.primary) {
     clearBrandOverrides();
     return;
   }
-  document.documentElement.style.setProperty(BRAND_PRIMARY_VAR, brand.primaryHex);
+  document.documentElement.style.setProperty(BRAND_PRIMARY_VARS.primary, palette.hex);
 }
 
 export function clearBrandOverrides(): void {
   if (typeof document === "undefined") return;
-  const root = document.documentElement;
-  root.style.removeProperty(BRAND_PRIMARY_VAR);
-  root.style.removeProperty(FONT_HEADING_VAR);
+  clearBrandColorVars();
+  document.documentElement.style.removeProperty(FONT_HEADING_VAR);
   restoreFavicon();
+}
+
+function clearBrandColorVars(): void {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  for (const name of Object.values(BRAND_PRIMARY_VARS)) {
+    root.style.removeProperty(name);
+  }
 }
 
 function setFavicon(href: string): void {

@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { Palette, Type, Sliders, Check, RefreshCw, Moon, Sun, Sparkles, Layout } from "lucide-react";
+import { Palette } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Badge } from "@/shared/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { Switch } from "@/shared/components/ui/switch";
 import { cn } from "@/shared/lib/utils";
 import { CALQULUS_COLOR, CALQULUS_BRAND } from "@/shared/theme/tokens";
 
@@ -22,16 +20,18 @@ export interface BrandThemeConfig {
 }
 
 const PRESET_THEMES: { name: string; primary: string; secondary: string; accent: string }[] = [
-  { name: CALQULUS_BRAND.product, primary: CALQULUS_COLOR.primary, secondary: CALQULUS_COLOR.textPrimary, accent: CALQULUS_COLOR.info },
-  { name: "Royal Sapphire Agency", primary: "#2563eb", secondary: "#1e3a8a", accent: CALQULUS_COLOR.success },
-  { name: "Luxury Onyx & Amber", primary: CALQULUS_COLOR.warning, secondary: "#78350f", accent: CALQULUS_COLOR.primary },
-  { name: "Teal Modern Urban", primary: "#14b8a6", secondary: "#134e4a", accent: CALQULUS_COLOR.info },
+  {
+    name: CALQULUS_BRAND.product,
+    primary: CALQULUS_COLOR.primary,
+    secondary: CALQULUS_COLOR.navyPrimary,
+    accent: CALQULUS_COLOR.primary,
+  },
 ];
 
 export function ThemeStudioEditor({
   config = {
     primaryColorHex: CALQULUS_COLOR.primary,
-    secondaryColorHex: CALQULUS_COLOR.textPrimary,
+    secondaryColorHex: CALQULUS_COLOR.navyPrimary,
     accentColorHex: CALQULUS_COLOR.info,
     fontFamilyHeading: "Outfit",
     fontFamilyBody: "system-ui",
@@ -48,7 +48,7 @@ export function ThemeStudioEditor({
 }) {
   const [currentConfig, setCurrentConfig] = useState<BrandThemeConfig>(config);
 
-  const handleUpdate = (field: keyof BrandThemeConfig, value: any) => {
+  const handleUpdate = <K extends keyof BrandThemeConfig>(field: K, value: BrandThemeConfig[K]) => {
     const updated = { ...currentConfig, [field]: value };
     setCurrentConfig(updated);
     if (onChange) onChange(updated);
@@ -75,12 +75,12 @@ export function ThemeStudioEditor({
             <CardTitle className="text-base font-bold text-foreground">Theme Studio & Color Palette Engine</CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Customize HSL/HEX color tokens, font pairings, and UI component border curvature for your tenant brand.
+            Trial colours only. Live branding is Settings → Company. Fonts stay Outfit or system-ui.
           </CardDescription>
         </div>
 
-        <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-          CSS Variables Injected
+        <Badge variant="outline" className="text-[10px] font-bold">
+          Preview only
         </Badge>
       </CardHeader>
 
@@ -175,9 +175,8 @@ export function ThemeStudioEditor({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Plus Jakarta Sans" className="text-xs">Plus Jakarta Sans (Modern Clean)</SelectItem>
-                <SelectItem value="Playfair Display" className="text-xs">Playfair Display (Luxury Serif)</SelectItem>
-                <SelectItem value="Outfit" className="text-xs">Outfit (Geometric Tech)</SelectItem>
+                <SelectItem value="Outfit" className="text-xs">Outfit</SelectItem>
+                <SelectItem value="system-ui" className="text-xs">system-ui</SelectItem>
               </SelectContent>
             </Select>
           </div>

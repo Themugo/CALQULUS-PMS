@@ -56,6 +56,40 @@ export const CALQULUS_COLOR = {
   focus: "#1AD4E4",
 } as const;
 
+/**
+ * Portal identity accents — thin chrome only.
+ * Not a second design system. Desks stay white + navy + cyan interaction.
+ * Status colour (success / warning / danger) is never replaced by these.
+ */
+export const CALQULUS_PORTAL_ACCENT = {
+  manager: {
+    id: "manager",
+    label: "Navy / Professional Blue",
+    hex: CALQULUS_COLOR.navySecondary,
+  },
+  landlord: {
+    id: "landlord",
+    label: "Emerald",
+    hex: CALQULUS_COLOR.success,
+  },
+  agency: {
+    id: "agency",
+    label: "Amber",
+    /** Darker than marketing spark so text/chrome on white meets contrast. */
+    hex: "#9A5A16",
+  },
+  tenant: {
+    id: "tenant",
+    label: "Violet",
+    hex: "#5C4A8A",
+  },
+  platform_admin: {
+    id: "platform_admin",
+    label: "Indigo",
+    hex: "#3E4C94",
+  },
+} as const;
+
 /** PWA chrome matches the navy identity, not a light browser default. */
 export const CALQULUS_PWA = {
   themeColor: CALQULUS_COLOR.navyPrimary,

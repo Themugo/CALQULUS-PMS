@@ -6,6 +6,7 @@ import {
   CALQULUS_DARK_MODE,
   CALQULUS_FIELD,
   CALQULUS_ICON,
+  CALQULUS_PORTAL_ACCENT,
   CALQULUS_PWA,
   CALQULUS_RADIUS,
   CALQULUS_SHADOW,
@@ -72,6 +73,14 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_DARK_MODE.cssStrategy).toBe("light-mirror");
   });
 
+  it("exposes portal accents without replacing the desk system", () => {
+    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.navySecondary);
+    expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe(CALQULUS_COLOR.success);
+    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#9A5A16");
+    expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#5C4A8A");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#3E4C94");
+  });
+
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
     expect(CALQULUS_SPACE[4]).toBe("1rem");
     expect(CALQULUS_RADIUS.card).toBe("0.625rem");
@@ -126,5 +135,10 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain(`--muted-foreground: ${CALQULUS_COLOR.textMuted}`);
     expect(css).toContain(`--glow: ${CALQULUS_COLOR.glow}`);
     expect(css).toContain(`--spark: ${CALQULUS_COLOR.spark}`);
+    expect(css).toContain(`[data-portal="manager"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.manager.hex}`);
+    expect(css).toContain(`[data-portal="landlord"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.landlord.hex}`);
+    expect(css).toContain(`[data-portal="agency"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.agency.hex}`);
+    expect(css).toContain(`[data-portal="tenant"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.tenant.hex}`);
+    expect(css).toContain(`[data-portal="platform_admin"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.platform_admin.hex}`);
   });
 });
