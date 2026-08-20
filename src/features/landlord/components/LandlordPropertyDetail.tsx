@@ -11,13 +11,12 @@ import {
   Building2, Home, Wrench, DollarSign, BarChart3, CheckCircle
 } from 'lucide-react';
 import { occupancyRateColor, maintenancePriorityTone, maintenanceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
+import { formatCurrency } from '@/shared/lib/formatCurrency';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 import { format, differenceInDays } from 'date-fns';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 const STATUS_BADGE: Record<string, string> = {
   occupied:    'bg-success/15 text-success border-success/30',
@@ -95,7 +94,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
         {[
           { label: 'Occupancy', value: `${occupancyRate}%`, sub: `${occupiedUnits}/${totalUnits} units`, icon: Home, color: occupancyRateColor(occupancyRate), bg: 'bg-card' },
           { label: 'Vacant units', value: vacantUnits, sub: maintenanceUnits > 0 ? `+${maintenanceUnits} on maintenance` : 'Ready to let', icon: Building2, color: 'text-muted-foreground', bg: 'bg-card' },
-          { label: 'Billed', value: fmt(monthlyGross), sub: `${fmt(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-foreground', bg: 'bg-card' },
+          { label: 'Occupied rent', value: formatCurrency(monthlyGross), sub: `${formatCurrency(Math.round(monthlyGross * revenueSharePct / 100))} net to you`, icon: DollarSign, color: 'text-foreground', bg: 'bg-card' },
           { label: 'Open maintenance', value: openMaintenance, sub: openMaintenance > 0 ? 'Requires attention' : 'All clear', icon: Wrench, color: openMaintenance > 0 ? 'text-destructive' : 'text-success', bg: 'bg-card' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl border border-border p-4 ${s.bg}`}>
@@ -177,12 +176,12 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                         </div>
                         <div className="text-right shrink-0">
                           {unit.monthly_rent && (
-                            <p className="text-sm font-semibold">{fmt(unit.monthly_rent)}/mo</p>
+                            <p className="text-sm font-semibold">{formatCurrency(unit.monthly_rent)}/mo</p>
                           )}
                           {rev && (
                             <p className={`text-xs mt-0.5 ${rev.collected < rev.billed ? 'text-warning' : 'text-success'}`}>
-                              {fmt(rev.collected)} collected
-                              {rev.collected < rev.billed && ` · ${fmt(rev.billed - rev.collected)} outstanding`}
+                              {formatCurrency(rev.collected)} collected
+                              {rev.collected < rev.billed && ` · ${formatCurrency(rev.billed - rev.collected)} outstanding`}
                             </p>
                           )}
                         </div>
@@ -261,9 +260,9 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        {m.budget && <p className="text-xs text-muted-foreground">Budget: {fmt(m.budget)}</p>}
+                        {m.budget && <p className="text-xs text-muted-foreground">Budget: {formatCurrency(m.budget)}</p>}
                         {m.deposit_deduction_amount > 0 && (
-                          <p className="text-xs text-warning">Deposit deduction: {fmt(m.deposit_deduction_amount)}</p>
+                          <p className="text-xs text-warning">Deposit deduction: {formatCurrency(m.deposit_deduction_amount)}</p>
                         )}
                       </div>
                     </div>
@@ -287,9 +286,9 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip formatter={(v: number) => fmt(v)} />
-                  <Bar dataKey="gross" name="Collected" fill="hsl(var(--teal))" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="net" name={`Net to you (${revenueSharePct}%)`} fill="hsl(var(--success))" radius={[3, 3, 0, 0]} />
+                  <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                  <Bar dataKey="gross" name="Collected" fill={CALQULUS_COLOR.navySecondary} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="net" name={`Net to you (${revenueSharePct}%)`} fill={CALQULUS_COLOR.primary} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex gap-4 justify-center mt-2 text-xs text-muted-foreground">

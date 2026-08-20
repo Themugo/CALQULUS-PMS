@@ -11,11 +11,10 @@ import { Input } from '@/shared/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { AlertTriangle } from 'lucide-react';
 import { occupancyRateColor } from '@/shared/lib/statusBadge';
+import { formatCurrency } from '@/shared/lib/formatCurrency';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
 interface Props {
   properties: Array<{
@@ -118,7 +117,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
       {isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-48 w-full" />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
           </div>
         </div>
@@ -151,7 +150,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                       <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Description</TableHead>
-                        <TableHead className="text-right">Income</TableHead>
+                        <TableHead className="text-right">Collected</TableHead>
                         <TableHead className="text-right">Expense</TableHead>
                         <TableHead className="text-right">Balance</TableHead>
                       </TableRow>
@@ -161,10 +160,10 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                         <TableRow key={row.description} className={row.emphasize ? 'bg-muted/40' : undefined}>
                           <TableCell className="whitespace-nowrap text-sm">{row.date}</TableCell>
                           <TableCell className={row.emphasize ? 'font-semibold' : undefined}>{row.description}</TableCell>
-                          <TableCell className="text-right tabular-nums">{row.income ? fmt(row.income) : '—'}</TableCell>
-                          <TableCell className="text-right tabular-nums text-muted-foreground">{row.expense ? fmt(row.expense) : '—'}</TableCell>
+                          <TableCell className="text-right tabular-nums">{row.income ? formatCurrency(row.income) : '—'}</TableCell>
+                          <TableCell className="text-right tabular-nums text-muted-foreground">{row.expense ? formatCurrency(row.expense) : '—'}</TableCell>
                           <TableCell className={`text-right tabular-nums ${row.emphasize ? 'font-bold text-success' : 'font-medium'}`}>
-                            {fmt(row.balance)}
+                            {formatCurrency(row.balance)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -173,12 +172,12 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                   <div className="grid grid-cols-2 gap-3 p-4 border-t border-border">
                     <div className="rounded-lg border border-border bg-muted/20 p-3">
                       <p className="text-xs text-muted-foreground mb-0.5">Outstanding</p>
-                      <p className={`text-lg font-semibold ${outstanding > 0 ? 'text-destructive' : 'text-foreground'}`}>{fmt(outstanding)}</p>
+                      <p className={`text-lg font-semibold ${outstanding > 0 ? 'text-destructive' : 'text-foreground'}`}>{formatCurrency(outstanding)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">Uncollected arrears</p>
                     </div>
                     <div className="rounded-lg border border-border bg-muted/20 p-3">
                       <p className="text-xs text-muted-foreground mb-0.5">Pending</p>
-                      <p className={`text-lg font-semibold ${pending > 0 ? 'text-warning' : 'text-foreground'}`}>{fmt(pending)}</p>
+                      <p className={`text-lg font-semibold ${pending > 0 ? 'text-warning' : 'text-foreground'}`}>{formatCurrency(pending)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">Payout not yet paid</p>
                     </div>
                   </div>
@@ -188,7 +187,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
           })()}
 
           {/* Occupancy */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {[
               { label: 'Total units',    value: String(financials.total_units) },
               { label: 'Occupied',       value: String(financials.occupied_units) },
@@ -207,7 +206,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
               <div>
                 <p className="text-sm font-semibold text-foreground">Outstanding</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {fmt(Number(financials.arrears_total))} uncollected. Your manager is working to collect — this is not yet income.
+                  {formatCurrency(Number(financials.arrears_total))} uncollected. Your manager is working to collect — this is not yet income.
                 </p>
               </div>
             </div>
@@ -242,8 +241,8 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                               {u.status}
                             </span>
                           </td>
-                          <td className="py-2 text-right">{fmt(Number(u.monthly_rent || 0))}</td>
-                          <td className="py-2 text-right font-medium">{fmt(Number(u.total_paid || 0))}</td>
+                          <td className="py-2 text-right">{formatCurrency(Number(u.monthly_rent || 0))}</td>
+                          <td className="py-2 text-right font-medium">{formatCurrency(Number(u.total_paid || 0))}</td>
                           <td className="py-2 text-right text-muted-foreground">{u.payment_count}</td>
                         </tr>
                       ))}
@@ -263,18 +262,18 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Collected</span>
-                  <span className="font-semibold">{fmt(Number(financials.gross_rent_collected))}</span>
+                  <span className="font-semibold">{formatCurrency(Number(financials.gross_rent_collected))}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">
                     Expense — management fee ({mgmtFee}%{property?.manager_name ? ` · ${property.manager_name}` : ''})
                   </span>
-                  <span className="text-muted-foreground">– {fmt(Number(financials.management_fee))}</span>
+                  <span className="text-muted-foreground">– {formatCurrency(Number(financials.management_fee))}</span>
                 </div>
                 <div className="h-px bg-border" />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Net to you ({property?.revenue_share_pct}%)</span>
-                  <span className="text-xl font-bold text-success">{fmt(Number(financials.net_to_landlord))}</span>
+                  <span className="text-xl font-bold text-success">{formatCurrency(Number(financials.net_to_landlord))}</span>
                 </div>
               </div>
             </CardContent>
@@ -294,8 +293,8 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={v => v >= 1000 ? `${v/1000}k` : String(v)} />
-                <Tooltip formatter={(v: number) => fmt(v)} />
-                <Bar dataKey="revenue" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                <Bar dataKey="revenue" fill={CALQULUS_COLOR.primary} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

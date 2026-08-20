@@ -148,8 +148,8 @@ const LandlordTeamSettings: React.FC = () => {
       const allPropertyIds = properties.map((p: { id: string }) => p.id);
       const perms = {
         can_view_properties: true,
-        can_view_tenants: true,
-        can_view_leases: true,
+        can_view_tenants: false,
+        can_view_leases: false,
         can_view_invoices: true,
         can_view_maintenance: true,
         can_view_contracts: false,
@@ -227,8 +227,7 @@ const LandlordTeamSettings: React.FC = () => {
           Management team
         </CardTitle>
         <CardDescription>
-          Build your in-house team with role-based access. Members use the Submanager portal and only see
-          tenants and properties you assign.
+          Add staff who help you operate. They use the submanager desk. Tenant names stay with your property manager — this portal does not grant tenant access.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -247,7 +246,7 @@ const LandlordTeamSettings: React.FC = () => {
           </Button>
         </div>
         {properties.length === 0 && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2">
+          <p className="text-xs text-warning bg-warning/10 border border-warning/30 rounded-md p-2">
             Link at least one property to your account before adding team members.
           </p>
         )}
@@ -261,9 +260,7 @@ const LandlordTeamSettings: React.FC = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Member</TableHead>
-                <TableHead>View tenants</TableHead>
                 <TableHead>Record payments</TableHead>
-                <TableHead>Edit tenants</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -276,20 +273,8 @@ const LandlordTeamSettings: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Switch
-                      checked={row.can_view_tenants}
-                      onCheckedChange={(v) => togglePerm.mutate({ row, key: 'can_view_tenants', value: v })}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Switch
                       checked={row.can_record_payments}
                       onCheckedChange={(v) => togglePerm.mutate({ row, key: 'can_record_payments', value: v })}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={row.can_edit_tenants}
-                      onCheckedChange={(v) => togglePerm.mutate({ row, key: 'can_edit_tenants', value: v })}
                     />
                   </TableCell>
                   <TableCell>
