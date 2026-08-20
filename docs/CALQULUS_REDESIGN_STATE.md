@@ -54,10 +54,13 @@ STOP. Do not redesign tenants, billing, leases, other portals, or the authentica
 - New `/units` page reads existing tables in memory (no new RPC / migration)
 
 ## TEST STATUS
-- Pending on this revision (typecheck, eslint, vitest, Playwright preview, production build)
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx eslint` on changed properties / units / preview files — pass
+- `npx vitest run` — **900 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-properties` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
-- Pending on this revision
+- `npm run build` — pass
 
 ## NEXT STEP
 STOP. Do not continue to tenants, billing, leases, other portals, or shell unification.

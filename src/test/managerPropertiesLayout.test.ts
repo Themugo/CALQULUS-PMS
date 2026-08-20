@@ -28,7 +28,7 @@ describe("Manager properties, property detail, and units layout contracts", () =
     expect(properties).not.toMatch(/KES 1\.24M/);
 
     const row = src("src/features/properties/components/PropertyTableRow.tsx");
-    expect(row).toContain(">View<");
+    expect(row).toContain("aria-label={`View ${property.name}`}");
     expect(row).toContain("View Details");
     expect(row).toContain("Edit Property");
     expect(row).toContain("Deactivate");

@@ -33,13 +33,11 @@ describe("Manager properties layout preview", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Property name" })).toBeInTheDocument();
     expect(screen.getByText("Location from the property record.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add tenant" })).toBeInTheDocument();
+    for (const label of ["Occupancy", "Rent", "Outstanding", "Overview", "Tenants", "Leases", "Billing", "Documents"]) {
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+    }
     expect(screen.getAllByText("Units").length).toBeGreaterThan(0);
-    for (const metric of ["Occupancy", "Rent", "Outstanding", "Maintenance"]) {
-      expect(screen.getByText(metric)).toBeInTheDocument();
-    }
-    for (const tab of ["Overview", "Tenants", "Leases", "Billing", "Documents"]) {
-      expect(screen.getByText(tab)).toBeInTheDocument();
-    }
+    expect(screen.getAllByText("Maintenance").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Live value").length).toBe(5);
 
     fireEvent.click(screen.getByRole("tab", { name: "Units" }));
