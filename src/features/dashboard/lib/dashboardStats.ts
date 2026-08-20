@@ -163,21 +163,43 @@ function monthBounds(now = new Date()) {
   return { firstOfThisMonth, endOfThisMonth, firstOfPrevMonth, endOfPrevMonth, expiringCutoff };
 }
 
-async function fetchExpectedRent(managerId: string, firstOfThisMonth: string, endOfThisMonth: string) {
-  const { data } = await supabase
+async function fetchExpectedRent(
+  managerId: string,
+  firstOfThisMonth: string,
+  endOfThisMonth: string,
+  tenantIds?: string[] | null,
+  propertyIds?: string[] | null,
+) {
+  let invoiceQuery = supabase
     .from('invoices')
     .select('amount, status')
     .eq('manager_id', managerId)
     .gte('due_date', firstOfThisMonth)
     .lte('due_date', endOfThisMonth);
+  if (tenantIds) {
+    if (tenantIds.length === 0) {
+      // fall through to leases
+    } else {
+      invoiceQuery = invoiceQuery.in('tenant_id', tenantIds);
+    }
+  }
+
+  const { data } =
+    tenantIds && tenantIds.length === 0
+      ? { data: [] as { amount: number }[] }
+      : await invoiceQuery;
 
   let expectedRent = ((data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
   if (expectedRent === 0) {
-    const { data: activeLeaseRows } = await supabase
+    let leaseQuery = supabase
       .from('leases')
       .select('monthly_rent')
       .eq('manager_id', managerId)
       .eq('status', 'active');
+    if (propertyIds && propertyIds.length > 0) {
+      leaseQuery = leaseQuery.in('property_id', propertyIds);
+    }
+    const { data: activeLeaseRows } = await leaseQuery;
     expectedRent = (activeLeaseRows || []).reduce((s, l) => s + Number(l.monthly_rent || 0), 0);
   }
   return expectedRent;
@@ -232,10 +254,108 @@ async function supplementPartialStats(
   };
 }
 
-/** Full 16-query path used when the RPC is missing or errors. */
-export async function fetchDashboardStatsFallback(managerId: string): Promise<ManagerDashboardStats> {
+export type ManagerDashboardScope = {
+  restrictToAssignedProperties?: boolean;
+  assignedPropertyIds?: string[];
+};
+
+/** Restricted submanagers must not consume the unscoped manager-wide RPC. */
+export function shouldSkipUnscopedDashboardRpc(scope?: ManagerDashboardScope): boolean {
+  return !!scope?.restrictToAssignedProperties;
+}
+
+async function resolveScopedTenantIds(managerId: string, propertyIds: string[]): Promise<string[]> {
+  const { data } = await supabase
+    .from('tenants')
+    .select('id')
+    .eq('manager_id', managerId)
+    .in('property_id', propertyIds);
+  return (data ?? []).map((row) => row.id);
+}
+
+async function countScopedMaintenance(
+  managerId: string,
+  propertyIds: string[],
+  priorities?: string[],
+): Promise<number> {
+  const { data: properties } = await supabase
+    .from('properties')
+    .select('name')
+    .eq('manager_id', managerId)
+    .in('id', propertyIds);
+  const names = (properties ?? []).map((p) => p.name).filter(Boolean);
+  if (names.length === 0) return 0;
+
+  let query = supabase
+    .from('maintenance_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('manager_id', managerId)
+    .in('status', ['open', 'pending', 'in_progress'])
+    .in('property_name', names);
+  if (priorities) {
+    query = query.in('priority', priorities);
+  }
+  const { count } = await query;
+  return count || 0;
+}
+
+type CountResult = { count: number | null };
+type AmountRow = { amount: number };
+
+const EMPTY_COUNT: CountResult = { count: 0 };
+const EMPTY_AMOUNT_ROWS: { data: AmountRow[] } = { data: [] };
+
+function sumAmounts(rows: AmountRow[] | null | undefined): number {
+  return (rows ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
+}
+
+/** Full 16-query path used when the RPC is missing, errors, or must be property-scoped. */
+export async function fetchDashboardStatsFallback(
+  managerId: string,
+  propertyIds?: string[],
+): Promise<ManagerDashboardStats> {
   const { firstOfThisMonth, endOfThisMonth, firstOfPrevMonth, endOfPrevMonth, expiringCutoff } =
     monthBounds();
+  const scoped = !!(propertyIds && propertyIds.length > 0);
+  const tenantIds = scoped ? await resolveScopedTenantIds(managerId, propertyIds) : null;
+  const invoiceScopeEmpty = tenantIds !== null && tenantIds.length === 0;
+
+  let tenantsAll = supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId);
+  let tenantsActive = supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active');
+  let tenantsInactive = supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'inactive');
+  let tenantsNew = supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).gte('created_at', firstOfThisMonth);
+  let leasesActive = supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active');
+  let leasesExpiring = supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active').lte('end_date', expiringCutoff);
+  let propertiesQuery = supabase.from('properties').select('id, units, occupied').eq('manager_id', managerId);
+
+  if (scoped) {
+    tenantsAll = tenantsAll.in('property_id', propertyIds!);
+    tenantsActive = tenantsActive.in('property_id', propertyIds!);
+    tenantsInactive = tenantsInactive.in('property_id', propertyIds!);
+    tenantsNew = tenantsNew.in('property_id', propertyIds!);
+    leasesActive = leasesActive.in('property_id', propertyIds!);
+    leasesExpiring = leasesExpiring.in('property_id', propertyIds!);
+    propertiesQuery = propertiesQuery.in('id', propertyIds!);
+  }
+
+  let paidQuery = supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfThisMonth);
+  let prevPaidQuery = supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfPrevMonth).lte('paid_date', endOfPrevMonth);
+  let pendingQuery = supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending');
+  let overdueQuery = supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'overdue');
+  let overdueAmountQuery = supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'overdue');
+
+  if (tenantIds && tenantIds.length > 0) {
+    paidQuery = paidQuery.in('tenant_id', tenantIds);
+    prevPaidQuery = prevPaidQuery.in('tenant_id', tenantIds);
+    pendingQuery = pendingQuery.in('tenant_id', tenantIds);
+    overdueQuery = overdueQuery.in('tenant_id', tenantIds);
+    overdueAmountQuery = overdueAmountQuery.in('tenant_id', tenantIds);
+  }
+
+  let depositQuery = supabase.from('deposit_refunds').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending');
+  if (tenantIds && tenantIds.length > 0) {
+    depositQuery = depositQuery.in('tenant_id', tenantIds);
+  }
 
   const [
     tenantsResult,
@@ -246,58 +366,46 @@ export async function fetchDashboardStatsFallback(managerId: string): Promise<Ma
     expiringLeasesResult,
     paidInvoicesResult,
     prevMonthResult,
-    thisMonthInvoicesResult,
     pendingInvoicesResult,
     overdueInvoicesResult,
     overdueAmountResult,
     propertiesResult,
-    maintenanceResult,
-    urgentMaintenanceResult,
+    openMaintenanceCount,
+    urgentMaintenanceCount,
     depositRefundsResult,
   ] = await Promise.all([
-    supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId),
-    supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
-    supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'inactive'),
-    supabase.from('tenants').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).gte('created_at', firstOfThisMonth),
-    supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active'),
-    supabase.from('leases').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'active')
-      .lte('end_date', expiringCutoff),
-    supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfThisMonth),
-    supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfPrevMonth).lte('paid_date', endOfPrevMonth),
-    supabase.from('invoices').select('amount, status').eq('manager_id', managerId).gte('due_date', firstOfThisMonth).lte('due_date', endOfThisMonth),
-    supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
-    supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'overdue'),
-    supabase.from('invoices').select('balance_due').eq('manager_id', managerId).eq('status', 'overdue'),
-    supabase.from('properties').select('id, units, occupied').eq('manager_id', managerId),
-    supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']),
-    supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).in('priority', ['high', 'urgent']),
-    supabase.from('deposit_refunds').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending'),
+    tenantsAll,
+    tenantsActive,
+    tenantsInactive,
+    tenantsNew,
+    leasesActive,
+    leasesExpiring,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_AMOUNT_ROWS) : paidQuery,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_AMOUNT_ROWS) : prevPaidQuery,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_COUNT) : pendingQuery,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_COUNT) : overdueQuery,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_AMOUNT_ROWS) : overdueAmountQuery,
+    propertiesQuery,
+    scoped ? countScopedMaintenance(managerId, propertyIds!) : supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).then((r) => r.count || 0),
+    scoped ? countScopedMaintenance(managerId, propertyIds!, ['high', 'urgent']) : supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).in('priority', ['high', 'urgent']).then((r) => r.count || 0),
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_COUNT) : depositQuery,
   ]);
 
-  const revenueMTD = ((paidInvoicesResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
-  const revenuePrev = ((prevMonthResult.data as { amount: number }[]) ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
-
-  let expectedRent = ((thisMonthInvoicesResult.data as { amount: number }[]) ?? []).reduce(
-    (s, i) => s + Number(i.amount || 0),
-    0,
+  const revenueMTD = sumAmounts(paidInvoicesResult.data as AmountRow[] | null);
+  const revenuePrev = sumAmounts(prevMonthResult.data as AmountRow[] | null);
+  const expectedRent = await fetchExpectedRent(
+    managerId,
+    firstOfThisMonth,
+    endOfThisMonth,
+    tenantIds,
+    propertyIds,
   );
-  if (expectedRent === 0) {
-    const { data: activeLeaseRows } = await supabase
-      .from('leases')
-      .select('monthly_rent')
-      .eq('manager_id', managerId)
-      .eq('status', 'active');
-    expectedRent = (activeLeaseRows || []).reduce((s, l) => s + Number(l.monthly_rent || 0), 0);
-  }
 
   const allProps = (propertiesResult.data as { id: string; units: number; occupied: number }[]) ?? [];
   const totalUnits = allProps.reduce((s, p) => s + (Number(p.units) || 0), 0);
   const occupiedUnits = allProps.reduce((s, p) => s + (Number(p.occupied) || 0), 0);
   const occupancy = deriveOccupancy(totalUnits, occupiedUnits);
-  const arrearsTotal = ((overdueAmountResult.data as { balance_due: number }[]) ?? []).reduce(
-    (s, i) => s + Number(i.balance_due || 0),
-    0,
-  );
+  const arrearsTotal = sumAmounts(overdueAmountResult.data as AmountRow[] | null);
 
   return {
     totalTenants: tenantsResult.count || 0,
@@ -320,13 +428,22 @@ export async function fetchDashboardStatsFallback(managerId: string): Promise<Ma
     pendingInvoices: pendingInvoicesResult.count || 0,
     overdueInvoices: overdueInvoicesResult.count || 0,
     arrearsTotal,
-    openMaintenanceCount: maintenanceResult.count || 0,
-    urgentMaintenanceCount: urgentMaintenanceResult.count || 0,
+    openMaintenanceCount: typeof openMaintenanceCount === 'number' ? openMaintenanceCount : 0,
+    urgentMaintenanceCount: typeof urgentMaintenanceCount === 'number' ? urgentMaintenanceCount : 0,
     pendingDepositRefundsCount: depositRefundsResult.count || 0,
   };
 }
 
-export async function fetchManagerDashboardStats(managerId: string): Promise<ManagerDashboardStats> {
+export async function fetchManagerDashboardStats(
+  managerId: string,
+  scope?: ManagerDashboardScope,
+): Promise<ManagerDashboardStats> {
+  if (shouldSkipUnscopedDashboardRpc(scope)) {
+    const assigned = scope?.assignedPropertyIds ?? [];
+    if (assigned.length === 0) return EMPTY_DASHBOARD_STATS;
+    return fetchDashboardStatsFallback(managerId, assigned);
+  }
+
   const { data, error } = await supabase.rpc('get_manager_dashboard_stats', {
     p_manager_id: managerId,
   });

@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { logError } from "@/shared/lib/errorLogger";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -72,8 +73,21 @@ export const billingKeys = {
 
 // ── Fetchers ─────────────────────────────────────────────────────────────────
 
-async function fetchInvoices(managerId: string): Promise<BillingInvoice[]> {
-  const { data, error } = await supabase
+async function fetchInvoices(managerId: string, assignedPropertyIds?: string[]): Promise<BillingInvoice[]> {
+  if (assignedPropertyIds && assignedPropertyIds.length === 0) return [];
+
+  let scopedTenantIds: string[] | null = null;
+  if (assignedPropertyIds) {
+    const { data: scopedTenants } = await supabase
+      .from("tenants")
+      .select("id")
+      .eq("manager_id", managerId)
+      .in("property_id", assignedPropertyIds);
+    scopedTenantIds = (scopedTenants ?? []).map((t) => t.id);
+    if (scopedTenantIds.length === 0) return [];
+  }
+
+  let query = supabase
     .from("invoices")
     .select(`
       *,
@@ -82,6 +96,11 @@ async function fetchInvoices(managerId: string): Promise<BillingInvoice[]> {
     `)
     .eq("manager_id", managerId)
     .order("created_at", { ascending: false });
+  if (scopedTenantIds) {
+    query = query.in("tenant_id", scopedTenantIds);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     logError("billing.fetchInvoices", error);
@@ -90,8 +109,10 @@ async function fetchInvoices(managerId: string): Promise<BillingInvoice[]> {
   return (data ?? []) as BillingInvoice[];
 }
 
-async function fetchLeases(managerId: string): Promise<BillingLease[]> {
-  const { data, error } = await supabase
+async function fetchLeases(managerId: string, assignedPropertyIds?: string[]): Promise<BillingLease[]> {
+  if (assignedPropertyIds && assignedPropertyIds.length === 0) return [];
+
+  let query = supabase
     .from("leases")
     .select(`
       id, property, unit, monthly_rent, tenant_id, property_id, unit_id,
@@ -100,6 +121,11 @@ async function fetchLeases(managerId: string): Promise<BillingLease[]> {
     .eq("manager_id", managerId)
     .eq("status", "active")
     .order("property");
+  if (assignedPropertyIds) {
+    query = query.in("property_id", assignedPropertyIds);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     logError("billing.fetchLeases", error);
@@ -108,13 +134,20 @@ async function fetchLeases(managerId: string): Promise<BillingLease[]> {
   return (data ?? []) as BillingLease[];
 }
 
-async function fetchTenants(managerId: string): Promise<BillingTenant[]> {
-  const { data, error } = await supabase
+async function fetchTenants(managerId: string, assignedPropertyIds?: string[]): Promise<BillingTenant[]> {
+  if (assignedPropertyIds && assignedPropertyIds.length === 0) return [];
+
+  let query = supabase
     .from("tenants")
     .select("id, name, email, phone, photo_url, property, unit, monthly_rent")
     .eq("manager_id", managerId)
     .eq("status", "active")
     .order("name");
+  if (assignedPropertyIds) {
+    query = query.in("property_id", assignedPropertyIds);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     logError("billing.fetchTenants", error);
@@ -145,51 +178,51 @@ async function fetchExpenditures(
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useBillingData(selectedMonth: string) {
-  const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const queryClient = useQueryClient();
+  const scopeKey = restrictToAssignedProperties ? assignedPropertyIds.join(",") : "all";
+  const scopedIds = restrictToAssignedProperties ? assignedPropertyIds : undefined;
 
   const invoicesQuery = useQuery({
-    queryKey: billingKeys.invoices(user?.id ?? ""),
-    queryFn: () => fetchInvoices(user!.id),
-    enabled: !!user?.id,
+    queryKey: [...billingKeys.invoices(managerId ?? ""), scopeKey],
+    queryFn: () => fetchInvoices(managerId!, scopedIds),
+    enabled: !!managerId,
     staleTime: 15 * 1000,
   });
 
   const leasesQuery = useQuery({
-    queryKey: billingKeys.leases(user?.id ?? ""),
-    queryFn: () => fetchLeases(user!.id),
-    enabled: !!user?.id,
+    queryKey: [...billingKeys.leases(managerId ?? ""), scopeKey],
+    queryFn: () => fetchLeases(managerId!, scopedIds),
+    enabled: !!managerId,
     staleTime: 5 * 60 * 1000,
   });
 
   const tenantsQuery = useQuery({
-    queryKey: billingKeys.tenants(user?.id ?? ""),
-    queryFn: () => fetchTenants(user!.id),
-    enabled: !!user?.id,
+    queryKey: [...billingKeys.tenants(managerId ?? ""), scopeKey],
+    queryFn: () => fetchTenants(managerId!, scopedIds),
+    enabled: !!managerId,
     staleTime: 5 * 60 * 1000,
   });
 
   const expendituresQuery = useQuery({
-    queryKey: billingKeys.expenditures(user?.id ?? "", selectedMonth),
-    queryFn: () => fetchExpenditures(user!.id, selectedMonth),
-    enabled: !!user?.id,
+    queryKey: billingKeys.expenditures(managerId ?? "", selectedMonth),
+    queryFn: () => fetchExpenditures(managerId!, selectedMonth),
+    enabled: !!managerId,
   });
 
   /** Call after any mutation that changes invoices to get fresh data. */
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateInvoices = useCallback(() => {
-    if (!user?.id) return;
-    queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
-  }, [queryClient, user?.id]);
+    if (!managerId) return;
+    queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId) });
+  }, [queryClient, managerId]);
 
   /** Call after saving an expenditure. */
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const invalidateExpenditures = useCallback(() => {
-    if (!user?.id) return;
+    if (!managerId) return;
     queryClient.invalidateQueries({
-      queryKey: billingKeys.expenditures(user.id, selectedMonth),
+      queryKey: billingKeys.expenditures(managerId, selectedMonth),
     });
-  }, [queryClient, user?.id, selectedMonth]);
+  }, [queryClient, managerId, selectedMonth]);
 
   return {
     // Data
@@ -200,11 +233,14 @@ export function useBillingData(selectedMonth: string) {
 
     // Loading / error states
     isLoading: invoicesQuery.isLoading || leasesQuery.isLoading,
+    isError: invoicesQuery.isError,
     isExpendituresLoading: expendituresQuery.isLoading,
+    refetchInvoices: invoicesQuery.refetch,
 
     // Invalidators (replaces bare fetchInvoices() calls in handlers)
     invalidateInvoices,
     invalidateExpenditures,
+    managerId,
   };
 }
 
@@ -213,6 +249,7 @@ export function useBillingData(selectedMonth: string) {
 /** Record a payment that closes the invoice (never a status-only write). */
 export function useMarkInvoicePaid() {
   const { user } = useAuth();
+  const { managerId } = useManagerScope();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -252,23 +289,23 @@ export function useMarkInvoicePaid() {
       if (data?.error) throw new Error(data.error);
 
       supabase.functions
-        .invoke("auto-send-receipt", { body: { invoiceId, managerId: user.id } })
+        .invoke("auto-send-receipt", { body: { invoiceId, managerId: managerId ?? user.id } })
         .catch(() => {/* receipt email is best-effort after payment is recorded */});
 
       return { invoiceId, paidDate };
     },
     onSuccess: () => {
       if (!user?.id) return;
-      trackTimeToFirst("payment", { managerId: user.id, signupAt: user.created_at });
+      trackTimeToFirst("payment", { managerId: managerId ?? user.id, signupAt: user.created_at });
       invalidateManagerActivation(queryClient);
-      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
+      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId ?? user.id) });
     },
   });
 }
 
 /** Update invoice amount, due_date, description. */
 export function useUpdateInvoice() {
-  const { user } = useAuth();
+  const { managerId } = useManagerScope();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -291,15 +328,15 @@ export function useUpdateInvoice() {
       if (error) throw error;
     },
     onSuccess: () => {
-      if (!user?.id) return;
-      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(user.id) });
+      if (!managerId) return;
+      queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId) });
     },
   });
 }
 
 /** Upsert a single expenditure category for the given month. */
 export function useSaveExpenditure() {
-  const { user } = useAuth();
+  const { managerId } = useManagerScope();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -316,7 +353,7 @@ export function useSaveExpenditure() {
       existingId: string | undefined;
       label: string;
     }) => {
-      if (!user?.id) throw new Error("Not authenticated");
+      if (!managerId) throw new Error("Not authenticated");
       const monthDate = `${month}-01`;
 
       if (existingId) {
@@ -329,7 +366,7 @@ export function useSaveExpenditure() {
         const { error } = await supabase
           .from("expenditures")
           .insert({
-            manager_id: user.id,
+            manager_id: managerId,
             category,
             amount,
             month: monthDate,
@@ -339,9 +376,9 @@ export function useSaveExpenditure() {
       }
     },
     onSuccess: (_data, variables) => {
-      if (!user?.id) return;
+      if (!managerId) return;
       queryClient.invalidateQueries({
-        queryKey: billingKeys.expenditures(user.id, variables.month),
+        queryKey: billingKeys.expenditures(managerId, variables.month),
       });
     },
   });

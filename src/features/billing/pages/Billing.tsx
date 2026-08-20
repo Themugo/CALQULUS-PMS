@@ -18,6 +18,7 @@ import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
+import { ErrorState } from "@/shared/components/ui/error-state";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -88,7 +89,7 @@ const Billing = () => {
 
   // ── Server state (React Query) ────────────────────────────────────────────
 
-  const { invoices, leases, tenants, expenditures, isLoading, invalidateInvoices } =
+  const { invoices, leases, tenants, expenditures, isLoading, isError, refetchInvoices, invalidateInvoices, managerId } =
     useBillingData(selectedMonth);
 
   useEffect(() => {
@@ -190,7 +191,7 @@ const Billing = () => {
           due_date: data.due_date,
           description: data.description || "Invoice",
           status: "pending",
-          manager_id: user.id,
+          manager_id: managerId ?? user.id,
           property_id: lease?.property_id ?? null,
           unit_id: lease?.unit_id ?? null,
         })
@@ -326,6 +327,12 @@ const Billing = () => {
 
         {/* ── Invoices tab ─────────────────────────────────────────────── */}
         <TabsContent value="invoices" className="space-y-4 sm:space-y-6">
+          {isError && (
+            <ErrorState
+              title="Couldn't load invoices"
+              onRetry={() => { void refetchInvoices(); }}
+            />
+          )}
           <BillingStatsBar invoices={invoices} isLoading={isLoading} />
 
           {/* Actions bar */}

@@ -63,7 +63,7 @@ import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { LeaseStatements } from "@/features/leases/components/LeaseStatements";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { LeaseCard } from "@/features/leases/components/LeaseCard";
@@ -189,7 +189,7 @@ const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
 
 const Leases = () => {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const queryClient = useQueryClient();
   const { logActivity: _logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
@@ -225,11 +225,15 @@ const Leases = () => {
   });
 
   const fetchLeases = useCallback(async () => {
-    if (!user) return;
+    if (!managerId) return;
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+      setLeases([]);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
 
-    // Try with tenant join first, fall back to plain query if FK doesn't exist
-    const { data, error } = await supabase.from("leases")
+    let query = supabase.from("leases")
       .select(`
         *,
         tenants (
@@ -239,17 +243,25 @@ const Leases = () => {
           photo_url
         )
       `)
-      .eq("manager_id", user.id)
+      .eq("manager_id", managerId)
       .order("created_at", { ascending: false });
+    if (restrictToAssignedProperties) {
+      query = query.in("property_id", assignedPropertyIds);
+    }
+    const { data, error } = await query;
 
     // If the join fails (FK not applied), fetch leases without the join
     if (error) {
       logError('Leases.fetchLeases.joinFailed', error);
-      const fallback = await supabase
+      let fallbackQuery = supabase
         .from("leases")
         .select("*")
-        .eq("manager_id", user.id)
+        .eq("manager_id", managerId)
         .order("created_at", { ascending: false });
+      if (restrictToAssignedProperties) {
+        fallbackQuery = fallbackQuery.in("property_id", assignedPropertyIds);
+      }
+      const fallback = await fallbackQuery;
 
       if (fallback.error) {
         toast({
@@ -264,36 +276,52 @@ const Leases = () => {
       setLeases(data || []);
     }
     setIsLoading(false);
-  }, [toast, user]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   const fetchTenants = useCallback(async () => {
-    if (!user) return;
-    const { data, error } = await supabase
+    if (!managerId) return;
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+      setTenants([]);
+      return;
+    }
+    let query = supabase
       .from("tenants")
       .select("id, name, email, photo_url")
-      .eq("manager_id", user.id)
+      .eq("manager_id", managerId)
       .eq("status", "active")
       .order("name");
+    if (restrictToAssignedProperties) {
+      query = query.in("property_id", assignedPropertyIds);
+    }
+    const { data, error } = await query;
 
     if (error) {
       logError('Leases.fetchTenants', error);
     } else {
       setTenants(data || []);
     }
-  }, [user]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   const fetchProperties = useCallback(async () => {
-    if (!user) return;
-    const { data, error } = await supabase
+    if (!managerId) return;
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+      setProperties([]);
+      return;
+    }
+    let query = supabase
       .from("properties")
       .select("id, name, address")
-      .eq("manager_id", user.id)
+      .eq("manager_id", managerId)
       .order("name", { ascending: true });
+    if (restrictToAssignedProperties) {
+      query = query.in("id", assignedPropertyIds);
+    }
+    const { data, error } = await query;
 
     if (!error && data) {
       setProperties(data);
     }
-  }, [user]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   const fetchUnits = useCallback(async () => {
     if (properties.length === 0) {
@@ -375,7 +403,7 @@ const Leases = () => {
       tenant_id: validationResult.data.tenant_id,
       property_id: validationResult.data.property_id,
       unit_id: validationResult.data.unit_id || null,
-      manager_id: user?.id ?? null,
+      manager_id: managerId ?? null,
       property: selectedProperty?.name || "",
       unit: validationResult.data.unit,
       start_date: validationResult.data.start_date,
@@ -440,7 +468,7 @@ const Leases = () => {
 
     await supabase.rpc("sync_tenant_payment_details", {
       p_tenant_id: validationResult.data.tenant_id,
-      p_manager_id: user?.id ?? null,
+      p_manager_id: managerId ?? null,
       p_property_id: validationResult.data.property_id || null,
       p_unit_id: validationResult.data.unit_id || null,
       p_monthly_rent: monthlyRent,

@@ -115,11 +115,10 @@ const getCategoryBadgeVariant = (category: string): "default" | "secondary" | "d
   }
 };
 
-export function RecentActivity() {
+export function RecentActivity({ showHeader = true }: { showHeader?: boolean }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchActivities = useCallback(async () => {
     try {
@@ -230,6 +229,7 @@ export function RecentActivity() {
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-6 card-shadow animate-fade-in">
+      {showHeader && (
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground">
           Recent Activity
@@ -238,6 +238,7 @@ export function RecentActivity() {
           {activities.length} updates
         </Badge>
       </div>
+      )}
       <div className="space-y-3">
         {activities.length === 0 ? (
           <div className="text-center py-8">

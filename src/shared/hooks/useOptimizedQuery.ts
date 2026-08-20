@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient, type UseQueryOptions, type UseQueryResult } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
+import { useManagerScope } from '@/shared/hooks/useManagerScope';
 
 // Query key factory for consistent, typed query keys
 export const queryKeys = {
@@ -150,15 +151,20 @@ export function useOptimizedTenants(managerId: string | null) {
 
 // Optimized dashboard stats query - combines multiple queries into one
 export function useOptimizedDashboardStats(managerId: string | null) {
+  const { restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedKey = assignedPropertyIds.join(',');
   return useQuery({
-    queryKey: queryKeys.dashboard.stats(managerId ?? ''),
+    queryKey: [...queryKeys.dashboard.stats(managerId ?? ''), assignedKey],
     queryFn: async () => {
       if (!managerId) {
         const { EMPTY_DASHBOARD_STATS } = await import('@/features/dashboard/lib/dashboardStats');
         return EMPTY_DASHBOARD_STATS;
       }
       const { fetchManagerDashboardStats } = await import('@/features/dashboard/lib/dashboardStats');
-      return fetchManagerDashboardStats(managerId);
+      return fetchManagerDashboardStats(managerId, {
+        restrictToAssignedProperties,
+        assignedPropertyIds,
+      });
     },
     enabled: !!managerId,
     staleTime: STALE_TIMES.frequentlyChanging,

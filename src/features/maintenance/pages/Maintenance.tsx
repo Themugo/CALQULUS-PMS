@@ -1,6 +1,6 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
@@ -19,6 +19,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -136,7 +146,7 @@ export default function Maintenance() {
   const [activeTab, setActiveTab] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const { can } = useRBAC();
   const { logActivity } = useActivityLog();
 
@@ -145,6 +155,7 @@ export default function Maintenance() {
   const [requestPage, setRequestPage] = useState(1);
   const [requestSortKey, setRequestSortKey] = useState("priority");
   const [requestSortDir, setRequestSortDir] = useState<SortDir>("desc");
+  const [completeTarget, setCompleteTarget] = useState<{ id: string; oldStatus?: RequestStatus } | null>(null);
 
   // Properties and units for dropdowns
   const [properties, setProperties] = useState<Property[]>([]);
@@ -167,18 +178,43 @@ export default function Maintenance() {
   });
 
   const fetchRequests = useCallback(async () => {
-    if (!user?.id) {
+    if (!managerId) {
+      setRequests([]);
+      setIsLoading(false);
+      return;
+    }
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
       setRequests([]);
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
-    const { data, error } = await supabase
+    let names: string[] | null = null;
+    if (restrictToAssignedProperties) {
+      const { data: scopedProperties } = await supabase
+        .from("properties")
+        .select("name")
+        .eq("manager_id", managerId)
+        .in("id", assignedPropertyIds);
+      names = (scopedProperties ?? []).map((p) => p.name).filter(Boolean);
+      if (!names.length) {
+        setRequests([]);
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    let query = supabase
       .from("maintenance_requests")
       .select("*")
-      .eq("manager_id", user!.id)
+      .eq("manager_id", managerId)
       .order("created_at", { ascending: false });
+    if (names) {
+      query = query.in("property_name", names);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       toast({
@@ -190,23 +226,40 @@ export default function Maintenance() {
       setRequests(data || []);
     }
     setIsLoading(false);
-  }, [user, toast]);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
 
   const fetchPropertiesAndUnits = useCallback(async () => {
-    if (!user?.id) {
+    if (!managerId) {
+      setProperties([]);
+      setUnits([]);
+      return;
+    }
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
       setProperties([]);
       setUnits([]);
       return;
     }
 
-    const [propertiesRes, unitsRes] = await Promise.all([
-      supabase.from("properties").select("id, name").eq("manager_id", user!.id).order("name"),
-      supabase.from("units").select("id, unit_number, property_id").order("unit_number"),
-    ]);
-    
-    if (propertiesRes.data) setProperties(propertiesRes.data);
-    if (unitsRes.data) setUnits(unitsRes.data);
-  }, [user]);
+    let propertiesQuery = supabase.from("properties").select("id, name").eq("manager_id", managerId).order("name");
+    if (restrictToAssignedProperties) {
+      propertiesQuery = propertiesQuery.in("id", assignedPropertyIds);
+    }
+    const { data: propertyRows } = await propertiesQuery;
+    const scopedProperties = propertyRows ?? [];
+    setProperties(scopedProperties);
+
+    const propertyIds = scopedProperties.map((p) => p.id);
+    if (propertyIds.length === 0) {
+      setUnits([]);
+      return;
+    }
+    const { data: unitRows } = await supabase
+      .from("units")
+      .select("id, unit_number, property_id")
+      .in("property_id", propertyIds)
+      .order("unit_number");
+    setUnits(unitRows ?? []);
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
   useEffect(() => {
     fetchRequests();
@@ -231,7 +284,7 @@ export default function Maintenance() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) {
+    if (!managerId) {
       toast({ title: "Error", description: "You must be signed in to submit a maintenance request.", variant: "destructive" });
       return;
     }
@@ -264,7 +317,7 @@ export default function Maintenance() {
       expected_completion_date: formData.expected_completion_date || null,
       budget: formData.budget ? parseFloat(formData.budget) : null,
       created_by_role: 'manager',
-      manager_id: user.id,
+      manager_id: managerId,
       property_id: formData.property_id || null,
     });
 
@@ -481,7 +534,7 @@ export default function Maintenance() {
           <MaintenanceActiveReport
             requests={requests}
             onStartRequest={(id) => updateRequestStatus(id, "in_progress", "open")}
-            onCompleteRequest={(id) => updateRequestStatus(id, "completed", "in_progress")}
+            onCompleteRequest={(id) => setCompleteTarget({ id, oldStatus: "in_progress" })}
           />
           <MaintenanceBudgetDashboard requests={requests} />
         </div>
@@ -830,7 +883,7 @@ export default function Maintenance() {
                               <Button
                                 size="sm"
                                 className="bg-success hover:bg-success/90"
-                                onClick={() => updateRequestStatus(request.id, "completed")}
+                                onClick={() => setCompleteTarget({ id: request.id, oldStatus: request.status })}
                               >
                                 Complete
                               </Button>
@@ -944,7 +997,7 @@ export default function Maintenance() {
                             <Button
                               size="sm"
                               className="bg-success hover:bg-success/90"
-                              onClick={() => updateRequestStatus(request.id, "completed")}
+                              onClick={() => setCompleteTarget({ id: request.id, oldStatus: request.status })}
                             >
                               Complete
                             </Button>
@@ -961,6 +1014,29 @@ export default function Maintenance() {
           )}
         </TabsContent>
       </Tabs>
+
+      <AlertDialog open={!!completeTarget} onOpenChange={(open) => { if (!open) setCompleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark this work order complete?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This records a completion date and notifies the requester. You can still view it under Completed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!completeTarget) return;
+                void updateRequestStatus(completeTarget.id, "completed", completeTarget.oldStatus);
+                setCompleteTarget(null);
+              }}
+            >
+              Mark complete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 }
@@ -974,13 +1050,13 @@ function AssignForm({ onAssign }: { onAssign: (name: string, providerId?: string
       {/* Tab toggle */}
       <div className="flex rounded-lg border border-border overflow-hidden text-sm">
         <button
-          className={`flex-1 py-2 font-medium transition-colors ${tab === 'marketplace' ? 'bg-amber-400 text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
+          className={`flex-1 py-2 font-medium transition-colors ${tab === 'marketplace' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted/40'}`}
           onClick={() => setTab('marketplace')}
         >
           From marketplace
         </button>
         <button
-          className={`flex-1 py-2 font-medium transition-colors ${tab === 'manual' ? 'bg-amber-400 text-white' : 'text-muted-foreground hover:bg-muted/40'}`}
+          className={`flex-1 py-2 font-medium transition-colors ${tab === 'manual' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted/40'}`}
           onClick={() => setTab('manual')}
         >
           Enter manually

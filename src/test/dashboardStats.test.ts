@@ -5,6 +5,7 @@ import {
   deriveRevenueChange,
   isCompleteDashboardRpc,
   mapRpcDashboardStats,
+  shouldSkipUnscopedDashboardRpc,
 } from '@/features/dashboard/lib/dashboardStats';
 import { canInitiateOnlinePayment } from '@/features/tenant-portal/lib/onlinePaymentGuard';
 
@@ -85,6 +86,13 @@ describe('dashboard derived metrics', () => {
     expect(deriveCollectionRate(0, 0)).toBe(0);
     expect(deriveRevenueChange(150, 100)).toBe(50);
     expect(deriveRevenueChange(80, 0)).toBe(0);
+  });
+});
+
+describe('shouldSkipUnscopedDashboardRpc', () => {
+  it('skips the unscoped RPC when the submanager is property-restricted', () => {
+    expect(shouldSkipUnscopedDashboardRpc({ restrictToAssignedProperties: true })).toBe(true);
+    expect(shouldSkipUnscopedDashboardRpc()).toBe(false);
   });
 });
 
