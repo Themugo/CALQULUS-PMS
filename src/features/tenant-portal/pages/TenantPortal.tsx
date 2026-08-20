@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/features/auth/AuthContext';
+import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -497,13 +497,7 @@ const TenantPortal = () => {
       <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gradient-to-br from-teal to-primary flex items-center justify-center shadow-sm shadow-teal/20">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-base md:text-lg text-foreground">CALQULUS PMS</h1>
-              <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Tenant Portal</p>
-            </div>
+            <BrandMark size="md" showWordmark subtitle="Tenant" />
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <span className="text-xs md:text-sm text-muted-foreground hidden md:block">{user?.email}</span>

@@ -12,12 +12,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
+import { Switch } from "@/shared/components/ui/switch";
+import { useFeatureAccess } from "@/shared/hooks/useFeatureAccess";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { isHexColor } from "@/core/brand/resolve";
 
 // Helper to get current user ID for manager_user_id
 
 export const CompanySettings = () => {
   const { toast } = useToast();
-  const { isManager, user } = useAuth();
+  const { isAgency, isManager, user } = useAuth();
+  const canManageCompany = isManager || isAgency;
+  const { enabled: whiteLabelOnPlan } = useFeatureAccess("white_label");
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
@@ -37,11 +43,13 @@ export const CompanySettings = () => {
   const [kraPin, setKraPin] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [brandPrimaryHex, setBrandPrimaryHex] = useState(CALQULUS_COLOR.primary);
+  const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(false);
   const displayLogoUrl = useSignedStorageUrl(logoUrl);
 
   useEffect(() => {
     const fetchCompanySettings = async () => {
-      if (!isManager) {
+      if (!canManageCompany) {
         setLoading(false);
         return;
       }
@@ -67,6 +75,12 @@ export const CompanySettings = () => {
           setCompanyPhone(data.phone || "");
           setCompanyWebsite(data.website || "");
           setLogoUrl(data.logo_url || null);
+          setBrandPrimaryHex(
+            typeof data.brand_primary_hex === "string" && isHexColor(data.brand_primary_hex)
+              ? data.brand_primary_hex
+              : CALQULUS_COLOR.primary,
+          );
+          setWhiteLabelEnabled(data.white_label_enabled === true);
         }
 
         // Load extended fields from agencies table (migration 014)
@@ -100,7 +114,7 @@ export const CompanySettings = () => {
 
     fetchCompanySettings();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isManager, user?.id]);
+  }, [canManageCompany, user?.id]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -248,6 +262,8 @@ export const CompanySettings = () => {
         phone: companyPhone,
         website: companyWebsite,
         logo_url: logoUrl,
+        brand_primary_hex: isHexColor(brandPrimaryHex) ? brandPrimaryHex : null,
+        white_label_enabled: whiteLabelOnPlan ? whiteLabelEnabled : false,
       };
 
       if (companyId) {
@@ -289,6 +305,7 @@ export const CompanySettings = () => {
         description: "Your company information has been updated.",
       });
       invalidateManagerActivation(queryClient);
+      queryClient.invalidateQueries({ queryKey: ["org-brand"] });
     } catch (error) {
       toast({
         title: "Couldn't save company details",
@@ -300,7 +317,7 @@ export const CompanySettings = () => {
     }
   };
 
-  if (!isManager) {
+  if (!canManageCompany) {
     return null;
   }
 
@@ -311,7 +328,9 @@ export const CompanySettings = () => {
           <Building2 className="h-5 w-5" />
           Company Details
         </CardTitle>
-        <CardDescription>Information displayed on contracts and invoices</CardDescription>
+        <CardDescription>
+          Shown on contracts and invoices. With white-label, Manager, Landlord, Agency, and Tenant desks use this brand instead of CALQULUS.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {loading ? (
@@ -383,6 +402,48 @@ export const CompanySettings = () => {
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Enter company name"
               />
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium">White-label desks</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Replace the CALQULUS mark with your name, logo, and interaction color on Manager, Landlord, Agency, and Tenant desks. Login and Platform Admin stay CALQULUS.
+                  </p>
+                </div>
+                <Switch
+                  checked={whiteLabelEnabled}
+                  disabled={!whiteLabelOnPlan}
+                  onCheckedChange={setWhiteLabelEnabled}
+                  aria-label="Enable white-label"
+                />
+              </div>
+              {!whiteLabelOnPlan && (
+                <p className="text-xs text-muted-foreground">
+                  White-label is included on Enterprise. Name and logo still print on invoices without it.
+                </p>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="brandPrimary">Interaction color</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="brandPrimary"
+                    type="color"
+                    value={isHexColor(brandPrimaryHex) ? brandPrimaryHex : CALQULUS_COLOR.primary}
+                    onChange={(e) => setBrandPrimaryHex(e.target.value.toUpperCase())}
+                    disabled={!whiteLabelOnPlan}
+                    className="h-10 w-12 cursor-pointer rounded border border-input bg-transparent"
+                  />
+                  <Input
+                    value={brandPrimaryHex}
+                    onChange={(e) => setBrandPrimaryHex(e.target.value)}
+                    disabled={!whiteLabelOnPlan}
+                    className="font-mono w-32"
+                    placeholder={CALQULUS_COLOR.primary}
+                  />
+                </div>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="address">Business Address</Label>

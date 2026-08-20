@@ -23,6 +23,7 @@ import {
 } from "@/app/routes";
 import { DevPortalSwitcher } from "@/shared/components/DevPortalSwitcher";
 import { STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
+import { WhiteLabelProvider } from "@/core/whiteLabel/WhiteLabelProvider";
 
 // Optimized QueryClient with better caching
 const queryClient = new QueryClient({
@@ -265,6 +266,7 @@ const App = () => (
         </ErrorBoundary>
         <BrowserRouter>
           <AuthProvider>
+            <WhiteLabelProvider>
             <ErrorBoundary fallback={null}>
               <PushNotificationPrompt />
             </ErrorBoundary>
@@ -274,6 +276,7 @@ const App = () => (
               <AppRoutes />
             </ErrorBoundary>
             <DevPortalSwitcher />
+            </WhiteLabelProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

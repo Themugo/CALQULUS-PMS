@@ -92,7 +92,7 @@ const WebhostDashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <BrandMark size="hero" className="animate-pulse-soft" />
+          <BrandMark size="hero" className="animate-pulse-soft" forcePlatform />
           <div className="flex gap-1.5" role="status" aria-live="polite" aria-label="Loading platform administration">
             {[0,1,2].map(i => (
               <div key={i} className="w-2 h-2 rounded-full bg-primary/70 animate-pulse-soft"
@@ -204,7 +204,7 @@ const WebhostDashboard = () => {
       </a>
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
-          <BrandMark size="md" showWordmark subtitle="Admin" className="min-w-0" />
+          <BrandMark size="md" showWordmark subtitle="Admin" className="min-w-0" forcePlatform />
 
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Sparkles, Palette, Image as ImageIcon, Globe, Monitor, Save, Check } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
+import { Sparkles, Palette, Image as ImageIcon, Globe } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { BrandAssetManager, BrandAssetsState } from "./BrandAssetManager";
+import { BrandAssetManager } from "./BrandAssetManager";
 import { ThemeStudioEditor, BrandThemeConfig } from "./ThemeStudioEditor";
 import { PortalPreviewCanvas } from "./PortalPreviewCanvas";
 import { CustomDomainConfig } from "./CustomDomainConfig";
@@ -12,7 +10,6 @@ import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export function MultiBrandStudio({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState("theme");
-  const [saved, setSaved] = useState(false);
 
   const [themeConfig, setThemeConfig] = useState<BrandThemeConfig>({
     primaryColorHex: CALQULUS_COLOR.primary,
@@ -25,11 +22,6 @@ export function MultiBrandStudio({ className }: { className?: string }) {
     tenantPortalThemeName: CALQULUS_BRAND.product,
   });
 
-  const handleSaveBrand = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
   return (
     <div className={cn("space-y-4", className)}>
       {/* Top Banner */}
@@ -39,14 +31,9 @@ export function MultiBrandStudio({ className }: { className?: string }) {
             <Sparkles className="h-5 w-5 text-primary" /> Multi-Brand SaaS & White-Label Theme Engine
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Empower every property management organization to deploy their own custom logos, colors, custom domains, and portal themes.
+            Live org branding is Settings → Company (Enterprise white-label). Login and Platform Admin always stay CALQULUS.
           </p>
         </div>
-
-        <Button size="sm" onClick={handleSaveBrand} className="h-8 text-xs font-bold gap-1 bg-primary text-primary-foreground">
-          {saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
-          {saved ? "Theme Published Live" : "Publish Brand Theme"}
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

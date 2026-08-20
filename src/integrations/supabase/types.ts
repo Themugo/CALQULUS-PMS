@@ -282,6 +282,8 @@ export type Database = {
           updated_at: string
           website: string | null
           zip_code: string | null
+          brand_primary_hex: string | null
+          white_label_enabled: boolean
         }
         Insert: {
           address?: string | null
@@ -297,6 +299,8 @@ export type Database = {
           updated_at?: string
           website?: string | null
           zip_code?: string | null
+          brand_primary_hex?: string | null
+          white_label_enabled?: boolean
         }
         Update: {
           address?: string | null
@@ -312,6 +316,8 @@ export type Database = {
           updated_at?: string
           website?: string | null
           zip_code?: string | null
+          brand_primary_hex?: string | null
+          white_label_enabled?: boolean
         }
         Relationships: []
       }
@@ -6661,6 +6667,7 @@ export type Database = {
       get_admin_level: { Args: { _user_id: string }; Returns: string }
       get_auth_user_email: { Args: { _user_id: string }; Returns: string }
       get_landlord_portfolio_stats: { Args: Record<PropertyKey, never>; Returns: Json }
+      get_org_brand: { Args: Record<PropertyKey, never>; Returns: Json }
       get_landlord_property_ops: { Args: { p_property_id: string }; Returns: Json }
       get_landlord_revenue: {
         Args: {

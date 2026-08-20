@@ -70,7 +70,7 @@ export function PortalAuthShell({
           <div className="relative z-10 flex h-full flex-col p-10 xl:p-12">
             <div className="mb-10 flex items-center justify-between gap-4">
               <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
-                <BrandMark size="nav" showWordmark subtitle={portalName} fetchPriority="high" />
+                <BrandMark size="nav" showWordmark subtitle={portalName} fetchPriority="high" forcePlatform />
               </Link>
               <Link
                 to={PUBLIC_ROUTES.home}
@@ -142,7 +142,7 @@ export function PortalAuthShell({
           <div className="w-full max-w-md">
             <div className="mb-6 flex items-center justify-between lg:hidden">
               <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
-                <BrandMark size="nav" showWordmark subtitle={portalName} />
+                <BrandMark size="nav" showWordmark subtitle={portalName} forcePlatform />
               </Link>
               <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-muted-foreground hover:text-primary">
                 Home
@@ -187,7 +187,7 @@ export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "l
       )}
     >
       <div className="flex flex-col items-center gap-4">
-        <BrandMark size="hero" className="animate-pulse-soft" />
+        <BrandMark size="hero" className="animate-pulse-soft" forcePlatform />
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
             <div

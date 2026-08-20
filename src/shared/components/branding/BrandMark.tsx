@@ -1,6 +1,7 @@
 import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
 import { cn } from "@/shared/lib/utils";
-import { CALQULUS_BRAND } from "@/shared/theme/tokens";
+import { PLATFORM_BRAND } from "@/core/brand/resolve";
+import { useWhiteLabel } from "@/core/whiteLabel/WhiteLabelProvider";
 
 const MARK_SIZE = {
   xs: "h-5 w-5",
@@ -20,9 +21,11 @@ interface BrandMarkProps {
   fetchPriority?: "high" | "low" | "auto";
   /** Use on navy/dark public surfaces so the wordmark stays readable. */
   inverse?: boolean;
+  /** Marketing, login, and platform admin always show CALQULUS. */
+  forcePlatform?: boolean;
 }
 
-/** Shared CALQULUS mark for login, header, sidebar, footer, and mobile chrome. */
+/** Shared mark for login, header, sidebar, footer, and mobile chrome. */
 export function BrandMark({
   size = "md",
   showWordmark = false,
@@ -31,14 +34,19 @@ export function BrandMark({
   imgClassName,
   fetchPriority,
   inverse = false,
+  forcePlatform = false,
 }: BrandMarkProps) {
+  const { brand } = useWhiteLabel();
+  const resolved = forcePlatform ? PLATFORM_BRAND : brand;
+  const logoSrc = resolved.logoUrl || calqulusLogo;
+  const wordmark = resolved.name;
   const square = size !== "hero";
   const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");
   return (
     <div className={cn("flex items-center gap-2.5 min-w-0", className)}>
       <img
-        src={calqulusLogo}
-        alt={CALQULUS_BRAND.product}
+        src={logoSrc}
+        alt={resolved.product}
         width={56}
         height={56}
         decoding="async"
@@ -57,14 +65,16 @@ export function BrandMark({
             "font-heading font-bold text-sm tracking-tight leading-none truncate",
             inverse ? "text-white" : "text-foreground",
           )}>
-            {CALQULUS_BRAND.name}
+            {wordmark}
           </p>
           {subtitle ? (
             <p className={cn(
               "text-[10px] font-medium tracking-wider uppercase mt-1 truncate",
               inverse ? "text-white/60" : "text-muted-foreground",
             )}>
-              {subtitle}
+              {resolved.source === "platform" && resolved.workspaceName && subtitle === "PMS"
+                ? resolved.workspaceName
+                : subtitle}
             </p>
           ) : null}
         </div>

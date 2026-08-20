@@ -29,7 +29,7 @@ export function PublicHeader() {
           className="flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="CALQULUS home"
         >
-          <BrandMark size="nav" showWordmark subtitle="" inverse fetchPriority="high" />
+          <BrandMark size="nav" showWordmark subtitle="" inverse fetchPriority="high" forcePlatform />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">

@@ -27,7 +27,7 @@ export function PublicFooter() {
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] lg:px-8">
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
-          <BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" />
+          <BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform />
           <p className="mt-3 text-sm leading-6 text-white/68">
             Property operations for modern rental teams.
           </p>

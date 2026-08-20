@@ -27,7 +27,7 @@ export function ProductPreview() {
       <div className="enterprise-card overflow-hidden shadow-[0_22px_48px_-18px_rgb(26_212_228_/_0.38)]">
         <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-2.5">
-            <BrandMark size="xs" />
+            <BrandMark size="xs" forcePlatform />
             <div className="min-w-0">
               <p className="truncate font-heading text-sm font-semibold text-foreground">Manager desk</p>
               <p className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
