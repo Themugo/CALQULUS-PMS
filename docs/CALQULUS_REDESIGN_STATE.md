@@ -53,10 +53,17 @@ sessions, or fraud scores.
   layout. Health tiles say Not probed / Probed live — no fake Healthy payments.
 
 ### Phase 8 verification
-- Pending this turn (typecheck, lint, vitest, Playwright, build).
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — pass
+- `npx vitest run` — 848 passed; 1 pre-existing fail
+  (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
+- Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
+  — 32 passed, 5 skipped (credential-gated auth)
+  Platform Admin preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
+- `npm run build` — pass
 
 ## CHECKPOINT
-Phase 8 platform admin is on `cursor/phase-8-control-tower-1e5d`.
+Phase 8 platform admin is on `cursor/phase-8-control-tower-1e5d` (PR #57).
 Do not merge to `main` until James asks.
 
 ## PREVIOUS PHASE
