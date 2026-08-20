@@ -30,7 +30,7 @@ describe("public marketing config", () => {
   });
 
   it("exposes executive primary navigation hashes", () => {
-    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "How it works", "Solutions"]);
-    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "how-it-works", "solutions"]);
+    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Solutions", "How it works"]);
+    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "solutions", "how-it-works"]);
   });
 });

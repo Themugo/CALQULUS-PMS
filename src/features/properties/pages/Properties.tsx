@@ -40,14 +40,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
-import { Plus, MapPin, Users, User, UserPlus, DollarSign, Building, Pencil, Trash2, ChevronDown, Building2, Phone, Mail, Search, ArrowUpDown, CheckSquare, Square, X, Eye, Layers } from "lucide-react";
+import { Plus, Building2, Search, ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { Checkbox } from "@/shared/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
 import { ImageUpload } from "@/shared/components/ui/image-upload";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +62,7 @@ import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CATEGORY_BY_KEY, CATEGORIES_BY_GROUP, GROUP_LABELS, PROPERTY_CATEGORIES } from "@/shared/constants/propertyTypes";
-import { PropertyCard, type Property, type Tenant } from "@/features/properties/components/PropertyCard";
+import { PropertyTableRow, type Property, type Tenant } from "@/features/properties/components/PropertyTableRow";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useAuth } from "@/features/auth/AuthContext";
 import { EmptyState } from "@/shared/components/ui/empty-state";
@@ -729,19 +735,32 @@ const Properties = () => {
         )
       ) : (
         <>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {propertySlice.items.map((property, index) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              index={index}
-              tenants={tenants}
-              isSelected={false}
-              formatCurrency={formatCurrency}
-              onEdit={openEditDialog}
-              onDelete={openDeleteDialog}
-            />
-          ))}
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Property</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Units</TableHead>
+                <TableHead>Occupancy</TableHead>
+                <TableHead>Tenants</TableHead>
+                <TableHead>Revenue</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {propertySlice.items.map((property) => (
+                <PropertyTableRow
+                  key={property.id}
+                  property={property}
+                  tenantCount={tenants.filter((t) => t.property_id === property.id).length}
+                  formatCurrency={formatCurrency}
+                  onEdit={openEditDialog}
+                  onDelete={openDeleteDialog}
+                />
+              ))}
+            </TableBody>
+          </Table>
         </div>
         <div className="mt-3 rounded-xl border border-border overflow-hidden">
           <TablePager page={propertySlice} onPageChange={setPropertyPage} noun="properties" />

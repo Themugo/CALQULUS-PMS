@@ -7,16 +7,345 @@
 > best-effort reconstruction, not first-hand agent notes.
 
 ## CURRENT PHASE
-James issued a new, separate instruction: "CALQULUS PHASE 1 — DESIGN SYSTEM
-FOUNDATION" — audit and establish the reusable design system (tokens, component
-hierarchy, a preview route) without redesigning individual pages yet. This is
-now done (see below). The `@ts-nocheck` remediation from the previous session
-is still open and paused, not abandoned - resume it whenever James asks to
-continue that instead.
+James issued "CALQULUS PHASE 4B — MANAGER PROPERTY OPERATIONS" right after
+Phase 4A - redesign and implement Properties, Property Detail, and Units
+"following the established design system," with an explicit named column/
+tab list for each surface and an explicit "preserve all current
+functionality" instruction. Done this session (see below). The
+`@ts-nocheck` remediation is still open/paused - resume whenever James asks
+for it specifically.
 
 ## CURRENT TASK
-Just finished: Phase 1 design system foundation audit + implementation (this
+Just finished: Phase 4B Property Operations audit + implementation (this
 entry). Nothing actively in progress as of this write-up.
+
+### Phase 4B findings (before any changes)
+Read this file first, then mapped the three named surfaces to actual code
+before touching anything:
+- **Properties** (`src/features/properties/pages/Properties.tsx`, carries
+  a pre-existing `@ts-nocheck` from before this redesign effort) already had
+  real search, a filters dropdown (sort + occupancy filter), an "Add
+  Property" dialog with tier-limit enforcement, edit/deactivate dialogs, and
+  pagination - all real, all working. **The one literal gap: it rendered as
+  a card grid (`PropertyCard.tsx`), not a table**, despite the brief
+  explicitly asking for "table." Converted the list rendering to a table;
+  every other control (search/filter/sort/pagination/dialogs) is the exact
+  same state and handlers, untouched.
+- While touching the file, found two dead imports that predate this session
+  - `handleQuickAssignTenant`/`handleUnassignTenant` are fully-written
+    functions with no call site anywhere in the render (confirmed via
+    grep) - looks like a "quick assign" UI that was never wired up. Left
+    both functions in place rather than deleting them (not part of this
+    phase's scope, and deleting working-but-orphaned logic felt riskier
+    than leaving it for a future pass); flagged here instead.
+  - About a dozen icon imports (`MapPin`, `Users`, `User`, `UserPlus`,
+    `DollarSign`, `Building`, `Pencil`, `Trash2`, `ChevronDown`, `Phone`,
+    `Mail`, `CheckSquare`, `Square`, `X`, `Eye`, `Layers`) and a `Checkbox`
+    import were referenced only in the import line, never in the actual
+    JSX - true dead imports. Since the import line was being rewritten
+    anyway for the table conversion, cleaned these out rather than leaving
+    them.
+- **Property Detail** (`src/features/properties/pages/PropertyDetail.tsx`)
+  already had a rich always-visible summary block above the tabs (photo,
+  name, address, category/amenity badges, a 4-up stat grid, an occupancy
+  snapshot card) plus 12 tabs: Houses(units)/Tenants/Leases/Billing as a
+  "golden path" row, then Agreements/Maintenance/Vacation/Water/Statement/
+  Landlord/Settings/History as a second row. The brief's named list is
+  overview/units/tenants/leases/billing/maintenance/documents (7). Treated
+  the existing always-visible summary block as satisfying "overview" -
+  it's already the equivalent, and demoting it into a click-to-view tab
+  would hide key numbers behind a click, a worse outcome than the brief
+  likely intends - added an explicit "Overview" section-title above it so
+  it reads as a named section rather than an unlabelled header. Renamed the
+  "Agreements" tab's visible label to "Documents" (its actual function -
+  create/sign/preview/download contract PDFs - matches "documents" well)
+  while deliberately keeping the tab's `value="agreements"` unchanged,
+  since nothing deep-links to it and there was no reason to touch the URL
+  contract. Left "Houses" as the Units tab's visible label rather than
+  renaming to "Units" - it's established product terminology used
+  throughout this codebase (`house_number`, `house_label_prefix` fields,
+  the "Manage Houses" link from Properties) for the same underlying units
+  concept the brief calls "units"; the tab's `value` is already literally
+  `"units"`. Did not delete or merge Vacation/Water/Statement/Landlord/
+  Settings/History - all real, working, currently-used functionality with
+  no equivalent in the brief's 7-item list, so removing any would violate
+  "preserve all current functionality."
+- Replaced five emoji-prefixed amenity badges (🛡 Gated, 🛗 Lift, ⚡
+  Generator, 💧 Borehole, 🪑 Furnished) with lucide icons (ShieldCheck/
+  MoveVertical/Zap/Droplets/Sofa) - emojis in production chrome read as
+  inconsistent with the master brief's "premium typography... no
+  unnecessary decoration" standard the rest of this redesign has followed.
+  Also swapped several ad hoc `text-xl`/`text-lg`/`text-2xl font-bold`
+  headings and stat values in the overview block for the established
+  `.section-title`/`.card-title-exec`/`.type-subtitle`/`.metric-value`
+  classes from Phase 1, for consistency with every other redesigned page.
+- **Units** - there is no standalone `/units` route anywhere in
+  `src/app/routes.ts`; confirmed via grep that `UnitManagement.tsx` (the
+  component rendered in Property Detail's Units tab) takes a required
+  `propertyId` prop and is the only place unit tables render. So "Units" as
+  a named surface, per this app's actual architecture, is this
+  per-property tab - not a separate global page. The brief's column list
+  (unit/property/tenant/status/rent/lease/balance) mostly already existed
+  (unit number, tenant, status, rent), but **Lease and Balance were
+  missing**, and a redundant "Property" column would repeat the same value
+  on every row (the page header already shows which property you're in) -
+  omitted deliberately rather than added for literal compliance. Added
+  real Lease (status + end date, from the `leases` table already fetched
+  by the parent) and Balance (sum of each tenant's `pending`/`overdue`
+  invoices, a new but minimal query added to `PropertyDetail.tsx`'s
+  existing fetch, following the exact same real-data pattern
+  `ArrearsHeatMap.tsx` already uses for the dashboard) columns. Moved the
+  old "Next action" nudge button (Assign tenant / Create lease / Invoice -
+  collect) from its own column into the row's existing actions dropdown as
+  its first item, so the column count stays at 7 instead of 8 while
+  keeping that real, working nudge functionality intact.
+
+### Phase 4A findings (before any changes)
+Read this file first, then audited `src/features/dashboard/pages/Dashboard.tsx`
+and every component/hook it touches before changing anything:
+- The dashboard already had strong real-data plumbing: `dashboardStats.ts`
+  computes `totalProperties`, `totalUnits`, `occupiedUnits`, `vacantUnits`,
+  `occupancyRate`, `collectedRent`, `revenueChange`, `openMaintenanceCount`,
+  `urgentMaintenanceCount`, `overdueInvoices`, `arrearsTotal`,
+  `expiringLeases`, `pendingDepositRefundsCount` - every number this phase's
+  brief needed already existed, live, from Supabase. Nothing fabricated.
+- `attentionItems.ts` already built exactly the "actual overdue payments /
+  maintenance requiring attention / expiring leases" list the brief asked
+  for (plus deposit refunds and vacant units as bonus real signals) - this
+  section needed no functional changes, only a small heading tweak
+  ("Needs your attention" -> "Attention", matching the brief's exact label).
+- **The KPI row was the wrong four numbers.** The brief specifies
+  Properties / Units / Occupancy / Collections; the live dashboard showed
+  Occupancy / Collected this month / Collection rate / Open maintenance -
+  no raw Properties count or Units count card existed as a KPI, even though
+  both numbers were already sitting in `stats.totalProperties` /
+  `stats.totalUnits` and were already used in the page subtitle. Rebuilt
+  the KPI row to the brief's exact four cards using `StatCard` (existing
+  component, unchanged) - no new data source needed.
+- **No "Recent activity" section existed at all** - `RecentActivity.tsx`
+  (a fully-built component reading live `tenant_history` rows via Supabase,
+  with realtime subscription) existed in the codebase but was never
+  imported or rendered anywhere - confirmed via a repo-wide grep. This was
+  the biggest literal gap against the brief's five-level hierarchy (Activity
+  was simply missing). Wired it in as the last section, lazy-loaded and
+  code-split like the other charts (own ~6.5KB chunk, not bundled into the
+  main Dashboard chunk).
+- A second, unused, more complex `ManagerActivityLog.tsx` also exists
+  (search/filter, full activity log, `@ts-nocheck`) - left untouched. It
+  looks built for a dedicated full-log page/route rather than a compact
+  dashboard widget, and standing up that route is out of scope for this
+  phase - flagged as a possible future page if James wants a "view all
+  activity" destination.
+- The old page had six-plus stacked sections (Attention, Portfolio+KPI+
+  occupancy chart combined, Collections trend, Outstanding balances, 
+  Maintenance, "What to do next" with a setup-progress card AND a 6-tile
+  generic shortcuts grid) - more sections/cards than the brief's five-level
+  hierarchy implies, and the brief explicitly says "do not create excessive
+  cards".
+
+### Changes made
+- KPI row rebuilt to Properties (count, new) / Units (count, new,
+  occupied-vs-vacant as the sub-line) / Occupancy (%, unchanged) /
+  Collections (amount, unchanged) - dropped "Collection rate" as a
+  standalone KPI since it isn't in the brief's four; the same underlying
+  number is still visible in the Collections chart section immediately
+  below.
+- Split the old combined "Portfolio" section into two named blocks matching
+  the brief's "Main" list literally: **Occupancy** (just the occupancy
+  chart, its own heading) and **Collections** (the revenue/collections
+  trend chart plus the arrears/outstanding-balances heat map, side by side
+  under one heading instead of two separate full-width sections) - this is
+  the specific move that reduces total section count without dropping any
+  real functionality; the outstanding-balances heat map still renders, just
+  grouped with Collections instead of standing alone.
+- Added the missing **Recent activity** section (see above) as the fifth
+  and final block, matching the brief's hierarchy exactly:
+  Attention -> Portfolio (KPI) -> Occupancy -> Collections -> Maintenance
+  -> Recent activity.
+- Added a real **"Add property"** action in the page header (next to the
+  existing refresh/currency controls) that navigates to `/properties` -
+  the same place the app's own onboarding flow (`ManagerActivationEmpty`)
+  already sends a manager to add their first property. Did not build a new
+  dialog or query-param auto-open, since the existing "Add Property" form
+  lives entirely inside `Properties.tsx` as local component state - wiring
+  a cross-page auto-open would have meant touching that page's internals,
+  which felt like scope creep for a dashboard-only phase. `/properties`
+  already has its own "Add Property" button front and center.
+- **Removed the always-visible "What to do next" generic shortcuts grid**
+  (Properties/Tenants/Leases/Invoices/Payments/Receipts tiles) - this
+  duplicated the sidebar navigation added in Phase 2 and was the clearest
+  case of "excessive cards" on the page. Kept the **setup-progress card**
+  from the same component (`ManagerQuickActions` with
+  `includeShortcuts={false}`), but now it only renders while
+  `!progress.isComplete` - a fully onboarded manager (the common case)
+  never sees it again, while a manager mid-setup still gets the guided
+  steps, which is real functionality worth keeping.
+- Maintenance section unchanged (`OpenMaintenancePreview`, already real
+  data, already the right shape for "Operations").
+
+### Phase 3 findings (before any changes)
+Audited the live homepage (`PublicLandingPage.tsx`, `PublicHeader.tsx`,
+`PublicFooter.tsx`, `ProductPreview.tsx`, `PublicPricing.tsx`,
+`publicConfig.ts`) and every public route in `src/app/routes.ts` before
+touching anything:
+- The homepage was already fairly compact (no long marketing scroll) - one
+  real structural gap against this specific brief, not a rebuild-everything
+  situation.
+- **The header was navy (`bg-navy-primary`), white text on dark chrome** -
+  the brief for this phase explicitly says "White. 68px approximately.
+  Subtle border." The CSS itself even had a comment codifying the navy
+  header as deliberate ("Navy is header/footer chrome only") and there was
+  a passing unit test asserting `header.className` matches `/navy-primary/`
+  - so this was a previously-intentional decision from an earlier Cursor
+  phase, now superseded by James's explicit instruction this round. Fixed:
+  header is now `bg-card` (white) at `h-[68px]`, subtle `border-border`
+  bottom border, navy logo (dropped the `inverse` BrandMark prop), and nav/
+  button colours switched from white-on-navy variants to the standard
+  light-surface tokens.
+- The footer was already Deep Navy with the CALQULUS wordmark, Platform/
+  Solutions/Company/Legal link columns, and a short East Africa statement -
+  matches the brief closely already. Only change: swapped the "About"
+  footer link (pointed at a now-removed `#about` anchor) for "How it works",
+  since the brief's footer list is Platform/Solutions/How it works/Contact/
+  Privacy/Terms and there's no dedicated About section in the new layout.
+- The hero already had the right headline ("Run your properties with
+  clarity and control."), eyebrow, and both CTA buttons ("Start managing" /
+  "Explore the platform") - only the supporting copy and the right-side
+  preview needed work.
+- `ProductPreview.tsx` was a static illustration but only showed a queue
+  list + a 2x2 metric grid - missing the sidebar, a chart, and distinct
+  "maintenance activity" vs "property information" panels the brief calls
+  for. Rebuilt it to include a thin icon sidebar rail, a 4-up KPI row, a
+  CSS bar chart for "Collections, last 7 weeks", a maintenance-activity
+  list, and a small property-info card - still clearly labelled "Preview"
+  and captioned as illustrative, not live data.
+- The "connected workflow" chain was missing "Unit" (`Property -> Tenant ->
+  Lease -> ...` instead of `Property -> Unit -> Tenant -> Lease -> ...`) -
+  added.
+- There was no "Three Pillars" section and no distinct "Portals" card grid
+  - the four portal roles were rendered as plain list rows, and pillars
+  didn't exist as their own section (the "how it works" chain stood in for
+  both). Added a compact 3-up Pillars grid (Property / Finance / Operations)
+  and rebuilt the roles list as a 4-up card grid with an icon, one-sentence
+  description, and portal link per card, using each portal's real accent
+  hex from `CALQULUS_PORTAL_ACCENT` as a restrained icon tint (not a full
+  card background) - consistent with the tokens' own "thin chrome only,
+  not a second design system" rule.
+- There was no distinct Final CTA band - the old page merged a contact form
+  and a pricing teaser card into one "contact" section. Replaced that with
+  a navy Final CTA band ("Bring your property operations together." + Get
+  started + Contact us) per the brief, and **removed the multi-field
+  contact form** (name/email/message inputs) since it isn't part of this
+  brief's section list and conflicts with "compact" - the contact channel
+  itself is preserved via a direct `mailto:` link on "Contact us" and in
+  the footer, so no functionality is actually lost, just the large inline
+  form.
+
+### Deliberately not changed
+- Pricing page (`/pricing`, rendered by the same `PublicLandingPage`
+  component's `PricingView`) - untouched, out of scope for this phase.
+- `PublicPricing.tsx` - untouched.
+- Portal login/signup routes, `publicConfig.ts` route values - untouched
+  except reordering `PUBLIC_NAV` to Platform/Solutions/How it works (brief's
+  literal order) and updating the two footer-link tweaks noted above.
+- `e2e/homepage-executive.spec.ts` already existed with the brief's exact
+  responsive breakpoint list (1440/1280/1024/768/480/390/360) baked in from
+  an earlier phase - left the viewport-overflow assertions as-is, only fixed
+  one now-stale assertion (`/view plans/i` link, which no longer exists
+  since the contact-form/pricing-teaser section was replaced) to check the
+  header's Pricing nav link instead.
+
+### Phase 2 audit findings (before any changes)
+Read this file first, then mapped which shell each portal actually uses before
+touching anything - the portals do NOT share one shell component the way the
+brief's phrasing implies:
+- **Manager**: `Layout.tsx` + `Sidebar.tsx` + `Header.tsx` - the only portal
+  using the shared `<Sidebar>`/`<Layout>` components. Confirmed via grep that
+  no other portal renders `<Sidebar>` or imports `Layout.tsx`.
+- **Agency**: its own separate `AgencyLayout.tsx` (not the shared Sidebar) -
+  has 9+ routed pages so it genuinely needs a sidebar, just a parallel
+  implementation of one rather than a shared one.
+- **Landlord**: no sidebar - `/landlord/dashboard` is its only route
+  (everything else redirects to it), so a single scrolling dashboard with an
+  inline header is correct by design, not a gap.
+- **Platform Admin / Webhost**: same as Landlord - `/webhost` is the only
+  route, inline header, no sidebar needed.
+- **Tenant**: `MobileBottomNav.tsx` (mobile bottom tabs) + its own inline
+  top header in `TenantPortal.tsx` - correct per the brief's "Tenant must be
+  SIMPLE, mobile-first" instruction.
+
+**The one substantial, brief-explicit gap: the Manager sidebar was navy
+(`#0D2744`), not white.** The brief says "white sidebar... NO black sidebar"
+(and the original master brief said the same thing before Phase 1 even
+started) - this had not actually been implemented despite several earlier
+"Design Bible" phases claiming to lock down chrome. Also found: every
+portal's active-nav-item styling was hardcoded to the interactive blue
+(`text-primary`/`text-teal`, where `--teal` itself resolves to blue), not the
+portal's own accent - technically invisible for Manager (blue is Manager's own
+accent) but visibly wrong for Agency (was blue, should be amber) and Tenant
+(was blue via a `teal` alias, should be violet).
+
+### What changed
+1. **`src/index.css`** - redefined `--sidebar-background/foreground/accent/
+   accent-foreground/border/muted` from the navy palette to light values
+   (white background, dark text, `#E5EAF0` border - the same values the main
+   `--card`/`--border`/`--muted-foreground` tokens already use). Changed in
+   both the `:root` block and its `.dark` mirror, consistent with the
+   "dark mode is a dormant light-mirror" decision from Phase 1. This alone
+   fixes the sidebar's background/text/hover colours everywhere they're
+   consumed (`Sidebar.tsx`, `WorkspaceSwitcher.tsx`) with no component code
+   changes needed, since both already used semantic `sidebar-*` classes
+   rather than hardcoded colours.
+2. **`src/shared/components/layout/Sidebar.tsx`** - removed `inverse` from
+   the two `BrandMark` calls (was rendering a white wordmark for a dark
+   sidebar; now renders the normal navy wordmark on the new white sidebar,
+   per "navy logo"). Replaced the two hardcoded `bg-primary/10 text-primary
+   border-primary` active-nav-item treatments (favourites + regular items)
+   with `bg-[var(--portal-accent-muted)] text-[var(--portal-accent)]
+   border-[var(--portal-accent)]`, so the active state now genuinely reflects
+   whichever portal is rendering the sidebar rather than always blue.
+3. **`src/features/agency/components/AgencyLayout.tsx`** - same fix: hardcoded
+   `bg-primary/10 border-primary/20 text-primary` active state and the
+   hardcoded `bg-navy-primary` user-avatar circle both now use
+   `var(--portal-accent)`, so Agency's own amber accent shows up correctly
+   instead of blue/navy.
+4. **`src/features/tenant-portal/components/MobileBottomNav.tsx`** -
+   `text-teal` (resolves to interactive blue via the legacy alias) replaced
+   with `text-[var(--portal-accent)]` so the active tab shows tenant violet.
+5. **`src/shared/components/branding/PortalPreviewCanvas.tsx`** - this is the
+   illustrative "structural portal mock" used in the homepage's product
+   preview and the design-preview page's per-portal tabs. It hardcoded a
+   `bg-navy-primary` rail with an inverse (white) logo - now inconsistent
+   with the real sidebar. Updated to a white rail (`bg-sidebar border-r
+   border-sidebar-border`) with a normal navy logo and a portal-accent icon,
+   plus updated its doc comment and on-screen description text
+   ("navy rail" → "white rail") so the illustration matches reality.
+6. **Header height**: `Header.tsx` and `AgencyLayout.tsx`'s inline header
+   were both `h-14` (56px), under the brief's 64-72px application-header
+   spec. Bumped both to `h-16` (64px) - confirmed no other file has a
+   hardcoded offset depending on the old height (headers are `sticky top-0`
+   with content flowing normally below, no manual padding compensation
+   anywhere).
+
+**Not changed, and why:** `Sidebar.tsx` still contains `webhostNavGroups`/
+`agencyNavGroups`/`landlordNavGroups`/`tenantNavGroups` and the `isWebhost`/
+`isAgency`/`isLandlord`/`isTenant` branching that selects between them, even
+though the audit above suggests these are unreachable in practice (nothing
+renders `<Sidebar>` except Manager pages). Left alone rather than deleted:
+removing them wasn't necessary to satisfy this phase's visual requirements,
+and I did not want to risk deleting something a future auth/role change might
+actually need without a more thorough reachability check than time allowed
+this session. Flagging as a candidate for a future dead-code pass, not doing
+it now.
+
+Breadcrumbs, notifications, and a user/profile menu already existed and
+already looked correct (`BreadcrumbSystem`, `NotificationsDropdown`,
+`ProfileMenu` inside `Header.tsx`) - no changes made there. Landlord's and
+Webhost's inline headers were already white/light with `PortalAccentBar` and
+`BrandMark` - reviewed, found consistent with the new shell language already,
+no changes needed.
+
+No authorization code touched. No routes added, removed, or restructured.
 
 ### Phase 1 audit findings (before any changes)
 Read `AGENTS.md` (no `CLAUDE.md` exists in the repo - AGENTS.md is the closest
@@ -147,6 +476,16 @@ raw `tsc` output, not yet reviewed for real-bug-vs-noise the way the 10 finished
 files were. That review is the next step.
 
 ## COMPLETED TASKS (reconstructed from git log, newest first)
+- (this session, not yet committed at write-time - see CURRENT PHASE) Phase 4B
+  Property Operations: Properties converted from a card grid to a table
+  (PropertyCard.tsx removed, replaced by PropertyTableRow.tsx), Property
+  Detail overview polished (icons instead of emoji badges, Phase 1
+  typography tokens, "Agreements" relabelled "Documents"), Units tab gained
+  real Lease and Balance columns.
+- `45e41d7` calqulus/redesign-phase-4a-manager-dashboard
+- `48adb0e` calqulus/redesign-phase-3-executive-homepage
+- `2ea4dc6` calqulus/redesign-phase-2-application-shell
+- `2455697` calqulus/redesign-phase-1-design-system-foundation
 - `6ff14e2` feat(design): apply master colour foundation without rewriting desks
 - `68f372f` feat(design): make the public site feel like an operating system
 - `458e2ea` fix(design): prefer hierarchy over extra chrome
@@ -176,7 +515,110 @@ files were. That review is the next step.
 ## IN PROGRESS
 Nothing actively mid-edit as of this entry.
 
-## NEXT TASK (Phase 1 design system - James's most recent instruction)
+## NEXT TASK (Phase 4B Property Operations - James's most recent instruction)
+Phase 4B as scoped is done. Not done, and worth doing before calling it
+fully final:
+- **Still no literal visual preview generated** - same sandbox limitation
+  as every prior phase (no browser/screenshot tool). The Properties table
+  in particular (7 columns) has only been checked for horizontal-scroll
+  behaviour on narrow viewports by reading the shared `Table` component's
+  wrapper (`overflow-auto`), not by actually looking at it on a phone-sized
+  screen.
+- `handleQuickAssignTenant`/`handleUnassignTenant` in `Properties.tsx` are
+  still real, working, but completely unwired functions (no call site) -
+  flagged, not resolved. Either wire a genuine "quick assign" action into
+  the new table's row actions, or remove them as confirmed-dead code - did
+  neither this session since it felt like a scope decision worth asking
+  James about rather than guessing.
+- `Properties.tsx` still carries `@ts-nocheck` (pre-existing, separate from
+  the `@ts-nocheck` remediation task #45's 76-file list - worth confirming
+  it's on that list, or adding it if it was somehow missed) - the file was
+  extensively edited this session but the exemption was deliberately left
+  in place rather than attempting removal mid-phase, to keep this phase's
+  diff focused on the redesign brief rather than expanding into type-safety
+  remediation at the same time.
+- The new Units "Balance" column sums `pending` + `overdue` invoices per
+  tenant with a fresh query added to `PropertyDetail.tsx` - this mirrors
+  `ArrearsHeatMap.tsx`'s existing real-data pattern but hasn't been checked
+  against a live database with actual overdue invoices to confirm the
+  number renders and formats correctly end-to-end (only typecheck/lint/
+  build-level verification was possible in this sandbox).
+- Other portal property surfaces (Agency's `AgencyProperties.tsx`,
+  Landlord's read-only property views) were not touched - only the Manager
+  Properties/Property Detail/Units surfaces were in scope per the brief's
+  title ("MANAGER Property Operations").
+
+## NEXT TASK (Phase 4A Manager Dashboard - James's most recent instruction)
+Phase 4A as scoped is done. Not done, and worth doing before calling it fully
+final:
+- **Still no literal visual preview generated** - same sandbox limitation as
+  Phases 2/3 (no browser/screenshot tool). Built directly in place again,
+  verified hard via typecheck/lint/tests/build, but James hasn't seen it
+  rendered yet.
+- `ManagerActivityLog.tsx` (the fuller, filterable activity log with search)
+  is still unused - if James wants a dedicated "view all activity" page
+  reachable from the new Recent Activity section's header, that's a natural
+  follow-up, not done this session (no link/route added, out of scope for a
+  dashboard-only phase).
+- The Collections section now places `RevenueChart` and `ArrearsHeatMap`
+  side by side on desktop (`lg:grid-cols-[1.3fr_1fr]`) - only checked this
+  visually in my head from the two components' existing internal card
+  styling, not from an actual rendered screenshot. Worth confirming neither
+  chart looks cramped at 1024-1280px widths specifically.
+- Other portal dashboards (Landlord/Agency/Tenant/Platform Admin) were not
+  touched this phase - only the Manager dashboard was in scope. If James
+  wants matching KPI-row/hierarchy treatment on those, that's presumably
+  Phase 4B/4C/etc., not started.
+
+## NEXT TASK (Phase 3 executive homepage - James's most recent instruction)
+Phase 3 as scoped is done. Not done, and worth doing before calling it fully
+final:
+- **No literal visual preview was generated this session either** - same
+  sandbox limitation as Phase 2 (no browser/screenshot tool). Built directly
+  in place rather than standing up a separate preview route, since a preview
+  route nobody can screenshot doesn't buy much extra safety over careful
+  testing - but this means James hasn't actually seen it rendered yet.
+  Worth a real look before treating this as final.
+- `e2e/homepage-executive.spec.ts` (Playwright) was not actually run this
+  session - no browser in this sandbox. It's been kept in sync (one stale
+  assertion fixed) but the seven-breakpoint overflow checks it contains have
+  not been executed since this change landed.
+- The final CTA band's "Contact us" button is a plain `mailto:` link now
+  instead of the old inline form - if James wants an actual contact form
+  back (rather than opening the visitor's email client), that's a
+  reasonably scoped follow-up.
+- Icon choices for the four portal cards (Building2/Landmark/Users/User)
+  are a judgment call, not from the brief - flag if James wants different
+  iconography.
+- Footer link groups still use "Company" as a column heading covering
+  How it works/Pricing/Contact - the brief lists these as a flat set of
+  footer links rather than specifying column headers, so this was kept
+  as the lowest-risk interpretation rather than restructured further.
+
+## NEXT TASK (Phase 2 app shell - James's most recent instruction)
+Phase 2 as scoped is done. Not done, and worth doing before calling the shell
+fully finished:
+- **No literal visual preview was generated this session** - I don't have a
+  browser/screenshot tool in this sandbox, so "create preview first if the
+  shell is substantially different" was satisfied by describing the change
+  in detail here rather than an actual rendered mockup. The change itself is
+  low structural risk (pure CSS custom property values plus a few
+  hardcoded-colour-to-token swaps, no component structure changes), and is
+  a single-token revert if James doesn't like it live. Worth James actually
+  looking at `/design-preview` (or the real sidebar) before treating this as
+  final.
+- Untested at the specific breakpoints the brief calls out (1440/1280/1024/
+  768/480/390/360) - only confirmed via the existing auth-shell render tests
+  and a build/lint/typecheck pass, not actual viewport testing.
+- The suspected-dead `webhostNavGroups`/`agencyNavGroups`/`landlordNavGroups`/
+  `tenantNavGroups` branches in `Sidebar.tsx` - confirm reachability properly
+  and remove if genuinely dead.
+- Consider whether Agency's parallel sidebar implementation
+  (`AgencyLayout.tsx`) should eventually be merged into the shared
+  `Sidebar.tsx`/`Layout.tsx` to stop the duplication - flagged, not done,
+  since it's a bigger structural change than this phase asked for.
+
+## NEXT TASK (Phase 1 design system - older, already shipped)
 Phase 1 as scoped is done. Natural continuations, not yet started:
 - Now that the type scale changed globally, spot-check a few dense screens
   (Properties table, Billing invoice list, Manager dashboard) for any heading
@@ -223,6 +665,37 @@ effort so far: `src/index.css` (design tokens), `tailwind.config.ts`, `src/core/
 `src/features/landlord/*`, `src/features/agency/*`, `src/features/tenant-portal/*`,
 `src/features/webhost/*` (platform admin).
 
+Phase 3 session, specifically: `src/features/marketing/PublicLandingPage.tsx`
+(full rewrite of `HomeView` - pillars, portal cards, final CTA, contact-form
+removal), `src/features/marketing/components/PublicHeader.tsx` (navy -> white),
+`src/features/marketing/components/ProductPreview.tsx` (full rewrite - sidebar,
+KPI row, chart, maintenance activity, property card), `src/features/marketing/
+publicConfig.ts` (nav order, footer "About" -> "How it works"), `src/index.css`
+(one comment fix, no token changes), `src/test/publicLanding.test.tsx` (rewritten
+to match the new structure), `src/test/publicConfig.test.ts` (nav order),
+`e2e/homepage-executive.spec.ts` (one stale assertion fixed).
+
+Phase 4A session: `src/features/dashboard/pages/Dashboard.tsx` (KPI row
+rebuilt, Occupancy/Collections split into named sections, Recent Activity
+wired in, Add Property header action, shortcuts grid removed / setup nudge
+made conditional). No other file touched - `dashboardStats.ts`,
+`attentionItems.ts`, `StatCard.tsx`, `RecentActivity.tsx`,
+`ManagerQuickActions.tsx`, `OccupancyChart.tsx`, `RevenueChart.tsx`,
+`ArrearsHeatMap.tsx`, `OpenMaintenancePreview.tsx` were all read/audited but
+used exactly as they already existed, unmodified.
+
+Phase 4B session: `src/features/properties/pages/Properties.tsx` (card grid
+-> table, dead imports removed, `PropertyCard` import swapped for
+`PropertyTableRow`), `src/features/properties/components/PropertyCard.tsx`
+(deleted - fully replaced, confirmed zero remaining references first),
+`src/features/properties/components/PropertyTableRow.tsx` (new file),
+`src/features/properties/pages/PropertyDetail.tsx` (Overview label added,
+emoji badges -> icons, typography tokens applied, "Agreements" tab
+relabelled "Documents", tenant-balance query added, `occupants` extended
+with `leaseEndDate`/`balance`), `src/features/units/components/
+UnitManagement.tsx` (Lease + Balance columns added, "Next" nudge moved into
+the actions dropdown, colSpan updated 6->7 across five expanded-row cells).
+
 ## ROUTES CHANGED
 Not enumerated this session — no route-level regressions found in the build, but no
 explicit route diff against pre-redesign `main` was run either.
@@ -237,6 +710,16 @@ explicit route diff against pre-redesign `main` was run either.
 ## COMPONENTS MODIFIED
 Effectively every portal dashboard and the homepage, per the commit list above.
 Exhaustive list not reconstructed — refer to git history per-commit.
+
+Phase 3 session: `PublicLandingPage.tsx`, `PublicHeader.tsx`, `ProductPreview.tsx`,
+`publicConfig.ts` (see FILES CHANGED above for detail). `PublicFooter.tsx` and
+`PublicPricing.tsx` were audited but not modified.
+
+Phase 4A session: `Dashboard.tsx` only (see FILES CHANGED above for detail).
+
+Phase 4B session: `Properties.tsx`, `PropertyDetail.tsx`,
+`UnitManagement.tsx` (see FILES CHANGED above). `PropertyTableRow.tsx`
+created; `PropertyCard.tsx` removed.
 
 ## KNOWN ISSUES
 1. **86 files under `@ts-nocheck`** (see `docs/audits/TYPECHECK_EXEMPTIONS.txt`).
@@ -256,19 +739,53 @@ Exhaustive list not reconstructed — refer to git history per-commit.
    remediation commit (`709d19e`). Current score not re-verified.
 
 ## TEST STATUS
-Phase 1 session: `designTokens.test.ts` (15/15) and `publicLanding.test.tsx`
-(8/8) re-run after the typography/preview-page changes - both still green, so
-the global heading-size bump didn't break the homepage's "single h1"/layout
-assertions. Scoped `tsc --noEmit` on `src/features/design-preview/**` - zero
-errors. Full-suite vitest run still not completed end-to-end in one sandbox
-call (same limitation as before, suite is large); no evidence of breakage in
-what was run.
-`npm run test:e2e` (Playwright): not run this session (requires a browser +
-longer runtime than available per sandbox call).
+Phase 4A session: no Dashboard.tsx-specific test file exists (confirmed via
+repo-wide grep), so re-ran every test file that touches the data/logic this
+phase depends on - `dashboardStats.test.ts` (7/7), `attentionItems.test.ts`
+(4/4), `activationPath.test.ts` (10/10), `commercialMetrics.test.ts` (2/2),
+`statCard.test.tsx` (1/1), `activationMetrics.test.ts` (3/3) - 27/27 passing,
+confirming none of the underlying stats/attention/activation logic was
+disturbed by the page-layout rewrite. Scoped `tsc --noEmit` across
+`Dashboard.tsx`, `RecentActivity.tsx`, `StatCard.tsx`,
+`ManagerQuickActions.tsx` - zero errors. `eslint` on `Dashboard.tsx` - zero
+warnings. `npm run build` - clean; confirmed `RecentActivity` code-splits into
+its own ~6.5KB chunk rather than bloating the main Dashboard bundle.
+
+Phase 3 session (still valid): `publicLanding.test.tsx` (10/10),
+`publicConfig.test.ts` (4/4), plus `managerAuthShell.test.tsx` (1/1),
+`landlordAuthShell.test.tsx` (1/1), `agencyTenantAuthShell.test.tsx` (2/2), and
+`designTokens.test.ts` (15/15) as a regression check - all green.
+
+Phase 2 session (still valid): `designTokens.test.ts` (15/15), `deriveBrandPalette.test.ts`
+(6/6), `pageHeader.test.tsx` (2/2), `managerAuthShell.test.tsx` (1/1),
+`landlordAuthShell.test.tsx` (1/1), `agencyTenantAuthShell.test.tsx` (2/2) - 27/27
+passing after the sidebar/header changes.
+
+Full-suite vitest run still not completed end-to-end in one sandbox call (suite
+is large); no evidence of breakage in anything run this session or prior.
+`npm run test:e2e` (Playwright) still not run this session either - no browser
+in this sandbox.
+
+Phase 4B session: no dedicated test files exist for Properties/PropertyDetail/
+Units (confirmed via repo-wide grep), so re-ran the shared regression set -
+`designTokens.test.ts` (15/15), `managerAuthShell.test.tsx` (1/1),
+`dashboardStats.test.ts` (7/7) - all still green. Scoped `tsc --noEmit`
+across `PropertyTableRow.tsx` (no `@ts-nocheck`), `PropertyDetail.tsx`, and
+`UnitManagement.tsx` (neither carries `@ts-nocheck`) - zero errors, real
+type-safety confirmation on all three. `Properties.tsx` itself still carries
+its pre-existing `@ts-nocheck` so wasn't type-checked, but `eslint` ran
+clean on it regardless. `npm run build` - clean; confirmed both `Properties`
+and `PropertyDetail` chunks still build (26.77KB and 199.13KB respectively).
+Checked `e2e/mobile.spec.ts`'s `.property-card` / `[data-testid*='property']`
+selector - neither existed anywhere in the codebase even before this
+session (a pre-existing, likely-already-broken selector, gated behind
+`test.skip` without real credentials) - added `data-testid="property-row"`
+to the new `PropertyTableRow` so that assertion has something real to find
+if the test is ever run with credentials, rather than leaving it dangling.
 
 ## BUILD STATUS
-Clean. `npm run build` succeeds, PWA service worker builds (256 precache
-entries, up from 255 - the new design-preview bundle is marginally bigger).
+Clean. `npm run build` succeeds (Phase 4B session re-verified), PWA service
+worker builds.
 
 ## DESIGN DECISIONS
 (Reconstructed from commit messages, not first-hand)

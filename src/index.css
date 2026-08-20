@@ -342,15 +342,18 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: #0D2744;
-    --sidebar-foreground: #F7F9FC;
+    /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
+       sidebar is a desk surface now, not chrome. Portal identity comes
+       from --portal-accent on active nav items, not from a dark fill. */
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #102033;
     --sidebar-primary: #2F6FED;
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #173F67;
-    --sidebar-accent-foreground: #FFFFFF;
-    --sidebar-border: #143250;
+    --sidebar-accent: #F7F9FC;
+    --sidebar-accent-foreground: #102033;
+    --sidebar-border: #E5EAF0;
     --sidebar-ring: #2F6FED;
-    --sidebar-muted: #9AAFC4;
+    --sidebar-muted: #637286;
   }
 
   [data-portal="manager"] { --portal-accent: #2F6FED; }
@@ -419,15 +422,18 @@
     --border: #E5EAF0;
     --input: #E5EAF0;
     --ring: #2F6FED;
-    --sidebar-background: #0D2744;
-    --sidebar-foreground: #F7F9FC;
+    /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
+       sidebar is a desk surface now, not chrome. Portal identity comes
+       from --portal-accent on active nav items, not from a dark fill. */
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #102033;
     --sidebar-primary: #2F6FED;
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #173F67;
-    --sidebar-accent-foreground: #FFFFFF;
-    --sidebar-border: #143250;
+    --sidebar-accent: #F7F9FC;
+    --sidebar-accent-foreground: #102033;
+    --sidebar-border: #E5EAF0;
     --sidebar-ring: #2F6FED;
-    --sidebar-muted: #9AAFC4;
+    --sidebar-muted: #637286;
   }
 }
 
@@ -503,7 +509,7 @@
   color: var(--foreground);
 }
 
-/* Public website — same light workspace as desks. Navy is header/footer chrome only. */
+/* Public website — same light workspace as desks. Navy is footer chrome only; header is white. */
 @utility public-canvas {
   background-color: var(--background);
   color: var(--foreground);

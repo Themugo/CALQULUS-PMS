@@ -73,10 +73,10 @@ const MobileBottomNav: React.FC = () => {
               aria-current={active ? 'page' : undefined}
               className={cn(
                 'flex flex-col items-center justify-center flex-1 h-full min-h-11 gap-1 transition-colors',
-                active ? 'text-teal' : 'text-muted-foreground hover:text-foreground',
+                active ? 'text-[var(--portal-accent)]' : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              <Icon className={cn('h-5 w-5', active && 'text-teal')} />
+              <Icon className={cn('h-5 w-5', active && 'text-[var(--portal-accent)]')} />
               <span className={cn('text-xs', active && 'font-medium')}>{item.label}</span>
             </Link>
           );

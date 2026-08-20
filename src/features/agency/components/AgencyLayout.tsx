@@ -89,14 +89,14 @@ const AgencyLayout = ({ children, title, description, actions }: AgencyLayoutPro
                   group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                   transition-all duration-200 border touch-manipulation
                   ${active
-                    ? 'bg-primary/10 border-primary/20 text-primary'
+                    ? 'bg-[var(--portal-accent-muted)] border-[var(--portal-accent-border)] text-[var(--portal-accent)]'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground border-transparent'}
                 `}
               >
                 <item.icon className={`h-4 w-4 flex-shrink-0 transition-colors
-                  ${active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                  ${active ? 'text-[var(--portal-accent)]' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 <span className="flex-1 truncate">{item.label}</span>
-                {active && <div className="w-1 h-4 rounded-full bg-primary flex-shrink-0" />}
+                {active && <div className="w-1 h-4 rounded-full bg-[var(--portal-accent)] flex-shrink-0" />}
               </Link>
             );
           })}
@@ -125,7 +125,7 @@ const AgencyLayout = ({ children, title, description, actions }: AgencyLayoutPro
       {/* Main content area */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Top header bar */}
-        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-14 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -147,7 +147,7 @@ const AgencyLayout = ({ children, title, description, actions }: AgencyLayoutPro
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[160px]">{user?.email}</span>
-            <div className="h-8 w-8 rounded-full bg-navy-primary flex items-center justify-center text-white text-xs font-bold">
+            <div className="h-8 w-8 rounded-full bg-[var(--portal-accent)] flex items-center justify-center text-white text-xs font-bold">
               {(user?.email || 'A')[0].toUpperCase()}
             </div>
           </div>

@@ -30,7 +30,10 @@ test.describe("Executive homepage", () => {
       "href",
       "/landlord/login",
     );
-    await expect(page.getByRole("link", { name: /view plans/i })).toHaveAttribute("href", "/pricing");
+    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Pricing" })).toHaveAttribute(
+      "href",
+      "/pricing",
+    );
     await expect(page.locator("footer")).toContainText(
       "The operating system for property work",
     );

@@ -24,7 +24,7 @@ import {
   ArrowLeft, Building2, MapPin, Users, Home, Mail, Phone, Calendar,
   Plus, UserPlus, DollarSign, X, Layers, History, Hash,
   Wrench, CreditCard, FileText, Droplets, FileSignature, CalendarX, Settings2,
-  FileSpreadsheet, User,
+  FileSpreadsheet, User, ShieldCheck, MoveVertical, Zap, Sofa,
 } from "lucide-react";
 import PropertyLandlordTab from "@/features/properties/components/PropertyLandlordTab";
 import { useToast } from "@/shared/hooks/use-toast";
@@ -116,6 +116,7 @@ const PropertyDetail = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [leases, setLeases] = useState<Lease[]>([]);
   const [allTenants, setAllTenants] = useState<Tenant[]>([]);
+  const [tenantBalances, setTenantBalances] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
@@ -185,6 +186,25 @@ const PropertyDetail = () => {
     if (tenantsRes.data) {
       setTenants(tenantsRes.data);
       generateSignedUrls(tenantsRes.data);
+
+      // Outstanding balance per tenant, from real unpaid invoices — same
+      // pending/overdue definition used by the dashboard's arrears view.
+      const tenantIds = tenantsRes.data.map((t) => t.id);
+      if (tenantIds.length > 0) {
+        const { data: invoiceRows } = await supabase
+          .from("invoices")
+          .select("tenant_id, amount, status")
+          .in("tenant_id", tenantIds)
+          .in("status", ["pending", "overdue"]);
+        const balances: Record<string, number> = {};
+        for (const row of invoiceRows ?? []) {
+          if (!row.tenant_id) continue;
+          balances[row.tenant_id] = (balances[row.tenant_id] ?? 0) + Number(row.amount ?? 0);
+        }
+        setTenantBalances(balances);
+      } else {
+        setTenantBalances({});
+      }
     }
 
     if (leasesRes.data) {
@@ -376,6 +396,8 @@ const PropertyDetail = () => {
       unitNumber: (t.unit || lease?.unit || "").trim(),
       tenantName: t.name,
       leaseStatus: lease?.status ?? null,
+      leaseEndDate: lease?.end_date ?? null,
+      balance: tenantBalances[t.id] ?? 0,
     };
   }).filter((o) => o.unitNumber);
 
@@ -403,7 +425,10 @@ const PropertyDetail = () => {
         </div>
       }
     >
-      {/* Property Overview */}
+      {/* Overview */}
+      <div className="mb-3">
+        <h2 className="section-title">Overview</h2>
+      </div>
       <div className="grid gap-6 lg:grid-cols-3 mb-6">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-4">
@@ -420,7 +445,7 @@ const PropertyDetail = () => {
                 )}
               </div>
               <div className="flex-1">
-                <CardTitle className="text-xl mb-1">{property.name}</CardTitle>
+                <CardTitle className="card-title-exec mb-1">{property.name}</CardTitle>
                 <p className="text-muted-foreground flex items-center gap-1 text-sm">
                   <MapPin className="h-4 w-4" />
                   {property.address}
@@ -442,19 +467,19 @@ const PropertyDetail = () => {
                     </Badge>
                   )}
                   {(property as {is_gated?: boolean}).is_gated && (
-                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">🛡 Gated</Badge>
+                    <Badge variant="outline" className="text-xs gap-1"><ShieldCheck className="h-3 w-3" /> Gated</Badge>
                   )}
                   {(property as {has_lift?: boolean}).has_lift && (
-                    <Badge variant="outline" className="text-xs bg-[hsl(214_73%_48%/0.06)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]">🛗 Lift</Badge>
+                    <Badge variant="outline" className="text-xs gap-1"><MoveVertical className="h-3 w-3" /> Lift</Badge>
                   )}
                   {(property as {has_backup_power?: boolean}).has_backup_power && (
-                    <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">⚡ Generator</Badge>
+                    <Badge variant="outline" className="text-xs gap-1"><Zap className="h-3 w-3" /> Generator</Badge>
                   )}
                   {(property as {has_borehole?: boolean}).has_borehole && (
-                    <Badge variant="outline" className="text-xs bg-[hsl(195_60%_42%/0.08)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.25)]">💧 Borehole</Badge>
+                    <Badge variant="outline" className="text-xs gap-1"><Droplets className="h-3 w-3" /> Borehole</Badge>
                   )}
                   {(property as {is_furnished_units?: boolean}).is_furnished_units && (
-                    <Badge variant="outline" className="text-xs bg-[hsl(218_58%_38%/0.08)] text-[hsl(218_58%_35%)] border-[hsl(218_58%_38%/0.25)]">🪑 Furnished</Badge>
+                    <Badge variant="outline" className="text-xs gap-1"><Sofa className="h-3 w-3" /> Furnished</Badge>
                   )}
                 </div>
               </div>
@@ -467,21 +492,21 @@ const PropertyDetail = () => {
                   <Home className="h-4 w-4" />
                   <span className="text-xs font-medium">Total Units</span>
                 </div>
-                <p className="text-2xl font-bold">{property.units}</p>
+                <p className="metric-value">{property.units}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
                   <Users className="h-4 w-4" />
                   <span className="text-xs font-medium">Occupied</span>
                 </div>
-                <p className="text-2xl font-bold">{property.occupied}</p>
+                <p className="metric-value">{property.occupied}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
                   <Building2 className="h-4 w-4" />
                   <span className="text-xs font-medium">Occupancy</span>
                 </div>
-                <p className={cn("text-2xl font-bold", occupancyRateColor(occupancyRate))}>
+                <p className={cn("metric-value", occupancyRateColor(occupancyRate))}>
                   {occupancyRate}%
                 </p>
               </div>
@@ -490,7 +515,7 @@ const PropertyDetail = () => {
                   <DollarSign className="h-4 w-4" />
                   <span className="text-xs font-medium">Revenue</span>
                 </div>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="metric-value text-foreground">
                   {formatCurrency(property.revenue)}
                 </p>
               </div>
@@ -500,7 +525,7 @@ const PropertyDetail = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="type-subtitle flex items-center gap-2">
               <Users className="h-5 w-5 text-muted-foreground" />
               Occupancy snapshot
             </CardTitle>
@@ -577,7 +602,7 @@ const PropertyDetail = () => {
         <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-transparent p-0">
           <TabsTrigger value="agreements" className="flex items-center gap-2 h-8 text-xs">
             <FileSignature className="h-3.5 w-3.5" />
-            Agreements
+            Documents
           </TabsTrigger>
           <TabsTrigger value="maintenance" className="flex items-center gap-2 h-8 text-xs">
             <Wrench className="h-3.5 w-3.5" />

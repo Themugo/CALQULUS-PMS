@@ -14,7 +14,7 @@ import { cn } from "@/shared/lib/utils";
 import { PUBLIC_NAV, PUBLIC_ROUTES, homeSectionHref } from "@/features/marketing/publicConfig";
 
 const navLinkClass =
-  "rounded-md px-3 py-1.5 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+  "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function PublicHeader() {
   const { pathname } = useLocation();
@@ -22,14 +22,14 @@ export function PublicHeader() {
   const onPricing = pathname === PUBLIC_ROUTES.pricing;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-primary backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md">
+      <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to={PUBLIC_ROUTES.home}
-          className="flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="CALQULUS home"
         >
-          <BrandMark size="nav" showWordmark subtitle="" inverse fetchPriority="high" forcePlatform />
+          <BrandMark size="nav" showWordmark subtitle="" fetchPriority="high" forcePlatform />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
@@ -48,12 +48,7 @@ export function PublicHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="hidden min-h-10 text-white/80 hover:bg-white/10 hover:text-white sm:inline-flex"
-          >
+          <Button asChild variant="ghost" size="sm" className="hidden min-h-10 sm:inline-flex">
             <Link to={PUBLIC_ROUTES.managerSignIn}>Sign in</Link>
           </Button>
           <Button asChild size="sm" className="min-h-10 btn-brand">
@@ -65,7 +60,7 @@ export function PublicHeader() {
               type="button"
               variant="outline"
               size="icon"
-              className="min-h-10 min-w-10 border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white lg:hidden"
+              className="min-h-10 min-w-10 lg:hidden"
               aria-label="Open menu"
               onClick={() => setOpen(true)}
             >

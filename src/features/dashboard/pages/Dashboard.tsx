@@ -8,7 +8,7 @@ import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupS
 import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import { OpenMaintenancePreview } from "@/features/dashboard/components/OpenMaintenancePreview";
 import {
-  Home, RefreshCw, PieChart, DollarSign, Wrench, CheckCircle2, ArrowRight,
+  Home, RefreshCw, DollarSign, Wrench, CheckCircle2, ArrowRight, Building2, DoorOpen, Plus,
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -36,8 +36,12 @@ const RevenueChart = lazy(() =>
 const OccupancyChart = lazy(() =>
   import("@/features/dashboard/components/OccupancyChart").then((m) => ({ default: m.OccupancyChart })),
 );
+const RecentActivity = lazy(() =>
+  import("@/features/dashboard/components/RecentActivity").then((m) => ({ default: m.RecentActivity })),
+);
 
 const ChartFallback = () => <Skeleton className="h-72 w-full rounded-xl" />;
+const ActivityFallback = () => <Skeleton className="h-64 w-full rounded-xl" />;
 
 const TONE_BAR: Record<string, string> = {
   danger: "bg-destructive",
@@ -132,6 +136,14 @@ const Dashboard = () => {
       headerActions={
         <div className="flex items-center gap-2">
           <Button
+            size="sm"
+            className="min-h-11"
+            onClick={() => navigate("/properties")}
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add property</span>
+          </Button>
+          <Button
             variant="ghost" size="sm"
             onClick={refreshStats}
             className="min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
@@ -180,11 +192,11 @@ const Dashboard = () => {
         <ManagerActivationEmpty />
       ) : (
         <>
-          {/* 1. Attention / priority actions */}
+          {/* 1. Attention — real overdue payments, urgent maintenance, expiring leases */}
           <section className="mb-6">
             <div className="mb-3">
-              <h2 className="section-title">Needs your attention</h2>
-              <p className="supporting-text hidden sm:block">Only live issues — overdue collections, urgent repairs, refunds, and vacancies</p>
+              <h2 className="section-title">Attention</h2>
+              <p className="supporting-text hidden sm:block">Only live issues — overdue collections, urgent repairs, refunds, and expiring leases</p>
             </div>
             {loading ? (
               <div className="space-y-2">
@@ -224,53 +236,65 @@ const Dashboard = () => {
             )}
           </section>
 
-          {/* 2. Snapshot — four numbers, then inspect occupancy */}
+          {/* Portfolio setup nudge — only while onboarding is incomplete; folded in here rather
+              than as a permanent section so a fully set-up manager never sees it again. */}
+          {!progress.isComplete && (
+            <section className="mb-6">
+              <ManagerQuickActions includeSetup includeShortcuts={false} />
+            </section>
+          )}
+
+          {/* 2. Portfolio health — the four numbers that summarise the whole book */}
           <section className="mb-6">
             <div className="mb-3">
               <h2 className="section-title">Portfolio</h2>
-              <p className="supporting-text hidden sm:block">Occupancy and collections from live records</p>
+              <p className="supporting-text hidden sm:block">Properties, units, occupancy, and collections from live records</p>
             </div>
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 mb-4">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
               {loading || !stats
                 ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-lg" />)
                 : (
                   <>
                     <StatCard
+                      title="Properties"
+                      value={String(stats.totalProperties)}
+                      icon={Building2}
+                      iconColor="primary"
+                    />
+                    <StatCard
+                      title="Units"
+                      value={String(stats.totalUnits)}
+                      change={`${stats.occupiedUnits} occupied · ${stats.vacantUnits} vacant`}
+                      changeType="neutral"
+                      icon={DoorOpen}
+                      iconColor="primary"
+                    />
+                    <StatCard
                       title="Occupancy"
                       value={`${stats.occupancyRate}%`}
-                      change={`${stats.occupiedUnits} occupied · ${stats.vacantUnits} vacant`}
                       changeType={stats.occupancyRate >= 90 ? "positive" : stats.occupancyRate >= 70 ? "neutral" : "negative"}
                       icon={Home}
                       iconColor={stats.occupancyRate >= 70 ? "success" : "destructive"}
                       progressValue={stats.occupancyRate}
                     />
                     <StatCard
-                      title="Collected this month"
+                      title="Collections"
                       value={formatCurrency(stats.collectedRent)}
                       change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
                       changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
                       icon={DollarSign}
                       iconColor="primary"
                     />
-                    <StatCard
-                      title="Collection rate"
-                      value={`${stats.collectionRate}%`}
-                      change={`Of ${formatCurrency(stats.expectedRent)} expected`}
-                      changeType={stats.collectionRate >= 90 ? "positive" : stats.collectionRate >= 75 ? "neutral" : "negative"}
-                      icon={PieChart}
-                      iconColor={stats.collectionRate >= 90 ? "success" : stats.collectionRate >= 75 ? "warning" : "destructive"}
-                      progressValue={stats.collectionRate}
-                    />
-                    <StatCard
-                      title="Open maintenance"
-                      value={String(stats.openMaintenanceCount)}
-                      change={stats.urgentMaintenanceCount > 0 ? `${stats.urgentMaintenanceCount} urgent` : "No urgent requests"}
-                      changeType={stats.urgentMaintenanceCount > 0 ? "negative" : "positive"}
-                      icon={Wrench}
-                      iconColor={stats.urgentMaintenanceCount > 0 ? "warning" : "neutral"}
-                    />
                   </>
                 )}
+            </div>
+          </section>
+
+          {/* 3. Occupancy — per-property breakdown behind the headline rate */}
+          <section className="mb-6">
+            <div className="mb-3">
+              <h2 className="section-title">Occupancy</h2>
+              <p className="supporting-text hidden sm:block">Occupied versus vacant units, by property</p>
             </div>
             <ErrorBoundary compact label="Occupancy chart">
               <Suspense fallback={<ChartFallback />}>
@@ -279,29 +303,23 @@ const Dashboard = () => {
             </ErrorBoundary>
           </section>
 
-          {/* 3. Collections trend */}
+          {/* 4. Collections — financial performance: trend plus who owes what */}
           <section className="mb-6">
             <div className="mb-3">
               <h2 className="section-title">Collections</h2>
-              <p className="supporting-text hidden sm:block">Collected rent versus expected this month, from paid invoices</p>
+              <p className="supporting-text hidden sm:block">Collected versus expected rent, and outstanding balances by property</p>
             </div>
-            <ErrorBoundary compact label="Revenue chart">
-              <Suspense fallback={<ChartFallback />}>
-                <RevenueChart />
-              </Suspense>
-            </ErrorBoundary>
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+              <ErrorBoundary compact label="Revenue chart">
+                <Suspense fallback={<ChartFallback />}>
+                  <RevenueChart />
+                </Suspense>
+              </ErrorBoundary>
+              <ArrearsHeatMap />
+            </div>
           </section>
 
-          {/* 4. Outstanding balances */}
-          <section className="mb-6">
-            <div className="mb-3">
-              <h2 className="section-title">Outstanding balances</h2>
-              <p className="supporting-text hidden sm:block">Overdue invoices grouped by property</p>
-            </div>
-            <ArrearsHeatMap />
-          </section>
-
-          {/* 5. Maintenance */}
+          {/* 5. Maintenance — operations */}
           <section className="mb-6">
             <div className="mb-3">
               <h2 className="section-title">Maintenance</h2>
@@ -314,17 +332,17 @@ const Dashboard = () => {
             <OpenMaintenancePreview />
           </section>
 
-          {/* 6. Next step */}
+          {/* 6. Recent activity */}
           <section className="mb-2">
             <div className="mb-3">
-              <h2 className="section-title">What to do next</h2>
-              <p className="supporting-text hidden sm:block">
-                {progress.isComplete
-                  ? "Jump to the operational screens you use every day"
-                  : progress.nextAction?.description ?? "Finish portfolio setup, then jump into daily operations"}
-              </p>
+              <h2 className="section-title">Recent activity</h2>
+              <p className="supporting-text hidden sm:block">Latest tenant, lease, and payment events</p>
             </div>
-            <ManagerQuickActions includeSetup={!progress.isComplete} includeShortcuts />
+            <ErrorBoundary compact label="Recent activity">
+              <Suspense fallback={<ActivityFallback />}>
+                <RecentActivity />
+              </Suspense>
+            </ErrorBoundary>
           </section>
         </>
       )}

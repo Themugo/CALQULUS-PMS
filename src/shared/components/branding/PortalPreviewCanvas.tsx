@@ -14,7 +14,8 @@ import { cn } from "@/shared/lib/utils";
 
 /**
  * Structural portal mock — not live financial data.
- * Hierarchy only: identity stripe, navy rail, white desk.
+ * Hierarchy only: identity stripe, white rail with a navy logo and
+ * portal-accent icon, white desk. The rail is a desk surface, not chrome.
  */
 export function PortalPreviewCanvas({
   primaryColor = CALQULUS_COLOR.primary,
@@ -43,7 +44,7 @@ export function PortalPreviewCanvas({
             <CardTitle className="type-card-title">Portal structure</CardTitle>
           </div>
           <CardDescription className="text-xs">
-            White desk, navy rail, 2px portal stripe, tool header, then PageHeader. Preview chrome — not live balances.
+            White desk, white rail, 2px portal stripe, tool header, then PageHeader. Preview chrome — not live balances.
           </CardDescription>
         </div>
         {tabsLocked ? (
@@ -87,9 +88,9 @@ function DeskFrame({
     >
       <PortalAccentBar />
       <div className="flex min-h-[320px]">
-        <div className="hidden sm:flex w-16 flex-col items-center gap-3 bg-navy-primary text-white py-3">
-          <BrandMark size="xs" inverse forcePlatform />
-          <Icon className="h-4 w-4 text-primary" aria-hidden />
+        <div className="hidden sm:flex w-16 flex-col items-center gap-3 bg-sidebar border-r border-sidebar-border py-3">
+          <BrandMark size="xs" forcePlatform />
+          <Icon className="h-4 w-4 text-[var(--portal-accent)]" aria-hidden />
         </div>
         <div className="flex-1 min-w-0 bg-background">
           <div className="h-11 border-b border-border px-3 flex items-center justify-between gap-2">

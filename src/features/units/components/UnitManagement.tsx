@@ -97,6 +97,8 @@ interface OccupantHint {
   unitNumber: string;
   tenantName: string | null;
   leaseStatus: string | null;
+  leaseEndDate?: string | null;
+  balance?: number;
 }
 
 interface UnitManagementProps {
@@ -120,6 +122,13 @@ const statusStyles: Record<string, string> = {
   occupied: statusBadgeClass("info"),
   maintenance: statusBadgeClass("warning"),
   reserved: statusBadgeClass("neutral"),
+};
+
+const leaseStatusStyles: Record<string, string> = {
+  active: statusBadgeClass("success"),
+  pending: statusBadgeClass("warning"),
+  expiring: statusBadgeClass("warning"),
+  inactive: statusBadgeClass("neutral"),
 };
 
 export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onUnitsChange, occupants = [], onOpenTab }: UnitManagementProps) {
@@ -466,7 +475,8 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                 <TableHead>Tenant</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Rent</TableHead>
-                <TableHead>Next</TableHead>
+                <TableHead>Lease</TableHead>
+                <TableHead>Balance</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -521,14 +531,27 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                       )}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2 text-primary"
-                        onClick={() => onOpenTab?.(next.tab)}
-                      >
-                        {next.label}
-                      </Button>
+                      {occupant?.leaseStatus ? (
+                        <div className="flex flex-col">
+                          <span className={cn("capitalize text-xs w-fit", leaseStatusStyles[occupant.leaseStatus] || statusBadgeClass("neutral"))}>
+                            {occupant.leaseStatus}
+                          </span>
+                          {occupant.leaseEndDate && (
+                            <span className="text-[11px] text-muted-foreground mt-0.5">
+                              Ends {new Date(occupant.leaseEndDate).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {occupant?.balance ? (
+                        <span className="font-medium text-destructive">{formatCurrency(occupant.balance)}</span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -538,6 +561,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => onOpenTab?.(next.tab)}>{next.label}</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => {
                             setExpandedHistoryUnitId(expandedHistoryUnitId === unit.id ? null : unit.id);
                             setExpandedBillingUnitId(null);
@@ -582,7 +606,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   </TableRow>
                   {expandedBillingUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={6} className="p-3 bg-muted/20">
+                      <TableCell colSpan={7} className="p-3 bg-muted/20">
                         <UnitBillingConfig
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -594,7 +618,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedHistoryUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={6} className="p-3 bg-muted/10">
+                      <TableCell colSpan={7} className="p-3 bg-muted/10">
                         <UnitHistoryPanel
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -605,7 +629,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedPhotosUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={6} className="p-3 bg-muted/10">
+                      <TableCell colSpan={7} className="p-3 bg-muted/10">
                         <UnitPhotoGallery
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -616,7 +640,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedAmenitiesUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={6} className="p-3 bg-muted/10">
+                      <TableCell colSpan={7} className="p-3 bg-muted/10">
                         <UnitAmenitiesManager
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
@@ -627,7 +651,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   )}
                   {expandedMetersUnitId === unit.id && (
                     <TableRow>
-                      <TableCell colSpan={6} className="p-3 bg-muted/10">
+                      <TableCell colSpan={7} className="p-3 bg-muted/10">
                         <UnitUtilityMeters
                           unitId={unit.id}
                           unitLabel={unit.unit_number}
