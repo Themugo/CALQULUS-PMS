@@ -34,8 +34,18 @@ receipts, contracts, and maintenance backends reused.
   single Report a problem control plus the existing request list/dialogs.
 - Extra routes (inbox, vacation notices, services) stay reachable off-nav.
 
+### Phase 7 verification
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — pass
+- `npx vitest run` — 840 passed; 1 pre-existing fail
+  (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
+- Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
+  — 27 passed, 5 skipped (credential-gated auth)
+  Tenant preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
+- `npm run build` — pass
+
 ## CHECKPOINT
-Phase 7 tenant experience is on `cursor/phase-7-tenant-experience-1e5d`.
+Phase 7 tenant experience is on `cursor/phase-7-tenant-experience-1e5d` (PR #56).
 Do not merge to `main` until James asks.
 
 ## PREVIOUS PHASE
