@@ -14,13 +14,15 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { Link } from 'react-router-dom';
+import { webhostOrganizationPath } from '@/features/webhost/lib/webhostPaths';
+import { format } from 'date-fns';
 import {
   UserCheck, UserX, Users, Building2, Home, Mail,
   AlertTriangle, CheckCircle, Clock, Ban, RefreshCw,
   ChevronDown, ChevronUp, UserPlus, Loader2,
   Activity, CreditCard
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   pending:              { label: 'Pending Approval', color: 'bg-warning/15 text-warning border-warning/30 font-bold', icon: Clock },
@@ -285,6 +287,9 @@ const ManagerManagement: React.FC = () => {
               {(m.approval_status === 'suspended' || m.approval_status === 'suspended_nonpayment' || m.approval_status === 'rejected') && (
                 <Button size="sm" className="bg-success hover:bg-success/90 text-white h-8 text-xs font-bold rounded-lg" onClick={() => { setActionDialog({ type: 'unsuspend', manager: m }); setActionReason(''); }}><UserCheck className="h-3.5 w-3.5 mr-1" />Reinstate</Button>
               )}
+              <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-lg" asChild>
+                <Link to={webhostOrganizationPath(m.user_id)}>Open</Link>
+              </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-secondary-foreground hover:text-primary hover:bg-soft-blue rounded-lg" onClick={() => setExpandedId(expanded ? null : m.user_id)} aria-label={expanded ? "Collapse details" : "Expand details"}>
                 {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>

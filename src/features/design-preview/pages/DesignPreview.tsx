@@ -174,6 +174,7 @@ export default function DesignPreview() {
           {active === "landlord" && <LandlordPagesPreview />}
           {active === "agency" && <AgencyPagesPreview />}
           {active === "tenant" && <TenantPagesPreview />}
+          {active === "platform_admin" && <AdminPagesPreview />}
           {active === "login" && <LoginPreview />}
           {active === "properties" && <RecordPreview title="Properties" icon={Building2} attention="Occupancy" action="Add property" inspect="Units" />}
           {active === "tenants" && <RecordPreview title="Tenants" icon={Home} attention="Invites" action="Invite" inspect="Lease" />}
@@ -613,6 +614,131 @@ function TenantPagesPreview() {
               <PreviewStat label="Needs attention" value={page.attention} />
               <PreviewStat label="Can do next" value={page.next} />
               <PreviewStat label="Not" value="A manager KPI dashboard" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AdminPagesPreview() {
+  const pages = [
+    {
+      title: "Dashboard",
+      where: "Platform control tower",
+      matters: "Organizations, users, sessions, revenue, transactions",
+      attention: "Failed logins and operational alerts",
+      next: "Open Organizations or Security",
+    },
+    {
+      title: "Organizations",
+      where: "Customers who buy from CALQULUS",
+      matters: "Manager and agency accounts",
+      attention: "Pending approval or suspension",
+      next: "Open a row",
+    },
+    {
+      title: "Organization Detail",
+      where: "One customer account",
+      matters: "Status, tier, properties, units",
+      attention: "Suspended or unpaid",
+      next: "Review subscriptions — no tenant records",
+    },
+    {
+      title: "Users",
+      where: "Platform operators and customer roles",
+      matters: "Admins, managers, agencies, landlords, submanagers",
+      attention: "Missing admin permissions",
+      next: "Manage platform admins",
+    },
+    {
+      title: "Subscriptions",
+      where: "Platform billing",
+      matters: "Manager invoices and receipts",
+      attention: "Pending invoices",
+      next: "Open billing",
+    },
+    {
+      title: "Audit Log",
+      where: "What changed",
+      matters: "Platform-sensitive access and actions",
+      attention: "Unexpected admin changes",
+      next: "Filter by entity — tenant rows stay hidden",
+    },
+    {
+      title: "Security",
+      where: "Access and authentication",
+      matters: "Auth events, failed logins, permission events",
+      attention: "Failed logins",
+      next: "Review admin access",
+    },
+    {
+      title: "Settings",
+      where: "Platform configuration",
+      matters: "Admin hierarchy and payment accounts",
+      attention: "Missing payout setup",
+      next: "Update details",
+    },
+    {
+      title: "Brand Studio",
+      where: "CALQULUS identity",
+      matters: "Platform brand, not customer white-label",
+      attention: "Org branding lives on the customer desk",
+      next: "Preview identity",
+    },
+  ];
+
+  return (
+    <div className="space-y-4" data-preview="admin-pages">
+      <p className="type-body text-muted-foreground">
+        Platform Admin is a control tower, not an operations desk. White surface, navy chrome, 2px indigo accent. System health is only shown where a live probe exists. Tenant records are never listed.
+      </p>
+      {pages.map((page) => (
+        <div key={page.title} className="rounded-lg border border-border overflow-hidden bg-background">
+          <div {...portalSurfaceProps("platform_admin")}>
+            <PortalAccentBar />
+            <PageHeader
+              title={page.title}
+              description={`${page.where} · ${page.matters}`}
+              className="px-4 py-4"
+            />
+            {page.title === "Dashboard" ? (
+              <div className="space-y-3 border-y border-border p-4">
+                <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-5">
+                  {[
+                    { label: "Organizations", value: "Live" },
+                    { label: "Users", value: "Live" },
+                    { label: "Active sessions", value: "Your sessions only" },
+                    { label: "Revenue", value: "Live" },
+                    { label: "Transactions", value: "Live" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="bg-card p-3">
+                      <p className="type-label">{stat.label}</p>
+                      <p className="mt-1 text-sm font-semibold">{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                  {[
+                    { label: "Database", value: "Probed live" },
+                    { label: "API", value: "Probed live" },
+                    { label: "Payments", value: "Not probed" },
+                    { label: "Notifications", value: "Not probed" },
+                    { label: "Storage", value: "When reported" },
+                  ].map((probe) => (
+                    <div key={probe.label} className="rounded-xl border border-border bg-card p-3">
+                      <p className="type-label">{probe.label}</p>
+                      <p className="mt-1 text-sm font-semibold text-muted-foreground">{probe.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            <div className="grid gap-3 sm:grid-cols-3 p-4">
+              <PreviewStat label="Needs attention" value={page.attention} />
+              <PreviewStat label="Can do next" value={page.next} />
+              <PreviewStat label="Not shown" value="Tenant names, leases, rent" />
             </div>
           </div>
         </div>

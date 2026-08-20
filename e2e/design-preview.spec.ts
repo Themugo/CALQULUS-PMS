@@ -39,6 +39,21 @@ test.describe("Design preview", () => {
     await expect(tenantPreview.getByText("Rent due", { exact: true }).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Lease", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Receipts", exact: true })).toBeVisible();
+    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Platform Admin", exact: true }).click();
+    await expect(page.getByText("Platform Admin is a control tower")).toBeVisible();
+    const adminPreview = page.locator("[data-preview='admin-pages']");
+    await expect(adminPreview.getByText("Organizations", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Users", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Active sessions", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Revenue", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Transactions", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Payments", { exact: true }).first()).toBeVisible();
+    await expect(adminPreview.getByText("Not probed").first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Organizations", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Organization Detail", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Subscriptions", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Audit Log", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Brand Studio", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Maintenance" }).click();
     await expect(page.getByRole("tab", { name: "New" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Assigned" })).toBeVisible();
@@ -76,6 +91,20 @@ test.describe("Design preview", () => {
       await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
       await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant", exact: true }).click();
       await expect(page.locator("[data-preview='tenant-pages']")).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(1);
+    });
+  }
+
+  for (const width of [360, 390, 480, 768, 1280] as const) {
+    test(`platform admin preview does not overflow at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: width < 768 ? 844 : 800 });
+      await page.goto("/design-preview");
+      await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
+      await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Platform Admin", exact: true }).click();
+      await expect(page.locator("[data-preview='admin-pages']")).toBeVisible();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );

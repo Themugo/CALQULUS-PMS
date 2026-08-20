@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { format } from 'date-fns';
 import { Search, Filter, Eye, Shield, FileText, CreditCard, Settings, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { isTenantEntityType } from '@/features/webhost/lib/adminSecurity';
 
 const resourceTypeIcons: Record<string, React.ReactNode> = {
   contract: <FileText className="h-4 w-4" />,
@@ -45,7 +46,7 @@ export function SecurityAuditLogs() {
     limit: 500,
   });
 
-  const visibleLogs = logs?.filter(log => !log.entity_type.toLowerCase().startsWith('tenant'));
+  const visibleLogs = logs?.filter(log => !isTenantEntityType(log.entity_type));
 
   const filteredLogs = visibleLogs?.filter(log => {
     if (!searchQuery) return true;

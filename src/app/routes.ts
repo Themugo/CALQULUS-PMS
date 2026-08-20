@@ -18,6 +18,21 @@ const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRe
 
 const LegalPage = lazy(() => import("@/features/legal/LegalPage"));
 const WebhostDashboard = lazy(() => import("@/features/webhost/pages/WebhostDashboard"));
+const AdminOrganizations = lazy(() => import("@/features/webhost/pages/AdminOrganizations"));
+const AdminOrganizationDetail = lazy(() => import("@/features/webhost/pages/AdminOrganizationDetail"));
+const AdminUsers = lazy(() => import("@/features/webhost/pages/AdminUsers"));
+const AdminSubscriptions = lazy(() => import("@/features/webhost/pages/AdminSubscriptions"));
+const AdminAuditLog = lazy(() => import("@/features/webhost/pages/AdminAuditLog"));
+const AdminSecurity = lazy(() => import("@/features/webhost/pages/AdminSecurity"));
+const AdminSettings = lazy(() => import("@/features/webhost/pages/AdminSettings"));
+const AdminBrandStudio = lazy(() => import("@/features/webhost/pages/AdminBrandStudio"));
+const AdminProperties = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminProperties })));
+const AdminLandlords = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminLandlords })));
+const AdminTiers = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminTiers })));
+const AdminBillingRules = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminBillingRules })));
+const AdminCustomPricing = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminCustomPricing })));
+const AdminContracts = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminContracts })));
+const AdminIssues = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminIssues })));
 const TenantPortal = lazy(() => import("@/features/tenant-portal/pages/TenantPortal"));
 const PaymentHistory = lazy(() => import("@/features/payments/pages/PaymentHistory"));
 const TenantProfile = lazy(() => import("@/features/tenant-portal/pages/TenantProfile"));
@@ -144,6 +159,21 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     routes: [
       { path: "/webhost/login", redirect: "/webhost" },
       { path: "/webhost", element: WebhostDashboard, protected: true },
+      { path: "/webhost/organizations", element: AdminOrganizations, protected: true },
+      { path: "/webhost/organizations/:userId", element: AdminOrganizationDetail, protected: true },
+      { path: "/webhost/users", element: AdminUsers, protected: true },
+      { path: "/webhost/subscriptions", element: AdminSubscriptions, protected: true },
+      { path: "/webhost/audit", element: AdminAuditLog, protected: true },
+      { path: "/webhost/security", element: AdminSecurity, protected: true },
+      { path: "/webhost/settings", element: AdminSettings, protected: true },
+      { path: "/webhost/brand", element: AdminBrandStudio, protected: true },
+      { path: "/webhost/properties", element: AdminProperties, protected: true },
+      { path: "/webhost/landlords", element: AdminLandlords, protected: true },
+      { path: "/webhost/tiers", element: AdminTiers, protected: true },
+      { path: "/webhost/billing-rules", element: AdminBillingRules, protected: true },
+      { path: "/webhost/custom-pricing", element: AdminCustomPricing, protected: true },
+      { path: "/webhost/contracts", element: AdminContracts, protected: true },
+      { path: "/webhost/issues", element: AdminIssues, protected: true },
       { path: "*", redirect: "/webhost" },
     ],
   },

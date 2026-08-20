@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isTenantEntityType } from '@/features/webhost/lib/adminSecurity';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Badge } from '@/shared/components/ui/badge';
@@ -57,7 +58,7 @@ const ACTION_COLOR = (action: string): string => {
 };
 
 const ActivityLog: React.FC = () => {
-  const { isWebhost, isManager } = useAuth();
+  const { isWebhost } = useAuth();
   const [entityFilter, setEntityFilter] = useState('all');
   const [roleFilter, setRoleFilter]   = useState('all');
   const [searchTerm, setSearchTerm]   = useState('');
@@ -78,6 +79,7 @@ const ActivityLog: React.FC = () => {
   });
 
   const filtered = activities.filter(a => {
+    if (isWebhost && isTenantEntityType(a.entity_type)) return false;
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
     return (
@@ -117,7 +119,7 @@ const ActivityLog: React.FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All entities</SelectItem>
-              {['tenant','property','invoice','lease','contract','maintenance','user','notice','payment'].map(e => (
+              {['property','invoice','lease','contract','maintenance','user','notice','payment'].map(e => (
                 <SelectItem key={e} value={e} className="capitalize">{e}</SelectItem>
               ))}
             </SelectContent>

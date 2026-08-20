@@ -16,6 +16,7 @@ import { LoadingState } from '@/shared/components/ui/loading-state';
 import { PageHeader } from '@/shared/components/layout/PageHeader';
 import { statusBadgeClass } from '@/shared/lib/statusBadge';
 import { cn } from '@/shared/lib/utils';
+import { isTenantEntityType } from '@/features/webhost/lib/adminSecurity';
 
 interface ErrorLog {
   id: string;
@@ -76,7 +77,7 @@ export default function ErrorLogsTab() {
         .order('created_at', { ascending: false })
         .limit(100);
       if (qErr) throw qErr;
-      return (data ?? []) as ErrorLog[];
+      return ((data ?? []) as ErrorLog[]).filter((row) => !isTenantEntityType(row.entity_type));
     },
     refetchInterval: 30_000, // periodic refresh — not real-time
   });

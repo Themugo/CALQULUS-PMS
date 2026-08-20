@@ -1,18 +1,78 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 8 — Platform Admin. James issued the control-tower brief: white / navy /
+indigo accent. Dashboard: Organizations, Users, Active sessions, Revenue,
+Transactions. System health: Database, API, Payments, Notifications, Storage
+where a live probe exists — never invented. Security: Authentication events,
+Failed logins, Permission events, Alerts. Business: Organizations,
+Subscriptions, Usage. Named pages: Dashboard, Organizations, Organization
+Detail, Users, Subscriptions, Audit Log, Security, Settings, Brand Studio.
+
+## CURRENT TASK
+Phase 8 platform admin desk: preview on `/design-preview`, then production
+pages. Auth prefix `/webhost` unchanged. Existing manager billing, org CRUD,
+audit logs, Brand Studio, and health-check reused. Do not invent health,
+sessions, or fraud scores.
+
+### Phase 8 findings (before any changes)
+- The webhost desk was one tabbed page (`WebhostDashboard`) with Overview,
+  Accounts, Subscriptions, Security, Issues, plus a secondary strip
+  (Properties, Landlords, Tiers, Billing Rules, Custom Pricing, Contracts).
+- Overview was a KPI/chart desk, not a control tower.
+- Live health: `checkHealth()` probes Supabase `profiles` + localStorage.
+  Edge `health-check` reports database, auth, storage, edgeFunctions. It
+  does **not** probe payments or notifications.
+- `user_sessions` RLS is own-rows only. There is no platform-wide session
+  count to show honestly.
+- Failed logins have no dedicated table; they can only be derived from
+  `activity_logs`.
+- Organizations = manager + agency `user_roles`. Users = non-tenant role
+  counts. Subscriptions = existing `ManagerBilling`. Brand Studio =
+  `MultiBrandStudio`.
+
+### Phase 8 implementation
+- One `WebhostLayout`: white desk, navy chrome, 2px indigo accent. Rail with
+  the nine named pages. Selected item is `bg-primary/10`, not an indigo fill.
+  Permission-gated nav kept (`can_manage_managers`, `can_manage_billing`,
+  `can_view_activity_logs`). Super-admin permission bootstrap kept.
+- Dashboard is a control tower: platform stats, probed health only,
+  audit-derived security, business usage as property count. Sessions labelled
+  “Your sessions only” / “Not available”. Payments and Notifications always
+  “Not probed”.
+- Organizations wrap `ManagerManagement` with an Open link to
+  `/webhost/organizations/:userId`. Detail shows status, tier, properties,
+  units — no tenant PII. Users = role head-counts + `WebhostManagement`.
+  Subscriptions = `ManagerBilling`. Audit = `SecurityAuditLogs` + `ActivityLog`
+  with tenant entity rows hidden. Security = account access + auth/failed/
+  permission lists from the audit log. Settings = platform admins + payment
+  accounts. Brand Studio = `MultiBrandStudio`.
+- Extra existing screens stay reachable off-nav (properties, landlords,
+  tiers, billing-rules, custom-pricing, contracts, issues).
+- `/design-preview` Platform Admin tab shows the named pages and control-tower
+  layout. Health tiles say Not probed / Probed live — no fake Healthy payments.
+
+### Phase 8 verification
+- Pending this turn (typecheck, lint, vitest, Playwright, build).
+
+## CHECKPOINT
+Phase 8 platform admin is on `cursor/phase-8-control-tower-1e5d`.
+Do not merge to `main` until James asks.
+
+## PREVIOUS PHASE
 Phase 7 — Tenant experience. James issued the tenant brief: white / navy /
 violet accent, simple and mobile-first. Dashboard: Good morning, Your home
 (property / unit), Rent due (amount, due date, Pay rent), then Lease,
 Maintenance, Receipts, Documents, then recent activity. No large KPI
 dashboards, complex analytics, enterprise navigation, or excessive cards.
 Named pages: Dashboard, Payments, Lease, Maintenance, Receipts, Documents,
-Profile (already present).
+Profile (already present). Merged to `main` (`dd8fded`).
 
-## CURRENT TASK
-Phase 7 tenant portal: preview on `/design-preview` (mobile and desktop),
-then production pages. Auth prefix `/portal` unchanged. Pay dialogs, invoices,
-receipts, contracts, and maintenance backends reused.
+## PREVIOUS TASK
+Phase 7 tenant portal complete and merged to `main`. Preview on
+`/design-preview` (mobile and desktop), then production pages. Auth prefix
+`/portal` unchanged. Pay dialogs, invoices, receipts, contracts, and
+maintenance backends reused.
 
 ### Phase 7 findings (before any changes)
 - Home was two different UIs (mobile hero vs desktop six-card KPI grid plus
@@ -43,10 +103,7 @@ receipts, contracts, and maintenance backends reused.
   — 27 passed, 5 skipped (credential-gated auth)
   Tenant preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
 - `npm run build` — pass
-
-## CHECKPOINT
-Phase 7 tenant experience is on `cursor/phase-7-tenant-experience-1e5d` (PR #56).
-Do not merge to `main` until James asks.
+- Merged to `main` as `dd8fded`.
 
 ## PREVIOUS PHASE
 Phase 6 — Agency portal. James issued the agency desk brief: white / navy /
