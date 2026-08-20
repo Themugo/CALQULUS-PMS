@@ -136,6 +136,9 @@ export default function DesignPreview() {
         <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3 min-w-0">
           <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform className="min-w-0" />
           <p className="type-meta hidden sm:block">Preview chrome — not live operations</p>
+          <Link to={PUBLIC_ROUTES.shellPreview} className="text-xs font-medium text-navy-mid hover:underline">
+            App shell
+          </Link>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site
           </Link>

@@ -86,6 +86,7 @@ const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
 const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
+const ShellPreviewPage = lazy(() => import("@/features/design-preview/pages/ShellPreviewPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // ── Route definition types ──────────────────────────────────────────
@@ -116,9 +117,14 @@ export interface RoleRouteConfig {
 }
 
 export const DESIGN_PREVIEW_PATH = "/design-preview";
+export const SHELL_PREVIEW_PATH = "/design-preview/shell";
 export const designPreviewRoute: RouteDef = {
   path: DESIGN_PREVIEW_PATH,
   element: DesignPreview,
+};
+export const shellPreviewRoute: RouteDef = {
+  path: SHELL_PREVIEW_PATH,
+  element: ShellPreviewPage,
 };
 
 // ── Shared public routes (available when not logged in) ─────────────
@@ -130,6 +136,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/design-preview", element: DesignPreview },
+  { path: "/design-preview/shell", element: ShellPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
@@ -337,6 +344,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
   { path: "/design-preview", element: DesignPreview },
+  { path: "/design-preview/shell", element: ShellPreviewPage },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
@@ -356,6 +364,7 @@ export const authOnlyRoutes: RouteDef[] = [
 export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/design-preview", element: DesignPreview },
+  { path: "/design-preview/shell", element: ShellPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },

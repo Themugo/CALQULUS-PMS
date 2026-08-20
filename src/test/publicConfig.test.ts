@@ -14,7 +14,8 @@ describe("public marketing config", () => {
     expect(PUBLIC_ROUTES.agencyLogin).toBe("/agency/login");
     expect(PUBLIC_ROUTES.tenantLogin).toBe("/tenant/login");
     expect(PUBLIC_ROUTES.webhostLogin).toBe("/webhost/login");
-    expect(PUBLIC_ROUTES.pricing).toBe("/pricing");
+    expect(PUBLIC_ROUTES.designPreview).toBe("/design-preview");
+    expect(PUBLIC_ROUTES.shellPreview).toBe("/design-preview/shell");
     expect(PUBLIC_ROUTES.legalPrivacy).toBe("/legal?tab=privacy");
     expect(PUBLIC_ROUTES.legalTerms).toBe("/legal?tab=terms");
   });
