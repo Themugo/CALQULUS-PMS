@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Briefcase,
   Building2,
-  ChevronDown,
   ChevronRight,
   Home,
   LayoutDashboard,
@@ -24,8 +23,8 @@ import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
 import { CONTACT_EMAIL, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { redirectBrowser } from "@/shared/lib/redirectBrowser";
 
-const SECTION = "scroll-mt-24 py-14 sm:py-16";
 const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8";
+const BAND = "scroll-mt-20 py-7 sm:py-8";
 const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary";
 
 function SectionIntro({
@@ -40,17 +39,17 @@ function SectionIntro({
   description: string;
 }) {
   return (
-    <div id={id} className="mb-8 max-w-2xl">
+    <div id={id} className="mb-5 max-w-2xl">
       {eyebrow ? <p className={EYEBROW}>{eyebrow}</p> : null}
-      <h2 className={`section-title text-[1.45rem] sm:text-[1.7rem] ${eyebrow ? "mt-2" : ""}`}>{title}</h2>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">{description}</p>
+      <h2 className={`section-title text-[1.3rem] sm:text-[1.5rem] ${eyebrow ? "mt-1.5" : ""}`}>{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-white/68">{description}</p>
     </div>
   );
 }
 
 function IconWell({ children }: { children: ReactNode }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-soft-blue text-primary">
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary shadow-[0_0_16px_-6px_rgb(26_212_228_/_0.8)]">
       {children}
     </span>
   );
@@ -110,6 +109,16 @@ const ROLES = [
   },
 ] as const;
 
+function CitySparks() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <span className="absolute bottom-[16%] right-[18%] h-1 w-1 rounded-full bg-spark opacity-80" />
+      <span className="absolute bottom-[28%] right-[8%] h-0.5 w-0.5 rounded-full bg-spark opacity-70" />
+      <span className="absolute top-[42%] right-[28%] h-0.5 w-0.5 rounded-full bg-spark/80" />
+    </div>
+  );
+}
+
 function HomeView() {
   const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -125,26 +134,32 @@ function HomeView() {
     <>
       <section className="relative overflow-hidden">
         <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
+        <CitySparks />
         <div
-          className={`${CONTAINER} relative grid items-center gap-10 py-12 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] xl:gap-12 xl:py-16`}
+          className={`${CONTAINER} relative grid items-center gap-7 py-8 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] xl:gap-10 xl:py-9`}
         >
           <div>
             <p className={EYEBROW}>Property operations, connected</p>
-            <h1 className="page-title mt-3 max-w-xl text-[2rem] leading-[1.15] sm:text-[2.45rem] lg:text-[2.7rem]">
+            <h1 className="page-title mt-2 max-w-xl text-[1.85rem] leading-[1.12] sm:text-[2.25rem] lg:text-[2.45rem]">
               Run your properties with clarity and control.
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/70 sm:text-[0.95rem]">
               CALQULUS brings properties, units, tenants, leases, rent, payments and maintenance into
               one focused operational system.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="btn-brand min-h-11">
                 <Link to={PUBLIC_ROUTES.managerSignUp}>
                   Start managing
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="min-h-11 bg-card/80">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="min-h-11 border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+              >
                 <a href="#platform">Explore the platform</a>
               </Button>
             </div>
@@ -153,23 +168,29 @@ function HomeView() {
         </div>
       </section>
 
-      <section id="platform" className={`${CONTAINER} ${SECTION}`}>
+      <section id="platform" className={`${CONTAINER} ${BAND}`}>
         <SectionIntro
           title="Everything important, connected."
           description="Properties, money, and repairs sit on the same operational record — the one a manager works from after sign-in."
         />
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-3 lg:grid-cols-3">
           {PILLARS.map((pillar) => (
-            <article key={pillar.title} className="enterprise-card p-6">
-              <IconWell>
-                <pillar.icon className="h-5 w-5" aria-hidden />
-              </IconWell>
-              <h3 className={`${EYEBROW} mt-4`}>{pillar.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{pillar.description}</p>
-              <ul className="mt-5 space-y-2">
+            <article key={pillar.title} className="night-card p-4">
+              <div className="flex items-start gap-3">
+                <IconWell>
+                  <pillar.icon className="h-4 w-4" aria-hidden />
+                </IconWell>
+                <div className="min-w-0">
+                  <h3 className={EYEBROW}>{pillar.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-white/68">{pillar.description}</p>
+                </div>
+              </div>
+              <ul className="mt-3 flex flex-wrap gap-1.5">
                 {pillar.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
+                  <li
+                    key={item}
+                    className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-white/85"
+                  >
                     {item}
                   </li>
                 ))}
@@ -177,30 +198,23 @@ function HomeView() {
             </article>
           ))}
         </div>
-      </section>
 
-      <section id="how-it-works" className={`border-y border-border/80 bg-card/60 ${SECTION}`}>
-        <div className={CONTAINER}>
-          <SectionIntro
-            title="From property to payment."
-            description="A unit is leased, billed, paid, and reported from the same operational chain."
-          />
-          <ol className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-0">
+        <div id="how-it-works" className="scroll-mt-20 mt-6">
+          <p className={EYEBROW}>How it works</p>
+          <h2 className="section-title mt-1.5 text-[1.2rem] sm:text-[1.35rem]">From property to payment.</h2>
+          <p className="mt-1.5 max-w-xl text-sm text-white/68">
+            A unit is leased, billed, paid, and reported from the same operational chain.
+          </p>
+          <ol className="mt-4 flex flex-wrap items-center gap-1.5">
             {FLOW.map((step, index) => (
-              <li key={step} className="flex flex-1 flex-col items-stretch lg:flex-row lg:items-center">
-                <div className="flex min-h-12 flex-1 items-center justify-center rounded-lg border border-border bg-card px-3 py-3 text-center">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+              <li key={step} className="flex items-center gap-1.5">
+                <div className="rounded-md border border-primary/30 bg-navy-mid/80 px-2.5 py-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
                     {step}
                   </span>
                 </div>
                 {index < FLOW.length - 1 ? (
-                  <>
-                    <ChevronDown className="mx-auto my-0.5 h-4 w-4 shrink-0 text-muted-foreground lg:hidden" aria-hidden />
-                    <ChevronRight
-                      className="mx-1 hidden h-4 w-4 shrink-0 text-muted-foreground lg:block"
-                      aria-hidden
-                    />
-                  </>
+                  <ChevronRight className="h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden />
                 ) : null}
               </li>
             ))}
@@ -208,20 +222,24 @@ function HomeView() {
         </div>
       </section>
 
-      <section id="solutions" className={`${CONTAINER} ${SECTION}`}>
+      <section id="solutions" className={`${CONTAINER} ${BAND} pt-0 sm:pt-1`}>
         <SectionIntro
           title="One system. Clear experiences."
           description="Managers buy and run CALQULUS. Landlords, agencies, and tenants use the portals connected to that work."
         />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ROLES.map((role) => (
-            <article key={role.title} className="enterprise-card flex flex-col p-6">
+            <article key={role.title} className="night-card flex flex-col p-4">
               <IconWell>
-                <role.icon className="h-5 w-5" aria-hidden />
+                <role.icon className="h-4 w-4" aria-hidden />
               </IconWell>
-              <h3 className="card-title-exec mt-4">{role.title}</h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{role.description}</p>
-              <Button asChild variant="outline" className="mt-5 min-h-11 w-full bg-card sm:w-auto">
+              <h3 className="card-title-exec mt-3">{role.title}</h3>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-white/68">{role.description}</p>
+              <Button
+                asChild
+                variant="outline"
+                className="mt-4 min-h-10 w-full border-primary/35 bg-transparent text-white hover:bg-primary/10 hover:text-primary"
+              >
                 <Link to={role.href}>
                   {role.cta}
                   <ArrowRight className="h-4 w-4" aria-hidden />
@@ -232,105 +250,104 @@ function HomeView() {
         </div>
       </section>
 
-      <section id="pricing" className={`border-y border-border/80 bg-card/60 ${SECTION}`}>
-        <div className={`${CONTAINER} flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between`}>
-          <div className="max-w-xl">
-            <p className={EYEBROW}>Pricing</p>
-            <h2 className="section-title mt-2 text-[1.45rem] sm:text-[1.7rem]">
-              Per property, per month, in Kenyan shillings.
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
-              Published rates multiply by the buildings you manage. Custom blocks exist for larger
-              portfolios — core operations are not locked behind plan walls.
-            </p>
-          </div>
-          <Button asChild size="lg" variant="outline" className="min-h-11 shrink-0 bg-card">
-            <Link to={PUBLIC_ROUTES.pricing}>
-              View plans
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      <section id="contact" className={`${CONTAINER} ${SECTION}`}>
-        <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
-          <div>
-            <p className={EYEBROW}>Contact</p>
-            <h2 className="section-title mt-2">Talk to CALQULUS</h2>
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Property management teams, landlords, and agencies can write about a portfolio and what
-              they need to run.
-            </p>
-            <ul className="mt-6 space-y-3 text-sm">
-              <li className="flex items-center gap-2 text-foreground">
-                <Mail className="h-4 w-4 text-primary" aria-hidden />
-                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline">
-                  {CONTACT_EMAIL}
-                </a>
-              </li>
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4 text-primary" aria-hidden />
-                Nairobi, Kenya
-              </li>
-            </ul>
-          </div>
-          <form onSubmit={handleContactSubmit} className="enterprise-card space-y-4 p-5">
-            <p className="text-sm font-medium text-foreground">Send an inquiry</p>
+      <section id="contact" className={`${CONTAINER} ${BAND} pt-0 sm:pt-1`}>
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <form onSubmit={handleContactSubmit} className="enterprise-card space-y-3 p-5 text-foreground">
             <div>
-              <label htmlFor="contact-name" className="type-label">
-                Full name
-              </label>
-              <Input id="contact-name" name="contact-name" required autoComplete="name" className="mt-1" />
+              <p className={EYEBROW}>Contact</p>
+              <h2 className="mt-1.5 font-heading text-xl font-bold tracking-tight text-foreground">
+                Talk to CALQULUS
+              </h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Property management teams, landlords, and agencies can write about a portfolio and what
+                they need to run.
+              </p>
+              <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+                <li className="flex items-center gap-2 text-foreground">
+                  <Mail className="h-4 w-4 text-primary" aria-hidden />
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline">
+                    {CONTACT_EMAIL}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-primary" aria-hidden />
+                  Nairobi, Kenya
+                </li>
+              </ul>
             </div>
-            <div>
-              <label htmlFor="contact-email" className="type-label">
-                Work email
-              </label>
-              <Input
-                id="contact-email"
-                name="contact-email"
-                type="email"
-                required
-                autoComplete="email"
-                className="mt-1"
-              />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="contact-name" className="type-label">
+                  Full name
+                </label>
+                <Input id="contact-name" name="contact-name" required autoComplete="name" className="mt-1" />
+              </div>
+              <div>
+                <label htmlFor="contact-email" className="type-label">
+                  Work email
+                </label>
+                <Input
+                  id="contact-email"
+                  name="contact-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className="mt-1"
+                />
+              </div>
             </div>
             <div>
               <label htmlFor="contact-message" className="type-label">
                 Message
               </label>
-              <Textarea id="contact-message" name="contact-message" rows={3} className="mt-1" />
+              <Textarea id="contact-message" name="contact-message" rows={2} className="mt-1" />
             </div>
-            <Button type="submit" className="btn-brand min-h-11 w-full">
+            <Button type="submit" className="btn-brand min-h-10 w-full sm:w-auto">
               Open email
             </Button>
           </form>
-        </div>
-      </section>
 
-      <section id="about" className="scroll-mt-24 bg-navy-primary text-white">
-        <div className={`${CONTAINER} py-14 sm:py-16`}>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-heading text-[1.55rem] font-bold leading-tight tracking-tight sm:text-[1.85rem]">
-              Ready to bring your property operations together?
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
-              Start managing your portfolio with a system built around the way property operations
-              actually work.
-            </p>
-            <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Button asChild size="lg" className="btn-brand min-h-11">
-                <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
-              </Button>
+          <div className="space-y-3">
+            <div id="pricing" className="night-card scroll-mt-20 p-5">
+              <p className={EYEBROW}>Pricing</p>
+              <h2 className="section-title mt-1.5 text-[1.2rem]">
+                Per property, per month, in Kenyan shillings.
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/68">
+                Published rates multiply by the buildings you manage. Custom blocks exist for larger
+                portfolios — core operations are not locked behind plan walls.
+              </p>
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                className="mt-4 min-h-10 border-primary/40 bg-transparent text-white hover:bg-primary/10 hover:text-primary"
               >
-                <a href="#contact">Contact us</a>
+                <Link to={PUBLIC_ROUTES.pricing}>
+                  View plans
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </Button>
+            </div>
+
+            <div id="about" className="night-card scroll-mt-20 p-5">
+              <h2 className="section-title text-[1.15rem]">Ready to bring operations together?</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/68">
+                Start managing your portfolio with a system built around the way property operations
+                actually work.
+              </p>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <Button asChild className="btn-brand min-h-10">
+                  <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="min-h-10 border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href="#contact">Contact us</a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -343,13 +360,13 @@ function PricingView() {
   const { data: tiers = [] } = usePublicTiers();
 
   return (
-    <section className={`${CONTAINER} ${SECTION}`}>
-      <div className="mb-8 max-w-2xl">
+    <section className={`${CONTAINER} ${BAND}`}>
+      <div className="mb-6 max-w-2xl">
         <p className={EYEBROW}>Pricing</p>
-        <h1 className="page-title mt-2 text-[2rem] sm:text-[2.25rem]">
+        <h1 className="page-title mt-2 text-[1.85rem] sm:text-[2.1rem]">
           Per property, per month, in Kenyan shillings.
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-2 text-sm leading-relaxed text-white/68 sm:text-base">
           Multiply the published rate by the buildings you manage. Custom blocks exist for larger portfolios.
         </p>
       </div>

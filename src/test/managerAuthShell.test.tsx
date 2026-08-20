@@ -37,7 +37,8 @@ describe("Manager portal auth chrome", () => {
     expect(screen.queryByText(/empower tenants/i)).not.toBeInTheDocument();
     expect(screen.getByText("Properties & units")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /landlord/i })).toHaveAttribute("href", PUBLIC_ROUTES.landlordLogin);
-    expect(document.querySelector(".public-canvas")).toBeTruthy();
+    expect(document.querySelector(".desk-canvas")).toBeTruthy();
+    expect(document.querySelector(".public-canvas")).toBeNull();
     expect(document.querySelector(".bg-navy-primary")).toBeNull();
   });
 });

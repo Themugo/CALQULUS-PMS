@@ -2,18 +2,16 @@
  * CALQULUS PMS design tokens — TypeScript source of truth.
  * Keep hex values in sync with CSS variables in src/index.css.
  *
- * This is the one visual language. Do not add a parallel palette,
- * theme file, or decorative colour set.
+ * Palette is taken from the Frameworks / CALQULUS identity card:
+ *   Navy  — night chrome (nav, sidebar, footer, marketing close)
+ *   Cyan  — interaction (buttons, links, focus, active nav)
+ *   White — type on navy; card surfaces in the operational app
+ *   Royal — atmospheric glow only, never body text
+ *   Spark — city-light flecks on marketing only, never chrome
+ *   Green / amber / red — success / warning / danger only
  *
- * Colour roles (do not use semantic colours as decoration):
- *   Navy  — identity (headers, chrome, marketing close)
- *   Blue  — interaction (buttons, links, focus, selected controls)
- *   Green — success only
- *   Amber — attention / warning only
- *   Red   — danger only
- *
- * Production experience is light. Dark-mode CSS exists only as a
- * classified dormant mirror of these light tokens.
+ * Marketing and app chrome are navy. Operational desks stay light
+ * so tables, forms, and invoices remain readable.
  */
 
 export const CALQULUS_BRAND = {
@@ -23,52 +21,56 @@ export const CALQULUS_BRAND = {
 } as const;
 
 export const CALQULUS_COLOR = {
-  /** Interactive blue — buttons, links, focus, selected controls. */
-  primary: "#2F6FED",
-  primaryHover: "#2560D4",
-  primaryActive: "#1E4FBA",
-  accent: "#2F6FED",
+  /** Electric cyan — buttons, links, focus, selected controls. */
+  primary: "#1AD4E4",
+  primaryHover: "#3DDBF0",
+  primaryActive: "#12B8C8",
+  accent: "#1AD4E4",
 
-  /** Navy identity scale. */
-  navyDeep: "#081A2E",
-  navyPrimary: "#0D2744",
-  navySecondary: "#173F67",
+  /** Navy identity scale from the card. */
+  navyDeep: "#040B16",
+  navyPrimary: "#0A1A32",
+  navySecondary: "#123056",
 
   white: "#FFFFFF",
-  secondary: "#F7F9FC",
+  secondary: "#F3F7FB",
   success: "#23856B",
   warning: "#B7791F",
   danger: "#C84B4B",
-  /** Informational tone — same family as interaction, not a sixth brand colour. */
-  info: "#2F6FED",
+  info: "#1AD4E4",
 
-  background: "#F7F9FC",
+  /** Royal blue glow — atmosphere on navy surfaces only. */
+  glow: "#1B4FBF",
+  /** Warm city-light fleck — marketing sparkle only. */
+  spark: "#F5A524",
+
+  background: "#F3F7FB",
   surface: "#FFFFFF",
-  surfaceElevated: "#F7F9FC",
+  surfaceElevated: "#F3F7FB",
 
-  textPrimary: "#102033",
-  textSecondary: "#637286",
-  textMuted: "#637286",
+  textPrimary: "#0E1C2E",
+  textSecondary: "#5A6E82",
+  textMuted: "#5A6E82",
 
-  border: "#E5EAF0",
-  focus: "#2F6FED",
+  border: "#D7E2EC",
+  focus: "#1AD4E4",
 } as const;
 
-/** PWA / native chrome must match the live light brand, not legacy gold/navy. */
+/** PWA chrome matches the navy identity, not a light browser default. */
 export const CALQULUS_PWA = {
-  themeColor: CALQULUS_COLOR.primary,
+  themeColor: CALQULUS_COLOR.navyPrimary,
   backgroundColor: CALQULUS_COLOR.background,
 } as const;
 
 /**
  * Dark mode is classified dormant: the toggle may persist a preference,
- * but production UI always renders the light token set. Do not delete
- * `.dark` CSS — keep it as a 1:1 light mirror so leftover `dark:`
- * utilities cannot reintroduce a heavy dark dashboard.
+ * but production UI always renders the light token set for desks.
+ * Marketing chrome is navy by class, not by `.dark`.
  */
 export const CALQULUS_DARK_MODE = {
   status: "dormant",
-  productionExperience: "light",
+  productionExperience: "light-desk",
+  marketingChrome: "navy-night",
   cssStrategy: "light-mirror",
 } as const;
 
@@ -91,11 +93,11 @@ export const CALQULUS_RADIUS = {
   card: "0.625rem",
 } as const;
 
-/** Shadows tint with primary text navy, not pure black. */
+/** Shadows tint with navy, with a faint cyan lift on elevated cards. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px 0 rgb(16 32 51 / 0.04), 0 1px 1px -1px rgb(16 32 51 / 0.03)",
-  elevated: "0 4px 12px -2px rgb(16 32 51 / 0.06)",
+  card: "0 1px 2px 0 rgb(4 11 22 / 0.05), 0 1px 1px -1px rgb(4 11 22 / 0.04)",
+  elevated: "0 8px 24px -12px rgb(4 11 22 / 0.18), 0 0 0 1px rgb(26 212 228 / 0.08)",
 } as const;
 
 export const CALQULUS_ICON = {

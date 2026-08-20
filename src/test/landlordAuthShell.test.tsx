@@ -47,6 +47,7 @@ describe("Landlord portal auth chrome", () => {
       "href",
       PUBLIC_ROUTES.managerSignIn,
     );
-    expect(document.querySelector(".public-canvas")).toBeTruthy();
+    expect(document.querySelector(".desk-canvas")).toBeTruthy();
+    expect(document.querySelector(".public-canvas")).toBeNull();
   });
 });

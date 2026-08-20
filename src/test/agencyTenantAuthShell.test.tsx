@@ -41,7 +41,8 @@ describe("Agency and tenant portal auth chrome", () => {
     );
     expect(screen.queryByText(/grow your agency/i)).not.toBeInTheDocument();
     expect(screen.getByText(/client properties/i)).toBeInTheDocument();
-    expect(document.querySelector(".public-canvas")).toBeTruthy();
+    expect(document.querySelector(".desk-canvas")).toBeTruthy();
+    expect(document.querySelector(".public-canvas")).toBeNull();
   });
 
   it("renders the tenant desk for one unit without other tenants or landlord PII", () => {
