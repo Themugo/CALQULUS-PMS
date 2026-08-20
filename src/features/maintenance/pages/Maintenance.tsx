@@ -841,7 +841,7 @@ export default function Maintenance() {
                             {request.status === "in_progress" && can('manage_maintenance') && (
                               <Button
                                 size="sm"
-                                className="bg-success hover:bg-success/90"
+                                className="bg-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_42%)] text-white"
                                 onClick={() => setCompleteTarget({ id: request.id, oldStatus: request.status })}
                               >
                                 Complete
@@ -955,7 +955,7 @@ export default function Maintenance() {
                           {request.status === "in_progress" && can('manage_maintenance') && (
                             <Button
                               size="sm"
-                              className="bg-success hover:bg-success/90"
+                              className="bg-[hsl(214_73%_48%)] hover:bg-[hsl(214_73%_42%)] text-white"
                               onClick={() => setCompleteTarget({ id: request.id, oldStatus: request.status })}
                             >
                               Complete
