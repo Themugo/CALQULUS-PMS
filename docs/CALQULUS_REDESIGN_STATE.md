@@ -41,11 +41,19 @@ live desks. No new features.
   overflow matrix covers every portal at all 7 widths.
 
 ### Phase 11 verification
-- Pending in this revision — tests run after the checkpoint PR.
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — 0 errors
+- `npx vitest run` — 864 passed; 1 skipped
+- Playwright Chromium (`responsive-certification`, `design-preview`,
+  `a11y`, `app`, `homepage-executive`) — 49 passed, 5 skipped
+  (credential-gated auth). All seven widths, every portal preview,
+  tenant Pay rent / amount / due date / shortcuts, maintenance Property
+  column, inset dialog, login paths.
+- `npm run build` — pass
 
 ## CHECKPOINT
-Phase 11 responsive certification — in progress on
-`cursor/phase-11-responsive-certification-1e5d`. Not merged.
+Phase 11 responsive certification on
+`cursor/phase-11-responsive-certification-1e5d`. Draft PR #60. Not merged.
 
 ## PREVIOUS PHASE
 Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
