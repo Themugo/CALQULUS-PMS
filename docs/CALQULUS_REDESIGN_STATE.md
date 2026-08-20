@@ -56,10 +56,10 @@ changes.
 - Playwright Chromium (`responsive-certification`, `design-preview`,
   `app`, `homepage-executive`) — 46 passed, 5 skipped (credential-gated)
 - `npm run build` — pass
-- Merged to `main` as `163aafb`.
+- Merged to `main` as `2f505ce`.
 
 ## CHECKPOINT
-Phase 12 accessibility certification merged to `main` (`163aafb`). PR #61.
+Phase 12 accessibility certification merged to `main` (`2f505ce`). PR #61.
 
 ## PREVIOUS PHASE
 Phase 11 — Responsive certification. Merged to `main` (`a1e23d1`). PR #60.
