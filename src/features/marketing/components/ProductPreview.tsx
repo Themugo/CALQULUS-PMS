@@ -1,13 +1,14 @@
-import { Building2, LayoutDashboard, Users, Wallet, Wrench } from "lucide-react";
+import { Bell, Building2, LayoutDashboard, Search, Users, Wallet, Wrench, BarChart3 } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { invoiceStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 
 const SIDEBAR_ITEMS = [
-  { label: "Overview", icon: LayoutDashboard, active: true },
+  { label: "Dashboard", icon: LayoutDashboard, active: true },
   { label: "Properties", icon: Building2, active: false },
   { label: "Tenants", icon: Users, active: false },
   { label: "Billing", icon: Wallet, active: false },
   { label: "Maintenance", icon: Wrench, active: false },
+  { label: "Reports", icon: BarChart3, active: false },
 ] as const;
 
 const SNAPSHOT = [
@@ -21,22 +22,22 @@ const SNAPSHOT = [
 const COLLECTION_TREND = [58, 64, 61, 74, 69, 83, 93] as const;
 
 const MAINTENANCE_ACTIVITY = [
-  { label: "Leaking tap · Kilimani Court A2", status: "pending" },
-  { label: "Gate motor repaired · Westlands B4", status: "paid" },
-  { label: "Inspection scheduled · Riverside C1", status: "pending" },
+  { label: "Leaking tap · Kilimani Court", status: "pending" },
+  { label: "Gate motor repaired · West View", status: "paid" },
+  { label: "Inspection scheduled · Block C", status: "pending" },
 ] as const;
 
 /** Static illustration of the manager desk — not a live data view. */
 export function ProductPreview() {
   return (
     <figure className="mx-auto w-full max-w-lg md:max-w-none">
-      <div className="flex overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+      <div className="flex overflow-hidden rounded-[14px] border border-border bg-card shadow-sm">
         <nav
           aria-hidden
           className="hidden w-12 shrink-0 flex-col items-center gap-3 border-r border-border bg-sidebar py-3 sm:flex"
         >
           <BrandMark size="xs" forcePlatform />
-          <ul className="mt-2 flex flex-col gap-2">
+          <ul className="mt-1 flex flex-col gap-2">
             {SIDEBAR_ITEMS.map((item) => (
               <li key={item.label}>
                 <span
@@ -54,16 +55,22 @@ export function ProductPreview() {
         </nav>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
+          <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-3 py-2 sm:px-4">
             <div className="min-w-0">
-              <p className="truncate font-heading text-sm font-semibold text-foreground">Manager desk</p>
+              <p className="truncate font-heading text-sm font-semibold text-foreground">
+                CALQULUS / Manager dashboard
+              </p>
               <p className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                Sample portfolio
+                Illustrative manager dashboard
               </p>
             </div>
-            <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-              Preview
-            </span>
+            <div className="flex shrink-0 items-center gap-1.5 text-muted-foreground" aria-hidden>
+              <Search className="h-3.5 w-3.5" />
+              <Bell className="h-3.5 w-3.5" />
+              <span className="ml-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-navy-primary text-[9px] font-semibold text-white">
+                JM
+              </span>
+            </div>
           </div>
 
           <div className="bg-background p-3 sm:p-4">
@@ -82,11 +89,21 @@ export function ProductPreview() {
 
             <div className="mt-3 rounded-lg border border-border bg-card p-3">
               <p className="type-label mb-2">Collections, last 7 weeks</p>
-              <div className="flex h-14 items-end gap-1.5">
+              <div
+                className="relative flex h-14 items-end gap-1.5"
+                role="img"
+                aria-label="Illustrative collections chart for the last seven weeks"
+              >
+                <div className="pointer-events-none absolute inset-0 flex flex-col justify-between" aria-hidden>
+                  <span className="border-t border-border" />
+                  <span className="border-t border-border" />
+                  <span className="border-t border-border" />
+                  <span className="border-t border-border" />
+                </div>
                 {COLLECTION_TREND.map((height, index) => (
                   <div
                     key={index}
-                    className="flex-1 rounded-sm bg-primary/70 last:bg-primary"
+                    className="relative z-[1] flex-1 rounded-sm bg-primary/70 last:bg-primary"
                     style={{ height: `${height}%` }}
                   />
                 ))}
@@ -120,7 +137,7 @@ export function ProductPreview() {
         </div>
       </div>
       <figcaption className="mt-2.5 text-center text-xs text-muted-foreground">
-        Illustrative view of the CALQULUS manager dashboard.
+        Illustrative manager dashboard. Sample figures only — not live customer data.
       </figcaption>
     </figure>
   );

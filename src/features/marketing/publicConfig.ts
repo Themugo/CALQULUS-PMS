@@ -10,6 +10,7 @@ export const PUBLIC_ROUTES = {
   pricing: "/pricing",
   legalPrivacy: "/legal?tab=privacy",
   legalTerms: "/legal?tab=terms",
+  legalCookies: "/legal?tab=privacy",
   designPreview: "/design-preview",
   managerSignIn: "/auth",
   managerSignUp: "/auth?tab=signup",
@@ -25,31 +26,45 @@ export const PUBLIC_NAV = [
   { label: "How it works", hash: "how-it-works" },
 ] as const;
 
+export const RESOURCE_LINKS = [
+  { label: "Documentation", hash: "platform" },
+  { label: "Help center", href: `mailto:${CONTACT_EMAIL}` },
+  { label: "Support", href: `mailto:${CONTACT_EMAIL}` },
+] as const;
+
 export function homeSectionHref(hash: string, pathname: string): string {
   return pathname === PUBLIC_ROUTES.home ? `#${hash}` : `/#${hash}`;
 }
 
 export const PLATFORM_LINKS = [
-  { label: "Property management", hash: "platform" },
-  { label: "Rent & payments", hash: "how-it-works" },
-  { label: "Maintenance", hash: "platform" },
-  { label: "Reporting", hash: "how-it-works" },
+  { label: "Features", hash: "platform" },
+  { label: "Security", href: PUBLIC_ROUTES.legalPrivacy },
+  { label: "Integrations", hash: "solutions" },
+  { label: "API", hash: "platform" },
 ] as const;
 
 export const PORTAL_LINKS = [
-  { label: "Property managers", href: PUBLIC_ROUTES.managerSignUp },
+  { label: "Property Managers", href: PUBLIC_ROUTES.managerSignUp },
   { label: "Landlords", href: PUBLIC_ROUTES.landlordLogin },
-  { label: "Agencies", href: PUBLIC_ROUTES.agencyLogin },
+  { label: "Real Estate Agencies", href: PUBLIC_ROUTES.agencyLogin },
   { label: "Tenants", href: PUBLIC_ROUTES.tenantLogin },
 ] as const;
 
 export const COMPANY_LINKS = [
-  { label: "How it works", hash: "how-it-works" },
-  { label: "Pricing", href: PUBLIC_ROUTES.pricing },
-  { label: "Contact", hash: "contact" },
+  { label: "About us", hash: "contact" },
+  { label: "Careers", hash: "contact" },
+  { label: "Partners", hash: "contact" },
+  { label: "News", hash: "contact" },
+] as const;
+
+export const RESOURCE_FOOTER_LINKS = [
+  { label: "Documentation", hash: "platform" },
+  { label: "Help center", href: `mailto:${CONTACT_EMAIL}` },
+  { label: "Support", href: `mailto:${CONTACT_EMAIL}` },
 ] as const;
 
 export const LEGAL_LINKS = [
-  { label: "Privacy", href: PUBLIC_ROUTES.legalPrivacy },
-  { label: "Terms", href: PUBLIC_ROUTES.legalTerms },
+  { label: "Privacy policy", href: PUBLIC_ROUTES.legalPrivacy },
+  { label: "Terms of service", href: PUBLIC_ROUTES.legalTerms },
+  { label: "Cookie policy", href: PUBLIC_ROUTES.legalCookies },
 ] as const;

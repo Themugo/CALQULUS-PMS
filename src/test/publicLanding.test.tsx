@@ -39,19 +39,19 @@ describe("PublicLandingPage", () => {
       "href",
       "#platform",
     );
-    expect(screen.getByRole("link", { name: /manager portal/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /view manager portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    expect(screen.getByRole("link", { name: /landlord portal/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /view landlord portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.landlordLogin,
     );
-    expect(screen.getByRole("link", { name: /agency portal/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /view agency portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.agencyLogin,
     );
-    expect(screen.getByRole("link", { name: /tenant portal/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /view tenant portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.tenantLogin,
     );
@@ -64,6 +64,7 @@ describe("PublicLandingPage", () => {
       .getAllByRole("link")
       .map((link) => link.textContent);
     expect(labels).toEqual(["Platform", "Solutions", "How it works", "Pricing"]);
+    expect(within(primary).getByRole("button", { name: /resources/i })).toBeInTheDocument();
     expect(primary).not.toHaveTextContent("Contact");
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute(
@@ -78,7 +79,7 @@ describe("PublicLandingPage", () => {
 
   it("labels the dashboard visual as a preview", () => {
     renderAt("/");
-    expect(screen.getByText(/illustrative view of the calqulus manager dashboard/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/illustrative manager dashboard/i).length).toBeGreaterThan(0);
   });
 
   it("keeps the pricing route reachable and free of fabricated prices on the homepage", () => {
@@ -108,31 +109,18 @@ describe("PublicLandingPage", () => {
     expect(container.querySelector("#solutions")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
-    expect(container.querySelector(".public-hero-grid")).toBeNull();
+    expect(container.querySelector(".public-hero-grid")).toBeTruthy();
   });
 
-  it("exposes the full operational flow from property to reporting", () => {
-    const { container } = renderAt("/");
-    const flow = container.querySelector("#how-it-works");
-    expect(flow).toBeTruthy();
-    const scoped = within(flow as HTMLElement);
-    expect(scoped.getByText("Property")).toBeInTheDocument();
-    expect(scoped.getByText("Unit")).toBeInTheDocument();
-    expect(scoped.getByText("Tenant")).toBeInTheDocument();
-    expect(scoped.getByText("Lease")).toBeInTheDocument();
-    expect(scoped.getByText("Billing")).toBeInTheDocument();
-    expect(scoped.getByText("Payment")).toBeInTheDocument();
-    expect(scoped.getByText("Reporting")).toBeInTheDocument();
-  });
-
-  it("shows the three compact pillars", () => {
+  it("shows the property type slider instead of a feature grid", () => {
     renderAt("/");
-    expect(screen.getByRole("heading", { name: "Property" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Finance" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Operations" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /designed for every property type/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Residential" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Commercial" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
   });
 
-  it("renders a final CTA band with get-started and contact actions", () => {
+  it("renders a compact CTA band with get-started and contact actions", () => {
     renderAt("/");
     expect(
       screen.getByRole("heading", { name: /bring your property operations together/i }),
