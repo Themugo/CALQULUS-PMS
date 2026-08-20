@@ -1,12 +1,88 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 13 — Final pre-Claude/Cursor audit. Objective evaluation only. Do not
+redesign. Do not implement findings. Rank CRITICAL / HIGH / MEDIUM / LOW
+across architecture, UI, UX, responsive, a11y, performance, routing, authn,
+authz, APIs, backend, data integrity, white-label, and commercial readiness.
+
+## CURRENT TASK
+Write the ranked report, update this state file, checkpoint (commit, push,
+draft PR). No application code. No Edge Function patches. No FeatureGate
+wiring. No RLS/migration applies.
+
+### Phase 13 findings (audit only — not fixed)
+Full report: `docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`.
+
+Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
+404 NOT_FOUND. Repo: 92 functions, 78 migrations, ~75 `@ts-nocheck` files.
+
+**CRITICAL**
+- `log-audit` — no JWT; service role inserts `activity_logs` (forgeable audit).
+- `notify-new-manager-signup` — no auth; mails every webhost via Resend.
+- `create-tenant-account` / `backfill-tenant-accounts` allow `webhost` (tenant
+  firewall contradiction).
+- Live `health-check` not deployed (404).
+- Plan paywalls unused: `FeatureGate` has zero importers; `useFeatureAccess`
+  fails open (`enabled ?? true`, default plan `'pro'`).
+
+**HIGH**
+- SMS functions auth any JWT, no role gate; bulk SMS up to 500 recipients.
+- Most of 92 Edge Functions do not use shared middleware.
+- Core ops pages `@ts-nocheck` (Leases, Tenants, Properties, Billing, …).
+- Query errors often `return []` (empty book instead of failure).
+- Live schema vs 78 git migrations unverified; prior gate: `tenants` 42P17,
+  `get_manager_dashboard_stats` 404 (2026-08-19, not re-proved this session).
+- Submanager `viewOnly` wrapper does not mark submanagers view-only;
+  `can()` treats landlords as fully permitted; direct URLs not permission-gated.
+- Client `user_roles` upsert on signup.
+- A11y/responsive certs cover public/login, not authenticated desks.
+- `VirtualizedList` unused by features.
+- Agency portal is layout wrappers over manager pages; ops routes off-nav.
+
+**MEDIUM**
+- Manager nav still has Portfolio (Properties, Landlords); docs/AGENTS.md stale.
+- Webhost ops routes off primary nav; shared webhost sidebar is a stub.
+- Amber Tailwind ~130 files; white-label cannot recolor them.
+- Demo/lab suites still in tree; `/design-preview` public.
+- PWA precache ~5.5MB; tests mock Supabase; E2E credential-gated.
+
+**LOW**
+- FeatureGate CTA is a raw `<a>`; email templates off-brand; conflicting
+  “certification” filenames/scores.
+
+**What is strong (do not undo)**
+- Feature folders + lazy role routing; webhost frontend tenant hard-block;
+  landlord feature tree has no tenant PII strings; Brand Studio does not
+  overwrite `--primary` or status tokens; desk chrome (tokens, 44px, skip
+  links); `devAccess` off in production; published price catalog.
+
+**Honest bottom line**
+Not a prototype. Not commercially gated. Not live-schema-certified. Closest
+prior independent score remains **55/100**. Do not sell as system of record
+until C1–C5 (audit auth, signup notify auth, webhost tenant create, live
+health-check, paywalls) are owned.
+
+### Phase 13 implementation
+None. Documentation and checkpoint only.
+
+### Phase 13 verification
+- Production origin curl — 200
+- Live health-check curl — 404 NOT_FOUND
+- Source review of Edge Functions, FeatureGate, RBAC, routes, Sidebar
+- No `tsc` / vitest / build required (no app code)
+
+## CHECKPOINT
+Phase 13 audit on `cursor/phase-13-final-pre-claude-audit-1e5d`. Report at
+`docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`. No product changes.
+
+## PREVIOUS PHASE
 Phase 12 — Accessibility certification. Audit keyboard navigation, focus,
 contrast, ARIA, semantic HTML, form labels, error messaging, screen readers,
 touch targets, colour-only states, tables, and dialogs. Fix issues. Do not
 change business logic.
 
-## CURRENT TASK
+## PREVIOUS TASK
 Phase 12 certification: shared primitives first (button, checkbox, radio,
 select, table, badge, alert, dialog, sheet, chart, toast, skip links), then
 portal nav `aria-current`, keyboard-activatable cards, labelled forms and
@@ -56,10 +132,7 @@ changes.
 - Playwright Chromium (`responsive-certification`, `design-preview`,
   `app`, `homepage-executive`) — 46 passed, 5 skipped (credential-gated)
 - `npm run build` — pass
-- Merged to `main` as `2f505ce`.
-
-## CHECKPOINT
-Phase 12 accessibility certification merged to `main` (`2f505ce`). PR #61.
+- Merged to `main` as `2f505ce`. PR #61.
 
 ## PREVIOUS PHASE
 Phase 11 — Responsive certification. Merged to `main` (`a1e23d1`). PR #60.
