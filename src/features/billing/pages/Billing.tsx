@@ -318,7 +318,7 @@ const Billing = () => {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <Layout title="Billing" subtitle="Invoice lifecycle from billed to paid — collect, record a payment, then download the receipt">
+    <Layout title="Billing" subtitle="Invoice lifecycle — from billing through collection, with full payment traceability">
       <Tabs
         value={mainTab}
         onValueChange={v => setMainTab(v as MainTab)}
@@ -401,7 +401,11 @@ const Billing = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab(step)}
-                    className={`rounded-full px-2 py-0.5 border ${activeTab === step ? "bg-primary/10 text-primary border-primary/20 font-semibold" : "border-border hover:border-primary/30"}`}
+                    className={`rounded-full px-2 py-0.5 border transition-colors ${
+                      activeTab === step
+                        ? "bg-[hsl(214_73%_48%/0.08)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)] font-semibold"
+                        : "border-border hover:border-[hsl(214_73%_48%/0.3)] hover:text-foreground"
+                    }`}
                   >
                     {step === "partially_paid" ? "Partial" : step.charAt(0).toUpperCase() + step.slice(1)}
                   </button>
@@ -411,7 +415,7 @@ const Billing = () => {
               <button
                 type="button"
                 onClick={() => setMainTab("receipts")}
-                className="rounded-full px-2 py-0.5 border border-border hover:border-primary/30"
+                className="rounded-full px-2 py-0.5 border border-border hover:border-[hsl(214_73%_48%/0.3)] hover:text-foreground transition-colors"
               >
                 Receipt
               </button>

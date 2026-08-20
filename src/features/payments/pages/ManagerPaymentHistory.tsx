@@ -495,7 +495,7 @@ const ManagerPaymentHistory = () => {
       body: summaryData,
       theme: "striped",
       headStyles: { 
-        fillColor: [16, 185, 129],
+        fillColor: [13, 39, 68],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -590,7 +590,7 @@ const ManagerPaymentHistory = () => {
     // Add new page for transactions
     doc.addPage();
     // Transactions Header
-    doc.setFillColor(16, 185, 129);
+    doc.setFillColor(13, 39, 68);
     doc.rect(0, 0, pageWidth, 30, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
@@ -619,7 +619,7 @@ const ManagerPaymentHistory = () => {
       ],
       theme: "striped",
       headStyles: { 
-        fillColor: [16, 185, 129],
+        fillColor: [47, 111, 237],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -701,8 +701,8 @@ const ManagerPaymentHistory = () => {
 
   return (
     <Layout
-      title="Payment History"
-      subtitle="Completed payments and receipts — record a payment against an invoice"
+      title="Payments"
+      subtitle="Completed payments with full traceability — record a payment against any pending invoice"
     >
       {/* Record Payment dialog */}
       {recordDialogOpen && recordTenant && (
@@ -914,17 +914,17 @@ const ManagerPaymentHistory = () => {
           chart colors on the page every manager lands on first isn't the
           "trustworthy, professional" look finance pages need. */}
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
-        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm hover:border-[hsl(214_73%_48%/0.25)] transition-colors">
           <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">Total Collected</p>
-          <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(stats.totalAmount)}</p>
+          <p className="mt-1 text-2xl font-bold text-[hsl(214_73%_48%)]">{formatCurrency(stats.totalAmount)}</p>
           <p className="text-xs text-[hsl(215_20%_45%)] mt-1">Matches current filters</p>
         </div>
-        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm hover:border-[hsl(214_73%_48%/0.25)] transition-colors">
           <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">Transactions</p>
           <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{stats.totalTransactions}</p>
           <p className="text-xs text-[hsl(215_20%_45%)] mt-1">Completed payments</p>
         </div>
-        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-[hsl(214_73%_48%/0.15)] bg-white p-4 shadow-sm hover:border-[hsl(214_73%_48%/0.25)] transition-colors">
           <p className="text-xs font-semibold text-[hsl(215_20%_45%)] uppercase tracking-wider">This Month</p>
           <p className="mt-1 text-2xl font-bold text-[hsl(222_47%_11%)]">{formatCurrency(stats.thisMonth)}</p>
           <p className="text-xs text-[hsl(215_20%_45%)] mt-1">All completed payments, unfiltered</p>
@@ -1149,8 +1149,7 @@ const ManagerPaymentHistory = () => {
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="font-heading font-semibold">Date</TableHead>
                 <TableHead className="font-heading font-semibold">Tenant</TableHead>
-                <TableHead className="font-heading font-semibold">Property</TableHead>
-                <TableHead className="font-heading font-semibold">Invoice</TableHead>
+                <TableHead className="font-heading font-semibold">Invoice / Ref</TableHead>
                 <TableHead className="font-heading font-semibold">Amount</TableHead>
                 <TableHead className="font-heading font-semibold">Method</TableHead>
                 <TableHead className="font-heading font-semibold">Reference</TableHead>
@@ -1164,7 +1163,7 @@ const ManagerPaymentHistory = () => {
                   className="hover:bg-muted/30 border-border animate-slide-in"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground whitespace-nowrap">
                     {payment.paid_date
                       ? format(new Date(payment.paid_date), "dd/MM/yy")
                       : "-"}
@@ -1173,7 +1172,7 @@ const ManagerPaymentHistory = () => {
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={payment.tenants?.photo_url || undefined} />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        <AvatarFallback className="bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] text-xs">
                           {payment.tenants?.name
                             ?.split(" ")
                             .map((n) => n[0])
@@ -1184,38 +1183,31 @@ const ManagerPaymentHistory = () => {
                         <span className="text-foreground font-medium">
                           {payment.tenants?.name || "Unknown"}
                         </span>
-                        {payment.tenants?.phone && (
+                        {payment.leases && (
                           <p className="text-xs text-muted-foreground">
-                            {payment.tenants.phone}
+                            {payment.leases.property} · {payment.leases.unit}
                           </p>
                         )}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    {payment.leases ? (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building className="h-4 w-4" />
-                        <span>
-                          {payment.leases.property} - {payment.leases.unit}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-mono text-foreground">
-                    {payment.invoice_number}
+                    <div>
+                      <span className="font-mono text-sm text-foreground">{payment.invoice_number}</span>
+                      {payment.description && (
+                        <p className="text-xs text-muted-foreground truncate max-w-[180px]">{payment.description}</p>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="font-semibold text-foreground">
                     {formatCurrency(Number(payment.amount))}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
                       {isMpesaMethod(payment.payment_method) ? (
-                        <Smartphone className="h-4 w-4" />
+                        <Smartphone className="h-3.5 w-3.5 text-[hsl(214_73%_48%)]" />
                       ) : (
-                        <CreditCard className="h-4 w-4" />
+                        <CreditCard className="h-3.5 w-3.5" />
                       )}
                       <span className="text-sm text-foreground">{paymentMethodLabel(payment.payment_method)}</span>
                     </div>

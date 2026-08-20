@@ -3,6 +3,10 @@
  *
  * The invoice rows table extracted from Billing.tsx.
  * Receives already-filtered invoices so the parent controls search/tab filtering.
+ *
+ * Phase 4 redesign: trustworthy Navy/Blue palette.
+ * Status badges use semantic tones from the design system.
+ * M-Pesa actions use interactive blue, not green.
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -224,7 +228,7 @@ export function InvoiceTable({
                       <>
                         <Button
                           variant="outline" size="sm"
-                          className="h-8 text-xs text-success border-success/30 hover:bg-success/10"
+                          className="h-8 text-xs text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.3)] hover:bg-[hsl(214_73%_48%/0.08)]"
                           onClick={() => onMpesa(invoice)}
                         >
                           <Smartphone className="h-3.5 w-3.5 sm:mr-1" />
@@ -240,7 +244,7 @@ export function InvoiceTable({
                     )}
                     {status === "paid" && (
                       <Button
-                        variant="ghost" size="sm" className="h-8 px-2 text-success"
+                        variant="ghost" size="sm" className="h-8 px-2 text-[hsl(214_73%_48%)]"
                         title="Download Receipt PDF"
                         onClick={() => downloadReceiptPDF({
                           invoice_number: invoice.invoice_number,

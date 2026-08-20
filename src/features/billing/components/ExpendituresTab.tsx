@@ -118,27 +118,27 @@ export function ExpendituresTab({
       <div className="grid gap-4 md:grid-cols-4">
         {[
           {
-            icon: <ArrowUpRight className="h-6 w-6 text-success" />,
-            bg: "bg-success/10",
+            icon: <ArrowUpRight className="h-6 w-6 text-[hsl(214_73%_48%)]" />,
+            bg: "bg-[hsl(214_73%_48%/0.08)]",
             label: "Income (Payments)",
             value: formatCurrency(monthlyIncome),
-            color: "text-success",
+            color: "text-[hsl(214_73%_48%)]",
           },
           {
-            icon: <ArrowDownRight className="h-6 w-6 text-red-500" />,
-            bg: "bg-red-500/10",
+            icon: <ArrowDownRight className="h-6 w-6 text-[hsl(215_20%_45%)]" />,
+            bg: "bg-[hsl(215_20%_45%/0.06)]",
             label: "Total Expenditures",
             value: formatCurrency(totalExpenditures),
-            color: "text-red-400",
+            color: "text-[hsl(222_47%_11%)]",
           },
           {
             icon: netProfit >= 0
-              ? <TrendingUp className="h-6 w-6 text-success" />
-              : <TrendingDown className="h-6 w-6 text-red-500" />,
-            bg: netProfit >= 0 ? "bg-success/10" : "bg-red-500/10",
+              ? <TrendingUp className="h-6 w-6 text-[hsl(214_73%_48%)]" />
+              : <TrendingDown className="h-6 w-6 text-[hsl(0_72%_51%)]" />,
+            bg: netProfit >= 0 ? "bg-[hsl(214_73%_48%/0.08)]" : "bg-[hsl(0_72%_51%/0.05)]",
             label: `Net ${netProfit >= 0 ? "Profit" : "Loss"}`,
             value: formatCurrency(Math.abs(netProfit)),
-            color: netProfit >= 0 ? "text-success" : "text-red-400",
+            color: netProfit >= 0 ? "text-[hsl(214_73%_48%)]" : "text-[hsl(222_47%_11%)]",
           },
           {
             icon: <Wallet className="h-6 w-6 text-[hsl(214_73%_48%)]" />,
@@ -165,7 +165,7 @@ export function ExpendituresTab({
       {/* Income table */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-success">
+          <CardTitle className="flex items-center gap-2 text-[hsl(214_73%_48%)]">
             <ArrowUpRight className="h-5 w-5" />
             Income (Payments Received)
           </CardTitle>
@@ -199,14 +199,14 @@ export function ExpendituresTab({
                       <TableCell>
                         {inv.paid_date ? formatDate(inv.paid_date) : "—"}
                       </TableCell>
-                      <TableCell className="text-right font-semibold text-success">
+                      <TableCell className="text-right font-semibold text-[hsl(214_73%_48%)]">
                         +{formatCurrency(inv.amount)}
                       </TableCell>
                     </TableRow>
                   ))}
-                  <TableRow className="hover:bg-transparent bg-success/5 border-border">
+                  <TableRow className="hover:bg-transparent bg-[hsl(214_73%_48%/0.04)] border-border">
                     <TableCell colSpan={4} className="font-bold">Total Income</TableCell>
-                    <TableCell className="text-right font-bold text-lg text-success">
+                    <TableCell className="text-right font-bold text-lg text-[hsl(214_73%_48%)]">
                       {formatCurrency(monthlyIncome)}
                     </TableCell>
                   </TableRow>
@@ -220,7 +220,7 @@ export function ExpendituresTab({
       {/* Expenditure editable cards */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-400">
+          <CardTitle className="flex items-center gap-2 text-muted-foreground">
             <ArrowDownRight className="h-5 w-5" />
             Expenditures (Outgoing)
           </CardTitle>
@@ -256,7 +256,7 @@ export function ExpendituresTab({
                             >
                               {isSaving
                                 ? <Loader2 className="h-4 w-4 animate-spin" />
-                                : <Save className="h-4 w-4 text-success" />}
+                                : <Save className="h-4 w-4 text-[hsl(214_73%_48%)]" />}
                             </Button>
                             <Button
                               variant="ghost" size="icon" className="h-8 w-8"
@@ -264,7 +264,7 @@ export function ExpendituresTab({
                               onClick={() => cancelEditing(cat.key)}
                               disabled={isSaving}
                             >
-                              <X className="h-4 w-4 text-red-500" />
+                              <X className="h-4 w-4 text-muted-foreground" />
                             </Button>
                           </div>
                         ) : (
@@ -297,7 +297,7 @@ export function ExpendituresTab({
                         />
                       </div>
                     ) : (
-                      <p className="text-2xl font-bold text-red-400">
+                      <p className="text-2xl font-bold text-muted-foreground">
                         -{formatCurrency(current)}
                       </p>
                     )}
@@ -327,14 +327,14 @@ export function ExpendituresTab({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="hover:bg-muted/30 bg-success/5 border-border">
+                <TableRow className="hover:bg-muted/30 bg-[hsl(214_73%_48%/0.04)] border-border">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <ArrowUpRight className="h-4 w-4 text-success" />
+                      <ArrowUpRight className="h-4 w-4 text-[hsl(214_73%_48%)]" />
                       <span className="font-medium">Total Income (Payments)</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-semibold text-success">
+                  <TableCell className="text-right font-semibold text-[hsl(214_73%_48%)]">
                     +{formatCurrency(monthlyIncome)}
                   </TableCell>
                 </TableRow>
@@ -347,37 +347,37 @@ export function ExpendituresTab({
                     <TableRow key={cat.key} className="hover:bg-muted/30 border-border">
                       <TableCell>
                         <div className="flex items-center gap-2 pl-4">
-                          <Icon className={`h-4 w-4 ${cat.color}`} />
-                          <span>{cat.label}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-red-400">
-                        -{formatCurrency(amount)}
+                      <Icon className={`h-4 w-4 ${cat.color}`} />
+                      <span>{cat.label}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-semibold text-muted-foreground">
+                    -{formatCurrency(amount)}
                       </TableCell>
                     </TableRow>
                   );
                 })}
 
-                <TableRow className="hover:bg-transparent bg-red-500/5 border-border">
+                <TableRow className="hover:bg-muted/30 border-border">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <ArrowDownRight className="h-4 w-4 text-red-500" />
+                      <ArrowDownRight className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">Total Expenditures</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-semibold text-red-400">
+                  <TableCell className="text-right font-semibold text-muted-foreground">
                     -{formatCurrency(totalExpenditures)}
                   </TableCell>
                 </TableRow>
 
                 <TableRow
-                  className={`hover:bg-transparent border-border ${netProfit >= 0 ? "bg-success/10" : "bg-red-500/10"}`}
+                  className={`hover:bg-transparent border-border ${netProfit >= 0 ? "bg-[hsl(214_73%_48%/0.04)]" : "bg-[hsl(0_72%_51%/0.04)]"}`}
                 >
                   <TableCell className="font-bold text-lg">
                     Net {netProfit >= 0 ? "Profit" : "Loss"}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-bold text-xl ${netProfit >= 0 ? "text-success" : "text-red-400"}`}
+                    className={`text-right font-bold text-xl ${netProfit >= 0 ? "text-[hsl(214_73%_48%)]" : "text-[hsl(222_47%_11%)]"}`}
                   >
                     {netProfit >= 0 ? "+" : "-"}{formatCurrency(Math.abs(netProfit))}
                   </TableCell>
