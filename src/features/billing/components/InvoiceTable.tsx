@@ -25,6 +25,7 @@ import { downloadReceiptPDF } from "@/features/billing/lib/receiptPdfExport";
 import type { BillingInvoice } from "../hooks/useBillingData";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { statusBadgeClass } from "@/shared/lib/statusBadge";
+import { invoiceOwedMinor, fromMinorUnits } from "@/shared/lib/money";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
@@ -193,9 +194,24 @@ export function InvoiceTable({
                 </TableCell>
 
                 <TableCell className="font-semibold text-foreground">
-                  {/* The invoices table has no balance_due/partial-payment columns
-                      yet, so there's nothing to show beyond the full amount. */}
-                  <div>{formatCurrency(invoice.amount)}</div>
+                  {/* balance_due/paid_amount are real columns (comprehensive-payment-
+                      schema migration); show the remaining balance when a partial
+                      payment has been made, with the original amount as context. */}
+                  {(() => {
+                    const owed = fromMinorUnits(invoiceOwedMinor(invoice));
+                    const original = Number(invoice.original_amount ?? invoice.amount);
+                    const isPartial = status === "partially_paid" && owed !== original;
+                    return (
+                      <div>
+                        <div>{formatCurrency(isPartial ? owed : invoice.amount)}</div>
+                        {isPartial && (
+                          <div className="text-xs font-normal text-muted-foreground">
+                            of {formatCurrency(original)} — partial
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </TableCell>
 
                 <TableCell className="text-muted-foreground">

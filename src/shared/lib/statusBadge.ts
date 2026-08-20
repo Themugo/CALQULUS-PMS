@@ -42,6 +42,7 @@ export function invoiceStatusTone(status: string): StatusTone {
     case "succeeded":
     case "success":
     case "complete":
+    case "completed":
       return "success";
     case "partially_paid":
       return "info";
@@ -53,6 +54,7 @@ export function invoiceStatusTone(status: string): StatusTone {
       return "danger";
     case "cancelled":
     case "canceled":
+    case "refunded":
       return "neutral";
     default:
       return "neutral";
@@ -66,6 +68,7 @@ export function invoiceStatusLabel(status: string): string {
     case "succeeded":
     case "success":
     case "complete":
+    case "completed":
       return "Successful";
     case "partially_paid":
       return "Partially paid";
@@ -79,9 +82,37 @@ export function invoiceStatusLabel(status: string): string {
     case "cancelled":
     case "canceled":
       return "Cancelled";
+    case "refunded":
+      return "Refunded";
     default:
       return status.replace(/_/g, " ");
   }
+}
+
+/**
+ * Human labels for the real payment_transactions.payment_method values
+ * (set explicitly by record-payment/process-payment, or defaulted to
+ * "mpesa_stk" by the column default for STK-initiated rows). Shared by
+ * the Payments page and PaymentAnalytics so both surfaces describe the
+ * same real column the same way.
+ */
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  mpesa_stk:         "M-Pesa STK",
+  mpesa_ussd:        "M-Pesa Paybill",
+  mpesa_till:        "M-Pesa Till",
+  bank_transfer:     "Bank Transfer",
+  bank_direct_debit: "Direct Debit",
+  receipt_upload:    "Receipt Upload",
+  cash:              "Cash",
+};
+
+export function paymentMethodLabel(method: string | null | undefined): string {
+  if (!method) return "Unknown";
+  return PAYMENT_METHOD_LABELS[method] ?? method.replace(/_/g, " ");
+}
+
+export function isMpesaMethod(method: string | null | undefined): boolean {
+  return !!method && method.startsWith("mpesa");
 }
 
 export function payoutStatusTone(status: string): StatusTone {

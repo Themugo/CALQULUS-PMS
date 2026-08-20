@@ -7,17 +7,198 @@
 > best-effort reconstruction, not first-hand agent notes.
 
 ## CURRENT PHASE
-James issued "CALQULUS PHASE 4B — MANAGER PROPERTY OPERATIONS" right after
-Phase 4A - redesign and implement Properties, Property Detail, and Units
-"following the established design system," with an explicit named column/
-tab list for each surface and an explicit "preserve all current
-functionality" instruction. Done this session (see below). The
-`@ts-nocheck` remediation is still open/paused - resume whenever James asks
-for it specifically.
+James issued "CALQULUS PHASE 4D — MANAGER FINANCE" right after Phase 4C -
+redesign Billing and Payments, with an explicit named field list for each,
+plus "Finance pages must look trustworthy and professional. Use semantic
+colours. Do not turn finance into a colourful dashboard. Preserve payment/
+billing functionality." Done this session (see below). The `@ts-nocheck`
+remediation is still open/paused - resume whenever James asks for it
+specifically.
 
 ## CURRENT TASK
-Just finished: Phase 4B Property Operations audit + implementation (this
+Just finished: Phase 4D Billing and Payments audit + implementation (this
 entry). Nothing actively in progress as of this write-up.
+
+### Phase 4D findings (before any changes)
+Read this file first, then mapped the two named surfaces to actual routes:
+`/billing` -> `Billing.tsx` (no `@ts-nocheck`, already refactored into
+`BillingStatsBar`/`InvoiceTable`/`ExpendituresTab`/`ReceiptsTab` plus a
+`useBillingData` React Query hook), `/payments` -> `ManagerPaymentHistory.tsx`
+(pre-existing `@ts-nocheck`, 1385 lines, five tabs: Payment History, Pending,
+Analytics, Bank Reconciliation, Notifications).
+- **A real schema-drift bug, not a hypothetical one**: the generated
+  `src/integrations/supabase/types.ts` still describes `invoices` without
+  `original_amount`/`paid_amount`/`balance_due` and `invoice_status` as only
+  `paid | pending | overdue | cancelled` - but migration
+  `20260506000003_comprehensive_payment_schema.sql` added those three
+  numeric columns (for partial/instalment payments) and the wider status
+  set (`partially_paid`, `failed`, `refunded`) is already live and already
+  used elsewhere (tenant portal, Reports, PropertyCollectionStatement,
+  `InvoiceTable.tsx`'s own local `InvoiceStatus` override, `shared/lib/
+  money.ts`'s `PayableInvoice`/`invoiceOwedMinor`). The **manager-facing**
+  `BillingStatsBar.tsx` and `InvoiceTable.tsx` were the one place that hadn't
+  caught up - `InvoiceTable.tsx` had a comment stating outright "the
+  invoices table has no balance_due/partial-payment columns yet," which is
+  simply incorrect. Fixed by extending `BillingInvoice` (useBillingData.ts)
+  with the three real columns and the real 7-value status union (still no
+  query change needed - `fetchInvoices()` already selects `"*"`), and by
+  widening `shared/lib/money.ts`'s `PayableInvoice` fields from `?: number`
+  to `?: number | null` to match what `invoiceOwedMinor()`'s own runtime
+  checks already assumed.
+- **Billing stat bar** (`BillingStatsBar.tsx`): renamed "Total billed" ->
+  "Billed", "Pending" -> "Outstanding" per the brief's exact field names,
+  and fixed the underlying math to use the real columns instead of
+  bucketing by status alone - Billed = sum of `original_amount ?? amount`
+  across non-cancelled/non-refunded invoices, Collected = sum of
+  `paid_amount` (falling back to full `amount` only for legacy `paid` rows
+  with no `paid_amount` recorded), Outstanding = sum of `invoiceOwedMinor()`
+  (shared/lib/money.ts - the exact same balance-owed calculation the
+  payment-allocation engine uses) across every unpaid, non-cancelled
+  invoice, Overdue = the same calculation restricted to `status ===
+  "overdue"`. This means a partially-paid invoice now contributes its
+  billed amount once and its real remaining balance to Outstanding,
+  instead of the old logic which only summed `pending`-status invoices at
+  full face value and had no concept of partial payment at all.
+  Semantic color per brief: Billed neutral, Collected `text-success`,
+  Outstanding `text-warning`, Overdue `text-destructive`.
+- **`InvoiceTable.tsx`** Amount column now shows the real remaining balance
+  (via `invoiceOwedMinor`) with an "of X - partial" sub-line when an
+  invoice is `partially_paid` and the balance differs from the original
+  amount - the same convention `ManagerPaymentHistory.tsx`'s Pending tab
+  already used, just now available on the main Invoices table too.
+- **Payments page** (`ManagerPaymentHistory.tsx`, "Payment History" tab -
+  this is the brief's "Payments" surface): the existing table already had
+  Date/Tenant/Property/Invoice/Amount/"Payment Method"/Status - 6 of the 7
+  named columns - but two real problems: (1) it sourced rows from
+  `invoices` where `status = "paid"`, which has no method/reference
+  columns at all, so "Payment Method" was **inferred** from whether the
+  tenant had a phone number on file (`p.tenants?.phone ? "M-Pesa" :
+  "Card/Other"`) rather than reading anything real, and Reference didn't
+  exist as a column anywhere in the page; (2) Status was a hardcoded
+  "Paid" badge, not read from anything. Traced how a payment actually gets
+  written: `record-payment` (manual entry) forwards to `process-payment`,
+  which inserts into `payment_transactions` with real `payment_method`,
+  `bank_reference` (the actual reference), and `status: "completed"`;
+  `mpesa-callback` (STK completions) updates the same row with
+  `mpesa_receipt_number` and `status: "completed"`. Rebuilt `fetchPayments`
+  to query `payment_transactions` (`status = "completed"`, joined to
+  `invoices(invoice_number, leases(property,unit))` and `tenants(...)`)
+  instead of `invoices`, mapped into the same downstream shape so every
+  other calculation in the file (monthly trend, tenant breakdown, CSV/PDF
+  export) kept working unchanged, and added the real fields: `payment_method`
+  (falls back to the legacy `payment_type` column for any pre-migration
+  row), `reference` (`bank_reference ?? mpesa_receipt_number ??
+  checkout_request_id`), `tx_status`. Added the missing **Reference**
+  column to the table and CSV export. Status badge now reads
+  `invoiceStatusTone`/`invoiceStatusLabel` (shared/lib/statusBadge.ts,
+  extended with a `"completed"` case) against the real per-row status
+  instead of a hardcoded "Paid". The phone-based M-Pesa/Card heuristic was
+  replaced everywhere it appeared (page `stats`, monthly trend split, CSV
+  method column) with a real check (`isMpesaMethod()`, new in
+  statusBadge.ts) against the real `payment_method` column.
+- **"Do not turn finance into a colourful dashboard"**: the Payment
+  History tab had its own full KPI-cards + Monthly-Revenue-bar-chart +
+  Payment-Method-pie-chart block inlined directly above the table -
+  100% duplicated by the dedicated "Analytics" tab's `PaymentAnalytics`
+  component (same KPIs, same monthly trend, same method pie, plus a
+  collection-rate figure and top-tenants list the inline block didn't
+  even have). Removed the duplicate block entirely - nothing is lost,
+  the identical functionality is still one tab away under Analytics,
+  untouched. What the inline block had that Analytics didn't - the "Top
+  Properties by Revenue" ranking - was kept, but re-rendered as a plain
+  ranked list with a single-color progress bar instead of a Recharts bar
+  chart with an indexed rainbow palette. Replaced the 4 decorative KPI
+  cards with a 3-cell plain summary strip (Total Collected in
+  `text-success`, Transactions and This Month in plain `text-foreground` -
+  no colored icon chips). Also neutralized amber-specific decorative
+  accents (avatar fallback colors, selected-card border/background) in
+  the "Tenant Payment Details" section to `text-primary`/`border-primary`,
+  since amber there was decorative rather than semantic (no warning/danger
+  meaning attached to a tenant being selected). Left `PaymentAnalytics.tsx`
+  itself untouched - it's the dedicated Analytics tab, not the "Payments"
+  surface the brief names, and touching its charts wasn't asked for.
+  Removed now-dead imports afterward: the whole `recharts` import block,
+  `BRAND_CHART_COLORS`, `TrendingUp`, and the `paymentMethodData` memo
+  (all were only referenced by the deleted block).
+- Reused rather than reinvented: `invoiceOwedMinor`/`fromMinorUnits`
+  (shared/lib/money.ts) for every "how much is actually owed" calculation
+  on both surfaces, and added `paymentMethodLabel()`/`isMpesaMethod()` to
+  `shared/lib/statusBadge.ts` as the one shared place both
+  `ManagerPaymentHistory.tsx` and (going forward) `PaymentAnalytics.tsx`
+  can read real payment-method labels from, rather than each file keeping
+  its own copy of the method-label dictionary.
+
+### Phase 4C findings (before any changes)
+Read this file first, then mapped the three named surfaces to actual code:
+- **No standalone Tenant Detail route exists** - confirmed via grep of
+  `src/app/routes.ts` (only `/tenants` and `/leases`, no `/tenants/:id`).
+  "Tenant Detail" is a slide-out `Sheet` opened from the Tenants table, with
+  six existing tabs: Profile, Payers, Deposit, Notices, History, Portal.
+  The brief's named list is Overview/Lease/Financial/Payments/Maintenance/
+  Documents/Activity (7). Relabelled rather than rebuilt where the mapping
+  was direct: Profile -> Overview, Deposit -> Financial (kept
+  `DepositAccountabilityStatement`'s real content), History -> Activity
+  (kept the same tenant_history timeline). **Lease, Payments, Maintenance,
+  and Documents did not exist as tabs at all** - genuine gaps, not
+  relabelling opportunities. Kept Payers/Notices/Portal as extra tabs after
+  the brief's 7, same "preserve real, working, non-conflicting extras"
+  approach used for Property Detail in Phase 4B.
+- The **Tenants** table (`src/features/tenants/pages/Tenants.tsx`, also
+  pre-existing `@ts-nocheck`) had Status/Tenant/Property+Unit (combined)/
+  Rent/Move-in/Contact/Actions - no Lease column, no Balance column, despite
+  neither `leases` nor `invoices` being fetched anywhere in this file at
+  all (confirmed via grep). Added both, split Property/Unit into separate
+  columns to match the brief and the pattern already set for Units/
+  Properties in Phase 4B.
+- **New real-data tabs built for the Tenant Detail sheet:**
+  - Lease (`TenantLeaseTab.tsx`, new) - reads the same `leases` rows
+    already fetched for the table's new Lease column, filtered to this
+    tenant; no separate query.
+  - Payments (`TenantPaymentsTab.tsx`, new) - fetches this tenant's
+    `invoices` fresh (invoice number, due date, amount, status).
+  - Maintenance (`TenantMaintenanceTab.tsx`, new) - `maintenance_requests`
+    has no `tenant_id` column (confirmed against
+    `src/integrations/supabase/types.ts`), only `tenant_email` and
+    `unit_id` - so this genuinely has to join on `tenant_email`, the same
+    real column the table already uses to record requests, not an invented
+    relationship.
+  - Documents (`TenantDocumentsTab.tsx`, new) - reads the real `contracts`
+    table filtered by `tenant_id` (title, status, valid_from/until,
+    signature state, download link if `uploaded_contract_url` is set).
+    Deliberately did NOT reuse the tenant-portal's existing
+    `useTenantContracts` hook / `TenantContractsSection.tsx` component -
+    that hook is self-referential to the logged-in tenant (no tenantId
+    param), so reusing it from the manager side would have meant changing
+    a hook the live self-service tenant portal depends on. Built a
+    separate, smaller, manager-scoped query instead - real same table, no
+    shared-hook risk.
+- **Leases** (`src/features/leases/pages/Leases.tsx`, also pre-existing
+  `@ts-nocheck`) already had Status/Tenant/Property+Unit (combined)/Rent/
+  Expiry/Action - missing a Start column, and Property/Unit needed
+  splitting, same as Tenants and the Units tab.
+- **Expiring Soon**: the `leases` table already has a manually-set
+  `status = "expiring"` value with an explicit "Mark Expiring" button
+  (`Leases.tsx`) - real, but requires a human to remember to click it. A
+  lease five days from `end_date` still shows "active" until someone flags
+  it. Added a *computed* Expiring Soon indicator instead: `status ===
+  "active"` and `end_date` within 30 days of today (the same 30-day window
+  `dashboardStats.ts`'s `expiringCutoff` already uses elsewhere in this
+  app) - a badge that overrides the plain status badge in both the Leases
+  table row, the mobile `LeaseCard.tsx`, the Tenants table's new Lease
+  column, and the Tenant Detail sheet's new Lease tab. Real `end_date`
+  data only; the 30-day window is the only non-database-literal part, and
+  it's borrowed from an existing convention rather than invented fresh.
+- **A real lint catch worth recording**: the first draft computed
+  "expiring soon" inline during render with `Date.now()` (once directly,
+  once inside `useMemo`) - `eslint`'s `react-hooks/purity` rule correctly
+  flagged both as impure-during-render, even the `useMemo` version. Fixed
+  by moving the date math into the plain data-fetch functions
+  (`fetchLeasesAndBalances` in Tenants.tsx, `fetchLeases` in Leases.tsx -
+  neither runs during render) and passing the *result* (a `Set` of
+  already-expiring lease IDs, or a plain `expiringSoon: boolean` field)
+  down as ordinary data. Matches the pattern `dashboardStats.ts` already
+  uses for its own `expiringCutoff` - Date math belongs in data-fetch code,
+  never in render.
 
 ### Phase 4B findings (before any changes)
 Read this file first, then mapped the three named surfaces to actual code

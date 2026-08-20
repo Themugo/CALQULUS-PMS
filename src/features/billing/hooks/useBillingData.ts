@@ -33,7 +33,16 @@ type ExpenditureRow = Database["public"]["Tables"]["expenditures"]["Row"];
 
 // ── Shape returned to the page component ────────────────────────────────────
 
-export interface BillingInvoice extends InvoiceRow {
+// The generated invoice_status enum ("paid" | "pending" | "overdue" | "cancelled")
+// is stale relative to the live DB — InvoiceTable.tsx already defines its own
+// wider local union for the same reason. Reuse the same seven real values here
+// rather than letting each file invent a slightly different override.
+export type BillingInvoiceStatus =
+  | "paid" | "pending" | "overdue" | "cancelled"
+  | "partially_paid" | "failed" | "refunded";
+
+export interface BillingInvoice extends Omit<InvoiceRow, "status"> {
+  status: BillingInvoiceStatus;
   leases: { property: string; unit: string } | null;
   tenants: {
     id: string;
@@ -42,6 +51,16 @@ export interface BillingInvoice extends InvoiceRow {
     phone: string | null;
     photo_url: string | null;
   } | null;
+  // The comprehensive-payment-schema migration (20260506000003) added these
+  // columns to invoices for partial/instalment payments — original_amount,
+  // paid_amount, balance_due. fetchInvoices() below selects "*", so they're
+  // already present on every row at runtime; they're just missing from the
+  // generated Database types until the next `supabase gen types` run, so we
+  // declare them here rather than casting past them (same pattern as
+  // shared/lib/money.ts's PayableInvoice).
+  original_amount: number | null;
+  paid_amount: number;
+  balance_due: number | null;
 }
 
 // fetchLeases() below only selects a handful of columns (not every LeaseRow

@@ -6,7 +6,7 @@
  */
 
 import { useCurrency } from "@/shared/hooks/useCurrency";
-import { roundMoney } from "@/shared/lib/money";
+import { roundMoney, invoiceOwedMinor, fromMinorUnits } from "@/shared/lib/money";
 import type { BillingInvoice } from "../hooks/useBillingData";
 
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -19,22 +19,30 @@ interface Props {
 export function BillingStatsBar({ invoices, isLoading = false }: Props) {
   const { formatCurrency } = useCurrency();
 
-  // Note: the invoices table only tracks a binary paid/pending/overdue/cancelled
-  // status today (no partial-payment columns exist in the schema yet), so "paid"
-  // is simply the sum of fully-paid invoices, and "pending"/"overdue" are the
-  // full invoice amount rather than a remaining balance.
+  // "Billed" and "Collected" use the real original_amount/paid_amount columns
+  // (comprehensive-payment-schema migration) so a partially-paid invoice
+  // contributes its full billed amount to "Billed" and only what's actually
+  // been paid to "Collected" — not the same number counted twice.
+  // "Outstanding" and "Overdue" use invoiceOwedMinor() (shared/lib/money.ts),
+  // the same balance-owed calculation the payment-allocation engine itself
+  // uses, so the stat bar can never disagree with what a payment would
+  // actually close.
+  const live = invoices.filter(i => i.status !== "cancelled" && i.status !== "refunded");
+  const unpaid = live.filter(i => i.status !== "paid");
+  const overdueInvoices = invoices.filter(i => i.status === "overdue");
+
   const stats = {
-    total:   roundMoney(invoices.reduce((s, i) => s + Number(i.amount ?? 0), 0)),
-    paid:    roundMoney(invoices.filter(i => i.status === "paid").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
-    pending: roundMoney(invoices.filter(i => i.status === "pending").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
-    overdue: roundMoney(invoices.filter(i => i.status === "overdue").reduce((s, i) => s + Number(i.amount ?? 0), 0)),
+    billed:      roundMoney(live.reduce((s, i) => s + Number(i.original_amount ?? i.amount ?? 0), 0)),
+    collected:   roundMoney(invoices.reduce((s, i) => s + Number(i.paid_amount ?? (i.status === "paid" ? i.amount : 0) ?? 0), 0)),
+    outstanding: fromMinorUnits(unpaid.reduce((s, i) => s + invoiceOwedMinor(i), 0)),
+    overdue:     fromMinorUnits(overdueInvoices.reduce((s, i) => s + invoiceOwedMinor(i), 0)),
   };
 
   const cards = [
-    { label: "Total billed",  value: stats.total,   tone: "text-foreground",     hint: "All invoices this period" },
-    { label: "Collected",     value: stats.paid,    tone: "text-foreground",     hint: "Paid in full" },
-    { label: "Pending",       value: stats.pending, tone: "text-warning",        hint: "Awaiting payment" },
-    { label: "Overdue",       value: stats.overdue, tone: "text-destructive",    hint: "Past due" },
+    { label: "Billed",      value: stats.billed,      tone: "text-foreground",  hint: "All invoices this period" },
+    { label: "Collected",   value: stats.collected,   tone: "text-success",     hint: "Received to date" },
+    { label: "Outstanding", value: stats.outstanding, tone: "text-warning",     hint: "Remaining balance owed" },
+    { label: "Overdue",     value: stats.overdue,     tone: "text-destructive", hint: "Past due" },
   ] as const;
 
   if (isLoading) {

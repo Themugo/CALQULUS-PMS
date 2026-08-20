@@ -120,6 +120,20 @@ interface Lease {
   tenants?: Tenant | null;
 }
 
+/** Real end_date data only — the 30-day window matches the one already used by
+ * dashboardStats.ts's expiringCutoff. Called from data-fetch code, never from
+ * render, so it stays outside the render-purity rule entirely. */
+function computeExpiringSoonIds(rows: Lease[]): Set<string> {
+  const cutoff = Date.now() + 30 * 86400000;
+  const ids = new Set<string>();
+  for (const lease of rows) {
+    if (lease.status === "active" && new Date(lease.end_date).getTime() <= cutoff) {
+      ids.add(lease.id);
+    }
+  }
+  return ids;
+}
+
 // Document Preview Component
 const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
@@ -194,6 +208,7 @@ const Leases = () => {
   const { logActivity: _logActivity } = useActivityLog();
   const { isViewOnly } = useViewOnly();
   const [leases, setLeases] = useState<Lease[]>([]);
+  const [expiringSoonLeaseIds, setExpiringSoonLeaseIds] = useState<Set<string>>(new Set());
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
@@ -271,9 +286,11 @@ const Leases = () => {
         });
       } else {
         setLeases(fallback.data || []);
+        setExpiringSoonLeaseIds(computeExpiringSoonIds(fallback.data || []));
       }
     } else {
       setLeases(data || []);
+      setExpiringSoonLeaseIds(computeExpiringSoonIds(data || []));
     }
     setIsLoading(false);
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties, toast]);
@@ -1131,7 +1148,9 @@ const Leases = () => {
                 <TableHead className="w-10" />
                 <SortableHead label="Status" sortKey="status" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <SortableHead label="Tenant" sortKey="tenant" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
-                <SortableHead label="Property / Unit" sortKey="property" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Property" sortKey="property" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <TableHead>Unit</TableHead>
+                <TableHead>Start</TableHead>
                 <SortableHead label="Rent" sortKey="rent" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <SortableHead label="Expiry" sortKey="expiry" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <TableHead className="text-right">Action</TableHead>
@@ -1148,9 +1167,13 @@ const Leases = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
-                      {lease.status}
-                    </span>
+                    {expiringSoonLeaseIds.has(lease.id) ? (
+                      <span className={statusBadgeClass("warning")}>Expiring soon</span>
+                    ) : (
+                      <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
+                        {lease.status}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 min-w-0">
@@ -1165,7 +1188,12 @@ const Leases = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-sm truncate">{lease.property}</p>
-                    <p className="text-xs text-muted-foreground">{lease.unit}</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-muted-foreground truncate">{lease.unit}</p>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                    {formatDate(lease.start_date)}
                   </TableCell>
                   <TableCell className="font-medium">{formatCurrency(lease.monthly_rent)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
@@ -1196,6 +1224,7 @@ const Leases = () => {
               lease={lease}
               isSelected={selectedLeases.has(lease.id)}
               formatCurrency={formatCurrency}
+              expiringSoon={expiringSoonLeaseIds.has(lease.id)}
               onSelect={() => toggleLeaseSelection(lease.id)}
               onView={() => { setSelectedLease(lease); setIsViewDialogOpen(true); }}
             />

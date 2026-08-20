@@ -30,9 +30,13 @@ export interface PayableInvoice {
   id: string;
   invoice_number?: string;
   amount: number;
-  original_amount?: number;
-  paid_amount?: number;
-  balance_due?: number;
+  // Nullable, not just optional: these are real nullable DB columns
+  // (comprehensive-payment-schema migration) and invoiceOwedMinor() below
+  // already defensively checks `!= null` / `?? amount` — the type just
+  // needs to say what the runtime already assumes.
+  original_amount?: number | null;
+  paid_amount?: number | null;
+  balance_due?: number | null;
   status: string;
 }
 

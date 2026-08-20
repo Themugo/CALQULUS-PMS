@@ -50,6 +50,10 @@ import MoveOutDialog from "@/features/tenants/components/MoveOutDialog";
 import TenantProfilePanel from "@/features/tenants/components/TenantProfilePanel";
 import DepositAccountabilityStatement from "@/features/tenants/components/DepositAccountabilityStatement";
 import TenantNoticeComposer from "@/features/tenants/components/TenantNoticeComposer";
+import { TenantLeaseTab } from "@/features/tenants/components/TenantLeaseTab";
+import { TenantPaymentsTab } from "@/features/tenants/components/TenantPaymentsTab";
+import { TenantMaintenanceTab } from "@/features/tenants/components/TenantMaintenanceTab";
+import { TenantDocumentsTab } from "@/features/tenants/components/TenantDocumentsTab";
 import PaymentPayersManager from "@/features/payments/components/PaymentPayersManager";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +62,7 @@ import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
+import { cn } from "@/shared/lib/utils";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
@@ -98,10 +103,30 @@ interface TenantHistoryItem {
   created_at: string;
 }
 
+interface LeaseRecord {
+  id: string;
+  tenant_id: string | null;
+  property: string;
+  unit: string;
+  start_date: string;
+  end_date: string;
+  monthly_rent: number;
+  deposit: number | null;
+  status: string;
+}
+
 const statusStyles: Record<string, string> = {
   active: statusBadgeClass("success"),
   pending: statusBadgeClass("warning"),
   inactive: statusBadgeClass("neutral"),
+};
+
+const leaseStatusStyles: Record<string, string> = {
+  active: statusBadgeClass("success"),
+  pending: statusBadgeClass("warning"),
+  expiring: statusBadgeClass("warning"),
+  expired: statusBadgeClass("danger"),
+  terminated: statusBadgeClass("neutral"),
 };
 
 
@@ -111,6 +136,9 @@ interface TenantTableProps {
   searchQuery: string;
   signedUrls: Record<string, string>;
   canApproveMoveouts: boolean;
+  leaseByTenantId: Map<string, LeaseRecord>;
+  balanceByTenantId: Record<string, number>;
+  expiringSoonLeaseIds: Set<string>;
   onOpenStatement: (tenant: TenantData) => void;
   onOpenHistory: (tenant: TenantData) => void;
   onMoveOut: (tenant: TenantData) => void;
@@ -118,7 +146,7 @@ interface TenantTableProps {
 
 const TENANT_PAGE_SIZE = 25;
 
-function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
+function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, leaseByTenantId, balanceByTenantId, expiringSoonLeaseIds, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
   const [page, setPage] = useState(1);
   const [sortKey, setSortKey] = useState("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
@@ -171,8 +199,11 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
             <TableRow className="hover:bg-transparent border-border">
               <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
               <SortableHead label="Tenant" sortKey="name" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
-              <SortableHead label="Property / Unit" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <SortableHead label="Property" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <TableHead>Unit</TableHead>
+              <TableHead>Lease</TableHead>
               <SortableHead label="Rent" sortKey="rent" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+              <TableHead>Balance</TableHead>
               <SortableHead label="Move-in" sortKey="move_in" currentKey={sortKey} dir={sortDir} onSort={handleSort} className="hidden lg:table-cell" />
               <TableHead className="hidden md:table-cell">Contact</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -201,14 +232,35 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="min-w-0">
-                    {tenant.property ? (
-                      <p className="text-sm text-foreground truncate">{tenant.property}</p>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">Unassigned</span>
-                    )}
-                    <p className="text-xs text-muted-foreground truncate">{tenant.unit || "No unit"}</p>
-                  </div>
+                  {tenant.property ? (
+                    <p className="text-sm text-foreground truncate">{tenant.property}</p>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">Unassigned</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <p className="text-sm text-muted-foreground truncate">{tenant.unit || "No unit"}</p>
+                </TableCell>
+                <TableCell>
+                  {(() => {
+                    const lease = leaseByTenantId.get(tenant.id);
+                    if (!lease) return <span className="text-sm text-muted-foreground">—</span>;
+                    const expiringSoon = expiringSoonLeaseIds.has(lease.id);
+                    return (
+                      <div className="flex flex-col gap-0.5">
+                        {expiringSoon ? (
+                          <span className={statusBadgeClass("warning") + " w-fit"}>Expiring soon</span>
+                        ) : (
+                          <span className={cn("capitalize w-fit", leaseStatusStyles[lease.status] || statusBadgeClass("neutral"))}>
+                            {lease.status}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-muted-foreground">
+                          Ends {format(new Date(lease.end_date), "dd/MM/yy")}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </TableCell>
                 <TableCell>
                   {tenant.monthly_rent ? (
@@ -222,6 +274,15 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                     </div>
                   ) : (
                     <span className="text-muted-foreground text-sm">No rent set</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {balanceByTenantId[tenant.id] ? (
+                    <span className="font-medium text-destructive text-sm">
+                      KES {balanceByTenantId[tenant.id].toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">—</span>
                   )}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
@@ -283,6 +344,9 @@ const Tenants = () => {
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const [tenants, setTenants] = useState<TenantData[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [leases, setLeases] = useState<LeaseRecord[]>([]);
+  const [tenantBalances, setTenantBalances] = useState<Record<string, number>>({});
+  const [expiringSoonLeaseIds, setExpiringSoonLeaseIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -386,6 +450,60 @@ const Tenants = () => {
     }
   }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
 
+  const fetchLeasesAndBalances = useCallback(async () => {
+    if (!managerId) {
+      setLeases([]);
+      setTenantBalances({});
+      return;
+    }
+    if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+      setLeases([]);
+      setTenantBalances({});
+      return;
+    }
+    try {
+      let leaseQuery = supabase
+        .from("leases")
+        .select("id, tenant_id, property, unit, start_date, end_date, monthly_rent, deposit, status")
+        .eq("manager_id", managerId);
+      if (restrictToAssignedProperties) {
+        leaseQuery = leaseQuery.in("property_id", assignedPropertyIds);
+      }
+      const { data: leaseRows, error: leaseError } = await leaseQuery;
+      if (!leaseError) {
+        setLeases(leaseRows ?? []);
+        // Computed once here (a plain data-fetch function, not render) so the
+        // render layer never calls Date.now() itself — real end_date data only,
+        // a 30-day window is the only "invented" part, same window the rest of
+        // this app already uses (see dashboardStats.ts's expiringCutoff).
+        const cutoff = Date.now() + 30 * 86400000;
+        const soon = new Set<string>();
+        for (const lease of leaseRows ?? []) {
+          if (lease.status === "active" && new Date(lease.end_date).getTime() <= cutoff) {
+            soon.add(lease.id);
+          }
+        }
+        setExpiringSoonLeaseIds(soon);
+      }
+
+      const { data: invoiceRows, error: invoiceError } = await supabase
+        .from("invoices")
+        .select("tenant_id, amount, status")
+        .eq("manager_id", managerId)
+        .in("status", ["pending", "overdue"]);
+      if (!invoiceError) {
+        const balances: Record<string, number> = {};
+        for (const row of invoiceRows ?? []) {
+          if (!row.tenant_id) continue;
+          balances[row.tenant_id] = (balances[row.tenant_id] ?? 0) + Number(row.amount ?? 0);
+        }
+        setTenantBalances(balances);
+      }
+    } catch (err) {
+      logError("Tenants.fetchLeasesAndBalances", err);
+    }
+  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
+
   const fetchTenantHistory = async (tenantId: string) => {
     const { data, error } = await supabase
       .from("tenant_history")
@@ -402,7 +520,21 @@ const Tenants = () => {
   useEffect(() => {
     fetchTenants();
     fetchProperties();
-  }, [fetchTenants, fetchProperties]);
+    fetchLeasesAndBalances();
+  }, [fetchTenants, fetchProperties, fetchLeasesAndBalances]);
+
+  const leaseByTenantId = useMemo(() => {
+    const map = new Map<string, LeaseRecord>();
+    for (const lease of leases) {
+      if (!lease.tenant_id) continue;
+      // Prefer the active lease if a tenant somehow has more than one record.
+      const existing = map.get(lease.tenant_id);
+      if (!existing || (lease.status === "active" && existing.status !== "active")) {
+        map.set(lease.tenant_id, lease);
+      }
+    }
+    return map;
+  }, [leases]);
 
   const openHistory = async (tenant: TenantData) => {
     setSelectedTenant(tenant);
@@ -522,6 +654,9 @@ const Tenants = () => {
             searchQuery={searchQuery}
             signedUrls={signedUrls}
             canApproveMoveouts={can('approve_moveouts')}
+            leaseByTenantId={leaseByTenantId}
+            balanceByTenantId={tenantBalances}
+            expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
             onMoveOut={(tenant) => {
@@ -537,6 +672,9 @@ const Tenants = () => {
             searchQuery={searchQuery}
             signedUrls={signedUrls}
             canApproveMoveouts={can('approve_moveouts')}
+            leaseByTenantId={leaseByTenantId}
+            balanceByTenantId={tenantBalances}
+            expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
             onMoveOut={(tenant) => {
@@ -552,6 +690,9 @@ const Tenants = () => {
             searchQuery={searchQuery}
             signedUrls={signedUrls}
             canApproveMoveouts={can('approve_moveouts')}
+            leaseByTenantId={leaseByTenantId}
+            balanceByTenantId={tenantBalances}
+            expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
             onMoveOut={(tenant) => {
@@ -585,18 +726,59 @@ const Tenants = () => {
           </SheetHeader>
           {selectedTenant && (
             <div className="mt-6">
-              <Tabs defaultValue="profile">
+              <Tabs defaultValue="overview">
                 <TabsList className="flex-wrap h-auto gap-1 p-1 mb-4 text-xs">
-                  <TabsTrigger value="profile" className="text-xs">Profile</TabsTrigger>
+                  <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+                  <TabsTrigger value="lease" className="text-xs">Lease</TabsTrigger>
+                  <TabsTrigger value="financial" className="text-xs">Financial</TabsTrigger>
+                  <TabsTrigger value="payments" className="text-xs">Payments</TabsTrigger>
+                  <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
+                  <TabsTrigger value="documents" className="text-xs">Documents</TabsTrigger>
+                  <TabsTrigger value="activity" className="text-xs">Activity</TabsTrigger>
                   <TabsTrigger value="payers" className="text-xs">Payers</TabsTrigger>
-                  <TabsTrigger value="deposit" className="text-xs">Deposit</TabsTrigger>
                   <TabsTrigger value="notices" className="text-xs">Notices</TabsTrigger>
-                  <TabsTrigger value="history" className="text-xs">History</TabsTrigger>
                   <TabsTrigger value="portal" className="text-xs">Portal</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="profile">
+                <TabsContent value="overview">
                   <TenantProfilePanel tenant={selectedTenant} onUpdate={fetchTenants} />
+                </TabsContent>
+
+                <TabsContent value="lease">
+                  <TenantLeaseTab
+                    leases={leases
+                      .filter((l) => l.tenant_id === selectedTenant.id)
+                      .map((l) => ({
+                        id: l.id,
+                        property: l.property,
+                        unit: l.unit,
+                        start_date: l.start_date,
+                        end_date: l.end_date,
+                        monthly_rent: l.monthly_rent,
+                        deposit: l.deposit,
+                        status: l.status,
+                        expiringSoon: expiringSoonLeaseIds.has(l.id),
+                      }))}
+                  />
+                </TabsContent>
+
+                <TabsContent value="financial">
+                  <DepositAccountabilityStatement
+                    tenant={selectedTenant}
+                    unitId={selectedTenant.unit_id}
+                  />
+                </TabsContent>
+
+                <TabsContent value="payments">
+                  <TenantPaymentsTab tenantId={selectedTenant.id} />
+                </TabsContent>
+
+                <TabsContent value="maintenance">
+                  <TenantMaintenanceTab tenantEmail={selectedTenant.email} />
+                </TabsContent>
+
+                <TabsContent value="documents">
+                  <TenantDocumentsTab tenantId={selectedTenant.id} />
                 </TabsContent>
 
                 <TabsContent value="payers">
@@ -609,18 +791,11 @@ const Tenants = () => {
                   />
                 </TabsContent>
 
-                <TabsContent value="deposit">
-                  <DepositAccountabilityStatement
-                    tenant={selectedTenant}
-                    unitId={selectedTenant.unit_id}
-                  />
-                </TabsContent>
-
                 <TabsContent value="notices">
                   <TenantNoticeComposer tenant={selectedTenant} />
                 </TabsContent>
 
-                <TabsContent value="history">
+                <TabsContent value="activity">
                   <ScrollArea className="h-[calc(100vh-300px)]">
                     {tenantHistory.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">

@@ -29,7 +29,6 @@ import {
   CreditCard,
   CheckCircle,
   Building,
-  TrendingUp,
   Calendar,
   Download,
   RefreshCw,
@@ -54,31 +53,28 @@ import autoTable from "jspdf-autotable";
 import PaymentAnalytics from "@/features/payments/components/PaymentAnalytics";
 import BankReconciliationPanel from "@/features/payments/components/BankReconciliationPanel";
 import NotificationFailuresPanel from "@/features/payments/components/NotificationFailuresPanel";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend,
-} from "recharts";
 import RecordPaymentDialog from "@/features/payments/components/RecordPaymentDialog";
-import { BRAND_CHART_COLORS } from "@/shared/lib/chartColors";
+import {
+  invoiceStatusTone,
+  invoiceStatusLabel,
+  paymentMethodLabel,
+  isMpesaMethod,
+  statusBadgeClass,
+} from "@/shared/lib/statusBadge";
 import { onActivateKey } from "@/shared/lib/a11y";
 
-interface PaidInvoice {
+interface PaymentRecord {
   id: string;
   invoice_number: string;
   amount: number;
   paid_date: string | null;
   description: string | null;
+  // Real payment_transactions columns (comprehensive-payment-schema migration) —
+  // this is the source of truth for how a payment was made and how to look it
+  // up on M-Pesa/bank statements, not something inferred from tenant contact info.
+  payment_method: string | null;
+  reference: string | null;
+  tx_status: string;
   tenants: {
     id: string;
     name: string;
@@ -97,7 +93,7 @@ const ManagerPaymentHistory = () => {
   const { user } = useAuth();
   const { formatCurrency, currency: _currency } = useCurrency();
   const queryClient = useQueryClient();
-  const [payments, setPayments] = useState<PaidInvoice[]>([]);
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -147,15 +143,25 @@ const ManagerPaymentHistory = () => {
 
   const fetchPayments = useCallback(async () => {
     setIsLoading(true);
-    
+
+    // Source of truth is payment_transactions, not invoices: it's the only
+    // table that actually records how a payment was made (payment_method)
+    // and the receipt/bank reference to reconcile it against (bank_reference /
+    // mpesa_receipt_number), both written by record-payment -> process-payment
+    // for manual entries and by mpesa-callback for STK completions.
     const { data, error } = await supabase
-      .from("invoices")
+      .from("payment_transactions")
       .select(`
         id,
-        invoice_number,
         amount,
-        paid_date,
-        description,
+        status,
+        payment_method,
+        payment_type,
+        bank_reference,
+        mpesa_receipt_number,
+        checkout_request_id,
+        completed_at,
+        initiated_at,
         tenants (
           id,
           name,
@@ -163,14 +169,18 @@ const ManagerPaymentHistory = () => {
           phone,
           photo_url
         ),
-        leases (
-          property,
-          unit
+        invoices (
+          invoice_number,
+          description,
+          leases (
+            property,
+            unit
+          )
         )
       `)
-      .eq("status", "paid")
-      .not("paid_date", "is", null)
-      .order("paid_date", { ascending: false });
+      .eq("manager_id", user?.id ?? "")
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false });
 
     if (error) {
       toast({
@@ -179,10 +189,23 @@ const ManagerPaymentHistory = () => {
         variant: "destructive",
       });
     } else {
-      setPayments(data || []);
+      setPayments(
+        (data || []).map((tx) => ({
+          id: tx.id,
+          invoice_number: tx.invoices?.invoice_number ?? "—",
+          amount: tx.amount,
+          paid_date: tx.completed_at ?? tx.initiated_at ?? null,
+          description: tx.invoices?.description ?? null,
+          payment_method: tx.payment_method ?? tx.payment_type ?? null,
+          reference: tx.bank_reference ?? tx.mpesa_receipt_number ?? tx.checkout_request_id ?? null,
+          tx_status: tx.status,
+          tenants: tx.tenants ?? null,
+          leases: tx.invoices?.leases ?? null,
+        }))
+      );
     }
     setIsLoading(false);
-  }, [toast]);
+  }, [toast, user?.id]);
 
   useEffect(() => {
     fetchPayments();
@@ -303,12 +326,14 @@ const ManagerPaymentHistory = () => {
     return Array.from(tenantMap.values()).sort((a, b) => b.totalAmount - a.totalAmount);
   }, [filteredPayments]);
 
-  // Calculate stats
+  // Calculate stats. Method split now reads the real payment_method column
+  // (isMpesaMethod checks for the mpesa_stk/mpesa_ussd/mpesa_till prefix)
+  // instead of guessing from whether the tenant has a phone number on file.
   const stats = {
     totalTransactions: filteredPayments.length,
     totalAmount: filteredPayments.reduce((sum, p) => sum + Number(p.amount), 0),
-    mpesaPayments: filteredPayments.filter((p) => p.tenants?.phone).length,
-    cardPayments: filteredPayments.filter((p) => !p.tenants?.phone).length,
+    mpesaPayments: filteredPayments.filter((p) => isMpesaMethod(p.payment_method)).length,
+    cardPayments: filteredPayments.filter((p) => !isMpesaMethod(p.payment_method)).length,
     thisMonth: payments.filter((p) => {
       if (!p.paid_date) return false;
       const paidDate = new Date(p.paid_date);
@@ -338,11 +363,11 @@ const ManagerPaymentHistory = () => {
       });
       
       const mpesaAmount = monthPayments
-        .filter((p) => p.tenants?.phone)
+        .filter((p) => isMpesaMethod(p.payment_method))
         .reduce((sum, p) => sum + Number(p.amount), 0);
-      
+
       const cardAmount = monthPayments
-        .filter((p) => !p.tenants?.phone)
+        .filter((p) => !isMpesaMethod(p.payment_method))
         .reduce((sum, p) => sum + Number(p.amount), 0);
       
       months.push({
@@ -355,14 +380,6 @@ const ManagerPaymentHistory = () => {
     
     return months;
   }, [payments]);
-
-  // Payment method distribution
-  const paymentMethodData = useMemo(() => {
-    return [
-      { name: "M-Pesa", value: stats.mpesaPayments, color: BRAND_CHART_COLORS[2] },
-      { name: "Card/Other", value: stats.cardPayments, color: BRAND_CHART_COLORS[0] },
-    ];
-  }, [stats.mpesaPayments, stats.cardPayments]);
 
   // Property revenue breakdown
   const propertyRevenueData = useMemo(() => {
@@ -391,6 +408,8 @@ const ManagerPaymentHistory = () => {
       "Unit",
       "Amount",
       "Payment Method",
+      "Reference",
+      "Status",
       "Description",
     ];
 
@@ -403,7 +422,9 @@ const ManagerPaymentHistory = () => {
       p.leases?.property || "",
       p.leases?.unit || "",
       p.amount.toString(),
-      p.tenants?.phone ? "M-Pesa" : "Card/Other",
+      paymentMethodLabel(p.payment_method),
+      p.reference || "",
+      invoiceStatusLabel(p.tx_status),
       p.description || "",
     ]);
 
@@ -678,8 +699,6 @@ const ManagerPaymentHistory = () => {
     });
   };
 
-  const CHART_COLORS = BRAND_CHART_COLORS;
-
   return (
     <Layout
       title="Payment History"
@@ -887,209 +906,69 @@ const ManagerPaymentHistory = () => {
 
       {/* ── Payment History Tab ── */}
       <TabsContent value="history">
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4 mb-6">
-        <Card className="card-shadow animate-fade-in">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-success" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Collected</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {formatCurrency(stats.totalAmount)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="card-shadow animate-fade-in" style={{ animationDelay: "50ms" }}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                <Receipt className="h-6 w-6 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Transactions</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.totalTransactions}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="card-shadow animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <Smartphone className="h-6 w-6 text-green-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">M-Pesa Payments</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.mpesaPayments}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="card-shadow animate-fade-in" style={{ animationDelay: "150ms" }}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-[hsl(214_73%_48%/0.1)] flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-[hsl(214_73%_48%)]" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">This Month</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {formatCurrency(stats.thisMonth)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Summary strip — three plain numbers, semantic color only where it
+          signals something (Collected is a positive outcome). Monthly trend,
+          payment-method split, and collection-rate detail all already live
+          on the Analytics tab (PaymentAnalytics) — repeating them here as a
+          second set of charts was pure duplication, and a wall of rainbow
+          chart colors on the page every manager lands on first isn't the
+          "trustworthy, professional" look finance pages need. */}
+      <div className="grid gap-4 sm:grid-cols-3 mb-6">
+        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Collected</p>
+          <p className="mt-1 text-2xl font-bold text-success">{formatCurrency(stats.totalAmount)}</p>
+          <p className="text-xs text-muted-foreground mt-1">Matches current filters</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Transactions</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">{stats.totalTransactions}</p>
+          <p className="text-xs text-muted-foreground mt-1">Completed payments</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">This Month</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">{formatCurrency(stats.thisMonth)}</p>
+          <p className="text-xs text-muted-foreground mt-1">All completed payments, unfiltered</p>
+        </div>
       </div>
 
-      {/* Analytics Charts */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-        {/* Monthly Revenue Trend */}
-        <Card className="md:col-span-2 card-shadow animate-fade-in">
+      {/* Top Properties by Revenue — kept as a plain ranked list rather than
+          a bar chart; this data isn't shown anywhere on the Analytics tab,
+          so it stays, just without another chart-color palette. */}
+      {propertyRevenueData.length > 0 && (
+        <Card className="mb-6 card-shadow animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <BarChart3 className="h-5 w-5 text-amber-500" />
-              Monthly Revenue (Last 6 Months)
-            </CardTitle>
-            <CardDescription>Revenue breakdown by payment method</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenueData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="month" 
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                  />
-                  <YAxis 
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                    formatter={(value: number) => formatCurrency(value)}
-                  />
-                  <Legend />
-                  <Bar dataKey="mpesa" name="M-Pesa" fill={BRAND_CHART_COLORS[2]} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="card" name="Card/Other" fill={BRAND_CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Payment Method Distribution */}
-        <Card className="card-shadow animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Smartphone className="h-5 w-5 text-success" />
-              Payment Methods
-            </CardTitle>
-            <CardDescription>Distribution by payment type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={paymentMethodData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {paymentMethodData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Property Revenue */}
-        <Card className="md:col-span-2 lg:col-span-3 card-shadow animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Building className="h-5 w-5 text-amber-500" />
+              <Building className="h-5 w-5 text-muted-foreground" />
               Top Properties by Revenue
             </CardTitle>
-            <CardDescription>Revenue collection by property</CardDescription>
+            <CardDescription>Revenue collection by property, current filters</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={propertyRevenueData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis 
-                    type="number"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                  />
-                  <YAxis 
-                    type="category"
-                    dataKey="name"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    width={120}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                    formatter={(value: number) => formatCurrency(value)}
-                  />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]}>
-                    {propertyRevenueData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="space-y-3">
+              {propertyRevenueData.map((p) => (
+                <div key={p.name}>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-foreground font-medium truncate">{p.name}</span>
+                    <span className="text-foreground font-semibold">{formatCurrency(p.revenue)}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${(p.revenue / propertyRevenueData[0].revenue) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
-      </div>
+      )}
 
       {/* Tenant Payment Breakdown */}
       <Card className="mb-6 card-shadow animate-fade-in">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-amber-500" />
+            <Users className="h-5 w-5 text-muted-foreground" />
             Tenant Payment Details
           </CardTitle>
           <CardDescription>Payment breakdown by tenant with total amounts and transaction counts</CardDescription>
@@ -1119,8 +998,8 @@ const ManagerPaymentHistory = () => {
                   tabIndex={0}
                   className={`p-4 rounded-lg border transition-all cursor-pointer ${
                     selectedTenant === tenant.id
-                      ? "border-amber-400/50 bg-amber-400/8"
-                      : "border-border hover:border-amber-400/60/50 hover:bg-muted/30"
+                      ? "border-primary/50 bg-primary/5"
+                      : "border-border hover:border-primary/30 hover:bg-muted/30"
                   }`}
                   onClick={toggleTenantSelection}
                   onKeyDown={onActivateKey(toggleTenantSelection)}
@@ -1128,7 +1007,7 @@ const ManagerPaymentHistory = () => {
                   <div className="flex items-center gap-3 mb-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={tenant.photo_url || undefined} />
-                      <AvatarFallback className="bg-amber-400 text-slate-900 text-sm">
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
                         {tenant.name
                           ?.split(" ")
                           .map((n) => n[0])
@@ -1273,7 +1152,8 @@ const ManagerPaymentHistory = () => {
                 <TableHead className="font-heading font-semibold">Property</TableHead>
                 <TableHead className="font-heading font-semibold">Invoice</TableHead>
                 <TableHead className="font-heading font-semibold">Amount</TableHead>
-                <TableHead className="font-heading font-semibold">Payment Method</TableHead>
+                <TableHead className="font-heading font-semibold">Method</TableHead>
+                <TableHead className="font-heading font-semibold">Reference</TableHead>
                 <TableHead className="font-heading font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -1293,7 +1173,7 @@ const ManagerPaymentHistory = () => {
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={payment.tenants?.photo_url || undefined} />
-                        <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {payment.tenants?.name
                             ?.split(" ")
                             .map((n) => n[0])
@@ -1331,28 +1211,23 @@ const ManagerPaymentHistory = () => {
                     {formatCurrency(Number(payment.amount))}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      {payment.tenants?.phone ? (
-                        <>
-                          <Smartphone className="h-4 w-4 text-success" />
-                          <span className="text-sm text-success">M-Pesa</span>
-                        </>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      {isMpesaMethod(payment.payment_method) ? (
+                        <Smartphone className="h-4 w-4" />
                       ) : (
-                        <>
-                          <CreditCard className="h-4 w-4 text-[hsl(214_73%_48%)]" />
-                          <span className="text-sm text-[hsl(214_73%_55%)]">Card/Other</span>
-                        </>
+                        <CreditCard className="h-4 w-4" />
                       )}
+                      <span className="text-sm text-foreground">{paymentMethodLabel(payment.payment_method)}</span>
                     </div>
                   </TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">
+                    {payment.reference ?? "—"}
+                  </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-success/10 text-success border-success/20 gap-1"
-                    >
+                    <span className={`${statusBadgeClass(invoiceStatusTone(payment.tx_status))} gap-1`}>
                       <CheckCircle className="h-3 w-3" />
-                      Paid
-                    </Badge>
+                      {invoiceStatusLabel(payment.tx_status)}
+                    </span>
                   </TableCell>
                 </TableRow>
               ))}

@@ -35,6 +35,8 @@ interface LeaseCardProps {
   lease: Lease;
   isSelected: boolean;
   formatCurrency: (amount: number) => string;
+  /** Computed by the parent from real end_date data — no date math in here. */
+  expiringSoon?: boolean;
   onSelect: () => void;
   onView: () => void;
 }
@@ -47,7 +49,7 @@ const statusIcons: Record<LeaseStatus, React.ReactNode> = {
   terminated: <AlertTriangle className="h-3 w-3" />,
 };
 
-export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView }: LeaseCardProps) => {
+export const LeaseCard = ({ lease, isSelected, formatCurrency, expiringSoon, onSelect, onView }: LeaseCardProps) => {
   return (
     <Card
       className={cn(
@@ -74,10 +76,17 @@ export const LeaseCard = ({ lease, isSelected, formatCurrency, onSelect, onView 
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className={cn(statusBadgeClass(leaseStatusTone(lease.status)), "flex-shrink-0")}>
-                  {statusIcons[lease.status]}
-                  <span className="capitalize">{lease.status}</span>
-                </span>
+                {expiringSoon ? (
+                  <span className={cn(statusBadgeClass("warning"), "flex-shrink-0")}>
+                    <Clock className="h-3 w-3" />
+                    Expiring soon
+                  </span>
+                ) : (
+                  <span className={cn(statusBadgeClass(leaseStatusTone(lease.status)), "flex-shrink-0")}>
+                    {statusIcons[lease.status]}
+                    <span className="capitalize">{lease.status}</span>
+                  </span>
+                )}
               </div>
               <h3 className="font-semibold text-sm sm:text-base text-foreground truncate group-hover:text-primary transition-colors">
                 {lease.tenants?.name || "No Tenant"}
