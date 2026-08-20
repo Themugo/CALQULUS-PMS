@@ -31,12 +31,12 @@ test.describe("Design preview", () => {
     await expect(page.getByRole("heading", { name: "Clients", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Portfolio", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Property detail", exact: true })).toBeVisible();
-    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant" }).click();
+    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant", exact: true }).click();
     await expect(page.getByText("Tenant is a simple mobile-first home")).toBeVisible();
     const tenantPreview = page.locator("[data-preview='tenant-pages']");
     await expect(tenantPreview.getByRole("button", { name: "Pay rent" }).first()).toBeVisible();
-    await expect(tenantPreview.getByText("Your home")).toBeVisible();
-    await expect(tenantPreview.getByText("Rent due")).toBeVisible();
+    await expect(tenantPreview.getByText("Your home", { exact: true }).first()).toBeVisible();
+    await expect(tenantPreview.getByText("Rent due", { exact: true }).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Lease", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Receipts", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Maintenance" }).click();
