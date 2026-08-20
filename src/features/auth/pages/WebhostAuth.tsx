@@ -145,8 +145,13 @@ const WebhostAuth = () => {
                     value={password} onChange={e => setPassword(e.target.value)} required
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-11 pr-11"
                   />
-                  <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                  >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -169,8 +174,8 @@ const WebhostAuth = () => {
             {/* Security notice */}
             <div className="mt-5 p-3.5 rounded-xl border border-primary/20 bg-primary/10">
               <div className="flex items-start gap-2.5">
-                <Shield className="h-4 w-4 text-primary/70 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <Shield className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-foreground leading-relaxed">
                   This portal is for authorized administrators only. All access is logged and audited.
                 </p>
               </div>
@@ -180,15 +185,15 @@ const WebhostAuth = () => {
             <div className="mt-3 p-3 rounded-xl border border-border bg-muted">
               <p className="text-xs text-muted-foreground text-center leading-relaxed">
                 First time? Run the{' '}
-                <code className="text-primary/70 bg-primary/10 px-1 rounded">bootstrap-webhost</code>
+                <code className="text-foreground bg-card px-1 rounded font-semibold">bootstrap-webhost</code>
                 {' '}edge function to create the admin account.
               </p>
             </div>
 
             {!isRecommendedWebhostHost() && (
               <div className="mt-3 p-3 rounded-xl border border-primary/20 bg-primary/10">
-                <p className="text-xs text-primary/70 text-center">
-                  Tip: use an <code className="bg-primary/10 px-1 rounded">admin.</code> subdomain for production access.
+                <p className="text-xs text-foreground text-center">
+                  Tip: use an <code className="bg-card px-1 rounded font-semibold">admin.</code> subdomain for production access.
                 </p>
               </div>
             )}

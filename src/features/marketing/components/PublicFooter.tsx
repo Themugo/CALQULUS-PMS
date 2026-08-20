@@ -9,7 +9,7 @@ import {
 } from "@/features/marketing/publicConfig";
 
 const footerLinkClass =
-  "text-sm text-white/72 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
+  "text-sm text-white/72 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
 
 export function PublicFooter() {
   const { pathname } = useLocation();
@@ -26,7 +26,7 @@ export function PublicFooter() {
         </div>
 
         <nav aria-label="Platform">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Platform</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Platform</p>
           <ul className="mt-3 space-y-2">
             {PLATFORM_LINKS.map((link) => (
               <li key={link.label}>
@@ -39,7 +39,7 @@ export function PublicFooter() {
         </nav>
 
         <nav aria-label="Solutions">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Solutions</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Solutions</p>
           <ul className="mt-3 space-y-2">
             {PORTAL_LINKS.map((link) => (
               <li key={link.label}>
@@ -52,7 +52,7 @@ export function PublicFooter() {
         </nav>
 
         <nav aria-label="Company">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Company</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Company</p>
           <ul className="mt-3 space-y-2">
             {COMPANY_LINKS.map((link) => (
               <li key={link.label}>
@@ -71,7 +71,7 @@ export function PublicFooter() {
         </nav>
 
         <nav aria-label="Legal">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Legal</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Legal</p>
           <ul className="mt-3 space-y-2">
             {LEGAL_LINKS.map((link) => (
               <li key={link.label}>

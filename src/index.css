@@ -271,6 +271,7 @@
     --primary-foreground: #FFFFFF;
     --primary-hover: #4C84F0;
     --primary-active: #2459D6;
+    --primary-text: #2459D6;
     /* Organization accent. Design-system --primary stays CALQULUS. */
     --brand-primary: var(--primary);
     --brand-primary-hover: var(--primary-hover);
@@ -309,10 +310,12 @@
 
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
+    --destructive-text: #A33A3A;
     --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
 
     --success: #23856B;
     --success-foreground: #FFFFFF;
+    --success-text: #1B6B56;
     --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
 
     --warning: #B7791F;
@@ -381,6 +384,7 @@
     --primary-foreground: #FFFFFF;
     --primary-hover: #4C84F0;
     --primary-active: #2459D6;
+    --primary-text: #2459D6;
     --brand-primary: var(--primary);
     --brand-primary-foreground: #FFFFFF;
     --navy-primary: #0D2744;
@@ -399,9 +403,11 @@
     --accent-foreground: #FFFFFF;
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
+    --destructive-text: #A33A3A;
     --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
     --success: #23856B;
     --success-foreground: #FFFFFF;
+    --success-text: #1B6B56;
     --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
     --warning: #B7791F;
     --warning-foreground: #FFFFFF;
@@ -728,7 +734,7 @@
   }
   .status-success {
     background-color: var(--success-bg);
-    color: var(--success);
+    color: var(--success-text);
     border-color: color-mix(in srgb, var(--success) 35%, #FFFFFF);
   }
   .status-warning {
@@ -738,7 +744,7 @@
   }
   .status-danger {
     background-color: var(--destructive-bg);
-    color: var(--destructive);
+    color: var(--destructive-text);
     border-color: color-mix(in srgb, var(--destructive) 35%, #FFFFFF);
   }
   .status-info {
@@ -793,7 +799,17 @@
   }
 }
 
-/* Warning fill stays #B7791F. Small warning text uses a darker amber so WCAG AA 4.5:1 holds on white desks. */
+/* Fill tokens stay locked. Small text uses darker on-surface companions so WCAG AA 4.5:1 holds on white desks. */
+.text-primary,
+.text-info {
+  color: var(--primary-text);
+}
+.text-success {
+  color: var(--success-text);
+}
+.text-destructive {
+  color: var(--destructive-text);
+}
 .text-warning {
   color: var(--warning-text);
 }

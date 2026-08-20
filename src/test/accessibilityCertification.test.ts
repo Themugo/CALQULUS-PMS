@@ -130,6 +130,11 @@ describe("Phase 12 accessibility certification contracts", () => {
     expect(meetsWCAG_AA(WARNING_TEXT, CALQULUS_COLOR.white)).toBe(true);
     expect(meetsWCAG_AA(WARNING_TEXT, CALQULUS_COLOR.background)).toBe(true);
     expect(src("src/index.css")).toContain("--warning-text: #9A5A16");
+    expect(src("src/index.css")).toContain("--primary-text: #2459D6");
+    expect(src("src/index.css")).toContain("--success-text: #1B6B56");
+    expect(src("src/index.css")).toContain("--destructive-text: #A33A3A");
     expect(src("src/index.css")).toContain("color: var(--warning-text)");
+    expect(meetsWCAG_AA(CALQULUS_COLOR.primaryActive, CALQULUS_COLOR.white)).toBe(true);
+    expect(meetsWCAG_AA(CALQULUS_COLOR.primaryActive, CALQULUS_COLOR.background)).toBe(true);
   });
 });

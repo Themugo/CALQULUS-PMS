@@ -44,13 +44,20 @@ changes.
 - Reduced motion already present; certification test asserts it.
 
 ### Phase 12 verification
-- Pending this turn (commit, then lint / typecheck / vitest / Playwright /
-  build).
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — 0 errors
+- `npx vitest run` — 877 passed; 1 skipped
+- Playwright Chromium `e2e/a11y.spec.ts` — 10 passed (axe WCAG 2A/2AA
+  critical+serious on design preview, homepage, all five login portals;
+  skip link; labelled dialog; table `scope="col"`)
+- Playwright Chromium (`responsive-certification`, `design-preview`,
+  `app`, `homepage-executive`) — 46 passed, 5 skipped (credential-gated)
+- `npm run build` — pass
 
 ## CHECKPOINT
-Phase 12 accessibility certification in progress on
-`cursor/phase-12-accessibility-certification-1e5d`. Do not merge to `main`
-unless asked.
+Phase 12 accessibility certification on
+`cursor/phase-12-accessibility-certification-1e5d`. Draft PR #61.
+Do not merge to `main` unless asked.
 
 ## PREVIOUS PHASE
 Phase 11 — Responsive certification. Merged to `main` (`a1e23d1`). PR #60.

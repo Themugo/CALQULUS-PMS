@@ -169,7 +169,7 @@ export function PortalAuthShell({
 
               {notice && (
                 <div className="mt-5 rounded-lg border border-primary/20 bg-soft-blue p-3.5">
-                  <p className="text-xs leading-relaxed text-muted-foreground">{notice}</p>
+                  <p className="text-xs leading-relaxed text-foreground">{notice}</p>
                 </div>
               )}
 
