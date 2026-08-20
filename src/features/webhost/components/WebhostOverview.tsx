@@ -18,6 +18,7 @@ import {
   ServerCog, MapPin, Bug, Receipt,
 } from 'lucide-react';
 import { HEALTH_COPY, usePlatformHealth } from '@/features/webhost/hooks/usePlatformHealth';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { CALQULUS_COLOR } from '@/shared/theme/tokens';
 
 type ManagerInvoiceRow = { amount: number | null };

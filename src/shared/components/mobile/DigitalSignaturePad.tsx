@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { PenTool, RotateCcw, Check, Download, Lock } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
+import { cn } from "@/shared/lib/utils";
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 export interface DigitalSignaturePadProps {
