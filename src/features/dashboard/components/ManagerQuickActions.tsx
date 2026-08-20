@@ -1,19 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Progress } from "@/shared/components/ui/progress";
-import { Building2, Users, FileText, CreditCard, Wallet, Receipt, Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/utils";
 import { useManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import type { ActivationStatus } from "@/features/dashboard/lib/activationPath";
 
 const shortcuts = [
-  { label: "Properties", icon: Building2, href: "/properties", description: "Buildings and units" },
-  { label: "Tenants", icon: Users, href: "/tenants", description: "Who lives where" },
-  { label: "Leases", icon: FileText, href: "/leases", description: "Agreements and expiry" },
-  { label: "Invoices", icon: CreditCard, href: "/billing", description: "Bill and collect" },
-  { label: "Payments", icon: Wallet, href: "/payments", description: "Payment history" },
-  { label: "Receipts", icon: Receipt, href: "/billing?tab=receipts", description: "Paid invoice receipts" },
+  { label: "Properties", href: "/properties", description: "Buildings and units" },
+  { label: "Tenants", href: "/tenants", description: "Who lives where" },
+  { label: "Leases", href: "/leases", description: "Agreements and expiry" },
+  { label: "Invoices", href: "/billing", description: "Bill and collect" },
+  { label: "Payments", href: "/payments", description: "Payment history" },
+  { label: "Receipts", href: "/billing?tab=receipts", description: "Paid invoice receipts" },
 ];
 
 interface ManagerQuickActionsProps {
@@ -37,7 +37,7 @@ export function ManagerQuickActions({
   const showSetup = includeSetup && !progress.isComplete;
 
   return (
-    <Card className="enterprise-card">
+    <Card>
       {showSetup && (
       <CardHeader className="pb-3 pt-4 px-4 sm:px-5">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
@@ -124,26 +124,10 @@ export function ManagerQuickActions({
                 key={action.label}
                 type="button"
                 onClick={() => navigate(action.href)}
-                className={cn(
-                  "group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border border-border",
-                  "bg-card transition-all duration-200 touch-manipulation",
-                  "hover:-translate-y-0.5 hover:shadow-sm hover:border-primary/30 hover:bg-primary/5",
-                  "active:scale-95",
-                )}
+                className="flex flex-col items-start gap-1 p-3 rounded-lg border border-border bg-card min-h-11 hover:bg-muted/40 touch-manipulation"
               >
-                <div
-                  className={cn(
-                    "h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center",
-                    "bg-muted/60 border border-border transition-colors",
-                    "group-hover:bg-primary/10 group-hover:border-primary/20",
-                  )}
-                >
-                  <action.icon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary" />
-                </div>
-                <div className="text-center">
-                  <p className="text-xs font-semibold text-foreground leading-tight">{action.label}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{action.description}</p>
-                </div>
+                <p className="text-xs font-semibold text-foreground leading-tight">{action.label}</p>
+                <p className="text-[10px] text-muted-foreground hidden sm:block">{action.description}</p>
               </button>
             ))}
           </div>

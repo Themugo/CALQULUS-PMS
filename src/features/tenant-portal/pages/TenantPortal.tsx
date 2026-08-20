@@ -632,10 +632,10 @@ const TenantPortal = () => {
 
                   if (isAllClear) {
                     return (
-                      <div className="mb-6 rounded-2xl p-5 border-2 bg-success/10 border-success/40 shadow-sm hover:shadow-md transition-all duration-300">
+                      <div className="mb-6 rounded-lg p-4 border bg-success/10 border-success/30">
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 rounded-2xl bg-success/20 flex items-center justify-center shrink-0 shadow-sm">
+                            <div className="h-10 w-10 rounded-lg bg-success/20 flex items-center justify-center shrink-0">
                               <CheckCircle className="h-7 w-7 text-success" />
                             </div>
                             <div>
@@ -677,14 +677,14 @@ const TenantPortal = () => {
                   const isOverdue = mostUrgent.status === 'overdue';
                   return (
                     <div
-                      className={`mb-6 rounded-2xl p-5 border-2 shadow-sm hover:shadow-md transition-all duration-300 ${
-                        isOverdue ? 'bg-destructive/10 border-destructive/40' : 'bg-warning/10 border-warning/40'
+                      className={`mb-6 rounded-lg p-4 border ${
+                        isOverdue ? 'bg-destructive/10 border-destructive/30' : 'bg-warning/10 border-warning/30'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-4 flex-wrap">
                         <div className="flex items-center gap-4">
                           <div
-                            className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                            className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
                               isOverdue ? 'bg-destructive/20' : 'bg-warning/20'
                             }`}
                           >

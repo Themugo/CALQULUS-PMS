@@ -5,11 +5,10 @@ import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerA
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
 import { ManagerBillingRecoveryBanner } from "@/features/payments/components/ManagerPlanStatus";
 import { PaymentSetupStatus } from "@/features/settings/components/PaymentSetupStatus";
-import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
 import { ArrearsHeatMap } from "@/features/dashboard/components/ArrearsHeatMap";
 import { OpenMaintenancePreview } from "@/features/dashboard/components/OpenMaintenancePreview";
 import {
-  Home, RefreshCw, PieChart, DollarSign, Building2, FileText, Users, CheckCircle2, ArrowRight,
+  Home, RefreshCw, PieChart, DollarSign, Wrench, CheckCircle2, ArrowRight,
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -225,25 +224,17 @@ const Dashboard = () => {
             )}
           </section>
 
-          {/* 2. Portfolio health */}
+          {/* 2. Snapshot — four numbers, then inspect occupancy */}
           <section className="mb-6">
             <div className="mb-3">
-              <h2 className="section-title">Portfolio health</h2>
-              <p className="supporting-text hidden sm:block">Properties, occupancy, leases, and tenants from live records</p>
+              <h2 className="section-title">Portfolio</h2>
+              <p className="supporting-text hidden sm:block">Occupancy and collections from live records</p>
             </div>
-            <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 mb-4">
               {loading || !stats
-                ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+                ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-lg" />)
                 : (
                   <>
-                    <StatCard
-                      title="Properties"
-                      value={String(stats.totalProperties)}
-                      change={`${stats.totalUnits} units`}
-                      changeType="neutral"
-                      icon={Building2}
-                      iconColor="neutral"
-                    />
                     <StatCard
                       title="Occupancy"
                       value={`${stats.occupancyRate}%`}
@@ -254,65 +245,12 @@ const Dashboard = () => {
                       progressValue={stats.occupancyRate}
                     />
                     <StatCard
-                      title="Active leases"
-                      value={String(stats.activeLeases)}
-                      change={stats.expiringLeases > 0 ? `${stats.expiringLeases} expiring in 30 days` : "None expiring in 30 days"}
-                      changeType={stats.expiringLeases > 0 ? "negative" : "positive"}
-                      icon={FileText}
-                      iconColor="neutral"
-                    />
-                    <StatCard
-                      title="Active tenants"
-                      value={String(stats.activeTenants)}
-                      change={stats.newTenantsThisMonth > 0 ? `${stats.newTenantsThisMonth} new this month` : "No new tenants this month"}
-                      changeType="neutral"
-                      icon={Users}
-                      iconColor="neutral"
-                    />
-                  </>
-                )}
-            </div>
-          </section>
-
-          {/* 3. Occupancy */}
-          <section className="mb-6">
-            <div className="mb-3">
-              <h2 className="section-title">Occupancy</h2>
-              <p className="supporting-text hidden sm:block">Occupied versus vacant units by property</p>
-            </div>
-            <ErrorBoundary compact label="Occupancy chart">
-              <Suspense fallback={<ChartFallback />}>
-                <OccupancyChart />
-              </Suspense>
-            </ErrorBoundary>
-          </section>
-
-          {/* 4. Collections */}
-          <section className="mb-6">
-            <div className="mb-3">
-              <h2 className="section-title">Collections</h2>
-              <p className="supporting-text hidden sm:block">Collected rent versus expected this month, from paid invoices</p>
-            </div>
-            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3 mb-4">
-              {loading || !stats
-                ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
-                : (
-                  <>
-                    <StatCard
                       title="Collected this month"
                       value={formatCurrency(stats.collectedRent)}
                       change={stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange}% vs last month` : "Same as last month"}
                       changeType={stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral"}
                       icon={DollarSign}
                       iconColor="primary"
-                    />
-                    <StatCard
-                      title="Expected this month"
-                      value={formatCurrency(stats.expectedRent)}
-                      change={`${stats.pendingInvoices} pending invoice${stats.pendingInvoices === 1 ? "" : "s"}`}
-                      changeType="neutral"
-                      icon={FileText}
-                      iconColor="neutral"
                     />
                     <StatCard
                       title="Collection rate"
@@ -323,8 +261,29 @@ const Dashboard = () => {
                       iconColor={stats.collectionRate >= 90 ? "success" : stats.collectionRate >= 75 ? "warning" : "destructive"}
                       progressValue={stats.collectionRate}
                     />
+                    <StatCard
+                      title="Open maintenance"
+                      value={String(stats.openMaintenanceCount)}
+                      change={stats.urgentMaintenanceCount > 0 ? `${stats.urgentMaintenanceCount} urgent` : "No urgent requests"}
+                      changeType={stats.urgentMaintenanceCount > 0 ? "negative" : "positive"}
+                      icon={Wrench}
+                      iconColor={stats.urgentMaintenanceCount > 0 ? "warning" : "neutral"}
+                    />
                   </>
                 )}
+            </div>
+            <ErrorBoundary compact label="Occupancy chart">
+              <Suspense fallback={<ChartFallback />}>
+                <OccupancyChart />
+              </Suspense>
+            </ErrorBoundary>
+          </section>
+
+          {/* 3. Collections trend */}
+          <section className="mb-6">
+            <div className="mb-3">
+              <h2 className="section-title">Collections</h2>
+              <p className="supporting-text hidden sm:block">Collected rent versus expected this month, from paid invoices</p>
             </div>
             <ErrorBoundary compact label="Revenue chart">
               <Suspense fallback={<ChartFallback />}>
@@ -333,7 +292,7 @@ const Dashboard = () => {
             </ErrorBoundary>
           </section>
 
-          {/* 5. Outstanding balances */}
+          {/* 4. Outstanding balances */}
           <section className="mb-6">
             <div className="mb-3">
               <h2 className="section-title">Outstanding balances</h2>
@@ -342,7 +301,7 @@ const Dashboard = () => {
             <ArrearsHeatMap />
           </section>
 
-          {/* 6. Maintenance */}
+          {/* 5. Maintenance */}
           <section className="mb-6">
             <div className="mb-3">
               <h2 className="section-title">Maintenance</h2>
@@ -355,18 +314,7 @@ const Dashboard = () => {
             <OpenMaintenancePreview />
           </section>
 
-          {/* 7. Recent activity */}
-          <section className="mb-6">
-            <div className="mb-3">
-              <h2 className="section-title">Recent activity</h2>
-              <p className="supporting-text hidden sm:block">Latest tenant and operations events</p>
-            </div>
-            <ErrorBoundary compact label="Activity feed">
-              <RecentActivity showHeader={false} />
-            </ErrorBoundary>
-          </section>
-
-          {/* 8. Quick actions / next step */}
+          {/* 6. Next step */}
           <section className="mb-2">
             <div className="mb-3">
               <h2 className="section-title">What to do next</h2>

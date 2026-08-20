@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
-import { Menu, Moon, Sun, Monitor, Check, Command, HelpCircle, Search, PanelRight } from "lucide-react";
+import { Menu, Command, HelpCircle, Search, PanelRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { useTheme } from "@/shared/contexts/ThemeContext";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { BreadcrumbSystem } from "./BreadcrumbSystem";
 import { QuickActions } from "./QuickActions";
@@ -31,7 +22,6 @@ export function Header({
   onOpenHelpCenter,
   onToggleContextPanel,
 }: HeaderProps) {
-  const { theme, resolvedTheme, setTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -123,46 +113,6 @@ export function Header({
           </Button>
         )}
 
-        {/* Theme Picker Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Toggle theme"
-              className="min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
-              title="Toggle theme"
-            >
-              {resolvedTheme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            <DropdownMenuLabel className="text-[11px] font-semibold uppercase text-muted-foreground">
-              Theme
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setTheme("light")} className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-2">
-                <Sun className="h-3.5 w-3.5" /> Light
-              </span>
-              {theme === "light" && <Check className="h-3.5 w-3.5 text-primary" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")} className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-2">
-                <Moon className="h-3.5 w-3.5" /> Dark
-              </span>
-              {theme === "dark" && <Check className="h-3.5 w-3.5 text-primary" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")} className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-2">
-                <Monitor className="h-3.5 w-3.5" /> System
-              </span>
-              {theme === "system" && <Check className="h-3.5 w-3.5 text-primary" />}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* User Profile Menu */}
         <ProfileMenu />
       </div>
     </header>

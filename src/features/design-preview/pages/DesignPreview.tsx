@@ -140,8 +140,7 @@ export default function DesignPreview() {
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
-              One product: white desks, mid-navy chrome, cyan interaction, Outfit type. Portal colour is a 2px stripe.
-              Tool chrome stays separate from the page title. Live branding is Settings → Company.
+              One product: white desks, mid-navy chrome, cyan interaction. Add a visual only if it improves hierarchy, clarity, navigation, a decision, or a workflow. Live branding is Settings → Company.
             </p>
             {liveDesk ? (
               <div className="mt-3">

@@ -77,7 +77,7 @@ export function DashboardKPI({
     <Card
       onClick={onClick}
       className={cn(
-        "border bg-card hover:shadow-md transition-all duration-200",
+        "border bg-card",
         onClick && "cursor-pointer hover:border-primary/40",
         style.border,
         className
@@ -94,7 +94,7 @@ export function DashboardKPI({
         </div>
 
         <div>
-          <h3 className="text-2xl font-black text-foreground tracking-tight">{value}</h3>
+          <h3 className="text-2xl font-semibold text-foreground tracking-tight">{value}</h3>
           {subtitle && <p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p>}
         </div>
 

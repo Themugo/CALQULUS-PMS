@@ -6,19 +6,13 @@ import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import AgencyLayout from '@/features/agency/components/AgencyLayout';
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import {
-  Building2, Users, TrendingUp, Shield, DollarSign, Handshake,
-  Home, FileText, CreditCard, AlertCircle, Zap, Wrench, BarChart3,
-  CheckSquare, Activity, ArrowRight, RefreshCw, CheckCircle2, Calendar
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -143,7 +137,7 @@ const AgencyDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -152,310 +146,154 @@ const AgencyDashboard = () => {
     return <Navigate to="/agency/login" replace />;
   }
 
-  const statCards = [
-    { label: 'Properties', value: stats?.totalProperties, sub: `${stats?.totalUnits ?? 0} units`, icon: Building2, color: 'text-indigo' },
-    { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : undefined, sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units`, icon: Home, color: 'text-purple' },
-    { label: 'Active tenants', value: stats?.activeTenants, sub: `${stats?.totalTenants ?? 0} total`, icon: Users, color: 'text-indigo' },
-    { label: 'Active leases', value: stats?.activeLeases, sub: (stats?.expiringLeases ?? 0) > 0 ? `${stats?.expiringLeases} expiring` : 'None expiring', icon: FileText, color: 'text-purple' },
-    { label: 'Invoices due', value: stats?.invoicesDue, sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'All on time', icon: CreditCard, color: (stats?.overdueInvoices ?? 0) > 0 ? 'text-warning' : 'text-indigo' },
-    { label: 'Revenue (MTD)', value: stats ? fmt(stats.revenueMTD) : undefined, sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last mo.` : 'vs last month', icon: TrendingUp, color: 'text-success' },
-  ];
+  const issueCount = (stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0);
+  const hasAttention = (stats?.arrearsTotal ?? 0) > 0 || issueCount > 0;
 
   return (
     <AgencyLayout
       title="Dashboard"
       description="Properties, occupancy, collections, and what needs attention"
     >
-      {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {/* 1. What requires attention? */}
-        <Card className="border-l-4 border-l-destructive border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                <AlertCircle className="h-3.5 w-3.5" />
-                What Requires Attention?
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-destructive/30 text-destructive">
-                {(stats?.overdueInvoices ?? 0) + (stats?.expiringLeases ?? 0)} Issues
-              </Badge>
-            </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Arrears Balance:</span>
-                <span className="font-semibold text-destructive">{fmt(stats?.arrearsTotal ?? 0)}</span>
+      <section className="mb-6">
+        <div className="mb-3">
+          <h2 className="section-title">Needs attention</h2>
+        </div>
+        {isLoading ? (
+          <Skeleton className="h-16 w-full" />
+        ) : !hasAttention ? (
+          <p className="text-sm text-muted-foreground">No overdue invoices or expiring leases right now.</p>
+        ) : (
+          <div className="rounded-lg border border-border bg-card divide-y divide-border">
+            {(stats?.arrearsTotal ?? 0) > 0 && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground">{fmt(stats!.arrearsTotal)} in arrears</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {stats!.overdueInvoices} overdue invoice{stats!.overdueInvoices !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <Button size="sm" className="min-h-11 shrink-0" onClick={() => navigate('/agency/billing')}>
+                  Open billing
+                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Button>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Overdue Invoices:</span>
-                <span className="font-semibold text-foreground">{stats?.overdueInvoices ?? 0} overdue</span>
+            )}
+            {(stats?.expiringLeases ?? 0) > 0 && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground">{stats!.expiringLeases} lease{stats!.expiringLeases !== 1 ? 's' : ''} expiring</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Review before they lapse</p>
+                </div>
+                <Button size="sm" variant="outline" className="min-h-11 shrink-0" onClick={() => navigate('/agency/leases')}>
+                  Open leases
+                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Button>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Expiring Leases:</span>
-                <span className="font-semibold text-warning">{stats?.expiringLeases ?? 0} expiring</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        )}
+      </section>
 
-        {/* 2. What generates revenue? */}
-        <Card className="border-l-4 border-l-success border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5" />
-                What Generates Revenue?
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                +{stats?.revenueChange ?? 0}% MoM
-              </Badge>
-            </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Revenue MTD:</span>
-                <span className="font-bold text-success">{fmt(stats?.revenueMTD ?? 0)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Occupancy Rate:</span>
-                <span className="font-semibold text-foreground">{stats?.occupancyRate ?? 0}% occupied</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Invoices Due:</span>
-                <span className="font-medium text-foreground">{stats?.invoicesDue ?? 0} total</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 3. What needs approval? */}
-        <Card className="border-l-4 border-l-warning border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                <CheckSquare className="h-3.5 w-3.5" />
-                What Needs Approval?
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-warning/30 text-warning">
-                Agency Ops
-              </Badge>
-            </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Pending Invoices:</span>
-                <span className="font-semibold text-warning">{stats?.pendingInvoices ?? 0} pending</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Lease Expiries:</span>
-                <span className="font-medium text-foreground">{stats?.expiringLeases ?? 0} for review</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 4. Portfolio Scope */}
-        <Card className="border-l-4 border-l-indigo border-border bg-card hover:shadow-md transition-all">
-          <CardContent className="p-3.5">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5" />
-                Agency Roster
-              </span>
-              <Badge variant="outline" className="text-[10px] h-4 border-indigo/30 text-indigo">
-                {stats?.totalProperties ?? 0} Properties
-              </Badge>
-            </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Active Tenants:</span>
-                <span className="font-semibold text-foreground">{stats?.activeTenants ?? 0}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Active Leases:</span>
-                <span className="font-semibold text-foreground">{stats?.activeLeases ?? 0}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* KPI Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-        {statCards.map(stat => (
-          <Card key={stat.label} className="bg-card border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
+      <section className="mb-6">
+        <div className="mb-3">
+          <h2 className="section-title">Portfolio</h2>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { label: 'Occupancy', value: stats ? `${stats.occupancyRate}%` : '—', sub: `${stats?.occupiedUnits ?? 0}/${stats?.totalUnits ?? 0} units` },
+            { label: 'Collected MTD', value: stats ? fmt(stats.revenueMTD) : '—', sub: stats && stats.revenueChange !== 0 ? `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange}% vs last month` : 'vs last month' },
+            { label: 'Invoices due', value: stats?.invoicesDue ?? '—', sub: (stats?.overdueInvoices ?? 0) > 0 ? `${stats?.overdueInvoices} overdue` : 'None overdue' },
+            { label: 'Properties', value: stats?.totalProperties ?? '—', sub: `${stats?.activeTenants ?? 0} active tenants` },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
               {isLoading ? (
-                <Skeleton className="h-7 w-20 bg-muted/60" />
+                <Skeleton className="h-7 w-20 mt-2" />
               ) : (
                 <>
-                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value ?? 0}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{stat.sub}</p>
+                  <p className="text-xl font-semibold text-foreground mt-1">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{stat.sub}</p>
                 </>
               )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Arrears Alert Banner */}
-      {!isLoading && (stats?.arrearsTotal ?? 0) > 0 && (
-        <Card className="bg-destructive/5 border-destructive/30 mb-6">
-          <CardContent className="p-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-destructive">
-                  {fmt(stats!.arrearsTotal)} in arrears across {stats!.overdueInvoices} overdue invoice{stats!.overdueInvoices !== 1 ? 's' : ''}
-                </p>
-                <p className="text-xs text-destructive/80">Immediate collection follow-up recommended.</p>
-              </div>
             </div>
-            <Button size="sm" variant="outline" className="border-destructive/30 text-destructive shrink-0" onClick={() => navigate('/agency/billing')}>
-              View Billing Matrix <ArrowRight className="h-3.5 w-3.5 ml-1" />
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          ))}
+        </div>
+      </section>
 
-      {/* Revenue trend + occupancy snapshot */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
-        <div className="lg:col-span-7">
-          <Card className="bg-card border-border h-full">
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-card-foreground font-semibold text-sm">Revenue Overview</h3>
-                  <p className="text-xs text-muted-foreground">6-Month Paid vs Pending Collections</p>
-                </div>
-                <TrendingUp className="h-4 w-4 text-indigo" />
-              </div>
-              {isLoading ? (
-                <Skeleton className="h-[220px] w-full bg-muted/60" />
-              ) : (
-                <div className="h-[230px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="agencyPaid" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--indigo))" stopOpacity={0.35} />
-                          <stop offset="95%" stopColor="hsl(var(--indigo))" stopOpacity={0} />
-                        </linearGradient>
-                        <linearGradient id="agencyPending" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
-                      <Tooltip
-                        contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
-                        formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
-                      />
-                      <Area type="monotone" dataKey="paid" stroke="hsl(var(--indigo))" strokeWidth={2} fill="url(#agencyPaid)" />
-                      <Area type="monotone" dataKey="pending" stroke="hsl(var(--warning))" strokeWidth={2} fill="url(#agencyPending)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <div className="lg:col-span-7 rounded-lg border border-border bg-card p-5">
+          <h3 className="text-sm font-semibold text-foreground">Collections</h3>
+          <p className="text-xs text-muted-foreground mb-4">Paid versus pending over six months</p>
+          {isLoading ? (
+            <Skeleton className="h-[220px] w-full" />
+          ) : (
+            <div className="h-[230px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={stats?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
+                  <Tooltip
+                    contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, color: 'hsl(var(--popover-foreground))' }}
+                    formatter={(v: number, name: string) => [fmt(v), name === 'paid' ? 'Collected' : 'Pending']}
+                  />
+                  <Area type="monotone" dataKey="paid" stroke="hsl(var(--navy-mid))" strokeWidth={2} fill="transparent" />
+                  <Area type="monotone" dataKey="pending" stroke="hsl(var(--warning))" strokeWidth={2} fill="transparent" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
 
-        <div className="lg:col-span-5">
-          <Card className="bg-card border-border h-full">
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-card-foreground font-semibold text-sm">Occupancy by Property</h3>
-                  <p className="text-xs text-muted-foreground">Top properties by size</p>
+        <div className="lg:col-span-5 rounded-lg border border-border bg-card p-5">
+          <h3 className="text-sm font-semibold text-foreground">Occupancy by property</h3>
+          <p className="text-xs text-muted-foreground mb-4">Largest properties first</p>
+          {isLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
+            </div>
+          ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
+            <div className="py-8">
+              <p className="text-sm text-muted-foreground">No properties yet</p>
+              <Button size="sm" className="mt-3" onClick={() => navigate('/agency/properties')}>
+                Add a property
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {stats!.occupancyByProperty.map(p => (
+                <div key={p.name}>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-foreground font-medium truncate pr-2">{p.name}</span>
+                    <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className={`h-full ${p.rate >= 90 ? 'bg-success' : p.rate >= 70 ? 'bg-warning' : 'bg-destructive'}`}
+                      style={{ width: `${Math.min(p.rate, 100)}%` }}
+                    />
+                  </div>
                 </div>
-                <Home className="h-4 w-4 text-indigo" />
-              </div>
-              {isLoading ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-full bg-muted/60" />)}
-                </div>
-              ) : (stats?.occupancyByProperty?.length ?? 0) === 0 ? (
-                <div className="py-10 text-center">
-                  <Building2 className="h-9 w-9 mx-auto mb-2 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">No properties yet</p>
-                  <Button size="sm" className="mt-3" onClick={() => navigate('/agency/properties')}>
-                    Add a property
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-3.5">
-                  {stats!.occupancyByProperty.map(p => (
-                    <div key={p.name}>
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-card-foreground font-medium truncate pr-2">{p.name}</span>
-                        <span className="text-muted-foreground shrink-0">{p.occupied}/{p.units} · {p.rate}%</span>
-                      </div>
-                      <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${p.rate >= 90 ? 'bg-success' : p.rate >= 70 ? 'bg-warning' : 'bg-destructive'}`}
-                          style={{ width: `${Math.min(p.rate, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Quick Actions Desk */}
-      <Card className="mb-6 border-border">
-        <CardContent className="p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-indigo" />
-              <span className="text-sm font-semibold text-foreground">Agency Action Desk</span>
-            </div>
-            <Badge variant="outline" className="text-xs">Direct Access</Badge>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {[
-              { label: 'Properties',  icon: Building2,  href: '/agency/properties',   accent: 'text-indigo',    bg: 'bg-indigo/10 border-indigo/20' },
-              { label: 'Tenants',     icon: Users,      href: '/agency/tenants',       accent: 'text-success',   bg: 'bg-success/10 border-success/20' },
-              { label: 'Billing',     icon: CreditCard, href: '/agency/billing',       accent: 'text-warning',   bg: 'bg-warning/10 border-warning/25' },
-              { label: 'Landlords',   icon: Handshake,  href: '/agency/landlords',     accent: 'text-purple',    bg: 'bg-purple/10 border-purple/20' },
-              { label: 'Maintenance', icon: Wrench,     href: '/agency/maintenance',   accent: 'text-info',      bg: 'bg-info/10 border-info/20' },
-              { label: 'Reports',     icon: BarChart3,  href: '/agency/reports',       accent: 'text-indigo',    bg: 'bg-indigo/10 border-indigo/20' },
-            ].map(a => (
-              <button key={a.label} onClick={() => navigate(a.href)}
-                className={`group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 touch-manipulation ${a.bg}`}>
-                <div className="h-9 w-9 rounded-xl bg-background/80 border border-border flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-110">
-                  <a.icon className={`h-4 w-4 ${a.accent}`} />
-                </div>
-                <p className="text-xs font-semibold text-foreground text-center leading-tight">{a.label}</p>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Info card */}
-      <Card className="bg-card border-border">
-        <CardContent className="p-5">
-          <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-indigo shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-card-foreground">Agency Operating Architecture</p>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                As a property agency, you operate as a full agent — managing properties on behalf of landlords,
-                collecting rent directly or forwarding to landlord destination accounts, and managing tenant relationships.
-                Your portal provides tenant lifecycle management, landlord revenue sharing configurations, and staff submanager controls.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <nav aria-label="Agency shortcuts" className="flex flex-wrap gap-2">
+        {[
+          { label: 'Properties', href: '/agency/properties' },
+          { label: 'Tenants', href: '/agency/tenants' },
+          { label: 'Billing', href: '/agency/billing' },
+          { label: 'Landlords', href: '/agency/landlords' },
+          { label: 'Maintenance', href: '/agency/maintenance' },
+          { label: 'Reports', href: '/agency/reports' },
+        ].map((item) => (
+          <Button key={item.href} variant="outline" size="sm" className="min-h-11" onClick={() => navigate(item.href)}>
+            {item.label}
+          </Button>
+        ))}
+      </nav>
     </AgencyLayout>
   );
 };
