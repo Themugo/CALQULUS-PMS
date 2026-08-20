@@ -32,6 +32,8 @@ import { LoadingState } from "@/shared/components/ui/loading-state";
 import { CALQULUS_BRAND, CALQULUS_COLOR, CALQULUS_PORTAL_ACCENT, CALQULUS_TYPE } from "@/shared/theme/tokens";
 import { CALQULUS_PORTALS, type PortalId } from "@/core/product/portals";
 import { PLATFORM_BRAND_CONFIG } from "@/core/brand/platformBrand";
+import { emptyOrgBrandDraft } from "@/core/brand/orgBrandDraft";
+import { BrandLivePreview } from "@/features/settings/components/BrandLivePreview";
 import { term } from "@/core/brand/terms";
 import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
 import { deriveBrandPalette } from "@/core/design/deriveBrandPalette";
@@ -1027,8 +1029,25 @@ function BrandStudioPreview({
   trial: ReturnType<typeof deriveBrandPalette>;
 }) {
   const config = PLATFORM_BRAND_CONFIG;
+  const draft = {
+    ...emptyOrgBrandDraft(),
+    companyName: "Ridgeview Estates",
+    tagline: "Property operations for your portfolio",
+    primaryHex: trial.approved ? trial.hex : CALQULUS_COLOR.primary,
+  };
+  const sections = [
+    { title: "Identity", copy: "Company name, logo, favicon, tagline" },
+    { title: "Colours", copy: "Primary, secondary, accent — contrast checked" },
+    { title: "Portal themes", copy: "Manager, Landlord, Agency, Tenant — 2px only" },
+    { title: "Communications", copy: "Email from-name and notification product name" },
+    { title: "Documents", copy: "Invoices, receipts, statements, reports" },
+    { title: "Domain", copy: "Stored host. DNS and TLS are not provisioned here" },
+  ];
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-preview="brand-studio">
+      <p className="type-body text-muted-foreground">
+        Brand Studio is configuration, not CSS. Managers and agencies edit named BrandConfig fields. Preview the draft, then save. Semantic status colours never move.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle className={CALQULUS_TYPE.cardTitle}>Brand configuration</CardTitle>
@@ -1074,7 +1093,14 @@ function BrandStudioPreview({
           </div>
         </CardContent>
       </Card>
-      <PortalPreviewCanvas primaryColor={trial.approved ? trial.hex : CALQULUS_COLOR.primary} />
+      {sections.map((section) => (
+        <div key={section.title} className="rounded-lg border border-border bg-card p-4">
+          <h2 className="section-title">{section.title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{section.copy}</p>
+        </div>
+      ))}
+      <BrandLivePreview draft={draft} />
+      <PortalPreviewCanvas primaryColor={trial.approved ? trial.hex : CALQULUS_COLOR.primary} companyName="Ridgeview Estates" />
     </div>
   );
 }

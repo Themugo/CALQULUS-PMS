@@ -15,6 +15,7 @@ import { Loader2, Upload, X } from "lucide-react";
 import { UserRoleManagement } from "@/features/settings/components/UserRoleManagement";
 import { PasswordChange } from "@/features/settings/components/PasswordChange";
 import { CompanySettings } from "@/features/settings/components/CompanySettings";
+import OrgBrandStudio from "@/features/settings/components/OrgBrandStudio";
 import { ReceiptSettings } from "@/features/settings/components/ReceiptSettings";
 import { PaymentReminderSettings } from "@/features/settings/components/PaymentReminderSettings";
 import { CurrencySettings } from "@/features/settings/components/CurrencySettings";
@@ -292,7 +293,7 @@ const Settings = () => {
       case "company":
         return <CompanySettings section="organization" />;
       case "branding":
-        return <CompanySettings section="branding" />;
+        return <OrgBrandStudio />;
       case "receipts":
         return <ReceiptSettings />;
       case "reminders":

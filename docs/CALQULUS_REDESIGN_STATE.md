@@ -1,6 +1,57 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:
+Identity (company name, logo, favicon, tagline), Colours (primary, secondary,
+accent), Portal themes (Manager, Landlord, Agency, Tenant), Communications
+(email, notifications), Documents (invoices, receipts, statements, reports),
+Domain if the existing record supports it, and live preview of Login, Header,
+Sidebar, Dashboard, Buttons, Document. Configuration-driven. No CSS injection.
+Contrast validated. Semantic status colours preserved. Preview before save.
+
+## CURRENT TASK
+Phase 9 Brand Studio: audit the existing BrandConfig / company_settings
+architecture and put a premium editor on it. Do not invent a second brand
+system. Authorized administrators are the manager or agency that owns
+`company_settings` (`manager_user_id = auth.uid()`).
+
+### Phase 9 findings (before any changes)
+- Live branding already lives on `company_settings` (name, logo, contact,
+  `brand_primary_hex`, `white_label_enabled`, `brand_config` jsonb).
+- `BrandConfig` is the named contract. `composeBrandConfig` / `parseOrgBrandRecord`
+  / `compactBrandOverlay` already merge platform defaults with the org overlay.
+- `WhiteLabelProvider` applies at most `--brand-primary*` after
+  `deriveBrandPalette` contrast checks. It never writes `--primary` or status
+  tokens. Webhost / login stay CALQULUS (`get_org_brand()` returns null).
+- Settings → Branding was a dense form inside `CompanySettings`. Secondary,
+  accent, portal accents, statements, reports, and a draft preview were
+  missing. Saving Organization also rewrote `brand_config` from stale state.
+- `MultiBrandStudio` / `CustomDomainConfig` / `BrandAssetManager` are
+  structural previews with fabricated DNS “verified” state. Not used for save.
+- Custom domain is stored on `brand_config.domains.customDomain`. DNS/TLS are
+  not provisioned from the app. RLS: owner or webhost; UI still denies webhost
+  org edits (platform chrome stays CALQULUS).
+
+### Phase 9 implementation
+- `OrgBrandStudio` is the live editor at Settings → Branding (nav label Brand
+  Studio). Draft preview, then Save. Named sections match the brief.
+- Colours and portal accents go through `deriveBrandPalette`. Unapproved
+  primary cannot enable white-label. Status green/amber/red stay read-only.
+- Inputs are sanitized (plain text, https/relative URLs, host-only domain).
+  No CSS or script payloads in `brand_config`.
+- Organization save writes contact/address only. Branding columns and jsonb
+  are written only from Brand Studio.
+- `/design-preview` Brand Studio shows the named sections and live frames.
+- Platform Admin Brand Studio remains a CALQULUS structural preview.
+
+### Phase 9 verification
+- Pending this turn.
+
+## CHECKPOINT
+Phase 9 Brand Studio is on `cursor/phase-9-brand-studio-1e5d`.
+Do not merge to `main` until James asks.
+
+## PREVIOUS PHASE
 Phase 8 — Platform Admin. James issued the control-tower brief: white / navy /
 indigo accent. Dashboard: Organizations, Users, Active sessions, Revenue,
 Transactions. System health: Database, API, Payments, Notifications, Storage
@@ -8,12 +59,11 @@ where a live probe exists — never invented. Security: Authentication events,
 Failed logins, Permission events, Alerts. Business: Organizations,
 Subscriptions, Usage. Named pages: Dashboard, Organizations, Organization
 Detail, Users, Subscriptions, Audit Log, Security, Settings, Brand Studio.
+Merged to `main` (`7f4d5ed`).
 
-## CURRENT TASK
-Phase 8 platform admin desk: preview on `/design-preview`, then production
-pages. Auth prefix `/webhost` unchanged. Existing manager billing, org CRUD,
-audit logs, Brand Studio, and health-check reused. Do not invent health,
-sessions, or fraud scores.
+## PREVIOUS TASK
+Phase 8 platform admin desk complete and merged to `main`. Preview on
+`/design-preview`, then production pages. Auth prefix `/webhost` unchanged.
 
 ### Phase 8 findings (before any changes)
 - The webhost desk was one tabbed page (`WebhostDashboard`) with Overview,
@@ -61,10 +111,7 @@ sessions, or fraud scores.
   — 32 passed, 5 skipped (credential-gated auth)
   Platform Admin preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
 - `npm run build` — pass
-
-## CHECKPOINT
-Phase 8 platform admin is on `cursor/phase-8-control-tower-1e5d` (PR #57).
-Do not merge to `main` until James asks.
+- Merged to `main` as `7f4d5ed`.
 
 ## PREVIOUS PHASE
 Phase 7 — Tenant experience. James issued the tenant brief: white / navy /

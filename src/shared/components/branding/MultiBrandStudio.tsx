@@ -33,7 +33,7 @@ export function MultiBrandStudio({ className }: { className?: string }) {
             <Sparkles className="h-5 w-5 text-primary" /> Brand configuration
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Live org branding is Settings → Company (Enterprise white-label). This canvas is structural preview only.
+            Live org branding is Settings → Brand Studio. This canvas is structural preview of CALQULUS chrome only.
           </p>
         </div>
       </div>

@@ -95,7 +95,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     id: "branding",
     label: "Branding",
     items: [
-      { id: "branding", label: "White-label", icon: Palette },
+      { id: "branding", label: "Brand Studio", icon: Palette },
     ],
   },
 ];

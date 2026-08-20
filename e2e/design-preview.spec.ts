@@ -10,6 +10,19 @@ test.describe("Design preview", () => {
     await expect(page.locator("[data-preview='design']")).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Brand Studio" }).click();
     await expect(page.getByText("Brand configuration")).toBeVisible();
+    const brandPreview = page.locator("[data-preview='brand-studio']");
+    await expect(brandPreview.getByRole("heading", { name: "Identity", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("heading", { name: "Colours", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("heading", { name: "Portal themes", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("heading", { name: "Communications", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("heading", { name: "Documents", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("heading", { name: "Domain", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Login", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Header", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Sidebar", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Dashboard", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Buttons", exact: true })).toBeVisible();
+    await expect(brandPreview.getByRole("button", { name: "Document", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Manager" }).click();
     await expect(page.getByText("Professional Blue")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Manager" })).toBeVisible();
@@ -73,6 +86,7 @@ test.describe("Design preview", () => {
     await expect(page.getByRole("navigation", { name: "Settings groups" })).toContainText("Integrations");
     await expect(page.getByRole("navigation", { name: "Settings groups" })).toContainText("Security");
     await expect(page.getByRole("navigation", { name: "Settings groups" })).toContainText("Branding");
+    await expect(page.getByRole("navigation", { name: "Settings groups" })).toContainText("Brand Studio");
   });
 
   test("does not overflow horizontally at 390px", async ({ page }) => {
