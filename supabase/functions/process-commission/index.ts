@@ -3,13 +3,13 @@ import { createClient } from "supabase/supabase-js@2";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
   const supabase = createClient(
     requireEnv("SUPABASE_URL"),
@@ -47,6 +47,17 @@ serve(async (req) => {
     if (!payment) {
       return new Response(JSON.stringify({ error: "Payment not found" }), {
         status: 404,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
+    if (
+      gate.userId &&
+      payment.manager_id !== gate.userId &&
+      payment.landlord_id !== gate.userId
+    ) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }

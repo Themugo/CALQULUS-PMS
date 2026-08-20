@@ -30,7 +30,7 @@ export function SmartSummaryCard({
     <Card
       className={cn(
         "border-border/80 bg-card shadow-sm hover:border-primary/40 transition-all text-xs space-y-3 p-4",
-        riskLevel === "high" && "border-amber-500/30 bg-amber-500/5",
+        riskLevel === "high" && "border-warning/30 bg-warning/5",
         className
       )}
     >
@@ -44,7 +44,7 @@ export function SmartSummaryCard({
           variant="outline"
           className={cn(
             "text-[9px] font-bold uppercase",
-            riskLevel === "high" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+            riskLevel === "high" && "bg-warning/10 text-warning border-warning/20",
             riskLevel === "medium" && "bg-blue-500/10 text-blue-600 border-blue-500/20",
             riskLevel === "low" && "bg-success/10 text-success border-success/20"
           )}

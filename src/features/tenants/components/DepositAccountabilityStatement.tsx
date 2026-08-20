@@ -43,7 +43,7 @@ const DEDUCTION_CATEGORIES = [
   { value: 'damages',         label: 'Physical damages',        color: 'text-red-600' },
   { value: 'unpaid_rent',     label: 'Unpaid rent arrears',     color: 'text-orange-600' },
   { value: 'unpaid_water',    label: 'Unpaid water bill',       color: 'text-[hsl(195_60%_38%)]' },
-  { value: 'unpaid_bills',    label: 'Other unpaid charges',    color: 'text-amber-600' },
+  { value: 'unpaid_bills',    label: 'Other unpaid charges',    color: 'text-warning' },
   { value: 'key_replacement', label: 'Key / lock replacement',  color: 'text-slate-600' },
   { value: 'repainting',      label: 'Repainting',              color: 'text-[hsl(218_58%_38%)]' },
   { value: 'maintenance',     label: 'Maintenance (linked)',     color: 'text-green-600' },
@@ -354,7 +354,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
             <div className="flex items-center gap-2">
               {refund.status === 'completed'
                 ? <CheckCircle className="h-4 w-4 text-green-600" />
-                : <Clock className="h-4 w-4 text-amber-600" />
+                : <Clock className="h-4 w-4 text-warning" />
               }
               <span className="text-sm font-medium">
                 Refund {refund.status} · {fmt(refund.refund_amount)} via {refund.refund_method}

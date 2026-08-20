@@ -43,10 +43,10 @@ export function LicenseSubscriptionCenter({ className }: { className?: string })
       </CardHeader>
 
       <CardContent className="p-4 space-y-4">
-        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
-          <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-2.5 rounded-lg border border-warning/20 bg-warning/5 text-[11px] flex items-start gap-2">
+          <AlertCircle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
           <p className="text-muted-foreground">
-            <strong className="text-amber-600">Control-plane summary.</strong> Per-unit prices reflect the configured <code className="font-mono">subscription_tiers.price_per_unit</code>. Active-agency counts shown below are illustrative; live counts are available in the Billing tab.
+            <strong className="text-warning">Control-plane summary.</strong> Per-unit prices reflect the configured <code className="font-mono">subscription_tiers.price_per_unit</code>. Active-agency counts shown below are illustrative; live counts are available in the Billing tab.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

@@ -124,7 +124,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Archive className="h-5 w-5 text-amber-600" />
+                <Archive className="h-5 w-5 text-warning" />
                 Process move-out
               </DialogTitle>
               <DialogDescription>
@@ -136,7 +136,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
               {/* Tenant summary */}
               <div className="p-3 rounded-lg bg-muted/40 flex items-center gap-3">
                 <div className="h-9 w-9 rounded-full bg-amber-400/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-amber-500" />
+                  <User className="h-4 w-4 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{tenant.name}</p>

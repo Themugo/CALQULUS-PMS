@@ -392,7 +392,7 @@ const PhysicalDocumentEntry: React.FC = () => {
                 <button key={t} type="button"
                   onClick={() => setDocType(t)}
                   className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors capitalize ${
-                    docType === t ? 'border-amber-400/50 bg-amber-400/8 text-amber-600' : 'border-border text-muted-foreground'
+                    docType === t ? 'border-amber-400/50 bg-amber-400/8 text-warning' : 'border-border text-muted-foreground'
                   }`}
                 >
                   {t === 'receipt' ? <><Receipt className="h-4 w-4 inline mr-2" />Receipt</> : <><FileText className="h-4 w-4 inline mr-2" />Invoice</>}

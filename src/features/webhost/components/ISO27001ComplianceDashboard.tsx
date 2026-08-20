@@ -485,7 +485,7 @@ const ISO27001ComplianceDashboard = () => {
                     <span className="text-warning/70">Partial</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-secondary-background rounded-full h-2">
-                        <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
+                        <div className="bg-warning h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'partial').length}</span>
                     </div>

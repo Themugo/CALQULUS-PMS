@@ -179,7 +179,7 @@ export default function NotificationFailuresPanel() {
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <AlertCircle className="h-5 w-5 text-warning" />
               Receipt notification failures
             </CardTitle>
             <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isLoading}>
@@ -251,7 +251,7 @@ export default function NotificationFailuresPanel() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <AlertCircle className="h-5 w-5 text-warning" />
               Notification failure
             </DialogTitle>
             <DialogDescription>

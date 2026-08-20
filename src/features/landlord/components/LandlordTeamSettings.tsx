@@ -247,7 +247,7 @@ const LandlordTeamSettings: React.FC = () => {
           </Button>
         </div>
         {properties.length === 0 && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2">
+          <p className="text-xs text-warning bg-amber-50 border border-amber-200 rounded-md p-2">
             Link at least one property to your account before adding team members.
           </p>
         )}

@@ -196,7 +196,7 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
                     Included
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-amber-300 text-amber-700 bg-amber-50">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-amber-300 text-warning bg-amber-50">
                     +{fmt(Number(a.extra_charge || 0))}/mo
                   </Badge>
                 )}

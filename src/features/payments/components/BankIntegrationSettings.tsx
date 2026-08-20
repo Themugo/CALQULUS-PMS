@@ -198,7 +198,7 @@ const BankIntegrationSettings: React.FC = () => {
           </div>
           <div className="flex gap-2">
             {unmatchedCount !== undefined && unmatchedCount > 0 && (
-              <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
+              <Badge variant="outline" className="border-amber-300 text-warning bg-amber-50">
                 {unmatchedCount} unmatched
               </Badge>
             )}

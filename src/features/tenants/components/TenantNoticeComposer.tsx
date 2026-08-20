@@ -39,7 +39,7 @@ interface TenantNoticeComposerProps {
 }
 
 const NOTICE_TYPES = [
-  { value: 'rent_increase',   label: 'Rent increase notice',    icon: TrendingUp,    color: 'text-amber-600', template: true },
+  { value: 'rent_increase',   label: 'Rent increase notice',    icon: TrendingUp,    color: 'text-warning', template: true },
   { value: 'arrears_demand',  label: 'Arrears demand letter',   icon: AlertTriangle, color: 'text-red-600',   template: true },
   { value: 'eviction_warning',label: 'Eviction warning',        icon: Home,          color: 'text-red-700',   template: true },
   { value: 'entry_notice',    label: 'Maintenance entry notice', icon: Home,          color: 'text-[hsl(214_73%_45%)]',  template: true },
@@ -260,7 +260,7 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
                     onClick={() => loadTemplate(t.value)}
                     className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.notice_type === t.value
-                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                        ? 'border-amber-400/50 bg-amber-400/8 text-warning'
                         : 'border-border hover:border-amber-400/30 text-muted-foreground'
                     }`}
                   >

@@ -153,8 +153,8 @@ export function AppMarketplace({ className }: { className?: string }) {
                 <Badge variant="outline" className="text-[9px] font-bold uppercase">
                   {app.category}
                 </Badge>
-                <div className="flex items-center gap-1 text-amber-500 font-bold text-[11px]">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 text-warning font-bold text-[11px]">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-warning" />
                   <span>{app.rating}</span>
                   <span className="text-muted-foreground font-normal text-[10px]">({app.reviews})</span>
                 </div>
@@ -163,7 +163,7 @@ export function AppMarketplace({ className }: { className?: string }) {
               <div>
                 <h4 className="font-extrabold text-foreground text-xs flex items-center gap-1.5">
                   {app.title}
-                  {app.featured && <Sparkles className="h-3.5 w-3.5 text-amber-500" />}
+                  {app.featured && <Sparkles className="h-3.5 w-3.5 text-warning" />}
                 </h4>
                 <p className="text-[10px] text-muted-foreground mt-0.5">By {app.publisher}</p>
                 <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{app.description}</p>

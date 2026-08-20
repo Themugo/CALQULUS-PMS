@@ -35,10 +35,10 @@ export function AdminConfigurationCenter({ className }: { className?: string }) 
       </CardHeader>
 
       <CardContent className="p-4 space-y-4 text-xs">
-        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
-          <Settings className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-2.5 rounded-lg border border-warning/20 bg-warning/5 text-[11px] flex items-start gap-2">
+          <Settings className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
           <p className="text-muted-foreground">
-            <strong className="text-amber-600">Configuration surface.</strong> These fields document the platform&apos;s configurable parameters. A backing settings store is not yet connected, so &quot;Save Changes&quot; confirms locally only.
+            <strong className="text-warning">Configuration surface.</strong> These fields document the platform&apos;s configurable parameters. A backing settings store is not yet connected, so &quot;Save Changes&quot; confirms locally only.
           </p>
         </div>
         <Tabs defaultValue="localization">

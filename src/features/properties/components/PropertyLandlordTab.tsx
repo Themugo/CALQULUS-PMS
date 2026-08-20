@@ -308,7 +308,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
             <div className="flex items-center justify-between gap-4 p-3 bg-muted/30 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-amber-700 font-semibold text-sm">
+                  <span className="text-warning font-semibold text-sm">
                     {(landlordLink.profile?.full_name || landlordLink.profile?.email || 'L')[0].toUpperCase()}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
                 </div>
               </div>
               <div className="text-right">
-                <Badge variant="outline" className="mb-2 border-amber-300 text-amber-700 bg-amber-50">
+                <Badge variant="outline" className="mb-2 border-amber-300 text-warning bg-amber-50">
                   {landlordLink.revenue_share_pct}% revenue share
                 </Badge>
                 <div className="text-xs text-muted-foreground">

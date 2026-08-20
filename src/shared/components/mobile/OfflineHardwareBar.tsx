@@ -47,7 +47,7 @@ export function OfflineHardwareBar({ className }: { className?: string }) {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 bg-muted/30 px-2.5 py-1 rounded-full border">
-            {isOnline ? <Wifi className="h-3.5 w-3.5 text-success" /> : <WifiOff className="h-3.5 w-3.5 text-amber-500" />}
+            {isOnline ? <Wifi className="h-3.5 w-3.5 text-success" /> : <WifiOff className="h-3.5 w-3.5 text-warning" />}
             <span className="font-bold text-[10px]">{isOnline ? "ONLINE" : "OFFLINE CACHE"}</span>
             <Switch checked={isOnline} onCheckedChange={setIsOnline} className="scale-75" />
           </div>
@@ -113,7 +113,7 @@ export function OfflineHardwareBar({ className }: { className?: string }) {
         {/* Push Notifications */}
         <div className="p-2.5 border rounded-xl bg-card flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Bell className="h-3.5 w-3.5 text-amber-500" />
+            <Bell className="h-3.5 w-3.5 text-warning" />
             <div>
               <span className="font-bold text-[10px] text-foreground block">FCM Push</span>
               <span className="text-[9px] text-muted-foreground">{pushSent ? "Alert Sent!" : "Subscribed"}</span>

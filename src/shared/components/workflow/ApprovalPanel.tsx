@@ -69,7 +69,7 @@ export function ApprovalPanel({
           className={cn(
             "text-xs font-bold capitalize px-2.5 h-6",
             currentStatus === "approved" && "bg-success/10 text-success border-success/30",
-            currentStatus === "pending_approval" && "bg-amber-500/10 text-amber-600 border-amber-500/30",
+            currentStatus === "pending_approval" && "bg-warning/10 text-warning border-warning/30",
             currentStatus === "rejected" && "bg-red-500/10 text-red-600 border-red-500/30",
             currentStatus === "escalated" && "bg-navy-mid/10 text-navy-mid border-navy-mid/30"
           )}

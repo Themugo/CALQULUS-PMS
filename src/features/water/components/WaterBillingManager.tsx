@@ -495,7 +495,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                         : "border-border hover:border-amber-400/60/50"
                     )}
                   >
-                    <GaugeCircle className={cn("h-6 w-6 mb-2", billingMethod === "meter" ? "text-amber-500" : "text-muted-foreground")} />
+                    <GaugeCircle className={cn("h-6 w-6 mb-2", billingMethod === "meter" ? "text-warning" : "text-muted-foreground")} />
                     <p className="font-medium text-sm">Meter Readings</p>
                     <p className="text-xs text-muted-foreground mt-1">Enter previous & current readings per unit. System calculates consumption × rate.</p>
                   </button>
@@ -509,7 +509,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                         : "border-border hover:border-amber-400/60/50"
                     )}
                   >
-                    <Receipt className={cn("h-6 w-6 mb-2", billingMethod === "flat_rate" ? "text-amber-500" : "text-muted-foreground")} />
+                    <Receipt className={cn("h-6 w-6 mb-2", billingMethod === "flat_rate" ? "text-warning" : "text-muted-foreground")} />
                     <p className="font-medium text-sm">Flat Rate</p>
                     <p className="text-xs text-muted-foreground mt-1">Fixed monthly water charge per unit. Can override per individual unit.</p>
                   </button>
@@ -649,7 +649,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                             "capitalize",
                             reading.status === "paid" && "bg-success/10 text-success border-success/20",
                             reading.status === "invoiced" && "bg-[hsl(195_60%_42%/0.1)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.2)]",
-                            reading.status === "pending" && "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                            reading.status === "pending" && "bg-warning/10 text-warning border-warning/20"
                           )}>
                             {reading.status}
                           </Badge>
@@ -686,9 +686,9 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                     {formatCurrency(readings.filter(r => r.status === "paid").reduce((sum, r) => sum + (r.total_amount || 0), 0))}
                   </p>
                 </div>
-                <div className="p-4 rounded-lg bg-amber-500/10">
+                <div className="p-4 rounded-lg bg-warning/10">
                   <p className="text-xs text-muted-foreground font-medium">Pending</p>
-                  <p className="text-xl font-bold text-amber-600">
+                  <p className="text-xl font-bold text-warning">
                     {formatCurrency(readings.filter(r => r.status === "pending").reduce((sum, r) => sum + (r.total_amount || 0), 0))}
                   </p>
                 </div>

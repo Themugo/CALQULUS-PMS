@@ -68,7 +68,7 @@ const priorityColors: Record<RequestPriority, string> = {
 };
 
 const statusColors: Record<RequestStatus, string> = {
-  open: "bg-amber-500 text-white",
+  open: "bg-warning text-warning-foreground",
   in_progress: "bg-[hsl(214_73%_45%)] text-white",
   completed: "bg-success text-white",
   cancelled: "bg-slate-600 text-white",
@@ -165,9 +165,9 @@ export function MaintenanceActiveReport({
     if (diffDays < 0) {
       return { label: `${Math.abs(diffDays)} day(s) overdue`, color: "text-red-500", isOverdue: true };
     } else if (diffDays === 0) {
-      return { label: "Due today", color: "text-amber-500", isOverdue: false };
+      return { label: "Due today", color: "text-warning", isOverdue: false };
     } else if (diffDays <= 3) {
-      return { label: `Due in ${diffDays} day(s)`, color: "text-amber-500", isOverdue: false };
+      return { label: `Due in ${diffDays} day(s)`, color: "text-warning", isOverdue: false };
     } else {
       return { label: formatDate(dueDate), color: "text-muted-foreground", isOverdue: false };
     }
@@ -204,7 +204,7 @@ export function MaintenanceActiveReport({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-amber-400/10">
-                  <Target className="h-5 w-5 text-amber-500" />
+                  <Target className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <CardTitle className="text-lg text-foreground">Active Report</CardTitle>
@@ -260,10 +260,10 @@ export function MaintenanceActiveReport({
                 </div>
                 <p className="text-2xl font-bold text-foreground">{overdueRequests.length}</p>
               </div>
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Clock className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Due Soon</span>
+                  <Clock className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Due Soon</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{dueSoonRequests.length}</p>
               </div>
@@ -283,8 +283,8 @@ export function MaintenanceActiveReport({
               </div>
               <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Completion Rate</span>
+                  <TrendingUp className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Completion Rate</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold text-foreground">{completionRate}%</p>

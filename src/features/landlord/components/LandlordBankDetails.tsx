@@ -141,8 +141,8 @@ const LandlordBankDetails: React.FC = () => {
                     : 'border-border hover:border-amber-400/40'
                 }`}
               >
-                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`} />
-                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`}>{m.label}</span>
+                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-warning' : 'text-muted-foreground'}`} />
+                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-warning' : 'text-muted-foreground'}`}>{m.label}</span>
               </button>
             ))}
           </div>

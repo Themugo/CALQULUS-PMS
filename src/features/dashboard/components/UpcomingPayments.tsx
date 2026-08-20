@@ -7,6 +7,7 @@ import { formatDate } from "@/shared/lib/dateFormat";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { isInvoiceOverdue, getDaysUntilDue } from "@/features/billing/lib/invoiceDueLogic";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { logError } from "@/shared/lib/errorLogger";
 
 type PaymentStatus = "upcoming" | "due_soon" | "due_today" | "overdue";
 
@@ -77,7 +78,7 @@ export function UpcomingPayments() {
       const { data: invoices, error } = await invoiceQuery;
 
       if (error) {
-        setPayments([]);
+        logError("UpcomingPayments.fetchPayments", error);
         return;
       }
 
@@ -218,7 +219,7 @@ export function UpcomingPayments() {
                     </Badge>
                   )}
                   {payment.status === "due_today" && (
-                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-amber-500/20 text-amber-600 border-amber-500/30">
+                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-warning/20 text-warning border-warning/30">
                       Due Today
                     </Badge>
                   )}

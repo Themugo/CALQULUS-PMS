@@ -150,14 +150,14 @@ export function ChatWindow({ conversationName = "Sarah Wanjiku", conversationRol
               className={cn(
                 "p-3 rounded-2xl text-xs space-y-2 shadow-2xs leading-relaxed",
                 msg.isInternalNote
-                  ? "bg-amber-500/10 border border-amber-500/30 text-amber-950 dark:text-amber-200 rounded-tr-none"
+                  ? "bg-warning/10 border border-warning/30 text-amber-950 dark:text-amber-200 rounded-tr-none"
                   : msg.isSelf
                   ? "bg-primary text-primary-foreground rounded-tr-none"
                   : "bg-card border border-border/80 text-foreground rounded-tl-none"
               )}
             >
               {msg.isInternalNote && (
-                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400 border-b border-amber-500/20 pb-1">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-warning dark:text-warning border-b border-warning/20 pb-1">
                   <Lock className="h-3 w-3" /> Internal Team Note (Hidden from tenant)
                 </div>
               )}
@@ -208,7 +208,7 @@ export function ChatWindow({ conversationName = "Sarah Wanjiku", conversationRol
               onClick={() => setIsInternalNoteMode(true)}
               className={cn(
                 "px-2.5 py-1 rounded-md font-bold text-[11px] transition-all flex items-center gap-1",
-                isInternalNoteMode ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground"
+                isInternalNoteMode ? "bg-warning text-warning-foreground" : "bg-muted text-muted-foreground"
               )}
             >
               <Lock className="h-3 w-3" /> Internal Note
@@ -232,7 +232,7 @@ export function ChatWindow({ conversationName = "Sarah Wanjiku", conversationRol
             placeholder={isInternalNoteMode ? "Type an internal note for staff..." : "Type a message to tenant..."}
             className={cn(
               "text-xs h-9 flex-1",
-              isInternalNoteMode && "bg-amber-500/5 border-amber-500/30 placeholder:text-amber-700/50"
+              isInternalNoteMode && "bg-warning/5 border-warning/30 placeholder:text-warning/50"
             )}
           />
 

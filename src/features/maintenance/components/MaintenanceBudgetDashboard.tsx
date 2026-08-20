@@ -161,8 +161,8 @@ export function MaintenanceBudgetDashboard({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="p-4 rounded-lg bg-amber-400/10 border border-amber-400/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Total Allocated</span>
+                  <DollarSign className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Total Allocated</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalAllocated)}</p>
               </div>
@@ -173,10 +173,10 @@ export function MaintenanceBudgetDashboard({
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalSpent)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Building2 className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm font-medium text-amber-500">Pending</span>
+                  <Building2 className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-warning">Pending</span>
                 </div>
                 <p className="text-xl font-bold text-foreground">{formatCurrency(totalPending)}</p>
               </div>
@@ -306,7 +306,7 @@ export function MaintenanceBudgetDashboard({
                           <td className="p-3 text-sm font-medium text-foreground">{property.fullName}</td>
                           <td className="p-3 text-sm text-right text-muted-foreground">{formatCurrency(property.allocated)}</td>
                           <td className="p-3 text-sm text-right text-green-500">{formatCurrency(property.spent)}</td>
-                          <td className="p-3 text-sm text-right text-amber-500">{formatCurrency(property.pending)}</td>
+                          <td className="p-3 text-sm text-right text-warning">{formatCurrency(property.pending)}</td>
                           <td className="p-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <Progress value={utilization} className="w-16 h-2" />

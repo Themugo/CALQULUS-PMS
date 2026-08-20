@@ -292,7 +292,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
                   onClick={() => setMethod(m.value)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-colors text-xs ${
                     method === m.value
-                      ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                      ? 'border-amber-400/50 bg-amber-400/8 text-warning'
                       : 'border-border hover:border-amber-400/40 text-muted-foreground'
                   }`}
                 >
@@ -338,7 +338,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-amber-900">Set up installment plan</p>
-                  <p className="text-xs text-amber-700">Tenant pays the remaining {fmt(targetBalance - enteredAmount)} in instalments</p>
+                  <p className="text-xs text-warning">Tenant pays the remaining {fmt(targetBalance - enteredAmount)} in instalments</p>
                 </div>
                 <Switch checked={isInstallment} onCheckedChange={setIsInstallment} />
               </div>

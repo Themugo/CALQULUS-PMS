@@ -107,7 +107,7 @@ export function AttachmentManager({
                   className={cn(
                     "text-[10px] capitalize font-bold h-5",
                     att.status === "uploaded" && "bg-success/10 text-success border-success/20",
-                    att.status === "pending" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+                    att.status === "pending" && "bg-warning/10 text-warning border-warning/20",
                     att.status === "verifying" && "bg-primary/10 text-primary border-primary/20"
                   )}
                 >

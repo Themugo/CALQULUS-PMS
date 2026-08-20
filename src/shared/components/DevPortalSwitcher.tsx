@@ -56,7 +56,7 @@ const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
     pass: 'CALQULUS RMS@2026!',
     defaultPath: '/webhost',
     icon: Shield,
-    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+    badgeColor: 'bg-warning/20 text-amber-300 border-warning/30'
   },
   {
     role: 'tenant',
@@ -157,12 +157,12 @@ export function DevPortalSwitcher() {
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-slate-900/95 text-amber-400 border-2 border-dashed border-amber-500 shadow-xl hover:bg-slate-800 hover:border-amber-400 backdrop-blur-md text-xs font-bold transition-all group"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-slate-900/95 text-warning border-2 border-dashed border-warning shadow-xl hover:bg-slate-800 hover:border-amber-400 backdrop-blur-md text-xs font-bold transition-all group"
           title="DEV ONLY — Open Dev Account & Portal Switcher"
         >
-          <Zap className="h-4 w-4 text-amber-400 animate-pulse group-hover:scale-110 transition-transform" />
+          <Zap className="h-4 w-4 text-warning animate-pulse group-hover:scale-110 transition-transform" />
           <span>Dev Bypass & Account Switcher</span>
-          <span className="px-2 py-0.5 rounded-full bg-amber-500 text-[9px] font-extrabold uppercase tracking-wider text-slate-900 shadow-sm">
+          <span className="px-2 py-0.5 rounded-full bg-warning text-[9px] font-extrabold uppercase tracking-wider text-slate-900 shadow-sm">
             ⚠ DEV ONLY
           </span>
           {userRole && (
@@ -173,17 +173,17 @@ export function DevPortalSwitcher() {
           <ChevronUp className="h-3.5 w-3.5 text-white/60" />
         </button>
       ) : (
-        <div className="w-80 sm:w-96 rounded-2xl bg-slate-900/95 border-2 border-dashed border-amber-500 text-white shadow-2xl backdrop-blur-2xl p-4 transition-all">
+        <div className="w-80 sm:w-96 rounded-2xl bg-slate-900/95 border-2 border-dashed border-warning text-white shadow-2xl backdrop-blur-2xl p-4 transition-all">
           {/* Development-only banner */}
-          <div className="flex items-center gap-2 mb-3 rounded-lg bg-amber-500/15 border border-amber-500 px-2.5 py-1.5">
-            <Zap className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+          <div className="flex items-center gap-2 mb-3 rounded-lg bg-warning/15 border border-warning px-2.5 py-1.5">
+            <Zap className="h-3.5 w-3.5 text-warning shrink-0" />
             <p className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 leading-tight">
               ⚠ Development Only — not shown in production
             </p>
           </div>
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-amber-400" />
+              <Sparkles className="h-4 w-4 text-warning" />
               <h3 className="text-sm font-bold text-white tracking-wide">Quick Account & Portal Bypass</h3>
             </div>
             <button
@@ -235,7 +235,7 @@ export function DevPortalSwitcher() {
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="p-1.5 rounded-lg bg-slate-800 text-amber-400 border border-white/10">
+                      <div className="p-1.5 rounded-lg bg-slate-800 text-warning border border-white/10">
                         <Icon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0">
@@ -271,7 +271,7 @@ export function DevPortalSwitcher() {
                         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white/80'
                     }`}
                   >
-                    <Icon className="h-3 w-3 text-amber-400 flex-shrink-0" />
+                    <Icon className="h-3 w-3 text-warning flex-shrink-0" />
                     <span className="truncate">{link.label}</span>
                   </button>
                 );
@@ -293,7 +293,7 @@ export function DevPortalSwitcher() {
             )}
             <button
               onClick={() => handleNavigate('/landlord')}
-              className="text-[11px] text-amber-400 hover:underline flex items-center gap-1 ml-auto font-medium"
+              className="text-[11px] text-warning hover:underline flex items-center gap-1 ml-auto font-medium"
             >
               Sign-In Page <ExternalLink className="h-3 w-3" />
             </button>

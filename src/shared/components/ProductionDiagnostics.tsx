@@ -206,7 +206,7 @@ export function ProductionDiagnostics() {
     switch (status) {
       case 'pass': return <CheckCircle className="h-4 w-4 text-success" />;
       case 'fail': return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case 'warn': return <AlertCircle className="h-4 w-4 text-amber-500" />;
+      case 'warn': return <AlertCircle className="h-4 w-4 text-warning" />;
       case 'checking': return <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />;
       default: return <Clock className="h-4 w-4 text-gray-400" />;
     }
@@ -216,7 +216,7 @@ export function ProductionDiagnostics() {
     const fails = diagnostics.filter(d => d.status === 'fail').length;
     const warns = diagnostics.filter(d => d.status === 'warn').length;
     if (fails > 0) return { status: 'unhealthy', color: 'text-red-500', label: 'Issues Detected' };
-    if (warns > 0) return { status: 'degraded', color: 'text-amber-500', label: 'Minor Issues' };
+    if (warns > 0) return { status: 'degraded', color: 'text-warning', label: 'Minor Issues' };
     if (diagnostics.length === 0) return { status: 'unknown', color: 'text-gray-400', label: 'Not Run' };
     return { status: 'healthy', color: 'text-success', label: 'All Systems Operational' };
   };

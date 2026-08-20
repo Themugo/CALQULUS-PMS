@@ -1,29 +1,60 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 13 leftover HIGH/MEDIUM remediations landed on GitHub `main`.
-Do not restart the redesign. Visual direction, RLS, auth contracts, and
-routes are unchanged.
+Phase 13 remaining in-git gaps (authorization scoping, token leftovers,
+one `@ts-nocheck` removal). Do not restart the redesign. Visual direction,
+RLS, auth contracts, and routes are unchanged.
 
 ## CURRENT TASK
-Operator-owned live deploy and SQL apply. No remaining in-git leftover
-HIGH from the continuation list.
+Checkpoint on `cursor/phase-13-remaining-gaps-1e5d`. JWT report/receipt
+callers are scoped to themselves; leftover amber/yellow utilities map to
+`warning` tokens; receipt/notify email chrome uses locked interactive
+navy. Operator deploy/SQL still out of git.
 
 ## COMPLETED TASKS
-- Phase 13 audit report (`a6f1adc`) and CRITICAL/HIGH remediations (`2bb9f70`)
-  merged to `main` (`f650a5a`)
-- Continuation leftover HIGH/MEDIUM (`51538fc`) pushed to GitHub `main`
-- Continuation leftover HIGH: remaining `if (error) return []` query swallows
-  now throw; leftover notify/report Edge Functions require a real user JWT,
-  service role, or `CRON_SECRET`; shared Sidebar webhost/agency groups match
-  portal primary nav
-- Continuation leftover MEDIUM: live-desk `yellow-500` / pending wells swapped
-  to `warning` tokens (vacation notices, recent activity, electricity icons,
-  password strength, contract near-limit, invoice pending badge)
-- `send-overdue-notifications` uses `rejectUnlessUserServiceOrCron` so the
-  manager Billing desk JWT invoke still works (service/cron still allowed)
+- Phase 13 audit (`a6f1adc`) + CRITICAL/HIGH (`2bb9f70`) on `main` (`f650a5a`)
+- Continuation leftover HIGH/MEDIUM on `main` (`51538fc` / `851ae2b`)
+- Remaining-gap pass (this branch):
+  - JWT `managerId` / payment ownership scoped after the caller check
+    (`scopedActorId`, landlord-statement manager link, commission 403,
+    auto-receipt invoice filtered by `manager_id`)
+  - Upcoming payments no longer clear the list on query error
+  - Live-desk amber/yellow class leftovers mapped to `warning` tokens
+  - Email chrome defaults `#2F6FED` / status fills `#23856B` `#B7791F`
+    `#C84B4B` instead of Tailwind green/amber hex
+  - `LazyImage.tsx` `@ts-nocheck` removed (74 remaining, cap 75)
 
-### Phase 13 continuation (this branch) — files changed
+## NEXT TASK
+Operator (cannot finish from git):
+1. Deploy Edge Functions (`health-check` still 404 live).
+2. Apply `20260820000000_tenants_select_role_in.sql`.
+
+Code remaining: large ops pages still `@ts-nocheck`; demo/lab suites
+still in tree; E2E still credential-gated; some gated functions still
+use the service role after a scoped caller check (by design for cron).
+
+## IN PROGRESS FILES
+`cursor/phase-13-remaining-gaps-1e5d` — checkpointing this turn.
+
+## KNOWN ISSUES
+- Live `health-check` 404 until function deploy (not claimed fixed)
+- Live tenants RLS / `get_manager_dashboard_stats` unproven until SQL
+  is applied (prior gate 2026-08-19: tenants `42P17`, RPC 404)
+- `@ts-nocheck` still on large ops pages (74 files, cap 75)
+- Demo/lab suites remain in tree, unrouted
+- E2E portal tests still credential-gated
+
+### Test status (this checkpoint)
+- `npx vitest run` — **887 passed**, 1 skipped
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- Live `health-check` / RLS not re-probed this session
+
+### Next exact action
+Review PR vs `main`. Do not merge unless asked. Operator deploys Edge
+Functions and applies `20260820000000_tenants_select_role_in.sql`.
+Do not restart the redesign.
+
+### Phase 13 continuation (already on main) — files changed
 Frontend queries: `TenantBalanceSummary.tsx`, `TenantNotificationBell.tsx`,
 `TenantPaymentSchedule.tsx`, `TenantPortableHistory.tsx`,
 `UnitHistoryPanel.tsx`, `UnmatchedBankTransactions.tsx`.
@@ -56,45 +87,7 @@ webhooks (`mpesa-callback`, `stripe-webhook`, `bank-webhook`),
 `self-register-tenant`, `claim-tenant`). `bootstrap-webhost` /
 `seed-demo-data` keep their own service/env gates.
 
-## NEXT TASK
-Operator (cannot finish from git):
-1. Deploy Edge Functions so live `health-check` is no longer 404. Cron
-   callers must send `X-Cron-Secret` or the service-role bearer; user
-   desks keep using `supabase.functions.invoke` with a session JWT.
-2. Apply `supabase/migrations/20260820000000_tenants_select_role_in.sql`.
-
-Code (optional, not blocking this checkpoint): reduce `@ts-nocheck` on
-large ops pages without breaking `tsc`; remaining amber utilities on
-live feature files that were not in the yellow-500 leftover set.
-
-## IN PROGRESS FILES
-None. Continuation is on GitHub `main` (`51538fc` and this docs note).
-
-## KNOWN ISSUES
-- Live `health-check` 404 until function deploy (not claimed fixed)
-- Live tenants RLS / `get_manager_dashboard_stats` unproven until SQL
-  is applied (prior gate 2026-08-19: tenants `42P17`, RPC 404)
-- Gated functions still use the service role after the caller check;
-  body `managerId` is not re-scoped to the JWT user
-- `@ts-nocheck` still on large ops pages (capped at 75)
-- Amber Tailwind leftovers remain on some live feature files (~not a
-  full 130-file rewrite)
-- Demo/lab suites remain in tree, unrouted
-- E2E portal tests still credential-gated
-
-### Test status (this checkpoint)
-- `npx vitest run` — **886 passed**, 1 skipped
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- Live `health-check` / RLS not re-probed this session
-
-### Next exact action
-On the Windows machine (`C:\Users\hp\Desktop\CALQULUS-PMS`):
-`git checkout main && git pull origin main`.
-Then operator deploys Edge Functions and applies
-`20260820000000_tenants_select_role_in.sql`.
-Do not restart the redesign.
-
-### Phase 13 remediations (this branch)
+### Phase 13 remediations (already on main)
 - `log-audit` requires a user JWT; actor is `ctx.user.id`, not the body.
 - `notify-new-manager-signup` requires a user session, HTML-escapes names,
   upserts the role server-side (`ignoreDuplicates`), and uses navy chrome.

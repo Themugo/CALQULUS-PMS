@@ -14,7 +14,7 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron, scopedActorId } from "../_shared/assertCaller.ts";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -234,8 +234,8 @@ function buildHtmlEmail(
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
   const RESEND_API_KEY  = getEnv("RESEND_API_KEY");
   const supabaseUrl     = requireEnv("SUPABASE_URL");
@@ -254,7 +254,8 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const { managerId, force = false } = body as { managerId?: string; force?: boolean };
+    const { force = false } = body as { managerId?: string; force?: boolean };
+    const managerId = scopedActorId(gate.userId, (body as { managerId?: string }).managerId);
 
     const today    = new Date();
     const todayDay = today.getDate();

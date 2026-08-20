@@ -86,10 +86,10 @@ export function FeatureFlagCenter({ className }: { className?: string }) {
       </CardHeader>
 
       <CardContent className="p-4 space-y-3">
-        <div className="p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-[11px] flex items-start gap-2">
-          <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-2.5 rounded-lg border border-warning/20 bg-warning/5 text-[11px] flex items-start gap-2">
+          <AlertCircle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
           <p className="text-muted-foreground">
-            <strong className="text-amber-600">Illustrative catalog.</strong> These flags document intended platform capabilities. There is no connected feature-flag service, so toggles do not change live system behavior and are not audit-logged.
+            <strong className="text-warning">Illustrative catalog.</strong> These flags document intended platform capabilities. There is no connected feature-flag service, so toggles do not change live system behavior and are not audit-logged.
           </p>
         </div>
         <div className="space-y-2.5">
@@ -103,7 +103,7 @@ export function FeatureFlagCenter({ className }: { className?: string }) {
                   <span className="font-bold text-foreground">{flag.name}</span>
                   <code className="text-[10px] bg-muted/50 px-1.5 py-0.5 rounded font-mono text-muted-foreground">{flag.key}</code>
                   {flag.betaOnly && (
-                    <Badge variant="outline" className="text-[9px] font-bold bg-amber-500/10 text-amber-600 border-amber-500/20">
+                    <Badge variant="outline" className="text-[9px] font-bold bg-warning/10 text-warning border-warning/20">
                       Beta Tier
                     </Badge>
                   )}

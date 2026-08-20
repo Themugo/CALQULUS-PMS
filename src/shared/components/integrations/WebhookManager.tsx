@@ -89,15 +89,15 @@ export function WebhookManager({ className }: { className?: string }) {
 
       <CardContent className="p-4 space-y-4 text-xs">
         {/* Dead Letter Queue Warning Header */}
-        <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl flex items-center justify-between gap-3">
+        <div className="p-3 bg-warning/5 border border-warning/20 rounded-xl flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
             <div>
               <span className="font-bold text-foreground block">Webhook Dead Letter Queue (DLQ)</span>
               <span className="text-[11px] text-muted-foreground">1 failed payload waiting for retry backoff.</span>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="h-7 text-[11px] font-bold gap-1 border-amber-500/30 text-amber-600">
+          <Button size="sm" variant="outline" className="h-7 text-[11px] font-bold gap-1 border-warning/30 text-warning">
             <RefreshCw className="h-3 w-3" /> Re-send Failed Payload
           </Button>
         </div>

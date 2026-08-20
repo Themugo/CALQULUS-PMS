@@ -350,7 +350,7 @@ const WebhostManagement = () => {
     switch (level) {
       case 'super_admin':
         return (
-          <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
+          <Badge className="bg-yellow-600/20 text-yellow-400 border-warning/30">
             <Crown className="h-3 w-3 mr-1" />
             Super Admin
           </Badge>

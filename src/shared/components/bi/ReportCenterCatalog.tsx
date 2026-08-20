@@ -105,7 +105,7 @@ export function ReportCenterCatalog({ onRunReport, onScheduleReport, className }
                       "text-[10px] font-bold h-5 capitalize",
                       rep.category === "Financial" && "bg-success/10 text-success border-success/20",
                       rep.category === "Operational" && "bg-primary/10 text-primary border-primary/20",
-                      rep.category === "Property" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+                      rep.category === "Property" && "bg-warning/10 text-warning border-warning/20",
                       rep.category === "Compliance" && "bg-navy-mid/10 text-navy-mid border-navy-mid/20",
                       rep.category === "Executive" && "bg-primary/10 text-primary border-primary/20"
                     )}

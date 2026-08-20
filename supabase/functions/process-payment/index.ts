@@ -614,7 +614,7 @@ serve(async (req) => {
         paymentMethod: methodLabel,
         outstandingBalance: finalBalance,
         advanceCredit: remaining > 0 ? remaining : undefined,
-        primaryColor:   (rs as any)?.primary_color ?? "#16a34a",
+        primaryColor:   (rs as any)?.primary_color ?? "#2F6FED",
         secondaryColor: (rs as any)?.secondary_color ?? "#1e293b",
         footerMessage:  (rs as any)?.footer_message ?? "Thank you for your payment!",
       }, { transactionId: txId, tenantId, managerId }));

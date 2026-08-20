@@ -32,19 +32,38 @@ export function isServiceOrCron(req: Request): boolean {
   return Boolean(cronSecret && cronHeader === cronSecret);
 }
 
+export type IdentifiedCaller =
+  | { ok: false; response: Response }
+  | { ok: true; userId: string | null };
+
+/**
+ * Allow a real user JWT, the service role, or CRON_SECRET.
+ * `userId` is the JWT subject; `null` means service role / cron (may act for any actor).
+ */
+export async function identifyUserServiceOrCron(req: Request): Promise<IdentifiedCaller> {
+  if (isServiceOrCron(req)) return { ok: true, userId: null };
+
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return { ok: false, response: unauthorized(req) };
+
+  const token = authHeader.slice("Bearer ".length);
+  const supabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_ANON_KEY"));
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) return { ok: false, response: unauthorized(req) };
+  return { ok: true, userId: data.user.id };
+}
+
 /**
  * Allow a real user JWT, the service role, or CRON_SECRET.
  * Rejects the anon/publishable key used as a fake user.
  */
 export async function rejectUnlessUserServiceOrCron(req: Request): Promise<Response | null> {
-  if (isServiceOrCron(req)) return null;
+  const gate = await identifyUserServiceOrCron(req);
+  return gate.ok ? null : gate.response;
+}
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) return unauthorized(req);
-
-  const token = authHeader.slice("Bearer ".length);
-  const supabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_ANON_KEY"));
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) return unauthorized(req);
-  return null;
+/** JWT callers are scoped to themselves; service/cron may use the requested id. */
+export function scopedActorId(userId: string | null, requested?: string | null): string | undefined {
+  if (userId) return userId;
+  return requested || undefined;
 }

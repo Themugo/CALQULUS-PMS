@@ -157,7 +157,7 @@ export const LeaseStatements = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -195,7 +195,7 @@ export const LeaseStatements = () => {
                   <div className="flex items-start gap-2 sm:gap-3">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarImage src={tenant.photo_url || undefined} />
-                      <AvatarFallback className="bg-amber-400/10 text-amber-600 text-xs sm:text-sm">
+                      <AvatarFallback className="bg-amber-400/10 text-warning text-xs sm:text-sm">
                         {tenant.name
                           .split(" ")
                           .map((n) => n[0])
@@ -232,8 +232,8 @@ export const LeaseStatements = () => {
                       </div>
                       <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Paid</p>
                     </div>
-                    <div className="bg-amber-500/10 rounded-lg p-1.5 sm:p-2">
-                      <div className="flex items-center justify-center gap-1 text-amber-400">
+                    <div className="bg-warning/10 rounded-lg p-1.5 sm:p-2">
+                      <div className="flex items-center justify-center gap-1 text-warning">
                         <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         <span className="text-xs sm:text-sm font-medium">{summary?.pending_count || 0}</span>
                       </div>

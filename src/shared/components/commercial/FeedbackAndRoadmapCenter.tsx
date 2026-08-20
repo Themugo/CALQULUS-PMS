@@ -61,7 +61,7 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-navy-mid" /> Centralized Product Feedback & Public Roadmap
             </h3>
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
             </Badge>
           </div>
@@ -87,7 +87,7 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
                   className={cn(
                     "text-[8px] font-bold border-none",
                     item.status === "Released" ? "bg-success/10 text-success" :
-                    item.status === "In Development" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"
+                    item.status === "In Development" ? "bg-blue-500/10 text-blue-600" : "bg-warning/10 text-warning"
                   )}
                 >
                   {item.status}

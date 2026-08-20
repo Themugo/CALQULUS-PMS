@@ -136,7 +136,7 @@ export function SmartPropertyProfile({ className }: { className?: string }) {
                   <Badge
                     className={cn(
                       "text-[9px] font-bold uppercase",
-                      ast.status === "Optimal" ? "bg-success/10 text-success border-success/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      ast.status === "Optimal" ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"
                     )}
                   >
                     {ast.status}

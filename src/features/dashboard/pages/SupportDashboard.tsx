@@ -178,7 +178,7 @@ export default function SupportDashboard() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>
-              <span className="flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-amber-500" /> Escalate Maintenance Ticket</span>
+              <span className="flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-warning" /> Escalate Maintenance Ticket</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>

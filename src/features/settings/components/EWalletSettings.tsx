@@ -161,7 +161,7 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
             <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-amber-400/12 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-amber-500" />
+                  <Wallet className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground">Enable E-Wallet Payments</p>

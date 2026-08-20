@@ -184,7 +184,7 @@ const ComplianceDashboard = () => {
       case 'high':
         return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-warning-foreground border-warning">{severity}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
       default:

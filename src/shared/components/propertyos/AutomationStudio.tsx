@@ -69,9 +69,9 @@ export function AutomationStudio({ className }: { className?: string }) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-              <Zap className="h-5 w-5 text-amber-500" /> Visual Property Automation Studio
+              <Zap className="h-5 w-5 text-warning" /> Visual Property Automation Studio
             </h3>
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
             </Badge>
           </div>
@@ -112,7 +112,7 @@ export function AutomationStudio({ className }: { className?: string }) {
               </div>
               <div className="space-y-0.5 border-r pr-2">
                 <span className="text-[9px] text-muted-foreground font-bold uppercase block">2. CONDITION</span>
-                <span className="font-bold text-amber-600">{wf.condition}</span>
+                <span className="font-bold text-warning">{wf.condition}</span>
               </div>
               <div className="space-y-0.5">
                 <span className="text-[9px] text-muted-foreground font-bold uppercase block">3. AUTOMATED ACTION</span>

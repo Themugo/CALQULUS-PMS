@@ -503,7 +503,7 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-amber-500" />
+            <TrendingUp className="h-4 w-4 text-warning" />
             Rent Collection Report
           </CardTitle>
           <CardDescription>Monthly PDF report grouped by property — download or email to landlords, managers &amp; agencies</CardDescription>
@@ -564,7 +564,7 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
           {[
             { label: 'Total Billed',       val: totalBilled,      icon: TrendingUp,   color: 'text-[hsl(214_73%_45%)]',    bg: 'bg-[hsl(214_73%_48%/0.08)]    dark:bg-[hsl(214_73%_25%/0.2)]' },
             { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10 dark:bg-success/30' },
-            { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50   dark:bg-amber-950/30' },
+            { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-warning',   bg: 'bg-amber-50   dark:bg-amber-950/30' },
             { label: 'Arrears invoices',   val: arrearsCount,     icon: AlertTriangle,color: 'text-red-600',     bg: 'bg-red-50     dark:bg-red-950/30', count: true },
           ].map(({ label, val, icon: Icon, color, bg, count }) => (
             <Card key={label} className="border-0 shadow-sm">
@@ -611,7 +611,7 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
                     <span className="text-muted-foreground">Billed: <strong>{formatCurrency(prop.billed)}</strong></span>
                     <span className="text-success">Collected: <strong>{formatCurrency(prop.collected)}</strong></span>
                     {prop.outstanding > 0 && (
-                      <span className="text-amber-600">Outstanding: <strong>{formatCurrency(prop.outstanding)}</strong></span>
+                      <span className="text-warning">Outstanding: <strong>{formatCurrency(prop.outstanding)}</strong></span>
                     )}
                   </div>
                 </div>
@@ -813,7 +813,7 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Mail className="h-4 w-4 text-amber-500" />
+              <Mail className="h-4 w-4 text-warning" />
               Send Report Now (One-off)
             </CardTitle>
             <CardDescription>Add landlord, agency, or manager email addresses — the PDF is attached automatically</CardDescription>

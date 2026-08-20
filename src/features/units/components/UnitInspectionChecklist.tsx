@@ -108,7 +108,7 @@ interface Checklist {
 const STATUS_CONFIG: Record<ItemStatus, { label: string; icon: LucideIcon; color: string; bg: string; border: string }> = {
   working:        { label: 'Working',       icon: CheckCircle,  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-300' },
   not_working:    { label: 'Not working',   icon: AlertTriangle, color: 'text-red-700',   bg: 'bg-red-50',     border: 'border-red-300' },
-  needs_repair:   { label: 'Needs repair',  icon: Wrench,        color: 'text-amber-700', bg: 'bg-amber-50',   border: 'border-amber-300' },
+  needs_repair:   { label: 'Needs repair',  icon: Wrench,        color: 'text-warning', bg: 'bg-amber-50',   border: 'border-amber-300' },
   not_applicable: { label: 'N/A',           icon: Minus,         color: 'text-slate-500', bg: 'bg-slate-50',   border: 'border-slate-200' },
 };
 

@@ -105,7 +105,7 @@ export function NativeInspectionForm({ className }: { className?: string }) {
                   onClick={() => toggleStatus(item.id)}
                   className={cn(
                     "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase transition-all",
-                    item.status === "Pass" ? "bg-success/10 text-success border border-success/20" : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                    item.status === "Pass" ? "bg-success/10 text-success border border-success/20" : "bg-warning/10 text-warning border border-warning/20"
                   )}
                 >
                   {item.status}

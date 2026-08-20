@@ -21,7 +21,7 @@ export const CHARGE_TYPE_META: Record<
   security: { label: 'Security', icon: Shield, color: 'text-navy-mid', bg: 'bg-navy-mid/10 border-navy-mid/20' },
   garbage: { label: 'Garbage', icon: Trash2, color: 'text-slate-700', bg: 'bg-slate-50 border-slate-200' },
   service_charge: { label: 'Service charge', icon: Receipt, color: 'text-navy-mid', bg: 'bg-navy-mid/10 border-navy-mid/20' },
-  caretaker: { label: 'Caretaker', icon: Wrench, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+  caretaker: { label: 'Caretaker', icon: Wrench, color: 'text-warning', bg: 'bg-warning/10 border-warning/20' },
   wifi: { label: 'Wi‑Fi', icon: Wifi, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
   parking: { label: 'Parking', icon: Car, color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200' },
   custom: { label: 'Other', icon: Receipt, color: 'text-gray-700', bg: 'bg-gray-50 border-gray-200' },

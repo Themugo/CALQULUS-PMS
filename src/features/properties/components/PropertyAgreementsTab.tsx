@@ -42,7 +42,7 @@ interface Unit {
 
 const statusStyles: Record<string, string> = {
   draft: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  pending_signature: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  pending_signature: "bg-warning/10 text-warning border-warning/20",
   active: "bg-success/10 text-success border-success/20",
   expired: "bg-red-500/10 text-red-600 border-red-500/20",
   terminated: "bg-red-500/10 text-red-600 border-red-500/20",
@@ -86,7 +86,7 @@ export function PropertyAgreementsTab({ propertyId, propertyName }: PropertyAgre
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileSignature className="h-5 w-5 text-amber-500" />
+            <FileSignature className="h-5 w-5 text-warning" />
             Tenant Agreements
           </CardTitle>
           {!isViewOnly && (

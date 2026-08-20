@@ -50,7 +50,7 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
           <div className="flex items-center gap-2">
             <Badge variant="outline" className={`text-xs ${TIER_BADGE[tier]}`}>{planName}</Badge>
             <span className="text-[10px] text-muted-foreground">{data.health.label}</span>
-            {(atLimit || nearLimit || data.health.recovery) && <AlertTriangle className={`h-3.5 w-3.5 ${atLimit || data.health.health === 'suspended' ? 'text-red-600' : 'text-amber-600'}`} />}
+            {(atLimit || nearLimit || data.health.recovery) && <AlertTriangle className={`h-3.5 w-3.5 ${atLimit || data.health.health === 'suspended' ? 'text-red-600' : 'text-warning'}`} />}
           </div>
           <Link to="/platform-billing">
             <Button variant="ghost" size="sm" className="h-6 text-xs gap-1">
@@ -113,13 +113,13 @@ const ManagerSubscriptionBanner: React.FC<ManagerSubscriptionBannerProps> = ({ c
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <stat.icon className="h-3 w-3" />{stat.label}
                 </span>
-                <span className={`font-medium ${stat.pct >= 100 ? 'text-red-600' : stat.pct >= 80 ? 'text-amber-600' : ''}`}>
+                <span className={`font-medium ${stat.pct >= 100 ? 'text-red-600' : stat.pct >= 80 ? 'text-warning' : ''}`}>
                   {stat.used} {stat.max < 999 ? `/ ${stat.max}` : ''}
                 </span>
               </div>
               {stat.max < 999 && (
                 <Progress value={Math.min(100, stat.pct)}
-                  className={`h-2 ${stat.pct >= 100 ? '[&>div]:bg-red-500' : stat.pct >= 80 ? '[&>div]:bg-amber-500' : ''}`}
+                  className={`h-2 ${stat.pct >= 100 ? '[&>div]:bg-red-500' : stat.pct >= 80 ? '[&>div]:bg-warning' : ''}`}
                 />
               )}
             </div>

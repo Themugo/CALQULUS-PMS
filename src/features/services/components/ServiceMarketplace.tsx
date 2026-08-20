@@ -243,7 +243,7 @@ const ProviderCard: React.FC<{
           <div className="h-12 w-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center shrink-0 overflow-hidden">
             {provider.profile_photo
               ? <img src={provider.profile_photo} alt="" className="w-full h-full object-cover" />
-              : <Wrench className="h-6 w-6 text-amber-500" />
+              : <Wrench className="h-6 w-6 text-warning" />
             }
           </div>
 
@@ -268,7 +268,7 @@ const ProviderCard: React.FC<{
               <div className="text-right shrink-0">
                 {provider.rating_count > 0 && (
                   <div className="flex items-center gap-1 justify-end">
-                    <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                    <Star className="h-3.5 w-3.5 text-warning fill-amber-400" />
                     <span className="text-sm font-semibold">{Number(provider.rating_avg).toFixed(1)}</span>
                     <span className="text-xs text-muted-foreground">({provider.rating_count})</span>
                   </div>
@@ -287,7 +287,7 @@ const ProviderCard: React.FC<{
                 <div key={s.id} className="flex items-center gap-1 text-xs bg-muted/60 rounded-full px-2 py-0.5">
                   <span>{s.service_categories?.name}</span>
                   {s.rate_type !== 'quote_only' && s.rate_min && (
-                    <span className="text-amber-600 font-medium">
+                    <span className="text-warning font-medium">
                       · KES {fmt(s.rate_min)}{RATE_LABELS[s.rate_type]}
                     </span>
                   )}
@@ -377,7 +377,7 @@ const ProviderProfile: React.FC<{ provider: ServiceProviderItem; onSelect?: () =
                     <span className="text-xs text-muted-foreground">Quote on request</span>
                   ) : (
                     <div>
-                      <span className="font-semibold text-amber-500">
+                      <span className="font-semibold text-warning">
                         KES {fmt(s.rate_min)}{s.rate_max && s.rate_max !== s.rate_min ? `–${fmt(s.rate_max)}` : ''}
                         {RATE_LABELS[s.rate_type]}
                       </span>

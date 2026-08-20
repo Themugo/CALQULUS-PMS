@@ -63,7 +63,7 @@ const CATEGORIES = [
 const SEVERITY_CONFIG: Record<string, { label: string; badgeClass: string }> = {
   critical: { label: 'Critical', badgeClass: 'bg-red-600 text-white border-red-700' },
   high:     { label: 'High',     badgeClass: 'bg-orange-500 text-white border-orange-600' },
-  medium:   { label: 'Medium',   badgeClass: 'bg-amber-400 text-amber-950 border-amber-500' },
+  medium:   { label: 'Medium',   badgeClass: 'bg-amber-400 text-amber-950 border-warning' },
   low:      { label: 'Low',      badgeClass: 'bg-[hsl(214_73%_48%)] text-white border-[hsl(214_73%_40%)]' },
 };
 

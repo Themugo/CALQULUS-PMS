@@ -104,7 +104,7 @@ interface ManagerContract {
 }
 
 const contractStatusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
-  pending: { label: "Pending Review", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
+  pending: { label: "Pending Review", styles: "bg-warning text-warning-foreground border-warning", icon: Clock },
   approved: { label: "Ready to Sign", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: CheckCircle },
   rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
   signed: { label: "Signed", styles: "bg-success text-white border-success", icon: ShieldCheck },
@@ -139,7 +139,7 @@ const ContractCard = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="h-10 w-10 rounded-lg bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-              <FileText className="h-5 w-5 text-amber-500" />
+              <FileText className="h-5 w-5 text-warning" />
             </div>
             <div className="min-w-0">
               <h3 className="font-semibold text-foreground truncate">{contract.title}</h3>
@@ -294,7 +294,7 @@ const ManagerPlatformBilling = () => {
     
     if (status === "pending") {
       return (
-        <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+        <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20">
           <Clock className="h-3 w-3 mr-1" />
           Pending
         </Badge>
@@ -664,7 +664,7 @@ const ManagerPlatformBilling = () => {
     return (
       <Layout title="Platform Billing" subtitle="Invoices & Contracts with CALQULUS PMS">
         <div className="flex items-center justify-center py-20">
-          <RefreshCw className="h-8 w-8 animate-spin text-amber-500" />
+          <RefreshCw className="h-8 w-8 animate-spin text-warning" />
         </div>
       </Layout>
     );
@@ -776,7 +776,7 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
                       <Clock className="h-5 w-5" />
                     </div>
                     <div>
@@ -798,7 +798,7 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
                       <Receipt className="h-5 w-5" />
                     </div>
                     <div>
@@ -887,7 +887,7 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center text-warning shrink-0">
                       <Calendar className="h-5 w-5" />
                     </div>
                     <div>
@@ -1024,7 +1024,7 @@ Status: PAID
                   <CardTitle className="text-sm font-medium text-muted-foreground">Pending Review</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-amber-500">{contracts.filter(c => c.status === "pending").length}</div>
+                  <div className="text-2xl font-bold text-warning">{contracts.filter(c => c.status === "pending").length}</div>
                 </CardContent>
               </Card>
               <Card className="bg-card/50 border-border/50">
@@ -1097,7 +1097,7 @@ Status: PAID
               />
             </div>
             {paymentStatus === "verifying" && (
-              <div className="flex items-center gap-2 text-amber-500">
+              <div className="flex items-center gap-2 text-warning">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm">Waiting for M-Pesa confirmation...</span>
               </div>

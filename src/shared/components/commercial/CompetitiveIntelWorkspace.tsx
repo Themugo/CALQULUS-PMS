@@ -18,7 +18,7 @@ export function CompetitiveIntelWorkspace({ className }: { className?: string })
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Swords className="h-5 w-5 text-amber-500" /> Competitive Intelligence & Differentiating Matrix
+            <Swords className="h-5 w-5 text-warning" /> Competitive Intelligence & Differentiating Matrix
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Feature parity breakdown, pricing benchmarks, and unique value propositions vs local & global alternatives.
@@ -47,7 +47,7 @@ export function CompetitiveIntelWorkspace({ className }: { className?: string })
                 <tr key={comp.name} className={cn("border-b", comp.name.includes("CALQULUS") && "bg-primary/5 font-extrabold")}>
                   <td className="py-2.5 px-2 flex items-center gap-1.5">
                     {comp.name}
-                    {comp.name.includes("CALQULUS") && <Sparkles className="h-3.5 w-3.5 text-amber-500" />}
+                    {comp.name.includes("CALQULUS") && <Sparkles className="h-3.5 w-3.5 text-warning" />}
                   </td>
                   <td className="py-2.5 px-2">
                     {comp.MpesaNative ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-rose-400" />}

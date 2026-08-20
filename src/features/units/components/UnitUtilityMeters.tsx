@@ -35,7 +35,7 @@ interface UtilityMeter {
 
 const UTILITY_TYPES = [
   { value: 'water', label: 'Water', icon: Droplets, color: 'text-[hsl(195_60%_42%)]' },
-  { value: 'electricity', label: 'Electricity', icon: Zap, color: 'text-amber-500' },
+  { value: 'electricity', label: 'Electricity', icon: Zap, color: 'text-warning' },
   { value: 'gas', label: 'Gas', icon: Flame, color: 'text-orange-500' },
   { value: 'internet', label: 'Internet', icon: Wifi, color: 'text-[hsl(38_52%_42%)]' },
 ];

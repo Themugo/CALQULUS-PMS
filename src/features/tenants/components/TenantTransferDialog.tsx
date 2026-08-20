@@ -241,7 +241,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
             <div className="bg-muted/50 rounded-lg p-3">
               <p className="text-sm text-muted-foreground mb-1">Current Location</p>
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-amber-500" />
+                <User className="h-4 w-4 text-warning" />
                 <span className="font-medium">{tenant.name}</span>
               </div>
               <div className="flex items-center gap-2 mt-1">
@@ -321,9 +321,9 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
             </div>
 
             {/* Warning */}
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-              <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-amber-600 dark:text-amber-400">
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
+              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-warning dark:text-warning">
                 This will update the tenant's property assignment. Their lease and payment history will remain intact.
               </p>
             </div>

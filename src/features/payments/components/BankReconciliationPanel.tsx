@@ -230,7 +230,7 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
                   }`}>
                     {tx.match_status === 'matched'
                       ? <CheckCircle className="h-4 w-4 text-green-600" />
-                      : <AlertTriangle className="h-4 w-4 text-amber-600" />}
+                      : <AlertTriangle className="h-4 w-4 text-warning" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">

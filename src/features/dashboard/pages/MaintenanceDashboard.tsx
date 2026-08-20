@@ -76,7 +76,7 @@ export default function MaintenanceDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Maintenance & Operations Command Center</h1>
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 font-bold">
               Maintenance Coordinator Workspace
             </Badge>
           </div>
@@ -178,7 +178,7 @@ export default function MaintenanceDashboard() {
                             req.priority === 'urgent'
                               ? 'bg-red-500/10 text-red-600 border-red-500/30'
                               : req.priority === 'high'
-                              ? 'bg-amber-500/10 text-amber-600 border-amber-500/30'
+                              ? 'bg-warning/10 text-warning border-warning/30'
                               : 'bg-muted text-muted-foreground'
                           }`}
                         >
@@ -219,7 +219,7 @@ export default function MaintenanceDashboard() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>
-              <span className="flex items-center gap-2"><Wrench className="h-4 w-4 text-amber-500" /> Schedule Property Inspection</span>
+              <span className="flex items-center gap-2"><Wrench className="h-4 w-4 text-warning" /> Schedule Property Inspection</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>

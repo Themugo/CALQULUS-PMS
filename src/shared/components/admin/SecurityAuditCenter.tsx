@@ -123,7 +123,7 @@ export function SecurityAuditCenter({ className }: { className?: string }) {
             {isLoading ? (
               <Skeleton className="h-5 w-12" />
             ) : (
-              <strong className={cn("text-base", flaggedCount > 0 ? "text-amber-600" : "text-success")}>{flaggedCount}</strong>
+              <strong className={cn("text-base", flaggedCount > 0 ? "text-warning" : "text-success")}>{flaggedCount}</strong>
             )}
             <span className="text-[10px] text-muted-foreground block">In current result set</span>
           </div>

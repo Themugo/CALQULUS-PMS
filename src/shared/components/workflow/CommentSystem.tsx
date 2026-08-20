@@ -57,7 +57,7 @@ export function CommentSystem({ comments, onAddComment, className }: CommentSyst
                 className={cn(
                   "p-3 rounded-lg border text-xs space-y-1.5",
                   comment.isInternal
-                    ? "bg-amber-500/5 border-amber-500/20"
+                    ? "bg-warning/5 border-warning/20"
                     : "bg-card border-border/80"
                 )}
               >
@@ -76,7 +76,7 @@ export function CommentSystem({ comments, onAddComment, className }: CommentSyst
 
                   <div className="flex items-center gap-2">
                     {comment.isInternal && (
-                      <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20 gap-1 font-bold">
+                      <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/20 gap-1 font-bold">
                         <Lock className="h-2.5 w-2.5" /> Internal Note
                       </Badge>
                     )}
@@ -108,7 +108,7 @@ export function CommentSystem({ comments, onAddComment, className }: CommentSyst
                 onClick={() => setIsInternal(!isInternal)}
                 className={cn(
                   "h-7 text-[11px] gap-1 font-semibold",
-                  isInternal ? "text-amber-600 bg-amber-500/10" : "text-muted-foreground"
+                  isInternal ? "text-warning bg-warning/10" : "text-muted-foreground"
                 )}
               >
                 {isInternal ? <Lock className="h-3 w-3" /> : <Globe className="h-3 w-3" />}

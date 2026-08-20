@@ -69,7 +69,7 @@ export function PropTechEcosystemHub({ className }: { className?: string }) {
             <Building2 className="h-3.5 w-3.5" /> Smart Property Profile
           </TabsTrigger>
           <TabsTrigger value="service-marketplace" className="text-xs font-bold gap-1.5 shrink-0">
-            <ShoppingBag className="h-3.5 w-3.5 text-amber-500" /> Service Marketplace
+            <ShoppingBag className="h-3.5 w-3.5 text-warning" /> Service Marketplace
           </TabsTrigger>
           <TabsTrigger value="investment-workspace" className="text-xs font-bold gap-1.5 shrink-0">
             <TrendingUp className="h-3.5 w-3.5 text-success" /> Investment Workspace

@@ -166,7 +166,7 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-sm font-semibold">{mode.label}</span>
                   {form.invoice_mode === mode.value && (
-                    <Badge className="bg-amber-400/10 text-amber-600 border-amber-400/20 text-xs">Selected</Badge>
+                    <Badge className="bg-amber-400/10 text-warning border-amber-400/20 text-xs">Selected</Badge>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">{mode.desc}</p>

@@ -73,8 +73,20 @@ describe("Phase 13 remediations", () => {
     ];
     for (const name of gated) {
       const body = readFileSync(`supabase/functions/${name}/index.ts`, "utf8");
-      expect(body, name).toMatch(/rejectUnlessUserServiceOrCron|rejectUnlessServiceOrCron|withMiddleware/);
+      expect(body, name).toMatch(
+        /identifyUserServiceOrCron|rejectUnlessUserServiceOrCron|rejectUnlessServiceOrCron|withMiddleware/,
+      );
     }
+  });
+
+  it("scopes JWT report callers to themselves instead of body managerId", () => {
+    const cashflow = readFileSync("supabase/functions/generate-cashflow/index.ts", "utf8");
+    const receipt = readFileSync("supabase/functions/auto-send-receipt/index.ts", "utf8");
+    const commission = readFileSync("supabase/functions/process-commission/index.ts", "utf8");
+    expect(cashflow).toContain("scopedActorId(gate.userId, body.managerId)");
+    expect(receipt).toContain("scopedActorId(gate.userId, body.managerId)");
+    expect(receipt).toContain('.eq("manager_id", managerId)');
+    expect(commission).toContain("payment.manager_id !== gate.userId");
   });
 
   it("keeps public-by-design functions without a user JWT gate", () => {

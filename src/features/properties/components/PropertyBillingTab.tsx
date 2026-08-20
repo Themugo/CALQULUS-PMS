@@ -101,7 +101,7 @@ const EXPENDITURE_CATEGORIES = [
 
 const statusConfig: Record<InvoiceStatus, { styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   paid: { styles: "bg-success/10 text-success border-success/20", icon: CheckCircle },
-  pending: { styles: "bg-amber-500/10 text-amber-400 border-amber-500/20", icon: Clock },
+  pending: { styles: "bg-warning/10 text-warning border-warning/20", icon: Clock },
   overdue: { styles: "bg-red-500/10 text-red-400 border-red-500/20", icon: AlertCircle },
   cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20", icon: XCircle },
 };
@@ -409,7 +409,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Pending</p>
-            <p className="text-lg font-bold text-amber-600">{formatCurrency(totalPending)}</p>
+            <p className="text-lg font-bold text-warning">{formatCurrency(totalPending)}</p>
           </CardContent>
         </Card>
         <Card>

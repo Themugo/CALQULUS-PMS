@@ -97,8 +97,8 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Upcoming Renewals</span>
-          <strong className="text-lg font-black text-amber-600">1 Due in 30 Days</strong>
-          <span className="text-[9px] text-amber-600 font-bold block">Fire Audit Pending</span>
+          <strong className="text-lg font-black text-warning">1 Due in 30 Days</strong>
+          <span className="text-[9px] text-warning font-bold block">Fire Audit Pending</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -157,7 +157,7 @@ export function ComplianceCenterWorkspace({ className }: { className?: string })
                 <Badge
                   className={cn(
                     "text-[9px] font-bold uppercase",
-                    rec.status === "Valid" ? "bg-success/10 text-success border-success/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    rec.status === "Valid" ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"
                   )}
                 >
                   {rec.status}

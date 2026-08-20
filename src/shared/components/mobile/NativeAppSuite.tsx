@@ -28,7 +28,7 @@ export function NativeAppSuite({ className }: { className?: string }) {
         <div>
           <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-primary" /> Native Mobile & Field Ops Experience Suite
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
             </Badge>
           </h2>
@@ -180,15 +180,15 @@ export function NativeAppSuite({ className }: { className?: string }) {
                   <h4 className="font-extrabold text-foreground text-xs">Field Technician Maintenance App</h4>
                   <p className="text-[10px] text-muted-foreground">Work order SLA tracking, before/after photos, and parts scan.</p>
                 </div>
-                <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[9px] font-bold">
+                <Badge className="bg-warning/10 text-warning border-warning/20 text-[9px] font-bold">
                   SLA Active (2h Left)
                 </Badge>
               </div>
 
-              <div className="p-3 border rounded-xl bg-amber-500/5 border-amber-500/20 space-y-2">
+              <div className="p-3 border rounded-xl bg-warning/5 border-warning/20 space-y-2">
                 <div className="flex items-center justify-between font-bold text-foreground">
                   <span>WO-882: Plumbing Leakage in Unit 12B</span>
-                  <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600">HIGH PRIORITY</Badge>
+                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning">HIGH PRIORITY</Badge>
                 </div>
                 <p className="text-[11px] text-muted-foreground">Water main pressure regulator replacement required.</p>
                 <div className="pt-2 flex gap-2">

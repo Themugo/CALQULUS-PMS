@@ -25,7 +25,7 @@ const CHARGE_TYPES = [
   { value: 'garbage',        label: 'Garbage Collection',  icon: Trash,    color: 'text-orange-600' },
   { value: 'security',       label: 'Security Levy',       icon: Shield,   color: 'text-green-600' },
   { value: 'service_charge', label: 'Service Charge',      icon: Settings2, color: 'text-[hsl(218_58%_38%)]' },
-  { value: 'caretaker',      label: 'Caretaker Fee',       icon: Home,     color: 'text-amber-600' },
+  { value: 'caretaker',      label: 'Caretaker Fee',       icon: Home,     color: 'text-warning' },
   { value: 'wifi',           label: 'Internet / WiFi',     icon: Wifi,     color: 'text-[hsl(38_52%_42%)]' },
   { value: 'parking',        label: 'Parking',             icon: Car,      color: 'text-slate-600' },
   { value: 'electricity',    label: 'Electricity',         icon: Zap,      color: 'text-yellow-600' },

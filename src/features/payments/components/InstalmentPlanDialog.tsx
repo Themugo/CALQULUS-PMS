@@ -117,7 +117,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-amber-500" />
+            <CreditCard className="h-5 w-5 text-warning" />
             Create instalment plan
           </DialogTitle>
           <DialogDescription>
@@ -173,7 +173,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
           {/* Per-instalment amount */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-amber-400/6 border border-amber-400/20">
             <span className="text-sm font-medium">Each instalment</span>
-            <span className="text-lg font-bold text-amber-500">{fmt(perInstalment)}</span>
+            <span className="text-lg font-bold text-warning">{fmt(perInstalment)}</span>
           </div>
 
           {/* Notes */}

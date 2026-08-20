@@ -158,8 +158,8 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
                 <Badge variant="outline" className="text-[9px] font-bold uppercase">
                   {vendor.category}
                 </Badge>
-                <div className="flex items-center gap-1 text-amber-500 font-bold text-[11px]">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 text-warning font-bold text-[11px]">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-warning" />
                   <span>{vendor.rating}</span>
                   <span className="text-muted-foreground font-normal text-[10px]">({vendor.reviewCount})</span>
                 </div>

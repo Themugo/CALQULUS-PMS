@@ -193,7 +193,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
           Configured
         </Badge>
       ) : (
-        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+        <Badge variant="outline" className="bg-amber-50 text-warning border-amber-200">
           <XCircle className="h-3 w-3 mr-1" />
           Not Set
         </Badge>
@@ -272,7 +272,7 @@ export const MpesaSettings = ({ propertyId, propertyName }: MpesaSettingsProps =
               href="https://developer.safaricom.co.ke" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-amber-600 underline"
+              className="text-warning underline"
             >
               Safaricom Daraja Portal
             </a>

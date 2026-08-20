@@ -211,7 +211,7 @@ serve(async (req) => {
               .invoice-box { background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${isOverdue ? '#ef4444' : '#3b82f6'}; }
               .amount { font-size: 28px; font-weight: bold; color: ${isOverdue ? '#ef4444' : '#1e293b'}; }
               .due-date { color: ${isOverdue ? '#ef4444' : '#6b7280'}; font-weight: 600; }
-              .cta-button { display: inline-block; background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 15px; }
+              .cta-button { display: inline-block; background: #2F6FED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 15px; }
               .footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px; }
             </style>
           </head>

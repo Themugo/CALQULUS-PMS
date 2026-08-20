@@ -197,7 +197,7 @@ export function NetworkQualityIndicator() {
   const qualityColors = {
     excellent: 'bg-green-500',
     good: 'bg-blue-500',
-    fair: 'bg-yellow-500',
+    fair: 'bg-warning',
     poor: 'bg-red-500',
   };
 

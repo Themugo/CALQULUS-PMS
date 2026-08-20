@@ -205,7 +205,7 @@ const SOC2ComplianceDashboard = () => {
       case 'high':
         return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-warning-foreground border-warning">{severity}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
       default:
@@ -352,7 +352,7 @@ const SOC2ComplianceDashboard = () => {
                     <span className="text-warning/70">Partial</span>
                     <div className="flex items-center gap-2">
                       <div className="w-32 bg-secondary-background rounded-full h-2">
-                        <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
+                        <div className="bg-warning h-2 rounded-full" style={{ width: `${(controls.filter(c => c.status === 'partial').length / controls.length) * 100}%` }} />
                       </div>
                       <span className="text-foreground">{controls.filter(c => c.status === 'partial').length}</span>
                     </div>

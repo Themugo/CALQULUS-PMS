@@ -65,7 +65,7 @@ export function IncidentStatusCenter({ className }: { className?: string }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 border rounded-xl bg-card shadow-sm">
         <div>
           <h3 className="font-extrabold text-foreground text-sm flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 text-amber-500" /> Incident Management & System Status Page
+            <ShieldAlert className="h-4 w-4 text-warning" /> Incident Management & System Status Page
           </h3>
           <p className="text-xs text-muted-foreground">
             Publish status updates, schedule maintenance windows, and manage tenant/landlord notifications.

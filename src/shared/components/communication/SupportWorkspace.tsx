@@ -97,7 +97,7 @@ export function SupportWorkspace({ className }: { className?: string }) {
                     className={cn(
                       "text-[9px] font-bold h-4 uppercase",
                       tck.priority === "Urgent" && "bg-red-500/10 text-red-600 border-red-500/20",
-                      tck.priority === "High" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+                      tck.priority === "High" && "bg-warning/10 text-warning border-warning/20",
                       tck.priority === "Normal" && "bg-primary/10 text-primary border-primary/20"
                     )}
                   >
@@ -112,7 +112,7 @@ export function SupportWorkspace({ className }: { className?: string }) {
 
               <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/50">
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <Clock className="h-3 w-3 text-amber-500" />
+                  <Clock className="h-3 w-3 text-warning" />
                   <span>SLA: {tck.slaDeadline}</span>
                 </div>
 
@@ -121,7 +121,7 @@ export function SupportWorkspace({ className }: { className?: string }) {
                   className={cn(
                     "text-[10px] font-bold h-5 capitalize",
                     tck.status === "Open" && "bg-red-500/10 text-red-600 border-red-500/20",
-                    tck.status === "In Progress" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+                    tck.status === "In Progress" && "bg-warning/10 text-warning border-warning/20",
                     tck.status === "Resolved" && "bg-success/10 text-success border-success/20"
                   )}
                 >

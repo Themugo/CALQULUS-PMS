@@ -164,8 +164,8 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 border border-dashed border-amber-500/30 rounded-lg bg-amber-500/5">
-              <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30">○ Pending</Badge>
+            <div className="p-4 border border-dashed border-warning/30 rounded-lg bg-warning/5">
+              <Badge className="bg-warning/10 text-warning border-warning/30">○ Pending</Badge>
               <p className="text-xs text-muted-foreground mt-2">Awaiting manager signature</p>
             </div>
           )}
@@ -187,8 +187,8 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 border border-dashed border-amber-500/30 rounded-lg bg-amber-500/5">
-              <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30">○ Pending</Badge>
+            <div className="p-4 border border-dashed border-warning/30 rounded-lg bg-warning/5">
+              <Badge className="bg-warning/10 text-warning border-warning/30">○ Pending</Badge>
               <p className="text-xs text-muted-foreground mt-2">Awaiting tenant signature</p>
             </div>
           )}

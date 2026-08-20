@@ -449,7 +449,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, { icon: React.ReactNode; className: string }> = {
-      pending: { icon: <Clock className="h-3 w-3" />, className: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+      pending: { icon: <Clock className="h-3 w-3" />, className: "bg-warning/10 text-warning border-warning/20" },
       processing: { icon: <Loader2 className="h-3 w-3 animate-spin" />, className: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] border-[hsl(214_73%_48%/0.2)]" },
       completed: { icon: <CheckCircle2 className="h-3 w-3" />, className: "bg-success/10 text-success border-success/20" },
       cancelled: { icon: <Ban className="h-3 w-3" />, className: "bg-slate-500/10 text-slate-500 border-slate-500/20" },
@@ -508,7 +508,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
                   <p className="text-sm text-muted-foreground">
                     {existingRefund ? "Refunded Amount" : "Current Balance"}
                   </p>
-                  <p className={`text-xl font-semibold ${existingRefund ? 'text-success' : 'text-amber-500'}`}>
+                  <p className={`text-xl font-semibold ${existingRefund ? 'text-success' : 'text-warning'}`}>
                     KES {existingRefund ? existingRefund.refund_amount.toLocaleString() : currentBalance.toLocaleString()}
                   </p>
                 </div>
@@ -701,8 +701,8 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
 
             {/* Refund Tab */}
             <TabsContent value="refund" className="space-y-4 mt-0">
-              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                <p className="text-sm text-amber-700 dark:text-amber-400">
+              <div className="p-4 rounded-lg bg-warning/10 border border-warning/20">
+                <p className="text-sm text-warning dark:text-warning">
                   <strong>Note:</strong> Initiating a refund will set the tenant status to inactive and zero out their deposit balance.
                 </p>
               </div>

@@ -280,7 +280,7 @@ const PenetrationTestingDashboard = () => {
       case 'high':
         return <Badge className="bg-warning text-white border-warning">{severity}</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-500 text-white border-yellow-600">{severity}</Badge>;
+        return <Badge className="bg-warning text-warning-foreground border-warning">{severity}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{severity}</Badge>;
       case 'info':
@@ -297,7 +297,7 @@ const PenetrationTestingDashboard = () => {
       case 'high':
         return <Badge className="bg-warning text-white border-warning">{priority}</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-500 text-white border-yellow-600">{priority}</Badge>;
+        return <Badge className="bg-warning text-warning-foreground border-warning">{priority}</Badge>;
       case 'low':
         return <Badge className="bg-blue-500 text-white border-blue-600">{priority}</Badge>;
       default:
@@ -419,7 +419,7 @@ const PenetrationTestingDashboard = () => {
             <div className="flex items-center gap-4">
               <div className="w-32 text-warning/70 text-sm">Medium</div>
               <div className="flex-1 bg-secondary-background rounded-full h-3">
-                <div className="bg-yellow-500 h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'medium').length / totalFindings) * 100}%` }} />
+                <div className="bg-warning h-3 rounded-full" style={{ width: `${(vulnerabilityFindings.filter(f => f.severity === 'medium').length / totalFindings) * 100}%` }} />
               </div>
               <div className="w-8 text-foreground text-sm">{vulnerabilityFindings.filter(f => f.severity === 'medium').length}</div>
             </div>

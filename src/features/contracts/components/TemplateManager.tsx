@@ -271,7 +271,7 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
         {templates.map((template) => (
           <Card key={template.id} className="relative">
             {template.is_default && (
-              <Badge className="absolute top-2 right-2 bg-amber-500">
+              <Badge className="absolute top-2 right-2 bg-warning">
                 <Star className="h-3 w-3 mr-1" />
                 Default
               </Badge>

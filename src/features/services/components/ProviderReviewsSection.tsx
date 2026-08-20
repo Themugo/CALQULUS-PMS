@@ -36,7 +36,7 @@ function StarRow({ value, onChange, size = 'h-5 w-5' }: { value: number; onChang
           className={onChange ? 'cursor-pointer' : 'cursor-default'}
           aria-label={`${n} star${n > 1 ? 's' : ''}`}
         >
-          <Star className={`${size} ${n <= value ? 'text-amber-400 fill-amber-400' : 'text-muted-foreground/30'}`} />
+          <Star className={`${size} ${n <= value ? 'text-warning fill-amber-400' : 'text-muted-foreground/30'}`} />
         </button>
       ))}
     </div>

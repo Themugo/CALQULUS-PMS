@@ -24,15 +24,15 @@ export function SupportOperationsCenter({ className }: { className?: string }) {
         </div>
 
         {impersonatingUser && (
-          <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold text-xs gap-1 py-1">
+          <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 font-bold text-xs gap-1 py-1">
             <AlertTriangle className="h-3.5 w-3.5" /> Impersonating: {impersonatingUser}
           </Badge>
         )}
       </CardHeader>
 
       <CardContent className="p-4 space-y-4 text-xs">
-        <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-1.5 text-xs">
-          <span className="font-bold text-amber-600 flex items-center gap-1.5">
+        <div className="p-3 bg-warning/5 border border-warning/20 rounded-xl space-y-1.5 text-xs">
+          <span className="font-bold text-warning flex items-center gap-1.5">
             <ShieldAlert className="h-4 w-4" /> Support Session Notice
           </span>
           <p className="text-muted-foreground">

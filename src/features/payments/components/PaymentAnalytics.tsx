@@ -83,9 +83,9 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Collected (shown period)', value: fmt(totalCollected), icon: TrendingUp, color: 'text-green-700', bg: 'bg-green-50' },
-          { label: 'Outstanding',               value: fmt(totalPending),   icon: CreditCard,  color: 'text-amber-700', bg: 'bg-amber-50' },
+          { label: 'Outstanding',               value: fmt(totalPending),   icon: CreditCard,  color: 'text-warning', bg: 'bg-amber-50' },
           { label: 'Overdue balance',            value: fmt(totalOverdue),  icon: TrendingDown,color: 'text-red-700',   bg: 'bg-red-50' },
-          { label: 'Collection rate',            value: `${collectionRate}%`, icon: Users, color: collectionRate >= 80 ? 'text-green-700' : 'text-amber-700', bg: collectionRate >= 80 ? 'bg-green-50' : 'bg-amber-50' },
+          { label: 'Collection rate',            value: `${collectionRate}%`, icon: Users, color: collectionRate >= 80 ? 'text-green-700' : 'text-warning', bg: collectionRate >= 80 ? 'bg-green-50' : 'bg-amber-50' },
         ].map(k => (
           <div key={k.label} className={`rounded-xl border border-border p-3 ${k.bg}`}>
             <div className="flex items-center justify-between mb-1">

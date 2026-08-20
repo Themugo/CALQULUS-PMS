@@ -23,7 +23,7 @@ interface MaintenanceRequest {
 }
 
 const statusStyles: Record<string, string> = {
-  open: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  open: "bg-warning/10 text-warning border-warning/20",
   in_progress: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]",
   completed: "bg-success/10 text-success border-success/20",
   cancelled: "bg-slate-500/10 text-slate-600 border-slate-500/20",
@@ -31,7 +31,7 @@ const statusStyles: Record<string, string> = {
 
 const priorityStyles: Record<string, string> = {
   low: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  medium: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  medium: "bg-warning/10 text-warning border-warning/20",
   high: "bg-orange-500/10 text-orange-600 border-orange-500/20",
   urgent: "bg-red-500/10 text-red-600 border-red-500/20",
 };
@@ -67,7 +67,7 @@ export function PropertyMaintenanceTab({ propertyName }: PropertyMaintenanceTabP
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Wrench className="h-5 w-5 text-amber-500" />
+            <Wrench className="h-5 w-5 text-warning" />
             Maintenance Requests
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">

@@ -183,7 +183,7 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
               <img src={photo.photo_url} alt={photo.caption || 'Unit photo'} className="w-full h-full object-cover" />
               <div className="absolute top-1.5 left-1.5 flex gap-1">
                 {photo.is_cover && (
-                  <Badge className="bg-amber-400 text-amber-950 border-amber-500 text-[10px] px-1.5 py-0 gap-1">
+                  <Badge className="bg-amber-400 text-amber-950 border-warning text-[10px] px-1.5 py-0 gap-1">
                     <Star className="h-2.5 w-2.5 fill-current" /> Cover
                   </Badge>
                 )}

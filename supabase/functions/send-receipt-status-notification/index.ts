@@ -55,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
     }: ReceiptStatusNotificationRequest = await req.json();
 
     const isVerified = status === 'verified';
-    const statusColor = isVerified ? '#22c55e' : '#ef4444';
+    const statusColor = isVerified ? '#23856B' : '#C84B4B';
     const statusText = isVerified ? 'Verified' : 'Rejected';
     const emoji = isVerified ? '✅' : '❌';
 

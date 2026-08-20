@@ -45,7 +45,7 @@ export function CommercialKpiDashboard({ className }: { className?: string }) {
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Customer Satisfaction (CSAT)</span>
-          <strong className="text-lg font-black text-amber-600">4.9 / 5.0</strong>
+          <strong className="text-lg font-black text-warning">4.9 / 5.0</strong>
           <span className="text-[9px] text-success font-bold block">98% First Contact Resolution</span>
         </Card>
       </div>

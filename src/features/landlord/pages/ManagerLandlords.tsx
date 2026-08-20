@@ -255,7 +255,7 @@ const ManagerLandlords = () => {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                          <span className="text-amber-700 font-semibold text-sm">
+                          <span className="text-warning font-semibold text-sm">
                             {(link.landlord_name || link.landlord_email || "U")[0].toUpperCase()}
                           </span>
                         </div>
@@ -273,7 +273,7 @@ const ManagerLandlords = () => {
                             </p>
                           )}
                           {!link.landlord_user_id && (
-                            <Badge variant="outline" className="mt-1 text-xs border-amber-200 text-amber-700 bg-amber-50">
+                            <Badge variant="outline" className="mt-1 text-xs border-amber-200 text-warning bg-amber-50">
                               Invitation pending
                             </Badge>
                           )}

@@ -79,7 +79,7 @@ const statusStyles: Record<string, { bg: string; icon: React.ReactNode }> = {
     icon: <CheckCircle className="h-3.5 w-3.5" />,
   },
   pending: {
-    bg: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    bg: "bg-warning/10 text-warning border-warning/20",
     icon: <Clock className="h-3.5 w-3.5" />,
   },
   overdue: {
@@ -520,7 +520,7 @@ export const TenantStatement = ({
           {/* Balance Summary */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-muted/30 rounded-lg p-3 text-center">
-              <Wallet className="h-5 w-5 mx-auto mb-1 text-amber-500" />
+              <Wallet className="h-5 w-5 mx-auto mb-1 text-warning" />
               <p className="text-xs text-muted-foreground">Total Billed</p>
               <p className="text-sm font-semibold text-foreground">
                 {formatKES(totalBilled)}
@@ -536,19 +536,19 @@ export const TenantStatement = ({
             <div
               className={`rounded-lg p-3 text-center ${
                 outstandingBalance > 0
-                  ? "bg-amber-500/10"
+                  ? "bg-warning/10"
                   : "bg-muted/30"
               }`}
             >
               <Clock
                 className={`h-5 w-5 mx-auto mb-1 ${
-                  outstandingBalance > 0 ? "text-amber-400" : "text-muted-foreground"
+                  outstandingBalance > 0 ? "text-warning" : "text-muted-foreground"
                 }`}
               />
               <p className="text-xs text-muted-foreground">Outstanding</p>
               <p
                 className={`text-sm font-semibold ${
-                  outstandingBalance > 0 ? "text-amber-400" : "text-foreground"
+                  outstandingBalance > 0 ? "text-warning" : "text-foreground"
                 }`}
               >
                 {formatKES(outstandingBalance)}

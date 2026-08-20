@@ -96,11 +96,11 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              <CalendarX className="h-5 w-5 text-amber-500" />
+              <CalendarX className="h-5 w-5 text-warning" />
               Vacation Notices
             </CardTitle>
             {pendingCount > 0 && (
-              <p className="text-sm text-amber-600 mt-1">{pendingCount} pending notice(s)</p>
+              <p className="text-sm text-warning mt-1">{pendingCount} pending notice(s)</p>
             )}
           </div>
         </CardHeader>

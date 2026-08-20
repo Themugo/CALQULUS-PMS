@@ -47,7 +47,7 @@ export function CommercialLaunchSuite({ className }: { className?: string }) {
             </div>
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">CSAT SCORE</span>
-              <span className="text-sm font-black text-amber-400">4.9 / 5.0</span>
+              <span className="text-sm font-black text-warning">4.9 / 5.0</span>
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export function CommercialLaunchSuite({ className }: { className?: string }) {
               <MessageSquare className="h-3.5 w-3.5 text-navy-mid" /> Feedback & Roadmap
             </TabsTrigger>
             <TabsTrigger value="competitive-intel" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Swords className="h-3.5 w-3.5 text-amber-500" /> Competitive Intel
+              <Swords className="h-3.5 w-3.5 text-warning" /> Competitive Intel
             </TabsTrigger>
             <TabsTrigger value="documentation" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <BookOpen className="h-3.5 w-3.5 text-navy-mid" /> Documentation

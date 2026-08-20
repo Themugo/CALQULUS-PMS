@@ -54,7 +54,7 @@ export function GtmSalesWorkspace({ className }: { className?: string }) {
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
               <Target className="h-5 w-5 text-success" /> Go-To-Market & Sales Pipeline Command Workspace
             </h3>
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
             </Badge>
           </div>

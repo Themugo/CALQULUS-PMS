@@ -2,12 +2,12 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { requireEnv } from "../_shared/env.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
   try {
     const supabase = createClient(
@@ -20,6 +20,20 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "landlordId and month required" }), {
         status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
+    }
+
+    if (gate.userId && gate.userId !== landlordId) {
+      const { data: link } = await supabase
+        .from("property_landlords")
+        .select("id")
+        .eq("landlord_user_id", landlordId)
+        .eq("manager_id", gate.userId)
+        .limit(1);
+      if (!link?.length) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
     }
 
     const start = `${month}-01`;

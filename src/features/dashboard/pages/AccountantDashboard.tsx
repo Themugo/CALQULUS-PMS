@@ -223,7 +223,7 @@ export default function AccountantDashboard() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/billing'}>
-              <span className="flex items-center gap-2"><Scale className="h-4 w-4 text-amber-500" /> Reconcile Bank Statements</span>
+              <span className="flex items-center gap-2"><Scale className="h-4 w-4 text-warning" /> Reconcile Bank Statements</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
@@ -312,7 +312,7 @@ export default function AccountantDashboard() {
                     <TableRow key={payout.id}>
                       <TableCell className="text-xs">{payout.created_at ? format(new Date(payout.created_at), 'MMM dd') : 'N/A'}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                        <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/20">
                           {payout.status}
                         </Badge>
                       </TableCell>

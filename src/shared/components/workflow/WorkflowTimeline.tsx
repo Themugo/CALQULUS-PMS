@@ -45,10 +45,10 @@ export function WorkflowTimeline({ events, className }: WorkflowTimelineProps) {
       badge: "bg-red-500/10 text-red-600 border-red-500/20",
     },
     rejected: {
-      dot: "bg-amber-500 text-white ring-4 ring-amber-500/20",
+      dot: "bg-warning text-warning-foreground ring-4 ring-amber-500/20",
       line: "bg-border",
       icon: AlertCircle,
-      badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+      badge: "bg-warning/10 text-warning border-warning/20",
     },
   };
 

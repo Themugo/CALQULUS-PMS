@@ -809,7 +809,7 @@ const Tenants = () => {
                             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-amber-400" />
                             <div className="bg-muted/30 rounded-lg p-3">
                               <div className="flex items-center justify-between mb-1">
-                                <Badge variant="outline" className="bg-amber-400/10 text-amber-600 border-amber-400/20">
+                                <Badge variant="outline" className="bg-amber-400/10 text-warning border-amber-400/20">
                                   {item.action}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">

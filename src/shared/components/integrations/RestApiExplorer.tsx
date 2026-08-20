@@ -149,7 +149,7 @@ export function RestApiExplorer({ className }: { className?: string }) {
                     "font-bold mr-2 px-1.5 py-0.5 rounded text-[10px]",
                     ep.method === "GET" && "bg-blue-500/10 text-blue-600",
                     ep.method === "POST" && "bg-success/10 text-success",
-                    ep.method === "PUT" && "bg-amber-500/10 text-amber-600",
+                    ep.method === "PUT" && "bg-warning/10 text-warning",
                     ep.method === "DELETE" && "bg-red-500/10 text-red-600"
                   )}>
                     {ep.method}

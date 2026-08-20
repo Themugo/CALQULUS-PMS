@@ -29,7 +29,7 @@ export function CommunityLearningHub({ className }: { className?: string }) {
         <Card className="border-border/80 bg-card p-4 space-y-3">
           <div className="flex items-center justify-between border-b pb-2">
             <h4 className="font-extrabold text-foreground text-xs flex items-center gap-2">
-              <Award className="h-4 w-4 text-amber-500" /> Professional Certification Tracks
+              <Award className="h-4 w-4 text-warning" /> Professional Certification Tracks
             </h4>
             <Badge variant="outline" className="text-[9px] font-bold">CPMS Accredited</Badge>
           </div>

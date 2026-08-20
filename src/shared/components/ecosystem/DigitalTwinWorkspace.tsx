@@ -35,7 +35,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <div className="flex justify-between items-center text-[10px] text-muted-foreground font-bold uppercase">
             <span>Ambient Temp</span>
-            <Thermometer className="h-3.5 w-3.5 text-amber-500" />
+            <Thermometer className="h-3.5 w-3.5 text-warning" />
           </div>
           <strong className="text-xl font-black text-foreground">22.4 °C</strong>
           <span className="text-[9px] text-success font-bold block">Comfortable HVAC Target</span>
@@ -53,9 +53,9 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <div className="flex justify-between items-center text-[10px] text-muted-foreground font-bold uppercase">
             <span>Solar Power Generation</span>
-            <Zap className="h-3.5 w-3.5 text-amber-400" />
+            <Zap className="h-3.5 w-3.5 text-warning" />
           </div>
-          <strong className="text-xl font-black text-amber-500">42.8 kW</strong>
+          <strong className="text-xl font-black text-warning">42.8 kW</strong>
           <span className="text-[9px] text-muted-foreground block">82% Grid Offset</span>
         </Card>
 
@@ -101,7 +101,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
                 <span className="text-[10px] text-slate-400 block font-mono">Temp: 22°C • Meter: 14 m³ • Normal</span>
               </div>
 
-              <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 space-y-1">
+              <div className="p-3 rounded-lg border border-warning/30 bg-warning/10 space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-white">Unit 3B</span>
                   <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
@@ -122,10 +122,10 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
           <span className="font-bold text-foreground text-xs block">IoT Telemetry Alerts</span>
 
           <div className="space-y-2">
-            <div className="p-2.5 border rounded-xl bg-amber-500/5 border-amber-500/20 space-y-1">
+            <div className="p-2.5 border rounded-xl bg-warning/5 border-warning/20 space-y-1">
               <div className="flex items-center justify-between font-bold text-foreground">
-                <span className="text-amber-600">Unit 3B Flow Anomaly</span>
-                <Badge variant="outline" className="text-[8px] bg-amber-500/10 text-amber-600">P2 Priority</Badge>
+                <span className="text-warning">Unit 3B Flow Anomaly</span>
+                <Badge variant="outline" className="text-[8px] bg-warning/10 text-warning">P2 Priority</Badge>
               </div>
               <p className="text-[10px] text-muted-foreground">
                 Meter registered 42 m³ in 24h. AI model predicts plumbing pipe valve leak.

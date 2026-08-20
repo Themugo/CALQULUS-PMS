@@ -158,7 +158,7 @@ const UnmatchedBankTransactions: React.FC = () => {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Unmatched bank transactions
               {unmatchedTxs.length > 0 && (
                 <Badge className="bg-amber-100 text-amber-800 border-amber-200">{unmatchedTxs.length}</Badge>

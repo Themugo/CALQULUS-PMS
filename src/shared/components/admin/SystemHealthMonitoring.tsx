@@ -66,7 +66,7 @@ function usePlatformTelemetry() {
 
 const SUMMARY_COPY: Record<HealthSummary, { label: string; cls: string; dot: string }> = {
   healthy: { label: "Healthy", cls: "text-success", dot: "bg-success" },
-  degraded: { label: "Degraded", cls: "text-amber-600", dot: "bg-amber-500" },
+  degraded: { label: "Degraded", cls: "text-warning", dot: "bg-warning" },
   unavailable: { label: "Unavailable", cls: "text-muted-foreground", dot: "bg-muted-foreground/50" },
 };
 
@@ -142,7 +142,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
           <div className="p-3 rounded-xl border border-border/80 bg-card space-y-1">
             <div className="flex items-center justify-between text-muted-foreground text-[10px] font-bold uppercase">
               <span>API P99 Latency</span>
-              <Zap className="h-3.5 w-3.5 text-amber-500" />
+              <Zap className="h-3.5 w-3.5 text-warning" />
             </div>
             <strong className="text-base font-extrabold text-muted-foreground">—</strong>
             <span className="text-[10px] text-muted-foreground block">Requires APM integration</span>
@@ -156,7 +156,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
             {healthLoading ? (
               <Skeleton className="h-5 w-16" />
             ) : supabaseCheck ? (
-              <strong className={cn("text-base font-extrabold", supabaseCheck.status === "healthy" ? "text-success" : "text-amber-600")}>
+              <strong className={cn("text-base font-extrabold", supabaseCheck.status === "healthy" ? "text-success" : "text-warning")}>
                 {supabaseCheck.status === "healthy" ? "Connected" : supabaseCheck.status}
               </strong>
             ) : (
@@ -177,7 +177,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
             ) : edgeResults.length === 0 ? (
               <strong className="text-base font-extrabold text-muted-foreground">—</strong>
             ) : (
-              <strong className={cn("text-base font-extrabold", healthyEdgeCount === edgeResults.length ? "text-success" : "text-amber-600")}>
+              <strong className={cn("text-base font-extrabold", healthyEdgeCount === edgeResults.length ? "text-success" : "text-warning")}>
                 {healthyEdgeCount}/{edgeResults.length} reachable
               </strong>
             )}
@@ -229,7 +229,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
             </div>
           )}
           {health.isError && (
-            <p className="text-[10px] text-amber-600 flex items-center gap-1 pt-1">
+            <p className="text-[10px] text-warning flex items-center gap-1 pt-1">
               <AlertTriangle className="h-3 w-3" /> Platform connectivity probe failed — showing cached/unavailable state.
             </p>
           )}

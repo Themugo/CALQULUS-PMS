@@ -66,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const isCompleted = refundStatus === "completed";
-    const statusColor = isCompleted ? "#22c55e" : "#f59e0b";
+    const statusColor = isCompleted ? "#23856B" : "#B7791F";
     const statusText = isCompleted ? "Completed" : "Initiated";
     const headerIcon = isCompleted ? "✓" : "⏳";
 

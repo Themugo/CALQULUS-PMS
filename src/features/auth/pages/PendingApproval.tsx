@@ -105,7 +105,7 @@ const PendingApproval = () => {
         <Card className="w-full border-border bg-muted backdrop-blur-xl shadow-sm">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
+              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${isSuspended ? 'bg-orange-500/10' : isRejected ? 'bg-red-500/10' : 'bg-warning/10'}`}>
                 <Clock className={`h-8 w-8 ${isSuspended ? 'text-warning' : isRejected ? 'text-destructive' : 'text-warning'}`} />
               </div>
             </div>
@@ -137,7 +137,7 @@ const PendingApproval = () => {
                           <p className="text-sm text-red-200">{suspensionReason}</p>
                         </div>
                       )}
-                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
+                      <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-left">
                         <p className="text-xs text-primary font-semibold mb-2 uppercase tracking-wide">How to restore access</p>
                         <ol className="text-sm text-muted-foreground space-y-1">
                           <li>1. Open Platform Billing and pay the outstanding invoice.</li>

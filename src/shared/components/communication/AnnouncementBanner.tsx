@@ -54,7 +54,7 @@ export function AnnouncementBanner({ announcement }: { announcement?: Announceme
       className={cn(
         "p-3 rounded-xl border flex items-start justify-between gap-3 shadow-xs text-xs",
         ann.severity === "high" && "bg-red-500/10 border-red-500/30 text-red-950 dark:text-red-200",
-        ann.severity === "medium" && "bg-amber-500/10 border-amber-500/30 text-amber-950 dark:text-amber-200",
+        ann.severity === "medium" && "bg-warning/10 border-warning/30 text-amber-950 dark:text-amber-200",
         ann.severity === "low" && "bg-primary/10 border-primary/30 text-primary-950 dark:text-primary-200"
       )}
     >

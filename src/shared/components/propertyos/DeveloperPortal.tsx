@@ -60,7 +60,7 @@ X-Correlation-ID: req_8829140219412
         {/* API Credentials */}
         <Card className="border-border/80 bg-card p-4 space-y-3">
           <h4 className="font-extrabold text-foreground text-xs flex items-center gap-2 border-b pb-2">
-            <Key className="h-4 w-4 text-amber-500" /> Organization API Keys
+            <Key className="h-4 w-4 text-warning" /> Organization API Keys
           </h4>
 
           <div className="space-y-2">

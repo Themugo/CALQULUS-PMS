@@ -66,13 +66,13 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
     return { icon: UserCheck, iconBg: "bg-primary/10 text-primary", category: "Account" };
   }
   if (actionLower.includes("created") && actionLower.includes("tenant")) {
-    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-amber-500", category: "Tenant" };
+    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-warning", category: "Tenant" };
   }
   if (actionLower.includes("move out") || actionLower.includes("vacated")) {
     return { icon: LogOut, iconBg: "bg-orange-500/10 text-orange-500", category: "Tenant" };
   }
   if (actionLower.includes("tenant") || actionLower.includes("move in")) {
-    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-amber-500", category: "Tenant" };
+    return { icon: UserPlus, iconBg: "bg-amber-400/12 text-warning", category: "Tenant" };
   }
   
   // Property related

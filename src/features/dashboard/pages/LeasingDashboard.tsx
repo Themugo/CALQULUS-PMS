@@ -199,7 +199,7 @@ export default function LeasingDashboard() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/tenants'}>
-              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-amber-500" /> Review Vacation Notices</span>
+              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-warning" /> Review Vacation Notices</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>

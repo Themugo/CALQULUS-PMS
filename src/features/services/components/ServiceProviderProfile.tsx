@@ -205,7 +205,7 @@ const ServiceProviderProfile: React.FC = () => {
       {!provider && (
         <div className="rounded-xl border border-amber-300/50 bg-amber-50/20 p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold">Complete your provider profile</p>
               <p className="text-xs text-muted-foreground mt-0.5">

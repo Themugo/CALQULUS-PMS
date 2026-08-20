@@ -1,4 +1,3 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useRef, memo, type CSSProperties } from 'react';
 import { cn } from '@/shared/lib/utils';
 
@@ -164,6 +163,7 @@ function LazyAvatar({
 }: LazyAvatarProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -210,7 +210,10 @@ function LazyAvatar({
             isLoaded ? 'opacity-100' : 'opacity-0'
           )}
           onLoad={() => setIsLoaded(true)}
-          onError={() => setIsLoaded(true)} // Show initials on error
+          onError={() => {
+            setIsLoaded(true);
+            setHasError(true);
+          }}
           loading="lazy"
           decoding="async"
         />
@@ -338,11 +341,6 @@ function PropertyImage({
       )}
     </div>
   );
-}
-
-// Helper for error state tracking in LazyAvatar
-function hasError() {
-  return false; // This is a placeholder - actual implementation would need state
 }
 
 export { LazyImage, LazyAvatar, PropertyImage };

@@ -104,7 +104,7 @@ export function PropertyHistory({ propertyId }: PropertyHistoryProps) {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          <History className="h-5 w-5 text-amber-500" />
+          <History className="h-5 w-5 text-warning" />
           Property History
         </CardTitle>
       </CardHeader>

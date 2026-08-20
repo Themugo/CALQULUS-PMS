@@ -279,7 +279,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
         {invitationUrl ? (
           <div className="space-y-4 py-4">
             <div className="rounded-lg border border-amber-400/20 bg-amber-400/6 p-4">
-              <div className="flex items-center gap-2 text-amber-500 mb-2">
+              <div className="flex items-center gap-2 text-warning mb-2">
                 <Check className="h-5 w-5" />
                 <span className="font-medium">Invitation Created!</span>
               </div>
@@ -420,7 +420,7 @@ export function InviteTenantDialog({ trigger, preSelectedPropertyId }: InviteTen
           </div>
 
           {!email && !phone && (
-            <div className="rounded-md bg-amber-500/10 border border-amber-500/30 p-3 text-sm text-amber-700">
+            <div className="rounded-md bg-warning/10 border border-warning/30 p-3 text-sm text-warning">
               Please provide at least an email address or phone number to send the invitation.
             </div>
           )}

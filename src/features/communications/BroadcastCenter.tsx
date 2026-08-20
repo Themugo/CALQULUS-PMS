@@ -371,7 +371,7 @@ const BroadcastCenter: React.FC = () => {
                           }}
                           className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border text-xs transition-colors text-left ${
                             messageType === mt.value
-                              ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                              ? 'border-amber-400/50 bg-amber-400/8 text-warning'
                               : 'border-border hover:border-amber-400/30 text-muted-foreground'
                           }`}
                         >
@@ -408,7 +408,7 @@ const BroadcastCenter: React.FC = () => {
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>{body.length} characters</span>
                       {sendSms && body.length > 160 && (
-                        <span className="text-amber-600">⚠ SMS will split into {Math.ceil(body.length / 160)} parts</span>
+                        <span className="text-warning">⚠ SMS will split into {Math.ceil(body.length / 160)} parts</span>
                       )}
                     </div>
                   </div>
@@ -439,10 +439,10 @@ const BroadcastCenter: React.FC = () => {
                         className={`rounded-lg border p-3 cursor-pointer transition-colors ${ch.state ? 'border-amber-400/50 bg-amber-400/8' : 'border-border'}`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <ch.icon className={`h-4 w-4 ${ch.state ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                          <ch.icon className={`h-4 w-4 ${ch.state ? 'text-warning' : 'text-muted-foreground'}`} />
                           <Switch checked={ch.state} onCheckedChange={ch.set} className="scale-75" />
                         </div>
-                        <p className={`text-xs font-medium ${ch.state ? 'text-amber-500' : 'text-muted-foreground'}`}>{ch.label}</p>
+                        <p className={`text-xs font-medium ${ch.state ? 'text-warning' : 'text-muted-foreground'}`}>{ch.label}</p>
                         <p className="text-xs text-muted-foreground/70">{ch.desc}</p>
                       </div>
                     ))}

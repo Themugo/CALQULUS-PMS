@@ -849,7 +849,7 @@ const ManagerPaymentHistory = () => {
                             variant="outline"
                             className={isOverdue
                               ? "border-red-300 text-red-700 bg-red-50"
-                              : "border-amber-300 text-amber-700 bg-amber-50"
+                              : "border-amber-300 text-warning bg-amber-50"
                             }
                           >
                             {isOverdue ? <AlertTriangle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}

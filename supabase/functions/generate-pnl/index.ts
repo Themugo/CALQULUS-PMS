@@ -2,12 +2,12 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { requireEnv } from "../_shared/env.ts";
+import { identifyUserServiceOrCron, scopedActorId } from "../_shared/assertCaller.ts";
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
   try {
     const supabase = createClient(
@@ -15,7 +15,9 @@ serve(async (req) => {
       requireEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
-    const { managerId, month, propertyId } = await req.json();
+    const body = await req.json();
+    const { month, propertyId } = body;
+    const managerId = scopedActorId(gate.userId, body.managerId);
 
     if (!managerId || !month) {
       return new Response(JSON.stringify({ error: "managerId and month required" }), {

@@ -96,7 +96,7 @@ export function IntegrationMarketplace({ className }: { className?: string }) {
                   <Badge variant="outline" className="text-[9px] font-semibold">
                     {app.category}
                   </Badge>
-                  <span className="text-[10px] font-bold text-amber-500 flex items-center gap-0.5">
+                  <span className="text-[10px] font-bold text-warning flex items-center gap-0.5">
                     <Star className="h-3 w-3 fill-amber-500" /> {app.rating}
                   </span>
                 </div>

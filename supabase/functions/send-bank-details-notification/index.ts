@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+          <div style="background: linear-gradient(135deg, #1B3A6B 0%, #2F6FED 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">Payment Details ${isNew ? "Added" : "Updated"}</h1>
           </div>
           
@@ -109,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p>Your landlord${managerName ? ` (${managerName})` : ""} has ${action} bank details${accountLabel ? ` for <strong>${accountLabel}</strong>` : ""}.</p>
             
             <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #16a34a; font-size: 16px;">Bank Transfer Details</h3>
+              <h3 style="margin-top: 0; color: #2F6FED; font-size: 16px;">Bank Transfer Details</h3>
               <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td style="padding: 8px 0; color: #64748b; width: 40%;">Bank Name</td>
@@ -132,7 +132,7 @@ const handler = async (req: Request): Promise<Response> => {
               </table>
               
               ${bankDetails.paybill_number || bankDetails.till_number ? `
-              <h3 style="margin-top: 20px; color: #16a34a; font-size: 16px;">M-Pesa Details</h3>
+              <h3 style="margin-top: 20px; color: #2F6FED; font-size: 16px;">M-Pesa Details</h3>
               <table style="width: 100%; border-collapse: collapse;">
                 ${bankDetails.paybill_number ? `
                 <tr>

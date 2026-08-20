@@ -6,7 +6,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron, scopedActorId } from "../_shared/assertCaller.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -16,11 +16,13 @@ const log = (s: string, d?: unknown) => console.log(`[AUTO-RECEIPT] ${s}`, d ? J
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
   try {
-    const { invoiceId, managerId } = await req.json();
+    const body = await req.json();
+    const invoiceId = body.invoiceId;
+    const managerId = scopedActorId(gate.userId, body.managerId);
     if (!invoiceId || !managerId) throw new Error("invoiceId and managerId required");
 
     const { data: rs } = await supabase.from("receipt_settings").select("*").eq("manager_user_id", managerId).maybeSingle();
@@ -29,8 +31,10 @@ serve(async (req) => {
     }
 
     const { data: invoice, error } = await supabase.from("invoices")
-      .select(`id, invoice_number, amount, status, due_date, paid_date, tenant_id, tenants(id, name, email, phone), leases(property, unit, unit_id, property_id)`)
-      .eq("id", invoiceId).single();
+      .select(`id, invoice_number, amount, status, due_date, paid_date, tenant_id, manager_id, tenants(id, name, email, phone), leases(property, unit, unit_id, property_id)`)
+      .eq("id", invoiceId)
+      .eq("manager_id", managerId)
+      .single();
     if (error || !invoice) throw new Error("Invoice not found");
 
     const tenant = (invoice as any).tenants;
@@ -81,7 +85,7 @@ serve(async (req) => {
         property: lease?.property ?? "Property", unit: lease?.unit ?? "Unit",
         companyName, mpesaReceipt: (tx as any)?.mpesa_receipt_number,
         bankRef: (tx as any)?.bank_reference, paymentMethod, outstandingBalance,
-        primaryColor: (rs as any)?.primary_color ?? "#16a34a",
+        primaryColor: (rs as any)?.primary_color ?? "#2F6FED",
         secondaryColor: (rs as any)?.secondary_color ?? "#1e293b",
         footerMessage: (rs as any)?.footer_message ?? "Thank you for your payment!",
       }),

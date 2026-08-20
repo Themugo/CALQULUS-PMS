@@ -254,7 +254,7 @@ export function InvitationTracker() {
       );
     }
     return (
-      <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20">
+      <Badge className="bg-warning/10 text-warning border-warning/20">
         <Clock className="h-3 w-3 mr-1" />
         Pending
       </Badge>
@@ -412,10 +412,10 @@ export function InvitationTracker() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="p-4 rounded-lg border bg-amber-500/5 border-amber-500/20">
+          <div className="p-4 rounded-lg border bg-warning/5 border-warning/20">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-amber-600">Pending</span>
+              <Clock className="h-4 w-4 text-warning" />
+              <span className="text-sm font-medium text-warning">Pending</span>
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.pending.length}</p>
           </div>

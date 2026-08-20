@@ -173,7 +173,7 @@ const DocumentPreview = ({ documentUrl }: { documentUrl: string }) => {
           <Button
             variant="link"
             size="sm"
-            className="text-amber-500 mt-1"
+            className="text-warning mt-1"
             onClick={() => openSafely(signedUrl)}
           >
             Click to view
@@ -893,7 +893,7 @@ const Leases = () => {
               size="sm"
               onClick={() => setIsBulkDeleteDialogOpen(true)}
               disabled={isViewOnly}
-              className="sm:size-default border-amber-500 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950"
+              className="sm:size-default border-warning text-warning hover:bg-amber-50 dark:hover:bg-amber-950"
             >
               <Trash2 className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Deactivate</span> {selectedLeases.size}
@@ -1010,7 +1010,7 @@ const Leases = () => {
                             <div className="flex items-center justify-between gap-4">
                               <span>{unit.unit_number}</span>
                               {unit.status === "occupied" && (
-                                <span className="text-xs text-amber-500">(Occupied)</span>
+                                <span className="text-xs text-warning">(Occupied)</span>
                               )}
                               {unit.monthly_rent && (
                                 <span className="text-xs text-muted-foreground">
@@ -1137,7 +1137,7 @@ const Leases = () => {
       {/* Leases Grid */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12 sm:py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-warning" />
         </div>
       ) : filteredLeases.length === 0 ? (
         <Card className="bg-card border-border">
@@ -1508,7 +1508,7 @@ const Leases = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                      className="border-warning/50 text-warning hover:bg-warning/10"
                       onClick={() =>
                         updateLeaseStatus(selectedLease.id, "expiring")
                       }

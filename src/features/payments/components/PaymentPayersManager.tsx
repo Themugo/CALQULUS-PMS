@@ -259,7 +259,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
                     onClick={() => setForm(p => ({ ...p, payer_type: t.value }))}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left text-xs transition-colors ${
                       form.payer_type === t.value
-                        ? 'border-amber-400/50 bg-amber-400/8 text-amber-600'
+                        ? 'border-amber-400/50 bg-amber-400/8 text-warning'
                         : 'border-border hover:border-amber-400/40 text-muted-foreground'
                     }`}
                   >

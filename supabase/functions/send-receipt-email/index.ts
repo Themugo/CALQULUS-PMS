@@ -28,7 +28,7 @@ serve(async (req) => {
       tenantEmail, tenantName, invoiceNumber, amount, paidDate, dueDate,
       property, unit, mpesaReceipt, bankRef, paymentMethod = "M-Pesa",
       outstandingBalance = 0, companyName = "Property Management",
-      primaryColor = "#16a34a", secondaryColor = "#1e293b",
+      primaryColor = "#2F6FED", secondaryColor = "#1B3A6B",
       footerMessage = "Thank you for your payment!", logoUrl,
     } = body;
 

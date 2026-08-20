@@ -198,7 +198,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
   const EVENT_ICONS: Record<string, EventIconConfig> = {
     tenant_moved_in:       { icon: User,         color: 'text-green-600',  bg: 'bg-green-50' },
     tenant_moved_out:      { icon: Archive,       color: 'text-slate-600',  bg: 'bg-slate-50' },
-    maintenance_raised:    { icon: Wrench,        color: 'text-amber-600',  bg: 'bg-amber-50' },
+    maintenance_raised:    { icon: Wrench,        color: 'text-warning',  bg: 'bg-amber-50' },
     maintenance_resolved:  { icon: CheckCircle,   color: 'text-green-600',  bg: 'bg-green-50' },
     notice_submitted:      { icon: CalendarX,     color: 'text-orange-600', bg: 'bg-orange-50' },
     lease_created:         { icon: FileSignature, color: 'text-[hsl(214_73%_45%)]',   bg: 'bg-[hsl(214_73%_48%/0.08)]'  },
@@ -227,7 +227,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Open maintenance</p>
-          <p className={`text-sm font-semibold ${openMaintenance > 0 ? 'text-amber-700' : 'text-green-700'}`}>
+          <p className={`text-sm font-semibold ${openMaintenance > 0 ? 'text-warning' : 'text-green-700'}`}>
             {openMaintenance}
           </p>
         </div>
@@ -431,13 +431,13 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
                     <TableCell className="text-xs text-muted-foreground">
                       {c.tenant_signed_at
                         ? <span className="text-green-700 flex items-center gap-1"><CheckCircle className="h-3 w-3" />{format(new Date(c.tenant_signed_at), 'dd/MM/yy')}</span>
-                        : <span className="text-amber-600">Pending</span>
+                        : <span className="text-warning">Pending</span>
                       }
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {c.manager_signed_at
                         ? <span className="text-green-700 flex items-center gap-1"><CheckCircle className="h-3 w-3" />{format(new Date(c.manager_signed_at), 'dd/MM/yy')}</span>
-                        : <span className="text-amber-600">Pending</span>
+                        : <span className="text-warning">Pending</span>
                       }
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">

@@ -73,7 +73,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
               <HeartPulse className="h-5 w-5 text-success" /> Customer Success & Health Scoring Command Center
             </h3>
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
+            <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
             </Badge>
           </div>
@@ -108,8 +108,8 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Accounts at Risk</span>
-          <strong className="text-lg font-black text-amber-600">1 Account</strong>
-          <span className="text-[9px] text-amber-600 font-bold block">Action Plan Assigned</span>
+          <strong className="text-lg font-black text-warning">1 Account</strong>
+          <span className="text-[9px] text-warning font-bold block">Action Plan Assigned</span>
         </Card>
       </div>
 
@@ -127,7 +127,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
                 className={cn(
                   "text-[9px] font-bold uppercase border-none",
                   c.riskStatus === "Low Risk" ? "bg-success/10 text-success" :
-                  c.riskStatus === "Medium Risk" ? "bg-amber-500/10 text-amber-600" : "bg-rose-500/10 text-rose-600"
+                  c.riskStatus === "Medium Risk" ? "bg-warning/10 text-warning" : "bg-rose-500/10 text-rose-600"
                 )}
               >
                 {c.riskStatus}

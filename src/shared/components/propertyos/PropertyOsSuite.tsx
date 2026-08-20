@@ -51,7 +51,7 @@ export function PropertyOsSuite({ className }: { className?: string }) {
             </div>
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">WORKFLOW LOOPS</span>
-              <span className="text-sm font-black text-amber-400">28 Triggered</span>
+              <span className="text-sm font-black text-warning">28 Triggered</span>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ export function PropertyOsSuite({ className }: { className?: string }) {
               <Sliders className="h-3.5 w-3.5 text-navy-mid" /> Plugins
             </TabsTrigger>
             <TabsTrigger value="automation-studio" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Zap className="h-3.5 w-3.5 text-amber-500" /> Automation Studio
+              <Zap className="h-3.5 w-3.5 text-warning" /> Automation Studio
             </TabsTrigger>
             <TabsTrigger value="rule-engine" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Code2 className="h-3.5 w-3.5 text-navy-mid" /> Rule Engine

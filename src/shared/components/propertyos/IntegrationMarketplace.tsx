@@ -76,7 +76,7 @@ export function IntegrationMarketplace({ className }: { className?: string }) {
               <Badge
                 className={cn(
                   "text-[8px] font-bold border-none",
-                  conn.status === "Connected" ? "bg-success/10 text-success" : "bg-amber-500/10 text-amber-600"
+                  conn.status === "Connected" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
                 )}
               >
                 {conn.status}

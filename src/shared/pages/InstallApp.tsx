@@ -151,7 +151,7 @@ const InstallApp = () => {
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                     <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-                      <Share className="h-4 w-4 text-amber-500" />
+                      <Share className="h-4 w-4 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">1. Tap the Share button</p>
@@ -160,7 +160,7 @@ const InstallApp = () => {
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                     <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-                      <Plus className="h-4 w-4 text-amber-500" />
+                      <Plus className="h-4 w-4 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">2. Select "Add to Home Screen"</p>
@@ -186,7 +186,7 @@ const InstallApp = () => {
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                     <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-                      <MoreVertical className="h-4 w-4 text-amber-500" />
+                      <MoreVertical className="h-4 w-4 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">1. Tap the menu button</p>
@@ -195,7 +195,7 @@ const InstallApp = () => {
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                     <div className="h-8 w-8 rounded-full bg-amber-400/10 flex items-center justify-center flex-shrink-0">
-                      <Download className="h-4 w-4 text-amber-500" />
+                      <Download className="h-4 w-4 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">2. Select "Install app" or "Add to Home screen"</p>
@@ -227,7 +227,7 @@ const InstallApp = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5 text-amber-500" />
+              <QrCode className="h-5 w-5 text-warning" />
               Scan or Share App Link
             </CardTitle>
             <CardDescription>
