@@ -8,9 +8,12 @@ import {
   Home,
   Info,
   LayoutDashboard,
+  Settings,
   TriangleAlert,
   Wrench,
 } from "lucide-react";
+import { MAINTENANCE_LANES } from "@/features/maintenance/lib/maintenanceLane";
+import { SETTINGS_GROUPS } from "@/features/settings/lib/settingsGroups";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PortalPreviewCanvas } from "@/shared/components/branding/PortalPreviewCanvas";
 import { Button } from "@/shared/components/ui/button";
@@ -45,6 +48,7 @@ type PreviewId =
   | "payments"
   | "maintenance"
   | "reports"
+  | "settings"
   | "tables"
   | "forms"
   | "buttons"
@@ -72,6 +76,7 @@ const LIVE_DESK: Partial<Record<PreviewId, { href: string; label: string }>> = {
   payments: { href: "/payments", label: "Open Payments (session required)" },
   maintenance: { href: "/maintenance", label: "Open Maintenance (session required)" },
   reports: { href: "/reports", label: "Open Reports (session required)" },
+  settings: { href: "/settings", label: "Open Settings (session required)" },
 };
 
 function LiveDeskLink({ href, label }: { href: string; label: string }) {
@@ -96,6 +101,7 @@ const NAV: { id: PreviewId; label: string }[] = [
   { id: "payments", label: "Payments" },
   { id: "maintenance", label: "Maintenance" },
   { id: "reports", label: "Reports" },
+  { id: "settings", label: "Settings" },
   { id: "tables", label: "Tables" },
   { id: "forms", label: "Forms" },
   { id: "buttons", label: "Buttons" },
@@ -171,8 +177,9 @@ export default function DesignPreview() {
           {active === "tenants" && <RecordPreview title="Tenants" icon={Home} attention="Invites" action="Invite" inspect="Lease" />}
           {active === "billing" && <RecordPreview title="Billing" icon={CreditCard} attention="Overdue" action="Issue invoice" inspect="Statement" />}
           {active === "payments" && <RecordPreview title="Payments" icon={CreditCard} attention="Unreconciled" action="Record" inspect="Receipt" />}
-          {active === "maintenance" && <RecordPreview title="Maintenance" icon={Wrench} attention="Urgent" action="Assign" inspect="Work order" />}
-          {active === "reports" && <RecordPreview title="Reports" icon={FileText} attention="Period" action="Export" inspect="Filters" />}
+          {active === "maintenance" && <MaintenancePreview />}
+          {active === "reports" && <ReportsPreview />}
+          {active === "settings" && <SettingsPreview />}
           {active === "tables" && <TablesPreview />}
           {active === "forms" && <FormsPreview />}
           {active === "buttons" && <ButtonsPreview />}
@@ -376,6 +383,140 @@ function LoginPreview() {
           <Input id="preview-email" type="email" placeholder="manager@company.co.ke" autoComplete="off" />
         </div>
         <Button type="button">Sign in</Button>
+      </div>
+    </div>
+  );
+}
+
+function MaintenancePreview() {
+  return (
+    <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="maintenance">
+      <div {...portalSurfaceProps("manager")}>
+        <PortalAccentBar />
+        <PageHeader
+          title="Maintenance"
+          description="Work orders by lane — assign, start, or complete. No new statuses."
+          className="px-4 py-4"
+          status={<Wrench className="h-4 w-4 text-primary" aria-hidden />}
+          actions={<Button size="sm" type="button">New request</Button>}
+        />
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border-y border-border bg-border">
+          {MAINTENANCE_LANES.map((lane, index) => (
+            <div key={lane.id} className="bg-card p-3">
+              <p className="type-label">{lane.label}</p>
+              <p className="text-lg font-semibold mt-1">{index === 0 ? "3" : index === 2 ? "1" : "0"}</p>
+            </div>
+          ))}
+        </div>
+        <div className="p-4 space-y-3">
+          <Tabs defaultValue="new">
+            <TabsList className="w-full grid grid-cols-5 h-auto">
+              {MAINTENANCE_LANES.map((lane) => (
+                <TabsTrigger key={lane.id} value={lane.id} className="text-xs sm:text-sm px-1">
+                  {lane.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="new" className="mt-3">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Issue</TableHead>
+                    <TableHead className="hidden sm:table-cell">Property</TableHead>
+                    <TableHead className="text-right">Next</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell><Badge variant="destructive">Urgent</Badge></TableCell>
+                    <TableCell className="font-medium">Leaking pipe</TableCell>
+                    <TableCell className="hidden sm:table-cell">Ridgeview · 2B</TableCell>
+                    <TableCell className="text-right text-muted-foreground">Assign</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReportsPreview() {
+  return (
+    <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="reports">
+      <div {...portalSurfaceProps("manager")}>
+        <PortalAccentBar />
+        <PageHeader
+          title="Reports"
+          description="Period, property, and report type over live collections data."
+          className="px-4 py-4"
+          status={<FileText className="h-4 w-4 text-primary" aria-hidden />}
+        />
+        <div className="p-4 space-y-4">
+          <div className="flex flex-wrap gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="preview-report-period">Period</Label>
+              <Input id="preview-report-period" readOnly value="Last 6 months" className="w-40" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="preview-report-property">Property</Label>
+              <Input id="preview-report-property" readOnly value="All properties" className="w-44" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="preview-report-type">Report type</Label>
+              <Input id="preview-report-type" readOnly value="Revenue trend" className="w-44" />
+            </div>
+          </div>
+          <div className="rounded-md border border-border bg-card p-4">
+            <p className="text-sm font-semibold">Revenue — billed vs collected vs arrears</p>
+            <p className="text-xs text-muted-foreground mt-1">Chart only on trend and occupancy. Arrears stays a summary list.</p>
+            <div className="mt-4 flex items-end gap-2 h-24" aria-hidden>
+              <div className="flex-1 bg-muted h-12 rounded-sm" />
+              <div className="flex-1 bg-success/40 h-20 rounded-sm" />
+              <div className="flex-1 bg-muted h-16 rounded-sm" />
+              <div className="flex-1 bg-success/40 h-24 rounded-sm" />
+              <div className="flex-1 bg-muted h-14 rounded-sm" />
+              <div className="flex-1 bg-success/40 h-20 rounded-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsPreview() {
+  return (
+    <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="settings">
+      <div {...portalSurfaceProps("manager")}>
+        <PortalAccentBar />
+        <PageHeader
+          title="Settings"
+          description="Organization, users, roles, notifications, billing, integrations, security, branding."
+          className="px-4 py-4"
+          status={<Settings className="h-4 w-4 text-primary" aria-hidden />}
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_minmax(0,1fr)] gap-0 border-t border-border">
+          <nav aria-label="Settings groups" className="border-b sm:border-b-0 sm:border-r border-border p-3 space-y-3">
+            {SETTINGS_GROUPS.map((group) => (
+              <div key={group.id}>
+                <p className="type-label px-2">{group.label}</p>
+                <ul className="mt-1">
+                  {group.items.map((item) => (
+                    <li key={item.id} className="px-2 py-1 text-sm text-muted-foreground">{item.label}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+          <div className="p-4">
+            <p className="text-sm font-semibold">Company details</p>
+            <p className="text-sm text-muted-foreground mt-1">Existing company, currency, and date panels. Branding is the white-label fields already on Company.</p>
+          </div>
+        </div>
       </div>
     </div>
   );

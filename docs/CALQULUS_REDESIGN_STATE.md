@@ -1,14 +1,59 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 4E — Manager operations. James issued the manager operations brief:
+redesign Maintenance, Reports, and Settings. Maintenance lanes: New,
+Assigned, In Progress, Awaiting, Completed. Reports filters: Period,
+Property, Report type — existing reports only, charts only where useful.
+Settings groups: Organization, Users, Roles, Notifications, Billing,
+Integrations, Security, Branding. Do not invent functionality.
+
+## CURRENT TASK
+Just finished: Phase 4E manager operations (this entry). Preview first on
+`/design-preview`, then production pages. Auth, RLS, APIs, and existing
+settings/report/maintenance backends unchanged.
+
+### Phase 4E findings (before any changes)
+- **Maintenance** (`/maintenance`): tabs were All / Open / In Progress /
+  Done plus four decorative KPI cards. Live statuses are
+  `open | pending | in_progress | completed | cancelled`. Assign already
+  existed, but `assignRequest()` also wrote `status: "in_progress"`, which
+  would empty an Assigned lane. PDF export already treated open+unassigned
+  as Assign and open+assigned as Start work.
+- **Reports** (`/reports`): Period select (3/6/12 months) already existed.
+  Default tab was Executive Analytics / catalog with hardcoded
+  `lastGenerated` dates. Real reports: revenue trend, occupancy, arrears
+  aging, revenue by property, collection summary. Arrears used a decorative
+  pie alongside the same summary list.
+- **Settings** (`/settings`): thirteen flat tabs (Profile, Password,
+  Notifications, Payment Settings, Bank Integration, Currency, Company,
+  Receipts, Payment Reminders, Date & Time, Submanagers, User Roles,
+  Cache). Company already mixed org identity and white-label branding.
+  Platform billing already lives at `/platform-billing`. Selected nav used
+  leftover `bg-amber-400`. `?tab=` query param already worked.
+
+### Phase 4E implementation
+- Maintenance lanes derived from existing columns (no new status). Assign
+  now only sets `assigned_to` / `assigned_provider_id`. Cancelled rows sit
+  on Completed with the real cancelled badge. Quiet 5-cell count strip.
+- Reports control bar: Period + Property + Report type. Default report is
+  Revenue trend. Existing catalog/builder/alerts/executive remain as types,
+  not the landing view. Occupancy and revenue keep bar charts; arrears is
+  the aging list only.
+- Settings nav regrouped into the eight named groups. Branding is the
+  existing Company white-label fields (`CompanySettings section="branding"`).
+  Platform billing is a link to `/platform-billing`. Legacy `?tab=` ids kept.
+- Preview: `/design-preview` → Maintenance, Reports, Settings.
+
+## PREVIOUS PHASE
 Phase 5 — Landlord portal. James issued the landlord desk brief: redesign the
 entire landlord experience around “How is my property portfolio performing?”
 with white / navy / emerald accent, dedicated pages (Dashboard, Portfolio,
 Property Detail, Financial Performance, Statements, Maintenance, Documents,
 Settings), and an explicit ban on copying the Manager operations desk.
 
-## CURRENT TASK
-Just finished: Phase 5 landlord portal (this entry). Split the previous
+## PREVIOUS TASK
+Phase 5 landlord portal. Split the previous
 single-tab `/landlord/dashboard` into a real landlord desk. Auth, RPCs, and
 tenant-PII firewall unchanged.
 

@@ -5,19 +5,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Layout } from '@/shared/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import { Tabs, TabsContent } from '@/shared/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useCurrency } from '@/shared/hooks/useCurrency';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import {
-  TrendingUp, TrendingDown, Building2, Users, CreditCard,
-  AlertTriangle, BarChart3, PieChartIcon, Activity, Home, FileDown
-} from 'lucide-react';
+import { Users, Home } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { RentCollectionSummary } from '@/features/reports/components/RentCollectionSummary';
 import {
@@ -27,25 +23,51 @@ import {
   AnalyticsAlertPanel,
   ReportSchedulingModal,
 } from '@/shared/components/bi';
-import { Sparkles, FileText, Sliders, ShieldAlert, Clock } from 'lucide-react';
-import { BRAND_CHART_COLORS } from '@/shared/lib/chartColors';
+import { occupancyRateColor } from '@/shared/lib/statusBadge';
+import { Label } from '@/shared/components/ui/label';
 import { CALQULUS_COLOR } from '@/shared/theme/tokens';
-
-const COLORS = [...BRAND_CHART_COLORS];
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
 
+const REPORT_TYPES = [
+  { id: 'revenue', label: 'Revenue trend' },
+  { id: 'occupancy', label: 'Occupancy' },
+  { id: 'arrears', label: 'Arrears aging' },
+  { id: 'by-property', label: 'Revenue by property' },
+  { id: 'collection-report', label: 'Collection report' },
+  { id: 'catalog', label: 'Report catalog' },
+  { id: 'builder', label: 'Custom report builder' },
+  { id: 'alerts', label: 'Analytics alerts' },
+  { id: 'executive', label: 'Executive analytics' },
+] as const;
+
 const Reports: React.FC = () => {
   const { user } = useAuth();
-  const { formatCurrency } = useCurrency();
   const [period, setPeriod] = useState('6');
+  const [propertyId, setPropertyId] = useState('all');
+  const [reportType, setReportType] = useState<string>('revenue');
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [selectedReportTitle, setSelectedReportTitle] = useState("Executive Performance Statement");
 
+  const { data: reportProperties = [] } = useQuery({
+    queryKey: ['reports-property-list', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('id, name')
+        .eq('manager_id', user!.id)
+        .eq('status', 'active')
+        .order('name');
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!user?.id,
+  });
+
   // ── Revenue trend ──────────────────────────────────────────
   const { data: revenueTrend = [], isLoading: revLoading } = useQuery({
-    queryKey: ['reports-revenue-trend', user?.id, period],
+    queryKey: ['reports-revenue-trend', user?.id, period, propertyId],
     queryFn: async () => {
       const months = parseInt(period);
       return Promise.all(
@@ -53,13 +75,16 @@ const Reports: React.FC = () => {
           const d = subMonths(new Date(), months - 1 - i);
           const start = startOfMonth(d).toISOString();
           const end   = endOfMonth(d).toISOString();
-          return supabase
+          let query = supabase
             .from('invoices')
             .select('amount, paid_amount, status')
             .eq('manager_id', user!.id)
             .gte('due_date', start)
-            .lte('due_date', end)
-            .then(({ data, error }) => {
+            .lte('due_date', end);
+          if (propertyId !== 'all') {
+            query = query.eq('property_id', propertyId);
+          }
+          return query.then(({ data, error }) => {
               if (error) throw error;
               const billed    = (data || []).reduce((s, i) => s + Number(i.amount), 0);
               const collected = (data || []).reduce((s, i) => s + Number(i.paid_amount ?? 0), 0);
@@ -84,6 +109,7 @@ const Reports: React.FC = () => {
         .order('name');
 
       const items = (props || []).map(p => ({
+        id: p.id,
         name: p.name.length > 18 ? p.name.slice(0, 16) + '…' : p.name,
         occupied: p.occupied ?? 0,
         vacant: (p.units ?? 0) - (p.occupied ?? 0),
@@ -100,14 +126,18 @@ const Reports: React.FC = () => {
 
   // ── Arrears aging ──────────────────────────────────────────
   const { data: arrearsAging = [], isLoading: arrearsLoading } = useQuery({
-    queryKey: ['reports-arrears', user?.id],
+    queryKey: ['reports-arrears', user?.id, propertyId],
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from('invoices')
-        .select('balance_due, due_date, tenants(name), leases(property, unit)')
+        .select('balance_due, due_date')
         .eq('manager_id', user!.id)
         .eq('status', 'overdue')
         .order('due_date');
+      if (propertyId !== 'all') {
+        query = query.eq('property_id', propertyId);
+      }
+      const { data } = await query;
 
       const now = new Date();
       const buckets = { '1-30 days': 0, '31-60 days': 0, '61-90 days': 0, '90+ days': 0 };
@@ -126,16 +156,20 @@ const Reports: React.FC = () => {
 
   // ── Revenue by property ────────────────────────────────────
   const { data: revenueByProp = [], isLoading: propRevLoading } = useQuery({
-    queryKey: ['reports-revenue-by-property', user?.id, period],
+    queryKey: ['reports-revenue-by-property', user?.id, period, propertyId],
     queryFn: async () => {
       const months = parseInt(period);
       const start  = startOfMonth(subMonths(new Date(), months - 1)).toISOString();
 
-      const { data: props } = await supabase
+      let propsQuery = supabase
         .from('properties')
         .select('id, name')
         .eq('manager_id', user!.id)
         .eq('status', 'active');
+      if (propertyId !== 'all') {
+        propsQuery = propsQuery.eq('id', propertyId);
+      }
+      const { data: props } = await propsQuery;
 
       return Promise.all((props || []).map(async (p) => {
         const { data: invs } = await supabase
@@ -153,15 +187,21 @@ const Reports: React.FC = () => {
   });
 
   const totalArrears = arrearsAging.reduce((s, b) => s + b.value, 0);
+  const occupancyItems = (occupancySummary?.items ?? []).filter(
+    (item) => propertyId === 'all' || item.id === propertyId,
+  );
+  const occupancyUnits = occupancyItems.reduce((s, p) => s + p.total, 0);
+  const occupancyOccupied = occupancyItems.reduce((s, p) => s + p.occupied, 0);
+  const occupancyRate = occupancyUnits > 0 ? Math.round((occupancyOccupied / occupancyUnits) * 100) : 0;
 
   return (
-    <Layout title="Reports" subtitle="Revenue, occupancy, arrears and performance insights">
+    <Layout title="Reports" subtitle="Period, property, and report type — live collections, occupancy, and arrears">
       <div className="space-y-6">
-        {/* Controls */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="space-y-1">
+            <Label htmlFor="report-period">Period</Label>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger id="report-period" className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -171,55 +211,53 @@ const Reports: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="space-y-1">
+            <Label htmlFor="report-property">Property</Label>
+            <Select value={propertyId} onValueChange={setPropertyId}>
+              <SelectTrigger id="report-property" className="w-52">
+                <SelectValue placeholder="All properties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All properties</SelectItem>
+                {reportProperties.map((property) => (
+                  <SelectItem key={property.id} value={property.id}>{property.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="report-type">Report type</Label>
+            <Select value={reportType} onValueChange={setReportType}>
+              <SelectTrigger id="report-type" className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REPORT_TYPES.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>{type.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground pb-1">
             {occupancySummary && (
               <>
                 <span className="flex items-center gap-1">
                   <Home className="h-4 w-4" />
-                  {occupancySummary.totalUnits} units
+                  {occupancyUnits} units
                 </span>
                 <span className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  {occupancySummary.totalOccupied} occupied
+                  {occupancyOccupied} occupied
                 </span>
-                <Badge variant="outline" className={`${occupancySummary.overallRate >= 80 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-                  {occupancySummary.overallRate}% occupancy
+                <Badge variant="outline" className={occupancyRateColor(occupancyRate)}>
+                  {occupancyRate}% occupancy
                 </Badge>
               </>
             )}
           </div>
         </div>
 
-        <Tabs defaultValue="executive">
-          <TabsList className="flex-wrap h-auto gap-1">
-            <TabsTrigger value="executive" className="gap-1.5 text-xs font-bold">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />Executive Analytics
-            </TabsTrigger>
-            <TabsTrigger value="catalog" className="gap-1.5 text-xs">
-              <FileText className="h-3.5 w-3.5" />Report Catalog
-            </TabsTrigger>
-            <TabsTrigger value="builder" className="gap-1.5 text-xs">
-              <Sliders className="h-3.5 w-3.5" />Custom Report Builder
-            </TabsTrigger>
-            <TabsTrigger value="revenue" className="gap-1.5 text-xs">
-              <TrendingUp className="h-3.5 w-3.5" />Revenue Trend
-            </TabsTrigger>
-            <TabsTrigger value="occupancy" className="gap-1.5 text-xs">
-              <Building2 className="h-3.5 w-3.5" />Occupancy
-            </TabsTrigger>
-            <TabsTrigger value="arrears" className="gap-1.5 text-xs">
-              <AlertTriangle className="h-3.5 w-3.5" />Arrears Aging
-            </TabsTrigger>
-            <TabsTrigger value="alerts" className="gap-1.5 text-xs">
-              <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />Analytics Alerts
-            </TabsTrigger>
-            <TabsTrigger value="by-property" className="gap-1.5 text-xs">
-              <BarChart3 className="h-3.5 w-3.5" />By Property
-            </TabsTrigger>
-            <TabsTrigger value="collection-report" className="gap-1.5 text-xs">
-              <FileDown className="h-3.5 w-3.5" />Collection Report
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={reportType} onValueChange={setReportType}>
 
           {/* Executive Analytics */}
           <TabsContent value="executive" className="mt-4 space-y-6">
@@ -272,8 +310,8 @@ const Reports: React.FC = () => {
                   <div className="mt-3 grid grid-cols-3 gap-3 text-center">
                     {[
                       { label: 'Total billed', val: revenueTrend.reduce((s, r) => s + r.billed, 0), color: 'text-muted-foreground' },
-                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-amber-600' },
-                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-red-600' },
+                      { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-success' },
+                      { label: 'Total arrears', val: revenueTrend.reduce((s, r) => s + r.arrears, 0), color: 'text-destructive' },
                     ].map(s => (
                       <div key={s.label} className="rounded-lg bg-muted/40 p-2">
                         <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -294,12 +332,12 @@ const Reports: React.FC = () => {
                 <CardDescription>Current occupied vs vacant units per property</CardDescription>
               </CardHeader>
               <CardContent>
-                {occLoading ? <Skeleton className="h-64 w-full" /> : !occupancySummary?.items.length ? (
+                {occLoading ? <Skeleton className="h-64 w-full" /> : !occupancyItems.length ? (
                   <p className="text-center py-12 text-muted-foreground text-sm">No active properties found.</p>
                 ) : (
                   <>
                     <ResponsiveContainer width="100%" height={260}>
-                      <BarChart data={occupancySummary.items} margin={{ top: 5, right: 10, left: 10, bottom: 40 }}>
+                      <BarChart data={occupancyItems} margin={{ top: 5, right: 10, left: 10, bottom: 40 }}>
                         <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                         <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" interval={0} />
                         <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
@@ -310,13 +348,13 @@ const Reports: React.FC = () => {
                       </BarChart>
                     </ResponsiveContainer>
                     <div className="mt-3 space-y-1.5">
-                      {occupancySummary.items.map(p => (
-                        <div key={p.name} className="flex items-center gap-3 text-xs">
+                      {occupancyItems.map(p => (
+                        <div key={p.id} className="flex items-center gap-3 text-xs">
                           <span className="w-32 truncate text-muted-foreground">{p.name}</span>
                           <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                             <div className="h-full rounded-full bg-success" style={{ width: `${p.rate}%` }} />
                           </div>
-                          <span className={`w-10 text-right font-medium ${p.rate >= 80 ? 'text-green-700' : p.rate >= 50 ? 'text-amber-700' : 'text-red-700'}`}>
+                          <span className={`w-10 text-right font-medium ${occupancyRateColor(p.rate)}`}>
                             {p.rate}%
                           </span>
                           <span className="text-muted-foreground w-12 text-right">{p.occupied}/{p.total}</span>
@@ -331,66 +369,39 @@ const Reports: React.FC = () => {
 
           {/* Arrears aging */}
           <TabsContent value="arrears" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Arrears aging buckets</CardTitle>
-                  <CardDescription>Overdue invoice amounts by how long they've been overdue</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {arrearsLoading ? <Skeleton className="h-48 w-full" /> : totalArrears === 0 ? (
-                    <div className="py-10 text-center text-muted-foreground">
-                      <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                      <p className="text-sm">No overdue invoices — great work!</p>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Arrears aging</CardTitle>
+                <CardDescription>Overdue invoice amounts by how long they have been overdue</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {arrearsLoading ? <Skeleton className="h-48 w-full" /> : totalArrears === 0 ? (
+                  <div className="py-10 text-center text-muted-foreground">
+                    <p className="text-sm">No overdue invoices.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {arrearsAging.map((bucket) => (
+                      <div key={bucket.name} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                        <span className="text-sm font-medium">{bucket.name}</span>
+                        <span className={`text-sm font-semibold ${bucket.value > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {bucket.value > 0 ? fmt(bucket.value) : '—'}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-destructive/30 bg-destructive/10 font-semibold">
+                      <span className="text-sm text-destructive">Total outstanding</span>
+                      <span className="text-sm text-destructive">{fmt(totalArrears)}</span>
                     </div>
-                  ) : (
-                    <ResponsiveContainer width="100%" height={200}>
-                      <PieChart>
-                        <Pie data={arrearsAging.filter(b => b.value > 0)} dataKey="value" nameKey="name"
-                          cx="50%" cy="50%" outerRadius={80} label={({ name, percent = 0 }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          labelLine={false}>
-                          {arrearsAging.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                        </Pie>
-                        <Tooltip formatter={(v: number) => fmt(v)} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  )}
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Arrears summary</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {arrearsLoading ? <Skeleton className="h-48 w-full" /> : (
-                    <div className="space-y-3">
-                      {arrearsAging.map((bucket, i) => (
-                        <div key={bucket.name} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                          <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                            <span className="text-sm font-medium">{bucket.name}</span>
-                          </div>
-                          <span className={`text-sm font-semibold ${bucket.value > 0 ? 'text-red-700' : 'text-muted-foreground'}`}>
-                            {bucket.value > 0 ? fmt(bucket.value) : '—'}
-                          </span>
-                        </div>
-                      ))}
-                      {totalArrears > 0 && (
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200 font-semibold">
-                          <span className="text-sm text-red-800">Total outstanding</span>
-                          <span className="text-sm text-red-800">{fmt(totalArrears)}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Collection report */}
           <TabsContent value="collection-report" className="mt-4">
-            <RentCollectionSummary />
+            <RentCollectionSummary propertyId={propertyId === 'all' ? undefined : propertyId} />
           </TabsContent>
 
           {/* Revenue by property */}

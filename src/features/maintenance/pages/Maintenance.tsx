@@ -63,9 +63,16 @@ import { maintenanceRequestSchema, formatValidationErrors } from "@/shared/lib/v
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { MAINTENANCE_CATEGORIES, getCategoryLabel } from "@/features/maintenance/lib/maintenanceCategories";
+import {
+  countMaintenanceLanes,
+  MAINTENANCE_LANES,
+  matchesMaintenanceLane,
+  type MaintenanceLane,
+} from "@/features/maintenance/lib/maintenanceLane";
 import { MaintenanceActiveReport } from "@/features/maintenance/components/MaintenanceActiveReport";
 import { MaintenanceBudgetDashboard } from "@/features/maintenance/components/MaintenanceBudgetDashboard";
 import { EmptyState } from "@/shared/components/ui/empty-state";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 import {
   requestAgeLabel,
   statusBadgeClass,
@@ -73,7 +80,7 @@ import {
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 
-type RequestStatus = "open" | "in_progress" | "completed" | "cancelled";
+type RequestStatus = "open" | "pending" | "in_progress" | "completed" | "cancelled";
 type RequestPriority = "low" | "medium" | "high" | "urgent";
 
 interface MaintenanceRequest {
@@ -111,6 +118,7 @@ interface Unit {
 
 const statusColors: Record<RequestStatus, string> = {
   open: statusBadgeClass("warning"),
+  pending: statusBadgeClass("warning"),
   in_progress: statusBadgeClass("info"),
   completed: statusBadgeClass("success"),
   cancelled: statusBadgeClass("neutral"),
@@ -133,6 +141,7 @@ const PRIORITY_RANK: Record<RequestPriority, number> = { urgent: 4, high: 3, med
 
 const statusIcons: Record<RequestStatus, React.ReactNode> = {
   open: <AlertTriangle className="h-4 w-4" />,
+  pending: <Clock className="h-4 w-4" />,
   in_progress: <Clock className="h-4 w-4" />,
   completed: <CheckCircle2 className="h-4 w-4" />,
   cancelled: <Wrench className="h-4 w-4" />,
@@ -143,7 +152,7 @@ export default function Maintenance() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<MaintenanceLane>("new");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { toast } = useToast();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
@@ -390,7 +399,6 @@ export default function Maintenance() {
       .update({
         assigned_to: assignedTo,
         assigned_provider_id: providerId || null,
-        status: "in_progress" as RequestStatus,
       } as unknown)
       .eq("id", id);
 
@@ -426,8 +434,7 @@ export default function Maintenance() {
 
     const matchesCategory = categoryFilter === "all" || request.category === categoryFilter;
 
-    if (activeTab === "all") return matchesSearch && matchesCategory;
-    return matchesSearch && matchesCategory && request.status === activeTab;
+    return matchesSearch && matchesCategory && matchesMaintenanceLane(request.status, request.assigned_to, activeTab);
   });
 
   useEffect(() => {
@@ -457,72 +464,27 @@ export default function Maintenance() {
     setRequestPage(1);
   };
 
-  const stats = {
-    total: requests.length,
-    open: requests.filter((r) => r.status === "open").length,
-    inProgress: requests.filter((r) => r.status === "in_progress").length,
-    completed: requests.filter((r) => r.status === "completed").length,
-  };
+  const laneCounts = countMaintenanceLanes(requests);
 
   return (
     <Layout
       title="Maintenance"
-      subtitle="Priority, status, property, unit, and age — assign, start, or complete work orders"
+      subtitle="New, assigned, in progress, awaiting, completed — assign, start, or complete work orders"
     >
-      {/* Stats Cards */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4 mb-4 sm:mb-6">
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-muted">
-                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+      {/* Lane counts — same five names as the tabs, not decorative KPI cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-border rounded-xl overflow-hidden bg-border mb-4 sm:mb-6">
+        {isLoading
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="bg-card p-3 sm:p-4">
+                <LoadingState variant="skeleton" rows={2} className="p-0" label="Loading lane counts" />
               </div>
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
-                <p className="text-lg sm:text-2xl font-semibold text-foreground">{stats.total}</p>
+            ))
+          : MAINTENANCE_LANES.map((lane) => (
+              <div key={lane.id} className="bg-card p-3 sm:p-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{lane.label}</p>
+                <p className="font-heading text-lg sm:text-2xl font-bold text-foreground mt-1">{laneCounts[lane.id]}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-warning/10">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Open</p>
-                <p className="text-lg sm:text-2xl font-semibold text-foreground">{stats.open}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">In Progress</p>
-                <p className="text-lg sm:text-2xl font-semibold text-foreground">{stats.inProgress}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-success/10">
-                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
-                <p className="text-lg sm:text-2xl font-semibold text-foreground">{stats.completed}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            ))}
       </div>
 
       <details className="mb-4 rounded-xl border border-border bg-card">
@@ -769,21 +731,18 @@ export default function Maintenance() {
       </div>
 
       {/* Tabs and Request List */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-card border border-border mb-3 sm:mb-4 w-full sm:w-auto grid grid-cols-4 sm:flex">
-          <TabsTrigger value="all" className="text-xs sm:text-sm px-2 sm:px-4">All</TabsTrigger>
-          <TabsTrigger value="open" className="text-xs sm:text-sm px-2 sm:px-4">Open</TabsTrigger>
-          <TabsTrigger value="in_progress" className="text-xs sm:text-sm px-2 sm:px-4">
-            <span className="hidden xs:inline">In </span>Progress
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="text-xs sm:text-sm px-2 sm:px-4">Done</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as MaintenanceLane)}>
+        <TabsList className="bg-card border border-border mb-3 sm:mb-4 w-full grid grid-cols-5 h-auto">
+          {MAINTENANCE_LANES.map((lane) => (
+            <TabsTrigger key={lane.id} value={lane.id} className="text-[11px] sm:text-sm px-1 sm:px-3">
+              {lane.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-0">
           {isLoading ? (
-            <div className="text-center py-8 sm:py-12 text-muted-foreground text-sm">
-              Loading requests...
-            </div>
+            <LoadingState variant="skeleton" rows={6} label="Loading requests" />
           ) : filteredRequests.length === 0 ? (
             <EmptyState
               icon={Wrench}

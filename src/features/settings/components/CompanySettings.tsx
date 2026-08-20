@@ -37,7 +37,9 @@ function asAllowedFont(value: string): AllowedFont {
 
 // Helper to get current user ID for manager_user_id
 
-export const CompanySettings = () => {
+export type CompanySettingsSection = "all" | "organization" | "branding";
+
+export const CompanySettings = ({ section = "all" }: { section?: CompanySettingsSection }) => {
   const { toast } = useToast();
   const { isAgency, isManager, user } = useAuth();
   const canManageCompany = isManager || isAgency;
@@ -400,15 +402,26 @@ export const CompanySettings = () => {
     return null;
   }
 
+  const showOrganization = section === "all" || section === "organization";
+  const showBranding = section === "all" || section === "branding";
+  const heading =
+    section === "branding" ? "Branding" : section === "organization" ? "Organization" : "Company Details";
+  const description =
+    section === "branding"
+      ? "Logo, colour, and white-label fields already stored on the company record."
+      : section === "organization"
+        ? "Shown on contracts and invoices."
+        : "Shown on contracts and invoices. With white-label, Manager, Landlord, Agency, and Tenant desks use this brand instead of CALQULUS.";
+
   return (
     <Card className="card-shadow animate-fade-in" style={{ animationDelay: "100ms" }}>
       <CardHeader>
         <CardTitle className="font-heading flex items-center gap-2">
           <Building2 className="h-5 w-5" />
-          Company Details
+          {heading}
         </CardTitle>
         <CardDescription>
-          Shown on contracts and invoices. With white-label, Manager, Landlord, Agency, and Tenant desks use this brand instead of CALQULUS.
+          {description}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -418,7 +431,7 @@ export const CompanySettings = () => {
           </div>
         ) : (
           <>
-            {/* Logo Upload Section */}
+            {showBranding && (
             <div className="space-y-2">
               <Label>Company Logo</Label>
               <div className="flex items-center gap-4">
@@ -472,7 +485,10 @@ export const CompanySettings = () => {
                 </div>
               </div>
             </div>
+            )}
 
+            {showOrganization && (
+            <>
             <div className="space-y-2">
               <Label htmlFor="companyName">Company Name</Label>
               <Input
@@ -509,7 +525,10 @@ export const CompanySettings = () => {
                 </div>
               </div>
             </div>
+            </>
+            )}
 
+            {showBranding && (
             <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -700,6 +719,10 @@ export const CompanySettings = () => {
                 </div>
               </div>
             </div>
+            )}
+
+            {showOrganization && (
+            <>
             <div className="space-y-2">
               <Label htmlFor="address">Business Address</Label>
               <Input
@@ -814,10 +837,12 @@ export const CompanySettings = () => {
                 This contact information will appear on invoices and contracts
               </p>
             </div>
+            </>
+            )}
             <div className="flex justify-end">
               <Button onClick={handleSave} disabled={saving} size="sm">
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Company Details
+                {section === "branding" ? "Save branding" : "Save Company Details"}
               </Button>
             </div>
           </>

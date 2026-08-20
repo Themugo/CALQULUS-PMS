@@ -243,7 +243,7 @@ function buildPDF(
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const RentCollectionSummary: React.FC = () => {
+export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = ({ propertyId }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useCurrency();
@@ -331,10 +331,15 @@ export const RentCollectionSummary: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule?.id, schedule?.enabled, schedule?.send_day, schedule?.updated_at]);
 
+  const scopedInvoices = useMemo(() => {
+    if (!propertyId) return invoices;
+    return invoices.filter((inv) => inv.leases?.property_id === propertyId);
+  }, [invoices, propertyId]);
+
   // ── Group by property ────────────────────────────────────────────────────
   const properties = useMemo<PropertyGroup[]>(() => {
     const map = new Map<string, PropertyGroup>();
-    for (const inv of invoices) {
+    for (const inv of scopedInvoices) {
       const key = inv.leases?.property ?? 'Unassigned';
       if (!map.has(key)) {
         map.set(key, { name: key, invoices: [], billed: 0, collected: 0, outstanding: 0, cancelled: 0 });
@@ -348,13 +353,13 @@ export const RentCollectionSummary: React.FC = () => {
       if (inv.status === 'cancelled')                    g.cancelled   += amt;
     }
     return [...map.values()].sort((a, b) => b.billed - a.billed);
-  }, [invoices]);
+  }, [scopedInvoices]);
 
   const totalBilled      = properties.reduce((s, p) => s + p.billed, 0);
   const totalCollected   = properties.reduce((s, p) => s + p.collected, 0);
   const totalOutstanding = properties.reduce((s, p) => s + p.outstanding, 0);
   const collectionRate   = totalBilled > 0 ? (totalCollected / totalBilled) * 100 : 0;
-  const arrearsCount     = invoices.filter(i => i.status === 'overdue').length;
+  const arrearsCount     = scopedInvoices.filter(i => i.status === 'overdue').length;
 
   // ── Schedule actions ──────────────────────────────────────────────────
   const addSchedRecipient = () => {
@@ -440,7 +445,7 @@ export const RentCollectionSummary: React.FC = () => {
   };
 
   const handleDownload = () => {
-    if (!invoices.length) return;
+    if (!scopedInvoices.length) return;
     const doc = buildPDF(periodLabel, companyName, properties, totalBilled, totalCollected, totalOutstanding);
     doc.save(`rent-collection-${year}-${String(month).padStart(2, '0')}.pdf`);
     toast({ title: 'PDF downloaded', description: `${periodLabel} collection report saved.` });
@@ -539,7 +544,7 @@ export const RentCollectionSummary: React.FC = () => {
             </Button>
             <div className="ml-auto flex gap-2">
               <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs"
-                onClick={handleDownload} disabled={isLoading || !invoices.length}>
+                onClick={handleDownload} disabled={isLoading || !scopedInvoices.length}>
                 <FileDown className="h-3.5 w-3.5" />Download PDF
               </Button>
             </div>
@@ -804,7 +809,7 @@ export const RentCollectionSummary: React.FC = () => {
       </Card>
 
       {/* ── Email recipients & send (one-off) ── */}
-      {!isLoading && invoices.length > 0 && (
+      {!isLoading && scopedInvoices.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">

@@ -1,19 +1,17 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Switch } from "@/shared/components/ui/switch";
-import { Separator } from "@/shared/components/ui/separator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { useToast } from "@/shared/hooks/use-toast";
 import { logError } from "@/shared/lib/errorLogger";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
-import { Loader2, Upload, X, User, Lock, Bell, Wallet, Globe, Building2, Receipt, Clock, Users, Shield, HardDrive } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import { UserRoleManagement } from "@/features/settings/components/UserRoleManagement";
 import { PasswordChange } from "@/features/settings/components/PasswordChange";
 import { CompanySettings } from "@/features/settings/components/CompanySettings";
@@ -32,33 +30,34 @@ import { PushNotificationSettings } from "@/features/settings/components/PushNot
 import { cn } from "@/shared/lib/utils";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
-
-const settingsTabs = [
-  { id: "profile", label: "Profile", icon: User },
-  { id: "password", label: "Password", icon: Lock },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "payments", label: "Payment Settings", icon: Wallet },
-  { id: "bank-integration", label: "Bank Integration", icon: Building2 },
-  { id: "currency", label: "Currency", icon: Globe },
-  { id: "company", label: "Company", icon: Building2 },
-  { id: "receipts", label: "Receipts", icon: Receipt },
-  { id: "reminders", label: "Payment Reminders", icon: Clock },
-  { id: "date-time", label: "Date & Time", icon: Clock },
-  { id: "submanagers", label: "Submanagers", icon: Users },
-  { id: "roles", label: "User Roles", icon: Shield },
-  { id: "cache", label: "Cache Management", icon: HardDrive },
-];
+import {
+  SETTINGS_GROUPS,
+  findSettingsItem,
+  isSettingsPanelId,
+} from "@/features/settings/lib/settingsGroups";
 
 const Settings = () => {
   const { toast } = useToast();
-  const { user, isManager } = useAuth();
-  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("profile");
 
+  const selectTab = (id: string) => {
+    const item = findSettingsItem(id);
+    if (item?.href) {
+      navigate(item.href);
+      return;
+    }
+    if (!isSettingsPanelId(id)) return;
+    setActiveTab(id);
+    setSearchParams(id === "profile" ? {} : { tab: id }, { replace: true });
+  };
+
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && settingsTabs.some((settingsTab) => settingsTab.id === tab)) {
+    if (tab && isSettingsPanelId(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -96,39 +95,6 @@ const Settings = () => {
       }
     };
     fetchProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  useEffect(() => {
-    const fetchNotificationSettings = async () => {
-      if (!user) return;
-      setNotificationLoading(true);
-      try {
-        const result = await (supabase
-          .from("manager_notification_settings" as never)
-          .select("notify_email, notify_sms, notify_whatsapp")
-          .eq("manager_user_id", user.id)
-          .maybeSingle()) as unknown as { data: { notify_email: boolean; notify_sms: boolean; notify_whatsapp: boolean } | null; error: unknown };
-        const { data, error } = result;
-        if (error) throw error;
-        if (data) {
-          setNotificationSettings({
-            notifyEmail: data.notify_email ?? true,
-            notifySms: data.notify_sms ?? true,
-            notifyWhatsapp: data.notify_whatsapp ?? false,
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Notification Settings Load Failed",
-          description: error instanceof Error ? error.message : "Could not load notification preferences.",
-          variant: "destructive",
-        });
-      } finally {
-        setNotificationLoading(false);
-      }
-    };
-    fetchNotificationSettings();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
@@ -259,7 +225,7 @@ const Settings = () => {
                       <div className="relative flex-shrink-0">
                         <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
                           <AvatarImage src={displayPhotoUrl || undefined} />
-                          <AvatarFallback className="bg-amber-400 text-slate-900 text-lg sm:text-xl">
+                          <AvatarFallback className="bg-primary/10 text-foreground text-lg sm:text-xl">
                             {getInitials(fullName)}
                           </AvatarFallback>
                         </Avatar>
@@ -324,7 +290,9 @@ const Settings = () => {
       case "currency":
         return <CurrencySettings />;
       case "company":
-        return <CompanySettings />;
+        return <CompanySettings section="organization" />;
+      case "branding":
+        return <CompanySettings section="branding" />;
       case "receipts":
         return <ReceiptSettings />;
       case "reminders":
@@ -342,14 +310,14 @@ const Settings = () => {
     }
   };
 
-  const currentTab = settingsTabs.find((t) => t.id === activeTab);
+  const currentTab = findSettingsItem(activeTab);
 
   return (
-    <Layout title="Settings" subtitle="Manage your account and preferences">
+    <Layout title="Settings" subtitle="Organization, users, roles, notifications, billing, integrations, security, branding">
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Mobile: Dropdown selector */}
         <div className="lg:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
+          <Select value={activeTab} onValueChange={selectTab}>
             <SelectTrigger className="w-full">
               <SelectValue>
                 {currentTab && (
@@ -361,13 +329,20 @@ const Settings = () => {
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {settingsTabs.map((tab) => (
-                <SelectItem key={tab.id} value={tab.id}>
-                  <span className="flex items-center gap-2">
-                    <tab.icon className="h-4 w-4" />
-                    {tab.label}
-                  </span>
-                </SelectItem>
+              {SETTINGS_GROUPS.map((group) => (
+                <div key={group.id}>
+                  <p className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {group.label}
+                  </p>
+                  {group.items.map((tab) => (
+                    <SelectItem key={tab.id} value={tab.id}>
+                      <span className="flex items-center gap-2">
+                        <tab.icon className="h-4 w-4" />
+                        {tab.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </div>
               ))}
             </SelectContent>
           </Select>
@@ -375,21 +350,40 @@ const Settings = () => {
 
         {/* Desktop: Left sidebar nav */}
         <div className="hidden lg:block w-56 flex-shrink-0">
-          <nav className="sticky top-20 space-y-1">
-            {settingsTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors touch-manipulation",
-                  activeTab === tab.id
-                    ? "bg-amber-400 text-slate-900"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          <nav aria-label="Settings groups" className="sticky top-20 space-y-4">
+            {SETTINGS_GROUPS.map((group) => (
+              <div key={group.id} className="space-y-1">
+                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {group.label}
+                </p>
+                {group.items.map((tab) =>
+                  tab.href ? (
+                    <Link
+                      key={tab.id}
+                      to={tab.href}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground touch-manipulation"
+                    >
+                      <tab.icon className="h-4 w-4 flex-shrink-0" />
+                      <span>{tab.label}</span>
+                    </Link>
+                  ) : (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => selectTab(tab.id)}
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors touch-manipulation min-h-11",
+                        activeTab === tab.id
+                          ? "bg-primary/10 text-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <tab.icon className="h-4 w-4 flex-shrink-0" />
+                      <span>{tab.label}</span>
+                    </button>
+                  )
                 )}
-              >
-                <tab.icon className="h-4 w-4 flex-shrink-0" />
-                <span>{tab.label}</span>
-              </button>
+              </div>
             ))}
           </nav>
         </div>
