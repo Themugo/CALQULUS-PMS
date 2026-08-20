@@ -11,6 +11,7 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
  */
 
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { serve } from "std/http/server.ts";
 
 const log = (step: string, details?: unknown) =>
@@ -46,6 +47,9 @@ interface ConfirmRequest {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
 
   try {

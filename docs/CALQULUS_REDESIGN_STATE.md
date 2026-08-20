@@ -1,16 +1,97 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 13 remediations. Implement the audit findings. Do not undo what is
-strong: feature folders, lazy role routing, webhost frontend tenant
-hard-block, landlord feature tree without tenant PII, Brand Studio not
-overwriting `--primary` or status tokens, desk chrome, 44px targets, skip
-links, `devAccess` off in production, published price catalog.
+Phase 13 leftover HIGH/MEDIUM remediations (continuation). Do not restart
+the redesign. CRITICAL/HIGH code remediations already on `main` (`2bb9f70`).
+Visual direction, RLS, auth contracts, and routes are unchanged.
 
 ## CURRENT TASK
-Close CRITICAL and HIGH gaps from
-`docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`, then the
-MEDIUM/LOW items that are safe without a redesign.
+Checkpoint complete on `cursor/phase-13-continuation-1e5d`. No further
+in-git leftover HIGH from the continuation list. Operator-owned live
+deploy and SQL apply remain.
+
+## COMPLETED TASKS
+- Phase 13 audit report (`a6f1adc`) and CRITICAL/HIGH remediations (`2bb9f70`)
+  merged to `main` (`f650a5a`)
+- Continuation leftover HIGH: remaining `if (error) return []` query swallows
+  now throw; leftover notify/report Edge Functions require a real user JWT,
+  service role, or `CRON_SECRET`; shared Sidebar webhost/agency groups match
+  portal primary nav
+- Continuation leftover MEDIUM: live-desk `yellow-500` / pending wells swapped
+  to `warning` tokens (vacation notices, recent activity, electricity icons,
+  password strength, contract near-limit, invoice pending badge)
+- `send-overdue-notifications` uses `rejectUnlessUserServiceOrCron` so the
+  manager Billing desk JWT invoke still works (service/cron still allowed)
+
+### Phase 13 continuation (this branch) — files changed
+Frontend queries: `TenantBalanceSummary.tsx`, `TenantNotificationBell.tsx`,
+`TenantPaymentSchedule.tsx`, `TenantPortableHistory.tsx`,
+`UnitHistoryPanel.tsx`, `UnmatchedBankTransactions.tsx`.
+Nav: `Sidebar.tsx`.
+Tokens: `VacationNotices.tsx`, `PropertyVacationNoticesTab.tsx`,
+`RecentActivity.tsx`, `PropertyBillingTab.tsx`, `ExpendituresTab.tsx`,
+`PasswordChange.tsx`, `ContractEditor.tsx`, `TemplateManager.tsx`,
+`InvoiceTable.tsx`.
+Shared: `supabase/functions/_shared/assertCaller.ts`
+(`rejectUnlessUserServiceOrCron`).
+Edge Functions gated this branch: `generate-cashflow`, `generate-pnl`,
+`generate-landlord-statement`, `process-commission`,
+`send-payment-push-notification`, `send-invoice-due-push-notification`,
+`send-manager-approval-notification`, `auto-send-receipt`,
+`auto-send-rent-report`, `notify-manager-tenant-signup`,
+`process-due-invoice-notifications`, `reconcile-bank`, `seed-maintenance`,
+`send-deposit-refund-notification`, `send-maintenance-notification`,
+`send-manager-contract-notification`, `send-manager-invoice-notification`,
+`send-manager-receipt-email`, `send-monthly-report`,
+`send-overdue-maintenance-notifications`, `send-payment-confirmation`,
+`send-payment-reminders`, `send-property-assignment-notification`,
+`send-receipt-email`, `send-receipt-status-notification`,
+`send-overdue-notifications`.
+Tests: `src/test/phase13Remediation.test.ts`.
+Docs: this file.
+
+Public-by-design left ungated: `activate-account` (token+password),
+webhooks (`mpesa-callback`, `stripe-webhook`, `bank-webhook`),
+`health-check`, invite/signup (`accept-tenant-invite`,
+`self-register-tenant`, `claim-tenant`). `bootstrap-webhost` /
+`seed-demo-data` keep their own service/env gates.
+
+## NEXT TASK
+Operator (cannot finish from git):
+1. Deploy Edge Functions so live `health-check` is no longer 404. Cron
+   callers must send `X-Cron-Secret` or the service-role bearer; user
+   desks keep using `supabase.functions.invoke` with a session JWT.
+2. Apply `supabase/migrations/20260820000000_tenants_select_role_in.sql`.
+
+Code (optional, not blocking this checkpoint): reduce `@ts-nocheck` on
+large ops pages without breaking `tsc`; remaining amber utilities on
+live feature files that were not in the yellow-500 leftover set.
+
+## IN PROGRESS FILES
+None. Continuation work is checkpointed on
+`cursor/phase-13-continuation-1e5d`.
+
+## KNOWN ISSUES
+- Live `health-check` 404 until function deploy (not claimed fixed)
+- Live tenants RLS / `get_manager_dashboard_stats` unproven until SQL
+  is applied (prior gate 2026-08-19: tenants `42P17`, RPC 404)
+- Gated functions still use the service role after the caller check;
+  body `managerId` is not re-scoped to the JWT user
+- `@ts-nocheck` still on large ops pages (capped at 75)
+- Amber Tailwind leftovers remain on some live feature files (~not a
+  full 130-file rewrite)
+- Demo/lab suites remain in tree, unrouted
+- E2E portal tests still credential-gated
+
+### Test status (this checkpoint)
+- `npx vitest run` — **886 passed**, 1 skipped
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- Live `health-check` / RLS not re-probed this session
+
+### Next exact action
+Open/review the continuation PR against `main`, then operator deploys
+Edge Functions and applies `20260820000000_tenants_select_role_in.sql`.
+Do not merge unless asked. Do not restart the redesign.
 
 ### Phase 13 remediations (this branch)
 - `log-audit` requires a user JWT; actor is `ctx.user.id`, not the body.

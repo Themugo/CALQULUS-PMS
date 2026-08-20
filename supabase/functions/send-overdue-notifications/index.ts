@@ -1,7 +1,7 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -24,7 +24,7 @@ interface OverdueInvoice {
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = rejectUnlessServiceOrCron(req);
+  const denied = await rejectUnlessUserServiceOrCron(req);
   if (denied) return denied;
 
 

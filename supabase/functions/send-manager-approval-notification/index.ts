@@ -4,6 +4,7 @@ import { Resend } from "resend/resend@2.0.0";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 const resend = new Resend(getEnv("RESEND_API_KEY"));
 
 interface ApprovalRequest {
@@ -20,6 +21,8 @@ interface ApprovalRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
 
   try {

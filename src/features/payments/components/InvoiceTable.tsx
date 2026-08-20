@@ -43,9 +43,9 @@ const getInvoiceStatusBadge = (status: string, dueDate: string) => {
   if (status === "pending") {
     const isOverdue = new Date(dueDate) < new Date();
     if (isOverdue) {
-      return <Badge className="bg-red-500/10 text-red-700 border-red-500/20">Overdue</Badge>;
+      return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Overdue</Badge>;
     }
-    return <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/20">Pending</Badge>;
+    return <Badge className="bg-warning/10 text-warning border-warning/20">Pending</Badge>;
   }
   return <Badge variant="outline">{status}</Badge>;
 };

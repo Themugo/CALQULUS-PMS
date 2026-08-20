@@ -43,7 +43,7 @@ function CharacterCount({ current, max }: { current: number; max: number }) {
     <span
       className={cn(
         "text-xs text-muted-foreground",
-        isNearLimit && "text-yellow-600 dark:text-yellow-500",
+        isNearLimit && "text-warning",
         isOverLimit && "text-destructive font-medium"
       )}
     >

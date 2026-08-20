@@ -8,12 +8,16 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
   const envName = (getEnv("ENVIRONMENT") || getEnv("NODE_ENV") || "").toLowerCase();
   if (envName !== "development" && envName !== "dev" && envName !== "local") {

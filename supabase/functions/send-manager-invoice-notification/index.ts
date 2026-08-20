@@ -3,6 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 // Resend email client
 const sendEmail = async (apiKey: string, to: string[], subject: string, html: string) => {
   const response = await fetch("https://api.resend.com/emails", {
@@ -44,6 +45,9 @@ const getSiteUrl = () => (getEnv("SITE_URL", "https://www.calqulus.site")).repla
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
 
   try {

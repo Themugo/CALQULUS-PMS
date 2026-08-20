@@ -83,7 +83,7 @@ const TenantPortableHistory: React.FC = () => {
         .select('*')
         .eq('tenant_id', user!.id)
         .order('move_in_date', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as TenancyRecord[];
     },
     enabled: !!user?.id,
@@ -98,7 +98,7 @@ const TenantPortableHistory: React.FC = () => {
         .select('id, invoice_number, amount, paid_amount, balance_due, status, due_date, paid_date, description')
         .eq('tenant_id', user!.id)
         .order('due_date', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as InvoiceRecord[];
     },
     enabled: !!user?.id,
@@ -113,7 +113,7 @@ const TenantPortableHistory: React.FC = () => {
         .select('id, title, status, created_at, tenant_signed_at, manager_signed_at, archived_at')
         .eq('tenant_id', user!.id)
         .order('created_at', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as ContractRecord[];
     },
     enabled: !!user?.id,
@@ -128,7 +128,7 @@ const TenantPortableHistory: React.FC = () => {
         .select('id, title, status, priority, category, requested_date, completion_date, property_name, unit_number')
         .eq('tenant_email', user!.email)
         .order('requested_date', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as MaintenanceRecord[];
     },
     enabled: !!user?.id,

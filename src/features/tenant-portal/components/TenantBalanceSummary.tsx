@@ -47,7 +47,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
     queryKey: ['tenant-balance', userId],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_tenant_balance', { p_tenant_id: userId });
-      if (error) return null;
+      if (error) throw error;
       return (data?.[0] as BalanceResult) ?? null;
     },
     enabled: !!userId,
@@ -63,7 +63,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
         .eq('tenant_id', userId)
         .order('created_at', { ascending: false })
         .limit(10);
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as CreditEntry[];
     },
     enabled: !!userId,
@@ -79,7 +79,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
         .eq('tenant_id', userId)
         .eq('status', 'active')
         .maybeSingle();
-      if (error) return null;
+      if (error) throw error;
       return data as ArrearsSchedule;
     },
     enabled: !!userId,

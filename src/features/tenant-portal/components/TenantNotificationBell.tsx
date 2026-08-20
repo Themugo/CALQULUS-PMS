@@ -61,7 +61,7 @@ const TenantNotificationBell: React.FC = () => {
         .eq('is_dismissed', false)
         .order('created_at', { ascending: false })
         .limit(30);
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as TenantNotification[];
     },
     enabled: !!user?.id,

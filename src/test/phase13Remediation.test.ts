@@ -54,6 +54,34 @@ describe("Phase 13 remediations", () => {
     expect(backfill).not.toMatch(/role !== "webhost"/);
   });
 
+  it("throws on remaining tenant-desk query failures instead of empty lists", () => {
+    expect(readFileSync("src/features/tenant-portal/components/TenantBalanceSummary.tsx", "utf8")).not.toContain("if (error) return []");
+    expect(readFileSync("src/features/tenant-portal/components/TenantNotificationBell.tsx", "utf8")).not.toContain("if (error) return []");
+    expect(readFileSync("src/features/units/components/UnitHistoryPanel.tsx", "utf8")).not.toContain("if (error) return []");
+  });
+
+  it("authenticates leftover report and notify functions", () => {
+    const gated = [
+      "generate-cashflow",
+      "send-manager-approval-notification",
+      "send-receipt-email",
+      "notify-manager-tenant-signup",
+      "send-overdue-notifications",
+      "send-payment-reminders",
+      "auto-send-receipt",
+      "send-maintenance-notification",
+    ];
+    for (const name of gated) {
+      const body = readFileSync(`supabase/functions/${name}/index.ts`, "utf8");
+      expect(body, name).toMatch(/rejectUnlessUserServiceOrCron|rejectUnlessServiceOrCron|withMiddleware/);
+    }
+  });
+
+  it("keeps public-by-design functions without a user JWT gate", () => {
+    expect(readFileSync("supabase/functions/activate-account/index.ts", "utf8")).not.toContain("rejectUnlessUserServiceOrCron");
+    expect(readFileSync("supabase/functions/health-check/index.ts", "utf8")).not.toContain("rejectUnlessUserServiceOrCron");
+  });
+
   it("caps @ts-nocheck growth in src/", () => {
     const files = walkTsFiles(join(process.cwd(), "src")).filter((file) =>
       readFileSync(file, "utf8").includes("@ts-nocheck"),

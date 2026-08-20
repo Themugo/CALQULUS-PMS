@@ -24,9 +24,9 @@ export const PasswordChange = () => {
     if (/[^a-zA-Z0-9]/.test(password)) score += 12.5;
 
     if (score <= 25) return { score, label: "Weak", color: "bg-destructive" };
-    if (score <= 50) return { score, label: "Fair", color: "bg-orange-500" };
-    if (score <= 75) return { score, label: "Good", color: "bg-yellow-500" };
-    return { score, label: "Strong", color: "bg-green-500" };
+    if (score <= 50) return { score, label: "Fair", color: "bg-warning/70" };
+    if (score <= 75) return { score, label: "Good", color: "bg-warning" };
+    return { score, label: "Strong", color: "bg-success" };
   };
 
   const validatePassword = (password: string): string | null => {

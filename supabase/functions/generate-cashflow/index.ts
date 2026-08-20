@@ -3,8 +3,11 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
   try {
     const supabase = createClient(

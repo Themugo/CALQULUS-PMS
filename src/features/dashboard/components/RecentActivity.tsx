@@ -85,7 +85,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Maintenance related
   if (actionLower.includes("maintenance") || actionLower.includes("repair")) {
-    return { icon: Wrench, iconBg: "bg-amber-500/10 text-amber-500", category: "Maintenance" };
+    return { icon: Wrench, iconBg: "bg-warning/10 text-warning", category: "Maintenance" };
   }
   
   // Alerts and notifications
@@ -93,7 +93,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
     return { icon: AlertTriangle, iconBg: "bg-destructive/10 text-destructive", category: "Alert" };
   }
   if (actionLower.includes("reminder") || actionLower.includes("notification")) {
-    return { icon: Bell, iconBg: "bg-yellow-500/10 text-yellow-500", category: "Notification" };
+    return { icon: Bell, iconBg: "bg-warning/10 text-warning", category: "Notification" };
   }
   
   // Status updates

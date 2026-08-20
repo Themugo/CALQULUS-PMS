@@ -143,7 +143,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         .select('id, title, description, status, priority, category, requested_date, completion_date, tenant_name, cost_actual, archived_at')
         .eq('unit_id', unitId)
         .order('requested_date', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as MaintenanceRow[];
     },
   });
@@ -157,7 +157,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         .select('id, title, status, created_at, tenant_signed_at, manager_signed_at, archived_at, archive_reason, tenant_id')
         .eq('unit_id', unitId)
         .order('created_at', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as ContractRow[];
     },
   });
@@ -171,7 +171,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         .select('id, tenant_name, tenant_email, notice_date, intended_move_out_date, status, reason, manager_notes, created_at')
         .eq('unit_id', unitId)
         .order('created_at', { ascending: false });
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as VacationNoticeRow[];
     },
   });
@@ -186,7 +186,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         .eq('unit_id', unitId)
         .order('created_at', { ascending: false })
         .limit(50);
-      if (error) return [];
+      if (error) throw error;
       return (data || []) as UnitActivityLogRow[];
     },
   });

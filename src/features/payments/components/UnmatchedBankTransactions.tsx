@@ -81,7 +81,7 @@ const UnmatchedBankTransactions: React.FC = () => {
         .in('status', ['pending', 'overdue'])
         .eq('manager_id', user!.id)
         .order('due_date', { ascending: true });
-      if (error) return [];
+      if (error) throw error;
       return (data || []).map((inv: any) => ({
         id: inv.id,
         invoice_number: inv.invoice_number,

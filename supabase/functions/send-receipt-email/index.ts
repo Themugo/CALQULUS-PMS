@@ -4,6 +4,7 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
  * Branded HTML receipt email — shows due date, amount paid, method, balance
  */
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { serve } from "std/http/server.ts";
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0 }).format(n);
@@ -11,6 +12,9 @@ const esc = (s: string) => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
   try {
     const RESEND_API_KEY = getEnv("RESEND_API_KEY");
     const FROM = getEnv("RESEND_FROM_EMAIL", "onboarding@resend.dev");

@@ -54,7 +54,7 @@ const TenantPaymentSchedule: React.FC = () => {
         .select('*, invoices(invoice_number, due_date, description)')
         .eq('tenant_id', user!.id)
         .order('created_at', { ascending: false });
-      if (error) return [] as ArrearsScheduleRow[];
+      if (error) throw error;
       return (data || []) as ArrearsScheduleRow[];
     },
     enabled: !!user?.id,

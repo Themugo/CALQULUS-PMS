@@ -6,6 +6,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
+import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -15,6 +16,9 @@ const log = (s: string, d?: unknown) => console.log(`[BANK-RECONCILE] ${s}`, d ?
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
+
+  const denied = await rejectUnlessUserServiceOrCron(req);
+  if (denied) return denied;
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
