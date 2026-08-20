@@ -98,8 +98,9 @@ test changes on `cursor/phase-13-gap-remediation-1e5d`.
 - Live health-check still 404 until function deploy
 
 ## CHECKPOINT
-Phase 13 gap remediations on `cursor/phase-13-gap-remediation-1e5d`.
-Audit report remains at `docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`.
+Phase 13 gap remediations merged to `main` (`2bb9f70`). PRs #62 (audit) and
+#63 (fixes). Live health-check still needs function deploy; tenants RLS
+migration still needs to be applied on the linked project.
 
 ## PREVIOUS PHASE
 Phase 12 — Accessibility certification. Audit keyboard navigation, focus,
