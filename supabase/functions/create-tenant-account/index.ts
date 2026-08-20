@@ -266,14 +266,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Check caller has manager or webhost role
-    const { data: roleData } = await supabaseClient
+    // Webhost is never allowed to create tenant accounts (tenant firewall).
+    const { data: roleRows } = await supabaseClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", caller.id)
-      .single();
+      .eq("user_id", caller.id);
 
-    if (roleData?.role !== "manager" && roleData?.role !== "webhost") {
+    const allowedCaller = new Set(["manager", "agency", "submanager"]);
+    if (!roleRows?.some((row) => allowedCaller.has(row.role))) {
       return new Response(
         JSON.stringify({ error: "Insufficient permissions" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }

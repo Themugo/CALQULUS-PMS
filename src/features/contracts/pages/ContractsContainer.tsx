@@ -15,6 +15,7 @@
 
 import { useCallback } from "react";
 import { Layout } from "@/shared/components/layout/Layout";
+import { FeatureGate } from "@/shared/components/FeatureGate";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useContractsData, ContractWithRelations, ContractStatus } from "@/features/contracts/hooks/useContractsData";
 import { useContractsUI } from "@/features/contracts/hooks/useContractsUI";
@@ -245,6 +246,7 @@ export function ContractsContainer() {
       title="Contracts & Documents"
       subtitle="Manage lease contracts, templates, and digital signatures"
     >
+      <FeatureGate feature="contracts" featureLabel="Contracts">
       <div className="space-y-6">
         <ContractsHeader
           searchQuery={filters.searchQuery}
@@ -305,6 +307,7 @@ export function ContractsContainer() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      </FeatureGate>
     </Layout>
   );
 }

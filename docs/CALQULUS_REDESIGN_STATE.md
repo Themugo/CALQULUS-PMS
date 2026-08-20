@@ -1,17 +1,40 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 13 — Final pre-Claude/Cursor audit. Objective evaluation only. Do not
-redesign. Do not implement findings. Rank CRITICAL / HIGH / MEDIUM / LOW
-across architecture, UI, UX, responsive, a11y, performance, routing, authn,
-authz, APIs, backend, data integrity, white-label, and commercial readiness.
+Phase 13 remediations. Implement the audit findings. Do not undo what is
+strong: feature folders, lazy role routing, webhost frontend tenant
+hard-block, landlord feature tree without tenant PII, Brand Studio not
+overwriting `--primary` or status tokens, desk chrome, 44px targets, skip
+links, `devAccess` off in production, published price catalog.
 
 ## CURRENT TASK
-Write the ranked report, update this state file, checkpoint (commit, push,
-draft PR). No application code. No Edge Function patches. No FeatureGate
-wiring. No RLS/migration applies.
+Close CRITICAL and HIGH gaps from
+`docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`, then the
+MEDIUM/LOW items that are safe without a redesign.
 
-### Phase 13 findings (audit only — not fixed)
+### Phase 13 remediations (this branch)
+- `log-audit` requires a user JWT; actor is `ctx.user.id`, not the body.
+- `notify-new-manager-signup` requires a user session, HTML-escapes names,
+  upserts the role server-side (`ignoreDuplicates`), and uses navy chrome.
+- `create-tenant-account` / `backfill-tenant-accounts` refuse `webhost`.
+- `check-feature` requires auth, defaults to **starter**, and is self-scoped.
+- `FeatureGate` wraps water billing, contracts, vacation notices, advanced
+  analytics, and broadcast SMS. Premium features fail closed.
+- SMS send/bulk: manager/agency/submanager only; bulk also checks `bulk_sms`.
+- Middleware skips role rows for service-role callers; `checkRoleAccess`
+  uses `limit` instead of `maybeSingle`.
+- Submanager URLs carry `permission`; `can()` is false for landlords.
+- Client no longer upserts `user_roles` on manager/agency/landlord signup.
+- Query helpers throw instead of `return []` on inbox, payment history,
+  deposit refunds, collection summary.
+- Tenant inbox uses `VirtualizedList`. Agency and webhost ops are on the
+  primary nav. PWA precache excludes chart/PDF vendors.
+- Migration `20260820000000_tenants_select_role_in.sql` rewrites
+  `tenants_select` via `role_in()` (must still be applied live).
+- `health-check` remains in repo with `verify_jwt = false`; live deploy is
+  still required for the 404 to clear.
+
+### Phase 13 findings (audit — original)
 Full report: `docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`.
 
 Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
@@ -57,24 +80,26 @@ Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
   overwrite `--primary` or status tokens; desk chrome (tokens, 44px, skip
   links); `devAccess` off in production; published price catalog.
 
-**Honest bottom line**
-Not a prototype. Not commercially gated. Not live-schema-certified. Closest
-prior independent score remains **55/100**. Do not sell as system of record
-until C1–C5 (audit auth, signup notify auth, webhost tenant create, live
-health-check, paywalls) are owned.
+**Honest bottom line (after remediations)**
+Code now gates premium features, authenticates audit/signup notify, and
+blocks webhost tenant-create. Live `health-check` 404 and unapplied
+migrations remain until operators deploy functions and paste SQL.
+`@ts-nocheck` on large ops pages is capped, not eliminated. Closest prior
+independent live score remains **55/100** until schema/RPC/health-check
+are proven on the linked project.
 
 ### Phase 13 implementation
-None. Documentation and checkpoint only.
+See remediations list above. Application + Edge Function + migration +
+test changes on `cursor/phase-13-gap-remediation-1e5d`.
 
 ### Phase 13 verification
-- Production origin curl — 200
-- Live health-check curl — 404 NOT_FOUND
-- Source review of Edge Functions, FeatureGate, RBAC, routes, Sidebar
-- No `tsc` / vitest / build required (no app code)
+- `npx vitest run src/test/phase13Remediation.test.ts` and full unit suite
+- `npx tsc --noEmit -p tsconfig.app.json`
+- Live health-check still 404 until function deploy
 
 ## CHECKPOINT
-Phase 13 audit on `cursor/phase-13-final-pre-claude-audit-1e5d`. Report at
-`docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`. No product changes.
+Phase 13 gap remediations on `cursor/phase-13-gap-remediation-1e5d`.
+Audit report remains at `docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`.
 
 ## PREVIOUS PHASE
 Phase 12 — Accessibility certification. Audit keyboard navigation, focus,

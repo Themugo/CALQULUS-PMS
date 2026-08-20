@@ -284,7 +284,7 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
         .gte('due_date', startStr)
         .lte('due_date', endStr)
         .order('due_date');
-      if (error) { logError('RentCollectionSummary.fetch', error); return []; }
+      if (error) { logError('RentCollectionSummary.fetch', error); throw error; }
       return (data ?? []) as unknown as InvoiceRow[];
     },
     enabled: !!user?.id,

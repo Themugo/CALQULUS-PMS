@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth, AppRole, AdminLevel, WebhostPermissions } from '@/features/auth/AuthContext';
+import { useRBAC, type PermissionKey } from '@/shared/hooks/useRBAC';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,6 +10,8 @@ interface ProtectedRouteProps {
   minAdminLevel?: AdminLevel;
   /** For webhost routes: require this specific permission */
   requirePermission?: keyof WebhostPermissions;
+  /** Submanager permission required to open this manager-desk URL */
+  permission?: PermissionKey;
 }
 
 /** Ordered so we can compare: super_admin > admin > limited_admin */
@@ -41,8 +44,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   allowedRoles,
   minAdminLevel,
   requirePermission,
+  permission,
 }) => {
   const { user, userRole, loading, webhostPermissions, isSuperAdmin, devAccessEnabled } = useAuth();
+  const { can } = useRBAC();
   const currentPath = window.location.pathname;
 
   const safeRedirect = (target: string) => {
@@ -120,23 +125,36 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
-  // ── Webhost: HARD BLOCK from any tenant/manager route ───────────
-  // This is a defence-in-depth check. Routes are already separated
-  // by role in App.tsx, but this catches any misconfiguration.
+  // ── Webhost: HARD BLOCK from tenant/manager operational routes ─────
   if (effectiveRole === 'webhost') {
-    const blockedPrefixes = ['/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing', '/contracts'];
-    if (blockedPrefixes.some(p => currentPath.startsWith(p))) {
+    const blockedPrefixes = [
+      '/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing',
+      '/contracts', '/invites', '/statements', '/water-billing', '/payments',
+      '/landlords', '/maintenance', '/reports', '/vacation-notices', '/tenant-screening',
+    ];
+    if (blockedPrefixes.some(p => currentPath === p || currentPath.startsWith(`${p}/`))) {
       return safeRedirect('/webhost');
     }
   }
 
   // ── Landlord: HARD BLOCK from manager/tenant routes ─────────────
   if (effectiveRole === 'landlord') {
-    const blockedPrefixes = ['/portal', '/tenant', '/', '/properties'];
-    if (blockedPrefixes.some(p => currentPath === p) ||
-        currentPath.startsWith('/portal') || currentPath.startsWith('/tenant/')) {
+    const blockedPrefixes = [
+      '/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing',
+      '/invites', '/water-billing', '/statements', '/payments', '/maintenance',
+      '/reports', '/contracts', '/vacation-notices',
+    ];
+    if (
+      currentPath === '/' ||
+      blockedPrefixes.some((p) => currentPath === p || currentPath.startsWith(`${p}/`))
+    ) {
       return safeRedirect('/landlord/dashboard');
     }
+  }
+
+  // ── Submanager: URL-level permission (nav filter is not enough) ──
+  if (effectiveRole === 'submanager' && permission && !can(permission)) {
+    return safeRedirect('/');
   }
 
   return <>{children}</>;

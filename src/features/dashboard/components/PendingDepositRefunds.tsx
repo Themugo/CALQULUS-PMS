@@ -76,7 +76,7 @@ export function PendingDepositRefunds() {
         .order("created_at", { ascending: false })
         .limit(10);
 
-      if (error) { logError('PendingDepositRefunds.fetchRefunds', error); return []; }
+      if (error) { logError('PendingDepositRefunds.fetchRefunds', error); throw error; }
 
       return (data || []).map(r => ({
         ...r,

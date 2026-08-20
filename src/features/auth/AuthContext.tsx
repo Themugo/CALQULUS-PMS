@@ -411,22 +411,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error ? new Error(error.message) : null };
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, tenantId?: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, _tenantId?: string) => {
     const redirectPath = signupRedirectPath(role);
     const { data, error } = await supabase.auth.signUp({ email, password,
       options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { full_name: fullName, role } } });
     if (error) return { error: new Error(error.message) };
     if (data.user) {
-      const { error: roleError } = await supabase.from('user_roles').upsert({
-        user_id: data.user.id, role, tenant_id: role === 'tenant' ? tenantId : null,
-        approval_status: role === 'manager' || role === 'agency' ? 'pending' : 'approved',
-      }, {
-        onConflict: 'user_id,role',
-      });
-      if (roleError) { logError('AuthContext.signUp', roleError); return { error: new Error('Failed to create role') }; }
+      // Role rows are created by handle_new_auth_user() and/or the
+      // authenticated notify-new-manager-signup function. The client must
+      // not upsert user_roles (privilege escalation).
       if (role === 'manager' || role === 'agency' || role === 'landlord') {
         supabase.functions.invoke('notify-new-manager-signup', {
-          body: { managerEmail: email, managerName: fullName, role },
+          body: { managerName: fullName, role },
         }).catch((e: unknown) => logWarning('notify-new-signup failed:', e as Error));
       }
       if (role === 'manager') {

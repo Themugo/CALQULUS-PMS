@@ -81,4 +81,12 @@ test.describe("Accessibility", () => {
     await expect(table).toBeVisible();
     await expect(table.locator("th[scope='col']").first()).toBeVisible();
   });
+
+  test("design preview desk chrome at 390px has skip link and no blocking axe", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/design-preview");
+    await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole("link", { name: /skip to main content/i })).toBeAttached();
+    await expectNoBlockingAxe(page);
+  });
 });

@@ -131,7 +131,7 @@ const renderRoute = (route: RouteDef, allowedRoles?: AppRole[]) => {
       <Route
         key={route.path}
         path={route.path}
-        element={<ProtectedRoute allowedRoles={allowedRoles}>{element}</ProtectedRoute>}
+        element={<ProtectedRoute allowedRoles={allowedRoles} permission={route.permission}>{element}</ProtectedRoute>}
       />
     );
   }

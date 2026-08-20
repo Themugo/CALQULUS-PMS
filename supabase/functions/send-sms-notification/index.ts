@@ -22,7 +22,8 @@ serve(
     {
       functionName: "send-sms-notification",
       requireAuth: true,
-      rateLimit: { maxPerHour: 10, failClosed: false },
+      allowedRoles: ["manager", "agency", "submanager"],
+      rateLimit: { maxPerHour: 10, failClosed: true },
     },
     async (req, ctx) => {
       const { phoneNumber, message }: SMSRequest = await req.json();

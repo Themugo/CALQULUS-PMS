@@ -10,7 +10,7 @@ export const AGENCY_ROUTES = {
   settings: "/agency/settings",
 } as const;
 
-/** Existing operational screens kept off the primary nav. */
+/** Operational screens — also linked from the primary agency nav. */
 export const AGENCY_OPS_ROUTES = {
   buildings: "/agency/properties",
   landlords: "/agency/landlords",

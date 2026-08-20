@@ -172,16 +172,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Check caller has webhost or manager role
-    const { data: roleData } = await supabaseClient
+    // Tenant firewall: webhost cannot create or backfill tenant accounts.
+    const { data: roleRows } = await supabaseClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", caller.id)
-      .single();
+      .eq("user_id", caller.id);
 
-    if (roleData?.role !== "webhost" && roleData?.role !== "manager") {
+    const allowedCaller = new Set(["manager", "agency"]);
+    if (!roleRows?.some((row) => allowedCaller.has(row.role))) {
       return new Response(
-        JSON.stringify({ error: "Insufficient permissions - only webhost or manager can run backfill" }),
+        JSON.stringify({ error: "Insufficient permissions - only a manager or agency can run backfill" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }

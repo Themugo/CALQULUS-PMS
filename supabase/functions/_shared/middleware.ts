@@ -200,7 +200,9 @@ export function withMiddleware<T = unknown>(
     }
 
     // ─── Authorization ─────────────────────────────────────────────────────
-    if (mergedOptions.allowedRoles.length > 0 && user) {
+    // Service-role callers (function-to-function) skip role rows — they already
+    // hold the project secret. Never treat the anon JWT as a user.
+    if (mergedOptions.allowedRoles.length > 0 && user && user.id !== "service-role") {
       const roleCheck = await checkRoleAccess(user.id, mergedOptions.allowedRoles);
       if (!roleCheck.allowed) {
         logger.warn("Role access denied", { userId: user.id, roles: mergedOptions.allowedRoles });

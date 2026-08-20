@@ -4,13 +4,17 @@ import {
   Building2,
   ChevronRight,
   CreditCard,
+  FileCheck,
+  Handshake,
   LayoutDashboard,
+  Layers,
   LogOut,
   Menu,
   Palette,
   ScrollText,
   Settings,
   ShieldAlert,
+  TriangleAlert,
   Users,
   X,
 } from "lucide-react";
@@ -21,16 +25,21 @@ import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { supabase } from "@/integrations/supabase/client";
-import { WEBHOST_LOGIN, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
+import { WEBHOST_LOGIN, WEBHOST_OPS_ROUTES, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
 import { cn } from "@/shared/lib/utils";
 
 const NAV = [
   { label: "Dashboard", href: WEBHOST_ROUTES.dashboard, icon: LayoutDashboard, permission: null },
   { label: "Organizations", href: WEBHOST_ROUTES.organizations, icon: Building2, permission: "can_manage_managers" as const },
   { label: "Users", href: WEBHOST_ROUTES.users, icon: Users, permission: null },
+  { label: "Properties", href: WEBHOST_OPS_ROUTES.properties, icon: Building2, permission: "can_manage_properties" as const },
+  { label: "Landlords", href: WEBHOST_OPS_ROUTES.landlords, icon: Handshake, permission: "can_manage_system_landlords" as const },
   { label: "Subscriptions", href: WEBHOST_ROUTES.subscriptions, icon: CreditCard, permission: "can_manage_billing" as const },
+  { label: "Tiers", href: WEBHOST_OPS_ROUTES.tiers, icon: Layers, permission: "can_manage_billing" as const },
+  { label: "Contracts", href: WEBHOST_OPS_ROUTES.contracts, icon: FileCheck, permission: "can_manage_managers" as const },
   { label: "Audit Log", href: WEBHOST_ROUTES.audit, icon: ScrollText, permission: "can_view_activity_logs" as const },
   { label: "Security", href: WEBHOST_ROUTES.security, icon: ShieldAlert, permission: "can_view_activity_logs" as const },
+  { label: "Issues", href: WEBHOST_OPS_ROUTES.issues, icon: TriangleAlert, permission: "can_view_activity_logs" as const },
   { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings, permission: null },
   { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette, permission: null },
 ] as const;

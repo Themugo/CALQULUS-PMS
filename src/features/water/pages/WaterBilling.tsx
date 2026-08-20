@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Droplets } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Card, CardContent } from "@/shared/components/ui/card";
+import { FeatureGate } from "@/shared/components/FeatureGate";
 
 const WaterBilling = () => {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
@@ -23,6 +24,7 @@ const WaterBilling = () => {
         />
       }
     >
+      <FeatureGate feature="water_billing" featureLabel="Water billing">
       {!selectedProperty && !isLoading && (
         <Card className="border-dashed">
           <CardContent className="py-16 text-center">
@@ -48,6 +50,7 @@ const WaterBilling = () => {
           propertyName={properties.find((p) => p.id === selectedProperty)?.name ?? "Property"}
         />
       )}
+      </FeatureGate>
     </Layout>
   );
 };

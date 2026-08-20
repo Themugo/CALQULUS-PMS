@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { useFeatureAccess, PlanFeature } from '@/shared/hooks/useFeatureAccess';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -13,9 +14,7 @@ interface FeatureGateProps {
 
 /**
  * Wraps a feature's UI, showing an upgrade prompt in place of `children`
- * when the manager's plan doesn't include it. See useFeatureAccess for why
- * this exists — it's available infrastructure, not yet applied anywhere;
- * wrap the specific pages you want gated with this deliberately.
+ * when the manager's plan doesn't include it.
  */
 export function FeatureGate({ feature, featureLabel, children }: FeatureGateProps) {
   const { enabled, plan, isLoading } = useFeatureAccess(feature);
@@ -24,17 +23,17 @@ export function FeatureGate({ feature, featureLabel, children }: FeatureGateProp
   if (enabled) return <>{children}</>;
 
   return (
-    <Card className="border-amber-400/30 bg-amber-400/5">
+    <Card className="border-warning/30 bg-warning/5">
       <CardContent className="p-6 text-center">
-        <div className="h-10 w-10 rounded-full bg-amber-400/15 flex items-center justify-center mx-auto mb-3">
-          <Lock className="h-5 w-5 text-amber-600" />
+        <div className="h-10 w-10 rounded-md bg-warning/15 flex items-center justify-center mx-auto mb-3">
+          <Lock className="h-5 w-5 text-warning" aria-hidden />
         </div>
-        <p className="font-medium">{featureLabel} isn't on your current plan</p>
+        <p className="font-medium">{featureLabel} is not on your current plan</p>
         <p className="text-sm text-muted-foreground mt-1 mb-4">
-          Your {plan} plan doesn't include this. Upgrade to unlock it.
+          Your {plan} plan does not include this. Upgrade to unlock it.
         </p>
         <Button size="sm" variant="outline" asChild>
-          <a href="/platform-billing">View plans</a>
+          <Link to="/platform-billing">View plans</Link>
         </Button>
       </CardContent>
     </Card>

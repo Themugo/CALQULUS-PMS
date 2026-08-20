@@ -1,50 +1,48 @@
 import { serve } from "std/http/server.ts";
-import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { createClient } from "supabase/supabase-js@2";
+import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
+import { normalizePlan, planIncludes } from "../_shared/planFeatures.ts";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-// Feature flags controlled by webhost admin
-const PLAN_FEATURES: Record<string, string[]> = {
-  free: ["basic_billing", "tenant_portal", "maintenance"],
-  pro: ["basic_billing", "tenant_portal", "maintenance", "water_billing", "contracts", "vacation_notices", "payment_reminders", "pdf_export"],
-  enterprise: ["basic_billing", "tenant_portal", "maintenance", "water_billing", "contracts", "vacation_notices", "payment_reminders", "pdf_export", "api_access", "white_label", "advanced_analytics", "bulk_sms"],
-};
+serve(
+  withMiddleware(
+    {
+      functionName: "check-feature",
+      requireAuth: true,
+      rateLimit: { maxPerHour: 120, failClosed: false },
+    },
+    async (req, ctx) => {
+      if (!ctx.user) throw errorResponse("Unauthorized", 401);
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return preflightResponse(req);
+      const { managerId, feature } = await req.json().catch(() => ({})) as {
+        managerId?: string;
+        feature?: string;
+      };
 
-  try {
-    const supabase = createClient(
-      requireEnv("SUPABASE_URL"),
-      requireEnv("SUPABASE_SERVICE_ROLE_KEY")
-    );
+      if (!managerId || !feature) {
+        throw errorResponse("managerId and feature required", 400);
+      }
 
-    const { managerId, feature } = await req.json();
+      if (ctx.user.id !== "service-role" && managerId !== ctx.user.id) {
+        const { data: sub } = await ctx.supabase
+          .from("submanager_permissions")
+          .select("manager_id")
+          .eq("submanager_user_id", ctx.user.id)
+          .maybeSingle();
+        if (!sub || sub.manager_id !== managerId) {
+          throw errorResponse("You can only check your own plan", 403);
+        }
+      }
 
-    if (!managerId || !feature) {
-      return new Response(JSON.stringify({ error: "managerId and feature required" }), {
-        status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
-    }
+      const { data: subscription } = await ctx.supabase
+        .from("manager_subscriptions")
+        .select("plan, status, expires_at")
+        .eq("manager_id", managerId)
+        .eq("status", "active")
+        .maybeSingle();
 
-    // Get manager's subscription plan
-    const { data: subscription } = await supabase
-      .from("manager_subscriptions")
-      .select("plan, status, expires_at")
-      .eq("manager_id", managerId)
-      .eq("status", "active")
-      .maybeSingle();
+      const plan = normalizePlan(subscription?.plan);
+      const enabled = planIncludes(plan, feature);
 
-    const plan = subscription?.plan || "pro"; // Default to pro for all active managers
-    const planFeatures = PLAN_FEATURES[plan] || PLAN_FEATURES.pro;
-    const enabled = planFeatures.includes(feature);
-
-    return new Response(JSON.stringify({ enabled, plan, feature }), {
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
-  }
-});
+      return { enabled, plan, feature };
+    },
+  ),
+);

@@ -11,7 +11,7 @@ export const WEBHOST_ROUTES = {
   brand: "/webhost/brand",
 } as const;
 
-/** Existing screens kept off the primary nav. */
+/** Existing screens — also linked from the primary webhost nav. */
 export const WEBHOST_OPS_ROUTES = {
   properties: "/webhost/properties",
   landlords: "/webhost/landlords",

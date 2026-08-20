@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout } from '@/shared/components/layout/Layout';
+import { FeatureGate } from '@/shared/components/FeatureGate';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Megaphone, Receipt } from 'lucide-react';
 import BroadcastCenter from '@/features/communications/BroadcastCenter';
@@ -20,7 +21,9 @@ const CommunicationsPage: React.FC = () => (
       </TabsList>
 
       <TabsContent value="broadcast">
+        <FeatureGate feature="bulk_sms" featureLabel="Broadcast messaging">
         <BroadcastCenter />
+        </FeatureGate>
       </TabsContent>
 
       <TabsContent value="physical">

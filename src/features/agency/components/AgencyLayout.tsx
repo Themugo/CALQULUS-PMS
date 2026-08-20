@@ -3,14 +3,20 @@ import { Link, Navigate, useLocation } from "react-router-dom";
 import {
   BarChart3,
   Building2,
+  Calendar,
   ChevronRight,
   CreditCard,
+  Droplets,
+  FileSpreadsheet,
+  FileText,
   Handshake,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Settings,
   Users,
+  Wrench,
   X,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -20,14 +26,20 @@ import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { DeskEmbedProvider } from "@/shared/components/layout/DeskEmbed";
 import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
-import { AGENCY_LOGIN, AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
+import { AGENCY_LOGIN, AGENCY_OPS_ROUTES, AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
 
 const NAV = [
   { label: "Dashboard", href: AGENCY_ROUTES.dashboard, icon: LayoutDashboard },
   { label: "Clients", href: AGENCY_ROUTES.clients, icon: Handshake },
   { label: "Portfolio", href: AGENCY_ROUTES.portfolio, icon: Building2 },
   { label: "Tenants", href: AGENCY_ROUTES.tenants, icon: Users },
+  { label: "Leases", href: AGENCY_OPS_ROUTES.leases, icon: FileText },
   { label: "Billing", href: AGENCY_ROUTES.billing, icon: CreditCard },
+  { label: "Water Billing", href: AGENCY_OPS_ROUTES.waterBilling, icon: Droplets },
+  { label: "Statements", href: AGENCY_OPS_ROUTES.statements, icon: FileSpreadsheet },
+  { label: "Invites", href: AGENCY_OPS_ROUTES.invites, icon: Mail },
+  { label: "Vacation Notices", href: AGENCY_OPS_ROUTES.vacationNotices, icon: Calendar },
+  { label: "Maintenance", href: AGENCY_OPS_ROUTES.maintenance, icon: Wrench },
   { label: "Reports", href: AGENCY_ROUTES.reports, icon: BarChart3 },
   { label: "Settings", href: AGENCY_ROUTES.settings, icon: Settings },
 ] as const;

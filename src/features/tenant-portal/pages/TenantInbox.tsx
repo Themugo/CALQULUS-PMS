@@ -37,6 +37,8 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import { onActivateKey } from '@/shared/lib/a11y';
+import { unwrapList } from '@/shared/lib/queryErrors';
+import VirtualizedList from '@/shared/components/VirtualizedList';
 
 interface NoticeIconConfig {
   icon: React.ComponentType<{ className?: string }>;
@@ -101,7 +103,7 @@ const TenantInbox: React.FC = () => {
   const tenantId = userRole?.tenant_id;
 
   // Formal notices from manager
-  const { data: notices = [], isLoading: noticesLoading } = useQuery({
+  const { data: notices = [], isLoading: noticesLoading, isError: noticesError, error: noticesQueryError } = useQuery({
     queryKey: ['tenant-notices-inbox', tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
@@ -111,8 +113,7 @@ const TenantInbox: React.FC = () => {
         .eq('tenant_id', tenantId)
         .neq('status', 'draft')
         .order('created_at', { ascending: false });
-      if (error) return [];
-      return (data || []) as TenantNotice[];
+      return unwrapList({ data, error }, 'tenant notices') as TenantNotice[];
     },
     enabled: !!tenantId,
   });
@@ -122,13 +123,13 @@ const TenantInbox: React.FC = () => {
     queryKey: ['tenant-messages-inbox', tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .select('*')
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false })
         .limit(50);
-      return (data || []) as TenantMessage[];
+      return unwrapList({ data, error }, 'tenant messages') as TenantMessage[];
     },
     enabled: !!tenantId,
   });
@@ -303,13 +304,25 @@ const TenantInbox: React.FC = () => {
         <TabsContent value="notices" className="mt-4 space-y-3">
           {noticesLoading ? (
             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
+          ) : noticesError ? (
+            <div className="py-12 text-center text-destructive" role="alert">
+              <AlertTriangle className="h-10 w-10 mx-auto mb-3 opacity-70" />
+              <p className="text-sm">Could not load notices. {noticesQueryError instanceof Error ? noticesQueryError.message : "Try again."}</p>
+            </div>
           ) : notices.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               <Bell className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No notices from your manager yet</p>
             </div>
           ) : (
-            notices.map((n) => <NoticeCard key={n.id} notice={n} />)
+            <VirtualizedList
+              items={notices}
+              getItemKey={(n) => n.id}
+              estimatedItemHeight={104}
+              className="max-h-[70vh]"
+              emptyMessage="No notices from your manager yet"
+              renderItem={(n) => <NoticeCard key={n.id} notice={n} />}
+            />
           )}
         </TabsContent>
 

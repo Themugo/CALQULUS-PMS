@@ -1,7 +1,4 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 /**
- * shared/types/common.ts
- *
  * Shared type utilities for improving TypeScript type safety.
  * Provides generic types, type guards, and utility types.
  */
@@ -210,7 +207,7 @@ export function createTypedRecord<K extends string | number, V>(
 /**
  * Pick specific keys from an object
  */
-export function pick<T, K extends keyof T>(
+export function pick<T extends object, K extends keyof T>(
   obj: T,
   keys: K[]
 ): Pick<T, K> {

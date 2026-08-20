@@ -257,18 +257,20 @@ export async function checkRoleAccess(
       getEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
-    const { data: roleData, error: roleError } = await supabase
+    const { data: roleRows, error: roleError } = await supabase
       .from("user_roles")
       .select("role, approval_status")
       .eq("user_id", userId)
       .in("role", allowedRoles)
-      .maybeSingle();
+      .limit(8);
 
-    if (roleError || !roleData) {
+    if (roleError || !roleRows?.length) {
       return { allowed: false, error: `User does not have required role: ${allowedRoles.join(", ")}` };
     }
 
-    if (roleData.approval_status !== "approved") {
+    const approved = roleRows.find((row) => row.approval_status === "approved")
+      ?? roleRows.find((row) => row.approval_status == null);
+    if (!approved) {
       return { allowed: false, error: "User account is not approved" };
     }
 

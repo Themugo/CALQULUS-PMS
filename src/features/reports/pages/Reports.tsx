@@ -26,6 +26,7 @@ import {
 import { occupancyRateColor } from '@/shared/lib/statusBadge';
 import { Label } from '@/shared/components/ui/label';
 import { CALQULUS_COLOR } from '@/shared/theme/tokens';
+import { FeatureGate } from '@/shared/components/FeatureGate';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -261,27 +262,35 @@ const Reports: React.FC = () => {
 
           {/* Executive Analytics */}
           <TabsContent value="executive" className="mt-4 space-y-6">
+            <FeatureGate feature="advanced_analytics" featureLabel="Executive analytics">
             <ExecutiveAnalyticsWorkspace />
+            </FeatureGate>
           </TabsContent>
 
           {/* Report Catalog */}
           <TabsContent value="catalog" className="mt-4 space-y-6">
+            <FeatureGate feature="advanced_analytics" featureLabel="Report catalog">
             <ReportCenterCatalog
               onScheduleReport={(title) => {
                 setSelectedReportTitle(title);
                 setScheduleModalOpen(true);
               }}
             />
+            </FeatureGate>
           </TabsContent>
 
           {/* Custom Report Builder */}
           <TabsContent value="builder" className="mt-4 space-y-6">
+            <FeatureGate feature="advanced_analytics" featureLabel="Custom report builder">
             <CustomReportBuilder />
+            </FeatureGate>
           </TabsContent>
 
           {/* Analytics Alerts */}
           <TabsContent value="alerts" className="mt-4 space-y-6">
+            <FeatureGate feature="advanced_analytics" featureLabel="Analytics alerts">
             <AnalyticsAlertPanel />
+            </FeatureGate>
           </TabsContent>
 
           {/* Revenue trend */}

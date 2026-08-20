@@ -120,8 +120,15 @@ export default defineConfig(({ mode }) => ({
       srcDir: "src",
       filename: "sw.ts",
       injectManifest: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+        globPatterns: [
+          "index.html",
+          "**/*.{css,ico,png,svg,woff2}",
+          "assets/index-*.js",
+          "assets/vendor-react-*.js",
+          "assets/vendor-router-*.js",
+        ],
+        globIgnores: ["**/vendor-charts-*.js", "**/vendor-pdf-*.js", "**/*.map"],
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {

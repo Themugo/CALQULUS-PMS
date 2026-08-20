@@ -137,7 +137,7 @@ Realign all dashboards to the new role architecture (Webhost, Manager, Landlord,
 ## Progress
 
 ### Done
-- **Sidebar restructured to match `calqulus_full_platform_v2.html` mockup**: Manager nav groups now show Overview (Dashboard), Tenants (Leases, Tenants, Invites, Vacation Notices), Billing (Billing, Water Billing, Statements), Operations (Maintenance, Reports), Account (Settings). Removed Properties group, Communication group, Finance extras, Services.
+- **Sidebar (live `Sidebar.tsx`)**: Manager groups are OVERVIEW (Dashboard), PORTFOLIO (Properties, Landlords), OCCUPANCY (Leases, Tenants, Invites, Vacation Notices, Tenant Screening), COLLECTIONS (Billing, Water Billing, Statements, Payment History), OPERATIONS (Maintenance, Contracts, Reports), ACCOUNT (Platform Billing, Settings). Do not treat older mockup notes as the product.
 - **Water Billing standalone page** (`/water-billing`): New property selector + WaterBillingManager integration. Route added for manager, submanager, and agency roles.
 - **Invites page** (`/invites`): Wraps InvitationTracker with InviteTenantDialog trigger. Route added for manager, submanager, and agency roles.
 - **Statements page** (`/statements`): Wraps PropertyStatementTab with property selector. Route added for manager, submanager, and agency roles.

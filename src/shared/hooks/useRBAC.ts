@@ -126,8 +126,9 @@ export const useRBAC = () => {
 
     if (isTenant) return false;
 
-    // Landlord property owners (boss) have full ops on their linked properties
-    if (isLandlord) return true;
+    // Landlords use the landlord portal. Manager/webhost permission keys
+    // must not evaluate to true if this hook is reused on shared chrome.
+    if (isLandlord) return false;
 
     // Webhost checks
     const webhostKey = WEBHOST_MAP[permission as WebhostCan];

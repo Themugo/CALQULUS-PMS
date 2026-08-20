@@ -116,7 +116,7 @@ const ManagerPaymentHistory = () => {
         .eq("manager_id", user!.id)
         .in("invoices.status", ["pending", "overdue"])
         .order("name");
-      if (error) return [];
+      if (error) throw new Error(`tenants with balances: ${error.message}`);
       return (data || []) as Array<{ id: string; name: string; email: string; phone: string | null; unit: string | null; property: string | null; property_id: string | null; unit_id: string | null; manager_id: string | null }>;
     },
     enabled: !!user?.id,
@@ -135,7 +135,7 @@ const ManagerPaymentHistory = () => {
         .in("status", ["pending", "overdue"])
         .eq("manager_id", user!.id)
         .order("due_date", { ascending: true });
-      if (error) return [];
+      if (error) throw new Error(`pending invoices: ${error.message}`);
       return (data || []) as Array<{ id: string; invoice_number: string; amount: number; balance_due: number; original_amount: number; paid_amount: number; due_date: string; status: string; installment_plan: unknown; penalty_amount: number | null }>;
     },
     enabled: !!user?.id,

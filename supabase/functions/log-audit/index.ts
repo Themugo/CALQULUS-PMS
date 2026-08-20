@@ -1,43 +1,44 @@
 import { serve } from "std/http/server.ts";
-import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { createClient } from "supabase/supabase-js@2";
-import { requireEnv } from "../_shared/env.ts";
+import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
 
-const SUPABASE_URL = requireEnv("SUPABASE_URL");
-const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+/**
+ * Authenticated audit writer. Actor identity is taken from the JWT, never
+ * from the request body. The previous unauthenticated service-role insert
+ * made the audit trail forgeable.
+ */
+serve(
+  withMiddleware(
+    {
+      functionName: "log-audit",
+      requireAuth: true,
+      rateLimit: { maxPerHour: 60, failClosed: true },
+    },
+    async (req, ctx) => {
+      if (!ctx.user) throw errorResponse("Unauthorized", 401);
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return preflightResponse(req);
+      const body = await req.json().catch(() => ({})) as {
+        action?: string;
+        entityType?: string;
+        entityId?: string;
+        details?: unknown;
+      };
 
-  try {
-    const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+      if (!body.action || !body.entityType) {
+        throw errorResponse("action and entityType are required", 400);
+      }
 
-    const { userId, userEmail, userName, action, entityType, entityId, details } = await req.json();
-
-    if (!userId || !action || !entityType) {
-      return new Response(JSON.stringify({ error: "userId, action and entityType are required" }), {
-        status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      const { error } = await ctx.supabase.from("activity_logs").insert({
+        user_id: ctx.user.id,
+        user_email: ctx.user.email || "unknown",
+        user_name: (ctx.user.full_name as string) || (ctx.user.name as string) || null,
+        action: body.action,
+        entity_type: body.entityType,
+        entity_id: body.entityId || null,
+        details: body.details || null,
       });
-    }
 
-    const { error } = await supabase.from("activity_logs").insert({
-      user_id: userId,
-      user_email: userEmail || "unknown",
-      user_name: userName || null,
-      action,
-      entity_type: entityType,
-      entity_id: entityId || null,
-      details: details || null,
-    });
-
-    if (error) throw error;
-
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-    });
-  }
-});
+      if (error) throw error;
+      return { success: true };
+    },
+  ),
+);

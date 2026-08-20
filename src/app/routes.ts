@@ -94,6 +94,14 @@ export interface RouteDef {
   element?: LazyExoticComponent<ComponentType> | ComponentType;
   protected?: boolean;
   redirect?: string;
+  /** Submanager permission required to open this URL. Managers ignore it. */
+  permission?:
+    | "view_properties"
+    | "view_tenants"
+    | "view_leases"
+    | "view_invoices"
+    | "view_maintenance"
+    | "view_contracts";
 }
 
 export interface RoleRouteConfig {
@@ -189,23 +197,23 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/dashboard/maintenance", redirect: "/" },
       { path: "/dashboard/leasing", redirect: "/" },
       { path: "/dashboard/support", redirect: "/" },
-      { path: "/payments", element: ManagerPaymentHistory, protected: true },
+      { path: "/payments", element: ManagerPaymentHistory, protected: true, permission: "view_invoices" },
       { path: "/communications", redirect: "/" },
-      { path: "/properties", element: Properties, protected: true },
-      { path: "/properties/:id", element: PropertyDetail, protected: true },
-      { path: "/tenants", element: Tenants, protected: true },
-      { path: "/tenant-screening", element: TenantScreening, protected: true },
-      { path: "/billing", element: Billing, protected: true },
-      { path: "/maintenance", element: Maintenance, protected: true },
+      { path: "/properties", element: Properties, protected: true, permission: "view_properties" },
+      { path: "/properties/:id", element: PropertyDetail, protected: true, permission: "view_properties" },
+      { path: "/tenants", element: Tenants, protected: true, permission: "view_tenants" },
+      { path: "/tenant-screening", element: TenantScreening, protected: true, permission: "view_tenants" },
+      { path: "/billing", element: Billing, protected: true, permission: "view_invoices" },
+      { path: "/maintenance", element: Maintenance, protected: true, permission: "view_maintenance" },
       { path: "/services", redirect: "/" },
-      { path: "/contracts", element: Contracts, protected: true },
-      { path: "/leases", element: Leases, protected: true },
-      { path: "/landlords", element: ManagerLandlords, protected: true },
-      { path: "/vacation-notices", element: VacationNotices, protected: true },
+      { path: "/contracts", element: Contracts, protected: true, permission: "view_contracts" },
+      { path: "/leases", element: Leases, protected: true, permission: "view_leases" },
+      { path: "/landlords", element: ManagerLandlords, protected: true, permission: "view_properties" },
+      { path: "/vacation-notices", element: VacationNotices, protected: true, permission: "view_tenants" },
       { path: "/reports", element: Reports, protected: true },
-      { path: "/invites", element: Invites, protected: true },
-      { path: "/water-billing", element: WaterBilling, protected: true },
-      { path: "/statements", element: Statements, protected: true },
+      { path: "/invites", element: Invites, protected: true, permission: "view_tenants" },
+      { path: "/water-billing", element: WaterBilling, protected: true, permission: "view_invoices" },
+      { path: "/statements", element: Statements, protected: true, permission: "view_invoices" },
       { path: "/settings", element: Settings, protected: true },
       { path: "*", element: NotFoundPage },
     ],
@@ -285,7 +293,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
   },
   {
     role: "manager",
-    fallback: "/properties",
+    fallback: "/",
     routes: [
       { path: "/install", element: InstallApp },
       { path: "/auth", redirect: "/" },

@@ -18,10 +18,11 @@ export const useViewOnly = () => useContext(ViewOnlyContext);
 export const ViewOnlyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { userRole } = useAuth();
 
-  // Webhosts viewing manager pages are always view-only
+  // Webhosts viewing manager pages are always view-only.
+  // Pending managers cannot write. Submanagers are NOT globally view-only —
+  // they are gated per permission via can() and route `permission` keys.
   const isWebhostViewing = userRole?.role === 'webhost';
 
-  // isViewOnly = webhost (cannot write) OR unapproved manager
   const isViewOnly =
     isWebhostViewing ||
     (userRole?.role === 'manager' && userRole?.approval_status !== 'approved');

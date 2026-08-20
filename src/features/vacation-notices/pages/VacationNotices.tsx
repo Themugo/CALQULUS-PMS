@@ -23,6 +23,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { toast } from "@/shared/hooks/use-toast";
+import { FeatureGate } from "@/shared/components/FeatureGate";
 import { formatDate } from "@/shared/lib/dateFormat";
 import {
   CalendarX,
@@ -166,6 +167,7 @@ const VacationNotices = () => {
 
   return (
     <Layout title="Vacation Notices" subtitle="Upcoming move-outs — prepare units, leases, and deposit refunds">
+      <FeatureGate feature="vacation_notices" featureLabel="Vacation notices">
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3 mb-6">
         <Card>
@@ -503,6 +505,7 @@ const VacationNotices = () => {
           )}
         </DialogContent>
       </Dialog>
+      </FeatureGate>
     </Layout>
   );
 };
