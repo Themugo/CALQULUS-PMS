@@ -133,9 +133,16 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
         <span className="text-sm font-medium text-foreground">{formatCurrency(property.revenue)}</span>
       </TableCell>
       <TableCell className="text-right">
+        <div className="flex items-center justify-end gap-1">
+        <Button variant="ghost" size="sm" className="min-h-11" asChild>
+          <Link to={detailHref} aria-label={`View ${property.name}`}>
+            <Eye className="h-4 w-4" />
+            View
+          </Link>
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Property actions">
+            <Button variant="ghost" size="icon" className="h-8 w-8 min-h-11 min-w-11" aria-label="Property actions">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -147,7 +154,7 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to={unitsHref} className="flex items-center gap-2">
-                <Layers className="h-4 w-4" /> Manage Houses
+                <Layers className="h-4 w-4" /> Manage units
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onEdit(property)}>
@@ -158,6 +165,7 @@ export const PropertyTableRow = memo<PropertyTableRowProps>(({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </TableCell>
     </TableRow>
   );

@@ -1,66 +1,82 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 1 — Manager portal executive operations dashboard.
-STATUS: preview + live implementation complete. STOP after dashboard.
+Phase 2 — Manager Properties, Property Detail, and Units.
+STATUS: preview + live implementation complete. STOP after these three surfaces.
 
 ## CURRENT TASK
-STOP. Do not redesign other Manager pages, other portals, or the authenticated shell.
+STOP. Do not redesign tenants, billing, leases, other portals, or the authenticated shell.
 
 ## COMPLETED
-- Inspected live Manager dashboard (`Dashboard.tsx`) and stats/attention sources before editing
-- Added layout preview at `/design-preview/manager-dashboard` (regions only — no invented KPI numbers)
-- Live dashboard header is now **Dashboard** / *Portfolio overview and today's operational priorities.*
-- Primary **Add property**, secondary **View reports**; refresh and currency kept
-- Attention strip uses `buildAttentionItems` (real overdue / maintenance / leases / pending only)
-- Restrained KPI row: Properties, Units, Occupancy, Collections
-- Main column is **Collections performance**; Occupancy and Maintenance sit secondary
-- Lower area: Recent activity, Upcoming actions (`UpcomingPayments`), Property performance table
-- Existing banners, empty-portfolio activation, onboarding quick actions, and realtime invalidation kept
+- Inspected live Properties (`/properties`), Property Detail (`/properties/:id`), and unit CRUD (`UnitManagement` on the property record). There was no `/units` route; units lived on the property detail tab.
+- Added layout preview at `/design-preview/manager-properties` (Properties / Property detail / Units chrome — labelled slots only, no invented occupancy, rent, or balances)
+- **Properties:** header **Add property** + **View units**; search, occupancy/sort filter, and row **View**; professional table from existing columns (Property, Category, Units, Occupancy, Tenants, Revenue); empty / loading / error kept; add / edit / deactivate dialogs unchanged
+- **Property Detail:** header is property name, address, status, primary **Add tenant**; summary Units / Occupancy / Rent / Outstanding / Maintenance from live property, leases, unpaid invoices, and open maintenance; primary tabs Overview, Units, Tenants, Leases, Billing, Maintenance, Documents; extra existing tabs (Vacation, Water, Statement, Landlord, Settings, History) remain
+- **Units:** new `/units` portfolio table — Unit, Property, Tenant, Status, Rent, Lease, Balance from live `properties` + `units` + `tenants` + `leases` + unpaid `invoices`; semantic status badges; empty / loading / error
+- Property-scoped unit CRUD (`UnitManagement`) preserved, including **Add House** / **Update House** forms
+- Sidebar PORTFOLIO now includes Units between Properties and Landlords; webhost/landlord `/units` blocks and manager role paths updated
 
 ## FILES INSPECTED
-- `src/features/dashboard/pages/Dashboard.tsx`
-- `src/features/dashboard/lib/dashboardStats.ts`, `attentionItems.ts`
-- `src/features/dashboard/components/{StatCard,RevenueChart,OccupancyChart,OpenMaintenancePreview,RecentActivity,UpcomingPayments,PropertiesOverview,ArrearsHeatMap}.tsx`
-- `src/shared/components/layout/{Layout,PageHeader}.tsx`
+- `src/features/properties/pages/Properties.tsx`
+- `src/features/properties/pages/PropertyDetail.tsx`
+- `src/features/properties/components/PropertyTableRow.tsx`
+- `src/features/units/components/UnitManagement.tsx`
+- `src/app/routes.ts`, `src/features/auth/lib/roleResolution.ts`, `src/shared/components/ProtectedRoute.tsx`
+- `src/shared/components/layout/{Layout,PageHeader,Sidebar}.tsx`
 
 ## COMPONENTS TO REUSE
-- `fetchManagerDashboardStats`, `buildAttentionItems`, `StatCard`, `RevenueChart`, `OccupancyChart`, `ArrearsHeatMap`, `OpenMaintenancePreview`, `RecentActivity`, `UpcomingPayments`, `PropertiesOverview`
-- `PageHeader`, `AttentionStrip`
+- Existing property CRUD dialogs, `PropertyTableRow`, `UnitManagement`, `AddTenantToPropertyDialog`, property detail tabs (`PropertyLeasesTab`, `PropertyBillingTab`, `PropertyMaintenanceTab`, `PropertyAgreementsTab`, …)
+- `StatCard`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`, `statusBadgeClass`
 
 ## COMPONENTS TO CREATE
-- None further for this phase. Unified `DeskShell` remains a later shell phase.
+- `src/features/units/pages/Units.tsx` — portfolio units table
+- `src/features/units/lib/portfolioUnits.ts` — live join of properties / units / tenants / leases / invoices
+- Preview: `ManagerPropertiesPreview` + `ManagerPropertiesPreviewPage`
 
 ## FILES CHANGED (this phase)
-- `src/features/design-preview/pages/ManagerDashboardPreviewPage.tsx`
-- `src/features/design-preview/components/ManagerDashboardPreview.tsx`
-- `src/features/dashboard/pages/Dashboard.tsx`
-- `src/features/dashboard/components/{AttentionStrip,StatCard,UpcomingPayments,PropertiesOverview}.tsx`
-- `src/app/routes.ts`, `src/App.tsx`, `src/features/marketing/publicConfig.ts`
-- `src/features/design-preview/pages/DesignPreview.tsx` (header link)
-- Tests: `src/test/managerDashboardPreview.test.tsx`, `src/test/managerDashboardLayout.test.ts`, `e2e/manager-dashboard-preview.spec.ts`
+- `src/features/properties/pages/{Properties,PropertyDetail}.tsx`
+- `src/features/properties/components/PropertyTableRow.tsx`
+- `src/features/units/components/UnitManagement.tsx`
+- `src/features/units/pages/Units.tsx`, `src/features/units/lib/portfolioUnits.ts`
+- `src/features/design-preview/pages/ManagerPropertiesPreviewPage.tsx`
+- `src/features/design-preview/components/ManagerPropertiesPreview.tsx`
+- `src/shared/components/layout/{Layout,Sidebar,CommandPalette}.tsx`
+- `src/app/routes.ts`, `src/features/marketing/publicConfig.ts`, `src/features/auth/lib/roleResolution.ts`
+- `src/shared/components/ProtectedRoute.tsx`, `src/shared/hooks/useNavHistory.ts`
+- Tests: `src/test/managerPropertiesPreview.test.tsx`, `src/test/managerPropertiesLayout.test.ts`, `e2e/manager-properties-preview.spec.ts`
 - `docs/CALQULUS_REDESIGN_STATE.md`
 
 ## KNOWN ISSUES
 - Live Manager still uses `Layout` + `Header`/`Sidebar` (Phase 0A shell not migrated)
-- Dashboard widgets still fetch independently (RevenueChart, OccupancyChart, UpcomingPayments, PropertiesOverview, RecentActivity) — not a single RPC. Backend was not rebuilt.
-- Vacant-units attention item remains (real data) in addition to the four named alert types
+- Property-detail extra tabs remain (Vacation, Water, Statement, Landlord, Settings, History) because they are existing workflows, not invented chrome
+- Property-scoped unit forms still say **Add House** / **Update House** (existing product language)
 - Submanager property scoping via `useManagerScope` is unchanged
+- New `/units` page reads existing tables in memory (no new RPC / migration)
 
 ## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx eslint` on changed dashboard/preview files — pass
-- `npx vitest run` — **894 passed**, 1 skipped
-- Playwright Chromium: `/design-preview/manager-dashboard` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
+- Pending on this revision (typecheck, eslint, vitest, Playwright preview, production build)
 
 ## BUILD STATUS
-- `npm run build` — pass
+- Pending on this revision
 
 ## NEXT STEP
-STOP. Do not continue to other Manager pages. After this checkpoint: Manager properties / tenants / billing, or shell unification — only when requested.
+STOP. Do not continue to tenants, billing, leases, other portals, or shell unification.
 
-Preview URL: `/design-preview/manager-dashboard`
-Live URL: `/` (Manager session)
+Preview URL: `/design-preview/manager-properties`
+Live URLs: `/properties`, `/properties/:id`, `/units` (Manager session)
+
+---
+
+## Previous checkpoint (Phase 1 dashboard)
+
+Phase 1 — Manager portal executive operations dashboard.
+STATUS: preview + live implementation complete.
+
+- Live dashboard header is **Dashboard** / *Portfolio overview and today's operational priorities.*
+- Primary **Add property**, secondary **View reports**; attention strip from `buildAttentionItems`
+- Four KPIs: Properties, Units, Occupancy, Collections; collections-first hierarchy
+- Preview: `/design-preview/manager-dashboard`
+- Tests: typecheck, eslint, 894 vitest passed + 1 skipped, Playwright Chromium overflow at 1440–360, `npm run build` pass
 
 ---
 

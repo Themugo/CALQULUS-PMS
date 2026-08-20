@@ -21,17 +21,18 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/shared/components/ui/table";
 import {
-  ArrowLeft, Building2, MapPin, Users, Home, Mail, Phone, Calendar,
+  ArrowLeft, Building2, Users, Home,
   Plus, UserPlus, DollarSign, X, Layers, History, Hash,
   Wrench, CreditCard, FileText, Droplets, FileSignature, CalendarX, Settings2,
-  FileSpreadsheet, User, ShieldCheck, MoveVertical, Zap, Sofa,
+  FileSpreadsheet, User, ShieldCheck, MoveVertical, Zap, Sofa, AlertTriangle,
 } from "lucide-react";
 import PropertyLandlordTab from "@/features/properties/components/PropertyLandlordTab";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
-import { occupancyRateColor, statusBadgeClass } from "@/shared/lib/statusBadge";
+import { statusBadgeClass } from "@/shared/lib/statusBadge";
+import { StatCard } from "@/features/dashboard/components/StatCard";
 import { UnitManagement } from "@/features/units/components/UnitManagement";
 import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import { PropertyHistory } from "@/features/properties/components/PropertyHistory";
@@ -60,6 +61,7 @@ interface Property {
   revenue: number;
   image_url: string | null;
   created_at: string;
+  status?: string | null;
 }
 
 interface Tenant {
@@ -108,7 +110,7 @@ const PropertyDetail = () => {
   const canSendNotices     = is('manager') || can('send_notices');
   const canCreateInvoices  = is('manager') || can('create_invoices');
   const canApproveMoveouts = is('manager') || can('approve_moveouts');
-  const activeTab = searchParams.get("tab") || "units";
+  const activeTab = searchParams.get("tab") || "overview";
   const setActiveTab = (tab: string) => {
     const next = new URLSearchParams(searchParams);
     next.set("tab", tab);
@@ -120,6 +122,7 @@ const PropertyDetail = () => {
   const [leases, setLeases] = useState<Lease[]>([]);
   const [allTenants, setAllTenants] = useState<Tenant[]>([]);
   const [tenantBalances, setTenantBalances] = useState<Record<string, number>>({});
+  const [maintenanceOpenCount, setMaintenanceOpenCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
@@ -180,10 +183,15 @@ const PropertyDetail = () => {
     setProperty(propertyData);
 
     // Fetch related data in parallel
-    const [tenantsRes, leasesRes, allTenantsRes] = await Promise.all([
+    const [tenantsRes, leasesRes, allTenantsRes, maintenanceRes] = await Promise.all([
       supabase.from("tenants").select("*").eq("property_id", id).order("name"),
       supabase.from("leases").select("*").eq("property_id", id).order("unit"),
       supabase.from("tenants").select("*").is("property_id", null).eq("status", "active").order("name"),
+      supabase
+        .from("maintenance_requests")
+        .select("id, status")
+        .eq("property_name", propertyData.name)
+        .in("status", ["open", "pending", "in_progress"]),
     ]);
 
     if (tenantsRes.data) {
@@ -217,6 +225,8 @@ const PropertyDetail = () => {
     if (allTenantsRes.data) {
       setAllTenants(allTenantsRes.data);
     }
+
+    setMaintenanceOpenCount((maintenanceRes.data ?? []).length);
 
     setIsLoading(false);
   }, [id, toast, navigate, propertyListPath]);
@@ -393,6 +403,11 @@ const PropertyDetail = () => {
 
   const occupancyRate = property.units > 0 ? Math.round((property.occupied / property.units) * 100) : 0;
   const unitsData = getUnitsWithTenants();
+  const outstandingTotal = Object.values(tenantBalances).reduce((sum, value) => sum + value, 0);
+  const activeRent = leases
+    .filter((lease) => lease.status === "active")
+    .reduce((sum, lease) => sum + Number(lease.monthly_rent || 0), 0);
+  const rentValue = activeRent > 0 ? activeRent : property.revenue;
   const occupants = tenants.map((t) => {
     const lease = leases.find((l) => l.tenant_id === t.id);
     return {
@@ -414,153 +429,35 @@ const PropertyDetail = () => {
   return (
     <Layout
       title={property.name}
-      subtitle="Property → units → tenants. Open a building to manage occupancy, leases, and billing."
+      subtitle={property.address}
+      status={
+        <span className={cn("capitalize", statusBadgeClass(property.status === "inactive" ? "neutral" : "success"))}>
+          {property.status || "active"}
+        </span>
+      }
       headerActions={
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate(propertyListPath)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {propertyListPath.endsWith("/portfolio") ? "Portfolio" : "Back to Properties"}
+        <div className="flex flex-wrap gap-2">
+          <Button className="min-h-11" onClick={() => setIsAddTenantOpen(true)}>
+            <UserPlus className="h-4 w-4" />
+            Add tenant
           </Button>
-          <Button onClick={() => setIsAddTenantOpen(true)}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add Tenant
+          <Button variant="outline" className="min-h-11" onClick={() => navigate(propertyListPath)}>
+            <ArrowLeft className="h-4 w-4" />
+            {propertyListPath.endsWith("/portfolio") ? "Portfolio" : "Properties"}
           </Button>
         </div>
       }
     >
-      {/* Overview */}
-      <div className="mb-3">
-        <h2 className="section-title">Overview</h2>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-3 mb-6">
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-4">
-            <div className="flex items-start gap-4">
-              <div className="h-20 w-20 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {property.image_url ? (
-                  <img
-                    src={property.image_url}
-                    alt={property.name}
-                    className="h-20 w-20 object-cover"
-                  />
-                ) : (
-                  <Building2 className="h-10 w-10 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex-1">
-                <CardTitle className="card-title-exec mb-1">{property.name}</CardTitle>
-                <p className="text-muted-foreground flex items-center gap-1 text-sm">
-                  <MapPin className="h-4 w-4" />
-                  {property.address}
-                </p>
-                {property.house_number && (
-                  <p className="text-muted-foreground flex items-center gap-1 text-sm mt-0.5">
-                    <Hash className="h-4 w-4" />
-                    House No: {property.house_number}
-                  </p>
-                )}
-                {/* Category + amenity badges */}
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {(property as {category_key?: string}).category_key && (
-                    <Badge variant="outline" className="text-xs">
-                      {(() => {
-                        const k = (property as {category_key?: string}).category_key as string;
-                        return k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                      })()}
-                    </Badge>
-                  )}
-                  {(property as {is_gated?: boolean}).is_gated && (
-                    <Badge variant="outline" className="text-xs gap-1"><ShieldCheck className="h-3 w-3" /> Gated</Badge>
-                  )}
-                  {(property as {has_lift?: boolean}).has_lift && (
-                    <Badge variant="outline" className="text-xs gap-1"><MoveVertical className="h-3 w-3" /> Lift</Badge>
-                  )}
-                  {(property as {has_backup_power?: boolean}).has_backup_power && (
-                    <Badge variant="outline" className="text-xs gap-1"><Zap className="h-3 w-3" /> Generator</Badge>
-                  )}
-                  {(property as {has_borehole?: boolean}).has_borehole && (
-                    <Badge variant="outline" className="text-xs gap-1"><Droplets className="h-3 w-3" /> Borehole</Badge>
-                  )}
-                  {(property as {is_furnished_units?: boolean}).is_furnished_units && (
-                    <Badge variant="outline" className="text-xs gap-1"><Sofa className="h-3 w-3" /> Furnished</Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <Home className="h-4 w-4" />
-                  <span className="text-xs font-medium">Total Units</span>
-                </div>
-                <p className="metric-value">{property.units}</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <Users className="h-4 w-4" />
-                  <span className="text-xs font-medium">Occupied</span>
-                </div>
-                <p className="metric-value">{property.occupied}</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <Building2 className="h-4 w-4" />
-                  <span className="text-xs font-medium">Occupancy</span>
-                </div>
-                <p className={cn("metric-value", occupancyRateColor(occupancyRate))}>
-                  {occupancyRate}%
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <DollarSign className="h-4 w-4" />
-                  <span className="text-xs font-medium">Revenue</span>
-                </div>
-                <p className="metric-value text-foreground">
-                  {formatCurrency(property.revenue)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="type-subtitle flex items-center gap-2">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              Occupancy snapshot
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Active Tenants</span>
-              <Badge variant="outline" className={statusBadgeClass("success")}>
-                {tenants.filter((t) => t.status === "active").length}
-              </Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Active Leases</span>
-              <Badge variant="outline" className={statusBadgeClass("info")}>
-                {leases.filter((l) => l.status === "active").length}
-              </Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Vacant Units</span>
-              <Badge variant="outline" className={statusBadgeClass("warning")}>
-                {property.units - property.occupied}
-              </Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Expiring Leases</span>
-              <Badge variant="outline" className={statusBadgeClass("warning")}>
-                {leases.filter((l) => l.status === "expiring").length}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <section className="mb-6 min-w-0" aria-labelledby="property-summary">
+        <h2 id="property-summary" className="sr-only">Property summary</h2>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <StatCard compact title="Units" value={String(property.units)} change={`${property.occupied} occupied`} changeType="neutral" icon={Home} iconColor="primary" />
+          <StatCard compact title="Occupancy" value={`${occupancyRate}%`} icon={Building2} iconColor={occupancyRate >= 70 ? "success" : "destructive"} progressValue={occupancyRate} />
+          <StatCard compact title="Rent" value={formatCurrency(rentValue)} change={activeRent > 0 ? "Active leases" : undefined} changeType="neutral" icon={DollarSign} iconColor="primary" />
+          <StatCard compact title="Outstanding" value={formatCurrency(outstandingTotal)} changeType={outstandingTotal > 0 ? "negative" : "neutral"} icon={AlertTriangle} iconColor={outstandingTotal > 0 ? "destructive" : "neutral"} />
+          <StatCard compact title="Maintenance" value={String(maintenanceOpenCount)} change={maintenanceOpenCount > 0 ? "Open work orders" : "No open work"} changeType={maintenanceOpenCount > 0 ? "negative" : "neutral"} icon={Wrench} iconColor={maintenanceOpenCount > 0 ? "warning" : "neutral"} />
+        </div>
+      </section>
 
       {/* Tabs for Property Details */}
       <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -585,9 +482,13 @@ const PropertyDetail = () => {
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-2 flex-wrap h-auto gap-1">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <Building2 className="h-4 w-4" />
+            Overview
+          </TabsTrigger>
           <TabsTrigger value="units" className="flex items-center gap-2">
             <Layers className="h-4 w-4" />
-            Houses
+            Units
           </TabsTrigger>
           <TabsTrigger value="tenants" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -601,16 +502,16 @@ const PropertyDetail = () => {
             <CreditCard className="h-4 w-4" />
             Billing
           </TabsTrigger>
-        </TabsList>
-        <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-transparent p-0">
-          <TabsTrigger value="agreements" className="flex items-center gap-2 h-8 text-xs">
-            <FileSignature className="h-3.5 w-3.5" />
-            Documents
-          </TabsTrigger>
-          <TabsTrigger value="maintenance" className="flex items-center gap-2 h-8 text-xs">
-            <Wrench className="h-3.5 w-3.5" />
+          <TabsTrigger value="maintenance" className="flex items-center gap-2">
+            <Wrench className="h-4 w-4" />
             Maintenance
           </TabsTrigger>
+          <TabsTrigger value="agreements" className="flex items-center gap-2">
+            <FileSignature className="h-4 w-4" />
+            Documents
+          </TabsTrigger>
+        </TabsList>
+        <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-transparent p-0">
           <TabsTrigger value="vacation" className="flex items-center gap-2 h-8 text-xs">
             <CalendarX className="h-3.5 w-3.5" />
             Vacation
@@ -636,6 +537,70 @@ const PropertyDetail = () => {
             History
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="overview">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+            <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+              <div className="flex items-start gap-4">
+                <div className="h-16 w-16 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
+                  {property.image_url ? (
+                    <img src={property.image_url} alt="" className="h-16 w-16 object-cover" />
+                  ) : (
+                    <Building2 className="h-7 w-7 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="min-w-0 space-y-1">
+                  {property.house_number && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Hash className="h-4 w-4" /> House No: {property.house_number}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-1.5">
+                    {(property as {category_key?: string}).category_key && (
+                      <Badge variant="outline" className="text-xs">
+                        {((property as {category_key?: string}).category_key as string).replace(/_/g, " ")}
+                      </Badge>
+                    )}
+                    {(property as {is_gated?: boolean}).is_gated && (
+                      <Badge variant="outline" className="text-xs gap-1"><ShieldCheck className="h-3 w-3" /> Gated</Badge>
+                    )}
+                    {(property as {has_lift?: boolean}).has_lift && (
+                      <Badge variant="outline" className="text-xs gap-1"><MoveVertical className="h-3 w-3" /> Lift</Badge>
+                    )}
+                    {(property as {has_backup_power?: boolean}).has_backup_power && (
+                      <Badge variant="outline" className="text-xs gap-1"><Zap className="h-3 w-3" /> Generator</Badge>
+                    )}
+                    {(property as {has_borehole?: boolean}).has_borehole && (
+                      <Badge variant="outline" className="text-xs gap-1"><Droplets className="h-3 w-3" /> Borehole</Badge>
+                    )}
+                    {(property as {is_furnished_units?: boolean}).is_furnished_units && (
+                      <Badge variant="outline" className="text-xs gap-1"><Sofa className="h-3 w-3" /> Furnished</Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4 card-shadow space-y-3">
+              <p className="text-sm font-semibold text-foreground">Occupancy snapshot</p>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Active tenants</span>
+                <span className={statusBadgeClass("success")}>{tenants.filter((t) => t.status === "active").length}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Active leases</span>
+                <span className={statusBadgeClass("info")}>{leases.filter((l) => l.status === "active").length}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Vacant units</span>
+                <span className={statusBadgeClass("warning")}>{Math.max(0, property.units - property.occupied)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Expiring leases</span>
+                <span className={statusBadgeClass("warning")}>{leases.filter((l) => l.status === "expiring").length}</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
 
         <TabsContent value="units">
           <UnitManagement 

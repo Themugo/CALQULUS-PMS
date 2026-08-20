@@ -11,6 +11,7 @@ export type ResolvedRole = UserRole & {
 const MANAGER_PATHS = [
   "/",
   "/properties",
+  "/units",
   "/tenants",
   "/billing",
   "/settings",

@@ -43,6 +43,7 @@ interface SearchResult {
 const ALL_PAGES: NavPage[] = [
   { name: "Dashboard", href: "/", category: "Overview" },
   { name: "Properties", href: "/properties", category: "Portfolio" },
+  { name: "Units", href: "/units", category: "Portfolio" },
   { name: "Landlords", href: "/landlords", category: "Portfolio" },
   { name: "Leases", href: "/leases", category: "Occupancy" },
   { name: "Tenants", href: "/tenants", category: "Occupancy" },

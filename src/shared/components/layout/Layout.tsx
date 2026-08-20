@@ -18,6 +18,7 @@ interface LayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle?: string;
+  status?: React.ReactNode;
   headerActions?: React.ReactNode;
   contextTitle?: string;
   contextContent?: React.ReactNode;
@@ -27,6 +28,7 @@ export function Layout({
   children,
   title,
   subtitle,
+  status,
   headerActions,
   contextTitle,
   contextContent,
@@ -103,6 +105,7 @@ export function Layout({
           <PageHeader
             title={title}
             description={subtitle}
+            status={status}
             actions={headerActions}
             className="px-4 py-5 md:px-6 lg:px-8"
           />

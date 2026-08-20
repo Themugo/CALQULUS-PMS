@@ -71,6 +71,9 @@ import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { toUserFacingError } from "@/shared/lib/errorLogger";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import { ErrorState } from "@/shared/components/ui/error-state";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 import { statusBadgeClass } from "@/shared/lib/statusBadge";
 
 interface Unit {
@@ -139,6 +142,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   
   const [units, setUnits] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
@@ -175,6 +179,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
 
   const fetchUnits = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     const { data, error } = await supabase
       .from('units')
       .select("*")
@@ -182,6 +187,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       .order("unit_number");
 
     if (error) {
+      setLoadError("Failed to load units");
       toast({
         title: "Error",
         description: "Failed to load units",
@@ -437,7 +443,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
             <Layers className="h-5 w-5 text-muted-foreground" />
-            House Management
+            Units
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
             {units.length} houses • {vacantCount} vacant • {occupiedCount} occupied
@@ -457,21 +463,22 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading units...</div>
+          <LoadingState label="Loading units…" variant="skeleton" rows={5} />
+        ) : loadError ? (
+          <ErrorState title="Couldn't load units" message={loadError} onRetry={() => { void fetchUnits(); }} />
         ) : units.length === 0 ? (
-          <div className="text-center py-12">
-            <Home className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-            <p className="text-muted-foreground">No houses added yet</p>
-            <Button variant="outline" className="mt-4" onClick={openCreateDialog}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add First House
-            </Button>
-          </div>
+          <EmptyState
+            icon={Home}
+            title="No units yet"
+            description="Add the first unit on this property."
+            actionLabel="Add unit"
+            onAction={openCreateDialog}
+          />
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>House</TableHead>
+                <TableHead>Unit</TableHead>
                 <TableHead>Tenant</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Rent</TableHead>

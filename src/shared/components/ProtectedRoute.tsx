@@ -128,7 +128,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // ── Webhost: HARD BLOCK from tenant/manager operational routes ─────
   if (effectiveRole === 'webhost') {
     const blockedPrefixes = [
-      '/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing',
+      '/portal', '/tenant', '/tenants', '/properties', '/units', '/leases', '/billing',
       '/contracts', '/invites', '/statements', '/water-billing', '/payments',
       '/landlords', '/maintenance', '/reports', '/vacation-notices', '/tenant-screening',
     ];
@@ -140,7 +140,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // ── Landlord: HARD BLOCK from manager/tenant routes ─────────────
   if (effectiveRole === 'landlord') {
     const blockedPrefixes = [
-      '/portal', '/tenant', '/tenants', '/properties', '/leases', '/billing',
+      '/portal', '/tenant', '/tenants', '/properties', '/units', '/leases', '/billing',
       '/invites', '/water-billing', '/statements', '/payments', '/maintenance',
       '/reports', '/contracts', '/vacation-notices',
     ];

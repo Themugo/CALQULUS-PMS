@@ -511,7 +511,28 @@ const Properties = () => {
 
 
   return (
-    <Layout title="Properties" subtitle="Buildings, units, and occupancy — open a property to manage tenants and leases">
+    <Layout title="Properties" subtitle="Buildings, units, and occupancy — open a property to manage tenants and leases."
+      headerActions={
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            className="min-h-11"
+            onClick={() => atPropertyLimit
+              ? toast({ title: 'Property limit reached', description: `Your ${subProfile?.subscription_tier ?? 'Starter'} plan allows ${subProfile?.max_properties ?? 5} properties. Upgrade at Platform Billing to add more.`, variant: 'destructive' })
+              : setIsDialogOpen(true)
+            }
+            title={atPropertyLimit ? `Limit reached — upgrade to add more properties` : 'Add a new property'}
+            aria-label="Add property"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add property</span>
+          </Button>
+          <Button variant="outline" size="sm" className="min-h-11" asChild>
+            <Link to="/units">View units</Link>
+          </Button>
+        </div>
+      }
+    >
       {/* Clean toolbar */}
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex flex-wrap items-center gap-2">
@@ -519,17 +540,18 @@ const Properties = () => {
           <div className="relative flex-1 min-w-[160px] max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search properties..."
+              placeholder="Search properties"
+              aria-label="Search properties"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9 text-sm bg-background border-border"
+              className="min-h-11 pl-8 text-sm bg-background border-border"
             />
           </div>
 
           {/* Filters dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9 gap-1.5">
+              <Button variant="outline" size="sm" className="min-h-11 gap-1.5" aria-label="Filter properties">
                 <ArrowUpDown className="h-3.5 w-3.5" />
                 Filters
                 {filterOccupancy !== "all" && (
@@ -587,21 +609,6 @@ const Properties = () => {
           </DropdownMenu>
 
           <div className="flex-1" />
-
-          {/* Action buttons */}
-          <Button
-            size="sm"
-            className="h-9 btn-brand"
-            onClick={() => atPropertyLimit
-              ? toast({ title: 'Property limit reached', description: `Your ${subProfile?.subscription_tier ?? 'Starter'} plan allows ${subProfile?.max_properties ?? 5} properties. Upgrade at Platform Billing to add more.`, variant: 'destructive' })
-              : setIsDialogOpen(true)
-            }
-            title={atPropertyLimit ? `Limit reached — upgrade to add more properties` : 'Add a new property'}
-          >
-            <Plus className="h-4 w-4 mr-1.5" />
-            Add Property
-            {atPropertyLimit && <span className="ml-1 text-xs opacity-75">(limit reached)</span>}
-          </Button>
         </div>
 
         {/* Summary line */}
@@ -718,11 +725,11 @@ const Properties = () => {
       {isLoading ? (
         <LoadingState label="Loading properties…" variant="skeleton" rows={6} />
       ) : filteredProperties.length === 0 ? (
-        searchQuery ? (
+        searchQuery || filterOccupancy !== "all" ? (
           <EmptyState
             icon={Search}
-            title={`No properties matching “${searchQuery}”`}
-            description="Try a different name or address."
+            title={searchQuery ? `No properties matching “${searchQuery}”` : "No matching properties"}
+            description="Try a different search or occupancy filter."
           />
         ) : (
           <EmptyState
@@ -735,7 +742,7 @@ const Properties = () => {
         )
       ) : (
         <>
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-border bg-card card-shadow">
           <Table>
             <TableHeader>
               <TableRow>

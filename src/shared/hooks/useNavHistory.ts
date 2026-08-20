@@ -17,6 +17,7 @@ const DEFAULT_FAVORITES: NavPage[] = [
 const ROUTE_NAME_MAP: Record<string, { name: string; category: string }> = {
   "/": { name: "Dashboard", category: "Overview" },
   "/properties": { name: "Properties", category: "Portfolio" },
+  "/units": { name: "Units", category: "Portfolio" },
   "/landlords": { name: "Landlords", category: "Portfolio" },
   "/leases": { name: "Leases", category: "Occupancy" },
   "/tenants": { name: "Tenants", category: "Occupancy" },

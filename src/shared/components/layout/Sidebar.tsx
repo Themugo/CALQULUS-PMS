@@ -21,6 +21,7 @@ import {
   FileSpreadsheet,
   UserX,
   Building2,
+  Layers,
   FileCheck,
   Receipt,
   Wallet,
@@ -65,6 +66,7 @@ const managerNavGroups: NavGroup[] = [
     title: "PORTFOLIO",
     items: [
       { name: "Properties", href: "/properties", icon: Building2, permission: "view_properties" },
+      { name: "Units", href: "/units", icon: Layers, permission: "view_properties" },
       { name: "Landlords", href: "/landlords", icon: Handshake, permission: "view_properties" },
     ],
   },
