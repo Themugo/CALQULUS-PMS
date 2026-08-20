@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/features/auth/AuthContext";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -318,7 +318,37 @@ const Billing = () => {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <Layout title="Billing" subtitle="Invoice lifecycle from billed to paid — collect, record a payment, then download the receipt">
+    <Layout
+      title="Billing"
+      subtitle="Billed, collected, outstanding, and overdue — issue invoices and collect through M-Pesa"
+      headerActions={
+        <div className="flex flex-wrap items-center gap-2">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="btn-brand min-h-11" disabled={!can("create_invoices")}>
+                <Plus className="h-4 w-4 mr-2" />Create Invoice
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[650px] bg-card border-border max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="font-heading text-foreground">Create New Invoice</DialogTitle>
+                <DialogDescription>Create an invoice for a tenant directly or from an existing lease.</DialogDescription>
+              </DialogHeader>
+              <TenantInvoiceForm
+                tenants={tenants}
+                leases={leases}
+                onSubmit={handleCreateInvoice}
+                isPending={isCreatingInvoice}
+                onCancel={() => setIsDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+          <Button variant="outline" size="sm" className="min-h-11" asChild>
+            <Link to="/payments">View payments</Link>
+          </Button>
+        </div>
+      }
+    >
       <Tabs
         value={mainTab}
         onValueChange={v => setMainTab(v as MainTab)}
@@ -349,6 +379,7 @@ const Billing = () => {
                 placeholder="Search invoices…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
+                aria-label="Search invoices"
                 className="pl-9 h-9 text-sm bg-card border-border"
               />
             </div>
@@ -368,26 +399,6 @@ const Billing = () => {
               >
                 {isGenerating ? "Generating…" : "Generate Monthly"}
               </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="btn-brand" disabled={!can("create_invoices")}>
-                    <Plus className="h-4 w-4 mr-2" />Create Invoice
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[650px] bg-card border-border max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="font-heading text-foreground">Create New Invoice</DialogTitle>
-                    <DialogDescription>Create an invoice for a tenant directly or from an existing lease.</DialogDescription>
-                  </DialogHeader>
-                  <TenantInvoiceForm
-                    tenants={tenants}
-                    leases={leases}
-                    onSubmit={handleCreateInvoice}
-                    isPending={isCreatingInvoice}
-                    onCancel={() => setIsDialogOpen(false)}
-                  />
-                </DialogContent>
-              </Dialog>
             </div>
           </div>
 

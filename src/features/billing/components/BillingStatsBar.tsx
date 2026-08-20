@@ -39,10 +39,10 @@ export function BillingStatsBar({ invoices, isLoading = false }: Props) {
   };
 
   const cards = [
-    { label: "Billed",      value: stats.billed,      tone: "text-foreground",  hint: "All invoices this period" },
-    { label: "Collected",   value: stats.collected,   tone: "text-success",     hint: "Received to date" },
-    { label: "Outstanding", value: stats.outstanding, tone: "text-warning",     hint: "Remaining balance owed" },
-    { label: "Overdue",     value: stats.overdue,     tone: "text-destructive", hint: "Past due" },
+    { label: "Billed",      value: stats.billed,      hint: "All invoices this period" },
+    { label: "Collected",   value: stats.collected,   hint: "Received to date" },
+    { label: "Outstanding", value: stats.outstanding, hint: "Remaining balance owed" },
+    { label: "Overdue",     value: stats.overdue,     hint: "Past due" },
   ] as const;
 
   if (isLoading) {
@@ -60,13 +60,13 @@ export function BillingStatsBar({ invoices, isLoading = false }: Props) {
 
   return (
     <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-      {cards.map(({ label, value, tone, hint }) => (
+      {cards.map(({ label, value, hint }) => (
         <div
           key={label}
           className="rounded-xl border border-border bg-card p-3 sm:p-4 card-shadow"
         >
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-          <p className={`font-heading text-lg sm:text-2xl font-bold truncate ${tone}`}>
+          <p className="font-heading text-lg sm:text-2xl font-bold truncate text-foreground">
             {formatCurrency(value)}
           </p>
           <p className="text-[11px] text-muted-foreground mt-1">{hint}</p>

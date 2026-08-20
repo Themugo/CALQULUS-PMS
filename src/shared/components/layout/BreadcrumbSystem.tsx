@@ -19,7 +19,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "billing": "Billing & Invoices",
   "water-billing": "Water Meter Billing",
   "statements": "Property Statements",
-  "payments": "Payment History",
+  "payments": "Payments",
   "platform-billing": "Platform Subscriptions",
   "maintenance": "Maintenance & Work Orders",
   "contracts": "Contracts & Agreements",

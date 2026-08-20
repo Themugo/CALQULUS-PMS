@@ -86,7 +86,7 @@ const managerNavGroups: NavGroup[] = [
       { name: "Billing", href: "/billing", icon: CreditCard, permission: "view_invoices" },
       { name: "Water Billing", href: "/water-billing", icon: Droplets, permission: "view_invoices" },
       { name: "Statements", href: "/statements", icon: FileSpreadsheet, permission: "view_invoices" },
-      { name: "Payment History", href: "/payments", icon: Wallet, permission: "view_invoices" },
+      { name: "Payments", href: "/payments", icon: Wallet, permission: "view_invoices" },
     ],
   },
   {

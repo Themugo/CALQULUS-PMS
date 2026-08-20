@@ -3,24 +3,13 @@ import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell
+  ResponsiveContainer
 } from 'recharts';
-import { TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { CALQULUS_COLOR } from '@/shared/theme/tokens';
+import { paymentMethodLabel } from '@/shared/lib/statusBadge';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
-
-const METHOD_LABELS: Record<string, string> = {
-  mpesa_stk:         'M-Pesa STK',
-  mpesa_ussd:        'M-Pesa Paybill',
-  mpesa_till:        'M-Pesa Till',
-  bank_transfer:     'Bank Transfer',
-  bank_direct_debit: 'Direct Debit',
-  receipt_upload:    'Receipt Upload',
-  cash:              'Cash',
-};
-
-const METHOD_COLORS = ['#22c55e','#16a34a','#4ade80','#6366f1','#8b5cf6','#f59e0b','#94a3b8'];
 
 interface Payment { amount: number; paid_date: string | null; payment_method?: string | null; tenants?: { name: string } | null; }
 interface PendingInvoice { amount: number; status: string; }
@@ -38,7 +27,6 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
   const collectionRate = totalCollected + totalPending > 0
     ? Math.round((totalCollected / (totalCollected + totalPending)) * 100) : 0;
 
-  // By payment method
   const byMethod = useMemo(() => {
     const map: Record<string, number> = {};
     for (const p of payments) {
@@ -46,11 +34,10 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
       map[m] = (map[m] ?? 0) + Number(p.amount);
     }
     return Object.entries(map)
-      .map(([method, amount]) => ({ method, label: METHOD_LABELS[method] ?? method, amount }))
+      .map(([method, amount]) => ({ method, label: paymentMethodLabel(method), amount }))
       .sort((a, b) => b.amount - a.amount);
   }, [payments]);
 
-  // Monthly trend (last 6 months)
   const monthlyTrend = useMemo(() => {
     const months: Record<string, number> = {};
     const now = new Date();
@@ -66,7 +53,6 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
     return Object.entries(months).map(([k, v]) => ({ month: k.slice(5), amount: v }));
   }, [payments]);
 
-  // Top tenants
   const topTenants = useMemo(() => {
     const map: Record<string, { name: string; total: number }> = {};
     for (const p of payments) {
@@ -77,106 +63,101 @@ const PaymentAnalytics: React.FC<PaymentAnalyticsProps> = ({ payments, pendingIn
     return Object.values(map).sort((a, b) => b.total - a.total).slice(0, 8);
   }, [payments]);
 
+  const kpis = [
+    { label: 'Collected (shown period)', value: fmt(totalCollected) },
+    { label: 'Outstanding', value: fmt(totalPending) },
+    { label: 'Overdue balance', value: fmt(totalOverdue) },
+    { label: 'Collection rate', value: `${collectionRate}%` },
+  ];
+
   return (
     <div className="space-y-4">
-      {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: 'Collected (shown period)', value: fmt(totalCollected), icon: TrendingUp, color: 'text-green-700', bg: 'bg-green-50' },
-          { label: 'Outstanding',               value: fmt(totalPending),   icon: CreditCard,  color: 'text-warning', bg: 'bg-amber-50' },
-          { label: 'Overdue balance',            value: fmt(totalOverdue),  icon: TrendingDown,color: 'text-red-700',   bg: 'bg-red-50' },
-          { label: 'Collection rate',            value: `${collectionRate}%`, icon: Users, color: collectionRate >= 80 ? 'text-green-700' : 'text-warning', bg: collectionRate >= 80 ? 'bg-green-50' : 'bg-amber-50' },
-        ].map(k => (
-          <div key={k.label} className={`rounded-xl border border-border p-3 ${k.bg}`}>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-muted-foreground">{k.label}</p>
-              <k.icon className={`h-4 w-4 ${k.color}`} />
-            </div>
-            <p className={`text-lg font-bold ${k.color}`}>{k.value}</p>
+        {kpis.map((k) => (
+          <div key={k.label} className="rounded-xl border border-border bg-card p-3">
+            <p className="text-xs text-muted-foreground">{k.label}</p>
+            <p className="mt-1 text-lg font-bold text-foreground">{k.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Monthly trend */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Monthly collections — last 6 months</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${Math.round(v/1000)}K`} />
-                <Tooltip formatter={(v: number) => fmt(v)} />
-                <Bar dataKey="amount" name="Collected" fill="#22c55e" radius={[3,3,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Monthly collections — last 6 months</CardTitle>
+          <CardDescription>Completed payment totals from the ledger. Exact rows stay on Payments.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={monthlyTrend}>
+              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${Math.round(v/1000)}K`} />
+              <Tooltip formatter={(v: number) => fmt(v)} />
+              <Bar dataKey="amount" name="Collected" fill={CALQULUS_COLOR.primary} radius={[3,3,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        {/* By payment method */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Payment methods</CardTitle>
+            <CardDescription>M-Pesa, Stripe, bank, and receipt totals from stored methods.</CardDescription>
           </CardHeader>
           <CardContent>
             {byMethod.length === 0 ? (
               <p className="text-center text-muted-foreground text-sm py-8">No payment data</p>
             ) : (
-              <ResponsiveContainer width="100%" height={180}>
-                <PieChart>
-                  <Pie data={byMethod} dataKey="amount" nameKey="label" cx="50%" cy="50%" outerRadius={65}
-                    label={({ label, percent }) => percent > 0.05 ? `${label.split(' ')[0]} ${(percent*100).toFixed(0)}%` : ''}
-                    labelLine={false}>
-                    {byMethod.map((_, i) => <Cell key={i} fill={METHOD_COLORS[i % METHOD_COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: number) => fmt(v)} />
-                </PieChart>
-              </ResponsiveContainer>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-muted-foreground">
+                    <th className="py-2 font-medium">Method</th>
+                    <th className="py-2 text-right font-medium">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {byMethod.map((m) => (
+                    <tr key={m.method} className="border-b border-border/60">
+                      <td className="py-2 text-foreground">{m.label}</td>
+                      <td className="py-2 text-right font-medium text-foreground">{fmt(m.amount)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-            <div className="space-y-1 mt-2">
-              {byMethod.map((m, i) => (
-                <div key={m.method} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: METHOD_COLORS[i % METHOD_COLORS.length] }} />
-                    <span>{m.label}</span>
-                  </div>
-                  <span className="font-medium">{fmt(m.amount)}</span>
-                </div>
-              ))}
-            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Top paying tenants</CardTitle>
+            <CardDescription>Highest completed totals in the selected ledger.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {topTenants.length === 0 ? (
+              <p className="text-center text-muted-foreground text-sm py-8">No payment data</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-muted-foreground">
+                    <th className="py-2 font-medium">Tenant</th>
+                    <th className="py-2 text-right font-medium">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topTenants.map((t) => (
+                    <tr key={t.name} className="border-b border-border/60">
+                      <td className="py-2 text-foreground">{t.name}</td>
+                      <td className="py-2 text-right font-medium text-foreground">{fmt(t.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Top tenants */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Top paying tenants</CardTitle>
-          <CardDescription>Highest total payments in selected period</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {topTenants.map((t, i) => (
-              <div key={t.name} className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground w-4 text-right">{i+1}</span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-medium">{t.name}</span>
-                    <span className="text-sm font-semibold text-green-700">{fmt(t.total)}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full"
-                      style={{ width: `${(t.total / topTenants[0].total) * 100}%` }} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

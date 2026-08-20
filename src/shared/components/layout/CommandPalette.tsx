@@ -53,7 +53,7 @@ const ALL_PAGES: NavPage[] = [
   { name: "Billing", href: "/billing", category: "Collections" },
   { name: "Water Billing", href: "/water-billing", category: "Collections" },
   { name: "Statements", href: "/statements", category: "Collections" },
-  { name: "Payment History", href: "/payments", category: "Collections" },
+  { name: "Payments", href: "/payments", category: "Collections" },
   { name: "Maintenance", href: "/maintenance", category: "Operations" },
   { name: "Contracts", href: "/contracts", category: "Operations" },
   { name: "Reports", href: "/reports", category: "Operations" },
