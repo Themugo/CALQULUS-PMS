@@ -10,28 +10,27 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_BRAND.iconFamily).toBe("lucide-react");
   });
 
-  it("uses electric cyan as primary, not gold", () => {
-    expect(CALQULUS_COLOR.primary).toBe("#1AD4E4");
-    expect(CALQULUS_COLOR.primaryHover).toBe("#3DDBF0");
-    expect(CALQULUS_COLOR.primaryActive).toBe("#12B8C8");
+  it("uses interactive blue as primary, not gold or cyan", () => {
+    expect(CALQULUS_COLOR.primary).toBe("#2F6FED");
+    expect(CALQULUS_COLOR.primaryHover).toBe("#4C84F0");
+    expect(CALQULUS_COLOR.primaryActive).toBe("#2459D6");
     expect(CALQULUS_COLOR.accent).toBe(CALQULUS_COLOR.primary);
     expect(CALQULUS_COLOR.primary).not.toBe("#C9A84C");
-    expect(CALQULUS_COLOR.primary).not.toBe("#155EEF");
-    expect(CALQULUS_COLOR.primary).not.toBe("#2F6FED");
+    expect(CALQULUS_COLOR.primary).not.toBe("#1AD4E4");
   });
 
-  it("establishes navy as the identity scale", () => {
-    expect(CALQULUS_COLOR.navyDeep).toBe("#123056");
-    expect(CALQULUS_COLOR.navyPrimary).toBe("#164272");
-    expect(CALQULUS_COLOR.navySecondary).toBe("#1E558C");
-    expect(CALQULUS_COLOR.navyDeep).not.toBe("#040B16");
-    expect(CALQULUS_COLOR.navyPrimary).not.toBe("#0A1A32");
+  it("establishes navy as chrome, not a page fill", () => {
+    expect(CALQULUS_COLOR.navyDeep).toBe("#081A2E");
+    expect(CALQULUS_COLOR.navyPrimary).toBe("#0D2744");
+    expect(CALQULUS_COLOR.navySecondary).toBe("#173F67");
+    expect(CALQULUS_COLOR.navyDeep).not.toBe("#000000");
+    expect(CALQULUS_COLOR.navyPrimary).not.toBe("#000000");
   });
 
   it("keeps light surfaces as the production background", () => {
-    expect(CALQULUS_COLOR.background).toBe("#F3F7FB");
+    expect(CALQULUS_COLOR.background).toBe("#F7F9FC");
     expect(CALQULUS_COLOR.surface).toBe("#FFFFFF");
-    expect(CALQULUS_COLOR.surfaceElevated).toBe("#F3F7FB");
+    expect(CALQULUS_COLOR.surfaceElevated).toBe("#F7F9FC");
     expect(CALQULUS_COLOR.white).toBe("#FFFFFF");
   });
 
@@ -40,11 +39,11 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_COLOR.warning).toBe("#B7791F");
     expect(CALQULUS_COLOR.danger).toBe("#C84B4B");
     expect(CALQULUS_COLOR.info).toBe(CALQULUS_COLOR.primary);
-    expect(CALQULUS_COLOR.border).toBe("#D7E2EC");
-    expect(CALQULUS_COLOR.textPrimary).toBe("#0E1C2E");
-    expect(CALQULUS_COLOR.textMuted).toBe("#5A6E82");
+    expect(CALQULUS_COLOR.border).toBe("#E5EAF0");
+    expect(CALQULUS_COLOR.textPrimary).toBe("#102033");
+    expect(CALQULUS_COLOR.textMuted).toBe("#637286");
     expect(CALQULUS_COLOR.focus).toBe(CALQULUS_COLOR.primary);
-    expect(CALQULUS_COLOR.glow).toBe("#1B4FBF");
+    expect(CALQULUS_COLOR.glow).toBe("#2F6FED");
     expect(CALQULUS_COLOR.spark).toBe("#F5A524");
   });
 
@@ -62,13 +61,14 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_DARK_MODE.cssStrategy).toBe("light-mirror");
   });
 
-  it("keeps a shared cyan focus ring, not a per-portal ring", () => {
+  it("keeps a shared interactive-blue focus ring, not a per-portal ring", () => {
     expect(FOCUS_RING_STYLES.default.outline).toContain(CALQULUS_COLOR.focus);
     expect(FOCUS_RING_STYLES.highContrast.outline).toContain(CALQULUS_COLOR.navyDeep);
   });
 
   it("exposes portal accents without replacing the desk system", () => {
-    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.navySecondary);
+    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.primary);
+    expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("Professional Blue");
     expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe(CALQULUS_COLOR.success);
     expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#9A5A16");
     expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#5C4A8A");
@@ -77,8 +77,8 @@ describe("CALQULUS design tokens", () => {
 
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
     expect(CALQULUS_SPACE[4]).toBe("1rem");
-    expect(CALQULUS_RADIUS.card).toBe("0.625rem");
-    expect(CALQULUS_SHADOW.card).toContain("18 48 86");
+    expect(CALQULUS_RADIUS.card).toBe("0.75rem");
+    expect(CALQULUS_SHADOW.card).toContain("13 39 68");
     expect(CALQULUS_TYPE.pageTitle).toBe("type-page-title");
     expect(CALQULUS_FIELD.error).toContain("text-destructive");
     expect(CALQULUS_ICON.md).toBe("h-4 w-4");
@@ -86,7 +86,7 @@ describe("CALQULUS design tokens", () => {
 });
 
 describe("chart palette follows tokens", () => {
-  it("leads with primary cyan", () => {
+  it("leads with primary interactive blue", () => {
     expect(BRAND_CHART_COLORS[0]).toBe(CALQULUS_COLOR.primary);
   });
 

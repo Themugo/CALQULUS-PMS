@@ -2,15 +2,15 @@
  * CALQULUS PMS design tokens — TypeScript source of truth.
  * Keep hex values in sync with CSS variables in src/index.css.
  *
- * Palette is taken from the Frameworks / CALQULUS identity card:
- *   Navy  — mid-navy chrome (nav, sidebar, footer)
- *   Cyan  — interaction (buttons, links, focus, active nav)
- *   White / mist — desks and the public website canvas
- *   Royal — atmospheric glow only, never body text
+ * Master redesign foundation:
+ *   White / mist — dominant application surfaces
+ *   Navy          — brand chrome (header, sidebar, footer), not page fill
+ *   Interactive   — professional blue for buttons, links, focus
+ *   Portal accents — 2px identity only, not separate design systems
  *   Green / amber / red — success / warning / danger only
  *
- * The public site is a light operating system, not a navy marketing poster.
- * Header and footer stay navy. Operational desks stay light.
+ * Outfit stays. Do not switch to Inter.
+ * Desks stay light. Never fill pages with black or deep navy.
  */
 
 export const CALQULUS_BRAND = {
@@ -20,51 +20,51 @@ export const CALQULUS_BRAND = {
 } as const;
 
 export const CALQULUS_COLOR = {
-  /** Electric cyan — buttons, links, focus, selected controls. */
-  primary: "#1AD4E4",
-  primaryHover: "#3DDBF0",
-  primaryActive: "#12B8C8",
-  accent: "#1AD4E4",
+  /** Interactive blue — buttons, links, focus, selected controls. */
+  primary: "#2F6FED",
+  primaryHover: "#4C84F0",
+  primaryActive: "#2459D6",
+  accent: "#2F6FED",
 
-  /** Mid-navy identity scale — no near-black floor. */
-  navyDeep: "#123056",
-  navyPrimary: "#164272",
-  navySecondary: "#1E558C",
+  /** Navy identity scale — chrome only, never a page fill. */
+  navyDeep: "#081A2E",
+  navyPrimary: "#0D2744",
+  navySecondary: "#173F67",
 
   white: "#FFFFFF",
-  secondary: "#F3F7FB",
+  secondary: "#F7F9FC",
   success: "#23856B",
   warning: "#B7791F",
   danger: "#C84B4B",
-  info: "#1AD4E4",
+  info: "#2F6FED",
 
-  /** Royal blue glow — atmosphere on navy surfaces only. */
-  glow: "#1B4FBF",
-  /** Reserved spark — not used on the public website. */
+  /** Atmosphere on navy chrome only. */
+  glow: "#2F6FED",
+  /** Reserved spark — not used as chrome. */
   spark: "#F5A524",
 
-  background: "#F3F7FB",
+  background: "#F7F9FC",
   surface: "#FFFFFF",
-  surfaceElevated: "#F3F7FB",
+  surfaceElevated: "#F7F9FC",
 
-  textPrimary: "#0E1C2E",
-  textSecondary: "#5A6E82",
-  textMuted: "#5A6E82",
+  textPrimary: "#102033",
+  textSecondary: "#637286",
+  textMuted: "#637286",
 
-  border: "#D7E2EC",
-  focus: "#1AD4E4",
+  border: "#E5EAF0",
+  focus: "#2F6FED",
 } as const;
 
 /**
  * Portal identity accents — thin chrome only.
- * Not a second design system. Desks stay white + navy + cyan interaction.
+ * Not a second design system. Desks stay white + navy + shared interactive blue.
  * Status colour (success / warning / danger) is never replaced by these.
  */
 export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
-    label: "Navy / Professional Blue",
-    hex: CALQULUS_COLOR.navySecondary,
+    label: "Professional Blue",
+    hex: CALQULUS_COLOR.primary,
   },
   landlord: {
     id: "landlord",
@@ -89,7 +89,7 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
 } as const;
 
-/** PWA chrome matches the navy identity, not a light browser default. */
+/** PWA chrome matches navy identity, not a light browser default. */
 export const CALQULUS_PWA = {
   themeColor: CALQULUS_COLOR.navyPrimary,
   backgroundColor: CALQULUS_COLOR.background,
@@ -122,15 +122,15 @@ export const CALQULUS_SPACE = {
 export const CALQULUS_RADIUS = {
   sm: "0.375rem",
   md: "0.5rem",
-  lg: "0.625rem",
-  card: "0.625rem",
+  lg: "0.75rem",
+  card: "0.75rem",
 } as const;
 
-/** Shadows tint with navy, with a faint cyan lift on elevated cards. */
+/** Shadows tint with navy. No decorative glow. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 1px -1px rgb(18 48 86 / 0.04)",
-  elevated: "0 8px 24px -12px rgb(18 48 86 / 0.16), 0 0 0 1px rgb(26 212 228 / 0.10)",
+  card: "0 1px 2px 0 rgb(13 39 68 / 0.06), 0 1px 1px -1px rgb(13 39 68 / 0.04)",
+  elevated: "0 8px 24px -12px rgb(13 39 68 / 0.16), 0 0 0 1px rgb(13 39 68 / 0.06)",
 } as const;
 
 export const CALQULUS_ICON = {

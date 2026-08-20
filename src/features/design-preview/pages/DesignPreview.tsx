@@ -140,7 +140,7 @@ export default function DesignPreview() {
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
-              One product: white desks, mid-navy chrome, cyan interaction. Design for Linear, Stripe, Notion, Arc, and Ramp — workflows, not a property website. Add a visual only if it improves hierarchy, clarity, navigation, a decision, or a workflow. Live branding is Settings → Company.
+              One product: white desks, navy chrome, interactive blue. Outfit stays. Portal colour is a 2px accent, not a second system. Every page answers where you are, what matters, what needs attention, and what to do next. Live branding is Settings → Company.
             </p>
             {liveDesk ? (
               <div className="mt-3">
@@ -182,6 +182,17 @@ function isPortal(id: PreviewId): id is PortalId {
 }
 
 function HomepagePreview() {
+  const foundation = [
+    { label: "Deep Navy", hex: CALQULUS_COLOR.navyDeep },
+    { label: "Mid Navy", hex: CALQULUS_COLOR.navyPrimary },
+    { label: "Secondary Navy", hex: CALQULUS_COLOR.navySecondary },
+    { label: "Interactive", hex: CALQULUS_COLOR.primary },
+    { label: "White", hex: CALQULUS_COLOR.white },
+    { label: "Soft surface", hex: CALQULUS_COLOR.background },
+    { label: "Border", hex: CALQULUS_COLOR.border },
+    { label: "Text", hex: CALQULUS_COLOR.textPrimary },
+  ] as const;
+
   return (
     <Card>
       <CardHeader>
@@ -190,7 +201,25 @@ function HomepagePreview() {
           Light workspace. Navy header and footer. The desk is the hero — not a property brochure.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-4">
+        <div>
+          <p className="type-label mb-2">Colour foundation</p>
+          <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {foundation.map((swatch) => (
+              <li key={swatch.hex} className="flex items-center gap-2 min-h-11">
+                <span
+                  className="h-6 w-6 shrink-0 rounded-md border border-border"
+                  style={{ backgroundColor: swatch.hex }}
+                  aria-hidden
+                />
+                <span className="text-xs text-muted-foreground">
+                  {swatch.label}
+                  <span className="block font-mono text-[10px]">{swatch.hex}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="overflow-hidden rounded-lg border border-border">
           <div className="bg-navy-primary px-4 py-2 text-xs font-medium text-white">CALQULUS</div>
           <div className="bg-card px-4 py-6">

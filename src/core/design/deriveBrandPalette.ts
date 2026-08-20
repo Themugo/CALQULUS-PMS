@@ -57,7 +57,7 @@ export function deriveBrandPalette(candidate: string | null | undefined): Derive
   }
 
   if (isForbiddenFloor(hex)) {
-    reasons.push("Near-black floors are not allowed. CALQULUS uses mid navy, never black.");
+    reasons.push("Near-black floors are not allowed. CALQULUS uses navy chrome on white desks, never black.");
   }
 
   if (getLuminance(hex) > 0.82) {

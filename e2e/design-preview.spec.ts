@@ -4,14 +4,14 @@ test.describe("Design preview", () => {
   test("renders the Design Bible gallery on a white desk", async ({ page }) => {
     await page.goto("/design-preview");
     await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText(/improves hierarchy, clarity, navigation/)).toBeVisible();
-    await expect(page.getByText(/workflows, not a property website/)).toBeVisible();
+    await expect(page.getByText(/where you are, what matters, what needs attention/i)).toBeVisible();
+    await expect(page.getByText(/Colour foundation/)).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Design preview screens" })).toContainText("Brand Studio");
     await expect(page.locator("[data-preview='design']")).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Brand Studio" }).click();
     await expect(page.getByText("Brand configuration")).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Manager" }).click();
-    await expect(page.getByText("Navy / Professional Blue")).toBeVisible();
+    await expect(page.getByText("Professional Blue")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Manager" })).toBeVisible();
     await expect(page.getByText("Where you are · what needs attention · the next action")).toBeVisible();
   });

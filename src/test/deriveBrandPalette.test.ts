@@ -5,7 +5,7 @@ import { PLATFORM_BRAND_CONFIG } from "@/core/brand/platformBrand";
 import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 
 describe("deriveBrandPalette", () => {
-  it("approves CALQULUS cyan and derives hover/active/surface", () => {
+  it("approves CALQULUS interactive blue and derives hover/active/surface", () => {
     const palette = deriveBrandPalette(CALQULUS_COLOR.primary);
     expect(palette.approved).toBe(true);
     expect(palette.hex).toBe(CALQULUS_COLOR.primary);

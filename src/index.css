@@ -246,30 +246,30 @@
 
 /* ── CALQULUS PMS Design Tokens ──────────────────────────────────────── */
 /* One visual language. Hex values match src/shared/theme/tokens.ts.
-   Navy = identity chrome. Cyan = interaction. Green/amber/red = success /
-   attention / danger only. Decorative purple/indigo/teal/gold aliases
-   resolve to navy or cyan so leftover classes cannot introduce a
-   second palette. */
+   White = desks. Navy = chrome. Interactive blue = buttons/links/focus.
+   Portal accents are 2px only. Green/amber/red = success / attention /
+   danger. Leftover purple/indigo/teal/gold aliases resolve to navy or
+   interactive blue so they cannot introduce a second palette. */
 
 @layer base {
   :root {
-    --background: #F3F7FB;
-    --secondary-background: #F3F7FB;
-    --foreground: #0E1C2E;
+    --background: #F7F9FC;
+    --secondary-background: #F7F9FC;
+    --foreground: #102033;
 
     --card: #FFFFFF;
-    --card-foreground: #0E1C2E;
+    --card-foreground: #102033;
     --surface: #FFFFFF;
-    --surface-elevated: #F3F7FB;
+    --surface-elevated: #F7F9FC;
 
     --popover: #FFFFFF;
-    --popover-foreground: #0E1C2E;
+    --popover-foreground: #102033;
 
-    /* Electric cyan — interaction */
-    --primary: #1AD4E4;
-    --primary-foreground: #123056;
-    --primary-hover: #3DDBF0;
-    --primary-active: #12B8C8;
+    /* Interactive blue — buttons, links, focus */
+    --primary: #2F6FED;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #4C84F0;
+    --primary-active: #2459D6;
     /* Organization accent. Design-system --primary stays CALQULUS. */
     --brand-primary: var(--primary);
     --brand-primary-hover: var(--primary-hover);
@@ -278,7 +278,7 @@
     --brand-primary-border: color-mix(in srgb, var(--brand-primary) 45%, #FFFFFF);
     --brand-primary-surface: color-mix(in srgb, var(--brand-primary) 10%, #FFFFFF);
     --brand-primary-focus: var(--brand-primary);
-    --brand-primary-foreground: #123056;
+    --brand-primary-foreground: #FFFFFF;
 
     /* Portal identity stripe — overridden by [data-portal] */
     --portal-accent: var(--navy-mid);
@@ -287,24 +287,24 @@
     --portal-accent-border: color-mix(in srgb, var(--portal-accent) 28%, transparent);
     --portal-accent-surface: color-mix(in srgb, var(--portal-accent) 10%, #FFFFFF);
 
-    /* Mid-navy identity — no near-black floor */
-    --navy-primary: #164272;
-    --navy-deep: #123056;
-    --navy-mid: #1E558C;
-    --navy-surface: #2668A8;
-    --secondary-navy: #1E558C;
+    /* Navy identity — chrome only, never a page fill */
+    --navy-primary: #0D2744;
+    --navy-deep: #081A2E;
+    --navy-mid: #173F67;
+    --navy-surface: #21507A;
+    --secondary-navy: #173F67;
     --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --glow: #1B4FBF;
+    --glow: #2F6FED;
     --spark: #F5A524;
 
-    --secondary: #F3F7FB;
-    --secondary-foreground: #5A6E82;
+    --secondary: #F7F9FC;
+    --secondary-foreground: #637286;
 
-    --muted: #F3F7FB;
-    --muted-foreground: #5A6E82;
+    --muted: #F7F9FC;
+    --muted-foreground: #637286;
 
-    --accent: #1AD4E4;
-    --accent-foreground: #123056;
+    --accent: #2F6FED;
+    --accent-foreground: #FFFFFF;
 
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
@@ -318,8 +318,8 @@
     --warning-foreground: #FFFFFF;
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
 
-    --info: #1AD4E4;
-    --info-foreground: #123056;
+    --info: #2F6FED;
+    --info-foreground: #FFFFFF;
     --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
 
     /* Legacy class aliases — identity or interaction, never a second palette */
@@ -336,24 +336,24 @@
     --gold-foreground: var(--primary-foreground);
     --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
 
-    --border: #D7E2EC;
-    --input: #D7E2EC;
-    --ring: #1AD4E4;
+    --border: #E5EAF0;
+    --input: #E5EAF0;
+    --ring: #2F6FED;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: #164272;
-    --sidebar-foreground: #F4FBFD;
-    --sidebar-primary: #1AD4E4;
-    --sidebar-primary-foreground: #123056;
-    --sidebar-accent: #1E558C;
-    --sidebar-accent-foreground: #1AD4E4;
-    --sidebar-border: #2A6498;
-    --sidebar-ring: #1AD4E4;
-    --sidebar-muted: #B4C9DC;
+    --sidebar-background: #0D2744;
+    --sidebar-foreground: #F7F9FC;
+    --sidebar-primary: #2F6FED;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #173F67;
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: #143250;
+    --sidebar-ring: #2F6FED;
+    --sidebar-muted: #9AAFC4;
   }
 
-  [data-portal="manager"] { --portal-accent: #1E558C; }
+  [data-portal="manager"] { --portal-accent: #2F6FED; }
   [data-portal="landlord"] { --portal-accent: #23856B; }
   [data-portal="agency"] { --portal-accent: #9A5A16; }
   [data-portal="tenant"] { --portal-accent: #5C4A8A; }
@@ -363,34 +363,35 @@
      leftover `dark:` utilities cannot reintroduce a heavy dashboard.
      Production experience is always light. */
   .dark {
-    --background: #F3F7FB;
-    --secondary-background: #F3F7FB;
-    --foreground: #0E1C2E;
+    --background: #F7F9FC;
+    --secondary-background: #F7F9FC;
+    --foreground: #102033;
     --card: #FFFFFF;
-    --card-foreground: #0E1C2E;
+    --card-foreground: #102033;
     --surface: #FFFFFF;
-    --surface-elevated: #F3F7FB;
+    --surface-elevated: #F7F9FC;
     --popover: #FFFFFF;
-    --popover-foreground: #0E1C2E;
-    --primary: #1AD4E4;
-    --primary-foreground: #123056;
-    --primary-hover: #3DDBF0;
-    --primary-active: #12B8C8;
+    --popover-foreground: #102033;
+    --primary: #2F6FED;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #4C84F0;
+    --primary-active: #2459D6;
     --brand-primary: var(--primary);
-    --navy-primary: #164272;
-    --navy-deep: #123056;
-    --navy-mid: #1E558C;
-    --navy-surface: #2668A8;
-    --secondary-navy: #1E558C;
+    --brand-primary-foreground: #FFFFFF;
+    --navy-primary: #0D2744;
+    --navy-deep: #081A2E;
+    --navy-mid: #173F67;
+    --navy-surface: #21507A;
+    --secondary-navy: #173F67;
     --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --glow: #1B4FBF;
+    --glow: #2F6FED;
     --spark: #F5A524;
-    --secondary: #F3F7FB;
-    --secondary-foreground: #5A6E82;
-    --muted: #F3F7FB;
-    --muted-foreground: #5A6E82;
-    --accent: #1AD4E4;
-    --accent-foreground: #123056;
+    --secondary: #F7F9FC;
+    --secondary-foreground: #637286;
+    --muted: #F7F9FC;
+    --muted-foreground: #637286;
+    --accent: #2F6FED;
+    --accent-foreground: #FFFFFF;
     --destructive: #C84B4B;
     --destructive-foreground: #FFFFFF;
     --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
@@ -400,8 +401,8 @@
     --warning: #B7791F;
     --warning-foreground: #FFFFFF;
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
-    --info: #1AD4E4;
-    --info-foreground: #123056;
+    --info: #2F6FED;
+    --info-foreground: #FFFFFF;
     --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
     --purple: var(--navy-mid);
     --purple-foreground: #FFFFFF;
@@ -415,18 +416,18 @@
     --gold: var(--primary);
     --gold-foreground: var(--primary-foreground);
     --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --border: #D7E2EC;
-    --input: #D7E2EC;
-    --ring: #1AD4E4;
-    --sidebar-background: #164272;
-    --sidebar-foreground: #F4FBFD;
-    --sidebar-primary: #1AD4E4;
-    --sidebar-primary-foreground: #123056;
-    --sidebar-accent: #1E558C;
-    --sidebar-accent-foreground: #1AD4E4;
-    --sidebar-border: #2A6498;
-    --sidebar-ring: #1AD4E4;
-    --sidebar-muted: #B4C9DC;
+    --border: #E5EAF0;
+    --input: #E5EAF0;
+    --ring: #2F6FED;
+    --sidebar-background: #0D2744;
+    --sidebar-foreground: #F7F9FC;
+    --sidebar-primary: #2F6FED;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #173F67;
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: #143250;
+    --sidebar-ring: #2F6FED;
+    --sidebar-muted: #9AAFC4;
   }
 }
 
@@ -475,19 +476,14 @@
 }
 
 @utility card-shadow {
-  box-shadow: 0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 1px -1px rgb(18 48 86 / 0.04);
+  box-shadow: 0 1px 2px 0 rgb(13 39 68 / 0.06), 0 1px 1px -1px rgb(13 39 68 / 0.04);
 }
 
 @utility enterprise-card {
   background-color: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px 0 rgb(18 48 86 / 0.06), 0 1px 3px 0 rgb(18 48 86 / 0.04);
-  position: relative;
-  background-image: linear-gradient(var(--primary), var(--primary));
-  background-repeat: no-repeat;
-  background-size: 100% 2px;
-  background-position: top;
+  box-shadow: 0 1px 2px 0 rgb(13 39 68 / 0.06), 0 1px 3px 0 rgb(13 39 68 / 0.04);
 }
 
 @utility night-card {
@@ -526,7 +522,7 @@
   background-color: var(--primary);
   color: var(--primary-foreground);
   font-weight: 600;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 40%, transparent), 0 8px 20px -12px color-mix(in srgb, var(--primary) 70%, transparent);
+  box-shadow: 0 1px 2px 0 rgb(13 39 68 / 0.08);
   transition: all 0.15s ease-in-out;
 }
 
