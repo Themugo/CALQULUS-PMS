@@ -48,6 +48,7 @@ interface NotificationPreferences {
 }
 
 const TenantProfile = () => {
+  const navigate = useNavigate();
   const { user, signOut, userRole } = useAuth();
   const { toast } = useToast();
   const {

@@ -5,7 +5,7 @@ import {
   isTenantDeskPath,
   isTenantPublicPath,
 } from "@/features/tenant-portal/lib/tenantPaths";
-import { amountOnInvoice } from "@/features/tenant-portal/components/TenantHome";
+import { amountOnInvoice } from "@/features/tenant-portal/lib/tenantInvoiceSelect";
 import { pickRoleForPath } from "@/features/auth/lib/roleResolution";
 import { roleRouteConfigs } from "@/app/routes";
 

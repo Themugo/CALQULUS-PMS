@@ -4,16 +4,6 @@ import { FileText, Receipt, ScrollText, Wrench } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { TENANT_ROUTES } from "@/features/tenant-portal/lib/tenantPaths";
 
-type Invoice = {
-  id: string;
-  invoice_number: string;
-  amount: number;
-  due_date: string;
-  paid_date: string | null;
-  status: string;
-  balance_due?: number | null;
-};
-
 type ActivityItem = {
   id: string;
   label: string;
@@ -41,10 +31,6 @@ const SHORTCUTS = [
   { label: "Receipts", href: TENANT_ROUTES.receipts, icon: Receipt },
   { label: "Documents", href: TENANT_ROUTES.documents, icon: FileText },
 ] as const;
-
-export function amountOnInvoice(invoice: Invoice): number {
-  return Number(invoice.balance_due ?? invoice.amount);
-}
 
 export default function TenantHome({
   greeting,
