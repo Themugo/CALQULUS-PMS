@@ -9,14 +9,15 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Building2, CheckCircle, AlertTriangle, Loader2, Eye, EyeOff } from 'lucide-react';
 
-interface Invitation {
+interface InvitationPayload {
   id: string;
   property_id: string;
   manager_id: string;
   email: string;
   status: string;
   expires_at: string;
-  properties?: { name: string; address: string };
+  property_name: string;
+  property_address: string;
 }
 
 const LandlordInvitationAccept: React.FC = () => {
@@ -26,8 +27,7 @@ const LandlordInvitationAccept: React.FC = () => {
   const { toast } = useToast();
 
   const token = searchParams.get('token');
-  const [invitation, setInvitation] = useState<Invitation | null>(null);
-  const [property, setProperty] = useState<{ name: string; address: string } | null>(null);
+  const [invitation, setInvitation] = useState<InvitationPayload | null>(null);
   const [status, setStatus] = useState<'loading' | 'found' | 'expired' | 'accepted' | 'error'>('loading');
   const [mode, setMode] = useState<'login' | 'register'>('register');
   const [submitting, setSubmitting] = useState(false);
@@ -35,19 +35,14 @@ const LandlordInvitationAccept: React.FC = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
 
   const loadInvitation = useCallback(async () => {
-    const { data: inv, error } = await supabase
-      .from('landlord_invitations')
-      .select('*, properties(name, address)')
-      .eq('token', token!)
-      .maybeSingle();
+    const { data, error } = await supabase.rpc('lookup_landlord_invitation', { p_token: token! });
+    if (error || !data) { setStatus('error'); return; }
+    const inv = data as unknown as InvitationPayload;
+    if (inv.status === 'accepted') { setStatus('accepted'); return; }
+    if (inv.status === 'expired') { setStatus('expired'); return; }
 
-    if (error || !inv) { setStatus('error'); return; }
-    if ((inv as Invitation).status === 'accepted') { setStatus('accepted'); return; }
-    if (new Date((inv as Invitation).expires_at) < new Date()) { setStatus('expired'); return; }
-
-    setInvitation(inv as Invitation);
-    setProperty((inv as Invitation).properties || null);
-    setForm(p => ({ ...p, email: (inv as Invitation).email }));
+    setInvitation(inv);
+    setForm(p => ({ ...p, email: inv.email }));
     setStatus('found');
   }, [token]);
 
@@ -57,36 +52,20 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [token, loadInvitation]);
 
   const acceptInvitation = useCallback(async () => {
-    if (!user || !invitation) return;
+    if (!user || !invitation || !token) return;
     setSubmitting(true);
     try {
-      // Create property_landlords link
-      await supabase.from('property_landlords').upsert({
-        property_id:      invitation.property_id,
-        landlord_user_id: user.id,
-        manager_id:       invitation.manager_id,
-        revenue_share_pct: 100,
-      }, { onConflict: 'property_id' });
+      const { error } = await supabase.rpc('accept_landlord_invitation', { p_token: token });
+      if (error) throw error;
 
-      // Create user_role as landlord if not exists
-      await supabase.from('user_roles').upsert({
-        user_id: user.id,
-        role:    'landlord',
-      }, { onConflict: 'user_id' });
-
-      // Mark invitation accepted
-      await supabase.from('landlord_invitations')
-        .update({ status: 'accepted', accepted_at: new Date().toISOString() })
-        .eq('id', invitation.id);
-
-      toast({ title: 'Welcome!', description: `You now have access to ${property?.name}` });
+      toast({ title: 'Welcome!', description: `You now have access to ${invitation.property_name}` });
       navigate('/landlord/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to accept';
       toast({ title: 'Failed to accept', description: message, variant: 'destructive' });
     }
     setSubmitting(false);
-  }, [user, invitation, toast, navigate, property]);
+  }, [user, invitation, token, toast, navigate]);
 
   useEffect(() => {
     if (user && invitation) acceptInvitation();
@@ -124,7 +103,7 @@ const LandlordInvitationAccept: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="py-12 text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto text-red-500 mb-4" />
+            <AlertTriangle className="h-12 w-12 mx-auto text-destructive mb-4" />
             <h2 className="font-semibold text-lg mb-2">Invalid invitation</h2>
             <p className="text-muted-foreground text-sm">This invitation link is invalid or has been used.</p>
           </CardContent>
@@ -138,7 +117,7 @@ const LandlordInvitationAccept: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="py-12 text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto text-amber-500 mb-4" />
+            <AlertTriangle className="h-12 w-12 mx-auto text-warning mb-4" />
             <h2 className="font-semibold text-lg mb-2">Invitation expired</h2>
             <p className="text-muted-foreground text-sm">This invitation link has expired. Ask your property manager to send a new one.</p>
           </CardContent>
@@ -152,7 +131,7 @@ const LandlordInvitationAccept: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="py-12 text-center">
-            <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-4" />
+            <CheckCircle className="h-12 w-12 mx-auto text-success mb-4" />
             <h2 className="font-semibold text-lg mb-2">Already accepted</h2>
             <p className="text-muted-foreground text-sm mb-4">This invitation has already been accepted.</p>
             <Button onClick={() => navigate('/landlord/login')}>Go to login</Button>
@@ -163,16 +142,16 @@ const LandlordInvitationAccept: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-950 via-card to-amber-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Property info */}
-        <Card className="border-amber-700/30 bg-muted text-foreground">
+        <Card className="enterprise-card text-foreground">
           <CardContent className="py-6 text-center">
-            <div className="h-12 w-12 mx-auto rounded-xl bg-amber-600/20 flex items-center justify-center mb-3">
-              <Building2 className="h-6 w-6 text-amber-400" />
+            <div className="h-12 w-12 mx-auto rounded-xl bg-primary/15 flex items-center justify-center mb-3">
+              <Building2 className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="font-semibold text-lg">{property?.name}</h2>
-            <p className="text-amber-300/70 text-sm">{property?.address}</p>
+            <h2 className="font-semibold text-lg">{invitation?.property_name}</h2>
+            <p className="text-muted-foreground text-sm">{invitation?.property_address}</p>
             <p className="text-muted-foreground text-xs mt-2">You have been invited as a landlord</p>
           </CardContent>
         </Card>
@@ -215,13 +194,13 @@ const LandlordInvitationAccept: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white gap-2" disabled={submitting}>
+              <Button type="submit" className="w-full btn-brand gap-2" disabled={submitting}>
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                 {mode === 'register' ? 'Create account & accept' : 'Sign in & accept'}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 {mode === 'register' ? 'Already have an account? ' : 'New to CALQULUS PMS? '}
-                <button type="button" className="text-amber-600 hover:underline" onClick={() => setMode(mode === 'register' ? 'login' : 'register')}>
+                <button type="button" className="text-primary hover:underline" onClick={() => setMode(mode === 'register' ? 'login' : 'register')}>
                   {mode === 'register' ? 'Sign in instead' : 'Create an account'}
                 </button>
               </p>

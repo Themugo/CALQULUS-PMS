@@ -14,11 +14,11 @@ const EVENTS = [
   { key: 'payout_approved',       label: 'Payout request approved',    desc: 'When your manager approves a payout request' },
   { key: 'payout_paid',           label: 'Payout transferred',          desc: 'When the manager marks payment as sent' },
   { key: 'monthly_statement',     label: 'Monthly statement ready',     desc: 'Monthly revenue/occupancy report' },
-  { key: 'new_tenant_moved_in',   label: 'New tenant moved in',         desc: 'When a tenant occupies one of your units' },
-  { key: 'tenant_moved_out',      label: 'Tenant moved out',            desc: 'When a tenant vacates a unit' },
+  { key: 'new_tenant_moved_in',   label: 'Unit occupied',               desc: 'When occupancy on one of your units increases' },
+  { key: 'tenant_moved_out',      label: 'Unit vacated',                desc: 'When a unit in your portfolio becomes vacant' },
   { key: 'maintenance_completed', label: 'Maintenance completed',       desc: 'When a repair or maintenance job is finished' },
   { key: 'vacancy_alert',         label: 'Vacancy alert',               desc: 'When a unit has been vacant for more than 14 days' },
-  { key: 'arrears_alert',         label: 'Arrears alert',               desc: 'When a tenant in your property is in arrears' },
+  { key: 'arrears_alert',         label: 'Arrears alert',               desc: 'When a unit has uncollected arrears' },
 ];
 
 const CHANNELS = [

@@ -6662,6 +6662,8 @@ export type Database = {
       get_auth_user_email: { Args: { _user_id: string }; Returns: string }
       get_landlord_portfolio_stats: { Args: Record<PropertyKey, never>; Returns: Json }
       get_landlord_property_ops: { Args: { p_property_id: string }; Returns: Json }
+      lookup_landlord_invitation: { Args: { p_token: string }; Returns: Json }
+      accept_landlord_invitation: { Args: { p_token: string }; Returns: Json }
       get_landlord_revenue: {
         Args: {
           p_landlord_user_id: string

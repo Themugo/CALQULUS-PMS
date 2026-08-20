@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth, AppRole, AdminLevel, WebhostPermissions } from '@/features/auth/AuthContext';
+import { isLandlordBlockedPath } from "@/features/landlord/lib/landlordAccess";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -58,7 +59,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -82,7 +83,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (!userRole) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -130,11 +131,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
-  // ── Landlord: HARD BLOCK from manager/tenant routes ─────────────
+  // ── Landlord: HARD BLOCK from manager/tenant/agency/webhost routes ─
   if (effectiveRole === 'landlord') {
-    const blockedPrefixes = ['/portal', '/tenant', '/', '/properties'];
-    if (blockedPrefixes.some(p => currentPath === p) ||
-        currentPath.startsWith('/portal') || currentPath.startsWith('/tenant/')) {
+    if (isLandlordBlockedPath(currentPath)) {
       return safeRedirect('/landlord/dashboard');
     }
   }

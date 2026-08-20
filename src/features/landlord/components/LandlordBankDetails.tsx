@@ -137,12 +137,12 @@ const LandlordBankDetails: React.FC = () => {
                 onClick={() => setForm(p => ({ ...p, preferred_method: m.value }))}
                 className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
                   form.preferred_method === m.value
-                    ? 'border-amber-400/50 bg-amber-400/8 ring-1 ring-amber-400'
-                    : 'border-border hover:border-amber-400/40'
+                    ? 'border-primary/50 bg-primary/10 ring-1 ring-primary'
+                    : 'border-border hover:border-primary/40'
                 }`}
               >
-                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`} />
-                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-amber-500' : 'text-muted-foreground'}`}>{m.label}</span>
+                <m.icon className={`h-5 w-5 ${form.preferred_method === m.value ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className={`text-xs font-medium ${form.preferred_method === m.value ? 'text-primary' : 'text-muted-foreground'}`}>{m.label}</span>
               </button>
             ))}
           </div>
@@ -153,7 +153,7 @@ const LandlordBankDetails: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Smartphone className="h-4 w-4 text-green-600" />
+            <Smartphone className="h-4 w-4 text-success" />
             M-Pesa details
           </CardTitle>
         </CardHeader>

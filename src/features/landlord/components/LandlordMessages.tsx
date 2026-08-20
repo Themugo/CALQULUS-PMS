@@ -151,7 +151,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                 key={thread.id}
                 role="button"
                 tabIndex={0}
-                className={`p-3 border-b border-border cursor-pointer hover:bg-muted/40 transition-colors ${selectedThread === thread.id ? 'bg-amber-400/6 border-l-2 border-l-primary' : ''}`}
+                className={`p-3 border-b border-border cursor-pointer hover:bg-muted/40 transition-colors ${selectedThread === thread.id ? 'bg-primary/8 border-l-2 border-l-primary' : ''}`}
                 onClick={() => setSelectedThread(thread.id)}
                 onKeyDown={onActivateKey(() => setSelectedThread(thread.id))}
               >
@@ -163,7 +163,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                     {prop && <p className="text-xs text-muted-foreground">{prop.name}</p>}
                     <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(thread.created_at), { addSuffix: true })}</p>
                   </div>
-                  {unread && <span className="h-2 w-2 rounded-full bg-[hsl(214_73%_48%)] shrink-0 mt-1" />}
+                  {unread && <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />}
                 </div>
               </div>
             );
@@ -188,10 +188,10 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} gap-2`}>
                       {!isMe && (
                         <Avatar className="h-7 w-7 shrink-0 mt-1">
-                          <AvatarFallback className="text-xs bg-amber-400/10">M</AvatarFallback>
+                          <AvatarFallback className="text-xs bg-primary/10 text-primary">M</AvatarFallback>
                         </Avatar>
                       )}
-                      <div className={`max-w-xs rounded-2xl px-3 py-2 text-sm ${isMe ? 'bg-amber-400 text-slate-900' : 'bg-muted'}`}>
+                      <div className={`max-w-xs rounded-2xl px-3 py-2 text-sm ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         {msg.subject && <p className="font-semibold text-xs mb-1 opacity-70">{msg.subject}</p>}
                         <p className="whitespace-pre-wrap">{msg.body}</p>
                         <p className="text-xs opacity-60 mt-1 text-right">{format(new Date(msg.created_at), 'dd MMM HH:mm')}</p>
