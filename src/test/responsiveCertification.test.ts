@@ -7,7 +7,7 @@ const src = (relative: string) => readFileSync(join(process.cwd(), relative), "u
 describe("Phase 11 responsive certification contracts", () => {
   it("keeps dialogs inset on small screens instead of edge-to-edge", () => {
     const dialog = src("src/shared/components/ui/dialog.tsx");
-    expect(dialog).toContain("w-[calc(100%-1.5rem)]");
+    expect(dialog).toContain("w-[min(32rem,calc(100vw-1.5rem))]");
     expect(dialog).toContain("max-h-[min(90vh,calc(100dvh-1.5rem))]");
   });
 
@@ -38,7 +38,9 @@ describe("Phase 11 responsive certification contracts", () => {
     expect(layout).toContain('label: "Fix"');
     expect(layout).toContain('label: "Docs"');
     expect(layout).toContain('label: "Me"');
-    expect(layout).not.toMatch(/MOBILE_NAV[\s\S]*truncate/);
+    const mobileNavRender = layout.split("{MOBILE_NAV.map")[1]?.split("</nav>")[0] ?? "";
+    expect(mobileNavRender).toContain("{item.label}");
+    expect(mobileNavRender).not.toContain("truncate");
   });
 
   it("does not hide the maintenance property column in the design preview", () => {

@@ -104,10 +104,15 @@ test.describe("Phase 11 responsive certification", () => {
     await expect(dialog.getByText("Confirm action")).toBeVisible();
     await expect(dialog.getByText(/same radius, type, and navy overlay/i)).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Continue" })).toBeVisible();
-    const box = await dialog.boundingBox();
-    expect(box, "dialog should render").toBeTruthy();
-    expect(box!.x, "dialog should not kiss the left edge").toBeGreaterThanOrEqual(8);
-    expect(box!.x + box!.width, "dialog should not kiss the right edge").toBeLessThanOrEqual(352);
+    await expect.poll(async () => {
+      return dialog.evaluate((el) => el.getBoundingClientRect().x);
+    }, { timeout: 5_000 }).toBeGreaterThanOrEqual(8);
+    const box = await dialog.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.x, right: r.right, width: r.width };
+    });
+    expect(box.width, "dialog should be narrower than the viewport").toBeLessThanOrEqual(344);
+    expect(box.right, "dialog should not kiss the right edge").toBeLessThanOrEqual(352);
   });
 
   for (const path of LOGIN_PATHS) {

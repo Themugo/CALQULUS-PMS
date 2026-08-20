@@ -304,6 +304,9 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
               </BarChart>
             </ResponsiveContainer>
             </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
