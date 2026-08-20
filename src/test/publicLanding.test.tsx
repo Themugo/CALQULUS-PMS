@@ -92,11 +92,17 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("keeps a light public canvas and reserves navy for footer and closing CTA", () => {
+  it("uses a navy night canvas with cyan chrome and a compact close", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
+    const header = screen.getByRole("banner");
+    expect(header.className).toMatch(/navy-primary/);
     expect(container.querySelector("footer.bg-navy-deep, footer.bg-navy-primary")).toBeTruthy();
-    expect(container.querySelector("#about.bg-navy-primary")).toBeTruthy();
+    expect(container.querySelector("#about")).toBeTruthy();
+    expect(container.querySelector("#platform")).toBeTruthy();
+    expect(container.querySelector("#how-it-works")).toBeTruthy();
+    expect(container.querySelector("#solutions")).toBeTruthy();
+    expect(container.querySelector("#contact")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
   });
 

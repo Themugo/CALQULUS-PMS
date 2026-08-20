@@ -221,7 +221,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Top Accent Stripe — CALQULUS blue */}
+        {/* Top Accent Stripe — electric cyan */}
         <div className="h-0.5 w-full bg-sidebar-primary flex-shrink-0" />
 
         {/* Workspace Brand Header */}
@@ -232,9 +232,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
         >
           {collapsed ? (
-            <BrandMark size="nav" />
+            <BrandMark size="nav" inverse />
           ) : (
-            <BrandMark size="md" showWordmark subtitle="PMS" />
+            <BrandMark size="md" showWordmark subtitle="PMS" inverse />
           )}
 
           <div className="flex items-center gap-1 flex-shrink-0">

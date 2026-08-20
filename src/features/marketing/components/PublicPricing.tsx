@@ -16,7 +16,7 @@ export function PublicPricing({ tiers }: PublicPricingProps) {
           key={tier.tierKey}
           className={cn(
             "flex flex-col p-5 enterprise-card",
-            tier.featured && "border-primary/35 bg-gradient-to-b from-soft-blue to-card shadow-[0_12px_32px_-20px_rgb(21_94_239_/_0.45)]",
+            tier.featured && "border-primary/40 bg-gradient-to-b from-soft-blue to-card shadow-[0_12px_32px_-18px_rgb(26_212_228_/_0.45)]",
           )}
         >
           {tier.featured && (

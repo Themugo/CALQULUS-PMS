@@ -7,14 +7,14 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #F7F9FC;
+  background: #F3F7FB;
 }
 
 .initial-loader-spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid rgba(47, 111, 237, 0.2);
-  border-top-color: #2F6FED;
+  border: 4px solid rgba(26, 212, 228, 0.2);
+  border-top-color: #1AD4E4;
   border-radius: 50%;
   animation: calqulus-spin 1s linear infinite;
 }
@@ -28,6 +28,6 @@
 @media (prefers-reduced-motion: reduce) {
   .initial-loader-spinner {
     animation: none;
-    border-top-color: #2F6FED;
+    border-top-color: #1AD4E4;
   }
 }

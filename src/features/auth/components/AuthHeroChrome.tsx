@@ -61,7 +61,7 @@ export function PortalAuthShell({
 }: PortalAuthShellProps) {
   const isLight = variant === "light";
   return (
-    <div className={cn("public-canvas min-h-screen text-foreground", !isLight && "hero-gradient")}>
+    <div className={cn("desk-canvas min-h-screen text-foreground", !isLight && "hero-gradient")}>
       <div className="mx-auto flex min-h-screen max-w-6xl">
         <div className="relative hidden overflow-hidden lg:flex lg:w-[54%] lg:flex-col">
           <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
@@ -183,7 +183,7 @@ export function AuthLoadingScreen({ variant = "light" }: { variant?: "hero" | "l
     <div
       className={cn(
         "flex min-h-screen items-center justify-center text-foreground",
-        variant === "light" ? "public-canvas" : "hero-gradient",
+        variant === "light" ? "desk-canvas" : "hero-gradient",
       )}
     >
       <div className="flex flex-col items-center gap-4">
@@ -208,7 +208,7 @@ export function AuthGridOverlay() {
       className="pointer-events-none absolute inset-0"
       style={{
         background:
-          "radial-gradient(circle at 18% 88%, hsl(220 87% 51% / 0.10) 0%, transparent 55%), radial-gradient(circle at 88% 12%, hsl(173 70% 42% / 0.08) 0%, transparent 50%)",
+          "radial-gradient(circle at 18% 88%, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 55%), radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--glow) 10%, transparent) 0%, transparent 50%)",
       }}
     />
   );

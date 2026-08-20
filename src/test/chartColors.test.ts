@@ -7,7 +7,7 @@ import {
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 describe("BRAND_CHART_COLORS", () => {
-  it("leads with the interactive-blue primary token", () => {
+  it("leads with the electric-cyan primary token", () => {
     expect(BRAND_CHART_COLORS[0]).toBe(CALQULUS_COLOR.primary);
   });
 

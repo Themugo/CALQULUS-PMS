@@ -24,7 +24,7 @@ const WORK = [
 export function ProductPreview() {
   return (
     <figure className="mx-auto w-full max-w-lg md:max-w-none">
-      <div className="enterprise-card overflow-hidden shadow-[0_18px_40px_-24px_rgb(21_94_239_/_0.28)]">
+      <div className="enterprise-card overflow-hidden shadow-[0_22px_48px_-18px_rgb(26_212_228_/_0.38)]">
         <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-2.5">
             <BrandMark size="xs" />
@@ -101,7 +101,7 @@ export function ProductPreview() {
           </div>
         </div>
       </div>
-      <figcaption className="mt-3 text-center text-xs text-muted-foreground">
+      <figcaption className="mt-2.5 text-center text-xs text-white/55">
         Illustrative view of the CALQULUS manager dashboard.
       </figcaption>
     </figure>

@@ -8,7 +8,7 @@ interface PublicShellProps {
 
 export function PublicShell({ children }: PublicShellProps) {
   return (
-    <div className="public-canvas min-h-screen text-foreground">
+    <div className="public-canvas min-h-screen text-white">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:shadow-md"

@@ -24,8 +24,8 @@ const LegalPage: React.FC = () => {
 
   return (
     <PublicShell>
-      <div className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
+      <div className="border-b border-white/10 bg-navy-primary/80">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2" role="tablist" aria-label="Legal documents">
             <button
               type="button"
@@ -36,7 +36,7 @@ const LegalPage: React.FC = () => {
                 'inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors',
                 tab === 'privacy'
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  : 'text-white/70 hover:bg-white/10 hover:text-white',
               )}
             >
               <Shield className="h-3.5 w-3.5" />
@@ -51,19 +51,21 @@ const LegalPage: React.FC = () => {
                 'inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors',
                 tab === 'terms'
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  : 'text-white/70 hover:bg-white/10 hover:text-white',
               )}
             >
               <FileText className="h-3.5 w-3.5" />
               Terms of Service
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">Updated {LAST_UPDATED}</p>
+          <p className="text-xs text-white/55">Updated {LAST_UPDATED}</p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-        {tab === 'privacy' ? <PrivacyPolicy /> : <TermsOfService />}
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <div className="enterprise-card p-6 text-foreground sm:p-8">
+          {tab === 'privacy' ? <PrivacyPolicy /> : <TermsOfService />}
+        </div>
       </div>
     </PublicShell>
   );
