@@ -337,21 +337,6 @@ const ManagerPaymentHistory = () => {
     return months;
   }, [payments]);
 
-  // Property revenue breakdown
-  const propertyRevenueData = useMemo(() => {
-    const propertyMap = new Map<string, number>();
-    
-    filteredPayments.forEach((p) => {
-      const property = p.leases?.property || "Unknown";
-      propertyMap.set(property, (propertyMap.get(property) || 0) + Number(p.amount));
-    });
-    
-    return Array.from(propertyMap.entries())
-      .map(([name, revenue]) => ({ name, revenue }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
-  }, [filteredPayments]);
-
   // Export to CSV
   const exportToCSV = () => {
     const headers = [
@@ -506,6 +491,16 @@ const ManagerPaymentHistory = () => {
     
     yPos = getAutoTableFinalY(doc) + 15;
     
+    const propertyMap = new Map<string, number>();
+    filteredPayments.forEach((p) => {
+      const property = p.leases?.property || "Unknown";
+      propertyMap.set(property, (propertyMap.get(property) || 0) + Number(p.amount));
+    });
+    const propertyRevenueData = Array.from(propertyMap.entries())
+      .map(([name, revenue]) => ({ name, revenue }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
+
     // Top Properties Section
     if (propertyRevenueData.length > 0) {
       doc.setTextColor(0, 0, 0);

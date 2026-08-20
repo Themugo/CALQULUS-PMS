@@ -19,7 +19,7 @@ test.describe("Manager finance layout preview", () => {
     await page.goto("/design-preview/manager-finance");
     await expect(page.getByRole("heading", { name: "Billing", exact: true })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole("button", { name: "Create invoice" })).toBeVisible();
-    await expect(page.getByText("Billed")).toBeVisible();
+    await expect(page.getByText("Billed", { exact: true })).toBeVisible();
     await expect(page.getByText("Live value").first()).toBeVisible();
     await expect(page.getByText(/KES 1.24M/i)).toHaveCount(0);
 
