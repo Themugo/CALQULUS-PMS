@@ -1,18 +1,18 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 13 leftover HIGH/MEDIUM remediations (continuation). Do not restart
-the redesign. CRITICAL/HIGH code remediations already on `main` (`2bb9f70`).
-Visual direction, RLS, auth contracts, and routes are unchanged.
+Phase 13 leftover HIGH/MEDIUM remediations landed on GitHub `main`.
+Do not restart the redesign. Visual direction, RLS, auth contracts, and
+routes are unchanged.
 
 ## CURRENT TASK
-Checkpoint complete on `cursor/phase-13-continuation-1e5d`. No further
-in-git leftover HIGH from the continuation list. Operator-owned live
-deploy and SQL apply remain.
+Operator-owned live deploy and SQL apply. No remaining in-git leftover
+HIGH from the continuation list.
 
 ## COMPLETED TASKS
 - Phase 13 audit report (`a6f1adc`) and CRITICAL/HIGH remediations (`2bb9f70`)
   merged to `main` (`f650a5a`)
+- Continuation leftover HIGH/MEDIUM (`51538fc`) pushed to GitHub `main`
 - Continuation leftover HIGH: remaining `if (error) return []` query swallows
   now throw; leftover notify/report Edge Functions require a real user JWT,
   service role, or `CRON_SECRET`; shared Sidebar webhost/agency groups match
@@ -68,8 +68,7 @@ large ops pages without breaking `tsc`; remaining amber utilities on
 live feature files that were not in the yellow-500 leftover set.
 
 ## IN PROGRESS FILES
-None. Continuation work is checkpointed on
-`cursor/phase-13-continuation-1e5d`.
+None. Continuation is on GitHub `main` (`51538fc` and this docs note).
 
 ## KNOWN ISSUES
 - Live `health-check` 404 until function deploy (not claimed fixed)
@@ -89,9 +88,11 @@ None. Continuation work is checkpointed on
 - Live `health-check` / RLS not re-probed this session
 
 ### Next exact action
-Open/review the continuation PR against `main`, then operator deploys
-Edge Functions and applies `20260820000000_tenants_select_role_in.sql`.
-Do not merge unless asked. Do not restart the redesign.
+On the Windows machine (`C:\Users\hp\Desktop\CALQULUS-PMS`):
+`git checkout main && git pull origin main`.
+Then operator deploys Edge Functions and applies
+`20260820000000_tenants_select_role_in.sql`.
+Do not restart the redesign.
 
 ### Phase 13 remediations (this branch)
 - `log-audit` requires a user JWT; actor is `ctx.user.id`, not the body.
