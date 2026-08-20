@@ -104,6 +104,9 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
   bank_direct_debit: "Direct Debit",
   receipt_upload:    "Receipt Upload",
   cash:              "Cash",
+  stripe:            "Stripe",
+  stripe_checkout:   "Stripe Checkout",
+  card:              "Card",
 };
 
 export function paymentMethodLabel(method: string | null | undefined): string {
@@ -113,6 +116,56 @@ export function paymentMethodLabel(method: string | null | undefined): string {
 
 export function isMpesaMethod(method: string | null | undefined): boolean {
   return !!method && method.startsWith("mpesa");
+}
+
+export function isStripeMethod(method: string | null | undefined): boolean {
+  return !!method && (method.startsWith("stripe") || method === "card");
+}
+
+/** Ledger status for payment_transactions — Successful, Pending, Failed, Cancelled. */
+export function paymentStatusTone(status: string): StatusTone {
+  switch (status) {
+    case "completed":
+    case "succeeded":
+    case "success":
+    case "paid":
+      return "success";
+    case "pending":
+    case "processing":
+    case "initiated":
+      return "warning";
+    case "failed":
+      return "danger";
+    case "cancelled":
+    case "canceled":
+    case "refunded":
+      return "neutral";
+    default:
+      return "neutral";
+  }
+}
+
+export function paymentStatusLabel(status: string): string {
+  switch (status) {
+    case "completed":
+    case "succeeded":
+    case "success":
+    case "paid":
+      return "Successful";
+    case "pending":
+    case "processing":
+    case "initiated":
+      return "Pending";
+    case "failed":
+      return "Failed";
+    case "cancelled":
+    case "canceled":
+      return "Cancelled";
+    case "refunded":
+      return "Refunded";
+    default:
+      return status.replace(/_/g, " ");
+  }
 }
 
 export function payoutStatusTone(status: string): StatusTone {

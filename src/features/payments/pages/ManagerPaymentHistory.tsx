@@ -1,6 +1,7 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -29,13 +30,13 @@ import {
   CreditCard,
   CheckCircle,
   Building,
+  Landmark,
   Calendar,
   Download,
   RefreshCw,
   Receipt,
   BarChart3,
   User,
-  Users,
   Plus,
   Clock,
   AlertTriangle,
@@ -55,13 +56,13 @@ import BankReconciliationPanel from "@/features/payments/components/BankReconcil
 import NotificationFailuresPanel from "@/features/payments/components/NotificationFailuresPanel";
 import RecordPaymentDialog from "@/features/payments/components/RecordPaymentDialog";
 import {
-  invoiceStatusTone,
-  invoiceStatusLabel,
   paymentMethodLabel,
   isMpesaMethod,
+  isStripeMethod,
+  paymentStatusLabel,
+  paymentStatusTone,
   statusBadgeClass,
 } from "@/shared/lib/statusBadge";
-import { onActivateKey } from "@/shared/lib/a11y";
 
 interface PaymentRecord {
   id: string;
@@ -98,7 +99,6 @@ const ManagerPaymentHistory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
   const [tenantFilter, setTenantFilter] = useState("all");
-  const [selectedTenant, setSelectedTenant] = useState<string | null>(null);
 
   // Record payment dialog state
   const [recordDialogOpen, setRecordDialogOpen] = useState(false);
@@ -282,50 +282,6 @@ const ManagerPaymentHistory = () => {
     return Array.from(tenantMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [payments]);
 
-  // Tenant payment breakdown data
-  const tenantBreakdownData = useMemo(() => {
-    const tenantMap = new Map<string, { 
-      id: string; 
-      name: string; 
-      photo_url: string | null;
-      email: string;
-      phone: string | null;
-      totalAmount: number; 
-      transactionCount: number;
-      property: string | null;
-      unit: string | null;
-      lastPayment: string | null;
-    }>();
-    
-    filteredPayments.forEach((p) => {
-      if (p.tenants?.id) {
-        const existing = tenantMap.get(p.tenants.id);
-        if (existing) {
-          existing.totalAmount += Number(p.amount);
-          existing.transactionCount += 1;
-          if (p.paid_date && (!existing.lastPayment || p.paid_date > existing.lastPayment)) {
-            existing.lastPayment = p.paid_date;
-          }
-        } else {
-          tenantMap.set(p.tenants.id, {
-            id: p.tenants.id,
-            name: p.tenants.name,
-            photo_url: p.tenants.photo_url,
-            email: p.tenants.email,
-            phone: p.tenants.phone,
-            totalAmount: Number(p.amount),
-            transactionCount: 1,
-            property: p.leases?.property || null,
-            unit: p.leases?.unit || null,
-            lastPayment: p.paid_date,
-          });
-        }
-      }
-    });
-    
-    return Array.from(tenantMap.values()).sort((a, b) => b.totalAmount - a.totalAmount);
-  }, [filteredPayments]);
-
   // Calculate stats. Method split now reads the real payment_method column
   // (isMpesaMethod checks for the mpesa_stk/mpesa_ussd/mpesa_till prefix)
   // instead of guessing from whether the tenant has a phone number on file.
@@ -381,21 +337,6 @@ const ManagerPaymentHistory = () => {
     return months;
   }, [payments]);
 
-  // Property revenue breakdown
-  const propertyRevenueData = useMemo(() => {
-    const propertyMap = new Map<string, number>();
-    
-    filteredPayments.forEach((p) => {
-      const property = p.leases?.property || "Unknown";
-      propertyMap.set(property, (propertyMap.get(property) || 0) + Number(p.amount));
-    });
-    
-    return Array.from(propertyMap.entries())
-      .map(([name, revenue]) => ({ name, revenue }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
-  }, [filteredPayments]);
-
   // Export to CSV
   const exportToCSV = () => {
     const headers = [
@@ -424,7 +365,7 @@ const ManagerPaymentHistory = () => {
       p.amount.toString(),
       paymentMethodLabel(p.payment_method),
       p.reference || "",
-      invoiceStatusLabel(p.tx_status),
+      paymentStatusLabel(p.tx_status),
       p.description || "",
     ]);
 
@@ -456,7 +397,7 @@ const ManagerPaymentHistory = () => {
     const reportDate = format(new Date(), "dd/MM/yy");
     
     // Header
-    doc.setFillColor(16, 185, 129); // Emerald color
+    doc.setFillColor(8, 26, 46); // Navy
     doc.rect(0, 0, pageWidth, 40, "F");
     
     doc.setTextColor(255, 255, 255);
@@ -495,7 +436,7 @@ const ManagerPaymentHistory = () => {
       body: summaryData,
       theme: "striped",
       headStyles: { 
-        fillColor: [16, 185, 129],
+        fillColor: [13, 39, 68],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -532,7 +473,7 @@ const ManagerPaymentHistory = () => {
       body: monthlyTableData,
       theme: "striped",
       headStyles: { 
-        fillColor: [59, 130, 246],
+        fillColor: [47, 111, 237],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -550,6 +491,16 @@ const ManagerPaymentHistory = () => {
     
     yPos = getAutoTableFinalY(doc) + 15;
     
+    const propertyMap = new Map<string, number>();
+    filteredPayments.forEach((p) => {
+      const property = p.leases?.property || "Unknown";
+      propertyMap.set(property, (propertyMap.get(property) || 0) + Number(p.amount));
+    });
+    const propertyRevenueData = Array.from(propertyMap.entries())
+      .map(([name, revenue]) => ({ name, revenue }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
+
     // Top Properties Section
     if (propertyRevenueData.length > 0) {
       doc.setTextColor(0, 0, 0);
@@ -570,7 +521,7 @@ const ManagerPaymentHistory = () => {
         body: propertyTableData,
         theme: "striped",
         headStyles: { 
-          fillColor: [139, 92, 246],
+          fillColor: [13, 39, 68],
           textColor: [255, 255, 255],
           fontStyle: "bold",
         },
@@ -590,7 +541,7 @@ const ManagerPaymentHistory = () => {
     // Add new page for transactions
     doc.addPage();
     // Transactions Header
-    doc.setFillColor(16, 185, 129);
+    doc.setFillColor(8, 26, 46);
     doc.rect(0, 0, pageWidth, 30, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
@@ -619,7 +570,7 @@ const ManagerPaymentHistory = () => {
       ],
       theme: "striped",
       headStyles: { 
-        fillColor: [16, 185, 129],
+        fillColor: [13, 39, 68],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -649,7 +600,7 @@ const ManagerPaymentHistory = () => {
       p.leases ? `${p.leases.property} - ${p.leases.unit}` : "-",
       p.invoice_number,
       formatCurrency(Number(p.amount)),
-      p.tenants?.phone ? "M-Pesa" : "Card",
+      paymentMethodLabel(p.payment_method),
     ]);
     
     autoTable(doc, {
@@ -658,7 +609,7 @@ const ManagerPaymentHistory = () => {
       body: transactionsData,
       theme: "striped",
       headStyles: { 
-        fillColor: [59, 130, 246],
+        fillColor: [47, 111, 237],
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
@@ -701,8 +652,28 @@ const ManagerPaymentHistory = () => {
 
   return (
     <Layout
-      title="Payment History"
-      subtitle="Completed payments and receipts — record a payment against an invoice"
+      title="Payments"
+      subtitle="Date, tenant, invoice or reference, amount, method, and status from the payment ledger"
+      headerActions={
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            className="btn-brand min-h-11 gap-2"
+            onClick={() => {
+              if (tenantsWithBalances.length > 0) {
+                setRecordTenant(tenantsWithBalances[0]);
+                setRecordInvoice(null);
+              }
+              setRecordDialogOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Record Payment
+          </Button>
+          <Button variant="outline" size="sm" className="min-h-11" asChild>
+            <Link to="/billing">View billing</Link>
+          </Button>
+        </div>
+      }
     >
       {/* Record Payment dialog */}
       {recordDialogOpen && recordTenant && (
@@ -724,17 +695,16 @@ const ManagerPaymentHistory = () => {
       )}
 
       <Tabs defaultValue="history" className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <TabsList className="flex-wrap h-auto gap-1 p-1">
+        <TabsList className="flex-wrap h-auto gap-1 p-1">
             <TabsTrigger value="history" className="gap-1.5">
               <Receipt className="h-4 w-4" />
-              Payment History
+              Payments
             </TabsTrigger>
             <TabsTrigger value="pending" className="gap-1.5">
               <Clock className="h-4 w-4" />
               Pending
               {pendingInvoices.length > 0 && (
-                <Badge className="ml-1 h-5 min-w-5 text-xs bg-amber-100 text-amber-800 border-amber-200">
+                <Badge variant="outline" className="ml-1 h-5 min-w-5 text-xs">
                   {pendingInvoices.length}
                 </Badge>
               )}
@@ -751,22 +721,7 @@ const ManagerPaymentHistory = () => {
               <Bell className="h-4 w-4" />
               Notifications
             </TabsTrigger>
-          </TabsList>
-
-          <Button
-            className="bg-green-600 hover:bg-green-700 text-white gap-2"
-            onClick={() => {
-              if (tenantsWithBalances.length > 0) {
-                setRecordTenant(tenantsWithBalances[0]);
-                setRecordInvoice(null);
-              }
-              setRecordDialogOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Record Payment
-          </Button>
-        </div>
+        </TabsList>
 
       {/* ── Pending Invoices Tab ── */}
       <TabsContent value="pending">
@@ -825,7 +780,7 @@ const ManagerPaymentHistory = () => {
                           {inv.leases?.property ?? inv.tenants?.property ?? "—"}{" "}
                           {inv.leases?.unit ?? inv.tenants?.unit ? `· Unit ${inv.leases?.unit ?? inv.tenants?.unit}` : ""}
                         </TableCell>
-                        <TableCell className={`text-sm ${isOverdue ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
+                        <TableCell className="text-sm text-muted-foreground">
                           {inv.due_date ? format(new Date(inv.due_date), "dd/MM/yy") : "—"}
                           {isOverdue && <span className="ml-1 text-xs">(overdue)</span>}
                         </TableCell>
@@ -845,21 +800,15 @@ const ManagerPaymentHistory = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={isOverdue
-                              ? "border-red-300 text-red-700 bg-red-50"
-                              : "border-amber-300 text-warning bg-amber-50"
-                            }
-                          >
-                            {isOverdue ? <AlertTriangle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
+                          <span className={`${statusBadgeClass(isOverdue ? "danger" : "warning")} gap-1`}>
+                            {isOverdue ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                             {isOverdue ? "Overdue" : "Pending"}
-                          </Badge>
+                          </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs gap-1"
+                            className="btn-brand h-7 text-xs gap-1"
                             onClick={() => {
                               const tenant = inv.tenants ?? {};
                               // collect all invoices for this tenant
@@ -906,17 +855,10 @@ const ManagerPaymentHistory = () => {
 
       {/* ── Payment History Tab ── */}
       <TabsContent value="history">
-      {/* Summary strip — three plain numbers, semantic color only where it
-          signals something (Collected is a positive outcome). Monthly trend,
-          payment-method split, and collection-rate detail all already live
-          on the Analytics tab (PaymentAnalytics) — repeating them here as a
-          second set of charts was pure duplication, and a wall of rainbow
-          chart colors on the page every manager lands on first isn't the
-          "trustworthy, professional" look finance pages need. */}
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
         <div className="rounded-xl border border-border bg-card p-4 card-shadow">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Collected</p>
-          <p className="mt-1 text-2xl font-bold text-success">{formatCurrency(stats.totalAmount)}</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Collected</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">{formatCurrency(stats.totalAmount)}</p>
           <p className="text-xs text-muted-foreground mt-1">Matches current filters</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 card-shadow">
@@ -925,135 +867,11 @@ const ManagerPaymentHistory = () => {
           <p className="text-xs text-muted-foreground mt-1">Completed payments</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 card-shadow">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">This Month</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">This month</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{formatCurrency(stats.thisMonth)}</p>
           <p className="text-xs text-muted-foreground mt-1">All completed payments, unfiltered</p>
         </div>
       </div>
-
-      {/* Top Properties by Revenue — kept as a plain ranked list rather than
-          a bar chart; this data isn't shown anywhere on the Analytics tab,
-          so it stays, just without another chart-color palette. */}
-      {propertyRevenueData.length > 0 && (
-        <Card className="mb-6 card-shadow animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Building className="h-5 w-5 text-muted-foreground" />
-              Top Properties by Revenue
-            </CardTitle>
-            <CardDescription>Revenue collection by property, current filters</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {propertyRevenueData.map((p) => (
-                <div key={p.name}>
-                  <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-foreground font-medium truncate">{p.name}</span>
-                    <span className="text-foreground font-semibold">{formatCurrency(p.revenue)}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full"
-                      style={{ width: `${(p.revenue / propertyRevenueData[0].revenue) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tenant Payment Breakdown */}
-      <Card className="mb-6 card-shadow animate-fade-in">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-muted-foreground" />
-            Tenant Payment Details
-          </CardTitle>
-          <CardDescription>Payment breakdown by tenant with total amounts and transaction counts</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {tenantBreakdownData.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No tenant payment data available</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {tenantBreakdownData.slice(0, 6).map((tenant) => {
-                const toggleTenantSelection = () => {
-                  if (selectedTenant === tenant.id) {
-                    setSelectedTenant(null);
-                    setTenantFilter("all");
-                  } else {
-                    setSelectedTenant(tenant.id);
-                    setTenantFilter(tenant.id);
-                  }
-                };
-                return (
-                <div
-                  key={tenant.id}
-                  role="button"
-                  tabIndex={0}
-                  className={`p-4 rounded-lg border transition-all cursor-pointer ${
-                    selectedTenant === tenant.id
-                      ? "border-primary/50 bg-primary/5"
-                      : "border-border hover:border-primary/30 hover:bg-muted/30"
-                  }`}
-                  onClick={toggleTenantSelection}
-                  onKeyDown={onActivateKey(toggleTenantSelection)}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={tenant.photo_url || undefined} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                        {tenant.name
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("") || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">{tenant.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{tenant.email}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Total Paid</p>
-                      <p className="font-semibold text-success">{formatCurrency(tenant.totalAmount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Transactions</p>
-                      <p className="font-semibold text-foreground">{tenant.transactionCount}</p>
-                    </div>
-                  </div>
-                  {tenant.property && (
-                    <div className="mt-2 pt-2 border-t border-border">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Building className="h-3 w-3" />
-                        {tenant.property} {tenant.unit && `- ${tenant.unit}`}
-                      </div>
-                    </div>
-                  )}
-                  {tenant.lastPayment && (
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      Last payment: {format(new Date(tenant.lastPayment), "dd/MM/yy")}
-                    </div>
-                  )}
-                </div>
-                );
-              })}
-            </div>
-          )}
-          {tenantBreakdownData.length > 6 && (
-            <p className="text-sm text-muted-foreground mt-4 text-center">
-              Showing top 6 tenants. Use filters below to see all.
-            </p>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between mb-6">
@@ -1064,6 +882,7 @@ const ManagerPaymentHistory = () => {
               placeholder="Search by tenant, invoice, phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search payments"
               className="pl-9 w-full sm:w-80 bg-card border-border"
             />
           </div>
@@ -1082,10 +901,7 @@ const ManagerPaymentHistory = () => {
             </SelectContent>
           </Select>
 
-          <Select value={tenantFilter} onValueChange={(value) => {
-            setTenantFilter(value);
-            setSelectedTenant(value === "all" ? null : value);
-          }}>
+          <Select value={tenantFilter} onValueChange={setTenantFilter}>
             <SelectTrigger className="w-[200px] bg-card border-border">
               <User className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Filter by tenant" />
@@ -1106,7 +922,6 @@ const ManagerPaymentHistory = () => {
               size="sm"
               onClick={() => {
                 setTenantFilter("all");
-                setSelectedTenant(null);
               }}
               className="text-muted-foreground hover:text-foreground"
             >
@@ -1149,11 +964,9 @@ const ManagerPaymentHistory = () => {
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="font-heading font-semibold">Date</TableHead>
                 <TableHead className="font-heading font-semibold">Tenant</TableHead>
-                <TableHead className="font-heading font-semibold">Property</TableHead>
-                <TableHead className="font-heading font-semibold">Invoice</TableHead>
+                <TableHead className="font-heading font-semibold">Invoice / reference</TableHead>
                 <TableHead className="font-heading font-semibold">Amount</TableHead>
                 <TableHead className="font-heading font-semibold">Method</TableHead>
-                <TableHead className="font-heading font-semibold">Reference</TableHead>
                 <TableHead className="font-heading font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -1184,28 +997,17 @@ const ManagerPaymentHistory = () => {
                         <span className="text-foreground font-medium">
                           {payment.tenants?.name || "Unknown"}
                         </span>
-                        {payment.tenants?.phone && (
+                        {payment.leases && (
                           <p className="text-xs text-muted-foreground">
-                            {payment.tenants.phone}
+                            {payment.leases.property}{payment.leases.unit ? ` · ${payment.leases.unit}` : ""}
                           </p>
                         )}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    {payment.leases ? (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building className="h-4 w-4" />
-                        <span>
-                          {payment.leases.property} - {payment.leases.unit}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-mono text-foreground">
-                    {payment.invoice_number}
+                    <p className="font-mono text-foreground">{payment.invoice_number}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{payment.reference ?? "—"}</p>
                   </TableCell>
                   <TableCell className="font-semibold text-foreground">
                     {formatCurrency(Number(payment.amount))}
@@ -1214,19 +1016,17 @@ const ManagerPaymentHistory = () => {
                     <div className="flex items-center gap-2 text-muted-foreground">
                       {isMpesaMethod(payment.payment_method) ? (
                         <Smartphone className="h-4 w-4" />
-                      ) : (
+                      ) : isStripeMethod(payment.payment_method) ? (
                         <CreditCard className="h-4 w-4" />
+                      ) : (
+                        <Landmark className="h-4 w-4" />
                       )}
                       <span className="text-sm text-foreground">{paymentMethodLabel(payment.payment_method)}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {payment.reference ?? "—"}
-                  </TableCell>
                   <TableCell>
-                    <span className={`${statusBadgeClass(invoiceStatusTone(payment.tx_status))} gap-1`}>
-                      <CheckCircle className="h-3 w-3" />
-                      {invoiceStatusLabel(payment.tx_status)}
+                    <span className={`${statusBadgeClass(paymentStatusTone(payment.tx_status))} gap-1`}>
+                      {paymentStatusLabel(payment.tx_status)}
                     </span>
                   </TableCell>
                 </TableRow>

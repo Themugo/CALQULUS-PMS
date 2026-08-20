@@ -124,12 +124,12 @@ export function InvoiceTable({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-border">
-            <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
             <SortableHead label="Invoice" sortKey="invoice" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
             <SortableHead label="Tenant" sortKey="tenant" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
-            <SortableHead label="Property / Unit" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+            <SortableHead label="Property" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
             <SortableHead label="Amount" sortKey="amount" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
-            <SortableHead label="Due" sortKey="due" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+            <SortableHead label="Due date" sortKey="due" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
+            <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -160,12 +160,6 @@ export function InvoiceTable({
                 key={invoice.id}
                 className="hover:bg-muted/30 border-border"
               >
-                <TableCell>
-                  <span className={`${statusBadgeClass(cfg.tone)} gap-1`}>
-                    <StatusIcon className="h-3 w-3" />
-                    {cfg.label}
-                  </span>
-                </TableCell>
                 <TableCell className="font-medium font-mono text-foreground">
                   {invoice.invoice_number}
                 </TableCell>
@@ -219,12 +213,19 @@ export function InvoiceTable({
                 </TableCell>
 
                 <TableCell>
+                  <span className={`${statusBadgeClass(cfg.tone)} gap-1`}>
+                    <StatusIcon className="h-3 w-3" />
+                    {cfg.label}
+                  </span>
+                </TableCell>
+
+                <TableCell>
                   <div className="flex items-center justify-end gap-1.5">
                     {canCollect && (
                       <>
                         <Button
                           variant="outline" size="sm"
-                          className="h-8 text-xs text-success border-success/30 hover:bg-success/10"
+                          className="h-8 text-xs"
                           onClick={() => onMpesa(invoice)}
                         >
                           <Smartphone className="h-3.5 w-3.5 sm:mr-1" />
@@ -240,7 +241,7 @@ export function InvoiceTable({
                     )}
                     {status === "paid" && (
                       <Button
-                        variant="ghost" size="sm" className="h-8 px-2 text-success"
+                        variant="ghost" size="sm" className="h-8 px-2"
                         title="Download Receipt PDF"
                         onClick={() => downloadReceiptPDF({
                           invoice_number: invoice.invoice_number,

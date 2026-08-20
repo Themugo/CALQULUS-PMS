@@ -8,6 +8,11 @@ import {
   occupancyRateColor,
   occupancyTone,
   payoutStatusTone,
+  paymentMethodLabel,
+  paymentStatusLabel,
+  paymentStatusTone,
+  isMpesaMethod,
+  isStripeMethod,
   requestAgeLabel,
   statusBadgeClass,
   tenantStatusTone,
@@ -39,6 +44,15 @@ describe("statusBadge helpers", () => {
     expect(payoutStatusTone("paid")).toBe("success");
     expect(payoutStatusTone("pending")).toBe("warning");
     expect(payoutStatusTone("rejected")).toBe("danger");
+    expect(paymentStatusTone("completed")).toBe("success");
+    expect(paymentStatusTone("pending")).toBe("warning");
+    expect(paymentStatusTone("failed")).toBe("danger");
+    expect(paymentStatusLabel("completed")).toBe("Successful");
+    expect(paymentStatusLabel("failed")).toBe("Failed");
+    expect(paymentMethodLabel("mpesa_stk")).toBe("M-Pesa STK");
+    expect(paymentMethodLabel("stripe_checkout")).toBe("Stripe Checkout");
+    expect(isStripeMethod("stripe_checkout")).toBe(true);
+    expect(isMpesaMethod("mpesa_ussd")).toBe(true);
   });
 
   it("maps maintenance priority and status without bright one-off colors", () => {

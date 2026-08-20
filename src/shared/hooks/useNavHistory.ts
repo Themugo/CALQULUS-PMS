@@ -27,7 +27,7 @@ const ROUTE_NAME_MAP: Record<string, { name: string; category: string }> = {
   "/billing": { name: "Billing", category: "Collections" },
   "/water-billing": { name: "Water Billing", category: "Collections" },
   "/statements": { name: "Statements", category: "Collections" },
-  "/payments": { name: "Payment History", category: "Collections" },
+  "/payments": { name: "Payments", category: "Collections" },
   "/platform-billing": { name: "Platform Billing", category: "Account" },
   "/maintenance": { name: "Maintenance", category: "Operations" },
   "/contracts": { name: "Contracts", category: "Operations" },

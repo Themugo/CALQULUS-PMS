@@ -1,66 +1,84 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 3 — Manager Tenants, Tenant Detail, and Leases.
-STATUS: preview + live implementation complete. STOP after these three surfaces.
+Phase 4 — Manager Billing and Payments.
+STATUS: preview + live implementation complete. STOP after these two surfaces.
 
 ## CURRENT TASK
-STOP. Do not redesign billing, other portals, or the authenticated shell.
+STOP. Do not redesign reports, settings, other portals, or the authenticated shell.
 
 ## COMPLETED
-- Inspected live Tenants (`/tenants`) and Leases (`/leases`). Tenant detail is a sheet on the tenants page (no `/tenants/:id` route).
-- Added layout preview at `/design-preview/manager-tenants` (Tenants / Tenant detail / Leases chrome — labelled slots only, no invented balances or expiry)
-- **Tenants:** header **Invite tenant** + **View leases**; searchable table in spec order (Tenant, Property / Unit, Lease, Rent, Balance, Status); row **View** opens detail; empty / loading / error kept; per-property **Add Tenant** and `InviteTenantDialog` / `MoveOutDialog` unchanged
-- **Tenant detail:** header is tenant name, property, unit, status; primary **View statement**; sections Overview, Lease, Financial, Payments, Maintenance, Documents, Activity; extra existing tabs (Payers, Notices, Portal) remain; profile still uses nested identity / employment / emergency sections
-- **Leases:** header **Create lease**; table Tenant, Property, Unit, Start date, Expiry, Rent, Status; Active / Expiring soon / Expired from stored status plus real `end_date` window; create form now shows inline field errors from existing `leaseSchema`; bulk deactivate confirmation kept
-- No business-logic, API, or permission changes
+- Inspected live Billing (`/billing`) and Payments (`/payments`). Invoice math stays on `original_amount` / `paid_amount` / `invoiceOwedMinor`. Payments stay on `payment_transactions`.
+- Added layout preview at `/design-preview/manager-finance` (Billing / Payments chrome — labelled Live value slots only, no invented collections)
+- **Billing:** header **Create Invoice** + **View payments**; stats Billed, Collected, Outstanding, Overdue; table Invoice, Tenant, Property, Amount, Due date, Status; M-Pesa STK, mark paid via `record-payment`, generate monthly, overdue reminders, receipts, verify, and expenditures kept
+- **Payments:** header **Record Payment** + **View billing**; table Date, Tenant, Invoice / reference, Amount, Method, Status; payment status semantics; M-Pesa / Stripe / bank / receipt method labels and references preserved; pending, analytics, bank reconciliation, and notification tabs kept
+- Analytics uses one navy/blue monthly collections bar plus method and tenant tables — no pie fill on the landing desk
+- No financial-calculation, API, or invented-transaction changes
 
 ## FILES INSPECTED
-- `src/features/tenants/pages/Tenants.tsx`
-- `src/features/tenants/components/{InviteTenantDialog,TenantProfilePanel,TenantLeaseTab,MoveOutDialog}.tsx`
-- `src/features/leases/pages/Leases.tsx`
-- `src/features/leases/components/LeaseCard.tsx`
-- `src/shared/lib/{statusBadge,validations,dateFormat}.ts`
+- `src/features/billing/pages/Billing.tsx`
+- `src/features/billing/components/{BillingStatsBar,InvoiceTable,MpesaPaymentDialog,TenantInvoiceForm}.tsx`
+- `src/features/billing/hooks/useBillingData.ts`
+- `src/features/payments/pages/ManagerPaymentHistory.tsx`
+- `src/features/payments/components/{PaymentAnalytics,RecordPaymentDialog}.tsx`
+- `src/shared/lib/statusBadge.ts`
 
 ## COMPONENTS TO REUSE
-- `InviteTenantDialog`, `MoveOutDialog`, `TenantProfilePanel`, `TenantLeaseTab`, `TenantPaymentsTab`, `TenantMaintenanceTab`, `TenantDocumentsTab`, `TenantStatement`
-- `LeaseCard`, `leaseSchema`, `computeExpiringSoonIds`, `statusBadgeClass`
-- `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`
+- `MpesaPaymentDialog`, `TenantInvoiceForm`, `RecordPaymentDialog`, `ReceiptVerification`, `ReceiptsTab`, `ExpendituresTab`
+- `BankReconciliationPanel`, `NotificationFailuresPanel`
+- `invoiceOwedMinor`, `paymentMethodLabel`, `statusBadgeClass`
+- `PageHeader`, `EmptyState`, `ErrorState`
 
 ## COMPONENTS TO CREATE
-- Preview: `ManagerTenantsPreview` + `ManagerTenantsPreviewPage`
+- Preview: `ManagerFinancePreview` + `ManagerFinancePreviewPage`
+- `paymentStatusTone` / `paymentStatusLabel` for ledger status semantics
 
 ## FILES CHANGED (this phase)
-- `src/features/tenants/pages/Tenants.tsx`
-- `src/features/leases/pages/Leases.tsx`
-- `src/features/design-preview/pages/ManagerTenantsPreviewPage.tsx`
-- `src/features/design-preview/components/ManagerTenantsPreview.tsx`
+- `src/features/billing/pages/Billing.tsx`
+- `src/features/billing/components/{BillingStatsBar,InvoiceTable,MpesaPaymentDialog}.tsx`
+- `src/features/payments/pages/ManagerPaymentHistory.tsx`
+- `src/features/payments/components/PaymentAnalytics.tsx`
+- `src/shared/lib/statusBadge.ts`
+- `src/shared/components/layout/{Sidebar,CommandPalette,BreadcrumbSystem}.tsx`
+- `src/features/design-preview/pages/ManagerFinancePreviewPage.tsx`
+- `src/features/design-preview/components/ManagerFinancePreview.tsx`
 - `src/app/routes.ts`, `src/features/marketing/publicConfig.ts`
 - `src/features/design-preview/pages/DesignPreview.tsx`
-- Tests: `src/test/managerTenantsPreview.test.tsx`, `src/test/managerTenantsLayout.test.ts`, `e2e/manager-tenants-preview.spec.ts`
+- Tests: `src/test/managerFinancePreview.test.tsx`, `src/test/managerFinanceLayout.test.ts`, `e2e/manager-finance-preview.spec.ts`
 - `docs/CALQULUS_REDESIGN_STATE.md`
 
 ## KNOWN ISSUES
 - Live Manager still uses `Layout` + `Header`/`Sidebar` (Phase 0A shell not migrated)
-- Tenant detail remains a sheet on `/tenants` (existing pattern; no new `/tenants/:id` route)
-- Lease "Expiring soon" overlay still uses the existing 30-day `end_date` window computed outside render
-- Create-lease validation toasts were replaced with inline field errors; API error toasts unchanged
+- Billing extra tabs (Receipts, Verify Payments, Expenditures) remain because they are existing workflows
+- Payments extra tabs (Pending, Analytics, Bank Reconciliation, Notifications) remain for the same reason
+- Payments history still loads completed `payment_transactions` only; status labels are payment semantics on those rows
 - Submanager scoping via `useManagerScope` is unchanged
 
 ## TEST STATUS
 - `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx eslint` on changed tenants / leases / preview files — pass
-- `npx vitest run` — **904 passed**, 1 skipped
-- Playwright Chromium: `/design-preview/manager-tenants` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
+- `npx eslint` on changed billing / payments / preview files — pass
+- `npx vitest run` — **907 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-finance` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
 - `npm run build` — pass
 
 ## NEXT STEP
-STOP. Do not continue to billing, other portals, or shell unification.
+STOP. Do not continue to reports, settings, other portals, or shell unification.
 
-Preview URL: `/design-preview/manager-tenants`
-Live URLs: `/tenants`, `/leases` (Manager session)
+Preview URL: `/design-preview/manager-finance`
+Live URLs: `/billing`, `/payments` (Manager session)
+
+---
+
+## Previous checkpoint (Phase 3 tenants)
+
+Phase 3 — Manager Tenants, Tenant Detail, and Leases.
+STATUS: preview + live implementation complete. Landed on `main` at `7472748`.
+
+- Tenants table, tenant detail sheet, leases table
+- Preview: `/design-preview/manager-tenants`
+- Tests: typecheck, eslint, 904 vitest passed + 1 skipped, Playwright Chromium overflow at 1440–360, `npm run build` pass
 
 ---
 
