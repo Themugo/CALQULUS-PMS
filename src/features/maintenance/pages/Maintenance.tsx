@@ -732,7 +732,7 @@ export default function Maintenance() {
 
       {/* Tabs and Request List */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as MaintenanceLane)}>
-        <TabsList className="bg-card border border-border mb-3 sm:mb-4 w-full grid grid-cols-5 h-auto">
+        <TabsList className="bg-card border border-border mb-3 sm:mb-4 w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto">
           {MAINTENANCE_LANES.map((lane) => (
             <TabsTrigger key={lane.id} value={lane.id} className="text-[11px] sm:text-sm px-1 sm:px-3">
               {lane.label}

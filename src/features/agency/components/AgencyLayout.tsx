@@ -142,13 +142,13 @@ export default function AgencyLayout({ children, title, description, actions }: 
           </div>
         </aside>
 
-        <div className="flex min-h-screen flex-col lg:ml-64">
+        <div className="flex min-h-screen min-w-0 flex-col lg:ml-64">
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 aria-label="Open menu"
-                className="-ml-1.5 inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground lg:hidden"
+                className="-ml-1.5 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground lg:hidden"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
@@ -168,7 +168,7 @@ export default function AgencyLayout({ children, title, description, actions }: 
             className="border-0 px-4 py-4 sm:px-6 lg:px-8"
           />
 
-          <main id="main-content" tabIndex={-1} className="flex-1 overflow-x-hidden px-4 pb-8 outline-none sm:px-6 lg:px-8">
+          <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 overflow-x-clip px-4 pb-8 outline-none sm:px-6 lg:px-8">
             {children}
           </main>
 

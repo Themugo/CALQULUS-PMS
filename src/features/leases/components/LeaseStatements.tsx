@@ -263,7 +263,7 @@ export const LeaseStatements = () => {
                       className="gap-1 h-7 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
                     >
                       <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="hidden xs:inline">View</span> Statement
+                      <span className="hidden sm:inline">View</span> Statement
                     </Button>
                   </div>
                 </CardContent>

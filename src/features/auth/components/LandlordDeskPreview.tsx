@@ -15,7 +15,7 @@ export function LandlordDeskPreview() {
           Preview
         </span>
       </div>
-      <div className="grid grid-cols-4 gap-px bg-border">
+      <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
         {[
           { label: "Properties", value: "2", icon: Building2 },
           { label: "Occupancy", value: "84%", icon: PieChart },

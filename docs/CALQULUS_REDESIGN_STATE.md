@@ -1,19 +1,57 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 11 — Responsive certification. Audit the entire application at 1440,
+1280, 1024, 768, 480, 390, and 360. Check every portal. Check sidebar, header,
+tables, charts, forms, dialogs, filters, buttons, cards, page headers, and
+navigation. Do not solve responsiveness by hiding important information.
+Reflow intelligently. Tenant receives highest mobile priority.
+
+## CURRENT TASK
+Phase 11 certification: reflow shared chrome (dialog, sheet, table, chart,
+header, page header), then tenant mobile (amount, Pay rent, five-item nav),
+then manager/landlord/agency/admin filters, forms, and charts. Preview and
+live desks. No new features.
+
+### Phase 11 findings (before any changes)
+- Overflow tests existed for homepage (all 7 widths) and design-preview
+  tenant/admin (360/390/480/768/1280 only — missing 1024 and 1440).
+- Manager header search was a fixed `w-64` from `md`, crowding 768–1023.
+- Dialogs were `w-full` at 360px (kissed the viewport).
+- Page titles truncated; `.page-title` jumped to 40px from 768px.
+- Tenant amount used `text-4xl` with no wrap. Bottom nav labels could clip.
+- Design-preview maintenance hid the Property column below `sm`. Tenant
+  desktop shortcuts were `grid-cols-4` inside a nested frame at 360.
+- Charts sat in grid children without `min-w-0`, so Recharts could not shrink.
+- Report filters used fixed `w-40`/`w-52`/`w-56`. Unit forms used
+  `grid-cols-4` / `grid-cols-3` with no breakpoint.
+- Dead `xs:` utilities never applied (no `--breakpoint-xs`).
+
+### Phase 11 implementation
+- Shared: viewport-inset dialogs and sheets; tables `overflow-x-auto` +
+  `min-w-0` (scroll, do not drop columns); cards and chart frames `min-w-0`;
+  page titles wrap and scale 28→32→36→40px; manager search is a field from
+  `lg` and the same command palette via icon below that.
+- Tenant: wrapping tabular amounts, full-width Pay rent, all five mobile
+  labels (Home / Pay / Fix / Docs / Me) stay visible.
+- Manager/landlord/agency/admin: wrapping filter bars, maintenance tabs
+  2→3→5, unit form 2→4, statement selects full-width on phones, chart
+  parents `.chart-frame`.
+- Design preview: Property column stays; tenant shortcuts reflow 2→4;
+  overflow matrix covers every portal at all 7 widths.
+
+### Phase 11 verification
+- Pending in this revision — tests run after the checkpoint PR.
+
+## CHECKPOINT
+Phase 11 responsive certification — in progress on
+`cursor/phase-11-responsive-certification-1e5d`. Not merged.
+
+## PREVIOUS PHASE
 Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
 spacing, typography, colour, buttons, cards, tables, forms, icons, charts,
 navigation, headers, footers, modals, badges, empty states, loading, errors,
-and success. Remove random colours, unnecessary cards, black backgrounds,
-excessive gradients, inconsistent radii, oversized headings, inconsistent
-buttons, poor spacing, misleading icons, and portal colour leakage. Do not
-introduce features or change business logic.
-
-## CURRENT TASK
-Phase 10 polish: reuse the existing token and chrome contracts. Align selected
-nav to `bg-primary/10`. Keep portal colour as the 2px stripe. Map leftover
-palette classes to semantic tokens. Quiet desks (compact footer, no fake
-health). Preview before claiming done.
+and success. Merged to `main` (`7b69d54`). PR #59.
 
 ### Phase 10 findings (before any changes)
 - Selected nav on Manager (`Sidebar`) and Landlord still filled with
@@ -58,8 +96,8 @@ health). Preview before claiming done.
 - `npm run build` — pass
 - Merged to `main` as `7b69d54`.
 
-## CHECKPOINT
-Phase 10 polish merged to `main` (`7b69d54`). PR #59.
+## PREVIOUS TASK
+Phase 10 polish complete and merged to `main`.
 
 ## PREVIOUS PHASE
 Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:

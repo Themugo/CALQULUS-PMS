@@ -239,12 +239,12 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
                     <span className="text-muted-foreground truncate max-w-[55%]">
                       {inv.description || inv.invoice_number}
                     </span>
-                    <span className="font-medium shrink-0">{fmt(balanceOf(inv))}</span>
+                  <span className="font-medium shrink-0 amount-display">{fmt(balanceOf(inv))}</span>
                   </div>
                 ))}
                 <div className="border-t border-success/30 pt-2 flex justify-between items-center">
                   <span className="font-semibold text-success">Total due</span>
-                  <span className="text-xl font-bold text-success">{fmt(amountDue)}</span>
+                  <span className="amount-display text-xl font-bold text-success">{fmt(amountDue)}</span>
                 </div>
               </div>
 
@@ -267,7 +267,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
               <Button
                 onClick={initiatePayment}
                 disabled={isOffline}
-                className="w-full min-h-12 h-12 text-base bg-success hover:bg-success text-white gap-2"
+                className="w-full min-h-12 h-auto py-3 text-base bg-success hover:bg-success text-white gap-2 whitespace-normal"
               >
                 {isOffline ? <WifiOff className="h-5 w-5" /> : <Smartphone className="h-5 w-5" />}
                 {isOffline ? 'Connect to pay' : `Send M-Pesa Request — ${fmt(amountDue)}`}

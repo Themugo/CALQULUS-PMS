@@ -10,7 +10,7 @@ export function ManagerDeskPreview() {
           Preview
         </span>
       </div>
-      <div className="grid grid-cols-4 gap-px bg-border">
+      <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
         {[
           { label: "Units", value: "48", icon: Home },
           { label: "Occupied", value: "92%", icon: Building2 },

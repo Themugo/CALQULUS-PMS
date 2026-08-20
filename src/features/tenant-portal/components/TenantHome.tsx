@@ -65,7 +65,7 @@ export default function TenantHome({
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {overdue ? "Rent overdue" : hasBalance ? "Rent due" : "Rent"}
         </p>
-        <p className={`mt-2 font-heading text-4xl font-bold tracking-tight ${overdue ? "text-destructive" : "text-foreground"}`}>
+        <p className={`mt-2 amount-display font-heading text-[1.75rem] font-bold leading-tight tracking-tight sm:text-4xl ${overdue ? "text-destructive" : "text-foreground"}`}>
           {formatCurrency(amountDue)}
         </p>
         {dueDate ? (

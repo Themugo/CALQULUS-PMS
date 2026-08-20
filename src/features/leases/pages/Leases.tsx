@@ -757,7 +757,7 @@ const Leases = () => {
         <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-2 sm:flex">
           <TabsTrigger value="agreements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="hidden xs:inline">Agreements</span>
+            <span className="hidden sm:inline">Agreements</span>
             <span className="xs:hidden">Leases</span>
           </TabsTrigger>
           <TabsTrigger value="statements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">

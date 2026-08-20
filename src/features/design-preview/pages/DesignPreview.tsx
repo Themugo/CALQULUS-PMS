@@ -127,8 +127,8 @@ export default function DesignPreview() {
   return (
     <div className="min-h-screen bg-background text-foreground" data-preview="design">
       <header className="sticky top-0 z-40 border-b border-border bg-card">
-        <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3">
-          <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform />
+        <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3 min-w-0">
+          <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform className="min-w-0" />
           <p className="type-meta hidden sm:block">Preview chrome — not live operations</p>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site
@@ -158,7 +158,7 @@ export default function DesignPreview() {
           </ul>
         </nav>
 
-        <main id="main-content" tabIndex={-1} className="space-y-6 outline-none">
+        <main id="main-content" tabIndex={-1} className="min-w-0 space-y-6 outline-none">
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
@@ -450,7 +450,7 @@ function AgencyPagesPreview() {
               className="px-4 py-4"
             />
             {page.title === "Dashboard" ? (
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border-y border-border bg-border">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px border-y border-border bg-border">
                 {[
                   { label: "Clients", value: "12" },
                   { label: "Properties", value: "18" },
@@ -551,7 +551,7 @@ function TenantPagesPreview() {
               </div>
               <div className="rounded-xl border border-border bg-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rent due</p>
-                <p className="mt-1 font-heading text-3xl font-bold">KES 45,000</p>
+                <p className="mt-1 amount-display font-heading text-3xl font-bold">KES 45,000</p>
                 <p className="mt-1 text-sm text-muted-foreground">Due 5 Sep 2026</p>
                 <Button className="mt-4 min-h-12 w-full" type="button">Pay rent</Button>
               </div>
@@ -588,11 +588,11 @@ function TenantPagesPreview() {
                 </div>
                 <div className="rounded-xl border border-border bg-card p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rent due</p>
-                  <p className="mt-1 font-heading text-3xl font-bold">KES 45,000</p>
+                  <p className="mt-1 amount-display font-heading text-3xl font-bold">KES 45,000</p>
                   <p className="mt-1 text-sm text-muted-foreground">Due 5 Sep 2026</p>
                   <Button className="mt-4" type="button">Pay rent</Button>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {["Lease", "Maintenance", "Receipts", "Documents"].map((label) => (
                     <div key={label} className="rounded-xl border border-border bg-card px-2 py-2 text-center text-xs font-medium">{label}</div>
                   ))}
@@ -707,7 +707,7 @@ function AdminPagesPreview() {
             />
             {page.title === "Dashboard" ? (
               <div className="space-y-3 border-y border-border p-4">
-                <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-5">
+                <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3 lg:grid-cols-5">
                   {[
                     { label: "Organizations", value: "Live" },
                     { label: "Users", value: "Live" },
@@ -721,7 +721,7 @@ function AdminPagesPreview() {
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
                   {[
                     { label: "Database", value: "Probed live" },
                     { label: "API", value: "Probed live" },
@@ -751,7 +751,7 @@ function AdminPagesPreview() {
 
 function LoginPreview() {
   return (
-    <div {...portalSurfaceProps("manager")} className="rounded-lg border border-border overflow-hidden bg-background">
+    <div {...portalSurfaceProps("manager")} className="rounded-lg border border-border overflow-hidden bg-background" data-preview="login">
       <PortalAccentBar />
       <div className="p-6 max-w-md space-y-4">
         <BrandMark size="md" showWordmark subtitle="Manager" forcePlatform />
@@ -779,7 +779,7 @@ function MaintenancePreview() {
           status={<Wrench className="h-4 w-4 text-primary" aria-hidden />}
           actions={<Button size="sm" type="button">New request</Button>}
         />
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border-y border-border bg-border">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px border-y border-border bg-border">
           {MAINTENANCE_LANES.map((lane, index) => (
             <div key={lane.id} className="bg-card p-3">
               <p className="type-label">{lane.label}</p>
@@ -789,7 +789,7 @@ function MaintenancePreview() {
         </div>
         <div className="p-4 space-y-3">
           <Tabs defaultValue="new">
-            <TabsList className="w-full grid grid-cols-5 h-auto">
+            <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto">
               {MAINTENANCE_LANES.map((lane) => (
                 <TabsTrigger key={lane.id} value={lane.id} className="text-xs sm:text-sm px-1">
                   {lane.label}
@@ -802,7 +802,7 @@ function MaintenancePreview() {
                   <TableRow>
                     <TableHead>Priority</TableHead>
                     <TableHead>Issue</TableHead>
-                    <TableHead className="hidden sm:table-cell">Property</TableHead>
+                    <TableHead>Property</TableHead>
                     <TableHead className="text-right">Next</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -810,7 +810,7 @@ function MaintenancePreview() {
                   <TableRow>
                     <TableCell><Badge variant="destructive">Urgent</Badge></TableCell>
                     <TableCell className="font-medium">Leaking pipe</TableCell>
-                    <TableCell className="hidden sm:table-cell">Ridgeview · 2B</TableCell>
+                    <TableCell>Ridgeview · 2B</TableCell>
                     <TableCell className="text-right text-muted-foreground">Assign</TableCell>
                   </TableRow>
                 </TableBody>
@@ -835,18 +835,18 @@ function ReportsPreview() {
           status={<FileText className="h-4 w-4 text-primary" aria-hidden />}
         />
         <div className="p-4 space-y-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="space-y-1">
+          <div className="flex min-w-0 flex-wrap gap-3">
+            <div className="min-w-0 w-full space-y-1 sm:w-auto">
               <Label htmlFor="preview-report-period">Period</Label>
-              <Input id="preview-report-period" readOnly value="Last 6 months" className="w-40" />
+              <Input id="preview-report-period" readOnly value="Last 6 months" className="w-full sm:w-40" />
             </div>
-            <div className="space-y-1">
+            <div className="min-w-0 w-full space-y-1 sm:w-auto">
               <Label htmlFor="preview-report-property">Property</Label>
-              <Input id="preview-report-property" readOnly value="All properties" className="w-44" />
+              <Input id="preview-report-property" readOnly value="All properties" className="w-full sm:w-44" />
             </div>
-            <div className="space-y-1">
+            <div className="min-w-0 w-full space-y-1 sm:w-auto">
               <Label htmlFor="preview-report-type">Report type</Label>
-              <Input id="preview-report-type" readOnly value="Revenue trend" className="w-44" />
+              <Input id="preview-report-type" readOnly value="Revenue trend" className="w-full sm:w-44" />
             </div>
           </div>
           <div className="rounded-md border border-border bg-card p-4">
@@ -943,7 +943,7 @@ function PreviewStat({ label, value }: { label: string; value: string }) {
 
 function TablesPreview() {
   return (
-    <Card>
+    <Card data-preview="tables">
       <CardHeader>
         <CardTitle className={CALQULUS_TYPE.cardTitle}>Tables</CardTitle>
         <CardDescription>Dense records on white. No colourful card grid.</CardDescription>
@@ -977,7 +977,7 @@ function TablesPreview() {
 
 function FormsPreview() {
   return (
-    <Card className="max-w-lg">
+    <Card className="max-w-lg" data-preview="forms">
       <CardHeader>
         <CardTitle className={CALQULUS_TYPE.cardTitle}>Forms</CardTitle>
         <CardDescription>
@@ -1001,6 +1001,7 @@ function FormsPreview() {
 
 function DialogsPreview() {
   return (
+    <div data-preview="dialogs">
     <Dialog>
       <DialogTrigger asChild>
         <Button type="button">Open dialog</Button>
@@ -1016,6 +1017,7 @@ function DialogsPreview() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </div>
   );
 }
 
@@ -1083,7 +1085,7 @@ function BrandStudioPreview({
               {trial.reasons.join(" ")}
             </p>
           )}
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
             {(["hex", "hover", "active", "muted", "border", "surface", "focus", "onColor"] as const).map((key) => (
               <div key={key} className="space-y-1">
                 <div className="h-8 rounded border border-border" style={{ backgroundColor: trial[key] }} />
@@ -1213,7 +1215,7 @@ function TabsPreview() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="overview">
-          <TabsList>
+          <TabsList className="h-auto flex-wrap">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>

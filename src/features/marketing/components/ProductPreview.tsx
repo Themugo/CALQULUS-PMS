@@ -67,7 +67,7 @@ export function ProductPreview() {
           </div>
 
           <div className="bg-background p-3 sm:p-4">
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {SNAPSHOT.map((metric) => (
                 <div key={metric.label} className="rounded-lg border border-border bg-card p-2">
                   <p className="truncate text-[9px] font-medium uppercase tracking-wide text-muted-foreground">

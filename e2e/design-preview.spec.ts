@@ -98,7 +98,7 @@ test.describe("Design preview", () => {
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
   });
 
-  for (const width of [360, 390, 480, 768, 1280] as const) {
+  for (const width of [360, 390, 480, 768, 1024, 1280, 1440] as const) {
     test(`tenant preview does not overflow at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 800 });
       await page.goto("/design-preview");
@@ -112,7 +112,7 @@ test.describe("Design preview", () => {
     });
   }
 
-  for (const width of [360, 390, 480, 768, 1280] as const) {
+  for (const width of [360, 390, 480, 768, 1024, 1280, 1440] as const) {
     test(`platform admin preview does not overflow at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 800 });
       await page.goto("/design-preview");

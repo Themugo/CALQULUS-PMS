@@ -198,10 +198,10 @@ const Reports: React.FC = () => {
     <Layout title="Reports" subtitle="Period, property, and report type — live collections, occupancy, and arrears">
       <div className="space-y-6">
         <div className="flex flex-wrap items-end gap-3">
-          <div className="space-y-1">
+          <div className="min-w-0 w-full space-y-1 sm:w-auto">
             <Label htmlFor="report-period">Period</Label>
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger id="report-period" className="w-40">
+              <SelectTrigger id="report-period" className="w-full sm:w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -211,10 +211,10 @@ const Reports: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1">
+          <div className="min-w-0 w-full space-y-1 sm:w-auto">
             <Label htmlFor="report-property">Property</Label>
             <Select value={propertyId} onValueChange={setPropertyId}>
-              <SelectTrigger id="report-property" className="w-52">
+              <SelectTrigger id="report-property" className="w-full sm:w-52">
                 <SelectValue placeholder="All properties" />
               </SelectTrigger>
               <SelectContent>
@@ -225,10 +225,10 @@ const Reports: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1">
+          <div className="min-w-0 w-full space-y-1 sm:w-auto">
             <Label htmlFor="report-type">Report type</Label>
             <Select value={reportType} onValueChange={setReportType}>
-              <SelectTrigger id="report-type" className="w-56">
+              <SelectTrigger id="report-type" className="w-full sm:w-56">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -238,7 +238,7 @@ const Reports: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground pb-1">
+          <div className="flex min-w-0 flex-wrap items-center gap-3 pb-1 text-sm text-muted-foreground">
             {occupancySummary && (
               <>
                 <span className="flex items-center gap-1">
@@ -291,9 +291,10 @@ const Reports: React.FC = () => {
                 <CardTitle className="text-base">Revenue — billed vs collected vs arrears</CardTitle>
                 <CardDescription>Last {period} months across all properties</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="min-w-0">
                 {revLoading ? <Skeleton className="h-64 w-full" /> : (
-                  <ResponsiveContainer width="100%" height={260}>
+                  <div className="chart-frame h-[220px] sm:h-[260px]">
+                  <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={revenueTrend} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} />
@@ -305,9 +306,10 @@ const Reports: React.FC = () => {
                       <Bar dataKey="arrears"   name="Arrears"   fill={CALQULUS_COLOR.danger} radius={[3,3,0,0]} />
                     </BarChart>
                   </ResponsiveContainer>
+                  </div>
                 )}
                 {!revLoading && revenueTrend.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-3 text-center">
+                  <div className="mt-3 grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
                     {[
                       { label: 'Total billed', val: revenueTrend.reduce((s, r) => s + r.billed, 0), color: 'text-muted-foreground' },
                       { label: 'Total collected', val: revenueTrend.reduce((s, r) => s + r.collected, 0), color: 'text-success' },
@@ -315,7 +317,7 @@ const Reports: React.FC = () => {
                     ].map(s => (
                       <div key={s.label} className="rounded-lg bg-muted/40 p-2">
                         <p className="text-xs text-muted-foreground">{s.label}</p>
-                        <p className={`text-sm font-semibold ${s.color}`}>{fmt(s.val)}</p>
+                        <p className={`amount-display text-sm font-semibold ${s.color}`}>{fmt(s.val)}</p>
                       </div>
                     ))}
                   </div>
@@ -336,7 +338,8 @@ const Reports: React.FC = () => {
                   <p className="text-center py-12 text-muted-foreground text-sm">No active properties found.</p>
                 ) : (
                   <>
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="chart-frame h-[220px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={occupancyItems} margin={{ top: 5, right: 10, left: 10, bottom: 40 }}>
                         <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                         <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" interval={0} />
@@ -347,10 +350,11 @@ const Reports: React.FC = () => {
                         <Bar dataKey="vacant"   name="Vacant"   stackId="a" fill="hsl(218 30% 88%)" radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
+                    </div>
                     <div className="mt-3 space-y-1.5">
                       {occupancyItems.map(p => (
                         <div key={p.id} className="flex items-center gap-3 text-xs">
-                          <span className="w-32 truncate text-muted-foreground">{p.name}</span>
+                          <span className="min-w-0 flex-1 truncate text-muted-foreground sm:w-32 sm:flex-none">{p.name}</span>
                           <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                             <div className="h-full rounded-full bg-success" style={{ width: `${p.rate}%` }} />
                           </div>
@@ -416,7 +420,8 @@ const Reports: React.FC = () => {
                   <p className="text-center py-12 text-muted-foreground text-sm">No revenue data found.</p>
                 ) : (
                   <>
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="chart-frame h-[220px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={[...revenueByProp].sort((a, b) => b.revenue - a.revenue)}
                         margin={{ top: 5, right: 10, left: 10, bottom: 40 }}>
                         <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -426,6 +431,7 @@ const Reports: React.FC = () => {
                         <Bar dataKey="revenue" name="Revenue collected" fill={CALQULUS_COLOR.primary} radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
+                    </div>
                     <div className="mt-3 space-y-1.5 max-h-48 overflow-y-auto">
                       {[...revenueByProp].sort((a, b) => b.revenue - a.revenue).map((p, i) => (
                         <div key={p.name} className="flex items-center gap-3 text-sm">

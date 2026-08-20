@@ -21,7 +21,7 @@ export function DashboardGrid({
   };
 
   return (
-    <div className={cn("grid gap-4 sm:gap-5", columnClasses[columns], className)}>
+    <div className={cn("grid min-w-0 gap-4 sm:gap-5", columnClasses[columns], className)}>
       {children}
     </div>
   );

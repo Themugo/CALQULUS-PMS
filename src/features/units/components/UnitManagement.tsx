@@ -739,7 +739,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="bedrooms">Bedrooms</Label>
                 <Input id="bedrooms" type="number" value={bedrooms} onChange={(e) => setBedrooms(e.target.value)} placeholder="2" />
@@ -757,7 +757,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                 <Input id="squareFeet" type="number" value={squareFeet} onChange={(e) => setSquareFeet(e.target.value)} placeholder="850" />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="monthlyRent">Monthly Rent (KES)</Label>
                 <Input id="monthlyRent" type="number"

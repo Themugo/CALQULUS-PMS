@@ -100,7 +100,7 @@ export default function AgencyDashboard() {
           {isLoading ? (
             <Skeleton className="h-[220px] w-full" />
           ) : (
-            <div className="h-[230px]">
+            <div className="chart-frame h-[230px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data?.series ?? []} margin={{ top: 10, right: 5, left: -12, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />

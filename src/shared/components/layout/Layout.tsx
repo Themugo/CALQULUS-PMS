@@ -76,7 +76,7 @@ export function Layout({
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Workspace Frame */}
-      <div className="lg:pl-64 transition-all duration-300 min-h-screen flex flex-col flex-1">
+      <div className="lg:pl-64 transition-all duration-300 min-h-screen flex flex-col flex-1 min-w-0">
         {/* PWA Mobile Install Banner */}
         <TopMobileInstallBanner />
 
@@ -109,7 +109,7 @@ export function Layout({
         )}
 
         {/* Main Content Viewport (Desktop-first Max-width Container) */}
-        <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-6 animate-fade-in outline-none">
+        <main id="main-content" tabIndex={-1} className="flex-1 w-full min-w-0 max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-6 animate-fade-in outline-none">
           {children}
         </main>
 

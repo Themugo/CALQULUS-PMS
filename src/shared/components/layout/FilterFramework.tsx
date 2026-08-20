@@ -76,7 +76,7 @@ export function FilterFramework({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs border-border/80">
+        <Button variant="outline" size="sm" className="min-h-11 h-11 gap-1.5 text-xs border-border/80">
           <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
           <span>{triggerLabel}</span>
           {activeCount > 0 && (

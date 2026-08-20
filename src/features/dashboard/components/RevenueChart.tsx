@@ -177,14 +177,14 @@ export function RevenueChart() {
         <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: CALQULUS_COLOR.primary }} />
-            <span className="text-muted-foreground hidden xs:inline">Collected</span>
+            <span className="text-muted-foreground">Collected</span>
             <span className="font-semibold text-foreground">
               {formatCurrency(totalRevenue)}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: CALQULUS_COLOR.warning }} />
-            <span className="text-muted-foreground hidden xs:inline">Pending</span>
+            <span className="text-muted-foreground">Pending</span>
             <span className="font-semibold text-foreground">
               {formatCurrency(totalPending)}
             </span>
@@ -192,7 +192,7 @@ export function RevenueChart() {
         </div>
       </div>
 
-      <div className="h-[200px] sm:h-[250px]">
+      <div className="chart-frame h-[200px] sm:h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 5, left: -10, bottom: 0 }}>
             <defs>

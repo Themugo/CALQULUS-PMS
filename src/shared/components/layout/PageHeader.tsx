@@ -29,13 +29,13 @@ export function PageHeader({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="page-title text-foreground truncate">{title}</h1>
+              <h1 className="page-title text-foreground break-words">{title}</h1>
               {status}
             </div>
-            {description ? <p className="supporting-text max-w-2xl">{description}</p> : null}
+            {description ? <p className="supporting-text max-w-2xl break-words">{description}</p> : null}
           </div>
           {actions ? (
-            <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div>
+            <div className="flex min-w-0 w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">{actions}</div>
           ) : null}
         </div>
       </div>

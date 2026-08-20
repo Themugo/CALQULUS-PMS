@@ -53,7 +53,7 @@ export function PortalPreviewCanvas({
           </Badge>
         ) : (
           <Tabs value={activePortal} onValueChange={(value) => setInternalPortal(value as PortalId)}>
-            <TabsList className="h-8 text-xs p-1">
+            <TabsList className="h-auto min-h-8 flex flex-wrap text-xs p-1">
               {(Object.keys(CALQULUS_PORTALS) as PortalId[]).map((id) => (
                 <TabsTrigger key={id} value={id} className="text-xs px-2 py-0.5">
                   {CALQULUS_PORTALS[id].label}

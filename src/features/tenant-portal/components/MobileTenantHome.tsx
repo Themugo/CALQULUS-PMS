@@ -151,7 +151,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
             {hasBalance ? 'Current balance' : 'Balance'}
           </p>
-          <p className={`text-4xl font-bold tracking-tight ${isOverdue ? 'text-destructive' : hasBalance ? 'text-warning' : 'text-success'}`}>
+          <p className={`amount-display text-[1.75rem] font-bold leading-tight tracking-tight sm:text-4xl ${isOverdue ? 'text-destructive' : hasBalance ? 'text-warning' : 'text-success'}`}>
             {formatCurrency(stats.totalDue)}
           </p>
           {nextDue ? (

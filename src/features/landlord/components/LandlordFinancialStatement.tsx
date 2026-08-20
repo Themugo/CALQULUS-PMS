@@ -107,7 +107,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
         <div>
           <Label className="text-xs text-muted-foreground mb-1 block">Property</Label>
           <Select value={selectedPropertyId} onValueChange={setSelectedPropertyId}>
-            <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full min-w-0 sm:w-64"><SelectValue /></SelectTrigger>
             <SelectContent>
               {properties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
@@ -115,7 +115,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
         </div>
         <div>
           <Label className="text-xs text-muted-foreground mb-1 block">Period</Label>
-          <Input type="month" value={period} onChange={e => setPeriod(e.target.value)} className="w-40" />
+          <Input type="month" value={period} onChange={e => setPeriod(e.target.value)} className="w-full sm:w-40" />
         </div>
       </div>
 
@@ -293,7 +293,8 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
             <CardTitle className="text-sm">6-month net to you</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+            <div className="chart-frame h-[200px]">
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart data={trend} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
@@ -302,9 +303,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
                 <Bar dataKey="revenue" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
+            </div>
     </div>
   );
 };

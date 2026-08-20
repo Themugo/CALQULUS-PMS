@@ -149,6 +149,7 @@ export default function LandlordDashboard() {
           ) : (trendQuery.data?.length ?? 0) === 0 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">Income trend appears once collections are recorded.</p>
           ) : (
+            <div className="chart-frame h-[220px]">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={trendQuery.data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
@@ -159,6 +160,7 @@ export default function LandlordDashboard() {
                 <Bar dataKey="net" name="Net to you" fill={CALQULUS_COLOR.success} radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            </div>
           )}
         </section>
 

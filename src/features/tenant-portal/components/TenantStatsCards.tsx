@@ -17,7 +17,7 @@ export const TenantStatsCards = ({
   formatCurrency,
 }: TenantStatsCardsProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div className="mb-8 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
@@ -26,7 +26,7 @@ export const TenantStatsCards = ({
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Due</p>
-              <p className="text-2xl font-bold">{formatCurrency(totalDue)}</p>
+              <p className="amount-display text-2xl font-bold">{formatCurrency(totalDue)}</p>
             </div>
           </div>
         </CardContent>
@@ -39,7 +39,7 @@ export const TenantStatsCards = ({
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Paid This Year</p>
-              <p className="text-2xl font-bold">{formatCurrency(paidThisYear)}</p>
+              <p className="amount-display text-2xl font-bold">{formatCurrency(paidThisYear)}</p>
             </div>
           </div>
         </CardContent>

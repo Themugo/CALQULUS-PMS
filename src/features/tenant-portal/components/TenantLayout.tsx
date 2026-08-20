@@ -122,9 +122,9 @@ export default function TenantLayout({
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-col md:ml-56">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl md:px-6">
-          <BrandMark size="sm" showWordmark subtitle="Tenant" className="md:hidden" />
+      <div className="flex min-h-screen min-w-0 flex-col md:ml-56">
+        <header className="sticky top-0 z-30 flex h-14 min-w-0 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl md:px-6">
+          <BrandMark size="sm" showWordmark subtitle="Tenant" className="min-w-0 flex-1 md:hidden" />
           <p className="hidden truncate text-sm text-muted-foreground md:block">{title}</p>
           {user ? (
             <button
@@ -150,7 +150,7 @@ export default function TenantLayout({
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-x-hidden px-4 pb-24 outline-none sm:px-6 md:pb-8"
+          className="flex-1 min-w-0 overflow-x-clip px-4 pb-24 outline-none sm:px-6 md:pb-8"
         >
           {children}
         </main>
@@ -162,7 +162,7 @@ export default function TenantLayout({
         aria-label="Tenant"
         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden safe-area-bottom"
       >
-        <div className="flex items-center justify-around h-16">
+        <div className="flex h-16 items-stretch justify-around">
           {MOBILE_NAV.map((item) => {
             const active = isNavActive(location.pathname, item.href);
             return (
@@ -171,12 +171,14 @@ export default function TenantLayout({
                 to={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1",
+                  "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                <item.icon className={cn("h-5 w-5", active && "text-primary")} />
-                <span className={cn("text-[11px]", active && "font-medium")}>{item.label}</span>
+                <item.icon className={cn("h-5 w-5 shrink-0", active && "text-primary")} />
+                <span className={cn("max-w-full text-center text-[10px] leading-tight", active && "font-medium")}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}

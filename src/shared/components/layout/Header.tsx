@@ -61,21 +61,21 @@ export function Header({
           type="button"
           onClick={onOpenCommandPalette}
           aria-label="Search or jump to a page"
-          className="hidden md:flex items-center gap-3 min-h-11 h-11 w-64 lg:w-72 px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="hidden lg:flex items-center gap-3 min-h-11 h-11 min-w-0 w-full max-w-xs xl:max-w-sm px-3 rounded-md bg-muted/50 border border-border/70 hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
           <span className="flex-1 text-left truncate">Search or jump to...</span>
-          <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono font-semibold text-muted-foreground">
+          <kbd className="hidden xl:inline-flex items-center gap-0.5 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono font-semibold text-muted-foreground">
             <Command className="h-2.5 w-2.5" />K
           </kbd>
         </button>
 
-        {/* Mobile Search Icon */}
+        {/* Compact search — same command palette, not a hidden capability */}
         <Button
           variant="ghost"
           size="icon"
           aria-label="Search"
-          className="md:hidden min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
+          className="lg:hidden min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
           onClick={onOpenCommandPalette}
         >
           <Search className="h-4 w-4" />

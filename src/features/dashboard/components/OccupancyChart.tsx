@@ -166,7 +166,7 @@ export function OccupancyChart() {
         </div>
       </div>
 
-      <div className="h-[180px] sm:h-[200px]">
+      <div className="chart-frame h-[180px] sm:h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 5, left: -15, bottom: 0 }}>
             <CartesianGrid
