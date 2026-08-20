@@ -35,8 +35,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 
 interface NoticeIconConfig {
   icon: React.ComponentType<{ className?: string }>;
@@ -64,7 +63,6 @@ const NOTICE_ICONS: Record<string, NoticeIconConfig> = {
 };
 
 const TenantInbox: React.FC = () => {
-  const isMobile = useIsMobile();
   const { user, userRole } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -268,6 +266,7 @@ const TenantInbox: React.FC = () => {
   };
 
   return (
+    <TenantLayout title="Inbox" description="Notices from your manager.">
     <div className="space-y-4">
       <Tabs defaultValue="notices">
         <TabsList>
@@ -446,8 +445,8 @@ const TenantInbox: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {isMobile && <MobileBottomNav />}
     </div>
+    </TenantLayout>
   );
 };
 

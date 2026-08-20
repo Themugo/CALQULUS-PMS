@@ -1,14 +1,12 @@
-import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { logError } from '@/shared/lib/errorLogger';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { useSignedStorageUrl } from '@/shared/hooks/useSignedStorageUrl';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -51,9 +49,7 @@ interface NotificationPreferences {
 
 const TenantProfile = () => {
   const { user, signOut, userRole } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const {
     isAvailable: biometricAvailable,
     biometryType,
@@ -418,17 +414,17 @@ const TenantProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-warning" />
-      </div>
+      <TenantLayout title="Profile" description="Your details and notifications.">
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </TenantLayout>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      <MobilePageHeader title="Profile" onBack={() => navigate('/portal')} />
-
-      <main className="p-4 max-w-2xl mx-auto space-y-6">
+    <TenantLayout title="Profile" description="Your details and notifications.">
+      <div className="mx-auto w-full max-w-xl space-y-6">
         {/* Profile Photo & Basic Info */}
         <Card>
           <CardContent className="pt-6">
@@ -691,11 +687,8 @@ const TenantProfile = () => {
             </Button>
           </CardContent>
         </Card>
-      </main>
-
-      {/* Mobile Bottom Navigation */}
-      {isMobile && <MobileBottomNav />}
-    </div>
+      </div>
+    </TenantLayout>
   );
 };
 

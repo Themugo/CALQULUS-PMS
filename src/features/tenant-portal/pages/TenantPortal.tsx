@@ -1,16 +1,9 @@
-import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { BrandMark } from '@/shared/components/branding/BrandMark';
-import { PageHeader } from '@/shared/components/layout/PageHeader';
 import { ErrorState } from '@/shared/components/ui/error-state';
-import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -24,46 +17,18 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDate } from '@/shared/lib/dateFormat';
-import {
-  Building2,
-  FileText,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  LogOut,
-  CreditCard,
-  History,
-  Smartphone,
-  RefreshCw,
-  Loader2,
-  ScrollText,
-  Upload,
-  MessageSquare,
-  Wrench,
-} from 'lucide-react';
-import { TenantContractsSection } from '@/features/tenants/components/TenantContractsSection';
-import TenantBalanceSummary from '@/features/tenant-portal/components/TenantBalanceSummary';
-import TenantPaymentDetails from '@/features/tenant-portal/components/TenantPaymentDetails';
-import TenantMultiUnit from '@/features/tenant-portal/components/TenantMultiUnit';
+import { CreditCard, Smartphone, RefreshCw, Loader2 } from 'lucide-react';
 import OrphanTenantHome from '@/features/tenant-portal/components/OrphanTenantHome';
-import TenantPortableHistory from '@/features/tenant-portal/components/TenantPortableHistory';
-import TenantNotificationBell from '@/features/tenant-portal/components/TenantNotificationBell';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import type { SupportedCurrency } from '@/shared/types/payment';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import MobileTenantHome from '@/features/tenant-portal/components/MobileTenantHome';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
+import TenantHome from '@/features/tenant-portal/components/TenantHome';
 import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
-import { ManagerBankDetails } from '@/features/tenant-portal/components/ManagerBankDetails';
-import { ReceiptUpload } from '@/features/tenant-portal/components/ReceiptUpload';
-import { ReceiptHistory } from '@/features/tenant-portal/components/ReceiptHistory';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
-import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
 import { TENANT_INVOICE_COLUMNS } from '@/features/tenant-portal/lib/tenantInvoiceSelect';
 import { redirectBrowser } from '@/shared/lib/redirectBrowser';
-import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 
 interface Invoice {
   id: string;
@@ -99,11 +64,10 @@ interface Lease {
 const payableStatuses = new Set(['pending', 'overdue', 'partially_paid']);
 
 const TenantPortal = () => {
-  const { user, userRole, signOut } = useAuth();
+  const { user, userRole } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
-  const isMobile = useIsMobile();
   const paymentProcessedRef = useRef(false);
 
   // Time-based greeting
@@ -127,17 +91,10 @@ const TenantPortal = () => {
   const [pendingInvoiceId, setPendingInvoiceId] = useState<string | null>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [receiptRefresh, setReceiptRefresh] = useState(0);
-  const [managerProfile, setManagerProfile] = useState<{
-    full_name: string | null;
-    email: string | null;
-    phone: string | null;
-  } | null>(null);
   const [maintenanceSummary, setMaintenanceSummary] = useState<{
     openCount: number;
-    urgentCount: number;
     latestTitle: string | null;
-  }>({ openCount: 0, urgentCount: 0, latestTitle: null });
+  }>({ openCount: 0, latestTitle: null });
 
   // Fetch tenant info with offline support
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -235,7 +192,6 @@ const TenantPortal = () => {
   });
 
   const {
-    data: lease,
     loading: leaseLoading,
     isFromCache: leaseFromCache,
     error: leaseError,
@@ -258,16 +214,6 @@ const TenantPortal = () => {
   }, [user?.id]);
 
   useEffect(() => {
-    if (!tenantInfo?.manager_id) return;
-    supabase
-      .from('profiles')
-      .select('full_name, email, phone')
-      .eq('id', tenantInfo.manager_id)
-      .maybeSingle()
-      .then(({ data }) => setManagerProfile(data || null));
-  }, [tenantInfo?.manager_id]);
-
-  useEffect(() => {
     if (!userRole?.tenant_id) return;
     supabase
       .from('maintenance_requests')
@@ -276,14 +222,12 @@ const TenantPortal = () => {
       .then(({ data }) => {
         const rows = data || [];
         const openReqs = rows.filter((r) => r.status === 'open' || r.status === 'in_progress');
-        const urgentReqs = openReqs.filter((r) => r.priority === 'urgent' || r.priority === 'high');
         setMaintenanceSummary({
           openCount: openReqs.length,
-          urgentCount: urgentReqs.length,
           latestTitle: rows[0]?.title || null,
         });
       });
-  }, [userRole?.tenant_id, receiptRefresh]);
+  }, [userRole?.tenant_id]);
 
   // Filter invoices based on statement_history_months setting
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -390,10 +334,6 @@ const TenantPortal = () => {
     setStkDialogOpen(true);
   };
 
-  const openPayDialog = (invoice: Invoice) => {
-    openStkPay([invoice as PayableInvoice]);
-  };
-
   const handleVerifyPayment = async () => {
     if (!pendingPaymentRef) return;
 
@@ -452,12 +392,6 @@ const TenantPortal = () => {
     totalDue: safeInvoices
       .filter((i) => payableStatuses.has(i.status))
       .reduce((acc, i) => acc + Number((i as PayableInvoice).balance_due ?? i.amount), 0),
-    paidThisYear: safeInvoices
-      .filter(
-        (i) => i.status === 'paid' && i.paid_date && new Date(i.paid_date).getFullYear() === new Date().getFullYear(),
-      )
-      .reduce((acc, i) => acc + Number(i.amount), 0),
-    pendingCount: safeInvoices.filter((i) => i.status === 'pending').length,
     overdueCount: safeInvoices.filter((i) => i.status === 'overdue').length,
   };
 
@@ -473,773 +407,88 @@ const TenantPortal = () => {
       invoice_number: i.invoice_number,
     }));
 
+  const urgentInvoices = safeInvoices.filter((i) => payableStatuses.has(i.status));
+  const mostUrgent = [...urgentInvoices].sort((a, b) => {
+    if (a.status === "overdue" && b.status !== "overdue") return -1;
+    if (b.status === "overdue" && a.status !== "overdue") return 1;
+    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+  })[0];
+  const recentActivity = [
+    ...recentPayments.map((payment) => ({
+      id: payment.id,
+      label: `Paid ${formatCurrency(payment.amount)}`,
+      detail: `${payment.invoice_number} · ${formatDate(payment.paid_date)}`,
+    })),
+    ...(maintenanceSummary.openCount > 0
+      ? [
+          {
+            id: "maintenance",
+            label: maintenanceSummary.latestTitle || "Maintenance request",
+            detail: `${maintenanceSummary.openCount} open`,
+          },
+        ]
+      : []),
+  ].slice(0, 5);
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal"></div>
-      </div>
+      <TenantLayout title="Home" hideHeader>
+        <div className="flex justify-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+        </div>
+      </TenantLayout>
     );
   }
 
-  // Get urgent invoices (pending or overdue)
-  const urgentInvoices = safeInvoices.filter((i) => payableStatuses.has(i.status));
-
-  const propertyInfo =
-    tenantInfo?.property && tenantInfo?.unit
-      ? `${tenantInfo.property} - Unit ${tenantInfo.unit}`
-      : 'View and manage your invoices below.';
-
   return (
-    <div className="min-h-screen bg-background" {...portalSurfaceProps("tenant")}>
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
-      >
-        Skip to main content
-      </a>
-      <PortalAccentBar />
-      {/* Header */}
-      <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BrandMark size="md" showWordmark subtitle="Tenant" />
-          </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            <span className="text-xs md:text-sm text-muted-foreground hidden md:block">{user?.email}</span>
-            <TenantNotificationBell />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={signOut}
-              className="min-h-11 h-11 px-3 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200"
-              aria-label="Sign out"
-            >
-              <LogOut className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Sign Out</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+    <TenantLayout title="Home" hideHeader>
+      {(isOffline || isFromCache) && (
+        <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
+      )}
 
-      <main id="main-content" tabIndex={-1} className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 space-y-6 outline-none">
-        {/* Offline indicator */}
-        {(isOffline || isFromCache) && (
-          <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
-        )}
+      {(tenantError || invoicesError || leaseError) && (
+        <ErrorState
+          title="Couldn't load your home"
+          message={
+            tenantError?.message ||
+            invoicesError?.message ||
+            leaseError?.message ||
+            "An unexpected error occurred."
+          }
+          onRetry={() => {
+            refetchTenant();
+            refetchInvoices();
+            refetchLease();
+          }}
+        />
+      )}
 
-        {/* Error state */}
-        {(tenantError || invoicesError || leaseError) && (
-          <ErrorState
-            title="Failed to load portal data"
-            message={
-              tenantError?.message ||
-              invoicesError?.message ||
-              leaseError?.message ||
-              'An unexpected error occurred.'
-            }
-            onRetry={() => {
-              refetchTenant();
-              refetchInvoices();
-              refetchLease();
-            }}
-          />
-        )}
+      {user?.email?.includes("@calqulusrms.com") && (
+        <p className="mb-4 text-sm text-muted-foreground">Demo mode — sample data</p>
+      )}
 
-        {/* Demo mode banner */}
-        {user?.email?.includes('@calqulusrms.com') && (
-          <div className="mb-4 rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 shadow-sm">
-            <span className="text-sm text-warning font-medium">
-              <strong>Demo mode</strong> — sample data
-            </span>
-          </div>
-        )}
+      {(!userRole?.tenant_id || (!tenantLoading && !tenantInfo?.manager_id)) && !tenantLoading && (
+        <OrphanTenantHome />
+      )}
 
-        {/* ── Orphan tenant: no manager link ── */}
-        {/* When userRole.tenant_id is null (self-registered) OR
- tenant has no manager_id, show the independent diary */}
-        {(!userRole?.tenant_id || (!tenantLoading && !tenantInfo?.manager_id)) && !tenantLoading && (
-          <div className="space-y-4">
-            <PageHeader
-              title="My rental"
-              description="Track your payments, receipts and property condition independently"
-              className="border-0 px-0 py-0"
-            />
-            <OrphanTenantHome />
-          </div>
-        )}
+      {userRole?.tenant_id && tenantInfo?.manager_id && (
+        <TenantHome
+          greeting={getGreeting()}
+          firstName={tenantInfo.name?.split(" ")[0] || "there"}
+          propertyName={tenantInfo.property}
+          unit={tenantInfo.unit}
+          amountDue={stats.totalDue}
+          dueDate={mostUrgent?.due_date ?? null}
+          overdue={stats.overdueCount > 0}
+          formatCurrency={formatCurrency}
+          onPayRent={() => openStkPay(urgentInvoices as PayableInvoice[])}
+          payDisabled={isOffline || urgentInvoices.length === 0}
+          maintenanceOpen={maintenanceSummary.openCount}
+          recentActivity={recentActivity}
+        />
+      )}
 
-        {/* ── Linked tenant: has manager_id — full portal ── */}
-        {userRole?.tenant_id && tenantInfo?.manager_id && (
-          <>
-            {/* Mobile View */}
-            {isMobile ? (
-              <MobileTenantHome
-                tenantName={tenantInfo?.name || 'Tenant'}
-                greeting={getGreeting()}
-                propertyInfo={propertyInfo}
-                stats={stats}
-                urgentInvoices={urgentInvoices}
-                lease={lease}
-                managerId={tenantInfo?.manager_id}
-                propertyId={tenantInfo?.property_id}
-                formatCurrency={(amount) => formatCurrency(amount)}
-                onPayInvoice={openPayDialog}
-                onPayNow={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                lastPayment={recentPayments[0] ?? null}
-                maintenance={maintenanceSummary}
-              />
-            ) : (
-              <>
-                {/* Desktop Welcome Header */}
-                <PageHeader
-                  className="mb-6 border-0 px-0 py-0"
-                  title={`${getGreeting()}, ${tenantInfo?.name?.split(' ')[0] || 'there'}`}
-                  description={propertyInfo}
-                  status={
-                    <Badge variant="outline" className="border-success/30 text-success bg-success/10">
-                      Active
-                    </Badge>
-                  }
-                  actions={
-                    <Button
-                      className="min-h-11 h-11"
-                      onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                      disabled={urgentInvoices.length === 0 || isOffline}
-                    >
-                      <Smartphone className="h-4 w-4 mr-2" />
-                      Pay now
-                    </Button>
-                  }
-                />
-
-                {/* ── Hero Balance Card — overdue / pending / clear states ── */}
-                {(() => {
-                  const isAllClear = stats.totalDue === 0;
-
-                  // Lease progress bar
-                  const leaseProgress = lease
-                    ? (() => {
-                        const start = new Date(lease.start_date).getTime();
-                        const end = new Date(lease.end_date).getTime();
-                        const now = Date.now();
-                        const total = end - start;
-                        const elapsed = now - start;
-                        const pct = Math.min(100, Math.max(0, (elapsed / total) * 100));
-                        const daysLeft = Math.max(0, Math.ceil((end - now) / 86_400_000));
-                        return { pct, daysLeft };
-                      })()
-                    : null;
-
-                  if (isAllClear) {
-                    return (
-                      <div className="mb-6 rounded-lg p-4 border bg-success/10 border-success/30">
-                        <div className="flex items-center justify-between gap-4 flex-wrap">
-                          <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-lg bg-success/20 flex items-center justify-center shrink-0">
-                              <CheckCircle className="h-7 w-7 text-success" />
-                            </div>
-                            <div>
-                              <p className="font-bold text-lg text-success">All paid up!</p>
-                              <p className="text-sm text-success/80">No pending invoices</p>
-                              {recentPayments.length > 0 && (
-                                <p className="text-xs text-success/70 mt-0.5">
-                                  Last payment: {recentPayments[0].invoice_number} &middot;{' '}
-                                  {formatCurrency(recentPayments[0].amount)}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          {leaseProgress && (
-                            <div className="w-full sm:w-48">
-                              <div className="flex justify-between text-xs text-success/80 mb-1">
-                                <span>{Math.round(leaseProgress.pct)}% elapsed</span>
-                                <span>{leaseProgress.daysLeft} days left</span>
-                              </div>
-                              <div className="h-2 bg-success/20 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-success rounded-full transition-all duration-500"
-                                  style={{ width: `${leaseProgress.pct}%` }}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  const mostUrgent = [...urgentInvoices].sort((a, b) => {
-                    if (a.status === 'overdue' && b.status !== 'overdue') return -1;
-                    if (b.status === 'overdue' && a.status !== 'overdue') return 1;
-                    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-                  })[0];
-                  const balanceDue = Number((mostUrgent as PayableInvoice).balance_due ?? mostUrgent.amount);
-                  const isOverdue = mostUrgent.status === 'overdue';
-                  return (
-                    <div
-                      className={`mb-6 rounded-lg p-4 border ${
-                        isOverdue ? 'bg-destructive/10 border-destructive/30' : 'bg-warning/10 border-warning/30'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-4 flex-wrap">
-                        <div className="flex items-center gap-4">
-                          <div
-                            className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
-                              isOverdue ? 'bg-destructive/20' : 'bg-warning/20'
-                            }`}
-                          >
-                            <Smartphone className={`h-7 w-7 ${isOverdue ? 'text-destructive' : 'text-warning'}`} />
-                          </div>
-                          <div>
-                            <p className={`font-bold text-lg ${isOverdue ? 'text-destructive' : 'text-warning'}`}>
-                              {isOverdue ? 'Payment overdue' : 'Rent due'}
-                            </p>
-                            <p className={`text-sm ${isOverdue ? 'text-destructive/80' : 'text-warning/80'}`}>
-                              {mostUrgent.invoice_number}
-                              {urgentInvoices.length > 1 && ` + ${urgentInvoices.length - 1} more`}
-                            </p>
-                            <p className={`text-xs mt-0.5 ${isOverdue ? 'text-destructive/70' : 'text-warning/70'}`}>
-                              Due {format(new Date(mostUrgent.due_date), 'dd/MM')}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <div className="text-right">
-                            <p className={`text-2xl font-bold ${isOverdue ? 'text-destructive' : 'text-warning'}`}>
-                              {formatCurrency(balanceDue)}
-                            </p>
-                            {urgentInvoices.length > 1 && (
-                              <p className="text-xs text-muted-foreground">Total: {formatCurrency(stats.totalDue)}</p>
-                            )}
-                          </div>
-                          <Button
-                            size="lg"
-                            className={`gap-2 h-12 px-6 text-base font-semibold shadow-lg rounded-xl transition-all duration-200 ${
-                              isOverdue ? 'bg-destructive hover:bg-destructive/90' : 'bg-warning hover:bg-warning/90'
-                            } text-white`}
-                            onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                          >
-                            <Smartphone className="h-5 w-5" />
-                            Pay now
-                          </Button>
-                        </div>
-                      </div>
-                      {leaseProgress && (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                            <span>{Math.round(leaseProgress.pct)}% of lease elapsed</span>
-                            <span>{leaseProgress.daysLeft} days remaining</span>
-                          </div>
-                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                isOverdue ? 'bg-destructive/60' : 'bg-warning/60'
-                              }`}
-                              style={{ width: `${leaseProgress.pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                {recentPayments[0] && (
-                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recent payment</p>
-                      <p className="text-sm text-foreground mt-0.5">
-                        {recentPayments[0].invoice_number} · {formatCurrency(recentPayments[0].amount)} · {formatDate(recentPayments[0].paid_date)}
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/portal/payments">View receipt</Link>
-                    </Button>
-                  </div>
-                )}
-
-                {/* ── Lease context (secondary) ── */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
-                  {/* 1. My Home */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-teal flex items-center gap-1.5">
-                          <Building2 className="h-3.5 w-3.5" />
-                          My Home
-                        </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-teal/30 text-teal">
-                          Unit {tenantInfo?.unit || '—'}
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Property:</span>
-                          <span
-                            className="font-bold text-foreground truncate max-w-[100px]"
-                            title={tenantInfo?.property || '—'}
-                          >
-                            {tenantInfo?.property || '—'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Manager:</span>
-                          <span
-                            className="font-semibold text-foreground truncate max-w-[100px]"
-                            title={managerProfile?.full_name || 'Property Manager'}
-                          >
-                            {managerProfile?.full_name || 'Property Manager'}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* 2. Balance Due */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-warning flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
-                          Balance Due
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${stats.overdueCount > 0 ? 'border-destructive/30 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
-                        >
-                          {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : `${stats.pendingCount} Pending`}
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Balance:</span>
-                          <span className={`font-bold ${stats.totalDue > 0 ? 'text-warning' : 'text-success'}`}>
-                            {formatCurrency(stats.totalDue)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Pending Bills:</span>
-                          <span className="font-semibold text-foreground">{urgentInvoices.length} item(s)</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* 3. Next Payment */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-destructive flex items-center gap-1.5">
-                          <Clock className="h-3.5 w-3.5" />
-                          Next Payment
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${urgentInvoices[0]?.status === 'overdue' ? 'border-destructive/40 text-destructive bg-destructive/10' : 'border-warning/30 text-warning'}`}
-                        >
-                          {urgentInvoices[0]
-                            ? urgentInvoices[0].status === 'overdue'
-                              ? 'OVERDUE'
-                              : 'DUE SOON'
-                            : 'PAID'}
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Next Due Date:</span>
-                          <span className="font-bold text-foreground">
-                            {urgentInvoices[0] ? formatDate(urgentInvoices[0].due_date) : 'All paid'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Status:</span>
-                          <span
-                            className={`font-semibold ${urgentInvoices[0]?.status === 'overdue' ? 'text-destructive' : 'text-success'}`}
-                          >
-                            {urgentInvoices[0]
-                              ? urgentInvoices[0].status === 'overdue'
-                                ? 'Overdue'
-                                : 'Upcoming'
-                              : 'All clear'}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* 4. Paid This Year */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-success flex items-center gap-1.5">
-                          <CreditCard className="h-3.5 w-3.5" />
-                          Paid This Year
-                        </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-success/30 text-success">
-                          YTD Paid
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Paid:</span>
-                          <span className="font-bold text-success">{formatCurrency(stats.paidThisYear)}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Last Receipt:</span>
-                          <span
-                            className="font-semibold text-foreground truncate max-w-[100px]"
-                            title={recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
-                          >
-                            {recentPayments[0] ? formatCurrency(recentPayments[0].amount) : 'None'}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* 5. My Lease */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                          <FileText className="h-3.5 w-3.5" />
-                          My Lease
-                        </span>
-                        <Badge variant="outline" className="text-[10px] h-4 border-primary/30 text-primary capitalize">
-                          {lease?.status || 'Active'}
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Monthly Rent:</span>
-                          <span className="font-bold text-foreground">
-                            {lease ? formatCurrency(lease.monthly_rent) : '—'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Lease End:</span>
-                          <span className="font-semibold text-foreground">
-                            {lease ? formatDate(lease.end_date) : '—'}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* 6. Maintenance */}
-                  <Card className="border border-border bg-card">
-                    <CardContent className="p-3.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-info flex items-center gap-1.5">
-                          <Wrench className="h-3.5 w-3.5" />
-                          Maintenance
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] h-4 ${maintenanceSummary.openCount > 0 ? 'border-warning/30 text-warning bg-warning/10' : 'border-info/30 text-info'}`}
-                        >
-                          {maintenanceSummary.openCount} Open
-                        </Badge>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Open Repairs:</span>
-                          <span className="font-bold text-foreground">{maintenanceSummary.openCount} ticket(s)</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Urgent Issues:</span>
-                          <span
-                            className={`font-semibold ${maintenanceSummary.urgentCount > 0 ? 'text-destructive' : 'text-success'}`}
-                          >
-                            {maintenanceSummary.urgentCount > 0 ? `${maintenanceSummary.urgentCount} urgent` : 'None'}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-card border border-border rounded-2xl mb-6 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">Quick Actions:</span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm rounded-xl gap-1.5 text-xs h-8"
-                      onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
-                      disabled={urgentInvoices.length === 0}
-                    >
-                      <Smartphone className="h-3.5 w-3.5" />
-                      Pay now
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-warning/10"
-                      asChild
-                    >
-                      <Link to="/portal/maintenance">
-                        <Wrench className="h-3.5 w-3.5 text-warning" />
-                        Request Repair
-                      </Link>
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-success/10"
-                      asChild
-                    >
-                      <Link to="/portal/payments">
-                        <History className="h-3.5 w-3.5 text-success" />
-                        Payment History
-                      </Link>
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-primary/10"
-                      asChild
-                    >
-                      <Link to="/portal/documents">
-                        <FileText className="h-3.5 w-3.5 text-primary" />
-                        Lease & Documents
-                      </Link>
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl gap-1.5 text-xs h-8 border-border hover:bg-info/10"
-                      asChild
-                    >
-                      <Link to="/portal/inbox">
-                        <MessageSquare className="h-3.5 w-3.5 text-info" />
-                        Contact Manager
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Lease expiry warning — shown ≤60 days before expiry */}
-                {lease &&
-                  (() => {
-                    // eslint-disable-next-line react-hooks/purity
-                    const daysLeft = Math.ceil((new Date(lease.end_date).getTime() - Date.now()) / 86_400_000);
-                    if (daysLeft > 60 || daysLeft < -30) return null;
-                    const isExpired = daysLeft <= 0;
-                    const isUrgent = daysLeft <= 14;
-                    return (
-                      <div
-                        className={`mb-4 rounded-2xl border p-4 flex items-start gap-3 shadow-sm transition-all duration-300 ${
-                          isUrgent ? 'bg-destructive/10 border-destructive/40' : 'bg-warning/10 border-warning/40'
-                        }`}
-                      >
-                        <div className="rounded-xl bg-card p-2 shadow-sm">
-                          <span className="text-2xl shrink-0">{isExpired ? '❌' : isUrgent ? '🚨' : '⚠️'}</span>
-                        </div>
-                        <div>
-                          <p className={`font-semibold text-sm ${isUrgent ? 'text-destructive' : 'text-warning'}`}>
-                            {isExpired
-                              ? 'Your lease has expired'
-                              : `Lease expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`}
-                          </p>
-                          <p className={`text-xs mt-0.5 ${isUrgent ? 'text-destructive/80' : 'text-warning/80'}`}>
-                            {isExpired
-                              ? 'Contact your manager to discuss renewal or move-out.'
-                              : `Ends ${format(new Date(lease.end_date), 'dd/MM/yy')}. Speak to your manager about renewal.`}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                {/* Bills hub — rent, water, security, amenities */}
-                {userRole?.tenant_id && (
-                  <div className="mb-8">
-                    <TenantBillsHub
-                      tenantId={userRole.tenant_id}
-                      onPay={openStkPay}
-                      invoices={urgentInvoices as PayableInvoice[]}
-                    />
-                  </div>
-                )}
-
-                {/* Bank Details Section */}
-                {tenantInfo?.manager_id && (
-                  <div className="mb-8">
-                    <ManagerBankDetails
-                      managerId={tenantInfo.manager_id}
-                      propertyId={tenantInfo.property_id || undefined}
-                    />
-                  </div>
-                )}
-
-                {/* Receipt Upload Section */}
-                {tenantInfo?.id && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <ReceiptUpload
-                      tenantId={tenantInfo.id}
-                      invoices={safeInvoices.filter((inv) => inv.status !== 'paid' && inv.status !== 'cancelled')}
-                      onUploadComplete={() => setReceiptRefresh((prev) => prev + 1)}
-                    />
-                    <ReceiptHistory tenantId={tenantInfo.id} refreshTrigger={receiptRefresh} />
-                  </div>
-                )}
-
-                {/* Balance & Credit Summary */}
-                {tenantInfo && user && (
-                  <div className="mb-8">
-                    <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Account Balance
-                    </h2>
-                    <TenantBalanceSummary tenantId={tenantInfo.id} userId={user.id} />
-                  </div>
-                )}
-
-                {/* Payment terms & M-Pesa details — set by manager at registration */}
-                {userRole?.tenant_id && (
-                  <div className="mb-8">
-                    <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Payment details
-                    </h2>
-                    <TenantPaymentDetails />
-                  </div>
-                )}
-
-                {/* Multi-unit: show all units if tenant has more than one */}
-                {userRole?.tenant_id && (
-                  <div className="mb-8">
-                    <TenantMultiUnit tenantId={userRole.tenant_id} />
-                  </div>
-                )}
-
-                {/* My Rental History — portable across all units ever lived in */}
-                <div className="mb-8">
-                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-                    <History className="h-4 w-4" />
-                    My Rental History
-                  </h2>
-                  <TenantPortableHistory />
-                </div>
-
-                {/* Contracts Section */}
-                <div className="mb-8">
-                  <TenantContractsSection />
-                </div>
-
-                {/* Invoices Table */}
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Your Invoices
-                      </CardTitle>
-                      <CardDescription>View and pay your rent invoices</CardDescription>
-                    </div>
-                    <Button variant="outline" asChild>
-                      <Link to="/portal/payments" className="gap-2">
-                        <History className="h-4 w-4" />
-                        Payment History
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/portal/inbox" className="gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        Inbox
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/portal/documents" className="gap-2">
-                        <FileText className="h-4 w-4" />
-                        Documents
-                      </Link>
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    {safeInvoices.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No invoices found.</p>
-                      </div>
-                    ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Invoice #</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Due Date</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {safeInvoices.map((invoice) => {
-                            return (
-                              <TableRow key={invoice.id}>
-                                <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                                <TableCell>{invoice.description || 'Monthly Rent'}</TableCell>
-                                <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                                <TableCell className="font-semibold">
-                                  {(invoice as PayableInvoice).balance_due != null &&
-                                  Number((invoice as PayableInvoice).balance_due) !== Number(invoice.amount) ? (
-                                    <div>
-                                      <span>{formatCurrency(Number((invoice as PayableInvoice).balance_due))}</span>
-                                      <p className="text-xs text-muted-foreground font-normal">
-                                        of {formatCurrency(Number(invoice.amount))} billed
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    formatCurrency(Number(invoice.amount))
-                                  )}
-                                </TableCell>
-                                <TableCell>
-                                  <span className={statusBadgeClass(invoiceStatusTone(invoice.status))}>
-                                    {invoiceStatusLabel(invoice.status)}
-                                  </span>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  {payableStatuses.has(invoice.status) && (
-                                    <Button
-                                      size="sm"
-                                      className="bg-teal hover:bg-teal/90 text-white gap-1.5 min-h-11 h-11"
-                                      onClick={() => openStkPay([invoice as PayableInvoice])}
-                                      disabled={isOffline}
-                                    >
-                                      <Smartphone className="h-3.5 w-3.5" />
-                                      Pay now
-                                    </Button>
-                                  )}
-                                  {invoice.status === 'paid' && invoice.paid_date && (
-                                    <span className="text-sm text-muted-foreground">
-                                      Paid {formatDate(invoice.paid_date)}
-                                    </span>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </CardContent>
-                </Card>
-              </>
-            )}
-            {/* End linked-tenant section */}
-          </>
-        )}
-      </main>
-
-      {/* Pay Invoice Dialog */}
+            {/* Pay Invoice Dialog */}
       <Dialog open={payDialogOpen} onOpenChange={setPayDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -1399,12 +648,8 @@ const TenantPortal = () => {
         />
       )}
 
-      {/* Offline Banner */}
       <OfflineBanner isOffline={isOffline} />
-
-      {/* Mobile Bottom Navigation */}
-      {isMobile && <MobileBottomNav />}
-    </div>
+    </TenantLayout>
   );
 };
 

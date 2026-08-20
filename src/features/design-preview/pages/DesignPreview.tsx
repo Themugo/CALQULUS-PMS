@@ -173,6 +173,7 @@ export default function DesignPreview() {
           {isPortal(active) && <PortalHierarchyPreview portal={active} />}
           {active === "landlord" && <LandlordPagesPreview />}
           {active === "agency" && <AgencyPagesPreview />}
+          {active === "tenant" && <TenantPagesPreview />}
           {active === "login" && <LoginPreview />}
           {active === "properties" && <RecordPreview title="Properties" icon={Building2} attention="Occupancy" action="Add property" inspect="Units" />}
           {active === "tenants" && <RecordPreview title="Tenants" icon={Home} attention="Invites" action="Invite" inspect="Lease" />}
@@ -465,6 +466,153 @@ function AgencyPagesPreview() {
               <PreviewStat label="Needs attention" value={page.attention} />
               <PreviewStat label="Can do next" value={page.next} />
               <PreviewStat label="Not a copy of" value="Manager operations chrome" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TenantPagesPreview() {
+  const pages = [
+    {
+      title: "Dashboard",
+      where: "Your home",
+      matters: "Rent due, amount, due date, Pay rent",
+      attention: "Overdue rent",
+      next: "Pay rent",
+    },
+    {
+      title: "Payments",
+      where: "What you owe",
+      matters: "Due invoices then history",
+      attention: "Unpaid bills",
+      next: "Pay now",
+    },
+    {
+      title: "Lease",
+      where: "Your agreement",
+      matters: "Sign or read the contract",
+      attention: "Awaiting signature",
+      next: "Open the lease",
+    },
+    {
+      title: "Maintenance",
+      where: "Something broken",
+      matters: "Report a problem",
+      attention: "Open requests",
+      next: "Describe the issue",
+    },
+    {
+      title: "Receipts",
+      where: "Proof of payment",
+      matters: "Upload or open a receipt",
+      attention: "Pending review",
+      next: "Upload",
+    },
+    {
+      title: "Documents",
+      where: "Files for your home",
+      matters: "Lease files and notices",
+      attention: "Renewal offer",
+      next: "Open a file",
+    },
+    {
+      title: "Profile",
+      where: "Your account",
+      matters: "Name, phone, notifications",
+      attention: "Missing phone",
+      next: "Save details",
+    },
+  ];
+
+  return (
+    <div className="space-y-6" data-preview="tenant-pages">
+      <p className="type-body text-muted-foreground">
+        Tenant is a simple mobile-first home, not an operations dashboard. White surface, navy chrome, 2px violet accent. Pay rent is the primary action.
+      </p>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="tenant-mobile">
+          <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">Mobile 390</p>
+          <div {...portalSurfaceProps("tenant")} className="max-w-[390px]">
+            <PortalAccentBar />
+            <div className="px-4 py-5 space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Good morning</p>
+                <h2 className="page-title mt-0.5">Amina</h2>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your home</p>
+                <p className="mt-1 font-medium">Kilimani Court · Unit 4B</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rent due</p>
+                <p className="mt-1 font-heading text-3xl font-bold">KES 45,000</p>
+                <p className="mt-1 text-sm text-muted-foreground">Due 5 Sep 2026</p>
+                <Button className="mt-4 min-h-12 w-full" type="button">Pay rent</Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {["Lease", "Maintenance", "Receipts", "Documents"].map((label) => (
+                  <div key={label} className="rounded-xl border border-border bg-card px-3 py-3 text-sm font-medium">{label}</div>
+                ))}
+              </div>
+              <div>
+                <p className="section-title mb-2">Recent activity</p>
+                <p className="text-sm text-muted-foreground">Paid KES 45,000 · INV-204 · 5 Aug</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="tenant-desktop">
+          <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">Desktop 1280</p>
+          <div {...portalSurfaceProps("tenant")}>
+            <PortalAccentBar />
+            <div className="flex min-h-[280px]">
+              <div className="hidden sm:block w-40 border-r border-border p-3 space-y-1 text-sm">
+                {["Dashboard", "Payments", "Lease", "Maintenance", "Receipts", "Documents", "Profile"].map((label, i) => (
+                  <p key={label} className={i === 0 ? "rounded-md bg-primary/10 px-2 py-1.5 font-medium" : "px-2 py-1.5 text-muted-foreground"}>{label}</p>
+                ))}
+              </div>
+              <div className="flex-1 p-5 max-w-xl space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Good morning</p>
+                  <h2 className="page-title mt-0.5">Amina</h2>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your home</p>
+                  <p className="mt-1 font-medium">Kilimani Court · Unit 4B</p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rent due</p>
+                  <p className="mt-1 font-heading text-3xl font-bold">KES 45,000</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Due 5 Sep 2026</p>
+                  <Button className="mt-4" type="button">Pay rent</Button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {["Lease", "Maintenance", "Receipts", "Documents"].map((label) => (
+                    <div key={label} className="rounded-xl border border-border bg-card px-2 py-2 text-center text-xs font-medium">{label}</div>
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground">Paid KES 45,000 · INV-204 · 5 Aug</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {pages.map((page) => (
+        <div key={page.title} className="rounded-lg border border-border overflow-hidden bg-background">
+          <div {...portalSurfaceProps("tenant")}>
+            <PortalAccentBar />
+            <PageHeader
+              title={page.title}
+              description={`${page.where} · ${page.matters}`}
+              className="px-4 py-4"
+            />
+            <div className="grid gap-3 sm:grid-cols-3 p-4">
+              <PreviewStat label="Needs attention" value={page.attention} />
+              <PreviewStat label="Can do next" value={page.next} />
+              <PreviewStat label="Not" value="A manager KPI dashboard" />
             </div>
           </div>
         </div>

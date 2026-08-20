@@ -26,6 +26,7 @@ const TenantMaintenance = lazy(() => import("@/features/tenant-portal/pages/Tena
 const TenantVacationNotices = lazy(() => import("@/features/tenant-portal/pages/TenantVacationNotices"));
 const TenantInbox = lazy(() => import("@/features/tenant-portal/pages/TenantInbox"));
 const TenantDocuments = lazy(() => import("@/features/tenant-portal/pages/TenantDocuments"));
+const TenantReceipts = lazy(() => import("@/features/tenant-portal/pages/TenantReceipts"));
 const ManagerPaymentHistory = lazy(() => import("@/features/payments/pages/ManagerPaymentHistory"));
 const Contracts = lazy(() => import("@/features/contracts/pages/Contracts"));
 const VacationNotices = lazy(() => import("@/features/vacation-notices/pages/VacationNotices"));
@@ -205,8 +206,10 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/portal", element: TenantPortal, protected: true },
       { path: "/portal/payments", element: PaymentHistory, protected: true },
       { path: "/portal/profile", element: TenantProfile, protected: true },
+      { path: "/portal/lease", redirect: "/portal/contracts" },
       { path: "/portal/contracts", element: TenantContracts, protected: true },
       { path: "/portal/maintenance", element: TenantMaintenance, protected: true },
+      { path: "/portal/receipts", element: TenantReceipts, protected: true },
       { path: "/portal/services", element: ServicesPage, protected: true },
       { path: "/portal/vacation-notices", element: TenantVacationNotices, protected: true },
       { path: "/portal/inbox", element: TenantInbox, protected: true },

@@ -1,18 +1,17 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import { formatDate, formatDateTime12h } from '@/shared/lib/dateFormat';
-import { Building2, ArrowLeft, CreditCard, Receipt, ExternalLink, Wallet, CheckCircle, LogOut, AlertCircle, RefreshCw } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useCurrency } from '@/shared/hooks/useCurrency';
+import { formatDate } from '@/shared/lib/dateFormat';
+import { CreditCard, Receipt, ExternalLink, AlertCircle, RefreshCw } from 'lucide-react';
 import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
+import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
+import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 
 interface Payment {
   id: string;
@@ -29,9 +28,20 @@ interface Payment {
 }
 
 const PaymentHistory = () => {
-  const { user, signOut } = useAuth();
-  const { formatCurrency: formatCurrencyHook } = useCurrency();
-  const isMobile = useIsMobile();
+  const { user, userRole } = useAuth();
+  const [stkInvoices, setStkInvoices] = useState<PayableInvoice[]>([]);
+  const [stkOpen, setStkOpen] = useState(false);
+  const [tenantPhone, setTenantPhone] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    void supabase
+      .from('profiles')
+      .select('phone')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setTenantPhone(data?.phone ?? null));
+  }, [user?.id]);
 
   const fetchPayments = useCallback(async (): Promise<Payment[]> => {
     const { data, error } = await supabase.functions.invoke('get-payment-history');
@@ -50,7 +60,7 @@ const PaymentHistory = () => {
 
   const safePayments = payments || [];
 
-  const formatCurrency = (amount: number, currency: string = 'KES') => {
+  const formatCurrency = (amount: number, _currency: string = 'KES') => {
     // Always use KES for display, converting the currency code to KES format
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -60,48 +70,21 @@ const PaymentHistory = () => {
     }).format(amount);
   };
 
-  const totalPaid = safePayments.reduce((acc, p) => acc + p.amount, 0);
-  const successfulCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'success').length;
-  const pendingCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'warning').length;
-  const failedCount = safePayments.filter((p) => invoiceStatusTone(p.status) === 'danger').length;
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal"></div>
-      </div>
+      <TenantLayout title="Payments" description="What you owe, then what you already paid.">
+        <div className="flex justify-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+        </div>
+      </TenantLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-teal flex items-center justify-center">
-              <Building2 className="h-4 w-4 md:h-5 md:w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-base md:text-lg">CALQULUS PMS</h1>
-              <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Payment History</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            <span className="text-xs md:text-sm text-muted-foreground hidden md:block">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={signOut} className="h-8 px-2 md:px-3">
-              <LogOut className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Sign Out</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-4 md:py-8">
-        {/* Offline indicator */}
-        {(isOffline || isFromCache) && (
-          <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
-        )}
+    <TenantLayout title="Payments" description="Pay what is due. History is the list below.">
+      {(isOffline || isFromCache) && (
+        <OfflineIndicator isOffline={isOffline} isFromCache={isFromCache} className="mb-4" />
+      )}
 
         {/* Error state */}
         {error && !loading && (
@@ -124,63 +107,18 @@ const PaymentHistory = () => {
           </Card>
         )}
 
-        {/* Back Link */}
-        <Link to="/portal" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Portal
-        </Link>
+        {userRole?.tenant_id ? (
+          <div className="mb-6">
+            <TenantBillsHub
+              tenantId={userRole.tenant_id}
+              onPay={(invoices) => {
+                setStkInvoices(invoices);
+                setStkOpen(true);
+              }}
+            />
+          </div>
+        ) : null}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-          <Card>
-            <CardContent className="pt-4 md:pt-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-400/10 flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
-                </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Transactions</p>
-                  <p className="text-xl md:text-2xl font-bold">{safePayments.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4 md:pt-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-success/10 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 md:h-6 md:w-6 text-success" />
-                </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Total Paid</p>
-                  <p className="text-xl md:text-2xl font-bold">{formatCurrency(totalPaid)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="col-span-2 md:col-span-1">
-            <CardContent className="pt-4 md:pt-6">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-success/10 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success" />
-                </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Successful</p>
-                  <p className="text-xl md:text-2xl font-bold">{successfulCount}</p>
-                  {(pendingCount > 0 || failedCount > 0) && (
-                    <p className="text-xs text-muted-foreground">
-                      {pendingCount > 0 ? `${pendingCount} pending` : ''}
-                      {pendingCount > 0 && failedCount > 0 ? ' · ' : ''}
-                      {failedCount > 0 ? `${failedCount} failed` : ''}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Payment History - Mobile Cards / Desktop Table */}
         <Card>
           <CardHeader className="pb-3 md:pb-6">
             <CardTitle className="flex items-center gap-2 text-base md:text-lg">
@@ -254,7 +192,7 @@ const PaymentHistory = () => {
                     {safePayments.map((payment) => (
                       <TableRow key={payment.id}>
                         <TableCell>
-                          {formatDateTime12h(payment.created)}
+                          {formatDate(payment.created)}
                         </TableCell>
                         <TableCell className="font-medium">
                           <div>
@@ -306,14 +244,25 @@ const PaymentHistory = () => {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Offline Banner */}
+      {stkInvoices.length > 0 && (
+        <TenantPayNowDialog
+          invoices={stkInvoices}
+          tenantPhone={tenantPhone}
+          open={stkOpen}
+          onOpenChange={(open) => {
+            setStkOpen(open);
+            if (!open) setStkInvoices([]);
+          }}
+          onPaymentSuccess={() => {
+            setStkOpen(false);
+            setStkInvoices([]);
+            void refetch();
+          }}
+        />
+      )}
       <OfflineBanner isOffline={isOffline} />
-
-      {/* Mobile Bottom Navigation */}
-      {isMobile && <MobileBottomNav />}
-    </div>
+    </TenantLayout>
   );
 };
 

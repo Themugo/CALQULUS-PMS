@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
-import { Layout } from '@/shared/components/layout/Layout';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
@@ -57,9 +57,9 @@ const ServicesPage: React.FC = () => {
   const completedJobs = assignedJobs.filter(j => j.status === 'completed');
 
   return (
-    <Layout
+    <TenantLayout
       title="Services"
-      subtitle="Find verified repair professionals with CALQULUS PMS work history"
+      description="Find verified repair professionals with CALQULUS PMS work history"
     >
       <Tabs defaultValue="marketplace">
         <TabsList className="flex-wrap h-auto gap-1 p-1 mb-6">
@@ -207,7 +207,7 @@ const ServicesPage: React.FC = () => {
           </TabsContent>
         )}
       </Tabs>
-    </Layout>
+    </TenantLayout>
   );
 };
 

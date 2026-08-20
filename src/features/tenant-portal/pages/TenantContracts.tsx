@@ -1,8 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
-import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -70,10 +67,7 @@ const statusConfig: Record<
 };
 
 const TenantContracts = () => {
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-
-  const {
+    const {
     contracts,
     loading,
     selectedContract,
@@ -96,50 +90,25 @@ const TenantContracts = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-warning" />
-      </div>
+      <TenantLayout title="Lease" description="Your agreement with the property.">
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </TenantLayout>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      <MobilePageHeader title="Contracts" onBack={() => navigate('/portal')} />
-
-      <main className="p-4 max-w-2xl mx-auto space-y-4">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-warning border-warning">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2">
-                <PenTool className="h-4 w-4 text-warning" />
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{pendingSignatureContracts.length}</p>
-                  <p className="text-xs text-muted-foreground">Needs Signature</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-success border-success">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-success" />
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{activeContracts.length}</p>
-                  <p className="text-xs text-muted-foreground">Active</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+    <TenantLayout title="Lease" description="Your agreement with the property.">
+      <div className="mx-auto w-full max-w-xl space-y-4">
 
         {contracts.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-8 text-muted-foreground">
                 <ScrollText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="font-medium">No tenant agreements found</p>
-                <p className="text-sm mt-1">Your tenant agreements will appear here</p>
+                <p className="font-medium">No lease on file</p>
+                <p className="text-sm mt-1">Your lease will appear here when your manager shares it.</p>
               </div>
             </CardContent>
           </Card>
@@ -208,7 +177,7 @@ const TenantContracts = () => {
             )}
           </>
         )}
-      </main>
+      </div>
 
       {/* View Contract Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
@@ -334,9 +303,7 @@ const TenantContracts = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Bottom Navigation */}
-      {isMobile && <MobileBottomNav />}
-    </div>
+    </TenantLayout>
   );
 };
 

@@ -31,6 +31,14 @@ test.describe("Design preview", () => {
     await expect(page.getByRole("heading", { name: "Clients", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Portfolio", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Property detail", exact: true })).toBeVisible();
+    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant" }).click();
+    await expect(page.getByText("Tenant is a simple mobile-first home")).toBeVisible();
+    const tenantPreview = page.locator("[data-preview='tenant-pages']");
+    await expect(tenantPreview.getByRole("button", { name: "Pay rent" }).first()).toBeVisible();
+    await expect(tenantPreview.getByText("Your home")).toBeVisible();
+    await expect(tenantPreview.getByText("Rent due")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Lease", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Receipts", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Maintenance" }).click();
     await expect(page.getByRole("tab", { name: "New" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Assigned" })).toBeVisible();
@@ -60,4 +68,18 @@ test.describe("Design preview", () => {
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
   });
+
+  for (const width of [360, 390, 480, 768, 1280] as const) {
+    test(`tenant preview does not overflow at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: width < 768 ? 844 : 800 });
+      await page.goto("/design-preview");
+      await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
+      await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant" }).click();
+      await expect(page.locator("[data-preview='tenant-pages']")).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(1);
+    });
+  }
 });

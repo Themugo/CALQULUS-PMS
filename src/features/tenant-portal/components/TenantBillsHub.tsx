@@ -216,7 +216,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                     <Button
                       size="sm"
                       variant="outline"
-                      className="mt-2 min-h-11 h-11 text-xs border-success/40 text-success hover:bg-success/20"
+                      className="mt-2 min-h-11 h-11 text-xs"
                       onClick={() => onPay([bill])}
                     >
                       Pay only
@@ -238,7 +238,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
             {selected.size > 0 && <p className="text-xl font-bold mt-0.5">{fmt(selectedTotal)}</p>}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button size="lg" className="bg-teal hover:bg-teal/90 text-white gap-2 h-11" onClick={() => onPay(payable)}>
+            <Button size="lg" className="gap-2 h-11" onClick={() => onPay(payable)}>
               <Smartphone className="h-4 w-4" />
               Pay now — {fmt(totalDue)}
             </Button>

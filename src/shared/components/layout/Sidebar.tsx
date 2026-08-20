@@ -160,14 +160,14 @@ const landlordNavGroups: NavGroup[] = [
 
 const tenantNavGroups: NavGroup[] = [
   {
-    title: "TENANT PORTAL",
+    title: "HOME",
     items: [
-      { name: "Home", href: "/portal", icon: Home },
+      { name: "Dashboard", href: "/portal", icon: Home },
       { name: "Payments", href: "/portal/payments", icon: CreditCard },
+      { name: "Lease", href: "/portal/contracts", icon: FileText },
       { name: "Maintenance", href: "/portal/maintenance", icon: Wrench },
+      { name: "Receipts", href: "/portal/receipts", icon: Receipt },
       { name: "Documents", href: "/portal/documents", icon: FileText },
-      { name: "Vacation Notice", href: "/portal/vacation-notices", icon: Calendar },
-      { name: "Inbox", href: "/portal/inbox", icon: MessageSquare },
       { name: "Profile", href: "/portal/profile", icon: User },
     ],
   },

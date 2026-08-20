@@ -1,13 +1,10 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { MobilePageHeader } from '@/features/tenant-portal/components/MobilePageHeader';
+import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { logError } from '@/shared/lib/errorLogger';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import MobileBottomNav from '@/features/tenant-portal/components/MobileBottomNav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -116,9 +113,7 @@ const priorityConfig: Record<RequestPriority, { label: string }> = {
 
 const TenantMaintenance = () => {
   const { userRole } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -305,60 +300,20 @@ const TenantMaintenance = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-warning" />
-      </div>
+      <TenantLayout title="Maintenance" description="Tell us what's broken. We'll send it to your manager.">
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </TenantLayout>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-background ${isMobile ? 'pb-20' : ''}`}>
-      <MobilePageHeader
-        title="Maintenance"
-        onBack={() => navigate('/portal')}
-        trailing={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="New maintenance request"
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            <Plus className="h-5 w-5" />
-          </Button>
-        }
-      />
-
-      <main className="p-4 max-w-2xl mx-auto space-y-4">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-warning/10 border-warning/20">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-warning" />
-                <div>
-                  <p className="text-2xl font-bold">{openRequests.length}</p>
-                  <p className="text-xs text-muted-foreground">Open Requests</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-success/10 border-success/20">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-success" />
-                <div>
-                  <p className="text-2xl font-bold">{closedRequests.length}</p>
-                  <p className="text-xs text-muted-foreground">Resolved</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* New Request Button */}
-        <Button className="w-full" onClick={() => setCreateDialogOpen(true)}>
+    <TenantLayout title="Maintenance" description="Tell us what's broken. We'll send it to your manager.">
+      <div className="mx-auto w-full max-w-xl space-y-4">
+        <Button className="min-h-12 w-full text-base" onClick={() => setCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Submit New Request
+          Report a problem
         </Button>
 
         {requests.length === 0 ? (
@@ -394,7 +349,7 @@ const TenantMaintenance = () => {
             )}
           </>
         )}
-      </main>
+      </div>
 
       {/* Create Request Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -402,9 +357,9 @@ const TenantMaintenance = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Wrench className="h-5 w-5" />
-              New Maintenance Request
+              Report a problem
             </DialogTitle>
-            <DialogDescription>Describe the issue you're experiencing and we'll get it fixed.</DialogDescription>
+            <DialogDescription>What’s broken? We’ll send it to your manager.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -672,10 +627,7 @@ const TenantMaintenance = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Mobile Bottom Navigation */}
-      {isMobile && <MobileBottomNav />}
-    </div>
+    </TenantLayout>
   );
 };
 

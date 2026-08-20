@@ -1,18 +1,57 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 7 — Tenant experience. James issued the tenant brief: white / navy /
+violet accent, simple and mobile-first. Dashboard: Good morning, Your home
+(property / unit), Rent due (amount, due date, Pay rent), then Lease,
+Maintenance, Receipts, Documents, then recent activity. No large KPI
+dashboards, complex analytics, enterprise navigation, or excessive cards.
+Named pages: Dashboard, Payments, Lease, Maintenance, Receipts, Documents,
+Profile (already present).
+
+## CURRENT TASK
+Phase 7 tenant portal: preview on `/design-preview` (mobile and desktop),
+then production pages. Auth prefix `/portal` unchanged. Pay dialogs, invoices,
+receipts, contracts, and maintenance backends reused.
+
+### Phase 7 findings (before any changes)
+- Home was two different UIs (mobile hero vs desktop six-card KPI grid plus
+  bills hub, receipts, balance, invoices table). Teal filled the Pay button.
+- Each sub-page rebuilt its own header and bottom nav. Bottom nav had six
+  cramped items including Inbox.
+- Receipts lived on the dashboard. Lease was labelled Contracts.
+- Payments was history plus three KPI cards, not a clear “what you owe”.
+
+### Phase 7 implementation
+- One `TenantLayout`: white desk, navy chrome, 2px violet accent. Mobile
+  bottom nav (Home, Pay, Fix, Docs, Me). Desktop rail with the seven named
+  pages. Selected item is `bg-primary/10`, not a violet fill.
+- Dashboard is `TenantHome`: greeting, home, rent due, Pay rent, four
+  shortcuts, recent activity. PAY RENT still opens existing STK / pay dialogs.
+- Payments reuses `TenantBillsHub` + history list (KPI cards removed).
+- Receipts is a page wrapping existing `ReceiptUpload` / `ReceiptHistory`.
+- Lease is `/portal/contracts` (`/portal/lease` redirects). Maintenance is a
+  single Report a problem control plus the existing request list/dialogs.
+- Extra routes (inbox, vacation notices, services) stay reachable off-nav.
+
+## CHECKPOINT
+Phase 7 tenant experience is on `cursor/phase-7-tenant-experience-1e5d`.
+Do not merge to `main` until James asks.
+
+## PREVIOUS PHASE
 Phase 6 — Agency portal. James issued the agency desk brief: white / navy /
 amber-orange accent, core question “How are our clients and portfolios
 performing?”, named pages Dashboard, Clients, Portfolio, Property Detail,
 Tenants, Billing, Reports, Settings. Agency must feel portfolio-oriented,
 client-oriented, and operational — not Manager with an orange colour.
 
-## CURRENT TASK
-Phase 6 agency portal complete on this branch: preview on `/design-preview`,
-then production pages. Auth prefix `/agency` unchanged. Existing landlord-link,
-property, tenant, billing, and report backends reused. Nested Manager chrome
-is skipped via `DeskEmbedProvider`. Property links stay on
-`/agency/properties/:id`.
+## PREVIOUS TASK
+Phase 6 agency portal complete and merged to `main` (PR #55). Preview on
+`/design-preview`, then production pages. Auth prefix `/agency` unchanged.
+Existing landlord-link, property, tenant, billing, and report backends reused.
+Nested Manager chrome is skipped via `DeskEmbedProvider`. Property links stay
+on `/agency/properties/:id`.
+
 
 ### Phase 6 findings (before any changes)
 - Agency already had a dedicated layout and `/agency/*` routes, but every
@@ -56,10 +95,7 @@ is skipped via `DeskEmbedProvider`. Property links stay on
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
   — 22 passed, 5 skipped (credential-gated auth)
 - `npm run build` — pass
-
-## CHECKPOINT
-Phase 6 agency portal is on `cursor/phase-6-agency-portal-1e5d` (PR #55).
-Do not merge to `main` until James asks. Next redesign phase is not started.
+- Merged to `main` as PR #55.
 
 ## PREVIOUS PHASE
 Phase 4E — Manager operations. James issued the manager operations brief:
