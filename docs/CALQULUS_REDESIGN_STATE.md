@@ -48,10 +48,13 @@ STOP. Do not redesign billing, other portals, or the authenticated shell.
 - Submanager scoping via `useManagerScope` is unchanged
 
 ## TEST STATUS
-- Pending on this revision (typecheck, eslint, vitest, Playwright preview, production build)
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx eslint` on changed tenants / leases / preview files — pass
+- `npx vitest run` — **904 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-tenants` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
-- Pending on this revision
+- `npm run build` — pass
 
 ## NEXT STEP
 STOP. Do not continue to billing, other portals, or shell unification.
