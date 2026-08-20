@@ -77,6 +77,7 @@ describe("Phase 12 accessibility certification contracts", () => {
     expect(src("src/features/design-preview/pages/ShellPreviewPage.tsx")).toContain("Skip to main content");
     expect(src("src/features/design-preview/pages/ManagerDashboardPreviewPage.tsx")).toContain("Skip to main content");
     expect(src("src/features/design-preview/pages/ManagerPropertiesPreviewPage.tsx")).toContain("Skip to main content");
+    expect(src("src/features/design-preview/pages/ManagerTenantsPreviewPage.tsx")).toContain("Skip to main content");
     expect(src("src/shared/components/layout/Layout.tsx")).toContain("Skip to main content");
     expect(src("src/features/landlord/components/LandlordLayout.tsx")).toContain("Skip to main content");
     expect(src("src/features/agency/components/AgencyLayout.tsx")).toContain("Skip to main content");

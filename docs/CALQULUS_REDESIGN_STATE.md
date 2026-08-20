@@ -1,13 +1,76 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 2 — Manager Properties, Property Detail, and Units.
+Phase 3 — Manager Tenants, Tenant Detail, and Leases.
 STATUS: preview + live implementation complete. STOP after these three surfaces.
 
 ## CURRENT TASK
-STOP. Do not redesign tenants, billing, leases, other portals, or the authenticated shell.
+STOP. Do not redesign billing, other portals, or the authenticated shell.
 
 ## COMPLETED
+- Inspected live Tenants (`/tenants`) and Leases (`/leases`). Tenant detail is a sheet on the tenants page (no `/tenants/:id` route).
+- Added layout preview at `/design-preview/manager-tenants` (Tenants / Tenant detail / Leases chrome — labelled slots only, no invented balances or expiry)
+- **Tenants:** header **Invite tenant** + **View leases**; searchable table in spec order (Tenant, Property / Unit, Lease, Rent, Balance, Status); row **View** opens detail; empty / loading / error kept; per-property **Add Tenant** and `InviteTenantDialog` / `MoveOutDialog` unchanged
+- **Tenant detail:** header is tenant name, property, unit, status; primary **View statement**; sections Overview, Lease, Financial, Payments, Maintenance, Documents, Activity; extra existing tabs (Payers, Notices, Portal) remain; profile still uses nested identity / employment / emergency sections
+- **Leases:** header **Create lease**; table Tenant, Property, Unit, Start date, Expiry, Rent, Status; Active / Expiring soon / Expired from stored status plus real `end_date` window; create form now shows inline field errors from existing `leaseSchema`; bulk deactivate confirmation kept
+- No business-logic, API, or permission changes
+
+## FILES INSPECTED
+- `src/features/tenants/pages/Tenants.tsx`
+- `src/features/tenants/components/{InviteTenantDialog,TenantProfilePanel,TenantLeaseTab,MoveOutDialog}.tsx`
+- `src/features/leases/pages/Leases.tsx`
+- `src/features/leases/components/LeaseCard.tsx`
+- `src/shared/lib/{statusBadge,validations,dateFormat}.ts`
+
+## COMPONENTS TO REUSE
+- `InviteTenantDialog`, `MoveOutDialog`, `TenantProfilePanel`, `TenantLeaseTab`, `TenantPaymentsTab`, `TenantMaintenanceTab`, `TenantDocumentsTab`, `TenantStatement`
+- `LeaseCard`, `leaseSchema`, `computeExpiringSoonIds`, `statusBadgeClass`
+- `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`
+
+## COMPONENTS TO CREATE
+- Preview: `ManagerTenantsPreview` + `ManagerTenantsPreviewPage`
+
+## FILES CHANGED (this phase)
+- `src/features/tenants/pages/Tenants.tsx`
+- `src/features/leases/pages/Leases.tsx`
+- `src/features/design-preview/pages/ManagerTenantsPreviewPage.tsx`
+- `src/features/design-preview/components/ManagerTenantsPreview.tsx`
+- `src/app/routes.ts`, `src/features/marketing/publicConfig.ts`
+- `src/features/design-preview/pages/DesignPreview.tsx`
+- Tests: `src/test/managerTenantsPreview.test.tsx`, `src/test/managerTenantsLayout.test.ts`, `e2e/manager-tenants-preview.spec.ts`
+- `docs/CALQULUS_REDESIGN_STATE.md`
+
+## KNOWN ISSUES
+- Live Manager still uses `Layout` + `Header`/`Sidebar` (Phase 0A shell not migrated)
+- Tenant detail remains a sheet on `/tenants` (existing pattern; no new `/tenants/:id` route)
+- Lease "Expiring soon" overlay still uses the existing 30-day `end_date` window computed outside render
+- Create-lease validation toasts were replaced with inline field errors; API error toasts unchanged
+- Submanager scoping via `useManagerScope` is unchanged
+
+## TEST STATUS
+- Pending on this revision (typecheck, eslint, vitest, Playwright preview, production build)
+
+## BUILD STATUS
+- Pending on this revision
+
+## NEXT STEP
+STOP. Do not continue to billing, other portals, or shell unification.
+
+Preview URL: `/design-preview/manager-tenants`
+Live URLs: `/tenants`, `/leases` (Manager session)
+
+---
+
+## Previous checkpoint (Phase 2 properties)
+
+Phase 2 — Manager Properties, Property Detail, and Units.
+STATUS: preview + live implementation complete. Landed on `main` at `09faf96`.
+
+- Properties table, property overview, and `/units` portfolio table
+- Preview: `/design-preview/manager-properties`
+- Tests: typecheck, eslint, 900 vitest passed + 1 skipped, Playwright Chromium overflow at 1440–360, `npm run build` pass
+
+---
 - Inspected live Properties (`/properties`), Property Detail (`/properties/:id`), and unit CRUD (`UnitManagement` on the property record). There was no `/units` route; units lived on the property detail tab.
 - Added layout preview at `/design-preview/manager-properties` (Properties / Property detail / Units chrome — labelled slots only, no invented occupancy, rent, or balances)
 - **Properties:** header **Add property** + **View units**; search, occupancy/sort filter, and row **View**; professional table from existing columns (Property, Category, Units, Occupancy, Tenants, Revenue); empty / loading / error kept; add / edit / deactivate dialogs unchanged

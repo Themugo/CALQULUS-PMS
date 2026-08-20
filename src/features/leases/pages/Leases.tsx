@@ -17,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import {
   AlertDialog,
@@ -58,7 +57,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { leaseSchema, formatValidationErrors } from "@/shared/lib/validations";
+import { leaseSchema } from "@/shared/lib/validations";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { formatDate } from "@/shared/lib/dateFormat";
@@ -76,6 +75,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { EmptyState } from "@/shared/components/ui/empty-state";
+import { ErrorState } from "@/shared/components/ui/error-state";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
@@ -133,6 +135,29 @@ function computeExpiringSoonIds(rows: Lease[]): Set<string> {
     }
   }
   return ids;
+}
+
+function leaseFieldErrors(error: { issues: { path: (string | number)[]; message: string }[] }): Record<string, string> {
+  const next: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const key = String(issue.path[0] ?? "form");
+    if (!next[key]) next[key] = issue.message;
+  }
+  return next;
+}
+
+function leaseStatusLabel(status: LeaseStatus, expiringSoon: boolean): string {
+  if (status === "expired") return "Expired";
+  if (expiringSoon || status === "expiring") return "Expiring soon";
+  if (status === "active") return "Active";
+  if (status === "pending") return "Pending";
+  if (status === "terminated") return "Terminated";
+  return status;
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return <p id={id} role="alert" className="text-xs text-destructive">{message}</p>;
 }
 
 // Document Preview Component
@@ -215,6 +240,7 @@ const Leases = () => {
   const [units, setUnits] = useState<Unit[]>([]);
   const [filteredUnits, setFilteredUnits] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeaseStatus | "all">("all");
   const [leasePage, setLeasePage] = useState(1);
@@ -239,6 +265,7 @@ const Leases = () => {
     deposit: "",
     terms: "",
   });
+  const [leaseErrors, setLeaseErrors] = useState<Record<string, string>>({});
 
   const fetchLeases = useCallback(async () => {
     if (!managerId) return;
@@ -248,6 +275,7 @@ const Leases = () => {
       return;
     }
     setIsLoading(true);
+    setLoadError(null);
 
     let query = supabase.from("leases")
       .select(`
@@ -280,6 +308,7 @@ const Leases = () => {
       const fallback = await fallbackQuery;
 
       if (fallback.error) {
+        setLoadError("Couldn't load leases from live records.");
         toast({
           title: "Error",
           description: "Failed to fetch leases",
@@ -405,13 +434,10 @@ const Leases = () => {
     // Validate input
     const validationResult = leaseSchema.safeParse(newLease);
     if (!validationResult.success) {
-      toast({
-        title: "Validation Error",
-        description: formatValidationErrors(validationResult.error),
-        variant: "destructive",
-      });
+      setLeaseErrors(leaseFieldErrors(validationResult.error));
       return;
     }
+    setLeaseErrors({});
 
     const monthlyRent = parseFloat(validationResult.data.monthly_rent);
     const deposit = validationResult.data.deposit ? parseFloat(validationResult.data.deposit) : monthlyRent * 2;
@@ -753,7 +779,16 @@ const Leases = () => {
   };
 
   return (
-    <Layout title="Leases" subtitle="Status, dates, tenant, property, rent, and expiry — renew or end a lease here">
+    <Layout
+      title="Leases"
+      subtitle="Status, dates, tenant, property, rent, and expiry — renew or end a lease here"
+      headerActions={
+        <Button size="sm" className="min-h-11 btn-brand" onClick={() => { setLeaseErrors({}); setIsDialogOpen(true); }}>
+          <Plus className="h-4 w-4" />
+          Create lease
+        </Button>
+      }
+    >
       <Tabs defaultValue="agreements" className="w-full">
         <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-2 sm:flex">
           <TabsTrigger value="agreements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
@@ -769,7 +804,7 @@ const Leases = () => {
 
         <TabsContent value="agreements" className="space-y-4 sm:space-y-6">
           {/* Summary Stats - Scrollable on mobile */}
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 scrollbar-hide" role="group" aria-label="Filter leases by status">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-5 scrollbar-hide" role="group" aria-label="Filter leases by status">
             <Card 
               role="button"
               tabIndex={0}
@@ -827,8 +862,29 @@ const Leases = () => {
                     <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                   </div>
                   <div className="text-right sm:text-left">
-                    <p className="text-[10px] sm:text-xs text-muted-foreground">Expiring</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Expiring soon</p>
                     <p className="text-lg sm:text-2xl font-bold text-foreground">{leaseStats.expiring}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card 
+              role="button"
+              tabIndex={0}
+              aria-pressed={statusFilter === "expired"}
+              aria-label={`Show expired leases, ${leaseStats.expired}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${statusFilter === "expired" ? "ring-2 ring-primary" : ""}`}
+              onClick={() => setStatusFilter("expired")}
+              onKeyDown={onActivateKey(() => setStatusFilter("expired"))}
+            >
+              <CardContent className="p-3">
+                <div className="flex items-center gap-2 sm:justify-between">
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-destructive" />
+                  </div>
+                  <div className="text-right sm:text-left">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Expired</p>
+                    <p className="text-lg sm:text-2xl font-bold text-foreground">{leaseStats.expired}</p>
                   </div>
                 </div>
               </CardContent>
@@ -882,7 +938,7 @@ const Leases = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Search leases"
-                className="pl-9 w-full sm:w-80 bg-card border-border"
+                className="pl-9 min-h-11 w-full sm:w-80 bg-card border-border"
               />
             </div>
 
@@ -899,14 +955,7 @@ const Leases = () => {
               <span className="hidden sm:inline">Deactivate</span> {selectedLeases.size}
             </Button>
           )}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="btn-brand sm:size-default">
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Create Lease Agreement</span>
-                <span className="sm:hidden">New</span>
-              </Button>
-            </DialogTrigger>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setLeaseErrors({}); }}>
           <DialogContent className="max-w-[95vw] sm:max-w-[600px] bg-card border-border max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-heading text-foreground text-base sm:text-lg">
@@ -922,11 +971,12 @@ const Leases = () => {
                   <Label htmlFor="tenant">Tenant *</Label>
                   <Select
                     value={newLease.tenant_id}
-                    onValueChange={(value) =>
-                      setNewLease({ ...newLease, tenant_id: value })
-                    }
+                    onValueChange={(value) => {
+                      setNewLease({ ...newLease, tenant_id: value });
+                      setLeaseErrors((prev) => ({ ...prev, tenant_id: "" }));
+                    }}
                   >
-                    <SelectTrigger className="bg-background border-border">
+                    <SelectTrigger className="bg-background border-border" aria-invalid={!!leaseErrors.tenant_id} aria-describedby={leaseErrors.tenant_id ? "lease-tenant-error" : undefined}>
                       <SelectValue placeholder="Select tenant" />
                     </SelectTrigger>
                     <SelectContent>
@@ -954,14 +1004,18 @@ const Leases = () => {
                       )}
                     </SelectContent>
                   </Select>
+                  <FieldError id="lease-tenant-error" message={leaseErrors.tenant_id} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="property">Property *</Label>
                   <Select
                     value={newLease.property_id}
-                    onValueChange={handlePropertyChange}
+                    onValueChange={(value) => {
+                      handlePropertyChange(value);
+                      setLeaseErrors((prev) => ({ ...prev, property_id: "" }));
+                    }}
                   >
-                    <SelectTrigger className="bg-background border-border">
+                    <SelectTrigger className="bg-background border-border" aria-invalid={!!leaseErrors.property_id} aria-describedby={leaseErrors.property_id ? "lease-property-error" : undefined}>
                       <SelectValue placeholder="Select property" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border-border z-50">
@@ -978,6 +1032,7 @@ const Leases = () => {
                       )}
                     </SelectContent>
                   </Select>
+                  <FieldError id="lease-property-error" message={leaseErrors.property_id} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -992,16 +1047,24 @@ const Leases = () => {
                     <Input
                       id="unit"
                       value={newLease.unit}
-                      onChange={(e) => setNewLease({ ...newLease, unit: e.target.value })}
+                      onChange={(e) => {
+                        setNewLease({ ...newLease, unit: e.target.value });
+                        setLeaseErrors((prev) => ({ ...prev, unit: "" }));
+                      }}
                       placeholder="e.g., A101, Unit 1"
+                      aria-invalid={!!leaseErrors.unit}
+                      aria-describedby={leaseErrors.unit ? "lease-unit-error" : undefined}
                       className="bg-background border-border"
                     />
                   ) : (
                     <Select
                       value={newLease.unit_id}
-                      onValueChange={handleUnitChange}
+                      onValueChange={(value) => {
+                        handleUnitChange(value);
+                        setLeaseErrors((prev) => ({ ...prev, unit: "" }));
+                      }}
                     >
-                      <SelectTrigger className="bg-background border-border">
+                      <SelectTrigger className="bg-background border-border" aria-invalid={!!leaseErrors.unit} aria-describedby={leaseErrors.unit ? "lease-unit-error" : undefined}>
                         <SelectValue placeholder="Select unit" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover border-border z-50">
@@ -1023,6 +1086,7 @@ const Leases = () => {
                       </SelectContent>
                     </Select>
                   )}
+                  <FieldError id="lease-unit-error" message={leaseErrors.unit} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="rent">Monthly Rent (KSh) *</Label>
@@ -1030,12 +1094,16 @@ const Leases = () => {
                     id="rent"
                     type="number"
                     value={newLease.monthly_rent}
-                    onChange={(e) =>
-                      setNewLease({ ...newLease, monthly_rent: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setNewLease({ ...newLease, monthly_rent: e.target.value });
+                      setLeaseErrors((prev) => ({ ...prev, monthly_rent: "" }));
+                    }}
                     placeholder="1500"
+                    aria-invalid={!!leaseErrors.monthly_rent}
+                    aria-describedby={leaseErrors.monthly_rent ? "lease-rent-error" : undefined}
                     className="bg-background border-border"
                   />
+                  <FieldError id="lease-rent-error" message={leaseErrors.monthly_rent} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -1045,11 +1113,15 @@ const Leases = () => {
                     id="startDate"
                     type="date"
                     value={newLease.start_date}
-                    onChange={(e) =>
-                      setNewLease({ ...newLease, start_date: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setNewLease({ ...newLease, start_date: e.target.value });
+                      setLeaseErrors((prev) => ({ ...prev, start_date: "" }));
+                    }}
+                    aria-invalid={!!leaseErrors.start_date}
+                    aria-describedby={leaseErrors.start_date ? "lease-start-error" : undefined}
                     className="bg-background border-border"
                   />
+                  <FieldError id="lease-start-error" message={leaseErrors.start_date} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="endDate">End Date *</Label>
@@ -1057,11 +1129,15 @@ const Leases = () => {
                     id="endDate"
                     type="date"
                     value={newLease.end_date}
-                    onChange={(e) =>
-                      setNewLease({ ...newLease, end_date: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setNewLease({ ...newLease, end_date: e.target.value });
+                      setLeaseErrors((prev) => ({ ...prev, end_date: "" }));
+                    }}
+                    aria-invalid={!!leaseErrors.end_date}
+                    aria-describedby={leaseErrors.end_date ? "lease-end-error" : undefined}
                     className="bg-background border-border"
                   />
+                  <FieldError id="lease-end-error" message={leaseErrors.end_date} />
                 </div>
               </div>
               <div className="grid gap-2">
@@ -1134,49 +1210,44 @@ const Leases = () => {
         </div>
       )}
 
+      {loadError && !isLoading && (
+        <div className="mb-4">
+          <ErrorState title="Couldn't load leases" message={loadError} onRetry={() => { void fetchLeases(); }} />
+        </div>
+      )}
+
       {/* Leases Grid */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12 sm:py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-warning" />
-        </div>
+        <LoadingState label="Loading leases…" variant="skeleton" rows={8} />
       ) : filteredLeases.length === 0 ? (
-        <Card className="bg-card border-border">
-          <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
-            <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">No leases found</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-sm">
-              {searchQuery || statusFilter !== "all" 
-                ? "Try adjusting your search or filter criteria" 
-                : "Create your first lease agreement to get started"}
-            </p>
-            {statusFilter !== "all" && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4"
-                onClick={() => setStatusFilter("all")}
-              >
-                Clear filter
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={FileText}
+          title={searchQuery || statusFilter !== "all" ? "No matching leases" : "No leases yet"}
+          description={
+            searchQuery || statusFilter !== "all"
+              ? "Try a different search or status filter."
+              : "Create a lease agreement to connect a tenant to a unit."
+          }
+          actionLabel={statusFilter !== "all" ? "Clear filter" : "Create lease"}
+          onAction={() => {
+            if (statusFilter !== "all") setStatusFilter("all");
+            else { setLeaseErrors({}); setIsDialogOpen(true); }
+          }}
+        />
       ) : (
         <>
-        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden">
+        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden card-shadow">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="w-10" />
-                <SortableHead label="Status" sortKey="status" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <SortableHead label="Tenant" sortKey="tenant" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <SortableHead label="Property" sortKey="property" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <TableHead>Unit</TableHead>
-                <TableHead>Start</TableHead>
-                <SortableHead label="Rent" sortKey="rent" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <TableHead>Start date</TableHead>
                 <SortableHead label="Expiry" sortKey="expiry" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Rent" sortKey="rent" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
+                <SortableHead label="Status" sortKey="status" currentKey={leaseSortKey} dir={leaseSortDir} onSort={handleLeaseSort} />
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -1189,15 +1260,6 @@ const Leases = () => {
                       onCheckedChange={() => toggleLeaseSelection(lease.id)}
                       aria-label={`Select lease for ${lease.tenants?.name}`}
                     />
-                  </TableCell>
-                  <TableCell>
-                    {expiringSoonLeaseIds.has(lease.id) ? (
-                      <span className={statusBadgeClass("warning")}>Expiring soon</span>
-                    ) : (
-                      <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
-                        {lease.status}
-                      </span>
-                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 min-w-0">
@@ -1219,17 +1281,26 @@ const Leases = () => {
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                     {formatDate(lease.start_date)}
                   </TableCell>
-                  <TableCell className="font-medium">{formatCurrency(lease.monthly_rent)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                     {formatDate(lease.end_date)}
                   </TableCell>
+                  <TableCell className="font-medium">{formatCurrency(lease.monthly_rent)}</TableCell>
+                  <TableCell>
+                    {expiringSoonLeaseIds.has(lease.id) || lease.status === "expiring" ? (
+                      <span className={statusBadgeClass("warning")}>Expiring soon</span>
+                    ) : (
+                      <span className={statusBadgeClass(leaseStatusTone(lease.status))}>
+                        {leaseStatusLabel(lease.status, false)}
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="sm" className="h-8" onClick={() => { setSelectedLease(lease); setIsViewDialogOpen(true); }}>
+                      <Button variant="ghost" size="sm" className="min-h-11" onClick={() => { setSelectedLease(lease); setIsViewDialogOpen(true); }}>
                         View
                       </Button>
                       {(lease.status === "active" || lease.status === "expiring") && (
-                        <Button variant="ghost" size="sm" className="h-8 text-primary" asChild>
+                        <Button variant="ghost" size="sm" className="min-h-11 text-primary" asChild>
                           <Link to="/billing">Invoice</Link>
                         </Button>
                       )}

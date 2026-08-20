@@ -18,6 +18,7 @@ describe("public marketing config", () => {
     expect(PUBLIC_ROUTES.shellPreview).toBe("/design-preview/shell");
     expect(PUBLIC_ROUTES.managerDashboardPreview).toBe("/design-preview/manager-dashboard");
     expect(PUBLIC_ROUTES.managerPropertiesPreview).toBe("/design-preview/manager-properties");
+    expect(PUBLIC_ROUTES.managerTenantsPreview).toBe("/design-preview/manager-tenants");
     expect(PUBLIC_ROUTES.legalPrivacy).toBe("/legal?tab=privacy");
     expect(PUBLIC_ROUTES.legalTerms).toBe("/legal?tab=terms");
   });

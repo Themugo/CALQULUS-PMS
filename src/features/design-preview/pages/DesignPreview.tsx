@@ -145,6 +145,9 @@ export default function DesignPreview() {
           <Link to={PUBLIC_ROUTES.managerPropertiesPreview} className="text-xs font-medium text-navy-mid hover:underline">
             Properties
           </Link>
+          <Link to={PUBLIC_ROUTES.managerTenantsPreview} className="text-xs font-medium text-navy-mid hover:underline">
+            Tenants
+          </Link>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site
           </Link>

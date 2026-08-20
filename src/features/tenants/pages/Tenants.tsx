@@ -2,6 +2,7 @@
 import { format } from "date-fns";
 import { logError } from "@/shared/lib/errorLogger";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -18,14 +19,6 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -40,7 +33,7 @@ import {
   TabsTrigger,
 } from "@/shared/components/ui/tabs";
 import {
-  Search, History, FileText, Users,
+  Search, History, FileText, Users, Eye,
   Clock, Archive, UserPlus, Building2, UserCheck, UserX,
 } from "lucide-react";
 import { TenantStatement } from "@/features/tenants/components/TenantStatement";
@@ -60,7 +53,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
 import { cn } from "@/shared/lib/utils";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
@@ -141,12 +134,13 @@ interface TenantTableProps {
   expiringSoonLeaseIds: Set<string>;
   onOpenStatement: (tenant: TenantData) => void;
   onOpenHistory: (tenant: TenantData) => void;
+  onOpenDetail: (tenant: TenantData) => void;
   onMoveOut: (tenant: TenantData) => void;
 }
 
 const TENANT_PAGE_SIZE = 25;
 
-function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, leaseByTenantId, balanceByTenantId, expiringSoonLeaseIds, onOpenStatement, onOpenHistory, onMoveOut }: TenantTableProps) {
+function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApproveMoveouts, leaseByTenantId, balanceByTenantId, expiringSoonLeaseIds, onOpenStatement, onOpenHistory, onOpenDetail, onMoveOut }: TenantTableProps) {
   const [page, setPage] = useState(1);
   const [sortKey, setSortKey] = useState("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
@@ -179,13 +173,9 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden card-shadow">
       {isLoading ? (
-        <div className="p-4 space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full rounded-md" />
-          ))}
-        </div>
+        <LoadingState label="Loading tenants…" variant="skeleton" rows={6} />
       ) : tenantList.length === 0 ? (
         <EmptyState
           icon={Users}
@@ -197,15 +187,12 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border">
-              <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
               <SortableHead label="Tenant" sortKey="name" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
-              <SortableHead label="Property" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
-              <TableHead>Unit</TableHead>
+              <SortableHead label="Property / Unit" sortKey="property" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
               <TableHead>Lease</TableHead>
               <SortableHead label="Rent" sortKey="rent" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
               <TableHead>Balance</TableHead>
-              <SortableHead label="Move-in" sortKey="move_in" currentKey={sortKey} dir={sortDir} onSort={handleSort} className="hidden lg:table-cell" />
-              <TableHead className="hidden md:table-cell">Contact</TableHead>
+              <SortableHead label="Status" sortKey="status" currentKey={sortKey} dir={sortDir} onSort={handleSort} />
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -213,13 +200,9 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
             {slice.items.map((tenant) => (
               <TableRow
                 key={tenant.id}
-                className="hover:bg-muted/30 border-border"
+                className="hover:bg-muted/30 border-border cursor-pointer"
+                onClick={() => onOpenDetail(tenant)}
               >
-                <TableCell>
-                  <span className={statusStyles[tenant.status] || statusBadgeClass(tenantStatusTone(tenant.status))}>
-                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
-                  </span>
-                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3 min-w-0">
                     <Avatar className="h-8 w-8">
@@ -233,13 +216,13 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                 </TableCell>
                 <TableCell>
                   {tenant.property ? (
-                    <p className="text-sm text-foreground truncate">{tenant.property}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm text-foreground truncate">{tenant.property}</p>
+                      <p className="text-xs text-muted-foreground truncate">{tenant.unit || "No unit"}</p>
+                    </div>
                   ) : (
                     <span className="text-muted-foreground text-sm">Unassigned</span>
                   )}
-                </TableCell>
-                <TableCell>
-                  <p className="text-sm text-muted-foreground truncate">{tenant.unit || "No unit"}</p>
                 </TableCell>
                 <TableCell>
                   {(() => {
@@ -285,32 +268,39 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                     <span className="text-sm text-muted-foreground">—</span>
                   )}
                 </TableCell>
-                <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
-                  {tenant.move_in_date ? format(new Date(tenant.move_in_date), "dd/MM/yy") : "—"}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <div className="space-y-0.5 text-sm text-muted-foreground">
-                    <p className="truncate max-w-[180px]">{tenant.email}</p>
-                    {tenant.phone && <p>{tenant.phone}</p>}
-                  </div>
+                <TableCell>
+                  <span className={statusStyles[tenant.status] || statusBadgeClass(tenantStatusTone(tenant.status))}>
+                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-1 justify-end">
+                  <div className="flex gap-1 justify-end" onClick={(event) => event.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="min-h-11"
+                      onClick={() => onOpenDetail(tenant)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      View
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-8 w-8 min-h-11 min-w-11"
                       onClick={() => onOpenStatement(tenant)}
                       title="View Statement"
+                      aria-label="View statement"
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-8 w-8 min-h-11 min-w-11"
                       onClick={() => onOpenHistory(tenant)}
                       title="View History"
+                      aria-label="View history"
                     >
                       <History className="h-4 w-4" />
                     </Button>
@@ -318,9 +308,10 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-warning hover:text-warning hover:bg-warning/10"
+                        className="h-8 w-8 min-h-11 min-w-11 text-warning hover:text-warning hover:bg-warning/10"
                         onClick={() => onMoveOut(tenant)}
                         title="Process Move-Out"
+                        aria-label="Process move-out"
                       >
                         <Archive className="h-4 w-4" />
                       </Button>
@@ -352,7 +343,7 @@ const Tenants = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTenant, setSelectedTenant] = useState<TenantData | null>(null);
   const [tenantHistory, setTenantHistory] = useState<TenantHistoryItem[]>([]);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isStatementOpen, setIsStatementOpen] = useState(false);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
   const [statusTab, setStatusTab] = useState<"active" | "pending" | "inactive">("active");
@@ -536,10 +527,14 @@ const Tenants = () => {
     return map;
   }, [leases]);
 
-  const openHistory = async (tenant: TenantData) => {
+  const openDetail = async (tenant: TenantData) => {
     setSelectedTenant(tenant);
+    setIsDetailOpen(true);
     await fetchTenantHistory(tenant.id);
-    setIsHistoryOpen(true);
+  };
+
+  const openHistory = async (tenant: TenantData) => {
+    await openDetail(tenant);
   };
 
   const openStatement = (tenant: TenantData) => {
@@ -566,11 +561,22 @@ const Tenants = () => {
   const inactiveTenants = tenants.filter(t => t.status === "inactive");
 
   return (
-    <Layout title="Tenants" subtitle="Who lives where, what they owe, and which lease needs action">
+    <Layout
+      title="Tenants"
+      subtitle="Who lives where, what they owe, and which lease needs action"
+      headerActions={
+        <div className="flex flex-wrap items-center gap-2">
+          <InviteTenantDialog trigger={<Button size="sm" className="min-h-11 gap-1.5"><UserPlus className="h-3.5 w-3.5" />Invite tenant</Button>} />
+          <Button variant="outline" size="sm" className="min-h-11" asChild>
+            <Link to="/leases">View leases</Link>
+          </Button>
+        </div>
+      }
+    >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-            <SelectTrigger className="w-56 h-9 text-sm">
+            <SelectTrigger className="w-56 min-h-11 text-sm" aria-label="Filter by property">
               <SelectValue placeholder="All Properties" />
             </SelectTrigger>
             <SelectContent>
@@ -584,15 +590,12 @@ const Tenants = () => {
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search tenants..."
+              aria-label="Search tenants"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-56 h-9 pl-8 text-sm bg-card border-border"
+              className="w-56 min-h-11 pl-8 text-sm bg-card border-border"
             />
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <InviteTenantDialog trigger={<Button size="sm" className="gap-1.5"><UserPlus className="h-3.5 w-3.5" />Invite Tenant</Button>} />
         </div>
       </div>
 
@@ -659,6 +662,7 @@ const Tenants = () => {
             expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
+            onOpenDetail={openDetail}
             onMoveOut={(tenant) => {
               setMoveOutTenant(tenant);
               setMoveOutDialogOpen(true);
@@ -677,6 +681,7 @@ const Tenants = () => {
             expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
+            onOpenDetail={openDetail}
             onMoveOut={(tenant) => {
               setMoveOutTenant(tenant);
               setMoveOutDialogOpen(true);
@@ -695,6 +700,7 @@ const Tenants = () => {
             expiringSoonLeaseIds={expiringSoonLeaseIds}
             onOpenStatement={openStatement}
             onOpenHistory={openHistory}
+            onOpenDetail={openDetail}
             onMoveOut={(tenant) => {
               setMoveOutTenant(tenant);
               setMoveOutDialogOpen(true);
@@ -704,7 +710,7 @@ const Tenants = () => {
       </Tabs>
 
       {/* Tenant Detail Sheet — full tabbed panel */}
-      <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+      <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <SheetContent className="bg-card border-border w-full sm:max-w-2xl overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="text-foreground flex items-center gap-3">
@@ -716,18 +722,51 @@ const Tenants = () => {
                       {selectedTenant.name.split(" ").map((n) => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p>{selectedTenant.name}</p>
-                    <p className="text-xs text-muted-foreground font-normal">{selectedTenant.unit} · {selectedTenant.property}</p>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate">{selectedTenant.name}</p>
+                      <span className={statusStyles[selectedTenant.status] || statusBadgeClass(tenantStatusTone(selectedTenant.status))}>
+                        {selectedTenant.status.charAt(0).toUpperCase() + selectedTenant.status.slice(1)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-normal">
+                      {selectedTenant.property || "Unassigned"}
+                      {selectedTenant.unit ? ` · ${selectedTenant.unit}` : ""}
+                    </p>
                   </div>
                 </>
               )}
             </SheetTitle>
+            <SheetDescription className="sr-only">
+              Tenant overview, lease, financials, payments, maintenance, documents, and activity.
+            </SheetDescription>
           </SheetHeader>
+          {selectedTenant && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button size="sm" className="min-h-11" onClick={() => setIsStatementOpen(true)}>
+                <FileText className="h-4 w-4" />
+                View statement
+              </Button>
+              {selectedTenant.status === "active" && selectedTenant.unit_id && can("approve_moveouts") && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11"
+                  onClick={() => {
+                    setMoveOutTenant(selectedTenant);
+                    setMoveOutDialogOpen(true);
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                  Move out
+                </Button>
+              )}
+            </div>
+          )}
           {selectedTenant && (
             <div className="mt-6">
               <Tabs defaultValue="overview">
-                <TabsList className="flex-wrap h-auto gap-1 p-1 mb-4 text-xs">
+                <TabsList className="flex-wrap h-auto gap-1 p-1 mb-2 text-xs">
                   <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
                   <TabsTrigger value="lease" className="text-xs">Lease</TabsTrigger>
                   <TabsTrigger value="financial" className="text-xs">Financial</TabsTrigger>
@@ -735,9 +774,11 @@ const Tenants = () => {
                   <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
                   <TabsTrigger value="documents" className="text-xs">Documents</TabsTrigger>
                   <TabsTrigger value="activity" className="text-xs">Activity</TabsTrigger>
-                  <TabsTrigger value="payers" className="text-xs">Payers</TabsTrigger>
-                  <TabsTrigger value="notices" className="text-xs">Notices</TabsTrigger>
-                  <TabsTrigger value="portal" className="text-xs">Portal</TabsTrigger>
+                </TabsList>
+                <TabsList className="flex-wrap h-auto gap-1 p-0 mb-4 bg-transparent text-xs">
+                  <TabsTrigger value="payers" className="text-xs h-8">Payers</TabsTrigger>
+                  <TabsTrigger value="notices" className="text-xs h-8">Notices</TabsTrigger>
+                  <TabsTrigger value="portal" className="text-xs h-8">Portal</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview">
@@ -806,10 +847,10 @@ const Tenants = () => {
                       <div className="space-y-4">
                         {tenantHistory.map((item) => (
                           <div key={item.id} className="relative pl-6 pb-4 border-l-2 border-border last:border-l-0">
-                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-amber-400" />
+                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary/40" />
                             <div className="bg-muted/30 rounded-lg p-3">
                               <div className="flex items-center justify-between mb-1">
-                                <Badge variant="outline" className="bg-amber-400/10 text-warning border-amber-400/20">
+                                <Badge variant="outline">
                                   {item.action}
                                 </Badge>
                                 <span className="text-xs text-muted-foreground">

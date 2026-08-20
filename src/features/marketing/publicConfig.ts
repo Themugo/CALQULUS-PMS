@@ -15,6 +15,7 @@ export const PUBLIC_ROUTES = {
   shellPreview: "/design-preview/shell",
   managerDashboardPreview: "/design-preview/manager-dashboard",
   managerPropertiesPreview: "/design-preview/manager-properties",
+  managerTenantsPreview: "/design-preview/manager-tenants",
   managerSignIn: "/auth",
   managerSignUp: "/auth?tab=signup",
   landlordLogin: "/landlord/login",
