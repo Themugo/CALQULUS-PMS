@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PageHeader } from '@/shared/components/layout/PageHeader';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -497,8 +499,8 @@ const TenantPortal = () => {
       </a>
       <PortalAccentBar />
       {/* Header */}
-      <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+      <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BrandMark size="md" showWordmark subtitle="Tenant" />
           </div>
@@ -527,37 +529,20 @@ const TenantPortal = () => {
 
         {/* Error state */}
         {(tenantError || invoicesError || leaseError) && (
-          <Card className="mb-6 rounded-2xl border border-destructive/50 bg-gradient-to-br from-destructive/5 to-destructive/10 shadow-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-4">
-                <div className="rounded-xl bg-destructive/10 p-2">
-                  <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-destructive">Failed to load portal data</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {tenantError?.message ||
-                      invoicesError?.message ||
-                      leaseError?.message ||
-                      'An unexpected error occurred.'}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      refetchTenant();
-                      refetchInvoices();
-                      refetchLease();
-                    }}
-                    className="mt-3 gap-2 rounded-xl border-destructive/50 hover:bg-destructive/10 transition-all duration-200"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    Retry
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ErrorState
+            title="Failed to load portal data"
+            message={
+              tenantError?.message ||
+              invoicesError?.message ||
+              leaseError?.message ||
+              'An unexpected error occurred.'
+            }
+            onRetry={() => {
+              refetchTenant();
+              refetchInvoices();
+              refetchLease();
+            }}
+          />
         )}
 
         {/* Demo mode banner */}
@@ -574,12 +559,11 @@ const TenantPortal = () => {
  tenant has no manager_id, show the independent diary */}
         {(!userRole?.tenant_id || (!tenantLoading && !tenantInfo?.manager_id)) && !tenantLoading && (
           <div className="space-y-4">
-            <div className="mb-6">
-              <h1 className="text-xl font-bold">My Rental</h1>
-              <p className="text-muted-foreground text-sm mt-1">
-                Track your payments, receipts and property condition independently
-              </p>
-            </div>
+            <PageHeader
+              title="My rental"
+              description="Track your payments, receipts and property condition independently"
+              className="border-0 px-0 py-0"
+            />
             <OrphanTenantHome />
           </div>
         )}
@@ -607,29 +591,26 @@ const TenantPortal = () => {
             ) : (
               <>
                 {/* Desktop Welcome Header */}
-                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border p-5 rounded-2xl shadow-sm">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-2xl font-bold text-foreground">
-                        {getGreeting()}, {tenantInfo?.name?.split(' ')[0] || 'there'}! 👋
-                      </h2>
-                      <Badge variant="outline" className="border-success/30 text-success bg-success/10">
-                        Active Tenant
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-0.5">{propertyInfo}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
+                <PageHeader
+                  className="mb-6 border-0 px-0 py-0"
+                  title={`${getGreeting()}, ${tenantInfo?.name?.split(' ')[0] || 'there'}`}
+                  description={propertyInfo}
+                  status={
+                    <Badge variant="outline" className="border-success/30 text-success bg-success/10">
+                      Active
+                    </Badge>
+                  }
+                  actions={
                     <Button
-                      className="bg-teal hover:bg-teal/90 text-white font-semibold shadow-sm min-h-11 h-11"
+                      className="min-h-11 h-11"
                       onClick={() => openStkPay(urgentInvoices as PayableInvoice[])}
                       disabled={urgentInvoices.length === 0 || isOffline}
                     >
                       <Smartphone className="h-4 w-4 mr-2" />
                       Pay now
                     </Button>
-                  </div>
-                </div>
+                  }
+                />
 
                 {/* ── Hero Balance Card — overdue / pending / clear states ── */}
                 {(() => {

@@ -162,7 +162,10 @@ const AgencyDashboard = () => {
   ];
 
   return (
-    <AgencyLayout title="Executive Agency Command Center">
+    <AgencyLayout
+      title="Dashboard"
+      description="Properties, occupancy, collections, and what needs attention"
+    >
       {/* ── EXECUTIVE INTELLIGENCE ANSWERS MATRIX ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {/* 1. What requires attention? */}

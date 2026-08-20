@@ -2,8 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Monitor, Building2, Home, Handshake, User, Shield } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
 import { CALQULUS_PORTALS, type PortalId } from "@/core/product/portals";
 import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
@@ -41,7 +43,7 @@ export function PortalPreviewCanvas({
             <CardTitle className="type-card-title">Portal structure</CardTitle>
           </div>
           <CardDescription className="text-xs">
-            White desk, navy rail, portal accent stripe. Preview chrome — not live balances.
+            White desk, navy rail, 2px portal stripe, tool header, then PageHeader. Preview chrome — not live balances.
           </CardDescription>
         </div>
         {tabsLocked ? (
@@ -84,27 +86,38 @@ function DeskFrame({
       className="rounded-lg border border-border overflow-hidden bg-background min-h-[280px]"
     >
       <PortalAccentBar />
-      <div className="flex min-h-[272px]">
+      <div className="flex min-h-[320px]">
         <div className="hidden sm:flex w-16 flex-col items-center gap-3 bg-navy-primary text-white py-3">
           <BrandMark size="xs" inverse forcePlatform />
           <Icon className="h-4 w-4 text-primary" aria-hidden />
         </div>
-        <div className="flex-1 p-4 space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-heading font-bold text-foreground truncate">{companyName}</p>
-            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+        <div className="flex-1 min-w-0 bg-background">
+          <div className="h-11 border-b border-border px-3 flex items-center justify-between gap-2">
+            <p className="type-meta truncate">{companyName} · tools</p>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wide shrink-0">
               {meta.label}
             </Badge>
           </div>
-          <p className="type-meta">What needs attention · What they can do · What they can inspect</p>
-          <div className="grid grid-cols-2 gap-2">
-            <PreviewTile label="Attention" value="Status" />
-            <PreviewTile label="Action" value="Primary control" swatch={brandHex} />
-          </div>
-          <div className="rounded-md border border-border bg-card p-3">
-            <p className="type-label mb-2">Records</p>
-            <div className="h-2 w-full rounded bg-muted" />
-            <div className="h-2 w-2/3 rounded bg-muted mt-2" />
+          <PageHeader
+            title={meta.label}
+            description="Where you are · what needs attention · the next action"
+            className="px-4 py-3"
+            actions={
+              <Button size="sm" type="button">
+                Primary action
+              </Button>
+            }
+          />
+          <div className="p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <PreviewTile label="Attention" value="Status" />
+              <PreviewTile label="Action" value="Primary control" swatch={brandHex} />
+            </div>
+            <div className="rounded-md border border-border bg-card p-3">
+              <p className="type-label mb-2">Records</p>
+              <div className="h-2 w-full rounded bg-muted" />
+              <div className="h-2 w-2/3 rounded bg-muted mt-2" />
+            </div>
           </div>
         </div>
       </div>

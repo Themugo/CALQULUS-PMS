@@ -34,6 +34,7 @@ import LandlordNotificationPreferences from '@/features/landlord/components/Land
 import LandlordDocuments from '@/features/landlord/components/LandlordDocuments';
 import LandlordTeamSettings from '@/features/landlord/components/LandlordTeamSettings';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PageHeader } from '@/shared/components/layout/PageHeader';
 import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 import { StatCard } from '@/features/dashboard/components/StatCard';
 import { occupancyRateColor, occupancyTone, payoutStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
@@ -344,7 +345,7 @@ const LandlordDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background" {...portalSurfaceProps("landlord")}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -357,10 +358,16 @@ const LandlordDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground" {...portalSurfaceProps("landlord")}>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+      >
+        Skip to main content
+      </a>
       <PortalAccentBar />
-      {/* Header */}
+      {/* Header — identity and tools. Page title lives in PageHeader. */}
       <header className="sticky top-0 z-40 border-b border-border/60 bg-card/90 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <BrandMark size="md" showWordmark subtitle="Landlord" />
             <Badge variant="outline" className="ml-1 text-xs border-border text-muted-foreground">
@@ -378,6 +385,7 @@ const LandlordDashboard = () => {
               onClick={() => queryClient.invalidateQueries()}
               className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground"
               title="Refresh"
+              aria-label="Refresh portfolio"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -389,7 +397,12 @@ const LandlordDashboard = () => {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main id="main-content" tabIndex={-1} className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 outline-none">
+        <PageHeader
+          title="How are my properties performing?"
+          description="Collected is rent received this month. Outstanding is uncollected arrears. Net is your share after revenue split."
+          className="border-0 px-0 py-0"
+        />
 
         {/* ── PORTFOLIO DATA ERROR BANNER (distinguish ERROR from REAL ZERO) ── */}
         {portfolioError && !propertiesLoading && (
@@ -413,13 +426,6 @@ const LandlordDashboard = () => {
             </Button>
           </div>
         )}
-
-        <div>
-          <h1 className="page-title">How are my properties performing?</h1>
-          <p className="supporting-text mt-1">
-            Collected is rent received this month. Outstanding is uncollected arrears. Net is your share after revenue split.
-          </p>
-        </div>
 
         <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-5">
           {propertiesLoading ? (

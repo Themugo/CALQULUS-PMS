@@ -13,6 +13,7 @@ import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PortalPreviewCanvas } from "@/shared/components/branding/PortalPreviewCanvas";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { Badge } from "@/shared/components/ui/badge";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -139,7 +140,8 @@ export default function DesignPreview() {
           <div>
             <h1 className={CALQULUS_TYPE.pageTitle}>CALQULUS design preview</h1>
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
-              One product: white desks, mid-navy chrome, cyan interaction. Portal colour is a 2px accent, not a new system.
+              One product: white desks, mid-navy chrome, cyan interaction, Outfit type. Portal colour is a 2px stripe.
+              Tool chrome stays separate from the page title. Live branding is Settings → Company.
             </p>
             {liveDesk ? (
               <div className="mt-3">
@@ -251,23 +253,20 @@ function RecordPreview({
   inspect: string;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-primary" />
-          <div>
-            <CardTitle className={CALQULUS_TYPE.cardTitle}>{title}</CardTitle>
-            <CardDescription>Know · Attention · Do · Inspect</CardDescription>
-          </div>
-        </div>
-        <Button size="sm" type="button">{action}</Button>
-      </CardHeader>
-      <CardContent className="grid gap-3 sm:grid-cols-3">
+    <div className="rounded-lg border border-border overflow-hidden bg-background">
+      <PageHeader
+        title={title}
+        description="Where you are · what needs attention · the next action"
+        className="px-4 py-4"
+        status={<Icon className="h-4 w-4 text-primary" aria-hidden />}
+        actions={<Button size="sm" type="button">{action}</Button>}
+      />
+      <div className="grid gap-3 sm:grid-cols-3 p-4">
         <PreviewStat label="Needs attention" value={attention} />
         <PreviewStat label="Can do" value={action} />
         <PreviewStat label="Can inspect" value={inspect} />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

@@ -10,6 +10,8 @@ test.describe("Design preview", () => {
     await expect(page.getByText("Brand configuration")).toBeVisible();
     await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Manager" }).click();
     await expect(page.getByText("Navy / Professional Blue")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Manager" })).toBeVisible();
+    await expect(page.getByText("Where you are · what needs attention · the next action")).toBeVisible();
   });
 
   test("does not overflow horizontally at 390px", async ({ page }) => {

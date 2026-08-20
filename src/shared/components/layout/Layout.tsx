@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { portalSurfaceProps } from "@/core/design";
+import { PortalAccentBar, portalSurfaceProps } from "@/core/design";
 import { PageHeader } from "./PageHeader";
 import { ContextPanel } from "./ContextPanel";
 import { CommandPalette } from "./CommandPalette";
@@ -42,6 +42,7 @@ export function Layout({
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans" {...portalSurfaceProps("manager")}>
+      <PortalAccentBar className="fixed top-0 left-0 right-0 z-[60]" />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:shadow-md"
@@ -78,9 +79,6 @@ export function Layout({
 
         {/* Top Header Navbar */}
         <Header
-          title={title}
-          subtitle={subtitle}
-          actions={headerActions}
           onMenuClick={() => setSidebarOpen(true)}
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
           onOpenShortcutsHelp={() => setShowShortcutsModal(true)}

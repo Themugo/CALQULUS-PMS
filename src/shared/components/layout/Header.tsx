@@ -17,9 +17,6 @@ import { QuickActions } from "./QuickActions";
 import { ProfileMenu } from "./ProfileMenu";
 
 interface HeaderProps {
-  title?: string;
-  subtitle?: string;
-  actions?: React.ReactNode;
   onMenuClick?: () => void;
   onOpenCommandPalette?: () => void;
   onOpenShortcutsHelp?: () => void;
@@ -28,9 +25,6 @@ interface HeaderProps {
 }
 
 export function Header({
-  title,
-  subtitle,
-  actions,
   onMenuClick,
   onOpenCommandPalette,
   onOpenShortcutsHelp,
@@ -49,7 +43,7 @@ export function Header({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center justify-between border-b transition-all duration-200 px-4 md:px-6 lg:px-8 gap-4 bg-background/95 backdrop-blur-md [box-shadow:inset_0_2px_0_0_var(--primary)]",
+        "sticky top-0 z-30 flex h-14 items-center justify-between border-b transition-all duration-200 px-4 md:px-6 lg:px-8 gap-4 bg-background/95 backdrop-blur-md",
         scrolled ? "border-border" : "border-border/60"
       )}
     >
@@ -67,20 +61,11 @@ export function Header({
 
         <div className="flex flex-col justify-center min-w-0">
           <BreadcrumbSystem />
-          {title && (
-            <div className="flex items-center gap-2 mt-0.5 sm:hidden">
-              <h1 className="text-base font-semibold text-foreground truncate">{title}</h1>
-              {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
-            </div>
-          )}
         </div>
       </div>
 
       {/* Right: Actions, Command Palette, QuickActions, Notifications, Theme, Context Panel, Profile */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Page-specific actions */}
-        {actions && <div className="hidden xl:flex items-center gap-2">{actions}</div>}
-
         {/* Global Search & Command Palette Trigger */}
         <button
           type="button"

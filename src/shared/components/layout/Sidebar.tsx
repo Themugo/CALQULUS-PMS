@@ -39,6 +39,7 @@ import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
+import { PortalAccentBar } from "@/core/design";
 
 interface NavItem {
   name: string;
@@ -221,8 +222,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Top Accent Stripe — electric cyan */}
-        <div className="h-0.5 w-full bg-sidebar-primary flex-shrink-0" />
+        {/* Top identity stripe — portal accent, not cyan */}
+        <PortalAccentBar />
 
         {/* Workspace Brand Header */}
         <div

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { Footer } from '@/shared/components/layout/Footer';
+import { PageHeader } from '@/shared/components/layout/PageHeader';
 import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
 
 const navItems = [
@@ -29,9 +30,11 @@ const navItems = [
 interface AgencyLayoutProps {
   children: React.ReactNode;
   title?: string;
+  description?: string;
+  actions?: React.ReactNode;
 }
 
-const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
+const AgencyLayout = ({ children, title, description, actions }: AgencyLayoutProps) => {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,6 +46,7 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background" {...portalSurfaceProps("agency")}>
+      <PortalAccentBar className="fixed top-0 left-0 right-0 z-[60]" />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
@@ -61,8 +65,6 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
         transform transition-transform duration-300
         lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <PortalAccentBar />
-
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -118,13 +120,12 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             <span>Sign Out</span>
           </button>
         </div>
-        <div className="h-0.5 w-full bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 flex-shrink-0" />
       </aside>
 
       {/* Main content area */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Top header bar */}
-        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl h-14 px-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -134,15 +135,15 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             >
               <Menu className="h-5 w-5" />
             </button>
-            {title && (
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="text-navy-mid font-medium hidden sm:inline">Agency</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+              <span className="text-navy-mid font-medium hidden sm:inline">Agency</span>
+              {title ? (
+                <>
                   <ChevronRight className="h-3.5 w-3.5 hidden sm:inline text-muted-foreground/50" />
-                  <h1 className="font-heading font-semibold text-foreground truncate">{title}</h1>
-                </div>
-              </div>
-            )}
+                  <span className="truncate hidden sm:inline">{title}</span>
+                </>
+              ) : null}
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[160px]">{user?.email}</span>
@@ -151,6 +152,15 @@ const AgencyLayout = ({ children, title }: AgencyLayoutProps) => {
             </div>
           </div>
         </header>
+
+        {(description || actions) && (
+          <PageHeader
+            title={title ?? "Agency"}
+            description={description}
+            actions={actions}
+            className="px-4 py-4 md:px-6 lg:px-8"
+          />
+        )}
 
         {/* Page content */}
         <main id="main-content" tabIndex={-1} className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden animate-fade-in outline-none">
