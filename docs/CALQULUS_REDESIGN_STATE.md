@@ -42,10 +42,24 @@ is skipped via `DeskEmbedProvider`. Property links stay on
 - Clients = landlord rollup (occupancy/collections) plus the existing
   link/invite UI. Portfolio = per-building client, occupancy, collections.
   Property detail = existing `PropertyDetail` at `/agency/properties/:id`.
+  Building CRUD and property cards stay on that prefix via `deskPropertyPath`.
 - Agency layout: white desk, navy chrome, 2px amber accent. Selected nav is
   `bg-primary/10`, not an orange-filled item. `DeskEmbedProvider` stops
   nested Manager `Layout` chrome. `can()` grants agency the manager-scope
   operations permissions already documented.
+
+### Phase 6 verification
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — pass
+- `npx vitest run` — 834 passed; 1 pre-existing fail
+  (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
+- Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
+  — 22 passed, 5 skipped (credential-gated auth)
+- `npm run build` — pass
+
+## CHECKPOINT
+Phase 6 agency portal is on `cursor/phase-6-agency-portal-1e5d` (PR #55).
+Do not merge to `main` until James asks. Next redesign phase is not started.
 
 ## PREVIOUS PHASE
 Phase 4E — Manager operations. James issued the manager operations brief:
