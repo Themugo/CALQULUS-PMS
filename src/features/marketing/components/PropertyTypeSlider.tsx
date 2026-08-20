@@ -70,7 +70,7 @@ export function PropertyTypeSlider() {
         <div className="mt-8 flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:inline-flex"
+            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
             aria-label="Previous property type"
             onClick={() => go(index - 1)}
           >
@@ -79,10 +79,10 @@ export function PropertyTypeSlider() {
 
           <ul
             ref={scrollerRef}
-            className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-1 md:grid md:grid-cols-3 md:overflow-visible md:pb-0"
+            className="flex w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0"
           >
             {TYPES.map((item) => (
-              <li key={item.id} className="min-w-[85%] snap-center md:min-w-0">
+              <li key={item.id} className="min-w-[85%] snap-center sm:min-w-[70%] lg:min-w-0">
                 <article className="relative h-[170px] overflow-hidden rounded-[14px] border border-border shadow-sm">
                   <ArchitecturalSurface slot={item.id} />
                   <div
@@ -105,7 +105,7 @@ export function PropertyTypeSlider() {
 
           <button
             type="button"
-            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:inline-flex"
+            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
             aria-label="Next property type"
             onClick={() => go(index + 1)}
           >

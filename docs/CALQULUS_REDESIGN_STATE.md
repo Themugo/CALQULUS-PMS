@@ -1,14 +1,75 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Executive public homepage redesign (compact front door). Homepage only.
+Do not proceed to other portal desks.
+
+## CURRENT TASK
+Homepage complete and stable on PR #66. Stop after this phase.
+
+## COMPLETED
+- Public `/` reduced to six sections: Header, Hero, Property Type Slider, Portal Experiences, Compact CTA, Footer
+- No photographs / no stock URLs; CSS navy architectural surfaces + optional `imageSrc` slot
+- Illustrative manager dashboard labelled as sample figures (not live data)
+- Existing portal/auth/legal routes preserved; newsletter is visual + `mailto:` only
+- SEO title/description/OG updated in `index.html`
+
+## FILES CHANGED
+- `index.html`
+- `src/index.css`
+- `src/features/marketing/publicConfig.ts`
+- `src/features/marketing/PublicLandingPage.tsx`
+- `src/features/marketing/components/PublicHeader.tsx`
+- `src/features/marketing/components/PublicFooter.tsx`
+- `src/features/marketing/components/ProductPreview.tsx`
+- `src/test/publicLanding.test.tsx`
+- `src/test/publicConfig.test.ts`
+- `docs/CALQULUS_REDESIGN_STATE.md`
+
+## COMPONENTS CREATED
+- `ArchitecturalSurface.tsx`
+- `ExecutiveHero.tsx`
+- `PropertyTypeSlider.tsx`
+- `PortalExperiences.tsx`
+- `CompactCta.tsx`
+
+## COMPONENTS MODIFIED
+- `PublicHeader.tsx` — 72px white header, Resources dropdown, existing Sheet mobile menu
+- `PublicFooter.tsx` — deep navy `#081A2E`, valid routes/mailto only
+- `ProductPreview.tsx` — KPI row, CSS bars, maintenance + Kilimani Court, illustrative caption
+- `PublicLandingPage.tsx` — compact HomeView only (pricing route unchanged)
+
+## KNOWN ISSUES
+- Property photography not yet inserted (intentional this phase; `data-image-slot` ready)
+- Company footer links (About/Careers/Partners/News) hash to `#contact` — no standalone pages exist
+- Cookie policy uses existing `/legal?tab=privacy` (legal surface has privacy + terms only)
+- Social icons hash to `#contact` — no official social URLs in repo
+- Operator-owned: live Edge Function deploy + `20260820000000_tenants_select_role_in.sql` (unchanged)
+
+## TEST STATUS
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx eslint` on homepage marketing files — pass
+- `npx vitest run src/test/publicLanding.test.tsx src/test/publicConfig.test.ts` — 13 passed
+- `npx vitest run` — **886 passed**, 1 skipped
+- Playwright visual pass at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360: no horizontal overflow
+- Header ~73px; desktop hero ~561–581px two-column from 1024px; mobile stacks text then dashboard
+
+## BUILD STATUS
+- `npm run build` — pass
+
+## NEXT TASK
+STOP. Do not redesign other portals yet.
+After merge: on Windows `git checkout main && git pull origin main`.
+
+---
+
+## Previous checkpoint (Phase 13 remaining-gap on main)
+
 Phase 13 remaining in-git gaps landed on GitHub `main`.
 Do not restart the redesign. Visual direction, RLS, auth contracts, and
 routes are unchanged.
 
-## CURRENT TASK
-Operator-owned live deploy and SQL apply.
-
-## COMPLETED TASKS
+### COMPLETED TASKS
 - Phase 13 audit (`a6f1adc`) + CRITICAL/HIGH (`2bb9f70`) on `main` (`f650a5a`)
 - Continuation leftover HIGH/MEDIUM on `main` (`51538fc` / `851ae2b`)
 - Remaining-gap pass (`2c31c08`) pushed to GitHub `main`
@@ -21,8 +82,7 @@ Operator-owned live deploy and SQL apply.
     `#C84B4B` instead of Tailwind green/amber hex
   - `LazyImage.tsx` `@ts-nocheck` removed (74 remaining, cap 75)
 
-## NEXT TASK
-Operator (cannot finish from git):
+### Operator-owned (cannot finish from git)
 1. Deploy Edge Functions (`health-check` still 404 live).
 2. Apply `20260820000000_tenants_select_role_in.sql`.
 
@@ -30,10 +90,7 @@ Code remaining: large ops pages still `@ts-nocheck`; demo/lab suites
 still in tree; E2E still credential-gated; some gated functions still
 use the service role after a scoped caller check (by design for cron).
 
-## IN PROGRESS FILES
-None. Remaining-gap pass is on GitHub `main` (`2c31c08` and this docs note).
-
-## KNOWN ISSUES
+### Known issues (platform, unchanged by homepage)
 - Live `health-check` 404 until function deploy (not claimed fixed)
 - Live tenants RLS / `get_manager_dashboard_stats` unproven until SQL
   is applied (prior gate 2026-08-19: tenants `42P17`, RPC 404)
@@ -41,17 +98,18 @@ None. Remaining-gap pass is on GitHub `main` (`2c31c08` and this docs note).
 - Demo/lab suites remain in tree, unrouted
 - E2E portal tests still credential-gated
 
-### Test status (this checkpoint)
+### Test status (Phase 13 checkpoint)
 - `npx vitest run` — **887 passed**, 1 skipped
 - `npx tsc --noEmit -p tsconfig.app.json` — pass
 - Live `health-check` / RLS not re-probed this session
 
-### Next exact action
+### Next exact action (after homepage merge)
 On the Windows machine (`C:\Users\hp\Desktop\CALQULUS-PMS`):
 `git checkout main && git pull origin main`.
 Then operator deploys Edge Functions and applies
 `20260820000000_tenants_select_role_in.sql`.
 Do not restart the redesign.
+
 
 ### Phase 13 continuation (already on main) — files changed
 Frontend queries: `TenantBalanceSummary.tsx`, `TenantNotificationBell.tsx`,

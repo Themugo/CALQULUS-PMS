@@ -560,22 +560,20 @@
   .public-section-title { font-size: 2rem; } /* 32px */
 }
 
-@utility public-arch-residential {
-  background-image:
-    linear-gradient(160deg, color-mix(in srgb, var(--navy-primary) 88%, var(--primary)) 0%, var(--navy-secondary) 58%, color-mix(in srgb, var(--primary) 45%, var(--navy-primary)) 100%),
-    repeating-linear-gradient(90deg, transparent 0 18px, rgb(255 255 255 / 0.06) 18px 19px);
+/* Plain CSS so Tailwind does not nest @supports inside these backgrounds. */
+.public-arch-residential,
+.public-arch-commercial,
+.public-arch-office {
+  background-color: var(--navy-primary);
 }
-
-@utility public-arch-commercial {
-  background-image:
-    linear-gradient(155deg, var(--navy-secondary) 0%, color-mix(in srgb, var(--navy-primary) 70%, var(--success)) 55%, var(--navy-primary) 100%),
-    repeating-linear-gradient(90deg, transparent 0 22px, rgb(255 255 255 / 0.07) 22px 23px);
+.public-arch-residential {
+  background-image: linear-gradient(160deg, var(--navy-primary) 0%, var(--navy-secondary) 55%, var(--primary) 100%);
 }
-
-@utility public-arch-office {
-  background-image:
-    linear-gradient(165deg, var(--navy-deep) 0%, color-mix(in srgb, var(--navy-primary) 72%, #5C4A8A) 52%, var(--navy-secondary) 100%),
-    repeating-linear-gradient(90deg, transparent 0 16px, rgb(255 255 255 / 0.05) 16px 17px);
+.public-arch-commercial {
+  background-image: linear-gradient(155deg, var(--navy-secondary) 0%, var(--success) 58%, var(--navy-primary) 100%);
+}
+.public-arch-office {
+  background-image: linear-gradient(165deg, var(--navy-deep) 0%, #5C4A8A 52%, var(--navy-secondary) 100%);
 }
 
 @utility btn-brand {

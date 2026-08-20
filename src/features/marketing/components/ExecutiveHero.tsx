@@ -46,7 +46,7 @@ export function ExecutiveHero() {
         aria-hidden
       />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:px-6 lg:px-8 xl:min-h-[580px] xl:grid-cols-[minmax(0,0.46fr)_minmax(0,0.54fr)] xl:gap-12 xl:py-12">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:px-6 lg:min-h-[560px] lg:grid-cols-[minmax(0,0.46fr)_minmax(0,0.54fr)] lg:gap-10 lg:px-8 lg:py-12 xl:min-h-[580px] xl:gap-12">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
             Property operations, connected
