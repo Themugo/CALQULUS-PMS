@@ -74,7 +74,7 @@ test.describe("Design preview", () => {
       await page.setViewportSize({ width, height: width < 768 ? 844 : 800 });
       await page.goto("/design-preview");
       await expect(page.getByRole("heading", { name: "CALQULUS design preview" })).toBeVisible({ timeout: 15000 });
-      await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant" }).click();
+      await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Tenant", exact: true }).click();
       await expect(page.locator("[data-preview='tenant-pages']")).toBeVisible();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
