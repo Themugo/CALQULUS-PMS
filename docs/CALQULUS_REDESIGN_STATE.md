@@ -1,23 +1,52 @@
 # CALQULUS Redesign — Persistent State
 
-> Reconstructed by Claude (Cowork) on 2026-08-20. This file did not exist prior to this
-> entry despite the master brief requiring it — everything below Phase 0 was
-> reverse-engineered from `git log`, `docs/audits/TYPECHECK_EXEMPTIONS.txt`, and direct
-> code inspection, not from a prior state record. Treat historical phase notes as
-> best-effort reconstruction, not first-hand agent notes.
-
 ## CURRENT PHASE
-James issued "CALQULUS PHASE 4D — MANAGER FINANCE" right after Phase 4C -
-redesign Billing and Payments, with an explicit named field list for each,
-plus "Finance pages must look trustworthy and professional. Use semantic
-colours. Do not turn finance into a colourful dashboard. Preserve payment/
-billing functionality." Done this session (see below). The `@ts-nocheck`
-remediation is still open/paused - resume whenever James asks for it
-specifically.
+Phase 5 — Landlord portal. James issued the landlord desk brief: redesign the
+entire landlord experience around “How is my property portfolio performing?”
+with white / navy / emerald accent, dedicated pages (Dashboard, Portfolio,
+Property Detail, Financial Performance, Statements, Maintenance, Documents,
+Settings), and an explicit ban on copying the Manager operations desk.
 
 ## CURRENT TASK
-Just finished: Phase 4D Billing and Payments audit + implementation (this
-entry). Nothing actively in progress as of this write-up.
+Just finished: Phase 5 landlord portal (this entry). Split the previous
+single-tab `/landlord/dashboard` into a real landlord desk. Auth, RPCs, and
+tenant-PII firewall unchanged.
+
+### Phase 5 findings (before any changes)
+- Landlord had **one authenticated route**: `/landlord/dashboard`. Portfolio,
+  statements, documents, payouts, messages, and settings were tabs inside
+  `LandlordDashboard.tsx`. Sidebar only listed “Portfolio”.
+- Data was already landlord-safe: `get_landlord_portfolio_stats`,
+  `get_landlord_revenue`, `get_landlord_property_ops` (no tenant names).
+  `payment_transactions` RLS still blocks landlords — recent transactions on
+  the dashboard are payout requests plus property-level collected totals,
+  not a tenant payment ledger.
+- Dual-role users were only forced onto the landlord role for
+  `/landlord/dashboard`. New desk paths like `/landlord/portfolio` would have
+  matched manager `MANAGER_PATHS` `/landlord`. Fixed via `isLandlordDeskPath`
+  (`/landlord/…` except login/invitation; never `/landlords`).
+
+### Phase 5 implementation
+- New layout (`LandlordLayout`) with emerald 2px accent, white desk, navy
+  chrome. Nav: Dashboard, Portfolio, Financials, Statements, Maintenance,
+  Documents, Settings.
+- Extracted `useLandlordPortfolio` / `useLandlordPayouts` / income-trend and
+  maintenance aggregation from existing RPCs. No new endpoints.
+- Dashboard answers the portfolio question with six real numbers, attention,
+  income trend, property performance table, recent payouts.
+- Property detail is `/landlord/properties/:id` wrapping the existing
+  `LandlordPropertyDetail` (units/status only).
+- Financials vs Statements split the existing `LandlordFinancialStatement`
+  (`mode="performance" | "statement"`). Payouts live on Statements.
+- Preview: `/design-preview` → Landlord lists every named page.
+- Tests: `src/test/landlordDesk.test.ts` plus roleResolution coverage and
+  design-preview E2E.
+
+## PREVIOUS PHASE
+James issued "CALQULUS PHASE 4D — MANAGER FINANCE" right after Phase 4C -
+redesign Billing and Payments. See historical notes below.
+
+
 
 ### Phase 4D findings (before any changes)
 Read this file first, then mapped the two named surfaces to actual routes:

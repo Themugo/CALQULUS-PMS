@@ -1,4 +1,5 @@
 import type { AppRole, ApprovalStatus, UserRole } from "@/features/auth/AuthContext";
+import { isLandlordDeskPath } from "@/features/landlord/lib/landlordPaths";
 
 /** Runtime row from user_roles plus fields AuthContext synthesizes in dev access. */
 export type ResolvedRole = UserRole & {
@@ -68,7 +69,7 @@ export function pickRoleForPath(
     const byRole = new Map<AppRole, ResolvedRole>();
     for (const r of roles) byRole.set(r.role, r);
 
-    if (pathname.startsWith("/landlord/dashboard") && byRole.has("landlord")) {
+    if (isLandlordDeskPath(pathname) && byRole.has("landlord")) {
       return byRole.get("landlord")!;
     }
     if (pathname.startsWith("/webhost") && byRole.has("webhost")) {
@@ -96,7 +97,7 @@ export function pickRoleForPath(
   }
 
   if (devAccessEnabled) {
-    if (pathname.startsWith("/landlord/dashboard")) {
+    if (isLandlordDeskPath(pathname)) {
       return synthetic(uId, "landlord", "approved");
     }
     if (pathname.startsWith("/webhost")) {

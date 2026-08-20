@@ -14,6 +14,12 @@ test.describe("Design preview", () => {
     await expect(page.getByText("Professional Blue")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Manager" })).toBeVisible();
     await expect(page.getByText("Where you are · what needs attention · the next action")).toBeVisible();
+    await page.getByRole("navigation", { name: "Design preview screens" }).getByRole("button", { name: "Landlord" }).click();
+    await expect(page.getByText("Landlord is a portfolio desk")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Portfolio", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Statements", exact: true })).toBeVisible();
+    await expect(page.getByText("No tenant PII")).toBeVisible();
   });
 
   test("does not overflow horizontally at 390px", async ({ page }) => {

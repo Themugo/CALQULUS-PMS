@@ -135,9 +135,25 @@ const agencyNavGroups: NavGroup[] = [
 
 const landlordNavGroups: NavGroup[] = [
   {
-    title: "PROPERTY OWNER",
+    title: "PORTFOLIO",
     items: [
-      { name: "Portfolio", href: "/landlord/dashboard", icon: Building2 },
+      { name: "Dashboard", href: "/landlord/dashboard", icon: LayoutDashboard },
+      { name: "Portfolio", href: "/landlord/portfolio", icon: Building2 },
+    ],
+  },
+  {
+    title: "FINANCE",
+    items: [
+      { name: "Financials", href: "/landlord/financials", icon: BarChart3 },
+      { name: "Statements", href: "/landlord/statements", icon: FileSpreadsheet },
+    ],
+  },
+  {
+    title: "PROPERTY",
+    items: [
+      { name: "Maintenance", href: "/landlord/maintenance", icon: Wrench },
+      { name: "Documents", href: "/landlord/documents", icon: FileText },
+      { name: "Settings", href: "/landlord/settings", icon: Settings },
     ],
   },
 ];

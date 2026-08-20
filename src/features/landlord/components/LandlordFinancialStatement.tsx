@@ -24,9 +24,13 @@ interface Props {
     revenue_share_pct: number;
     manager_name: string | null;
   }>;
+  /** performance = trend and net; statement = period statement table. Default shows both. */
+  mode?: "performance" | "statement" | "full";
 }
 
-const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
+const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full" }) => {
+  const showStatement = mode === "statement" || mode === "full";
+  const showPerformance = mode === "performance" || mode === "full";
   const { user } = useAuth();
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>(properties[0]?.id ?? '');
   const [period, setPeriod] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
@@ -124,7 +128,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
         </div>
       ) : !financials ? null : (
         <>
-          {(() => {
+          {showStatement && (() => {
             const collected = Number(financials.gross_rent_collected ?? 0);
             const expense = Number(financials.management_fee ?? 0);
             const net = Number(financials.net_to_landlord ?? 0);
@@ -187,7 +191,8 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
             );
           })()}
 
-          {/* Occupancy */}
+          {showPerformance && (
+            <>
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Total units',    value: String(financials.total_units) },
@@ -213,7 +218,6 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
             </div>
           )}
 
-          {/* Per-unit breakdown */}
           {!isLoadingUnits && unitSummary && unitSummary.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
@@ -254,7 +258,6 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
             </Card>
           )}
 
-          {/* Revenue breakdown */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Net performance — {format(new Date(periodStart), 'MMMM yyyy')}</CardTitle>
@@ -279,11 +282,12 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties }) => {
               </div>
             </CardContent>
           </Card>
+            </>
+          )}
         </>
       )}
 
-      {/* 6-month trend */}
-      {trend.length > 0 && (
+      {showPerformance && trend.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm">6-month net to you</CardTitle>

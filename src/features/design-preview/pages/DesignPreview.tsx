@@ -165,6 +165,7 @@ export default function DesignPreview() {
 
           {active === "homepage" && <HomepagePreview />}
           {isPortal(active) && <PortalHierarchyPreview portal={active} />}
+          {active === "landlord" && <LandlordPagesPreview />}
           {active === "login" && <LoginPreview />}
           {active === "properties" && <RecordPreview title="Properties" icon={Building2} attention="Occupancy" action="Add property" inspect="Units" />}
           {active === "tenants" && <RecordPreview title="Tenants" icon={Home} attention="Invites" action="Invite" inspect="Lease" />}
@@ -272,6 +273,92 @@ function PortalHierarchyPreview({ portal }: { portal: PortalId }) {
         <p className="text-sm font-semibold">{meta.label} · {accent.label}</p>
       </div>
       <PortalPreviewCanvas companyName={CALQULUS_BRAND.product} portal={portal} />
+    </div>
+  );
+}
+
+function LandlordPagesPreview() {
+  const pages = [
+    {
+      title: "Dashboard",
+      where: "Landlord desk",
+      matters: "Properties, units, occupancy, monthly income, outstanding",
+      attention: "Arrears, urgent maintenance, pending payouts",
+      next: "Open financials or request a payout",
+    },
+    {
+      title: "Portfolio",
+      where: "Your buildings",
+      matters: "Occupancy and net share per property",
+      attention: "Vacant units and outstanding",
+      next: "Open a property",
+    },
+    {
+      title: "Property detail",
+      where: "One building",
+      matters: "Units and occupancy",
+      attention: "Open maintenance",
+      next: "Review unit status — no tenant names",
+    },
+    {
+      title: "Financial performance",
+      where: "Income over time",
+      matters: "Collected vs net to you",
+      attention: "Outstanding arrears",
+      next: "Compare months",
+    },
+    {
+      title: "Statements",
+      where: "Period statement",
+      matters: "Income, expense, balance",
+      attention: "Pending payouts",
+      next: "Request a payout",
+    },
+    {
+      title: "Maintenance",
+      where: "Portfolio jobs",
+      matters: "Unit and category",
+      attention: "Urgent / high priority",
+      next: "Manager runs the work",
+    },
+    {
+      title: "Documents",
+      where: "Shared files",
+      matters: "Statements and reports from your manager",
+      attention: "New uploads",
+      next: "Download",
+    },
+    {
+      title: "Settings",
+      where: "Account",
+      matters: "Bank details and notifications",
+      attention: "Missing payout account",
+      next: "Update details",
+    },
+  ];
+
+  return (
+    <div className="space-y-4" data-preview="landlord-pages">
+      <p className="type-body text-muted-foreground">
+        Landlord is a portfolio desk, not a copy of Manager operations. White surface, navy chrome, 2px emerald accent. No tenant PII.
+      </p>
+      {pages.map((page) => (
+        <div key={page.title} className="rounded-lg border border-border overflow-hidden bg-background">
+          <div {...portalSurfaceProps("landlord")}>
+            <PortalAccentBar />
+            <PageHeader
+              title={page.title}
+              description={`${page.where} · ${page.matters}`}
+              className="px-4 py-4"
+            />
+            <div className="grid gap-3 sm:grid-cols-3 p-4">
+              <PreviewStat label="Needs attention" value={page.attention} />
+              <PreviewStat label="Can do next" value={page.next} />
+              <PreviewStat label="Not shown" value="Tenant names, invoices, invites" />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -42,6 +42,13 @@ const WaterBilling = lazy(() => import("@/features/water/pages/WaterBilling"));
 const Statements = lazy(() => import("@/features/statements/pages/Statements"));
 const LandlordPortalAuth = lazy(() => import("@/features/auth/pages/LandlordPortalAuth"));
 const LandlordDashboard = lazy(() => import("@/features/landlord/pages/LandlordDashboard"));
+const LandlordPortfolio = lazy(() => import("@/features/landlord/pages/LandlordPortfolio"));
+const LandlordPropertyPage = lazy(() => import("@/features/landlord/pages/LandlordPropertyPage"));
+const LandlordFinancials = lazy(() => import("@/features/landlord/pages/LandlordFinancials"));
+const LandlordStatements = lazy(() => import("@/features/landlord/pages/LandlordStatements"));
+const LandlordMaintenance = lazy(() => import("@/features/landlord/pages/LandlordMaintenance"));
+const LandlordDocumentsPage = lazy(() => import("@/features/landlord/pages/LandlordDocumentsPage"));
+const LandlordSettings = lazy(() => import("@/features/landlord/pages/LandlordSettings"));
 const LandlordInvitationAccept = lazy(() => import("@/features/landlord/pages/LandlordInvitationAccept"));
 const AgencyDashboard = lazy(() => import("@/features/agency/pages/AgencyDashboard"));
 const AgencyProperties = lazy(() => import("@/features/agency/pages/AgencyProperties"));
@@ -110,6 +117,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/portal", redirect: "/tenant/login" },
   { path: "/portal/*", redirect: "/tenant/login" },
   { path: "/landlord/dashboard", redirect: "/landlord/login" },
+  { path: "/landlord/*", redirect: "/landlord/login" },
   { path: "/webhost", redirect: "/webhost/login" },
   { path: "/webhost/*", redirect: "/webhost/login" },
   { path: "/agency", redirect: "/agency/login" },
@@ -175,6 +183,13 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/landlord/login", redirect: "/landlord/dashboard" },
       { path: "/landlord/invitation", element: LandlordInvitationAccept },
       { path: "/landlord/dashboard", element: LandlordDashboard, protected: true },
+      { path: "/landlord/portfolio", element: LandlordPortfolio, protected: true },
+      { path: "/landlord/properties/:id", element: LandlordPropertyPage, protected: true },
+      { path: "/landlord/financials", element: LandlordFinancials, protected: true },
+      { path: "/landlord/statements", element: LandlordStatements, protected: true },
+      { path: "/landlord/maintenance", element: LandlordMaintenance, protected: true },
+      { path: "/landlord/documents", element: LandlordDocumentsPage, protected: true },
+      { path: "/landlord/settings", element: LandlordSettings, protected: true },
       { path: "/reset-password", element: ResetPassword },
       { path: "*", redirect: "/landlord/dashboard" },
     ],

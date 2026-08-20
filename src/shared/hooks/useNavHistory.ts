@@ -34,7 +34,13 @@ const ROUTE_NAME_MAP: Record<string, { name: string; category: string }> = {
   "/settings": { name: "Settings", category: "Account" },
   "/webhost": { name: "Webhost Portal", category: "Webhost" },
   "/agency": { name: "Agency Portal", category: "Agency" },
-  "/landlord/dashboard": { name: "Landlord Portal", category: "Landlord" },
+  "/landlord/dashboard": { name: "Landlord Dashboard", category: "Landlord" },
+  "/landlord/portfolio": { name: "Portfolio", category: "Landlord" },
+  "/landlord/financials": { name: "Financials", category: "Landlord" },
+  "/landlord/statements": { name: "Statements", category: "Landlord" },
+  "/landlord/maintenance": { name: "Maintenance", category: "Landlord" },
+  "/landlord/documents": { name: "Documents", category: "Landlord" },
+  "/landlord/settings": { name: "Settings", category: "Landlord" },
   "/portal": { name: "Tenant Portal", category: "Tenant" },
 };
 
