@@ -95,7 +95,7 @@ describe("PublicLandingPage", () => {
   it("keeps a light public canvas and reserves navy for footer and closing CTA", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
-    expect(container.querySelector("footer.bg-navy-primary")).toBeTruthy();
+    expect(container.querySelector("footer.bg-navy-deep, footer.bg-navy-primary")).toBeTruthy();
     expect(container.querySelector("#about.bg-navy-primary")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
   });

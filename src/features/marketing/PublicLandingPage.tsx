@@ -126,7 +126,7 @@ function HomeView() {
       <section className="relative overflow-hidden">
         <div className="public-hero-grid pointer-events-none absolute inset-0" aria-hidden />
         <div
-          className={`${CONTAINER} relative grid items-center gap-10 py-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-12 lg:py-16`}
+          className={`${CONTAINER} relative grid items-center gap-10 py-12 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] xl:gap-12 xl:py-16`}
         >
           <div>
             <p className={EYEBROW}>Property operations, connected</p>
@@ -156,7 +156,7 @@ function HomeView() {
       <section id="platform" className={`${CONTAINER} ${SECTION}`}>
         <SectionIntro
           title="Everything important, connected."
-          description="Three operational pillars — the same records a manager works from after sign-in. Nothing here is a brochure of slogans."
+          description="Properties, money, and repairs sit on the same operational record — the one a manager works from after sign-in."
         />
         <div className="grid gap-4 lg:grid-cols-3">
           {PILLARS.map((pillar) => (
@@ -166,7 +166,7 @@ function HomeView() {
               </IconWell>
               <h3 className={`${EYEBROW} mt-4`}>{pillar.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{pillar.description}</p>
-              <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2">
+              <ul className="mt-5 space-y-2">
                 {pillar.items.map((item) => (
                   <li key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
@@ -188,7 +188,7 @@ function HomeView() {
           <ol className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-0">
             {FLOW.map((step, index) => (
               <li key={step} className="flex flex-1 flex-col items-stretch lg:flex-row lg:items-center">
-                <div className="enterprise-card flex min-h-12 flex-1 items-center justify-center px-3 py-3 text-center">
+                <div className="flex min-h-12 flex-1 items-center justify-center rounded-lg border border-border bg-card px-3 py-3 text-center">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
                     {step}
                   </span>
