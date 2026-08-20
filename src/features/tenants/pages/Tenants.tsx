@@ -55,6 +55,7 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { EmptyState } from "@/shared/components/ui/empty-state";
+import { ErrorState } from "@/shared/components/ui/error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
@@ -283,6 +284,7 @@ const Tenants = () => {
   const [tenants, setTenants] = useState<TenantData[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTenant, setSelectedTenant] = useState<TenantData | null>(null);
   const [tenantHistory, setTenantHistory] = useState<TenantHistoryItem[]>([]);
@@ -326,6 +328,7 @@ const Tenants = () => {
     }
 
     setIsLoading(true);
+    setLoadError(null);
     try {
       let query = supabase
         .from("tenants")
@@ -340,6 +343,7 @@ const Tenants = () => {
       const { data, error } = await query;
 
       if (error) {
+        setLoadError(error.message || "Failed to fetch tenants");
         toast({ title: "Error", description: error.message || "Failed to fetch tenants", variant: "destructive" });
       } else {
         setTenants((data || []) as TenantData[]);
@@ -349,6 +353,7 @@ const Tenants = () => {
       }
     } catch (err) {
       logError('Tenants.fetchTenants', err);
+      setLoadError("Failed to load tenants. Please try again.");
       toast({ title: "Error", description: "Failed to load tenants. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
@@ -459,6 +464,16 @@ const Tenants = () => {
         </div>
       </div>
 
+      {loadError && !isLoading && (
+        <div className="mb-4">
+          <ErrorState
+            title="Couldn't load tenants"
+            message={loadError}
+            onRetry={() => { void fetchTenants(); }}
+          />
+        </div>
+      )}
+
       {/* Per-property quick-add sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         {(propertyFilter ? properties.filter(p => p.id === propertyFilter) : properties).map((p) => {
@@ -556,7 +571,7 @@ const Tenants = () => {
                 <>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={signedUrls[selectedTenant.id] || undefined} />
-                    <AvatarFallback className="bg-amber-400 text-slate-900 text-xs">
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
                       {selectedTenant.name.split(" ").map((n) => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>

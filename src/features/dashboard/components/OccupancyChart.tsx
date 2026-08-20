@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { logError } from "@/shared/lib/errorLogger";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 import {
   Bar,
   BarChart,
@@ -57,7 +58,6 @@ export function OccupancyChart() {
   const [data, setData] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState(true);
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchOccupancyData = useCallback(async () => {
     try {
@@ -118,9 +118,9 @@ export function OccupancyChart() {
   }, [fetchOccupancyData]);
 
   const getBarColor = (rate: number) => {
-    if (rate >= 90) return "hsl(42 51% 55%)"; // gold
-    if (rate >= 70) return "hsl(214 73% 52%)"; // blue
-    return "hsl(var(--destructive))";
+    if (rate >= 90) return CALQULUS_COLOR.success;
+    if (rate >= 70) return CALQULUS_COLOR.warning;
+    return CALQULUS_COLOR.danger;
   };
 
   if (loading) {
@@ -171,14 +171,14 @@ export function OccupancyChart() {
           <BarChart data={data} margin={{ top: 10, right: 5, left: -15, bottom: 0 }}>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="hsl(var(--border))"
+              stroke={CALQULUS_COLOR.border}
               vertical={false}
             />
             <XAxis
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+              tick={{ fill: CALQULUS_COLOR.textMuted, fontSize: 11 }}
               interval={0}
               angle={-20}
               textAnchor="end"
@@ -187,11 +187,11 @@ export function OccupancyChart() {
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              tick={{ fill: CALQULUS_COLOR.textMuted, fontSize: 12 }}
               tickFormatter={(value) => `${value}%`}
               domain={[0, 100]}
             />
-            <Tooltip content={<OccupancyCustomTooltip />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }} />
+            <Tooltip content={<OccupancyCustomTooltip />} cursor={{ fill: CALQULUS_COLOR.secondary, opacity: 0.3 }} />
             <Bar dataKey="rate" radius={[4, 4, 0, 0]} maxBarSize={50}>
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getBarColor(entry.rate)} />

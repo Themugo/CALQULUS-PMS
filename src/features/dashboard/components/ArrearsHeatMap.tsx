@@ -7,6 +7,7 @@ import { logError } from "@/shared/lib/errorLogger";
 import { cn } from "@/shared/lib/utils";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Card, CardContent } from "@/shared/components/ui/card";
+import { ErrorState } from "@/shared/components/ui/error-state";
 import { CheckCircle2, AlertTriangle, Flame, ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -35,64 +36,93 @@ function heatLevel(amount: number, max: number): 0 | 1 | 2 | 3 | 4 {
   return 4;
 }
 
-const heatStyles: Record<0 | 1 | 2 | 3 | 4, { tile: string; badge: string; label: string }> = {
+const heatStyles: Record<0 | 1 | 2 | 3 | 4, { tile: string; badge: string; label: string; bar: string }> = {
   0: {
-    tile:  "bg-emerald-500/8 border-emerald-500/20 hover:border-emerald-500/40",
-    badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    tile:  "bg-success/8 border-success/20 hover:border-success/40",
+    badge: "bg-success/15 text-success",
     label: "Clear",
+    bar: "bg-success/40",
   },
   1: {
-    tile:  "bg-amber-400/10 border-amber-400/30 hover:border-amber-400/60",
-    badge: "bg-amber-400/20 text-amber-700 dark:text-amber-400",
+    tile:  "bg-warning/10 border-warning/30 hover:border-warning/60",
+    badge: "bg-warning/20 text-warning",
     label: "Low",
+    bar: "bg-warning/70",
   },
   2: {
-    tile:  "bg-orange-400/12 border-orange-400/35 hover:border-orange-400/65",
-    badge: "bg-orange-400/20 text-orange-700 dark:text-orange-400",
+    tile:  "bg-warning/15 border-warning/40 hover:border-warning/70",
+    badge: "bg-warning/25 text-warning",
     label: "Medium",
+    bar: "bg-warning",
   },
   3: {
-    tile:  "bg-red-400/15 border-red-400/40 hover:border-red-500/70",
-    badge: "bg-red-400/20 text-red-700 dark:text-red-400",
+    tile:  "bg-destructive/15 border-destructive/40 hover:border-destructive/70",
+    badge: "bg-destructive/20 text-destructive",
     label: "High",
+    bar: "bg-destructive",
   },
   4: {
-    tile:  "bg-red-600/20 border-red-500/50 hover:border-red-500/80",
-    badge: "bg-red-500/25 text-red-700 dark:text-red-300 font-bold",
+    tile:  "bg-destructive/20 border-destructive/50 hover:border-destructive/80",
+    badge: "bg-destructive/25 text-destructive font-bold",
     label: "Critical",
+    bar: "bg-destructive",
   },
 };
 
 export function ArrearsHeatMap() {
-  const { managerId } = useManagerScope();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
+  const assignedKey = assignedPropertyIds.join(",");
   const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["arrears-heatmap", managerId],
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["arrears-heatmap", managerId, assignedKey],
     queryFn: async (): Promise<PropertyArrears[]> => {
       if (!managerId) return [];
-      const { data: rows, error } = await supabase
+      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return [];
+
+      let scopedTenantIds: string[] | null = null;
+      if (restrictToAssignedProperties) {
+        const { data: scopedTenants } = await supabase
+          .from("tenants")
+          .select("id")
+          .eq("manager_id", managerId)
+          .in("property_id", assignedPropertyIds);
+        scopedTenantIds = (scopedTenants ?? []).map((t) => t.id);
+        if (scopedTenantIds.length === 0) return [];
+      }
+
+      let query = supabase
         .from("invoices")
-        .select("balance_due, leases(property, property_id)")
+        .select("amount, leases(property, property_id)")
         .eq("manager_id", managerId)
         .eq("status", "overdue");
+
+      if (scopedTenantIds) {
+        query = query.in("tenant_id", scopedTenantIds);
+      }
+
+      const { data: rows, error } = await query;
 
       if (error) throw error;
 
       const byProperty = new Map<string, PropertyArrears>();
-      for (const row of (rows ?? []) as RawInvoice[]) {
+      for (const row of (rows ?? []) as Array<RawInvoice & { amount?: number }>) {
         const name = row.leases?.property ?? "Unknown Property";
         const pid  = row.leases?.property_id ?? name;
+        if (restrictToAssignedProperties && row.leases?.property_id && !assignedPropertyIds.includes(row.leases.property_id)) {
+          continue;
+        }
+        const outstanding = Number(row.balance_due ?? row.amount ?? 0);
         const existing = byProperty.get(pid);
         if (existing) {
-          existing.totalArrears += Number(row.balance_due ?? 0);
+          existing.totalArrears += outstanding;
           existing.overdueCount += 1;
         } else {
           byProperty.set(pid, {
             propertyId:   pid,
             propertyName: name,
-            totalArrears: Number(row.balance_due ?? 0),
+            totalArrears: outstanding,
             overdueCount: 1,
           });
         }
@@ -116,22 +146,22 @@ export function ArrearsHeatMap() {
   const criticalCount = data?.filter((p) => heatLevel(p.totalArrears, maxArrears) >= 3).length ?? 0;
 
   return (
-    <Card className="mb-6 overflow-hidden border-border/60">
+    <Card className="overflow-hidden border-border">
       <CardContent className="p-4 sm:p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-red-500/15 to-orange-500/5 border border-red-500/20 flex items-center justify-center shadow-sm">
-              <Flame className="h-3.5 w-3.5 text-red-500" />
+            <div className="h-7 w-7 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center">
+              <Flame className="h-3.5 w-3.5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground leading-tight">Arrears Heat Map</p>
-              <p className="text-[11px] text-muted-foreground/70 leading-tight">Per-property overdue invoices</p>
+              <p className="text-sm font-semibold text-foreground leading-tight">Overdue by property</p>
+              <p className="text-[11px] text-muted-foreground leading-tight">Live overdue invoices</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {!isLoading && criticalCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5">
+              <span className="flex items-center gap-1 text-[11px] font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-full px-2 py-0.5">
                 <AlertTriangle className="h-3 w-3" />
                 {criticalCount} critical
               </span>
@@ -156,11 +186,18 @@ export function ArrearsHeatMap() {
           </div>
         )}
 
+        {isError && !isLoading && (
+          <ErrorState
+            title="Couldn't load overdue balances"
+            onRetry={() => { void refetch(); }}
+          />
+        )}
+
         {/* All-clear state */}
-        {!isLoading && (!data || data.length === 0) && (
+        {!isLoading && !isError && (!data || data.length === 0) && (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <div className="h-12 w-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+            <div className="h-12 w-12 rounded-full bg-success/10 border border-success/20 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-success" />
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold text-foreground">All properties clear</p>
@@ -170,7 +207,7 @@ export function ArrearsHeatMap() {
         )}
 
         {/* Heat map grid */}
-        {!isLoading && data && data.length > 0 && (
+        {!isLoading && !isError && data && data.length > 0 && (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
               {data.map((prop) => {
@@ -191,11 +228,7 @@ export function ArrearsHeatMap() {
                     <div
                       className={cn(
                         "absolute top-0 inset-x-0 h-0.5 rounded-t-xl transition-opacity duration-300",
-                        level === 0 && "bg-emerald-500/40 opacity-60",
-                        level === 1 && "bg-amber-400/70",
-                        level === 2 && "bg-orange-400",
-                        level === 3 && "bg-red-400",
-                        level === 4 && "bg-red-600 opacity-90",
+                        styles.bar,
                       )}
                       style={{
                         width: level === 0
@@ -217,7 +250,7 @@ export function ArrearsHeatMap() {
                     {/* Arrears amount */}
                     <p className={cn(
                       "text-sm font-bold tracking-tight",
-                      level >= 3 ? "text-red-600 dark:text-red-400" : "text-foreground"
+                      level >= 3 ? "text-destructive" : "text-foreground"
                     )}>
                       {formatCurrency(prop.totalArrears)}
                     </p>
@@ -236,7 +269,7 @@ export function ArrearsHeatMap() {
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-semibold">Total Arrears</p>
-                  <p className="text-sm font-bold text-red-600 dark:text-red-400">{formatCurrency(totalArrears)}</p>
+                  <p className="text-sm font-bold text-destructive">{formatCurrency(totalArrears)}</p>
                 </div>
                 <div className="h-6 w-px bg-border/60" />
                 <div>

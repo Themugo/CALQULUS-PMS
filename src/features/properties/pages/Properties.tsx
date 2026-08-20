@@ -1,5 +1,5 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { useState, useEffect, useCallback, Fragment } from "react";
+import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Link } from "react-router-dom";
 import { Layout } from "@/shared/components/layout/Layout";
@@ -60,6 +60,10 @@ import { PropertyCard, type Property, type Tenant } from "@/features/properties/
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useAuth } from "@/features/auth/AuthContext";
 import { EmptyState } from "@/shared/components/ui/empty-state";
+import { LoadingState } from "@/shared/components/ui/loading-state";
+import { ErrorState } from "@/shared/components/ui/error-state";
+import { paginate } from "@/shared/lib/clientTable";
+import { TablePager } from "@/shared/components/ui/table-pager";
 import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -103,6 +107,8 @@ const Properties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [propertyPage, setPropertyPage] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [newProperty, setNewProperty] = useState(() => loadFormDraft<typeof EMPTY_PROPERTY_FORM>("new-property") ?? EMPTY_PROPERTY_FORM);
@@ -155,6 +161,7 @@ const Properties = () => {
     }
 
     setIsLoading(true);
+    setLoadError(null);
     try {
       let propertiesQuery = supabase
         .from("properties")
@@ -179,6 +186,7 @@ const Properties = () => {
       ]);
 
       if (propertiesRes.error) {
+        setLoadError(propertiesRes.error.message || "Failed to fetch properties");
         toast({ title: "Error", description: propertiesRes.error.message || "Failed to fetch properties", variant: "destructive" });
       } else {
         setProperties(propertiesRes.data || []);
@@ -189,6 +197,7 @@ const Properties = () => {
       }
     } catch (err) {
       logError('Properties.fetchData', err);
+      setLoadError("Failed to load data. Please try again.");
       toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
     }
     setIsLoading(false);
@@ -393,8 +402,9 @@ const Properties = () => {
     }).format(amount);
   };
 
-  // Filter properties based on search query
-  const getFilteredProperties = () => {
+  const PROPERTY_PAGE_SIZE = 9;
+
+  const filteredProperties = useMemo(() => {
     let filtered = properties;
     
     // Apply occupancy filter
@@ -445,7 +455,16 @@ const Properties = () => {
     });
     
     return filtered;
-  };
+  }, [filterOccupancy, properties, searchQuery, sortBy, sortOrder]);
+
+  const propertySlice = useMemo(
+    () => paginate(filteredProperties, propertyPage, PROPERTY_PAGE_SIZE),
+    [filteredProperties, propertyPage],
+  );
+
+  useEffect(() => {
+    setPropertyPage(1);
+  }, [searchQuery, filterOccupancy, sortBy, sortOrder]);
 
   const handleQuickAssignTenant = async (tenantId: string, propertyId: string, propertyName: string) => {
     const tenant = tenants.find(t => t.id === tenantId);
@@ -581,11 +600,11 @@ const Properties = () => {
 
         {/* Summary line */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span>{getFilteredProperties().length} properties</span>
+          <span>{filteredProperties.length} properties</span>
           <span>·</span>
-          <span>{getFilteredProperties().reduce((sum, p) => sum + p.units, 0)} total units</span>
+          <span>{filteredProperties.reduce((sum, p) => sum + p.units, 0)} total units</span>
           <span>·</span>
-          <span>{formatCurrency(getFilteredProperties().reduce((sum, p) => sum + p.revenue, 0))} revenue</span>
+          <span>{formatCurrency(filteredProperties.reduce((sum, p) => sum + p.revenue, 0))} revenue</span>
         </div>
       </div>
       {/* Add Property Dialog */}
@@ -679,10 +698,20 @@ const Properties = () => {
         </DialogContent>
       </Dialog>
 
+      {loadError && !isLoading && (
+        <div className="mb-4">
+          <ErrorState
+            title="Couldn't load properties"
+            message={loadError}
+            onRetry={() => { void fetchData(); }}
+          />
+        </div>
+      )}
+
       {/* Properties grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading properties...</div>
-      ) : getFilteredProperties().length === 0 ? (
+        <LoadingState label="Loading properties…" variant="skeleton" rows={6} />
+      ) : filteredProperties.length === 0 ? (
         searchQuery ? (
           <EmptyState
             icon={Search}
@@ -699,8 +728,9 @@ const Properties = () => {
           />
         )
       ) : (
+        <>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {getFilteredProperties().map((property, index) => (
+          {propertySlice.items.map((property, index) => (
             <PropertyCard
               key={property.id}
               property={property}
@@ -713,6 +743,10 @@ const Properties = () => {
             />
           ))}
         </div>
+        <div className="mt-3 rounded-xl border border-border overflow-hidden">
+          <TablePager page={propertySlice} onPageChange={setPropertyPage} noun="properties" />
+        </div>
+        </>
       )}
 
       {/* Edit Property Dialog */}

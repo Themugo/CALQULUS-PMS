@@ -13,6 +13,7 @@ import {
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 interface MonthlyRevenue {
   month: string;
@@ -35,14 +36,14 @@ function RevenueCustomTooltip({ active, payload, label, formatCurrency }: Revenu
         <p className="font-medium text-foreground mb-2">{label}</p>
         <div className="space-y-1 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-400" />
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CALQULUS_COLOR.primary }} />
             <span className="text-muted-foreground">Paid:</span>
             <span className="font-medium text-foreground">
               {formatCurrency(payload[0]?.value || 0)}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-warning" />
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CALQULUS_COLOR.warning }} />
             <span className="text-muted-foreground">Pending:</span>
             <span className="font-medium text-foreground">
               {formatCurrency(payload[1]?.value || 0)}
@@ -60,7 +61,6 @@ export function RevenueChart() {
   const [loading, setLoading] = useState(true);
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchRevenueData = useCallback(async () => {
     try {
@@ -176,14 +176,14 @@ export function RevenueChart() {
         </div>
         <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-400 flex-shrink-0" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: CALQULUS_COLOR.primary }} />
             <span className="text-muted-foreground hidden xs:inline">Collected</span>
             <span className="font-semibold text-foreground">
               {formatCurrency(totalRevenue)}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-warning flex-shrink-0" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: CALQULUS_COLOR.warning }} />
             <span className="text-muted-foreground hidden xs:inline">Pending</span>
             <span className="font-semibold text-foreground">
               {formatCurrency(totalPending)}
@@ -196,45 +196,45 @@ export function RevenueChart() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 5, left: -10, bottom: 0 }}>
             <defs>
-              <linearGradient id="colorPaidGold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(42 51% 55%)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(42 51% 55%)" stopOpacity={0} />
+              <linearGradient id="colorPaidPrimary" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorPending" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
+                <stop offset="5%" stopColor={CALQULUS_COLOR.warning} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={CALQULUS_COLOR.warning} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="hsl(var(--border))"
+              stroke={CALQULUS_COLOR.border}
               vertical={false}
             />
             <XAxis
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              tick={{ fill: CALQULUS_COLOR.textMuted, fontSize: 12 }}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              tick={{ fill: CALQULUS_COLOR.textMuted, fontSize: 12 }}
               tickFormatter={formatCurrencyCompact}
             />
             <Tooltip content={<RevenueCustomTooltip formatCurrency={formatCurrency} />} />
             <Area
               type="monotone"
               dataKey="paid"
-              stroke="hsl(42 51% 55%)"
+              stroke={CALQULUS_COLOR.primary}
               strokeWidth={2}
               fillOpacity={1}
-              fill="url(#colorPaidGold)"
+              fill="url(#colorPaidPrimary)"
             />
             <Area
               type="monotone"
               dataKey="pending"
-              stroke="hsl(var(--warning))"
+              stroke={CALQULUS_COLOR.warning}
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorPending)"

@@ -13,8 +13,13 @@ const shortcuts = [
   { label: "Leases", icon: FileText, href: "/leases", description: "Agreements and expiry" },
   { label: "Invoices", icon: CreditCard, href: "/billing", description: "Bill and collect" },
   { label: "Payments", icon: Wallet, href: "/payments", description: "Payment history" },
-          { label: "Receipts", icon: Receipt, href: "/billing?tab=receipts", description: "Paid invoice receipts" },
+  { label: "Receipts", icon: Receipt, href: "/billing?tab=receipts", description: "Paid invoice receipts" },
 ];
+
+interface ManagerQuickActionsProps {
+  includeSetup?: boolean;
+  includeShortcuts?: boolean;
+}
 
 function statusClass(status: ActivationStatus) {
   if (status === "completed") return "bg-success text-white";
@@ -22,13 +27,18 @@ function statusClass(status: ActivationStatus) {
   return "bg-muted text-muted-foreground";
 }
 
-export function ManagerQuickActions() {
+export function ManagerQuickActions({
+  includeSetup = true,
+  includeShortcuts = true,
+}: ManagerQuickActionsProps) {
   const navigate = useNavigate();
   const { progress, skipStep, isLoading, isEmptyPortfolio } = useManagerActivation();
   const current = progress.steps.find((s) => s.status === "current");
+  const showSetup = includeSetup && !progress.isComplete;
 
   return (
-    <Card className="mb-4 sm:mb-6 enterprise-card">
+    <Card className="enterprise-card">
+      {showSetup && (
       <CardHeader className="pb-3 pt-4 px-4 sm:px-5">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div className="min-w-0">
@@ -70,7 +80,9 @@ export function ManagerQuickActions() {
           indicatorClassName="bg-primary"
         />
       </CardHeader>
-      <CardContent className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
+      )}
+      <CardContent className={cn("px-4 sm:px-5 pb-4 sm:pb-5 space-y-4", !showSetup && "pt-4 sm:pt-5")}>
+        {showSetup && (
         <ol className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" aria-label="Setup progress">
           {progress.steps.map((step, index) => (
             <li key={step.id}>
@@ -103,8 +115,9 @@ export function ManagerQuickActions() {
             </li>
           ))}
         </ol>
+        )}
 
-        {!isEmptyPortfolio && (
+        {includeShortcuts && !isEmptyPortfolio && (
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 pt-1">
             {shortcuts.map((action) => (
               <button
