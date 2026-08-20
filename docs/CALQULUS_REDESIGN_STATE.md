@@ -1,13 +1,80 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Executive public homepage redesign (compact front door). Homepage only.
-Do not proceed to other portal desks.
+Phase 0A — Authenticated application shell audit + preview.
+STATUS: preview complete. Live portal layouts were not migrated.
 
 ## CURRENT TASK
-Homepage complete and stable on PR #66. Stop after this phase.
+STOP. Do not redesign dashboards or implement the shell on live desks yet.
 
 ## COMPLETED
+- Audited Manager, Landlord, Agency, Tenant, Admin/WebHost chrome
+- Added preview-only route `/design-preview/shell`
+- Preview shows white sidebar, 68px white top bar, portal-accent active nav, mobile drawer, page header, user menu, notifications, workspace selector, loading/empty/error canvases
+
+## FILES INSPECTED
+- `src/shared/components/layout/Layout.tsx`, `Sidebar.tsx`, `Header.tsx`, `PageHeader.tsx`, `BreadcrumbSystem.tsx`, `ProfileMenu.tsx`, `NotificationsDropdown.tsx`, `WorkspaceSwitcher.tsx`
+- `src/features/landlord/components/LandlordLayout.tsx`
+- `src/features/agency/components/AgencyLayout.tsx`
+- `src/features/tenant-portal/components/TenantLayout.tsx`
+- `src/features/webhost/components/WebhostLayout.tsx`
+- `src/app/routes.ts`, `src/App.tsx`
+- `src/core/design/deskNav.ts`, `PortalAccentBar.tsx`, `src/shared/theme/tokens.ts`
+- `src/features/design-preview/pages/DesignPreview.tsx`, `PortalPreviewCanvas.tsx`
+
+## COMPONENTS TO REUSE
+- `BrandMark`, `PageHeader`, `PortalAccentBar`, `portalSurfaceProps`
+- `Button`, `EmptyState`, `ErrorState`, `LoadingState`
+- `CALQULUS_PORTAL_ACCENT` + `[data-portal]` CSS variables
+- Lucide icons (already the only shell icon library)
+
+## COMPONENTS TO CREATE
+- Unified `DeskShell` / `AppSidebar` / `AppHeader` (not implemented in live routes)
+- Shared nav config module to replace duplicated `NAV` arrays
+- Optional: wire or delete orphans `TenantNotificationBell`, `MobilePageHeader`
+
+## FILES CHANGED (this phase)
+- `src/features/design-preview/pages/ShellPreviewPage.tsx`
+- `src/features/design-preview/components/AuthenticatedShellPreview.tsx`
+- `src/features/design-preview/shellPreviewConfig.ts`
+- `src/features/design-preview/pages/DesignPreview.tsx` (header link)
+- `src/app/routes.ts`, `src/App.tsx`, `src/features/marketing/publicConfig.ts`
+- `src/test/shellPreview.test.tsx` and related contract tests
+- `docs/CALQULUS_REDESIGN_STATE.md`
+
+## KNOWN ISSUES
+- Live product has **three shells**, not one:
+  - Manager: `Layout` + rich `Header`/`Sidebar` (command palette, notifications, profile, workspace switcher)
+  - Landlord / Agency / Webhost: copy-pasted `*Layout.tsx` with minimal header
+  - Tenant: unique `h-14` header + **bottom tab bar** on mobile
+- Live selected nav uses **interactive blue wash** (`deskNavClass` / `sidebarNavClass`), not portal accent. Preview uses portal accent tint as specified for this phase.
+- Live WebHost and Admin share `platform_admin` indigo. Preview splits WebHost as proposed teal `#17807A` (not a production token yet).
+- Sidebar configs for non-manager roles in `Sidebar.tsx` are unused dead duplication.
+- Tenant notification bell exists but is not wired into `TenantLayout`.
+- No organization multi-select in portal layouts; Manager has `WorkspaceSwitcher` (portal jumper, not multi-org).
+
+## TEST STATUS
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx vitest run src/test/shellPreview.test.tsx` — 4 passed
+- `npx vitest run` — **890 passed**, 1 skipped
+- Playwright visual pass at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360: no horizontal overflow; header 68px; sidebar 256px desktop; mobile hamburger + drawer
+
+## BUILD STATUS
+- `npm run build` — pass
+
+## NEXT STEP
+After preview approval: extract a shared `DeskShell` and migrate one live portal at a time. Do **not** redesign dashboard page content in that step.
+
+Preview URL: `/design-preview/shell`
+
+---
+
+## Previous checkpoint (Executive homepage on main)
+
+Executive public homepage redesign landed on GitHub `main` (`d886882`, PR #66).
+Public `/` is six sections only. Do not restart the homepage.
+
+## COMPLETED (homepage)
 - Public `/` reduced to six sections: Header, Hero, Property Type Slider, Portal Experiences, Compact CTA, Footer
 - No photographs / no stock URLs; CSS navy architectural surfaces + optional `imageSrc` slot
 - Illustrative manager dashboard labelled as sample figures (not live data)

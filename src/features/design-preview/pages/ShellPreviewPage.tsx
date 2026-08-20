@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Button } from "@/shared/components/ui/button";
@@ -19,6 +19,10 @@ export default function ShellPreviewPage() {
     () => SHELL_PREVIEW_PORTALS.find((item) => item.id === portalId) ?? SHELL_PREVIEW_PORTALS[0],
     [portalId],
   );
+
+  useEffect(() => {
+    document.title = "CALQULUS PMS | Authenticated shell preview";
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-preview="authenticated-shell">

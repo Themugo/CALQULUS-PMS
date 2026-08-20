@@ -255,7 +255,7 @@ export function AuthenticatedShellPreview({ portal, canvas }: AuthenticatedShell
                 <Button type="button" variant="outline">
                   {portal.secondaryAction}
                 </Button>
-                <Button type="button" className="btn-brand">
+                <Button type="button" style={{ backgroundColor: portal.accent, color: CALQULUS_COLOR.white }}>
                   {portal.primaryAction}
                 </Button>
               </>
