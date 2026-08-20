@@ -96,6 +96,7 @@ export default function TenantLayout({
               <Link
                 key={item.href}
                 to={item.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
                   deskNavClass(active),

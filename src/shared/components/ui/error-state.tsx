@@ -42,7 +42,7 @@ export function ErrorState({
         {safeMessage}
       </p>
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry} className="gap-2 min-h-10">
+        <Button variant="outline" size="sm" onClick={onRetry} className="gap-2 min-h-11">
           <RefreshCw className="h-3.5 w-3.5" />
           {retryLabel}
         </Button>

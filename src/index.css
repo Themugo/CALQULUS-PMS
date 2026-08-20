@@ -317,6 +317,7 @@
 
     --warning: #B7791F;
     --warning-foreground: #FFFFFF;
+    --warning-text: #9A5A16;
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
 
     --info: #2F6FED;
@@ -404,6 +405,7 @@
     --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
     --warning: #B7791F;
     --warning-foreground: #FFFFFF;
+    --warning-text: #9A5A16;
     --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
     --info: #2F6FED;
     --info-foreground: #FFFFFF;
@@ -731,7 +733,7 @@
   }
   .status-warning {
     background-color: var(--warning-bg);
-    color: var(--warning);
+    color: var(--warning-text);
     border-color: color-mix(in srgb, var(--warning) 35%, #FFFFFF);
   }
   .status-danger {
@@ -789,4 +791,9 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Warning fill stays #B7791F. Small warning text uses a darker amber so WCAG AA 4.5:1 holds on white desks. */
+.text-warning {
+  color: var(--warning-text);
 }

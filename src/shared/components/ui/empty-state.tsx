@@ -40,7 +40,7 @@ export function EmptyState({
         </p>
       )}
       {actionLabel && onAction && (
-        <Button size="sm" onClick={onAction}>
+        <Button size="sm" className="min-h-11" onClick={onAction}>
           {actionLabel}
         </Button>
       )}

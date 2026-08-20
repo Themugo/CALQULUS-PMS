@@ -90,7 +90,7 @@ export default function LandlordLayout({ children, title, description, actions }
           <BrandMark size="md" showWordmark subtitle="Landlord" />
           <button
             type="button"
-            className="p-1 text-muted-foreground hover:text-foreground lg:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground lg:hidden"
             onClick={() => setSidebarOpen(false)}
             aria-label="Close menu"
           >
@@ -106,7 +106,8 @@ export default function LandlordLayout({ children, title, description, actions }
                 key={item.href}
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${deskNavClass(active)}`}
+                aria-current={active ? "page" : undefined}
+                className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${deskNavClass(active)}`}
               >
                 <item.icon className="h-4 w-4 flex-shrink-0" />
                 <span className="flex-1 truncate">{item.label}</span>

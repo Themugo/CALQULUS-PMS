@@ -842,27 +842,27 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <Label className="text-xs">Prefix</Label>
-                <Input value={bulkPrefix} onChange={e => setBulkPrefix(e.target.value.toUpperCase())} placeholder="R" className="mt-1" />
+                <Label htmlFor="bulk-prefix" className="text-xs">Prefix</Label>
+                <Input id="bulk-prefix" value={bulkPrefix} onChange={e => setBulkPrefix(e.target.value.toUpperCase())} placeholder="R" className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Start number</Label>
-                <Input type="number" min="1" value={bulkStart} onChange={e => setBulkStart(e.target.value)} className="mt-1" />
+                <Label htmlFor="bulk-start" className="text-xs">Start number</Label>
+                <Input id="bulk-start" type="number" min="1" value={bulkStart} onChange={e => setBulkStart(e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">How many</Label>
-                <Input type="number" min="1" max="100" value={bulkCount} onChange={e => setBulkCount(e.target.value)} className="mt-1" />
+                <Label htmlFor="bulk-count" className="text-xs">How many</Label>
+                <Input id="bulk-count" type="number" min="1" max="100" value={bulkCount} onChange={e => setBulkCount(e.target.value)} className="mt-1" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Monthly rent (KES)</Label>
-                <Input type="number" value={bulkRent} onChange={e => setBulkRent(e.target.value)} placeholder="e.g. 12000" className="mt-1" />
+                <Label htmlFor="bulk-rent" className="text-xs">Monthly rent (KES)</Label>
+                <Input id="bulk-rent" type="number" value={bulkRent} onChange={e => setBulkRent(e.target.value)} placeholder="e.g. 12000" className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Unit type</Label>
+                <Label htmlFor="bulk-unit-type" className="text-xs">Unit type</Label>
                 <Select value={unitType} onValueChange={setUnitType}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="bulk-unit-type" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {[{value:'bedsitter',label:'Bedsitter'},{value:'one_bedroom',label:'1 Bedroom'},{value:'two_bedroom',label:'2 Bedrooms'},{value:'studio',label:'Studio'},{value:'standard',label:'Standard'}].map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                   </SelectContent>

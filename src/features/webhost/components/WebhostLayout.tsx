@@ -127,7 +127,7 @@ export default function WebhostLayout({ children, title, description, actions }:
           <BrandMark size="md" showWordmark subtitle="Admin" forcePlatform />
           <button
             type="button"
-            className="p-1 text-muted-foreground hover:text-foreground lg:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground lg:hidden"
             onClick={() => setSidebarOpen(false)}
             aria-label="Close menu"
           >
@@ -143,6 +143,7 @@ export default function WebhostLayout({ children, title, description, actions }:
                 key={item.href}
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   deskNavClass(active),

@@ -30,6 +30,7 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { Label } from "@/shared/components/ui/label";
+import { onActivateKey } from "@/shared/lib/a11y";
 import {
   Select,
   SelectContent,
@@ -768,10 +769,15 @@ const Leases = () => {
 
         <TabsContent value="agreements" className="space-y-4 sm:space-y-6">
           {/* Summary Stats - Scrollable on mobile */}
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 scrollbar-hide">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 scrollbar-hide" role="group" aria-label="Filter leases by status">
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={statusFilter === "all"}
+              aria-label={`Show all leases, ${leaseStats.total}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("all")}
+              onKeyDown={onActivateKey(() => setStatusFilter("all"))}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
@@ -786,8 +792,13 @@ const Leases = () => {
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "active" ? "ring-2 ring-primary" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={statusFilter === "active"}
+              aria-label={`Show active leases, ${leaseStats.active}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${statusFilter === "active" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("active")}
+              onKeyDown={onActivateKey(() => setStatusFilter("active"))}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
@@ -802,8 +813,13 @@ const Leases = () => {
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "expiring" ? "ring-2 ring-primary" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={statusFilter === "expiring"}
+              aria-label={`Show expiring leases, ${leaseStats.expiring}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${statusFilter === "expiring" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("expiring")}
+              onKeyDown={onActivateKey(() => setStatusFilter("expiring"))}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
@@ -818,8 +834,13 @@ const Leases = () => {
               </CardContent>
             </Card>
             <Card 
-              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 ${statusFilter === "pending" ? "ring-2 ring-primary" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={statusFilter === "pending"}
+              aria-label={`Show pending leases, ${leaseStats.pending}`}
+              className={`flex-shrink-0 w-[140px] sm:w-auto bg-card border-border cursor-pointer transition-all active:scale-95 sm:active:scale-100 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${statusFilter === "pending" ? "ring-2 ring-primary" : ""}`}
               onClick={() => setStatusFilter("pending")}
+              onKeyDown={onActivateKey(() => setStatusFilter("pending"))}
             >
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 sm:justify-between">
@@ -841,8 +862,10 @@ const Leases = () => {
               <Badge variant="secondary" className="gap-1.5">
                 Showing: {statusFilter}
                 <button 
+                  type="button"
                   onClick={() => setStatusFilter("all")} 
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 inline-flex min-h-11 min-w-11 items-center justify-center hover:text-destructive"
+                  aria-label="Clear lease filter"
                 >
                   ×
                 </button>
@@ -858,6 +881,7 @@ const Leases = () => {
                 placeholder="Search by tenant, property or unit..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search leases"
                 className="pl-9 w-full sm:w-80 bg-card border-border"
               />
             </div>

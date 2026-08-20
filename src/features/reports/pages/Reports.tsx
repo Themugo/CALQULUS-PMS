@@ -355,7 +355,14 @@ const Reports: React.FC = () => {
                       {occupancyItems.map(p => (
                         <div key={p.id} className="flex items-center gap-3 text-xs">
                           <span className="min-w-0 flex-1 truncate text-muted-foreground sm:w-32 sm:flex-none">{p.name}</span>
-                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="flex-1 h-2 rounded-full bg-muted overflow-hidden"
+                            role="progressbar"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={p.rate}
+                            aria-label={`${p.name} occupancy ${p.rate} percent`}
+                          >
                             <div className="h-full rounded-full bg-success" style={{ width: `${p.rate}%` }} />
                           </div>
                           <span className={`w-10 text-right font-medium ${occupancyRateColor(p.rate)}`}>

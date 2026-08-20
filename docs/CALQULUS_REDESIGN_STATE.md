@@ -1,61 +1,62 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 11 — Responsive certification. Audit the entire application at 1440,
-1280, 1024, 768, 480, 390, and 360. Check every portal. Check sidebar, header,
-tables, charts, forms, dialogs, filters, buttons, cards, page headers, and
-navigation. Do not solve responsiveness by hiding important information.
-Reflow intelligently. Tenant receives highest mobile priority.
+Phase 12 — Accessibility certification. Audit keyboard navigation, focus,
+contrast, ARIA, semantic HTML, form labels, error messaging, screen readers,
+touch targets, colour-only states, tables, and dialogs. Fix issues. Do not
+change business logic.
 
 ## CURRENT TASK
-Phase 11 certification: reflow shared chrome (dialog, sheet, table, chart,
-header, page header), then tenant mobile (amount, Pay rent, five-item nav),
-then manager/landlord/agency/admin filters, forms, and charts. Preview and
-live desks. No new features.
+Phase 12 certification: shared primitives first (button, checkbox, radio,
+select, table, badge, alert, dialog, sheet, chart, toast, skip links), then
+portal nav `aria-current`, keyboard-activatable cards, labelled forms and
+errors, warning text contrast, then tests. No new features. No auth/RLS/API
+changes.
 
-### Phase 11 findings (before any changes)
-- Overflow tests existed for homepage (all 7 widths) and design-preview
-  tenant/admin (360/390/480/768/1280 only — missing 1024 and 1440).
-- Manager header search was a fixed `w-64` from `md`, crowding 768–1023.
-- Dialogs were `w-full` at 360px (kissed the viewport).
-- Page titles truncated; `.page-title` jumped to 40px from 768px.
-- Tenant amount used `text-4xl` with no wrap. Bottom nav labels could clip.
-- Design-preview maintenance hid the Property column below `sm`. Tenant
-  desktop shortcuts were `grid-cols-4` inside a nested frame at 360.
-- Charts sat in grid children without `min-w-0`, so Recharts could not shrink.
-- Report filters used fixed `w-40`/`w-52`/`w-56`. Unit forms used
-  `grid-cols-4` / `grid-cols-3` with no breakpoint.
-- Dead `xs:` utilities never applied (no `--breakpoint-xs`).
+### Phase 12 findings (before any changes)
+- Default buttons were 36px (`h-9`); icon buttons 36px; checkboxes and radios
+  16px (below WCAG 2.5.8 24px). Auth password toggles were 28px.
+- Lease filter cards and tenant inbox cards were mouse-only `onClick` cards.
+- Manager, landlord, agency, and admin nav lacked `aria-current="page"`.
+- `Badge` rendered a `<div>`; `AlertTitle` used `<h5>` (heading-order skip).
+- `TableHead` had no `scope="col"`. Charts had no `role="img"` / label.
+- Signup email errors were a `<p>` without `role="alert"` or `aria-invalid`.
+- Landlord statement period and bulk unit fields lacked `htmlFor` / `id`.
+- Design preview had `#main-content` but no skip link.
+- Warning fill `#B7791F` on white is 3.64:1 (large-text AA only). Small
+  `text-warning` failed 4.5:1.
+- Occupancy bars already showed a percentage; they lacked a progressbar name.
 
-### Phase 11 implementation
-- Shared: viewport-inset dialogs and sheets; tables `overflow-x-auto` +
-  `min-w-0` (scroll, do not drop columns); cards and chart frames `min-w-0`;
-  page titles wrap and scale 28→32→36→40px; manager search is a field from
-  `lg` and the same command palette via icon below that.
-- Tenant: wrapping tabular amounts, full-width Pay rent, all five mobile
-  labels (Home / Pay / Fix / Docs / Me) stay visible.
-- Manager/landlord/agency/admin: wrapping filter bars, maintenance tabs
-  2→3→5, unit form 2→4, statement selects full-width on phones, chart
-  parents `.chart-frame`.
-- Design preview: Property column stays; tenant shortcuts reflow 2→4;
-  overflow matrix covers every portal at all 7 widths.
+### Phase 12 implementation
+- Shared: default/icon buttons `min-h-11` (44px); checkbox/radio `h-6`;
+  select/input `min-h-11` and `focus-visible`; table `scope="col"`; badge
+  `<span>`; alert title `<p>`; dialog/sheet close `focus-visible`; chart
+  `role="img"`; toast dismiss labelled; loader `aria-hidden`.
+- Nav: `aria-current="page"` on Manager, Landlord, Agency, Admin, Tenant.
+  Skip link on design preview; public `main` is focusable.
+- Keyboard: lease status cards and tenant inbox cards use `role="button"`,
+  `tabIndex={0}`, and `onActivateKey`.
+- Forms: signup `aria-invalid` / `aria-describedby` / `role="alert"`;
+  landlord period and bulk unit labels; trial hex text field labelled.
+- Contrast: fill token `--warning` stays `#B7791F`. Small warning text uses
+  `--warning-text: #9A5A16` (AA on white/mist). Colour-only occupancy bars
+  named via `role="progressbar"`; status still has visible text.
+- Reduced motion already present; certification test asserts it.
 
-### Phase 11 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — 0 errors
-- `npx vitest run` — 864 passed; 1 skipped
-- Playwright Chromium (`responsive-certification`, `design-preview`,
-  `a11y`, `app`, `homepage-executive`) — 49 passed, 5 skipped
-  (credential-gated auth). All seven widths, every portal preview,
-  tenant Pay rent / amount / due date / shortcuts, maintenance Property
-  column, inset dialog, login paths.
-- `npm run build` — pass
-- Merged to `main` as `a1e23d1`.
+### Phase 12 verification
+- Pending this turn (commit, then lint / typecheck / vitest / Playwright /
+  build).
 
 ## CHECKPOINT
-Phase 11 responsive certification merged to `main` (`a1e23d1`). PR #60.
+Phase 12 accessibility certification in progress on
+`cursor/phase-12-accessibility-certification-1e5d`. Do not merge to `main`
+unless asked.
 
 ## PREVIOUS PHASE
+Phase 11 — Responsive certification. Merged to `main` (`a1e23d1`). PR #60.
+Audit at 1440, 1280, 1024, 768, 480, 390, and 360. Do not hide information.
+Tenant received highest mobile priority.
+
 Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
 spacing, typography, colour, buttons, cards, tables, forms, icons, charts,
 navigation, headers, footers, modals, badges, empty states, loading, errors,

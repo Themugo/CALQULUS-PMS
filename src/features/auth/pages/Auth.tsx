@@ -256,7 +256,7 @@ const Auth = () => {
               </div>
               <div className="relative">
                 <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
-                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showLoginPassword ? "Hide password" : "Show password"}>
+                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showLoginPassword ? "Hide password" : "Show password"} aria-pressed={showLoginPassword}>
                   {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -290,16 +290,16 @@ const Auth = () => {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">Email</Label>
-              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required className={`bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive focus:border-destructive focus-visible:ring-destructive/20' : ''}`} />
+              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required aria-invalid={!!signupEmailError} aria-describedby={signupEmailError ? "signup-email-error" : undefined} className={`bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive focus:border-destructive focus-visible:ring-destructive/20' : ''}`} />
               {signupEmailError && (
-                <p className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" />{signupEmailError}</p>
+                <p id="signup-email-error" role="alert" className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" aria-hidden="true" />{signupEmailError}</p>
               )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">Password</Label>
               <div className="relative">
                 <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
-                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showSignupPassword ? "Hide password" : "Show password"}>
+                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showSignupPassword ? "Hide password" : "Show password"} aria-pressed={showSignupPassword}>
                   {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>

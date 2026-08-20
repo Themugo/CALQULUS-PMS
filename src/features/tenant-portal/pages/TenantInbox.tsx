@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
+import { onActivateKey } from '@/shared/lib/a11y';
 
 interface NoticeIconConfig {
   icon: React.ComponentType<{ className?: string }>;
@@ -188,8 +189,12 @@ const TenantInbox: React.FC = () => {
 
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!notice.tenant_acknowledged ? 'border-warning/40/40 bg-warning' : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-label={`${config.label}: ${notice.title}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${!notice.tenant_acknowledged ? 'border-warning/40 bg-warning/10' : ''}`}
         onClick={() => setSelectedNotice(notice)}
+        onKeyDown={onActivateKey(() => setSelectedNotice(notice))}
       >
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
@@ -233,8 +238,12 @@ const TenantInbox: React.FC = () => {
     const Icon = config.icon;
     return (
       <Card
-        className={`cursor-pointer hover:shadow-sm transition-shadow ${!msg.is_read ? 'border-warning/40/40 bg-warning' : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-label={`${msg.subject || 'Message'}${!msg.is_read ? ', unread' : ''}`}
+        className={`cursor-pointer hover:shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${!msg.is_read ? 'border-warning/40 bg-warning/10' : ''}`}
         onClick={() => markRead.mutate(msg.id)}
+        onKeyDown={onActivateKey(() => markRead.mutate(msg.id))}
       >
         <CardContent className="p-4">
           <div className="flex items-start gap-3">

@@ -126,6 +126,12 @@ export default function DesignPreview() {
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-preview="design">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:shadow-md"
+      >
+        Skip to main content
+      </a>
       <header className="sticky top-0 z-40 border-b border-border bg-card">
         <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3 min-w-0">
           <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform className="min-w-0" />
@@ -144,6 +150,7 @@ export default function DesignPreview() {
                 <button
                   type="button"
                   onClick={() => setActive(item.id)}
+                  aria-current={active === item.id ? "true" : undefined}
                   className={cn(
                     "w-full text-left rounded-md px-3 py-2 text-sm min-h-11",
                     active === item.id
@@ -1074,7 +1081,7 @@ function BrandStudioPreview({
                 onChange={(event) => onTrialHex(event.target.value.toUpperCase())}
                 className="h-10 w-12 rounded border border-input"
               />
-              <Input value={trialHex} onChange={(event) => onTrialHex(event.target.value)} className="font-mono w-36" />
+              <Input id="trial-hex-value" value={trialHex} onChange={(event) => onTrialHex(event.target.value)} aria-label="Trial primary hex" className="font-mono w-36" />
             </div>
           </div>
           {trial.approved ? (

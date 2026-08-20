@@ -105,17 +105,17 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
       {/* Controls */}
       <div className="flex gap-3 flex-wrap items-end">
         <div>
-          <Label className="text-xs text-muted-foreground mb-1 block">Property</Label>
+          <Label htmlFor="statement-property" className="text-xs text-muted-foreground mb-1 block">Property</Label>
           <Select value={selectedPropertyId} onValueChange={setSelectedPropertyId}>
-            <SelectTrigger className="w-full min-w-0 sm:w-64"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="statement-property" className="w-full min-w-0 sm:w-64"><SelectValue /></SelectTrigger>
             <SelectContent>
               {properties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label className="text-xs text-muted-foreground mb-1 block">Period</Label>
-          <Input type="month" value={period} onChange={e => setPeriod(e.target.value)} className="w-full sm:w-40" />
+          <Label htmlFor="statement-period" className="text-xs text-muted-foreground mb-1 block">Period</Label>
+          <Input id="statement-period" type="month" value={period} onChange={e => setPeriod(e.target.value)} className="w-full sm:w-40" />
         </div>
       </div>
 

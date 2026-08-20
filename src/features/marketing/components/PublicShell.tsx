@@ -16,7 +16,7 @@ export function PublicShell({ children }: PublicShellProps) {
         Skip to content
       </a>
       <PublicHeader />
-      <main id="main-content">{children}</main>
+      <main id="main-content" tabIndex={-1} className="outline-none">{children}</main>
       <PublicFooter />
     </div>
   );

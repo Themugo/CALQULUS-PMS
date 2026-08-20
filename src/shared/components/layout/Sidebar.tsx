@@ -258,9 +258,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden lg:flex text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/60 h-7 w-7 rounded-md"
+              className="hidden lg:flex text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/60 rounded-md"
               onClick={() => setCollapsed(!collapsed)}
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-expanded={!collapsed}
             >
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -268,7 +270,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               variant="ghost"
               size="icon"
               aria-label="Close sidebar"
-              className="lg:hidden text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/60 h-7 w-7 rounded-md"
+              className="lg:hidden text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/60 rounded-md"
               onClick={onClose}
             >
               <X className="h-4 w-4" />
@@ -296,8 +298,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     key={fav.href}
                     to={fav.href}
                     onClick={handleNavClick}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
+                      "group relative flex min-h-11 items-center gap-2.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
                       sidebarNavClass(active),
                     )}
                   >
@@ -325,9 +328,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     key={item.name}
                     to={item.href}
                     onClick={handleNavClick}
+                    aria-current={active ? "page" : undefined}
+                    aria-label={collapsed ? item.name : undefined}
                     className={cn(
                       "group relative flex items-center gap-3 rounded-md text-xs font-medium transition-all duration-150 touch-manipulation",
-                      collapsed ? "justify-center p-2.5" : "px-3 py-2",
+                      collapsed ? "justify-center min-h-11 min-w-11 p-2.5" : "min-h-11 px-3 py-2",
                       sidebarNavClass(active),
                     )}
                     title={collapsed ? item.name : undefined}

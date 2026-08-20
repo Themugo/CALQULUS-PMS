@@ -14,7 +14,7 @@ import { cn } from "@/shared/lib/utils";
 import { PUBLIC_NAV, PUBLIC_ROUTES, homeSectionHref } from "@/features/marketing/publicConfig";
 
 const navLinkClass =
-  "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function PublicHeader() {
   const { pathname } = useLocation();
@@ -48,10 +48,10 @@ export function PublicHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="hidden min-h-10 sm:inline-flex">
+          <Button asChild variant="ghost" size="sm" className="hidden min-h-11 sm:inline-flex">
             <Link to={PUBLIC_ROUTES.managerSignIn}>Sign in</Link>
           </Button>
-          <Button asChild size="sm" className="min-h-10 btn-brand">
+          <Button asChild size="sm" className="min-h-11 btn-brand">
             <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
           </Button>
 
@@ -60,7 +60,7 @@ export function PublicHeader() {
               type="button"
               variant="outline"
               size="icon"
-              className="min-h-10 min-w-10 lg:hidden"
+              className="lg:hidden"
               aria-label="Open menu"
               onClick={() => setOpen(true)}
             >
