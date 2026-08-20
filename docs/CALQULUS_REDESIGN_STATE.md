@@ -38,9 +38,12 @@ changes.
   `tabIndex={0}`, and `onActivateKey`.
 - Forms: signup `aria-invalid` / `aria-describedby` / `role="alert"`;
   landlord period and bulk unit labels; trial hex text field labelled.
-- Contrast: fill token `--warning` stays `#B7791F`. Small warning text uses
-  `--warning-text: #9A5A16` (AA on white/mist). Colour-only occupancy bars
-  named via `role="progressbar"`; status still has visible text.
+- Contrast: fill tokens stay locked (`#2F6FED`, `#23856B`, `#B7791F`,
+  `#C84B4B`). Small text uses on-surface companions (`--primary-text`
+  `#2459D6`, `--success-text` `#1B6B56`, `--warning-text` `#9A5A16`,
+  `--destructive-text` `#A33A3A`). Footer headings on navy use white.
+  Occupancy bars named via `role="progressbar"`; status still has visible
+  text.
 - Reduced motion already present; certification test asserts it.
 
 ### Phase 12 verification
