@@ -70,7 +70,7 @@ const priorityColors: Record<RequestPriority, string> = {
 const statusColors: Record<RequestStatus, string> = {
   open: "bg-amber-500 text-white",
   in_progress: "bg-[hsl(214_73%_45%)] text-white",
-  completed: "bg-emerald-600 text-white",
+  completed: "bg-success text-white",
   cancelled: "bg-slate-600 text-white",
 };
 
@@ -371,7 +371,7 @@ export function MaintenanceActiveReport({
                           {request.status === "in_progress" && (
                             <Button
                               size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700"
+                              className="bg-success hover:bg-success"
                               onClick={() => onCompleteRequest(request.id)}
                             >
                               Complete

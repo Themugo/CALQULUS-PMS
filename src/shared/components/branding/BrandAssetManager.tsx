@@ -86,10 +86,10 @@ export function BrandAssetManager({
               <Label className="text-xs font-bold text-foreground">Dark Mode Primary Logo</Label>
               <Badge variant="secondary" className="text-[9px]">Dark Canvas & Mobile App</Badge>
             </div>
-            <div className="p-3 bg-slate-950 rounded-lg flex items-center justify-center border border-dashed border-slate-800 h-16">
+            <div className="p-3 bg-navy-deep rounded-lg flex items-center justify-center border border-dashed border-slate-800 h-16">
               <span className="font-extrabold text-slate-100 text-sm tracking-tight flex items-center gap-1.5">
-                <span className="h-6 w-6 rounded bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black">C</span>
-                CALQULUS <span className="text-emerald-400 text-xs font-normal">PMS</span>
+                <span className="h-6 w-6 rounded bg-success text-slate-950 flex items-center justify-center text-xs font-black">C</span>
+                CALQULUS <span className="text-success text-xs font-normal">PMS</span>
               </span>
             </div>
             <Input
@@ -126,7 +126,7 @@ export function BrandAssetManager({
               <Badge variant="secondary" className="text-[9px]">Watermark for Paid Receipts</Badge>
             </div>
             <div className="p-2 bg-muted/30 rounded-lg flex items-center justify-center border h-12">
-              <span className="text-[10px] font-bold text-emerald-600 uppercase border border-emerald-500 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="text-[10px] font-bold text-success uppercase border border-success px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Stamp className="h-3 w-3" /> OFFICIAL PAID STAMP
               </span>
             </div>

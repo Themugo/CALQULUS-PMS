@@ -22,14 +22,14 @@ export function ObservabilityEngine({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Activity className="h-5 w-5 text-emerald-500" /> Real-time System Observability & Telemetry
+            <Activity className="h-5 w-5 text-success" /> Real-time System Observability & Telemetry
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Full-stack APM telemetry monitoring database pool latency, M-Pesa API response times, memory, and Web Vitals.
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           ALL SYSTEMS OPTIMAL
         </Badge>
       </div>
@@ -37,7 +37,7 @@ export function ObservabilityEngine({ className }: { className?: string }) {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
         <Card className="p-3 border-border/80 bg-card text-center space-y-1">
           <span className="text-[9px] text-muted-foreground font-bold uppercase block">CPU LOAD</span>
-          <span className="text-sm font-black text-emerald-600">{metrics.cpu}</span>
+          <span className="text-sm font-black text-success">{metrics.cpu}</span>
         </Card>
         <Card className="p-3 border-border/80 bg-card text-center space-y-1">
           <span className="text-[9px] text-muted-foreground font-bold uppercase block">RAM ALLOCATED</span>
@@ -49,11 +49,11 @@ export function ObservabilityEngine({ className }: { className?: string }) {
         </Card>
         <Card className="p-3 border-border/80 bg-card text-center space-y-1">
           <span className="text-[9px] text-muted-foreground font-bold uppercase block">P99 API LATENCY</span>
-          <span className="text-xs font-black text-emerald-600">{metrics.apiLatency}</span>
+          <span className="text-xs font-black text-success">{metrics.apiLatency}</span>
         </Card>
         <Card className="p-3 border-border/80 bg-card text-center space-y-1">
           <span className="text-[9px] text-muted-foreground font-bold uppercase block">ERROR RATE</span>
-          <span className="text-xs font-black text-emerald-600">{metrics.errorRate}</span>
+          <span className="text-xs font-black text-success">{metrics.errorRate}</span>
         </Card>
         <Card className="p-3 border-border/80 bg-card text-center space-y-1">
           <span className="text-[9px] text-muted-foreground font-bold uppercase block">ACTIVE USERS</span>
@@ -65,9 +65,9 @@ export function ObservabilityEngine({ className }: { className?: string }) {
         <h4 className="font-extrabold text-foreground text-xs flex items-center gap-2">
           <Terminal className="h-4 w-4 text-primary" /> Live Application Trace Console
         </h4>
-        <div className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[10px] space-y-1 h-36 overflow-y-auto">
+        <div className="p-3 rounded-xl bg-navy-deep text-slate-100 font-mono text-[10px] space-y-1 h-36 overflow-y-auto">
           <div className="text-slate-400">[05:52:10] INFO: Supabase Auth JWT refresh succeeded for user demo.manager@calqulusrms.com</div>
-          <div className="text-emerald-400">[05:52:14] INFO: Safaricom M-Pesa C2B Callback received (TransID: RHK92812A) - 200 OK (22ms)</div>
+          <div className="text-success">[05:52:14] INFO: Safaricom M-Pesa C2B Callback received (TransID: RHK92812A) - 200 OK (22ms)</div>
           <div className="text-slate-400">[05:52:18] INFO: VirtualizedList rendered 1,200 units smoothly without frame drop</div>
           <div className="text-slate-400">[05:52:25] INFO: Edge Function 'send-tenant-invitation' executed successfully</div>
         </div>

@@ -96,8 +96,8 @@ const InstallApp = () => {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center">
           <CardHeader>
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-emerald-500" />
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-success/10 flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
             <CardTitle className="font-heading">App Installed!</CardTitle>
             <CardDescription>
@@ -168,8 +168,8 @@ const InstallApp = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="h-4 w-4 text-emerald-500" />
+                    <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-4 w-4 text-success" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">3. Tap "Add"</p>
@@ -202,9 +202,9 @@ const InstallApp = () => {
                       <p className="text-xs text-muted-foreground">In the dropdown menu</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/10">
-                    <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-success/10">
+                    <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-4 w-4 text-success" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">3. Confirm installation</p>
@@ -278,7 +278,7 @@ const InstallApp = () => {
                 >
                   {copied ? (
                     <>
-                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      <Check className="h-3.5 w-3.5 text-success" />
                       <span>Copied!</span>
                     </>
                   ) : (
@@ -301,23 +301,23 @@ const InstallApp = () => {
           <CardContent>
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <span className="text-sm">Works offline</span>
               </li>
               <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <span className="text-sm">Fast loading from home screen</span>
               </li>
               <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <span className="text-sm">Full-screen experience</span>
               </li>
               <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <span className="text-sm">Manage properties on the go</span>
               </li>
               <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <span className="text-sm">Pay rent with M-Pesa</span>
               </li>
             </ul>

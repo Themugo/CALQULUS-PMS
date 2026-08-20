@@ -43,7 +43,7 @@ export function AnalyticsAlertPanel({ className }: { className?: string }) {
               "p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs",
               alt.severity === "critical" && "bg-red-500/5 border-red-500/20",
               alt.severity === "warning" && "bg-amber-500/5 border-amber-500/20",
-              alt.severity === "informational" && "bg-sky-500/5 border-sky-500/20"
+              alt.severity === "informational" && "bg-primary/5 border-primary/20"
             )}
           >
             <div className="space-y-1">

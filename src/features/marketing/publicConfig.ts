@@ -16,6 +16,7 @@ export const PUBLIC_ROUTES = {
   landlordLogin: "/landlord/login",
   agencyLogin: "/agency/login",
   tenantLogin: "/tenant/login",
+  webhostLogin: "/webhost/login",
 } as const;
 
 export const PUBLIC_NAV = [

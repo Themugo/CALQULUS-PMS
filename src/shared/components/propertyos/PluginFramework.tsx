@@ -114,7 +114,7 @@ export function PluginFramework({ className }: { className?: string }) {
                 <Badge
                   className={cn(
                     "text-[9px] font-bold border-none",
-                    plg.health === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                    plg.health === "Healthy" ? "bg-success/10 text-success" : "bg-amber-500/10 text-amber-600"
                   )}
                 >
                   {plg.health}

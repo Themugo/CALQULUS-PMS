@@ -111,7 +111,7 @@ export const MobileInstallBanner = () => {
             {/* Feature highlights */}
             <div className="flex items-center gap-3 mt-2">
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Wifi className="h-3 w-3 text-emerald-500" />
+                <Wifi className="h-3 w-3 text-success" />
                 <span>Offline</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">

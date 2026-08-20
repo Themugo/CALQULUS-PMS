@@ -17,7 +17,7 @@ const isRecommendedWebhostHost = () => {
 };
 
 const features = [
-  { icon: Globe,    text: 'Full platform oversight — all managers, properties & tenants' },
+  { icon: Globe,    text: 'Full platform oversight — managers, properties, and billing. No tenant records.' },
   { icon: Crown,    text: 'Tier management, billing enforcement & subscription control' },
   { icon: BarChart3, text: 'Platform-wide revenue analytics and audit trails' },
   { icon: Shield,   text: 'Security logs, access control & compliance reporting' },
@@ -159,7 +159,7 @@ const WebhostAuth = () => {
               <Button type="submit" disabled={isSubmitting} className="w-full h-11 btn-brand text-sm font-bold mt-2">
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900 animate-spin" />
+                    <span className="h-4 w-4 rounded-full border-2 border-navy-deep/30 border-t-navy-deep animate-spin" />
                     Signing in…
                   </span>
                 ) : (

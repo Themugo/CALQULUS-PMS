@@ -72,7 +72,7 @@ export function IncidentStatusCenter({ className }: { className?: string }) {
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           ALL SYSTEMS OPERATIONAL
         </Badge>
       </div>
@@ -81,19 +81,19 @@ export function IncidentStatusCenter({ className }: { className?: string }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className="p-3 border rounded-xl bg-card flex items-center justify-between">
           <span className="font-bold text-foreground">Webhost & Manager Portal</span>
-          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <CheckCircle2 className="h-4 w-4 text-success" />
         </div>
         <div className="p-3 border rounded-xl bg-card flex items-center justify-between">
           <span className="font-bold text-foreground">Tenant & Landlord Portals</span>
-          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <CheckCircle2 className="h-4 w-4 text-success" />
         </div>
         <div className="p-3 border rounded-xl bg-card flex items-center justify-between">
           <span className="font-bold text-foreground">M-Pesa STK Gateway</span>
-          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <CheckCircle2 className="h-4 w-4 text-success" />
         </div>
         <div className="p-3 border rounded-xl bg-card flex items-center justify-between">
           <span className="font-bold text-foreground">Africa's Talking SMS API</span>
-          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <CheckCircle2 className="h-4 w-4 text-success" />
         </div>
       </div>
 
@@ -149,7 +149,7 @@ export function IncidentStatusCenter({ className }: { className?: string }) {
               <div key={inc.id} className="p-3 border rounded-xl bg-card space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-foreground">{inc.title}</span>
-                  <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-none font-bold">
+                  <Badge variant="outline" className="text-[9px] bg-success/10 text-success border-none font-bold">
                     {inc.status}
                   </Badge>
                 </div>

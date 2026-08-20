@@ -160,7 +160,7 @@ export function PendingDepositRefunds() {
       <CardContent>
         {pendingRefunds.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-emerald-500/50" />
+            <CheckCircle2 className="h-10 w-10 mx-auto mb-2 text-success/50" />
             <p className="text-sm">No pending refunds</p>
           </div>
         ) : (
@@ -197,7 +197,7 @@ export function PendingDepositRefunds() {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end gap-2">
-                      <p className="font-semibold text-emerald-600">
+                      <p className="font-semibold text-success">
                         {formatCurrency(refund.refund_amount)}
                       </p>
                       <Button 

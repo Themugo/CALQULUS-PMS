@@ -100,7 +100,7 @@ interface Manager {
 
 const statusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   pending: { label: "Pending Review", styles: "bg-warning text-white border-warning", icon: Clock },
-  approved: { label: "Approved", styles: "bg-success text-white border-emerald-700", icon: CheckCircle },
+  approved: { label: "Approved", styles: "bg-success text-white border-success", icon: CheckCircle },
   rejected: { label: "Rejected", styles: "bg-destructive text-white border-red-700", icon: XCircle },
   signed: { label: "Signed", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: ShieldCheck },
   expired: { label: "Expired", styles: "bg-secondary-foreground text-white border-gray-700", icon: XCircle },

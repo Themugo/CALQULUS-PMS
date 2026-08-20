@@ -47,7 +47,7 @@ const PAYER_COLORS: Record<string, string> = {
   self:          'bg-green-100 text-green-800 border-green-200',
   employer:      'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]',
   parent:        'bg-[hsl(218_58%_35%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_35%/0.25)]',
-  housing_assoc: 'bg-teal-100 text-teal-800 border-teal-200',
+  housing_assoc: 'bg-primary/10 text-primary border-primary/20',
   guarantor:     'bg-amber-100 text-amber-800 border-amber-200',
   split:         'bg-orange-100 text-orange-800 border-orange-200',
   custom:        'bg-slate-100 text-slate-700 border-slate-200',

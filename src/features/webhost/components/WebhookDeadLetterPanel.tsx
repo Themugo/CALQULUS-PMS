@@ -71,7 +71,7 @@ type SourceFilter = "all" | "mpesa" | "bank" | "stripe";
 type StatusFilter = "pending" | "all" | "resolved" | "ignored";
 
 const sourceMeta: Record<DeadLetterRow["source"], { label: string; icon: typeof Smartphone; tone: string }> = {
-  mpesa:  { label: "M-Pesa", icon: Smartphone,  tone: "bg-success/15 text-success border-emerald-200" },
+  mpesa:  { label: "M-Pesa", icon: Smartphone,  tone: "bg-success/15 text-success border-success/20" },
   bank:   { label: "Bank",   icon: Banknote,    tone: "bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]" },
   stripe: { label: "Stripe", icon: CreditCard,  tone: "bg-[hsl(218_58%_38%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_38%/0.25)]" },
 };

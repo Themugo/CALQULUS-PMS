@@ -65,7 +65,7 @@ export default function SupportDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Tenant Support & Communications Center</h1>
-            <Badge variant="outline" className="bg-sky-500/10 text-sky-600 border-sky-500/20 font-bold">
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 font-bold">
               Support Specialist Workspace
             </Badge>
           </div>
@@ -92,7 +92,7 @@ export default function SupportDashboard() {
           value={data?.metrics.openTickets || 0}
           subtitle="Pending initial response"
           icon={Headphones}
-          color="sky"
+          color="info"
         />
         <DashboardKPI
           title="Avg First Response"
@@ -101,14 +101,14 @@ export default function SupportDashboard() {
           change="-4 mins"
           changeType="increase"
           icon={Clock}
-          color="emerald"
+          color="success"
         />
         <DashboardKPI
           title="Satisfaction Rating"
           value={`${data?.metrics.csatScore || 0}%`}
           subtitle="Based on tenant feedback"
           icon={CheckCircle2}
-          color="purple"
+          color="navy"
           progress={data?.metrics.csatScore}
         />
         <DashboardKPI
@@ -116,7 +116,7 @@ export default function SupportDashboard() {
           value={data?.metrics.resolvedToday || 0}
           subtitle="Closed successfully"
           icon={MessageSquare}
-          color="amber"
+          color="warning"
         />
       </DashboardGrid>
 
@@ -170,11 +170,11 @@ export default function SupportDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
-              <span className="flex items-center gap-2"><UserCheck className="h-4 w-4 text-emerald-500" /> Resend Tenant Invitation</span>
+              <span className="flex items-center gap-2"><UserCheck className="h-4 w-4 text-success" /> Resend Tenant Invitation</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/tenants'}>
-              <span className="flex items-center gap-2"><Search className="h-4 w-4 text-sky-500" /> Lookup Tenant Profile</span>
+              <span className="flex items-center gap-2"><Search className="h-4 w-4 text-primary" /> Lookup Tenant Profile</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>

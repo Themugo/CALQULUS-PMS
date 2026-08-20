@@ -30,28 +30,28 @@ export function DashboardAlertBanner({
 
   const typeStyles = {
     critical: {
-      bg: "bg-red-500/10 border-red-500/30 text-red-900 dark:text-red-200",
+      bg: "bg-destructive/10 border-destructive/30 text-destructive",
       icon: AlertCircle,
-      iconColor: "text-red-500",
-      badge: "bg-red-500 text-white",
+      iconColor: "text-destructive",
+      badge: "bg-destructive text-destructive-foreground",
     },
     warning: {
-      bg: "bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200",
+      bg: "bg-warning/10 border-warning/30 text-warning",
       icon: AlertTriangle,
-      iconColor: "text-amber-500",
-      badge: "bg-amber-500 text-slate-900",
+      iconColor: "text-warning",
+      badge: "bg-warning text-warning-foreground",
     },
     info: {
-      bg: "bg-sky-500/10 border-sky-500/30 text-sky-900 dark:text-sky-200",
+      bg: "bg-primary/10 border-primary/30 text-foreground",
       icon: Info,
-      iconColor: "text-sky-500",
-      badge: "bg-sky-500 text-white",
+      iconColor: "text-primary",
+      badge: "bg-primary text-primary-foreground",
     },
     success: {
-      bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-200",
+      bg: "bg-success/10 border-success/30 text-success",
       icon: CheckCircle,
-      iconColor: "text-emerald-500",
-      badge: "bg-emerald-500 text-white",
+      iconColor: "text-success",
+      badge: "bg-success text-success-foreground",
     },
   };
 

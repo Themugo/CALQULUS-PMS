@@ -104,7 +104,7 @@ export function DigitalSignaturePad({
           </div>
         </div>
 
-        <Badge variant="outline" className="text-[9px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+        <Badge variant="outline" className="text-[9px] font-bold bg-success/10 text-success border-success/20">
           <Lock className="h-2.5 w-2.5 mr-1" /> Encrypted RSA-256
         </Badge>
       </div>

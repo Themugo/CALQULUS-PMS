@@ -90,7 +90,7 @@ export function AiAssistantDrawer({ className }: { className?: string }) {
           </div>
         </div>
 
-        <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold">
+        <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 font-bold">
           Role-Gated
         </Badge>
       </CardHeader>
@@ -124,7 +124,7 @@ export function AiAssistantDrawer({ className }: { className?: string }) {
                   onClick={() => handleCopyText(msg.id, msg.text)}
                   className="h-6 text-[10px] font-bold gap-1"
                 >
-                  {copiedId === msg.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                  {copiedId === msg.id ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                   {copiedId === msg.id ? "Copied Draft" : "Copy Message"}
                 </Button>
               </div>

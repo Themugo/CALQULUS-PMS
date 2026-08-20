@@ -48,6 +48,30 @@ type PreviewId =
   | "error"
   | "brand";
 
+const LIVE_DESK: Partial<Record<PreviewId, { href: string; label: string }>> = {
+  homepage: { href: PUBLIC_ROUTES.home, label: "Open live homepage" },
+  manager: { href: PUBLIC_ROUTES.managerSignIn, label: "Open Manager login" },
+  landlord: { href: PUBLIC_ROUTES.landlordLogin, label: "Open Landlord login" },
+  agency: { href: PUBLIC_ROUTES.agencyLogin, label: "Open Agency login" },
+  tenant: { href: PUBLIC_ROUTES.tenantLogin, label: "Open Tenant login" },
+  platform_admin: { href: PUBLIC_ROUTES.webhostLogin, label: "Open Platform Admin login" },
+  login: { href: PUBLIC_ROUTES.managerSignIn, label: "Open live login" },
+  properties: { href: "/properties", label: "Open Properties (session required)" },
+  tenants: { href: "/tenants", label: "Open Tenants (session required)" },
+  billing: { href: "/billing", label: "Open Billing (session required)" },
+  payments: { href: "/payments", label: "Open Payments (session required)" },
+  maintenance: { href: "/maintenance", label: "Open Maintenance (session required)" },
+  reports: { href: "/reports", label: "Open Reports (session required)" },
+};
+
+function LiveDeskLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Button variant="outline" size="sm" asChild>
+      <Link to={href}>{label}</Link>
+    </Button>
+  );
+}
+
 const NAV: { id: PreviewId; label: string }[] = [
   { id: "homepage", label: "Homepage" },
   { id: "manager", label: "Manager" },
@@ -75,6 +99,7 @@ export default function DesignPreview() {
   const [active, setActive] = useState<PreviewId>("homepage");
   const [trialHex, setTrialHex] = useState<string>(CALQULUS_COLOR.primary);
   const trial = useMemo(() => deriveBrandPalette(trialHex), [trialHex]);
+  const liveDesk = LIVE_DESK[active];
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-preview="design">
@@ -82,7 +107,7 @@ export default function DesignPreview() {
         <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3">
           <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform />
           <p className="type-meta hidden sm:block">Preview chrome — not live operations</p>
-          <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-primary hover:underline">
+          <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site
           </Link>
         </div>
@@ -116,6 +141,11 @@ export default function DesignPreview() {
             <p className="type-body text-muted-foreground mt-1 max-w-2xl">
               One product: white desks, mid-navy chrome, cyan interaction. Portal colour is a 2px accent, not a new system.
             </p>
+            {liveDesk ? (
+              <div className="mt-3">
+                <LiveDeskLink href={liveDesk.href} label={liveDesk.label} />
+              </div>
+            ) : null}
           </div>
 
           {active === "homepage" && <HomepagePreview />}
@@ -289,7 +319,9 @@ function FormsPreview() {
     <Card className="max-w-lg">
       <CardHeader>
         <CardTitle className={CALQULUS_TYPE.cardTitle}>Forms</CardTitle>
-        <CardDescription>Shared field chrome. No custom radii.</CardDescription>
+        <CardDescription>
+          Shared field chrome. Tab through fields — the focus ring is cyan (`ring-ring`), not a per-portal colour.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-2">

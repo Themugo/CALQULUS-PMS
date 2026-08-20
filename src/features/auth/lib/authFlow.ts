@@ -2,8 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/features/auth/AuthContext";
 
 const ROLE_LOGIN: Record<AppRole, string> = {
-  manager: "/landlord",
-  submanager: "/landlord",
+  manager: "/auth",
+  submanager: "/auth",
   tenant: "/tenant/login",
   landlord: "/landlord/login",
   webhost: "/webhost/login",

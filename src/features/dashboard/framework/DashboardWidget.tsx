@@ -57,20 +57,20 @@ export function DashboardWidget({
 
   const accentBorderClasses = {
     primary: "border-l-4 border-l-primary",
-    emerald: "border-l-4 border-l-emerald-500",
+    emerald: "border-l-4 border-l-success",
     amber: "border-l-4 border-l-amber-500",
     red: "border-l-4 border-l-red-500",
-    sky: "border-l-4 border-l-sky-500",
-    purple: "border-l-4 border-l-purple-500",
+    sky: "border-l-4 border-l-primary",
+    purple: "border-l-4 border-l-navy-mid",
   };
 
   const iconColorClasses = {
     primary: "text-primary bg-primary/10",
-    emerald: "text-emerald-500 bg-emerald-500/10",
+    emerald: "text-success bg-success/10",
     amber: "text-amber-500 bg-amber-500/10",
     red: "text-red-500 bg-red-500/10",
-    sky: "text-sky-500 bg-sky-500/10",
-    purple: "text-purple-500 bg-purple-500/10",
+    sky: "text-primary bg-primary/10",
+    purple: "text-navy-mid bg-navy-mid/10",
   };
 
   return (

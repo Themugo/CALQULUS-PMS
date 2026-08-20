@@ -273,7 +273,7 @@ export const PushNotificationSettings: React.FC = () => {
                     Push Notifications
                   </CardTitle>
                   {isSubscribed && (
-                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 gap-1 text-xs">
+                    <Badge variant="outline" className="bg-success/10 text-success border-success/30 gap-1 text-xs">
                       <CheckCircle2 className="h-3 w-3" /> Active
                     </Badge>
                   )}
@@ -377,7 +377,7 @@ export const PushNotificationSettings: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="h-9 w-9 rounded-lg bg-success/10 text-success flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CreditCard className="h-4 w-4" />
                   </div>
                   <div>
@@ -417,7 +417,7 @@ export const PushNotificationSettings: React.FC = () => {
 
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="h-9 w-9 rounded-lg bg-navy-mid/10 text-navy-mid flex items-center justify-center flex-shrink-0 mt-0.5">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div>

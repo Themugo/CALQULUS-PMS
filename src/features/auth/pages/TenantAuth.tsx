@@ -477,8 +477,8 @@ const TenantAuth = () => {
                 <div className="space-y-1">
                   {Object.entries(passwordStrength).map(([key, valid]) => (
                     <div key={key} className="flex items-center gap-2 text-xs">
-                      {valid ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}
-                      <span className={valid ? 'text-emerald-600' : 'text-muted-foreground'}>
+                      {valid ? <CheckCircle className="h-3 w-3 text-success" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}
+                      <span className={valid ? 'text-success' : 'text-muted-foreground'}>
                         {key === 'length' && 'At least 8 characters'}
                         {key === 'uppercase' && 'One uppercase letter'}
                         {key === 'lowercase' && 'One lowercase letter'}

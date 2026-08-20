@@ -65,7 +65,7 @@ export function PropertyHistory({ propertyId }: PropertyHistoryProps) {
   const getActionColor = (action: string) => {
     switch (action) {
       case "created":
-        return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+        return "bg-success/10 text-success border-success/20";
       case "updated":
         return "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]";
       default:

@@ -797,7 +797,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-emerald-600 text-success hover:bg-success/20"
+                  className="border-success text-success hover:bg-success/20"
                   onClick={bulkMarkAsPaid}
                   disabled={bulkActionLoading}
                 >

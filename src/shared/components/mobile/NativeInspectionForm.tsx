@@ -56,7 +56,7 @@ export function NativeInspectionForm({ className }: { className?: string }) {
           </CardDescription>
         </div>
 
-        <Badge variant="outline" className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+        <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20">
           GPS Geofenced (-1.286, 36.817)
         </Badge>
       </CardHeader>
@@ -105,7 +105,7 @@ export function NativeInspectionForm({ className }: { className?: string }) {
                   onClick={() => toggleStatus(item.id)}
                   className={cn(
                     "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase transition-all",
-                    item.status === "Pass" ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                    item.status === "Pass" ? "bg-success/10 text-success border border-success/20" : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
                   )}
                 >
                   {item.status}
@@ -123,7 +123,7 @@ export function NativeInspectionForm({ className }: { className?: string }) {
             </span>
             <div className="h-32 rounded-lg border border-dashed flex flex-col items-center justify-center p-3 text-center bg-muted/20 space-y-2">
               {photoCaptured ? (
-                <div className="flex flex-col items-center gap-1 text-emerald-600">
+                <div className="flex flex-col items-center gap-1 text-success">
                   <CheckCircle2 className="h-6 w-6" />
                   <span className="font-bold text-xs">Photo Captured with GPS Metadata</span>
                   <span className="text-[10px] text-muted-foreground font-mono">LAT: -1.28638 • LNG: 36.81722</span>

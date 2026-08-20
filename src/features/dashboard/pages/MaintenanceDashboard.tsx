@@ -109,21 +109,21 @@ export default function MaintenanceDashboard() {
           change="SLA Critical"
           changeType="decrease"
           icon={AlertTriangle}
-          color="red"
+          color="danger"
         />
         <DashboardKPI
           title="In-Progress Work Orders"
           value={data?.metrics.inProgressCount || 0}
           subtitle="Assigned to active vendors"
           icon={Wrench}
-          color="amber"
+          color="warning"
         />
         <DashboardKPI
           title="Unassigned Requests"
           value={data?.metrics.pendingCount || 0}
           subtitle="Awaiting triage & vendor"
           icon={Clock}
-          color="sky"
+          color="info"
         />
         <DashboardKPI
           title="Avg SLA Response Time"
@@ -132,7 +132,7 @@ export default function MaintenanceDashboard() {
           change="-0.8 hrs"
           changeType="increase"
           icon={CheckCircle2}
-          color="emerald"
+          color="success"
           progress={data?.metrics.resolutionRate}
         />
       </DashboardGrid>
@@ -215,7 +215,7 @@ export default function MaintenanceDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>
-              <span className="flex items-center gap-2"><PhoneCall className="h-4 w-4 text-emerald-500" /> Dispatch Emergency Vendor</span>
+              <span className="flex items-center gap-2"><PhoneCall className="h-4 w-4 text-success" /> Dispatch Emergency Vendor</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/maintenance'}>

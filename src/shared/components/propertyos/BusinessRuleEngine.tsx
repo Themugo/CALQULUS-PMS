@@ -58,7 +58,7 @@ export function BusinessRuleEngine({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Code2 className="h-5 w-5 text-purple-600" /> Declarative Business Rule Engine
+            <Code2 className="h-5 w-5 text-navy-mid" /> Declarative Business Rule Engine
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Configure IF-THEN-ELSE business policies, approval thresholds, fee calculations, and escalation rules.
@@ -83,9 +83,9 @@ export function BusinessRuleEngine({ className }: { className?: string }) {
               <Switch checked={rule.enabled} onCheckedChange={() => toggleRule(rule.id)} className="scale-75" />
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[11px] leading-relaxed border space-y-1">
-              <span className="text-purple-400 font-bold block">{rule.expression}</span>
-              <span className="text-emerald-400 text-[10px] block">➔ Outcome: {rule.outcome}</span>
+            <div className="p-3 rounded-xl bg-navy-deep text-slate-100 font-mono text-[11px] leading-relaxed border space-y-1">
+              <span className="text-navy-mid font-bold block">{rule.expression}</span>
+              <span className="text-success text-[10px] block">➔ Outcome: {rule.outcome}</span>
             </div>
           </Card>
         ))}

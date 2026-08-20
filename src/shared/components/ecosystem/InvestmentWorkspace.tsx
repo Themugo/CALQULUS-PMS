@@ -15,10 +15,10 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4 text-xs", className)}>
       {/* Investor Banner Header */}
-      <div className="p-4 rounded-xl border bg-gradient-to-r from-emerald-500/15 via-primary/5 to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+      <div className="p-4 rounded-xl border bg-gradient-to-r from-success/15 via-primary/5 to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-emerald-600" /> Capital Investor & Asset Yield Intelligence
+            <TrendingUp className="h-5 w-5 text-success" /> Capital Investor & Asset Yield Intelligence
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Portfolio ROI performance, NOI (Net Operating Income) cash flow, yield projections, and benchmark comparisons.
@@ -48,15 +48,15 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Portfolio Market Value</span>
           <strong className="text-lg font-black text-foreground">KES 1.28 B</strong>
-          <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
+          <div className="flex items-center gap-1 text-[10px] text-success font-bold">
             <ArrowUpRight className="h-3 w-3" /> +8.4% Capital Growth
           </div>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Annualized Yield (NOI)</span>
-          <strong className="text-lg font-black text-emerald-600">11.4% p.a.</strong>
-          <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
+          <strong className="text-lg font-black text-success">11.4% p.a.</strong>
+          <div className="flex items-center gap-1 text-[10px] text-success font-bold">
             <ArrowUpRight className="h-3 w-3" /> +1.2% vs Nairobi Index
           </div>
         </Card>
@@ -69,7 +69,7 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Cap Rate Index</span>
-          <strong className="text-lg font-black text-purple-600">9.2% Cap Rate</strong>
+          <strong className="text-lg font-black text-navy-mid">9.2% Cap Rate</strong>
           <span className="text-[10px] text-muted-foreground block">Low Risk Profile</span>
         </Card>
       </div>
@@ -88,7 +88,7 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
             <div className="space-y-1">
               <div className="flex justify-between text-[11px]">
                 <span className="font-bold text-foreground">Kilimani Heights (Residential)</span>
-                <span className="font-bold text-emerald-600">12.1% Yield</span>
+                <span className="font-bold text-success">12.1% Yield</span>
               </div>
               <Progress value={88} className="h-2" />
             </div>
@@ -96,7 +96,7 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
             <div className="space-y-1">
               <div className="flex justify-between text-[11px]">
                 <span className="font-bold text-foreground">Westlands Commercial Plaza</span>
-                <span className="font-bold text-emerald-600">10.8% Yield</span>
+                <span className="font-bold text-success">10.8% Yield</span>
               </div>
               <Progress value={76} className="h-2" />
             </div>
@@ -104,7 +104,7 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
             <div className="space-y-1">
               <div className="flex justify-between text-[11px]">
                 <span className="font-bold text-foreground">Lavington Executive Villas</span>
-                <span className="font-bold text-emerald-600">11.4% Yield</span>
+                <span className="font-bold text-success">11.4% Yield</span>
               </div>
               <Progress value={82} className="h-2" />
             </div>
@@ -116,7 +116,7 @@ export function InvestmentWorkspace({ className }: { className?: string }) {
             <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
               <Target className="h-4 w-4 text-blue-500" /> Capital Allocation & Forecast Model
             </span>
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[9px]">Optimized Yield</Badge>
+            <Badge className="bg-success/10 text-success text-[9px]">Optimized Yield</Badge>
           </div>
 
           <div className="space-y-2 text-[11px] leading-relaxed">

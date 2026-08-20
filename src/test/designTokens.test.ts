@@ -1,18 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BRAND_CHART_COLORS, CHART_STATUS_COLORS } from "@/shared/lib/chartColors";
-import {
-  CALQULUS_BRAND,
-  CALQULUS_COLOR,
-  CALQULUS_DARK_MODE,
-  CALQULUS_FIELD,
-  CALQULUS_ICON,
-  CALQULUS_PORTAL_ACCENT,
-  CALQULUS_PWA,
-  CALQULUS_RADIUS,
-  CALQULUS_SHADOW,
-  CALQULUS_SPACE,
-  CALQULUS_TYPE,
-} from "@/shared/theme/tokens";
+import { CALQULUS_BRAND, CALQULUS_COLOR, CALQULUS_DARK_MODE, CALQULUS_FIELD, CALQULUS_ICON, CALQULUS_PORTAL_ACCENT, CALQULUS_PWA, CALQULUS_RADIUS, CALQULUS_SHADOW, CALQULUS_SPACE, CALQULUS_TYPE } from "@/shared/theme/tokens";
+import { FOCUS_RING_STYLES } from "@/shared/lib/accessibility";
 
 describe("CALQULUS design tokens", () => {
   it("names the product CALQULUS PMS", () => {
@@ -71,6 +60,11 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_DARK_MODE.productionExperience).toBe("light-desk");
     expect(CALQULUS_DARK_MODE.marketingChrome).toBe("navy-mid");
     expect(CALQULUS_DARK_MODE.cssStrategy).toBe("light-mirror");
+  });
+
+  it("keeps a shared cyan focus ring, not a per-portal ring", () => {
+    expect(FOCUS_RING_STYLES.default.outline).toContain(CALQULUS_COLOR.focus);
+    expect(FOCUS_RING_STYLES.highContrast.outline).toContain(CALQULUS_COLOR.navyDeep);
   });
 
   it("exposes portal accents without replacing the desk system", () => {
@@ -135,6 +129,7 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain(`--muted-foreground: ${CALQULUS_COLOR.textMuted}`);
     expect(css).toContain(`--glow: ${CALQULUS_COLOR.glow}`);
     expect(css).toContain(`--spark: ${CALQULUS_COLOR.spark}`);
+    expect(css).toContain(`--ring: ${CALQULUS_COLOR.focus}`);
     expect(css).toContain(`[data-portal="manager"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.manager.hex}`);
     expect(css).toContain(`[data-portal="landlord"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.landlord.hex}`);
     expect(css).toContain(`[data-portal="agency"] { --portal-accent: ${CALQULUS_PORTAL_ACCENT.agency.hex}`);

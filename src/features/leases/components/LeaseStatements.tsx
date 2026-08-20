@@ -214,7 +214,7 @@ export const LeaseStatements = () => {
                       variant="outline"
                       className={`text-xs flex-shrink-0 ${
                         tenant.status === "active"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          ? "bg-success/10 text-success border-success/20"
                           : "bg-slate-500/10 text-slate-400 border-slate-500/20"
                       }`}
                     >
@@ -225,8 +225,8 @@ export const LeaseStatements = () => {
                 <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
                   {/* Invoice Summary */}
                   <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
-                    <div className="bg-emerald-500/10 rounded-lg p-1.5 sm:p-2">
-                      <div className="flex items-center justify-center gap-1 text-emerald-400">
+                    <div className="bg-success/10 rounded-lg p-1.5 sm:p-2">
+                      <div className="flex items-center justify-center gap-1 text-success">
                         <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         <span className="text-xs sm:text-sm font-medium">{summary?.paid_count || 0}</span>
                       </div>

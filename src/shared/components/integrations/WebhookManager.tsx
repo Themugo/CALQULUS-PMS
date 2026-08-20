@@ -117,7 +117,7 @@ export function WebhookManager({ className }: { className?: string }) {
                       variant="outline"
                       className={cn(
                         "text-[9px] font-bold h-4 capitalize",
-                        wh.status === "active" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                        wh.status === "active" && "bg-success/10 text-success border-success/20",
                         wh.status === "failing" && "bg-red-500/10 text-red-600 border-red-500/20"
                       )}
                     >
@@ -161,7 +161,7 @@ export function WebhookManager({ className }: { className?: string }) {
                     onClick={() => handleCopySecret(wh.id, wh.secretMasked)}
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    {copiedId === wh.id ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    {copiedId === wh.id ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                   </button>
                 </div>
               </div>

@@ -75,7 +75,7 @@ interface TenantStatementProps {
 
 const statusStyles: Record<string, { bg: string; icon: React.ReactNode }> = {
   paid: {
-    bg: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    bg: "bg-success/10 text-success border-success/20",
     icon: <CheckCircle className="h-3.5 w-3.5" />,
   },
   pending: {
@@ -526,10 +526,10 @@ export const TenantStatement = ({
                 {formatKES(totalBilled)}
               </p>
             </div>
-            <div className="bg-emerald-500/10 rounded-lg p-3 text-center">
-              <CheckCircle className="h-5 w-5 mx-auto mb-1 text-emerald-400" />
+            <div className="bg-success/10 rounded-lg p-3 text-center">
+              <CheckCircle className="h-5 w-5 mx-auto mb-1 text-success" />
               <p className="text-xs text-muted-foreground">Total Paid</p>
-              <p className="text-sm font-semibold text-emerald-400">
+              <p className="text-sm font-semibold text-success">
                 {formatKES(totalPaid)}
               </p>
             </div>
@@ -608,7 +608,7 @@ export const TenantStatement = ({
                             Due: {format(new Date(invoice.due_date), 'dd/MM/yy')}
                           </span>
                           {invoice.paid_date && (
-                            <span className="flex items-center gap-1 text-emerald-400">
+                            <span className="flex items-center gap-1 text-success">
                               <CheckCircle className="h-3.5 w-3.5" />
                               Paid: {format(new Date(invoice.paid_date), 'dd/MM/yy')}
                             </span>

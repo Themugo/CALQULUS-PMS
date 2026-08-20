@@ -74,7 +74,7 @@ export function PropertiesOverview() {
   }, [fetchProperties]);
 
   const getOccupancyColor = (rate: number) => {
-    if (rate >= 90) return "bg-emerald-500";
+    if (rate >= 90) return "bg-success";
     if (rate >= 70) return "bg-amber-500";
     return "bg-red-500";
   };
@@ -170,7 +170,7 @@ export function PropertiesOverview() {
                     variant="outline" 
                     className={cn(
                       "text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg font-semibold border-2",
-                      occupancyRate >= 90 && "border-emerald-500/50 text-emerald-600 bg-emerald-500/5",
+                      occupancyRate >= 90 && "border-success/50 text-success bg-success/5",
                       occupancyRate >= 70 && occupancyRate < 90 && "border-amber-500/50 text-amber-600 bg-amber-500/5",
                       occupancyRate < 70 && "border-red-500/50 text-red-600 bg-red-500/5"
                     )}

@@ -12,7 +12,7 @@ export interface DashboardKPIProps {
   changeType?: "increase" | "decrease" | "neutral";
   periodLabel?: string;
   icon?: React.ElementType;
-  color?: "primary" | "emerald" | "amber" | "red" | "sky" | "purple";
+  color?: "primary" | "success" | "warning" | "danger" | "info" | "navy";
   progress?: number;
   subtitle?: string;
   onClick?: () => void;
@@ -39,35 +39,35 @@ export function DashboardKPI({
       iconBg: "bg-primary/10 text-primary",
       badge: "bg-primary/10 text-primary border-primary/20",
     },
-    emerald: {
-      bg: "bg-emerald-500/5",
-      border: "border-emerald-500/20",
-      iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-      badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    success: {
+      bg: "bg-success/5",
+      border: "border-success/20",
+      iconBg: "bg-success/10 text-success",
+      badge: "bg-success/10 text-success border-success/20",
     },
-    amber: {
-      bg: "bg-amber-500/5",
-      border: "border-amber-500/20",
-      iconBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-      badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    warning: {
+      bg: "bg-warning/5",
+      border: "border-warning/20",
+      iconBg: "bg-warning/10 text-warning",
+      badge: "bg-warning/10 text-warning border-warning/20",
     },
-    red: {
-      bg: "bg-red-500/5",
-      border: "border-red-500/20",
-      iconBg: "bg-red-500/10 text-red-600 dark:text-red-400",
-      badge: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+    danger: {
+      bg: "bg-destructive/5",
+      border: "border-destructive/20",
+      iconBg: "bg-destructive/10 text-destructive",
+      badge: "bg-destructive/10 text-destructive border-destructive/20",
     },
-    sky: {
-      bg: "bg-sky-500/5",
-      border: "border-sky-500/20",
-      iconBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-      badge: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+    info: {
+      bg: "bg-primary/5",
+      border: "border-primary/20",
+      iconBg: "bg-primary/10 text-primary",
+      badge: "bg-primary/10 text-primary border-primary/20",
     },
-    purple: {
-      bg: "bg-purple-500/5",
-      border: "border-purple-500/20",
-      iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-      badge: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+    navy: {
+      bg: "bg-navy-mid/5",
+      border: "border-navy-mid/20",
+      iconBg: "bg-navy-mid/10 text-navy-mid",
+      badge: "bg-navy-mid/10 text-navy-mid border-navy-mid/20",
     },
   };
 
@@ -115,7 +115,7 @@ export function DashboardKPI({
               className={cn(
                 "h-5 px-1.5 gap-0.5 text-[10px] font-bold border",
                 changeType === "increase"
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                  ? "bg-success/10 text-success dark:text-success border-success/30"
                   : changeType === "decrease"
                   ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30"
                   : "bg-muted text-muted-foreground border-border"

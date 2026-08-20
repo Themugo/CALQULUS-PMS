@@ -52,7 +52,7 @@ export function GtmSalesWorkspace({ className }: { className?: string }) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-              <Target className="h-5 w-5 text-emerald-600" /> Go-To-Market & Sales Pipeline Command Workspace
+              <Target className="h-5 w-5 text-success" /> Go-To-Market & Sales Pipeline Command Workspace
             </h3>
             <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
@@ -72,13 +72,13 @@ export function GtmSalesWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Pipeline ARR</span>
           <strong className="text-lg font-black text-foreground">KES 14.8M</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">18 Active Opportunities</span>
+          <span className="text-[9px] text-success font-bold block">18 Active Opportunities</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Trial Conversion</span>
-          <strong className="text-lg font-black text-emerald-600">34.2%</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">+4.1% MoM Improvement</span>
+          <strong className="text-lg font-black text-success">34.2%</strong>
+          <span className="text-[9px] text-success font-bold block">+4.1% MoM Improvement</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -90,7 +90,7 @@ export function GtmSalesWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Sales Cycle Duration</span>
           <strong className="text-lg font-black text-foreground">14 Days</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">Fast Frictionless Closure</span>
+          <span className="text-[9px] text-success font-bold block">Fast Frictionless Closure</span>
         </Card>
       </div>
 
@@ -109,7 +109,7 @@ export function GtmSalesWorkspace({ className }: { className?: string }) {
 
             <div className="flex justify-between items-center text-[11px] pt-1">
               <span className="text-muted-foreground">Managed Portfolio Size: <strong className="text-foreground">{d.unitsCount} Units</strong></span>
-              <span className="font-bold text-emerald-600">{d.arrValue} ARR</span>
+              <span className="font-bold text-success">{d.arrValue} ARR</span>
             </div>
           </Card>
         ))}

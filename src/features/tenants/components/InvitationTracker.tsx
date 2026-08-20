@@ -239,7 +239,7 @@ export function InvitationTracker() {
   const getStatusBadge = (invitation: Invitation) => {
     if (invitation.status === "used") {
       return (
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+        <Badge className="bg-success/10 text-success border-success/20">
           <CheckCircle2 className="h-3 w-3 mr-1" />
           Used
         </Badge>
@@ -310,7 +310,7 @@ export function InvitationTracker() {
                     </p>
                   )}
                   {invitation.used_at && (
-                    <p className="text-xs text-emerald-600">
+                    <p className="text-xs text-success">
                       Used {formatDistanceToNow(parseISO(invitation.used_at), { addSuffix: true })}
                     </p>
                   )}
@@ -419,10 +419,10 @@ export function InvitationTracker() {
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.pending.length}</p>
           </div>
-          <div className="p-4 rounded-lg border bg-emerald-500/5 border-emerald-500/20">
+          <div className="p-4 rounded-lg border bg-success/5 border-success/20">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-600">Used</span>
+              <CheckCircle2 className="h-4 w-4 text-success" />
+              <span className="text-sm font-medium text-success">Used</span>
             </div>
             <p className="text-2xl font-bold mt-1">{categorizedInvitations.used.length}</p>
           </div>

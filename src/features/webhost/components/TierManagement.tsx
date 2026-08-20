@@ -556,7 +556,7 @@ const TierManagement: React.FC = () => {
                         return (
                           <div key={cat.key} className="flex items-center justify-between p-2 rounded-lg bg-card border border-border/20">
                             <div className="flex items-center gap-2 min-w-0">
-                              <div className="h-6 w-6 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: `${cat.color}33` }}>
+                              <div className="h-6 w-6 rounded flex items-center justify-center shrink-0 bg-navy-mid/15">
                                 <span className="text-xs">📋</span>
                               </div>
                               <div className="min-w-0">

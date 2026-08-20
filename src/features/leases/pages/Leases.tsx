@@ -1299,9 +1299,9 @@ const Leases = () => {
                 </p>
                 {selectedLease.document_url ? (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-success/10 border border-success/20 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <Paperclip className="h-4 w-4 text-emerald-500" />
+                        <Paperclip className="h-4 w-4 text-success" />
                         <span className="text-sm font-medium">Document attached</span>
                       </div>
                       <div className="flex gap-2">
@@ -1445,7 +1445,7 @@ const Leases = () => {
                   {selectedLease.status !== "active" && (
                     <Button
                       size="sm"
-                      className="bg-emerald-600 hover:bg-emerald-700"
+                      className="bg-success hover:bg-success"
                       onClick={() => updateLeaseStatus(selectedLease.id, "active")}
                     >
                       Activate

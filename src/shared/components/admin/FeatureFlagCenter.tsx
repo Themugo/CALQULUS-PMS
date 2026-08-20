@@ -122,7 +122,7 @@ export function FeatureFlagCenter({ className }: { className?: string }) {
                     checked={flag.isEnabled}
                     onCheckedChange={() => handleToggleFlag(flag.id)}
                   />
-                  <span className={cn("font-bold text-[11px]", flag.isEnabled ? "text-emerald-600" : "text-muted-foreground")}>
+                  <span className={cn("font-bold text-[11px]", flag.isEnabled ? "text-success" : "text-muted-foreground")}>
                     {flag.isEnabled ? "Active" : "Disabled"}
                   </span>
                 </div>

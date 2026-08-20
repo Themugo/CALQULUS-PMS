@@ -23,7 +23,7 @@ export function OrgCustomization({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Palette className="h-5 w-5 text-emerald-600" /> Organization Branding & Navigation Customizer
+            <Palette className="h-5 w-5 text-success" /> Organization Branding & Navigation Customizer
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             White-label branding, custom navigation bar hierarchy, custom CSS theme variables, and role menu routing.

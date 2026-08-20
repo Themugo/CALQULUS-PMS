@@ -69,10 +69,10 @@ interface NotificationFailureRow {
 }
 
 const channelMeta: Record<Channel, { label: string; icon: typeof Mail; tone: string }> = {
-  email:           { label: "Email",       icon: Mail,           tone: "bg-sky-100 text-sky-800 border-sky-200" },
-  sms:             { label: "SMS",         icon: MessageSquare,  tone: "bg-emerald-100 text-emerald-800 border-emerald-200" },
+  email:           { label: "Email",       icon: Mail,           tone: "bg-primary/10 text-primary border-primary/20" },
+  sms:             { label: "SMS",         icon: MessageSquare,  tone: "bg-success/10 text-success border-success/20" },
   whatsapp:        { label: "WhatsApp",    icon: MessageCircle,  tone: "bg-green-100 text-green-800 border-green-200" },
-  manager_notify:  { label: "Manager",     icon: Bell,           tone: "bg-violet-100 text-violet-800 border-violet-200" },
+  manager_notify:  { label: "Manager",     icon: Bell,           tone: "bg-navy-mid/10 text-navy-mid border-navy-mid/20" },
   landlord_notify: { label: "Landlord",    icon: Users,          tone: "bg-amber-100 text-amber-800 border-amber-200" },
 };
 

@@ -74,7 +74,7 @@ export function DeveloperPortal({ className }: { className?: string }) {
                       <span className="font-bold text-foreground">{key.label}</span>
                       <code className="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded font-mono text-muted-foreground">{key.maskedKey}</code>
                       <button onClick={() => handleCopyKey(key.id, key.maskedKey)}>
-                        {copiedKeyId === key.id ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+                        {copiedKeyId === key.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
                       </button>
                     </div>
 
@@ -100,7 +100,7 @@ export function DeveloperPortal({ className }: { className?: string }) {
 
           {/* SDK Quickstart Tab */}
           <TabsContent value="sdks" className="space-y-3 m-0">
-            <div className="p-3 border rounded-xl bg-slate-950 text-slate-100 font-mono space-y-2">
+            <div className="p-3 border rounded-xl bg-navy-deep text-slate-100 font-mono space-y-2">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                   <Terminal className="h-4 w-4" /> Client SDK Quickstart
@@ -133,7 +133,7 @@ export function DeveloperPortal({ className }: { className?: string }) {
               <div className="p-3 border rounded-xl bg-card">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase block">Monthly API Call Usage</span>
                 <strong className="text-lg font-extrabold text-foreground">142,890 / 500,000</strong>
-                <span className="text-[10px] text-emerald-600 block mt-0.5">28.5% of tier limit</span>
+                <span className="text-[10px] text-success block mt-0.5">28.5% of tier limit</span>
               </div>
 
               <div className="p-3 border rounded-xl bg-card">
@@ -145,7 +145,7 @@ export function DeveloperPortal({ className }: { className?: string }) {
               <div className="p-3 border rounded-xl bg-card">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase block">Average Response Latency</span>
                 <strong className="text-lg font-extrabold text-foreground">32 ms</strong>
-                <span className="text-[10px] text-emerald-600 block mt-0.5">99.99% Availability</span>
+                <span className="text-[10px] text-success block mt-0.5">99.99% Availability</span>
               </div>
             </div>
           </TabsContent>

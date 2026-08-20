@@ -28,7 +28,7 @@ interface Tenant {
 
 const statusStyles: Record<string, string> = {
   pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  paid: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  paid: "bg-success/10 text-success border-success/20",
   overdue: "bg-red-500/10 text-red-600 border-red-500/20",
   cancelled: "bg-slate-500/10 text-slate-600 border-slate-500/20",
 };
@@ -86,7 +86,7 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
             Property Invoices
           </CardTitle>
           <div className="flex gap-4 mt-2 text-sm">
-            <span className="text-emerald-600">Paid: {formatCurrency(totalPaid)}</span>
+            <span className="text-success">Paid: {formatCurrency(totalPaid)}</span>
             <span className="text-amber-600">Pending: {formatCurrency(totalPending)}</span>
             <span className="text-red-600">Overdue: {formatCurrency(totalOverdue)}</span>
           </div>

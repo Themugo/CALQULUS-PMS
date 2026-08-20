@@ -107,7 +107,7 @@ export const TopMobileInstallBanner = () => {
             <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-md text-primary-foreground font-bold text-xs">
               <Smartphone className="h-5 w-5 text-slate-950" />
             </div>
-            <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 bg-emerald-500 rounded-full flex items-center justify-center ring-2 ring-background">
+            <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 bg-success rounded-full flex items-center justify-center ring-2 ring-background">
               <Zap className="h-2 w-2 text-slate-950 fill-slate-950" />
             </div>
           </div>

@@ -84,7 +84,7 @@ export const DesktopInstallBanner = () => {
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-primary/10">
               <Monitor className="h-6 w-6 text-primary" />
             </div>
-            <div className="absolute -top-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+            <div className="absolute -top-1 -right-1 h-5 w-5 bg-success rounded-full flex items-center justify-center shadow-lg animate-pulse">
               <Zap className="h-3 w-3 text-white" />
             </div>
           </div>
@@ -97,9 +97,9 @@ export const DesktopInstallBanner = () => {
             
             {/* Feature badges */}
             <div className="flex flex-wrap items-center gap-2 mt-3">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 rounded-full">
-                <Wifi className="h-3 w-3 text-emerald-500" />
-                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Works Offline</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-success/10 rounded-full">
+                <Wifi className="h-3 w-3 text-success" />
+                <span className="text-xs font-medium text-success dark:text-success">Works Offline</span>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 rounded-full">
                 <Bell className="h-3 w-3 text-primary" />

@@ -21,10 +21,10 @@ interface WorkflowTimelineProps {
 export function WorkflowTimeline({ events, className }: WorkflowTimelineProps) {
   const statusStyles = {
     completed: {
-      dot: "bg-emerald-500 text-white ring-4 ring-emerald-500/20",
-      line: "bg-emerald-500/40",
+      dot: "bg-success text-white ring-4 ring-success/20",
+      line: "bg-success/40",
       icon: CheckCircle2,
-      badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+      badge: "bg-success/10 text-success border-success/20",
     },
     current: {
       dot: "bg-primary text-primary-foreground ring-4 ring-primary/20 animate-pulse",

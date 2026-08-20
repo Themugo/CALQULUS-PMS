@@ -109,7 +109,7 @@ export function ChatWindow({ conversationName = "Sarah Wanjiku", conversationRol
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xs font-bold text-foreground">{conversationName}</h3>
-              <Badge variant="outline" className="text-[9px] font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+              <Badge variant="outline" className="text-[9px] font-bold bg-success/10 text-success border-success/20">
                 Online
               </Badge>
             </div>

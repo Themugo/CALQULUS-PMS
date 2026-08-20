@@ -26,7 +26,7 @@ const ACTION_COLOR = (action: string) => {
   if (a.includes('create') || a.includes('add') || a.includes('invite') || a.includes('move_in')) return 'bg-green-100 text-green-800 border-green-200';
   if (a.includes('update') || a.includes('edit') || a.includes('change') || a.includes('complete')) return 'bg-[hsl(214_73%_48%/0.12)] text-[hsl(214_73%_35%)] border-[hsl(214_73%_48%/0.25)]';
   if (a.includes('delete') || a.includes('remove') || a.includes('move_out') || a.includes('archive')) return 'bg-red-100 text-red-800 border-red-200';
-  if (a.includes('approve') || a.includes('verify')) return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+  if (a.includes('approve') || a.includes('verify')) return 'bg-success/10 text-success border-success/20';
   if (a.includes('reject') || a.includes('deny')) return 'bg-orange-100 text-orange-800 border-orange-200';
   if (a.includes('pay') || a.includes('record_payment') || a.includes('invoice')) return 'bg-amber-100 text-amber-800 border-amber-200';
   if (a.includes('notice') || a.includes('send')) return 'bg-[hsl(218_58%_38%/0.12)] text-[hsl(218_58%_30%)] border-[hsl(218_58%_38%/0.25)]';

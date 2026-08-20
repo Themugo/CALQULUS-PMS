@@ -31,7 +31,7 @@ export function TaskPanel({
 }: TaskPanelProps) {
   const priorityStyles = {
     low: "bg-muted text-muted-foreground",
-    medium: "bg-sky-500/10 text-sky-600 border-sky-500/20",
+    medium: "bg-primary/10 text-primary border-primary/20",
     high: "bg-amber-500/10 text-amber-600 border-amber-500/20",
     urgent: "bg-red-500/10 text-red-600 border-red-500/20",
   };
@@ -68,7 +68,7 @@ export function TaskPanel({
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="text-primary shrink-0">
                   {task.completed ? (
-                    <CheckSquare className="h-4 w-4 text-emerald-500" />
+                    <CheckSquare className="h-4 w-4 text-success" />
                   ) : (
                     <Square className="h-4 w-4 text-muted-foreground" />
                   )}

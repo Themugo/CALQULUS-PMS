@@ -48,7 +48,7 @@ export function CustomDomainConfig({ className }: { className?: string }) {
               <span className="font-bold text-foreground block">White-Label Web Portal Domain</span>
               <p className="text-[11px] text-muted-foreground">The custom URL your tenants and landlords visit to log in.</p>
             </div>
-            <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold">
+            <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 font-bold">
               SSL Auto-Provisioned
             </Badge>
           </div>
@@ -77,7 +77,7 @@ export function CustomDomainConfig({ className }: { className?: string }) {
               <span className="font-bold text-foreground block">Branded Sender Email (DKIM & SPF)</span>
               <p className="text-[11px] text-muted-foreground">Sends rent invoices directly from your domain email address.</p>
             </div>
-            <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold">
+            <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 font-bold">
               DKIM Signed
             </Badge>
           </div>

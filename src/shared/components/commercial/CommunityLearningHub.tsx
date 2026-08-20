@@ -13,14 +13,14 @@ export function CommunityLearningHub({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <GraduationCap className="h-5 w-5 text-emerald-600" /> Property OS Academy & Community Network
+            <GraduationCap className="h-5 w-5 text-success" /> Property OS Academy & Community Network
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Certified Property Manager training courses, developer forums, partner accreditation, and community meetups.
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           420 CERTIFIED MANAGERS
         </Badge>
       </div>

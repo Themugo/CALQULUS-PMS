@@ -88,10 +88,10 @@ export function CustomerCommunicationHistory({
             <div key={evt.id} className="relative group">
               {/* Timeline Bullet Icon */}
               <div className="absolute -left-6 top-0.5 h-5 w-5 rounded-full bg-card border-2 border-primary flex items-center justify-center text-primary shrink-0 shadow-2xs">
-                {evt.type === "payment" && <DollarSign className="h-3 w-3 text-emerald-600" />}
+                {evt.type === "payment" && <DollarSign className="h-3 w-3 text-success" />}
                 {evt.type === "message" && <MessageSquare className="h-3 w-3 text-primary" />}
                 {evt.type === "maintenance" && <Wrench className="h-3 w-3 text-amber-500" />}
-                {evt.type === "lease" && <FileCheck className="h-3 w-3 text-sky-500" />}
+                {evt.type === "lease" && <FileCheck className="h-3 w-3 text-primary" />}
               </div>
 
               <div className="space-y-1 bg-muted/20 p-3 rounded-lg border border-border/60 text-xs">

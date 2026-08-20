@@ -34,7 +34,7 @@ export function LowCodeBuilder({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Layout className="h-5 w-5 text-indigo-500" /> Low-Code Layout & Custom Page Studio
+            <Layout className="h-5 w-5 text-navy-mid" /> Low-Code Layout & Custom Page Studio
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             No-code drag-and-drop builder for custom manager dashboards, custom form fields, reports, and UI widgets.
@@ -43,7 +43,7 @@ export function LowCodeBuilder({ className }: { className?: string }) {
 
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={handleSaveLayout} className="h-8 text-xs font-bold gap-1">
-            {saved ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <Eye className="h-3.5 w-3.5" />}
+            {saved ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <Eye className="h-3.5 w-3.5" />}
             {saved ? "Layout Saved!" : "Preview Dashboard"}
           </Button>
           <Button size="sm" className="h-8 text-xs font-bold gap-1 bg-primary text-primary-foreground">

@@ -33,6 +33,11 @@ describe("CALQULUS CORE product system", () => {
       "platform_admin",
     ]);
     expect(WHITE_LABEL_CONSUMERS).toEqual(["manager", "landlord", "agency", "tenant"]);
+    expect(CALQULUS_PORTALS.manager.login).toBe("/auth");
+    expect(CALQULUS_PORTALS.landlord.login).toBe("/landlord/login");
+    expect(CALQULUS_PORTALS.agency.login).toBe("/agency/login");
+    expect(CALQULUS_PORTALS.tenant.login).toBe("/tenant/login");
+    expect(CALQULUS_PORTALS.platform_admin.login).toBe("/webhost/login");
   });
 
   it("maps app roles onto portals", () => {

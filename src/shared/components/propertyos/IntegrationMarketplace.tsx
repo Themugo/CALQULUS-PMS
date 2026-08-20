@@ -41,14 +41,14 @@ export function IntegrationMarketplace({ className }: { className?: string }) {
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Link2 className="h-5 w-5 text-emerald-600" /> Enterprise Integration Connectors Hub
+            <Link2 className="h-5 w-5 text-success" /> Enterprise Integration Connectors Hub
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Pre-built enterprise connectors for QuickBooks, Equity Bank, KPLC Utilities, DocuSign, and Metropol CRB.
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           5 CONNECTORS ACTIVE
         </Badge>
       </div>
@@ -76,7 +76,7 @@ export function IntegrationMarketplace({ className }: { className?: string }) {
               <Badge
                 className={cn(
                   "text-[8px] font-bold border-none",
-                  conn.status === "Connected" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                  conn.status === "Connected" ? "bg-success/10 text-success" : "bg-amber-500/10 text-amber-600"
                 )}
               >
                 {conn.status}

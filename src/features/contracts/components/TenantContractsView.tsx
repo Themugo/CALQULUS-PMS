@@ -185,11 +185,11 @@ export const TenantContractsView = ({
 
                   {signedContracts.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-medium text-sm text-emerald-600">Signed Agreements</h4>
+                      <h4 className="font-medium text-sm text-success">Signed Agreements</h4>
                       {signedContracts.map((contract) => (
-                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-emerald-500/5">
+                        <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg bg-success/5">
                           <div className="flex items-center gap-3">
-                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                            <CheckCircle className="h-5 w-5 text-success" />
                             <div>
                               <p className="font-medium text-sm">{contract.title}</p>
                               <p className="text-xs text-muted-foreground">

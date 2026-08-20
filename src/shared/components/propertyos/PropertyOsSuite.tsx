@@ -25,12 +25,12 @@ export function PropertyOsSuite({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4 text-xs", className)}>
       {/* Top Banner */}
-      <div className="p-5 rounded-2xl border bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg relative overflow-hidden">
+      <div className="p-5 rounded-2xl border bg-gradient-to-r from-navy-primary via-navy-mid to-navy-deep text-white shadow-lg relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider">
-                <Sparkles className="h-3 w-3 mr-1 text-emerald-400" /> CALQULUS PROPERTY OS
+              <Badge className="bg-success/20 text-white border-success/30 text-[10px] font-bold uppercase tracking-wider">
+                <Sparkles className="h-3 w-3 mr-1 text-success" /> CALQULUS PROPERTY OS
               </Badge>
               <Badge className="bg-primary/20 text-primary-foreground border-primary/30 text-[10px] font-mono">
                 SCORE: 98/100 (Extensible Ecosystem)
@@ -47,7 +47,7 @@ export function PropertyOsSuite({ className }: { className?: string }) {
           <div className="flex items-center gap-2 shrink-0">
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">PLUGINS ACTIVE</span>
-              <span className="text-sm font-black text-emerald-400">14 Active</span>
+              <span className="text-sm font-black text-success">14 Active</span>
             </div>
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">WORKFLOW LOOPS</span>
@@ -65,19 +65,19 @@ export function PropertyOsSuite({ className }: { className?: string }) {
               <ShoppingBag className="h-3.5 w-3.5 text-primary" /> App Marketplace
             </TabsTrigger>
             <TabsTrigger value="plugin-framework" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Sliders className="h-3.5 w-3.5 text-indigo-500" /> Plugins
+              <Sliders className="h-3.5 w-3.5 text-navy-mid" /> Plugins
             </TabsTrigger>
             <TabsTrigger value="automation-studio" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Zap className="h-3.5 w-3.5 text-amber-500" /> Automation Studio
             </TabsTrigger>
             <TabsTrigger value="rule-engine" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Code2 className="h-3.5 w-3.5 text-purple-500" /> Rule Engine
+              <Code2 className="h-3.5 w-3.5 text-navy-mid" /> Rule Engine
             </TabsTrigger>
             <TabsTrigger value="event-center" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Webhook className="h-3.5 w-3.5 text-blue-500" /> Event Center
             </TabsTrigger>
             <TabsTrigger value="integrations" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Link2 className="h-3.5 w-3.5 text-emerald-500" /> Connectors
+              <Link2 className="h-3.5 w-3.5 text-success" /> Connectors
             </TabsTrigger>
             <TabsTrigger value="lowcode-builder" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Layout className="h-3.5 w-3.5 text-pink-500" /> Low-Code Builder
@@ -86,7 +86,7 @@ export function PropertyOsSuite({ className }: { className?: string }) {
               <Palette className="h-3.5 w-3.5 text-orange-500" /> Branding & Navigation
             </TabsTrigger>
             <TabsTrigger value="observability" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <Activity className="h-3.5 w-3.5 text-emerald-500" /> Observability
+              <Activity className="h-3.5 w-3.5 text-success" /> Observability
             </TabsTrigger>
             <TabsTrigger value="developer-portal" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Terminal className="h-3.5 w-3.5 text-slate-700" /> Developer Portal

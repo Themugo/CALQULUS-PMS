@@ -49,7 +49,7 @@ export function EnterpriseFormWrapper({
           <div className="flex items-center gap-2">
             <CardTitle className="text-base font-bold text-foreground">{title}</CardTitle>
             {isDraftSaved && (
-              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-1 font-bold">
+              <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 gap-1 font-bold">
                 <Check className="h-3 w-3" /> Draft Saved {lastSavedAt && `at ${lastSavedAt}`}
               </Badge>
             )}
@@ -102,7 +102,7 @@ export function EnterpriseFormWrapper({
             )}
 
             {(!totalSteps || (currentStepIndex !== undefined && currentStepIndex === totalSteps - 1)) && (
-              <Button type="submit" size="sm" disabled={!canSubmit || isSaving} className="h-9 text-xs font-bold gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button type="submit" size="sm" disabled={!canSubmit || isSaving} className="h-9 text-xs font-bold gap-1.5 bg-success hover:bg-success text-white">
                 {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {submitLabel}
               </Button>

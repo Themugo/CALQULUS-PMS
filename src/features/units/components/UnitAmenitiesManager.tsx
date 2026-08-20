@@ -192,7 +192,7 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
               <div key={a.id} className="group flex items-center gap-1.5 rounded-full border pl-3 pr-1.5 py-1 bg-card">
                 <span className="text-sm">{a.amenity_label}</span>
                 {a.is_included ? (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-emerald-300 text-emerald-700 bg-emerald-50">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-success/20 text-success bg-success/10">
                     Included
                   </Badge>
                 ) : (

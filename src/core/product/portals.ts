@@ -15,7 +15,7 @@ export const CALQULUS_PORTALS = {
     label: "Manager",
     subtitle: "Manager",
     home: "/",
-    login: "/landlord",
+    login: "/auth",
     audience: "operations",
   },
   landlord: {

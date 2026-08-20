@@ -68,10 +68,10 @@ export function ApprovalPanel({
           variant="outline"
           className={cn(
             "text-xs font-bold capitalize px-2.5 h-6",
-            currentStatus === "approved" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
+            currentStatus === "approved" && "bg-success/10 text-success border-success/30",
             currentStatus === "pending_approval" && "bg-amber-500/10 text-amber-600 border-amber-500/30",
             currentStatus === "rejected" && "bg-red-500/10 text-red-600 border-red-500/30",
-            currentStatus === "escalated" && "bg-purple-500/10 text-purple-600 border-purple-500/30"
+            currentStatus === "escalated" && "bg-navy-mid/10 text-navy-mid border-navy-mid/30"
           )}
         >
           {currentStatus.replace("_", " ")}
@@ -135,7 +135,7 @@ export function ApprovalPanel({
             <div className="flex items-center gap-2 pt-1">
               <Button
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 font-bold h-9 text-xs flex-1"
+                className="bg-success hover:bg-success text-white gap-1.5 font-bold h-9 text-xs flex-1"
                 disabled={isSubmitting}
                 onClick={() => handleAction("approve")}
               >
@@ -158,7 +158,7 @@ export function ApprovalPanel({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-purple-600 hover:bg-purple-500/10 gap-1.5 font-semibold h-9 text-xs"
+                  className="text-navy-mid hover:bg-navy-mid/10 gap-1.5 font-semibold h-9 text-xs"
                   disabled={isSubmitting}
                   onClick={() => handleAction("escalate")}
                 >

@@ -59,7 +59,7 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-indigo-500" /> Centralized Product Feedback & Public Roadmap
+              <MessageSquare className="h-5 w-5 text-navy-mid" /> Centralized Product Feedback & Public Roadmap
             </h3>
             <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
@@ -86,7 +86,7 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
                 <Badge
                   className={cn(
                     "text-[8px] font-bold border-none",
-                    item.status === "Released" ? "bg-emerald-500/10 text-emerald-600" :
+                    item.status === "Released" ? "bg-success/10 text-success" :
                     item.status === "In Development" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"
                   )}
                 >
@@ -103,7 +103,7 @@ export function FeedbackAndRoadmapCenter({ className }: { className?: string }) 
               onClick={() => handleVote(item.id)}
               className="h-8 text-xs font-bold gap-1.5 shrink-0 self-start sm:self-center"
             >
-              <ThumbsUp className="h-3.5 w-3.5 text-indigo-500" />
+              <ThumbsUp className="h-3.5 w-3.5 text-navy-mid" />
               <span>{item.votes} Votes</span>
             </Button>
           </Card>

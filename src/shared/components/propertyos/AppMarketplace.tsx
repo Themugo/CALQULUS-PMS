@@ -186,7 +186,7 @@ export function AppMarketplace({ className }: { className?: string }) {
                 onClick={() => toggleInstall(app.id)}
                 className="h-7 text-[10px] font-bold gap-1"
               >
-                {app.installed ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <Download className="h-3.5 w-3.5" />}
+                {app.installed ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <Download className="h-3.5 w-3.5" />}
                 {app.installed ? "Installed & Active" : "Install Application"}
               </Button>
             </div>

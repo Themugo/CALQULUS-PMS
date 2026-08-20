@@ -56,7 +56,7 @@ export function WorkflowStepper({
               <div
                 className={cn(
                   "h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors",
-                  isCompleted && "bg-emerald-500 text-white shadow-sm",
+                  isCompleted && "bg-success text-white shadow-sm",
                   isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/20",
                   isFailed && "bg-red-500 text-white",
                   isPending && "bg-muted text-muted-foreground border border-border"
@@ -103,7 +103,7 @@ export function WorkflowStepper({
               <div
                 className={cn(
                   "h-[2px] flex-1 min-w-[20px] transition-colors rounded-full",
-                  isCompleted ? "bg-emerald-500/50" : "bg-border"
+                  isCompleted ? "bg-success/50" : "bg-border"
                 )}
               />
             )}

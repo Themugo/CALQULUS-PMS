@@ -56,7 +56,7 @@ export function AiCopilotHub({ className }: { className?: string }) {
             <div className="lg:col-span-4 space-y-3">
               <Card className="border-border/80 bg-card p-4 space-y-3 text-xs">
                 <div className="flex items-center gap-2 font-bold text-foreground">
-                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  <ShieldCheck className="h-4 w-4 text-success" />
                   <span>Permission Safeguards</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">

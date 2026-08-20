@@ -44,14 +44,14 @@ X-Correlation-ID: req_8829140219412
       <div className="p-4 rounded-xl border bg-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Terminal className="h-5 w-5 text-indigo-600" /> Developer Experience Platform & API Sandbox
+            <Terminal className="h-5 w-5 text-navy-mid" /> Developer Experience Platform & API Sandbox
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             REST API Explorer, TypeScript SDK, Webhook Testing Sandbox, OAuth Client Credentials, and App Store Submission Portal.
           </p>
         </div>
 
-        <Badge variant="outline" className="text-[10px] font-bold bg-indigo-500/10 text-indigo-600 border-indigo-500/20">
+        <Badge variant="outline" className="text-[10px] font-bold bg-navy-mid/10 text-navy-mid border-navy-mid/20">
           API v2.4 (OpenAPI 3.1)
         </Badge>
       </div>
@@ -69,7 +69,7 @@ X-Correlation-ID: req_8829140219412
               <div className="flex gap-2 mt-1">
                 <Input value={apiKey} readOnly className="h-8 text-xs font-mono bg-muted/30" />
                 <Button size="sm" variant="outline" onClick={handleCopyKey} className="h-8 text-xs font-bold shrink-0">
-                  {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? "Copied" : "Copy"}
                 </Button>
               </div>
@@ -89,7 +89,7 @@ X-Correlation-ID: req_8829140219412
 
           <div className="space-y-2">
             <div className="flex gap-2">
-              <Badge className="h-8 bg-emerald-500/10 text-emerald-600 font-bold text-[10px] flex items-center shrink-0">
+              <Badge className="h-8 bg-success/10 text-success font-bold text-[10px] flex items-center shrink-0">
                 GET
               </Badge>
               <Input
@@ -103,7 +103,7 @@ X-Correlation-ID: req_8829140219412
             </div>
 
             {testResponse && (
-              <pre className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[10px] overflow-x-auto max-h-36">
+              <pre className="p-3 rounded-xl bg-navy-deep text-slate-100 font-mono text-[10px] overflow-x-auto max-h-36">
                 {testResponse}
               </pre>
             )}

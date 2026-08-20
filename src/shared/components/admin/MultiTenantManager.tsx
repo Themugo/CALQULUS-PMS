@@ -110,7 +110,7 @@ export function MultiTenantManager({ className }: { className?: string }) {
                     variant="outline"
                     className={cn(
                       "text-[10px] font-bold h-5 capitalize",
-                      org.status === "active" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                      org.status === "active" && "bg-success/10 text-success border-success/20",
                       org.status === "suspended" && "bg-red-500/10 text-red-600 border-red-500/20"
                     )}
                   >

@@ -64,7 +64,7 @@ export function EventCenter({ className }: { className?: string }) {
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           EVENT BUS RUNNING (0ms LAG)
         </Badge>
       </div>
@@ -92,14 +92,14 @@ export function EventCenter({ className }: { className?: string }) {
                 <span className="font-bold text-foreground text-xs">{evt.source}</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-none text-[8px] font-bold">
+                <Badge className="bg-success/10 text-success border-none text-[8px] font-bold">
                   {evt.status}
                 </Badge>
                 <span>{evt.timestamp}</span>
               </div>
             </div>
 
-            <pre className="p-2 rounded bg-slate-950 text-slate-200 font-mono text-[10px] overflow-x-auto">
+            <pre className="p-2 rounded bg-navy-deep text-slate-200 font-mono text-[10px] overflow-x-auto">
               {evt.payloadSnippet}
             </pre>
           </Card>

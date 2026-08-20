@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Palette } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
@@ -7,6 +7,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/shared/lib/utils";
 import { CALQULUS_COLOR, CALQULUS_BRAND } from "@/shared/theme/tokens";
+import { deriveBrandPalette } from "@/core/design/deriveBrandPalette";
 
 export interface BrandThemeConfig {
   primaryColorHex: string;
@@ -47,6 +48,10 @@ export function ThemeStudioEditor({
   className?: string;
 }) {
   const [currentConfig, setCurrentConfig] = useState<BrandThemeConfig>(config);
+  const primaryPalette = useMemo(
+    () => deriveBrandPalette(currentConfig.primaryColorHex),
+    [currentConfig.primaryColorHex],
+  );
 
   const handleUpdate = <K extends keyof BrandThemeConfig>(field: K, value: BrandThemeConfig[K]) => {
     const updated = { ...currentConfig, [field]: value };
@@ -117,8 +122,8 @@ export function ThemeStudioEditor({
             <div className="flex items-center gap-2">
               <input
                 type="color"
-                value={currentConfig.primaryColorHex}
-                onChange={(e) => handleUpdate("primaryColorHex", e.target.value)}
+                value={/^#[0-9A-Fa-f]{6}$/.test(currentConfig.primaryColorHex) ? currentConfig.primaryColorHex : CALQULUS_COLOR.primary}
+                onChange={(e) => handleUpdate("primaryColorHex", e.target.value.toUpperCase())}
                 className="h-8 w-8 rounded cursor-pointer border border-border p-0"
               />
               <Input
@@ -127,6 +132,11 @@ export function ThemeStudioEditor({
                 className="h-8 text-xs font-mono"
               />
             </div>
+            {primaryPalette.approved ? (
+              <p className="text-[11px] text-success">Approved. Live save is Settings → Company.</p>
+            ) : (
+              <p className="text-[11px] text-destructive">{primaryPalette.reasons[0]}</p>
+            )}
           </div>
 
           {/* Secondary Color */}

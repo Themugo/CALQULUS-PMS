@@ -108,7 +108,7 @@ export function IntegrationMarketplace({ className }: { className?: string }) {
               <div className="pt-2 border-t border-border/50 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-mono">{app.version}</span>
-                  <span className="text-[10px] text-emerald-600 font-semibold">{app.uptime} Uptime</span>
+                  <span className="text-[10px] text-success font-semibold">{app.uptime} Uptime</span>
                 </div>
 
                 <Button

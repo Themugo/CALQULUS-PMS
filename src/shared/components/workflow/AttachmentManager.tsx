@@ -106,9 +106,9 @@ export function AttachmentManager({
                   variant="outline"
                   className={cn(
                     "text-[10px] capitalize font-bold h-5",
-                    att.status === "uploaded" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                    att.status === "uploaded" && "bg-success/10 text-success border-success/20",
                     att.status === "pending" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
-                    att.status === "verifying" && "bg-sky-500/10 text-sky-600 border-sky-500/20"
+                    att.status === "verifying" && "bg-primary/10 text-primary border-primary/20"
                   )}
                 >
                   {att.status}

@@ -118,9 +118,9 @@ export function NotificationCenterSheet({ isOpen, onClose }: NotificationCenterS
                     )}
                   >
                     <div className="mt-0.5 shrink-0">
-                      {not.category === "Billing" && <DollarSign className="h-4 w-4 text-emerald-500" />}
+                      {not.category === "Billing" && <DollarSign className="h-4 w-4 text-success" />}
                       {not.category === "Maintenance" && <AlertTriangle className="h-4 w-4 text-amber-500" />}
-                      {not.category === "Lease" && <FileText className="h-4 w-4 text-sky-500" />}
+                      {not.category === "Lease" && <FileText className="h-4 w-4 text-primary" />}
                       {not.category === "System" && <Bell className="h-4 w-4 text-primary" />}
                     </div>
 

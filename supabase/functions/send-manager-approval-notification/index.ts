@@ -62,7 +62,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (profile.full_name) name = profile.full_name;
     }
 
-    const loginUrl = `${(getEnv("SITE_URL", "https://www.calqulus.site")).replace(/\/+$/, "")}/landlord`;
+    const loginUrl = `${(getEnv("SITE_URL", "https://www.calqulus.site")).replace(/\/+$/, "")}/auth`;
 
     const subjects: Record<string, string> = {
       approved:   "Your CALQULUS RMS manager account has been approved 🎉",

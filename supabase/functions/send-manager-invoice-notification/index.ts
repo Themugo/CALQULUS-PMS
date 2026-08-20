@@ -132,7 +132,7 @@ serve(async (req) => {
     };
 
     const greeting = managerName ? `Dear ${managerName}` : 'Dear Manager';
-    const portalUrl = `${getSiteUrl()}/landlord`;
+    const portalUrl = `${getSiteUrl()}/auth`;
 
     switch (notificationType) {
       case 'new_invoice':

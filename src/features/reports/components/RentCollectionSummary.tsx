@@ -70,7 +70,7 @@ const fmtKES = (n: number) =>
   }).format(n);
 
 const STATUS_BADGE: Record<string, string> = {
-  paid:      'bg-emerald-100 text-emerald-700',
+  paid:      'bg-success/10 text-success',
   pending:   'bg-amber-100 text-amber-700',
   overdue:   'bg-red-100 text-red-700',
   cancelled: 'bg-slate-100 text-slate-500',
@@ -558,7 +558,7 @@ export const RentCollectionSummary: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: 'Total Billed',       val: totalBilled,      icon: TrendingUp,   color: 'text-[hsl(214_73%_45%)]',    bg: 'bg-[hsl(214_73%_48%/0.08)]    dark:bg-[hsl(214_73%_25%/0.2)]' },
-            { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+            { label: 'Collected',          val: totalCollected,   icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10 dark:bg-success/30' },
             { label: 'Outstanding',        val: totalOutstanding, icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50   dark:bg-amber-950/30' },
             { label: 'Arrears invoices',   val: arrearsCount,     icon: AlertTriangle,color: 'text-red-600',     bg: 'bg-red-50     dark:bg-red-950/30', count: true },
           ].map(({ label, val, icon: Icon, color, bg, count }) => (
@@ -604,7 +604,7 @@ export const RentCollectionSummary: React.FC = () => {
                   </CardTitle>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="text-muted-foreground">Billed: <strong>{formatCurrency(prop.billed)}</strong></span>
-                    <span className="text-emerald-600">Collected: <strong>{formatCurrency(prop.collected)}</strong></span>
+                    <span className="text-success">Collected: <strong>{formatCurrency(prop.collected)}</strong></span>
                     {prop.outstanding > 0 && (
                       <span className="text-amber-600">Outstanding: <strong>{formatCurrency(prop.outstanding)}</strong></span>
                     )}
@@ -665,7 +665,7 @@ export const RentCollectionSummary: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {schedEnabled
-                ? <Bell className="h-3.5 w-3.5 text-emerald-500" />
+                ? <Bell className="h-3.5 w-3.5 text-success" />
                 : <BellOff className="h-3.5 w-3.5 text-muted-foreground" />}
               <Switch
                 checked={schedEnabled}
@@ -737,7 +737,7 @@ export const RentCollectionSummary: React.FC = () => {
           </div>
 
           {schedEnabled && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-3 text-xs text-emerald-700 dark:text-emerald-400">
+            <div className="rounded-lg border border-success/20 bg-success/10 dark:bg-success/20 dark:border-success p-3 text-xs text-success dark:text-success">
               <strong>Active:</strong> An HTML summary of last month's rent collection will be sent to{' '}
               {schedRecipients.length > 0 ? `${schedRecipients.length} recipient${schedRecipients.length > 1 ? 's' : ''}` : 'saved recipients'}{' '}
               on day {schedSendDay} of each month at 07:00 EAT.

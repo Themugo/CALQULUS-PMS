@@ -30,8 +30,8 @@ const ROLE_HOME: Record<AppRole, string> = {
 const LOGIN_PATH: Record<AppRole, string> = {
   tenant:     '/tenant/login',
   webhost:    '/webhost/login',
-  submanager: '/landlord',
-  manager:    '/landlord',
+  submanager: '/auth',
+  manager:    '/auth',
   landlord:   '/landlord/login',
   agency:     '/agency/login',
 };
@@ -58,7 +58,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -75,14 +75,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (!user) {
     // Pick login path based on what role this route requires
     const targetRole = allowedRoles?.[0] ?? 'manager';
-    return safeRedirect(LOGIN_PATH[targetRole] ?? '/landlord');
+    return safeRedirect(LOGIN_PATH[targetRole] ?? '/auth');
   }
 
   // ── Role not resolved yet ────────────────────────────────────────
   if (!userRole) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }

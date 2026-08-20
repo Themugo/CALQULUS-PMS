@@ -38,7 +38,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
             <Thermometer className="h-3.5 w-3.5 text-amber-500" />
           </div>
           <strong className="text-xl font-black text-foreground">22.4 °C</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">Comfortable HVAC Target</span>
+          <span className="text-[9px] text-success font-bold block">Comfortable HVAC Target</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -47,7 +47,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
             <Droplet className="h-3.5 w-3.5 text-blue-500" />
           </div>
           <strong className="text-xl font-black text-foreground">3.8 Bar</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">Nominal Flow Rate</span>
+          <span className="text-[9px] text-success font-bold block">Nominal Flow Rate</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -62,9 +62,9 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <div className="flex justify-between items-center text-[10px] text-muted-foreground font-bold uppercase">
             <span>Occupancy Sensor Index</span>
-            <Eye className="h-3.5 w-3.5 text-purple-500" />
+            <Eye className="h-3.5 w-3.5 text-navy-mid" />
           </div>
-          <strong className="text-xl font-black text-purple-600">92% Active</strong>
+          <strong className="text-xl font-black text-navy-mid">92% Active</strong>
           <span className="text-[9px] text-muted-foreground block">Common Areas Active</span>
         </Card>
       </div>
@@ -75,7 +75,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
         <Card className="lg:col-span-8 border-border/80 bg-card p-4 space-y-3">
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
-              <Radio className="h-4 w-4 text-emerald-500" /> Building Floor Plan CAD Model
+              <Radio className="h-4 w-4 text-success" /> Building Floor Plan CAD Model
             </span>
             <Badge variant="outline" className="text-[9px] font-mono">
               {selectedFloor}
@@ -83,10 +83,10 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
           </div>
 
           {/* Interactive Interactive Visual Blueprint canvas representation */}
-          <div className="h-64 rounded-xl border border-dashed bg-slate-950 p-4 relative overflow-hidden flex flex-col justify-between text-white">
+          <div className="h-64 rounded-xl border border-dashed bg-navy-deep p-4 relative overflow-hidden flex flex-col justify-between text-white">
             <div className="flex justify-between items-center text-[10px] text-slate-400">
               <span className="font-mono">CAD BIM Layer: Architectural & Plumbing Wireframe</span>
-              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[8px]">
+              <Badge className="bg-success/20 text-success border-success/30 text-[8px]">
                 LIVE IoT SENSORS (12 MAPPED)
               </Badge>
             </div>
@@ -96,7 +96,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
               <div className="p-3 rounded-lg border border-slate-800 bg-slate-900/80 space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-white">Unit 3A</span>
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
                 </div>
                 <span className="text-[10px] text-slate-400 block font-mono">Temp: 22°C • Meter: 14 m³ • Normal</span>
               </div>
@@ -112,7 +112,7 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
 
             <div className="flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800 pt-2">
               <span>Zoom: 100% • 3D BIM Coordinates: (X: 142, Y: 98, Z: 3)</span>
-              <span className="text-emerald-400 font-bold">Predictive Failure Risk: Low</span>
+              <span className="text-success font-bold">Predictive Failure Risk: Low</span>
             </div>
           </div>
         </Card>
@@ -132,10 +132,10 @@ export function DigitalTwinWorkspace({ className }: { className?: string }) {
               </p>
             </div>
 
-            <div className="p-2.5 border rounded-xl bg-emerald-500/5 border-emerald-500/20 space-y-1">
+            <div className="p-2.5 border rounded-xl bg-success/5 border-success/20 space-y-1">
               <div className="flex items-center justify-between font-bold text-foreground">
-                <span className="text-emerald-600">Booster Pump Motor Vibration</span>
-                <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600">Optimal</Badge>
+                <span className="text-success">Booster Pump Motor Vibration</span>
+                <Badge variant="outline" className="text-[8px] bg-success/10 text-success">Optimal</Badge>
               </div>
               <p className="text-[10px] text-muted-foreground">
                 Vibration frequency 48 Hz within manufacturer tolerance window.

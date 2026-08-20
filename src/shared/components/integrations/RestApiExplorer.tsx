@@ -130,7 +130,7 @@ export function RestApiExplorer({ className }: { className?: string }) {
         </div>
 
         <Button size="sm" variant="outline" onClick={handleCopyCurl} className="h-8 text-xs font-semibold gap-1.5">
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? "Copied cURL" : "Copy cURL Command"}
         </Button>
       </CardHeader>
@@ -148,7 +148,7 @@ export function RestApiExplorer({ className }: { className?: string }) {
                   <span className={cn(
                     "font-bold mr-2 px-1.5 py-0.5 rounded text-[10px]",
                     ep.method === "GET" && "bg-blue-500/10 text-blue-600",
-                    ep.method === "POST" && "bg-emerald-500/10 text-emerald-600",
+                    ep.method === "POST" && "bg-success/10 text-success",
                     ep.method === "PUT" && "bg-amber-500/10 text-amber-600",
                     ep.method === "DELETE" && "bg-red-500/10 text-red-600"
                   )}>
@@ -165,7 +165,7 @@ export function RestApiExplorer({ className }: { className?: string }) {
               className={cn(
                 "text-[10px] font-mono font-bold h-6 px-2 shrink-0",
                 endpoint.method === "GET" && "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                endpoint.method === "POST" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                endpoint.method === "POST" && "bg-success/10 text-success border-success/20"
               )}
             >
               {endpoint.method}
@@ -236,12 +236,12 @@ export function RestApiExplorer({ className }: { className?: string }) {
           </div>
 
           {/* Response Viewer Box */}
-          <div className="p-3 border rounded-xl bg-slate-950 text-slate-100 font-mono space-y-2">
+          <div className="p-3 border rounded-xl bg-navy-deep text-slate-100 font-mono space-y-2">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+              <span className="text-xs font-bold text-success flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4" /> 200 OK Response
               </span>
-              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+              <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/30">
                 JSON • 28ms
               </Badge>
             </div>

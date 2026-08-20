@@ -7,6 +7,7 @@ import { PortalPreviewCanvas } from "./PortalPreviewCanvas";
 import { CustomDomainConfig } from "./CustomDomainConfig";
 import { cn } from "@/shared/lib/utils";
 import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { deriveBrandPalette } from "@/core/design/deriveBrandPalette";
 
 export function MultiBrandStudio({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState("theme");
@@ -21,6 +22,7 @@ export function MultiBrandStudio({ className }: { className?: string }) {
     enableDarkMode: false,
     tenantPortalThemeName: CALQULUS_BRAND.product,
   });
+  const previewPrimary = deriveBrandPalette(themeConfig.primaryColorHex);
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -69,7 +71,7 @@ export function MultiBrandStudio({ className }: { className?: string }) {
         {/* Side Live Preview Canvas */}
         <div className="lg:col-span-5">
           <PortalPreviewCanvas
-            primaryColor={themeConfig.primaryColorHex}
+            primaryColor={previewPrimary.approved ? previewPrimary.hex : CALQULUS_COLOR.primary}
             secondaryColor={themeConfig.secondaryColorHex}
             companyName={CALQULUS_BRAND.product}
           />

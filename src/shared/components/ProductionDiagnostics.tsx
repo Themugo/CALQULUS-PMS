@@ -204,7 +204,7 @@ export function ProductionDiagnostics() {
 
   const getStatusIcon = (status: DiagnosticResult['status']) => {
     switch (status) {
-      case 'pass': return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+      case 'pass': return <CheckCircle className="h-4 w-4 text-success" />;
       case 'fail': return <AlertCircle className="h-4 w-4 text-red-500" />;
       case 'warn': return <AlertCircle className="h-4 w-4 text-amber-500" />;
       case 'checking': return <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />;
@@ -218,7 +218,7 @@ export function ProductionDiagnostics() {
     if (fails > 0) return { status: 'unhealthy', color: 'text-red-500', label: 'Issues Detected' };
     if (warns > 0) return { status: 'degraded', color: 'text-amber-500', label: 'Minor Issues' };
     if (diagnostics.length === 0) return { status: 'unknown', color: 'text-gray-400', label: 'Not Run' };
-    return { status: 'healthy', color: 'text-emerald-500', label: 'All Systems Operational' };
+    return { status: 'healthy', color: 'text-success', label: 'All Systems Operational' };
   };
 
   const overall = getOverallStatus();
@@ -242,7 +242,7 @@ export function ProductionDiagnostics() {
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${overall.status === 'healthy' ? 'bg-emerald-100 dark:bg-emerald-900/30' : overall.status === 'unhealthy' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-amber-100 dark:bg-amber-900/30'}`}>
+            <div className={`p-2 rounded-lg ${overall.status === 'healthy' ? 'bg-success/10 dark:bg-success/30' : overall.status === 'unhealthy' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-amber-100 dark:bg-amber-900/30'}`}>
               <Activity className={`h-5 w-5 ${overall.color}`} />
             </div>
             <div>

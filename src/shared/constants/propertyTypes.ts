@@ -250,11 +250,11 @@ export const GROUP_LABELS: Record<string, string> = {
 };
 
 export const GROUP_COLORS: Record<string, string> = {
-  residential: 'text-blue-700 bg-blue-50 border-blue-200',
-  commercial:  'text-amber-700 bg-amber-50 border-amber-200',
-  industrial:  'text-slate-700 bg-slate-100 border-slate-300',
-  mixed:       'text-violet-700 bg-violet-50 border-violet-200',
-  land:        'text-green-700 bg-green-50 border-green-200',
+  residential: 'text-navy-mid bg-navy-mid/10 border-navy-mid/20',
+  commercial:  'text-warning bg-warning/10 border-warning/20',
+  industrial:  'text-muted-foreground bg-muted border-border',
+  mixed:       'text-navy-mid bg-navy-mid/10 border-navy-mid/20',
+  land:        'text-success bg-success/10 border-success/20',
 };
 
 /** Return category group ('residential'|'commercial'|...) from a category key */
@@ -284,7 +284,7 @@ export const TIER_BADGE_COLORS: Record<string, string> = {
   enterprise: 'bg-amber-100 text-amber-800 border-amber-300',
   starter:    'bg-slate-100 text-slate-700 border-slate-200',
   growth:     'bg-blue-100 text-blue-700 border-blue-200',
-  professional:'bg-amber-400/15 text-amber-700 border-purple-300',
+  professional:'bg-amber-400/15 text-amber-700 border-navy-mid/20',
 };
 
 /** Unit types per category — displayed in Add Unit form */

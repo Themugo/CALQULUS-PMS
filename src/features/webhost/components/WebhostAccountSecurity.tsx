@@ -129,7 +129,7 @@ const WebhostAccountSecurity: React.FC = () => {
 
   const adminTypeConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; tone: string }> = {
     owner: { label: 'Owner', icon: Crown, tone: 'bg-warning/15 text-warning border-warning/30' },
-    business: { label: 'Business', icon: UserCog, tone: 'bg-info/15 text-indigo-300 border-info/30' },
+    business: { label: 'Business', icon: UserCog, tone: 'bg-info/15 text-navy-mid border-info/30' },
     admin: { label: 'Admin', icon: Shield, tone: 'bg-secondary-foreground/15 text-secondary-foreground border-border/30' },
   };
 

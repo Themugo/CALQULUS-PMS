@@ -71,7 +71,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-              <HeartPulse className="h-5 w-5 text-emerald-600" /> Customer Success & Health Scoring Command Center
+              <HeartPulse className="h-5 w-5 text-success" /> Customer Success & Health Scoring Command Center
             </h3>
             <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold">
               DEMO / LAB ENVIRONMENT
@@ -82,7 +82,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           HEALTH INDEX: 84/100 (LOW CHURN)
         </Badge>
       </div>
@@ -90,14 +90,14 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Net Revenue Retention</span>
-          <strong className="text-lg font-black text-emerald-600">118% NRR</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">+12% Expansion ARR</span>
+          <strong className="text-lg font-black text-success">118% NRR</strong>
+          <span className="text-[9px] text-success font-bold block">+12% Expansion ARR</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
           <span className="text-[10px] text-muted-foreground font-bold uppercase block">Customer Churn Rate</span>
           <strong className="text-lg font-black text-foreground">0.8% / mo</strong>
-          <span className="text-[9px] text-emerald-600 font-bold block">Top Quartile Benchmark</span>
+          <span className="text-[9px] text-success font-bold block">Top Quartile Benchmark</span>
         </Card>
 
         <Card className="p-3 border rounded-xl bg-card space-y-1">
@@ -126,7 +126,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
               <Badge
                 className={cn(
                   "text-[9px] font-bold uppercase border-none",
-                  c.riskStatus === "Low Risk" ? "bg-emerald-500/10 text-emerald-600" :
+                  c.riskStatus === "Low Risk" ? "bg-success/10 text-success" :
                   c.riskStatus === "Medium Risk" ? "bg-amber-500/10 text-amber-600" : "bg-rose-500/10 text-rose-600"
                 )}
               >
@@ -148,7 +148,7 @@ export function CustomerSuccessDashboard({ className }: { className?: string }) 
 
               <div>
                 <span className="text-muted-foreground block">Expansion Metric:</span>
-                <strong className="text-emerald-600 font-bold">{c.nrr} NRR</strong>
+                <strong className="text-success font-bold">{c.nrr} NRR</strong>
               </div>
             </div>
           </Card>

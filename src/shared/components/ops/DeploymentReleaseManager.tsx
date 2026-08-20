@@ -63,7 +63,7 @@ export function DeploymentReleaseManager({ className }: { className?: string }) 
               <GitBranch className="h-4 w-4 text-primary" />
               <span className="font-bold text-foreground text-xs">Production Deployment (GitHub main)</span>
             </div>
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[9px] border-emerald-500/20">
+            <Badge className="bg-success/10 text-success text-[9px] border-success/20">
               DEPLOYED LIVE
             </Badge>
           </div>
@@ -88,7 +88,7 @@ export function DeploymentReleaseManager({ className }: { className?: string }) 
         <Card className="border-border/80 bg-card p-4 space-y-3">
           <div className="flex items-center justify-between border-b pb-2">
             <div className="flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-purple-500" />
+              <Sliders className="h-4 w-4 text-navy-mid" />
               <span className="font-bold text-foreground text-xs">Gradual Feature Rollouts & Toggles</span>
             </div>
             <Badge variant="outline" className="text-[9px] font-bold">

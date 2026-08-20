@@ -185,7 +185,7 @@ export function CacheManagementSettings() {
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                 {isOnline ? (
                   <>
-                    <Wifi className="h-4 w-4 text-emerald-500" /> Online Mode Active
+                    <Wifi className="h-4 w-4 text-success" /> Online Mode Active
                   </>
                 ) : (
                   <>
@@ -198,7 +198,7 @@ export function CacheManagementSettings() {
               variant="outline"
               className={cn(
                 "text-[10px] font-bold h-5 px-2",
-                isOnline ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                isOnline ? "bg-success/10 text-success border-success/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
               )}
             >
               {isOnline ? "Connected" : "Offline"}
@@ -221,7 +221,7 @@ export function CacheManagementSettings() {
               variant="outline"
               className={cn(
                 "text-[10px] font-bold h-5 px-2 capitalize",
-                swStatus === "active" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                swStatus === "active" && "bg-success/10 text-success border-success/20",
                 swStatus === "installing" && "bg-amber-500/10 text-amber-600 border-amber-500/20",
                 (swStatus === "unregistered" || swStatus === "unsupported") && "bg-muted text-muted-foreground"
               )}

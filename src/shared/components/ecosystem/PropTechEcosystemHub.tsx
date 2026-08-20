@@ -31,7 +31,7 @@ export function PropTechEcosystemHub({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4 text-xs", className)}>
       {/* Ecosystem Interactive Network Header */}
-      <Card className="border-border/80 bg-gradient-to-r from-primary/10 via-card to-emerald-500/10 p-4 space-y-3 shadow-sm">
+      <Card className="border-border/80 bg-gradient-to-r from-primary/10 via-card to-success/10 p-4 space-y-3 shadow-sm">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b pb-3">
           <div>
             <div className="flex items-center gap-2">
@@ -54,7 +54,7 @@ export function PropTechEcosystemHub({ className }: { className?: string }) {
             <div key={s.name} className="p-2 rounded-lg border bg-card/80 text-center space-y-0.5">
               <span className="font-bold text-foreground text-[10px] block truncate">{s.name}</span>
               <span className="text-[9px] text-muted-foreground block font-mono">{s.count}</span>
-              <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none font-bold py-0">
+              <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none font-bold py-0">
                 {s.status}
               </Badge>
             </div>
@@ -72,16 +72,16 @@ export function PropTechEcosystemHub({ className }: { className?: string }) {
             <ShoppingBag className="h-3.5 w-3.5 text-amber-500" /> Service Marketplace
           </TabsTrigger>
           <TabsTrigger value="investment-workspace" className="text-xs font-bold gap-1.5 shrink-0">
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" /> Investment Workspace
+            <TrendingUp className="h-3.5 w-3.5 text-success" /> Investment Workspace
           </TabsTrigger>
           <TabsTrigger value="compliance-center" className="text-xs font-bold gap-1.5 shrink-0">
-            <ShieldCheck className="h-3.5 w-3.5 text-purple-500" /> Compliance Center
+            <ShieldCheck className="h-3.5 w-3.5 text-navy-mid" /> Compliance Center
           </TabsTrigger>
           <TabsTrigger value="digital-twin" className="text-xs font-bold gap-1.5 shrink-0">
             <Layers className="h-3.5 w-3.5 text-blue-500" /> Digital Twin Readiness
           </TabsTrigger>
           <TabsTrigger value="knowledge-center" className="text-xs font-bold gap-1.5 shrink-0">
-            <BookOpen className="h-3.5 w-3.5 text-indigo-500" /> Knowledge Center
+            <BookOpen className="h-3.5 w-3.5 text-navy-mid" /> Knowledge Center
           </TabsTrigger>
           <TabsTrigger value="open-platform" className="text-xs font-bold gap-1.5 shrink-0">
             <Code2 className="h-3.5 w-3.5 text-rose-500" /> Open Platform APIs

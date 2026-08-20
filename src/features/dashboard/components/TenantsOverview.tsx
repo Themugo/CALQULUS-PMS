@@ -22,7 +22,7 @@ interface Tenant {
 }
 
 const statusStyles: Record<string, string> = {
-  active: "bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 text-emerald-600 border-emerald-500/30",
+  active: "bg-gradient-to-br from-success/10 to-success/5 text-success border-success/30",
   pending: "bg-gradient-to-br from-amber-500/10 to-amber-500/5 text-amber-600 border-amber-500/30",
   inactive: "bg-gradient-to-br from-slate-500/10 to-slate-500/5 text-slate-600 border-slate-500/30",
 };

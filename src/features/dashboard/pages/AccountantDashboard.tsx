@@ -108,7 +108,7 @@ export default function AccountantDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black tracking-tight text-foreground">Financial Operational Command Center</h1>
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold">
+            <Badge variant="outline" className="bg-success/10 text-success border-success/20 font-bold">
               Accountant Workspace
             </Badge>
           </div>
@@ -141,7 +141,7 @@ export default function AccountantDashboard() {
           changeType="increase"
           periodLabel="vs last month"
           icon={DollarSign}
-          color="emerald"
+          color="success"
         />
         <DashboardKPI
           title="Pending Receivables"
@@ -151,7 +151,7 @@ export default function AccountantDashboard() {
           changeType="decrease"
           periodLabel="vs last week"
           icon={CreditCard}
-          color="amber"
+          color="warning"
         />
         <DashboardKPI
           title="Overdue Invoices"
@@ -161,14 +161,14 @@ export default function AccountantDashboard() {
           changeType="increase"
           periodLabel="attention needed"
           icon={AlertCircle}
-          color="red"
+          color="danger"
         />
         <DashboardKPI
           title="Pending Owner Payouts"
           value={fmt(data?.metrics.totalPendingPayouts || 0)}
           subtitle={`${data?.pendingPayouts.length || 0} disbursements pending`}
           icon={Wallet}
-          color="sky"
+          color="info"
           progress={data?.metrics.reconciliationRate}
         />
       </DashboardGrid>
@@ -215,11 +215,11 @@ export default function AccountantDashboard() {
         >
           <div className="space-y-2.5">
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/statements'}>
-              <span className="flex items-center gap-2"><Receipt className="h-4 w-4 text-emerald-500" /> Generate Owner Statements</span>
+              <span className="flex items-center gap-2"><Receipt className="h-4 w-4 text-success" /> Generate Owner Statements</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/water-billing'}>
-              <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-sky-500" /> Process Water & Utility Billing</span>
+              <span className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary" /> Process Water & Utility Billing</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/billing'}>
@@ -227,7 +227,7 @@ export default function AccountantDashboard() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="outline" className="w-full justify-between h-11 text-xs font-semibold" onClick={() => window.location.href = '/invites'}>
-              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-purple-500" /> Audit Rent Reminders</span>
+              <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-navy-mid" /> Audit Rent Reminders</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -318,7 +318,7 @@ export default function AccountantDashboard() {
                       </TableCell>
                       <TableCell className="text-xs font-bold text-right">{fmt(payout.amount)}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" className="h-6 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white">
+                        <Button size="sm" className="h-6 text-[11px] bg-success hover:bg-success text-white">
                           Approve
                         </Button>
                       </TableCell>

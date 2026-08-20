@@ -65,7 +65,7 @@ function usePlatformTelemetry() {
 }
 
 const SUMMARY_COPY: Record<HealthSummary, { label: string; cls: string; dot: string }> = {
-  healthy: { label: "Healthy", cls: "text-emerald-600", dot: "bg-emerald-500" },
+  healthy: { label: "Healthy", cls: "text-success", dot: "bg-success" },
   degraded: { label: "Degraded", cls: "text-amber-600", dot: "bg-amber-500" },
   unavailable: { label: "Unavailable", cls: "text-muted-foreground", dot: "bg-muted-foreground/50" },
 };
@@ -156,7 +156,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
             {healthLoading ? (
               <Skeleton className="h-5 w-16" />
             ) : supabaseCheck ? (
-              <strong className={cn("text-base font-extrabold", supabaseCheck.status === "healthy" ? "text-emerald-600" : "text-amber-600")}>
+              <strong className={cn("text-base font-extrabold", supabaseCheck.status === "healthy" ? "text-success" : "text-amber-600")}>
                 {supabaseCheck.status === "healthy" ? "Connected" : supabaseCheck.status}
               </strong>
             ) : (
@@ -170,14 +170,14 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
           <div className="p-3 rounded-xl border border-border/80 bg-card space-y-1">
             <div className="flex items-center justify-between text-muted-foreground text-[10px] font-bold uppercase">
               <span>Edge Functions</span>
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
             </div>
             {edgeLoading ? (
               <Skeleton className="h-5 w-20" />
             ) : edgeResults.length === 0 ? (
               <strong className="text-base font-extrabold text-muted-foreground">—</strong>
             ) : (
-              <strong className={cn("text-base font-extrabold", healthyEdgeCount === edgeResults.length ? "text-emerald-600" : "text-amber-600")}>
+              <strong className={cn("text-base font-extrabold", healthyEdgeCount === edgeResults.length ? "text-success" : "text-amber-600")}>
                 {healthyEdgeCount}/{edgeResults.length} reachable
               </strong>
             )}
@@ -205,7 +205,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
                 <div key={func.name} className="p-2.5 rounded-lg border bg-card flex items-center justify-between">
                   <div className="min-w-0">
                     <span className="font-bold text-foreground block truncate">{func.name}</span>
-                    <span className={cn("text-[10px] font-semibold flex items-center gap-1", func.status === "healthy" ? "text-emerald-600" : "text-muted-foreground")}>
+                    <span className={cn("text-[10px] font-semibold flex items-center gap-1", func.status === "healthy" ? "text-success" : "text-muted-foreground")}>
                       {func.status === "healthy" ? (
                         <><CheckCircle2 className="h-3 w-3" /> Reachable{func.responseMs ? ` · ${func.responseMs}ms` : ""}</>
                       ) : (
@@ -218,7 +218,7 @@ export function SystemHealthMonitoring({ className }: { className?: string }) {
                     className={cn(
                       "text-[10px] font-bold shrink-0",
                       func.status === "healthy"
-                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        ? "bg-success/10 text-success border-success/20"
                         : "bg-muted/30 text-muted-foreground border-border/80"
                     )}
                   >

@@ -58,12 +58,12 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
     <div className="space-y-6">
       {/* Uploaded Contract Section */}
       {contract.uploaded_contract_url && (
-        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+        <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <FileCheck className="h-5 w-5 text-emerald-500" />
+              <FileCheck className="h-5 w-5 text-success" />
               <div>
-                <p className="font-medium text-emerald-600 dark:text-emerald-400">Signed Contract Uploaded</p>
+                <p className="font-medium text-success dark:text-success">Signed Contract Uploaded</p>
                 <p className="text-xs text-muted-foreground">A signed version of this contract has been uploaded</p>
               </div>
             </div>
@@ -157,7 +157,7 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
                 className="h-20 border rounded bg-white p-2"
               />
               <div className="flex items-center gap-2">
-                <Badge className="bg-emerald-600 text-white">✓ Signed</Badge>
+                <Badge className="bg-success text-white">✓ Signed</Badge>
                 <p className="text-xs text-muted-foreground">
                   {format(new Date(contract.manager_signed_at!), "dd/MM/yy 'at' h:mm a")}
                 </p>
@@ -180,7 +180,7 @@ export function ContractPreview({ contract }: ContractPreviewProps) {
                 className="h-20 border rounded bg-white p-2"
               />
               <div className="flex items-center gap-2">
-                <Badge className="bg-emerald-600 text-white">✓ Signed</Badge>
+                <Badge className="bg-success text-white">✓ Signed</Badge>
                 <p className="text-xs text-muted-foreground">
                   {format(new Date(contract.tenant_signed_at!), "dd/MM/yy 'at' h:mm a")}
                 </p>

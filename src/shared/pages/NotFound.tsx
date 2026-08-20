@@ -16,7 +16,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   const homeLink = () => {
-    if (!userRole) return '/landlord';
+    if (!userRole) return '/auth';
     switch (userRole.role) {
       case 'tenant':     return '/portal';
       case 'landlord':   return '/landlord/dashboard';

@@ -34,10 +34,10 @@ export function ChecklistComponent({
     <Card className={cn("border-border/80 bg-card shadow-sm", className)}>
       <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <ListChecks className="h-4 w-4 text-emerald-500" />
+          <ListChecks className="h-4 w-4 text-success" />
           <CardTitle className="text-sm font-bold text-foreground">{title}</CardTitle>
         </div>
-        <Badge variant="outline" className="text-xs font-bold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+        <Badge variant="outline" className="text-xs font-bold bg-success/10 text-success border-success/20">
           {completedCount} / {total} Completed ({progressPct}%)
         </Badge>
       </CardHeader>
@@ -52,13 +52,13 @@ export function ChecklistComponent({
               onClick={() => onToggleItem && onToggleItem(item.id, !item.completed)}
               className={cn(
                 "p-2.5 rounded-lg border flex items-center justify-between text-xs transition-all cursor-pointer hover:bg-muted/40",
-                item.completed ? "bg-emerald-500/5 border-emerald-500/20" : "bg-card border-border/80"
+                item.completed ? "bg-success/5 border-success/20" : "bg-card border-border/80"
               )}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="shrink-0">
                   {item.completed ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                   ) : (
                     <Circle className="h-4 w-4 text-muted-foreground" />
                   )}

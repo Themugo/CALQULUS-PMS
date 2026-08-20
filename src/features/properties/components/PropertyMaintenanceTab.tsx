@@ -25,7 +25,7 @@ interface MaintenanceRequest {
 const statusStyles: Record<string, string> = {
   open: "bg-amber-500/10 text-amber-600 border-amber-500/20",
   in_progress: "bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_45%)] border-[hsl(214_73%_48%/0.2)]",
-  completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  completed: "bg-success/10 text-success border-success/20",
   cancelled: "bg-slate-500/10 text-slate-600 border-slate-500/20",
 };
 
@@ -83,7 +83,7 @@ export function PropertyMaintenanceTab({ propertyName }: PropertyMaintenanceTabP
           <div className="py-8 text-center text-muted-foreground">Loading...</div>
         ) : requests.length === 0 ? (
           <div className="text-center py-12">
-            <CheckCircle2 className="h-12 w-12 mx-auto text-emerald-500/50 mb-4" />
+            <CheckCircle2 className="h-12 w-12 mx-auto text-success/50 mb-4" />
             <p className="text-muted-foreground">No maintenance requests for this property</p>
           </div>
         ) : (

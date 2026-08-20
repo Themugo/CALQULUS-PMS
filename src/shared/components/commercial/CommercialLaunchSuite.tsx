@@ -21,12 +21,12 @@ export function CommercialLaunchSuite({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4 text-xs", className)}>
       {/* Hero Banner */}
-      <div className="p-5 rounded-2xl border bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 text-white shadow-lg relative overflow-hidden">
+      <div className="p-5 rounded-2xl border bg-navy-primary text-white shadow-lg relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider">
-                <Rocket className="h-3 w-3 mr-1 text-emerald-400" /> COMMERCIAL LAUNCH READINESS
+              <Badge className="bg-success/20 text-white border-success/30 text-[10px] font-bold uppercase tracking-wider">
+                <Rocket className="h-3 w-3 mr-1 text-success" /> COMMERCIAL LAUNCH READINESS
               </Badge>
               <Badge className="bg-primary/20 text-primary-foreground border-primary/30 text-[10px] font-mono">
                 COMMERCIAL READINESS SCORE: 98/100
@@ -43,7 +43,7 @@ export function CommercialLaunchSuite({ className }: { className?: string }) {
           <div className="flex items-center gap-2 shrink-0">
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">NET RETENTION</span>
-              <span className="text-sm font-black text-emerald-400">118% NRR</span>
+              <span className="text-sm font-black text-success">118% NRR</span>
             </div>
             <div className="p-3 rounded-xl bg-white/10 backdrop-blur border border-white/10 text-center">
               <span className="text-[9px] text-slate-300 block font-bold uppercase">CSAT SCORE</span>
@@ -58,25 +58,25 @@ export function CommercialLaunchSuite({ className }: { className?: string }) {
         <div className="border-b overflow-x-auto bg-card rounded-xl p-1.5 shadow-sm scrollbar-none">
           <TabsList className="h-9 bg-transparent p-0 gap-1 inline-flex w-max">
             <TabsTrigger value="cs-dashboard" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <HeartPulse className="h-3.5 w-3.5 text-emerald-600" /> Customer Success
+              <HeartPulse className="h-3.5 w-3.5 text-success" /> Customer Success
             </TabsTrigger>
             <TabsTrigger value="gtm-sales" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Target className="h-3.5 w-3.5 text-blue-600" /> Sales & GTM
             </TabsTrigger>
             <TabsTrigger value="feedback-roadmap" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <MessageSquare className="h-3.5 w-3.5 text-indigo-500" /> Feedback & Roadmap
+              <MessageSquare className="h-3.5 w-3.5 text-navy-mid" /> Feedback & Roadmap
             </TabsTrigger>
             <TabsTrigger value="competitive-intel" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <Swords className="h-3.5 w-3.5 text-amber-500" /> Competitive Intel
             </TabsTrigger>
             <TabsTrigger value="documentation" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <BookOpen className="h-3.5 w-3.5 text-purple-500" /> Documentation
+              <BookOpen className="h-3.5 w-3.5 text-navy-mid" /> Documentation
             </TabsTrigger>
             <TabsTrigger value="community-learning" className="h-8 text-[11px] font-bold gap-1.5 px-3">
               <GraduationCap className="h-3.5 w-3.5 text-pink-500" /> Community & Academy
             </TabsTrigger>
             <TabsTrigger value="commercial-kpis" className="h-8 text-[11px] font-bold gap-1.5 px-3">
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-500" /> Executive KPIs
+              <TrendingUp className="h-3.5 w-3.5 text-success" /> Executive KPIs
             </TabsTrigger>
           </TabsList>
         </div>

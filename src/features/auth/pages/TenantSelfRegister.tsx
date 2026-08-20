@@ -126,18 +126,18 @@ const TenantSelfRegister = () => {
               <React.Fragment key={s.id}>
                 <div className="flex flex-col items-center gap-1.5">
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                    done   ? 'bg-emerald-500 border-emerald-500 text-white' :
+                    done   ? 'bg-success border-success text-white' :
                     active ? 'bg-primary border-primary text-white' :
                              'bg-white/5 border-white/15 text-white/30'
                   }`}>
                     {done ? <CheckCircle className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
                   </div>
-                  <span className={`text-xs font-medium ${active ? 'text-white' : done ? 'text-emerald-400' : 'text-white/30'}`}>
+                  <span className={`text-xs font-medium ${active ? 'text-white' : done ? 'text-success' : 'text-white/30'}`}>
                     {s.title}
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`flex-1 h-px mx-3 mb-5 transition-colors ${i < step ? 'bg-emerald-500/50' : 'bg-white/10'}`} />
+                  <div className={`flex-1 h-px mx-3 mb-5 transition-colors ${i < step ? 'bg-success/50' : 'bg-white/10'}`} />
                 )}
               </React.Fragment>
             );
@@ -195,10 +195,10 @@ const TenantSelfRegister = () => {
               </div>
 
               {/* Invite summary */}
-              <div className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/8">
-                <CheckCircle className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+              <div className="flex items-center gap-3 p-3 rounded-xl border border-success/20 bg-success/8">
+                <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-emerald-300">Invitation verified</p>
+                  <p className="text-xs font-medium text-success">Invitation verified</p>
                   <p className="text-xs text-muted-foreground truncate">{inviteData.email}</p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ const TenantSelfRegister = () => {
                       { pass: strength.lower,   label: 'Lowercase' },
                       { pass: strength.number,  label: 'Number' },
                     ].map((c, i) => (
-                      <div key={i} className={`flex items-center gap-1.5 text-xs ${c.pass ? 'text-emerald-400' : 'text-white/30'}`}>
+                      <div key={i} className={`flex items-center gap-1.5 text-xs ${c.pass ? 'text-success' : 'text-white/30'}`}>
                         {c.pass ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                         {c.label}
                       </div>
@@ -262,8 +262,8 @@ const TenantSelfRegister = () => {
           {step === 2 && (
             <div className="text-center space-y-5">
               <div className="flex justify-center">
-                <div className="h-20 w-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/30 flex items-center justify-center">
-                  <CheckCircle className="h-10 w-10 text-emerald-400" />
+                <div className="h-20 w-20 rounded-full bg-success/15 border-2 border-success/30 flex items-center justify-center">
+                  <CheckCircle className="h-10 w-10 text-success" />
                 </div>
               </div>
               <div>

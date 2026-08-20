@@ -80,7 +80,7 @@ export function LicenseSubscriptionCenter({ className }: { className?: string })
                 <ul className="space-y-1.5 pt-2 border-t border-border/50 text-[11px]">
                   {tier.features.map((feat, idx) => (
                     <li key={idx} className="flex items-center gap-1.5 text-muted-foreground">
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      <Check className="h-3.5 w-3.5 text-success shrink-0" />
                       <span>{feat}</span>
                     </li>
                   ))}

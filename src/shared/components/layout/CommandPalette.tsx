@@ -257,7 +257,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {recents.length > 0 && (
                 <div>
                   <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                    <Clock className="h-3 w-3 text-sky-500" /> Recently Visited
+                    <Clock className="h-3 w-3 text-primary" /> Recently Visited
                   </p>
                   <div className="space-y-0.5 mt-1">
                     {recents.map((page) => (

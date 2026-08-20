@@ -25,7 +25,7 @@ export function CompetitiveIntelWorkspace({ className }: { className?: string })
           </p>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-bold">
           10x VALUE ADVANTAGE
         </Badge>
       </div>
@@ -50,13 +50,13 @@ export function CompetitiveIntelWorkspace({ className }: { className?: string })
                     {comp.name.includes("CALQULUS") && <Sparkles className="h-3.5 w-3.5 text-amber-500" />}
                   </td>
                   <td className="py-2.5 px-2">
-                    {comp.MpesaNative ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <XCircle className="h-4 w-4 text-rose-400" />}
+                    {comp.MpesaNative ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-rose-400" />}
                   </td>
                   <td className="py-2.5 px-2">
-                    {comp.RealTimeIoTMeter ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <XCircle className="h-4 w-4 text-rose-400" />}
+                    {comp.RealTimeIoTMeter ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-rose-400" />}
                   </td>
                   <td className="py-2.5 px-2">
-                    {comp.LandlordFirewallPII ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <XCircle className="h-4 w-4 text-rose-400" />}
+                    {comp.LandlordFirewallPII ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-rose-400" />}
                   </td>
                   <td className="py-2.5 px-2 font-mono">{comp.Pricing}</td>
                 </tr>

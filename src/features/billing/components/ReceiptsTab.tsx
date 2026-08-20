@@ -129,7 +129,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
       <div className="grid gap-4 md:grid-cols-3">
         {[
           { label: "Total Receipts", value: paidInvoices.length.toString(), color: "text-foreground" },
-          { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-emerald-400" },
+          { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-success" },
           { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-amber-500" },
         ].map(({ label, value, color }, i) => (
           <div key={label} className="rounded-xl border border-border bg-card p-4 card-shadow animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
@@ -235,7 +235,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
                     </div>
                   </TableCell>
                   <TableCell>{inv.leases ? <div className="flex items-center gap-2 text-muted-foreground"><Building className="h-4 w-4" /><span>{inv.leases.property} — {inv.leases.unit}</span></div> : <span className="text-muted-foreground">—</span>}</TableCell>
-                  <TableCell className="font-semibold text-emerald-400">{formatCurrency(inv.amount)}</TableCell>
+                  <TableCell className="font-semibold text-success">{formatCurrency(inv.amount)}</TableCell>
                   <TableCell className="text-muted-foreground">{inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : "—"}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

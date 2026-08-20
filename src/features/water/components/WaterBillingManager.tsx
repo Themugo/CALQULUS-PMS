@@ -641,13 +641,13 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                             </TableCell>
                           </>
                         )}
-                        <TableCell className="font-medium text-emerald-600">
+                        <TableCell className="font-medium text-success">
                           {formatCurrency(reading.total_amount)}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={cn(
                             "capitalize",
-                            reading.status === "paid" && "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                            reading.status === "paid" && "bg-success/10 text-success border-success/20",
                             reading.status === "invoiced" && "bg-[hsl(195_60%_42%/0.1)] text-[hsl(195_60%_32%)] border-[hsl(195_60%_42%/0.2)]",
                             reading.status === "pending" && "bg-amber-500/10 text-amber-600 border-amber-500/20"
                           )}>
@@ -680,9 +680,9 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                     {formatCurrency(readings.reduce((sum, r) => sum + (r.total_amount || 0), 0))}
                   </p>
                 </div>
-                <div className="p-4 rounded-lg bg-emerald-500/10">
+                <div className="p-4 rounded-lg bg-success/10">
                   <p className="text-xs text-muted-foreground font-medium">Paid</p>
-                  <p className="text-xl font-bold text-emerald-600">
+                  <p className="text-xl font-bold text-success">
                     {formatCurrency(readings.filter(r => r.status === "paid").reduce((sum, r) => sum + (r.total_amount || 0), 0))}
                   </p>
                 </div>
@@ -781,7 +781,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
                     </div>
                     <div className="flex justify-between text-sm mt-1">
                       <span className="text-muted-foreground">Estimated Cost:</span>
-                      <span className="font-bold text-emerald-600">
+                      <span className="font-bold text-success">
                         {formatCurrency((parseFloat(currReading) - parseFloat(prevReading)) * (parseFloat(ratePerUnit) || 0))}
                       </span>
                     </div>

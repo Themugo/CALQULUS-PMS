@@ -39,7 +39,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground font-bold uppercase">LCP (Largest Content)</span>
-            <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none">GOOD (&lt;1.2s)</Badge>
+            <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none">GOOD (&lt;1.2s)</Badge>
           </div>
           <strong className="text-xl font-black text-foreground">0.82 s</strong>
           <Progress value={28} className="h-1.5" />
@@ -48,7 +48,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground font-bold uppercase">FID (First Input)</span>
-            <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none">EXCELLENT (&lt;10ms)</Badge>
+            <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none">EXCELLENT (&lt;10ms)</Badge>
           </div>
           <strong className="text-xl font-black text-foreground">6 ms</strong>
           <Progress value={12} className="h-1.5" />
@@ -57,7 +57,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground font-bold uppercase">CLS (Shift Index)</span>
-            <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none">OPTIMAL (&lt;0.01)</Badge>
+            <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none">OPTIMAL (&lt;0.01)</Badge>
           </div>
           <strong className="text-xl font-black text-foreground">0.004</strong>
           <Progress value={5} className="h-1.5" />
@@ -66,7 +66,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
         <Card className="p-3 border rounded-xl bg-card space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground font-bold uppercase">TTFB (Server Time)</span>
-            <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none">FAST (&lt;80ms)</Badge>
+            <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none">FAST (&lt;80ms)</Badge>
           </div>
           <strong className="text-xl font-black text-foreground">42 ms</strong>
           <Progress value={18} className="h-1.5" />
@@ -80,7 +80,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
             <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
               <Database className="h-4 w-4 text-primary" /> Supabase Connection Pool & RLS Health
             </span>
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[9px]">Pool Healthy</Badge>
+            <Badge className="bg-success/10 text-success text-[9px]">Pool Healthy</Badge>
           </div>
 
           <div className="space-y-2">
@@ -92,7 +92,7 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
 
             <div className="flex justify-between text-[11px] pt-1">
               <span className="text-muted-foreground">Average Query Latency</span>
-              <span className="font-bold text-emerald-600">12.4 ms</span>
+              <span className="font-bold text-success">12.4 ms</span>
             </div>
           </div>
         </Card>
@@ -102,21 +102,21 @@ export function SystemMetricsDashboard({ className }: { className?: string }) {
             <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
               <Server className="h-4 w-4 text-blue-500" /> M-Pesa & Utility Gateway Latency
             </span>
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[9px]">Gateway 100% Up</Badge>
+            <Badge className="bg-success/10 text-success text-[9px]">Gateway 100% Up</Badge>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between text-[11px]">
               <span className="text-muted-foreground">M-Pesa Daraja STK Push Gateway</span>
-              <span className="font-bold text-emerald-600">140 ms SLA</span>
+              <span className="font-bold text-success">140 ms SLA</span>
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-muted-foreground">Africa's Talking SMS Gateway</span>
-              <span className="font-bold text-emerald-600">85 ms SLA</span>
+              <span className="font-bold text-success">85 ms SLA</span>
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-muted-foreground">Water Meter Metering API</span>
-              <span className="font-bold text-emerald-600">62 ms SLA</span>
+              <span className="font-bold text-success">62 ms SLA</span>
             </div>
           </div>
         </Card>

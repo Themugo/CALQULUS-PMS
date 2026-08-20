@@ -95,7 +95,7 @@ interface ContractsTableProps {
 const statusConfig: Record<ContractStatus, { label: string; styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   draft: { label: "Draft", styles: "bg-slate-600 text-white border-slate-700", icon: FileText },
   pending_signature: { label: "Pending Signature", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
-  signed: { label: "Signed", styles: "bg-emerald-600 text-white border-emerald-700", icon: CheckCircle },
+  signed: { label: "Signed", styles: "bg-success text-white border-success", icon: CheckCircle },
   expired: { label: "Expired", styles: "bg-red-600 text-white border-red-700", icon: ShieldX },
   cancelled: { label: "Cancelled", styles: "bg-gray-600 text-white border-gray-700", icon: ShieldX },
 };
@@ -277,7 +277,7 @@ export const ContractsTable = ({
                           onClick={() => onDownloadUploaded(contract.uploaded_contract_url!, contract.title)}
                           title="Download Uploaded Contract"
                         >
-                          <Download className="h-4 w-4 text-emerald-500" />
+                          <Download className="h-4 w-4 text-success" />
                         </Button>
                         <Button
                           variant="ghost"

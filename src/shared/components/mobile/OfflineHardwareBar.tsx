@@ -47,7 +47,7 @@ export function OfflineHardwareBar({ className }: { className?: string }) {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 bg-muted/30 px-2.5 py-1 rounded-full border">
-            {isOnline ? <Wifi className="h-3.5 w-3.5 text-emerald-500" /> : <WifiOff className="h-3.5 w-3.5 text-amber-500" />}
+            {isOnline ? <Wifi className="h-3.5 w-3.5 text-success" /> : <WifiOff className="h-3.5 w-3.5 text-amber-500" />}
             <span className="font-bold text-[10px]">{isOnline ? "ONLINE" : "OFFLINE CACHE"}</span>
             <Switch checked={isOnline} onCheckedChange={setIsOnline} className="scale-75" />
           </div>
@@ -69,13 +69,13 @@ export function OfflineHardwareBar({ className }: { className?: string }) {
         {/* GPS Sensor */}
         <div className="p-2.5 border rounded-xl bg-card flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <MapPin className={cn("h-3.5 w-3.5", gpsActive ? "text-emerald-500" : "text-muted-foreground")} />
+            <MapPin className={cn("h-3.5 w-3.5", gpsActive ? "text-success" : "text-muted-foreground")} />
             <div>
               <span className="font-bold text-[10px] text-foreground block">GPS Geofence</span>
               <span className="text-[9px] text-muted-foreground">-1.28638, 36.81722</span>
             </div>
           </div>
-          <Badge variant="outline" className="text-[8px] bg-emerald-500/10 text-emerald-600 border-none">
+          <Badge variant="outline" className="text-[8px] bg-success/10 text-success border-none">
             Verified
           </Badge>
         </div>

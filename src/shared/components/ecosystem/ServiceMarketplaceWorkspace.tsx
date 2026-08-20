@@ -168,7 +168,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
               <div>
                 <h4 className="font-extrabold text-foreground text-xs flex items-center gap-1.5">
                   {vendor.name}
-                  {vendor.verifiedBadge && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+                  {vendor.verifiedBadge && <ShieldCheck className="h-3.5 w-3.5 text-success shrink-0" />}
                 </h4>
                 <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{vendor.description}</p>
               </div>
@@ -185,7 +185,7 @@ export function ServiceMarketplaceWorkspace({ className }: { className?: string 
                 onClick={() => handleRequestQuote(vendor.name)}
                 className="w-full h-8 text-[11px] font-bold gap-1 bg-primary text-primary-foreground"
               >
-                {requestedVendor === vendor.name ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> : <ArrowRight className="h-3.5 w-3.5" />}
+                {requestedVendor === vendor.name ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <ArrowRight className="h-3.5 w-3.5" />}
                 {requestedVendor === vendor.name ? "Quote Request Sent!" : "Request Service Quote"}
               </Button>
             </div>

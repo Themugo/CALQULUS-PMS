@@ -43,7 +43,7 @@ interface Unit {
 const statusStyles: Record<string, string> = {
   draft: "bg-slate-500/10 text-slate-600 border-slate-500/20",
   pending_signature: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  active: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  active: "bg-success/10 text-success border-success/20",
   expired: "bg-red-500/10 text-red-600 border-red-500/20",
   terminated: "bg-red-500/10 text-red-600 border-red-500/20",
 };

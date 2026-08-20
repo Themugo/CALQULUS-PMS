@@ -891,8 +891,8 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-emerald-500" />
+              <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Collected</p>
@@ -1000,7 +1000,7 @@ const ManagerPaymentHistory = () => {
         <Card className="card-shadow animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Smartphone className="h-5 w-5 text-emerald-500" />
+              <Smartphone className="h-5 w-5 text-success" />
               Payment Methods
             </CardTitle>
             <CardDescription>Distribution by payment type</CardDescription>
@@ -1142,7 +1142,7 @@ const ManagerPaymentHistory = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Total Paid</p>
-                      <p className="font-semibold text-emerald-500">{formatCurrency(tenant.totalAmount)}</p>
+                      <p className="font-semibold text-success">{formatCurrency(tenant.totalAmount)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Transactions</p>
@@ -1333,8 +1333,8 @@ const ManagerPaymentHistory = () => {
                     <div className="flex items-center gap-2">
                       {payment.tenants?.phone ? (
                         <>
-                          <Smartphone className="h-4 w-4 text-emerald-500" />
-                          <span className="text-sm text-emerald-400">M-Pesa</span>
+                          <Smartphone className="h-4 w-4 text-success" />
+                          <span className="text-sm text-success">M-Pesa</span>
                         </>
                       ) : (
                         <>
@@ -1347,7 +1347,7 @@ const ManagerPaymentHistory = () => {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-1"
+                      className="bg-success/10 text-success border-success/20 gap-1"
                     >
                       <CheckCircle className="h-3 w-3" />
                       Paid

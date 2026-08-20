@@ -137,7 +137,7 @@ const BillingOverview: React.FC<BillingOverviewProps> = ({ managers, invoices, p
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-[hsl(218_58%_16%/0.5)] to-indigo-900/50 border-warning/12">
+        <Card className="bg-gradient-to-br from-[hsl(218_58%_16%/0.5)] to-navy-mid/50 border-warning/12">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-[hsl(218_58%_50%/0.2)] flex items-center justify-center">

@@ -663,7 +663,7 @@ const PropertyDetail = () => {
                           <div className="flex items-center gap-2">
                             <div className={cn(
                               "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium",
-                              tenant ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+                              tenant ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
                             )}>
                               <Home className="h-4 w-4" />
                             </div>

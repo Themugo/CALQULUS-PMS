@@ -98,7 +98,7 @@ export function ConversationList({ activeId, onSelectConversation, className }: 
                 <span
                   className={cn(
                     "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-card",
-                    conv.status === "online" && "bg-emerald-500",
+                    conv.status === "online" && "bg-success",
                     conv.status === "away" && "bg-amber-500",
                     conv.status === "offline" && "bg-muted-foreground/40"
                   )}

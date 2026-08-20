@@ -39,7 +39,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Payment related
   if (actionLower.includes("payment received") || actionLower.includes("paid")) {
-    return { icon: CheckCircle, iconBg: "bg-emerald-500/10 text-emerald-500", category: "Payment" };
+    return { icon: CheckCircle, iconBg: "bg-success/10 text-success", category: "Payment" };
   }
   if (actionLower.includes("payment") && actionLower.includes("fail")) {
     return { icon: XCircle, iconBg: "bg-destructive/10 text-destructive", category: "Payment" };
@@ -63,7 +63,7 @@ const getActivityIcon = (action: string): { icon: LucideIcon; iconBg: string; ca
   
   // Tenant related
   if (actionLower.includes("account created") || actionLower.includes("credentials")) {
-    return { icon: UserCheck, iconBg: "bg-teal-500/10 text-teal-500", category: "Account" };
+    return { icon: UserCheck, iconBg: "bg-primary/10 text-primary", category: "Account" };
   }
   if (actionLower.includes("created") && actionLower.includes("tenant")) {
     return { icon: UserPlus, iconBg: "bg-amber-400/12 text-amber-500", category: "Tenant" };

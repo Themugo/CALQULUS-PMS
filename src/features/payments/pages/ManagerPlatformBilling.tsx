@@ -107,7 +107,7 @@ const contractStatusConfig: Record<ContractStatus, { label: string; styles: stri
   pending: { label: "Pending Review", styles: "bg-amber-500 text-white border-amber-600", icon: Clock },
   approved: { label: "Ready to Sign", styles: "bg-[hsl(214_73%_45%)] text-white border-[hsl(214_73%_38%)]", icon: CheckCircle },
   rejected: { label: "Rejected", styles: "bg-red-600 text-white border-red-700", icon: XCircle },
-  signed: { label: "Signed", styles: "bg-emerald-600 text-white border-emerald-700", icon: ShieldCheck },
+  signed: { label: "Signed", styles: "bg-success text-white border-success", icon: ShieldCheck },
   expired: { label: "Expired", styles: "bg-gray-600 text-white border-gray-700", icon: XCircle },
   cancelled: { label: "Cancelled", styles: "bg-slate-600 text-white border-slate-700", icon: XCircle },
 };
@@ -276,7 +276,7 @@ const ManagerPlatformBilling = () => {
     
     if (status === "paid") {
       return (
-        <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+        <Badge className="bg-success/10 text-success border-success/20">
           <CheckCircle className="h-3 w-3 mr-1" />
           Paid
         </Badge>
@@ -757,7 +757,7 @@ Status: PAID
               <FileCheck className="h-4 w-4" />
               Receipts
               {paidInvoices.length > 0 && (
-                <Badge className="ml-1 bg-emerald-500 text-white">{paidInvoices.length}</Badge>
+                <Badge className="ml-1 bg-success text-white">{paidInvoices.length}</Badge>
               )}
             </TabsTrigger>
             <TabsTrigger value="contracts" className="flex items-center gap-2">
@@ -789,8 +789,8 @@ Status: PAID
 
               <StatCard
                 icon={CheckCircle}
-                iconBgClass="bg-emerald-500/10"
-                iconColorClass="text-emerald-600"
+                iconBgClass="bg-success/10"
+                iconColorClass="text-success"
                 label="Total Paid"
                 value={formatCurrency(invoiceStats.totalPaid)}
               />
@@ -865,7 +865,7 @@ Status: PAID
               <Card className="bg-card border-border">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-success/10 border border-success/20 flex items-center justify-center text-success shrink-0">
                       <FileCheck className="h-5 w-5" />
                     </div>
                     <div>
@@ -878,8 +878,8 @@ Status: PAID
 
               <StatCard
                 icon={CheckCircle}
-                iconBgClass="bg-emerald-500/10"
-                iconColorClass="text-emerald-600"
+                iconBgClass="bg-success/10"
+                iconColorClass="text-success"
                 label="Total Paid"
                 value={formatCurrency(invoiceStats.totalPaid)}
               />
@@ -941,12 +941,12 @@ Status: PAID
                           <TableRow key={invoice.id}>
                             <TableCell className="font-mono text-sm">
                               <div className="flex items-center gap-2">
-                                <FileCheck className="h-4 w-4 text-emerald-500" />
+                                <FileCheck className="h-4 w-4 text-success" />
                                 {getReceiptNumber(invoice)}
                               </div>
                             </TableCell>
                             <TableCell>{invoice.description || "Platform subscription fee"}</TableCell>
-                            <TableCell className="font-semibold text-emerald-600">{formatCurrency(invoice.amount)}</TableCell>
+                            <TableCell className="font-semibold text-success">{formatCurrency(invoice.amount)}</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -990,7 +990,7 @@ Status: PAID
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleDownloadReceipt(invoice)}
-                                  className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10"
+                                  className="border-success/30 text-success hover:bg-success/10"
                                 >
                                   <DownloadIcon className="h-4 w-4 mr-1" />
                                   Download
@@ -1040,7 +1040,7 @@ Status: PAID
                   <CardTitle className="text-sm font-medium text-muted-foreground">Signed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-emerald-500">{signedContracts.length}</div>
+                  <div className="text-2xl font-bold text-success">{signedContracts.length}</div>
                 </CardContent>
               </Card>
             </div>
@@ -1103,7 +1103,7 @@ Status: PAID
               </div>
             )}
             {paymentStatus === "success" && (
-              <div className="flex items-center gap-2 text-emerald-500">
+              <div className="flex items-center gap-2 text-success">
                 <CheckCircle className="h-4 w-4" />
                 <span className="text-sm">Payment successful!</span>
               </div>

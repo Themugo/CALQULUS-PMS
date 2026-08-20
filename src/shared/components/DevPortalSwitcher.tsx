@@ -65,7 +65,7 @@ const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
     pass: 'CALQULUS RMS@2026!',
     defaultPath: '/portal',
     icon: User,
-    badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    badgeColor: 'bg-success/20 text-success border-success/30'
   },
   {
     role: 'agency',
@@ -74,7 +74,7 @@ const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
     pass: 'Demo@2026',
     defaultPath: '/agency',
     icon: Handshake,
-    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+    badgeColor: 'bg-navy-mid/20 text-navy-mid border-navy-mid/30'
   },
   {
     role: 'landlord',
@@ -196,7 +196,7 @@ export function DevPortalSwitcher() {
           </div>
 
           {/* Current session info */}
-          <div className="mb-3 p-2.5 rounded-xl bg-slate-950/80 border border-white/10 flex items-center justify-between">
+          <div className="mb-3 p-2.5 rounded-xl bg-navy-deep/80 border border-white/10 flex items-center justify-between">
             <div className="min-w-0 pr-2">
               <p className="text-[10px] text-white/50 uppercase font-bold tracking-wider">Current Session</p>
               <p className="text-xs font-semibold text-white truncate">

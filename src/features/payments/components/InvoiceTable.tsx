@@ -38,7 +38,7 @@ interface InvoiceTableProps {
 
 const getInvoiceStatusBadge = (status: string, dueDate: string) => {
   if (status === "paid") {
-    return <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Paid</Badge>;
+    return <Badge className="bg-success/10 text-success border-success/20">Paid</Badge>;
   }
   if (status === "pending") {
     const isOverdue = new Date(dueDate) < new Date();

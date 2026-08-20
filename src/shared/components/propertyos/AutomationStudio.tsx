@@ -97,7 +97,7 @@ export function AutomationStudio({ className }: { className?: string }) {
                   onClick={() => handleTestWorkflow(wf.id)}
                   className="h-7 text-[10px] font-bold gap-1"
                 >
-                  <Play className="h-3 w-3 text-emerald-500" />
+                  <Play className="h-3 w-3 text-success" />
                   {testedId === wf.id ? "Test Execution OK!" : "Dry Run Test"}
                 </Button>
                 <Switch checked={wf.enabled} onCheckedChange={() => toggleWorkflow(wf.id)} className="scale-75" />
@@ -116,7 +116,7 @@ export function AutomationStudio({ className }: { className?: string }) {
               </div>
               <div className="space-y-0.5">
                 <span className="text-[9px] text-muted-foreground font-bold uppercase block">3. AUTOMATED ACTION</span>
-                <span className="font-bold text-emerald-600">{wf.action}</span>
+                <span className="font-bold text-success">{wf.action}</span>
               </div>
             </div>
 

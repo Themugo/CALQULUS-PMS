@@ -477,7 +477,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                     <Badge
                       variant="outline"
                       className={
-                        entry.entry_type === 'received' ? 'border-emerald-300 text-emerald-700 bg-emerald-50' :
+                        entry.entry_type === 'received' ? 'border-success/20 text-success bg-success/10' :
                         entry.entry_type === 'refund' ? 'border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] bg-[hsl(214_73%_48%/0.06)]' :
                         'border-red-300 text-red-700 bg-red-50'
                       }
@@ -489,7 +489,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                   {entry.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{entry.description}</p>}
                 </div>
                 <div className="text-right shrink-0 pl-3">
-                  <p className={entry.entry_type === 'deduction' ? 'text-red-600 font-medium' : 'text-emerald-600 font-medium'}>
+                  <p className={entry.entry_type === 'deduction' ? 'text-red-600 font-medium' : 'text-success font-medium'}>
                     {entry.entry_type === 'deduction' ? '−' : '+'}{fmt(Number(entry.amount))}
                   </p>
                   <p className="text-xs text-muted-foreground">Bal: {fmt(Number(entry.balance_after))}</p>
