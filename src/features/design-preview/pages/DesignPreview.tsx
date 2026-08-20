@@ -133,11 +133,14 @@ export default function DesignPreview() {
         Skip to main content
       </a>
       <header className="sticky top-0 z-40 border-b border-border bg-card">
-        <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between gap-3 min-w-0">
+        <div className="max-w-[1400px] mx-auto px-4 min-h-14 py-3 flex flex-wrap items-center justify-between gap-3 min-w-0">
           <BrandMark size="nav" showWordmark subtitle="Design Bible" forcePlatform className="min-w-0" />
           <p className="type-meta hidden sm:block">Preview chrome — not live operations</p>
           <Link to={PUBLIC_ROUTES.shellPreview} className="text-xs font-medium text-navy-mid hover:underline">
             App shell
+          </Link>
+          <Link to={PUBLIC_ROUTES.managerDashboardPreview} className="text-xs font-medium text-navy-mid hover:underline">
+            Manager dashboard
           </Link>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site

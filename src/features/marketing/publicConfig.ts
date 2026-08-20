@@ -13,6 +13,7 @@ export const PUBLIC_ROUTES = {
   legalCookies: "/legal?tab=privacy",
   designPreview: "/design-preview",
   shellPreview: "/design-preview/shell",
+  managerDashboardPreview: "/design-preview/manager-dashboard",
   managerSignIn: "/auth",
   managerSignUp: "/auth?tab=signup",
   landlordLogin: "/landlord/login",

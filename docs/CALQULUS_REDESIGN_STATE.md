@@ -1,18 +1,79 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Phase 1 — Manager portal executive operations dashboard.
+STATUS: preview + live implementation complete. STOP after dashboard.
+
+## CURRENT TASK
+STOP. Do not redesign other Manager pages, other portals, or the authenticated shell.
+
+## COMPLETED
+- Inspected live Manager dashboard (`Dashboard.tsx`) and stats/attention sources before editing
+- Added layout preview at `/design-preview/manager-dashboard` (regions only — no invented KPI numbers)
+- Live dashboard header is now **Dashboard** / *Portfolio overview and today's operational priorities.*
+- Primary **Add property**, secondary **View reports**; refresh and currency kept
+- Attention strip uses `buildAttentionItems` (real overdue / maintenance / leases / pending only)
+- Restrained KPI row: Properties, Units, Occupancy, Collections
+- Main column is **Collections performance**; Occupancy and Maintenance sit secondary
+- Lower area: Recent activity, Upcoming actions (`UpcomingPayments`), Property performance table
+- Existing banners, empty-portfolio activation, onboarding quick actions, and realtime invalidation kept
+
+## FILES INSPECTED
+- `src/features/dashboard/pages/Dashboard.tsx`
+- `src/features/dashboard/lib/dashboardStats.ts`, `attentionItems.ts`
+- `src/features/dashboard/components/{StatCard,RevenueChart,OccupancyChart,OpenMaintenancePreview,RecentActivity,UpcomingPayments,PropertiesOverview,ArrearsHeatMap}.tsx`
+- `src/shared/components/layout/{Layout,PageHeader}.tsx`
+
+## COMPONENTS TO REUSE
+- `fetchManagerDashboardStats`, `buildAttentionItems`, `StatCard`, `RevenueChart`, `OccupancyChart`, `ArrearsHeatMap`, `OpenMaintenancePreview`, `RecentActivity`, `UpcomingPayments`, `PropertiesOverview`
+- `PageHeader`, `AttentionStrip`
+
+## COMPONENTS TO CREATE
+- None further for this phase. Unified `DeskShell` remains a later shell phase.
+
+## FILES CHANGED (this phase)
+- `src/features/design-preview/pages/ManagerDashboardPreviewPage.tsx`
+- `src/features/design-preview/components/ManagerDashboardPreview.tsx`
+- `src/features/dashboard/pages/Dashboard.tsx`
+- `src/features/dashboard/components/{AttentionStrip,StatCard,UpcomingPayments,PropertiesOverview}.tsx`
+- `src/app/routes.ts`, `src/App.tsx`, `src/features/marketing/publicConfig.ts`
+- `src/features/design-preview/pages/DesignPreview.tsx` (header link)
+- Tests: `src/test/managerDashboardPreview.test.tsx`, `src/test/managerDashboardLayout.test.ts`, `e2e/manager-dashboard-preview.spec.ts`
+- `docs/CALQULUS_REDESIGN_STATE.md`
+
+## KNOWN ISSUES
+- Live Manager still uses `Layout` + `Header`/`Sidebar` (Phase 0A shell not migrated)
+- Dashboard widgets still fetch independently (RevenueChart, OccupancyChart, UpcomingPayments, PropertiesOverview, RecentActivity) — not a single RPC. Backend was not rebuilt.
+- Vacant-units attention item remains (real data) in addition to the four named alert types
+- Submanager property scoping via `useManagerScope` is unchanged
+
+## TEST STATUS
+- `npx tsc --noEmit -p tsconfig.app.json`
+- `npx vitest run` for new dashboard/preview contracts
+- Playwright: `/design-preview/manager-dashboard` at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360
+
+## BUILD STATUS
+- `npm run build`
+
+## NEXT STEP
+STOP. Do not continue to other Manager pages. After this checkpoint: Manager properties / tenants / billing, or shell unification — only when requested.
+
+Preview URL: `/design-preview/manager-dashboard`
+Live URL: `/` (Manager session)
+
+---
+
+## Previous checkpoint (Phase 0A shell)
+
 Phase 0A — Authenticated application shell audit + preview.
 STATUS: preview complete. Live portal layouts were not migrated.
 
-## CURRENT TASK
-STOP. Do not redesign dashboards or implement the shell on live desks yet.
-
-## COMPLETED
+### COMPLETED (shell)
 - Audited Manager, Landlord, Agency, Tenant, Admin/WebHost chrome
 - Added preview-only route `/design-preview/shell`
 - Preview shows white sidebar, 68px white top bar, portal-accent active nav, mobile drawer, page header, user menu, notifications, workspace selector, loading/empty/error canvases
 
-## FILES INSPECTED
+### FILES INSPECTED (shell)
 - `src/shared/components/layout/Layout.tsx`, `Sidebar.tsx`, `Header.tsx`, `PageHeader.tsx`, `BreadcrumbSystem.tsx`, `ProfileMenu.tsx`, `NotificationsDropdown.tsx`, `WorkspaceSwitcher.tsx`
 - `src/features/landlord/components/LandlordLayout.tsx`
 - `src/features/agency/components/AgencyLayout.tsx`
@@ -22,18 +83,18 @@ STOP. Do not redesign dashboards or implement the shell on live desks yet.
 - `src/core/design/deskNav.ts`, `PortalAccentBar.tsx`, `src/shared/theme/tokens.ts`
 - `src/features/design-preview/pages/DesignPreview.tsx`, `PortalPreviewCanvas.tsx`
 
-## COMPONENTS TO REUSE
+### COMPONENTS TO REUSE (shell)
 - `BrandMark`, `PageHeader`, `PortalAccentBar`, `portalSurfaceProps`
 - `Button`, `EmptyState`, `ErrorState`, `LoadingState`
 - `CALQULUS_PORTAL_ACCENT` + `[data-portal]` CSS variables
 - Lucide icons (already the only shell icon library)
 
-## COMPONENTS TO CREATE
+### COMPONENTS TO CREATE (shell)
 - Unified `DeskShell` / `AppSidebar` / `AppHeader` (not implemented in live routes)
 - Shared nav config module to replace duplicated `NAV` arrays
 - Optional: wire or delete orphans `TenantNotificationBell`, `MobilePageHeader`
 
-## FILES CHANGED (this phase)
+### FILES CHANGED (shell)
 - `src/features/design-preview/pages/ShellPreviewPage.tsx`
 - `src/features/design-preview/components/AuthenticatedShellPreview.tsx`
 - `src/features/design-preview/shellPreviewConfig.ts`
@@ -42,7 +103,7 @@ STOP. Do not redesign dashboards or implement the shell on live desks yet.
 - `src/test/shellPreview.test.tsx` and related contract tests
 - `docs/CALQULUS_REDESIGN_STATE.md`
 
-## KNOWN ISSUES
+### KNOWN ISSUES (shell)
 - Live product has **three shells**, not one:
   - Manager: `Layout` + rich `Header`/`Sidebar` (command palette, notifications, profile, workspace switcher)
   - Landlord / Agency / Webhost: copy-pasted `*Layout.tsx` with minimal header
@@ -52,18 +113,6 @@ STOP. Do not redesign dashboards or implement the shell on live desks yet.
 - Sidebar configs for non-manager roles in `Sidebar.tsx` are unused dead duplication.
 - Tenant notification bell exists but is not wired into `TenantLayout`.
 - No organization multi-select in portal layouts; Manager has `WorkspaceSwitcher` (portal jumper, not multi-org).
-
-## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx vitest run src/test/shellPreview.test.tsx` — 4 passed
-- `npx vitest run` — **890 passed**, 1 skipped
-- Playwright visual pass at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360: no horizontal overflow; header 68px; sidebar 256px desktop; mobile hamburger + drawer
-
-## BUILD STATUS
-- `npm run build` — pass
-
-## NEXT STEP
-After preview approval: extract a shared `DeskShell` and migrate one live portal at a time. Do **not** redesign dashboard page content in that step.
 
 Preview URL: `/design-preview/shell`
 

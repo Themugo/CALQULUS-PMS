@@ -87,6 +87,7 @@ const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingP
 const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
 const ShellPreviewPage = lazy(() => import("@/features/design-preview/pages/ShellPreviewPage"));
+const ManagerDashboardPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerDashboardPreviewPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // ── Route definition types ──────────────────────────────────────────
@@ -118,6 +119,7 @@ export interface RoleRouteConfig {
 
 export const DESIGN_PREVIEW_PATH = "/design-preview";
 export const SHELL_PREVIEW_PATH = "/design-preview/shell";
+export const MANAGER_DASHBOARD_PREVIEW_PATH = "/design-preview/manager-dashboard";
 export const designPreviewRoute: RouteDef = {
   path: DESIGN_PREVIEW_PATH,
   element: DesignPreview,
@@ -126,6 +128,18 @@ export const shellPreviewRoute: RouteDef = {
   path: SHELL_PREVIEW_PATH,
   element: ShellPreviewPage,
 };
+export const managerDashboardPreviewRoute: RouteDef = {
+  path: MANAGER_DASHBOARD_PREVIEW_PATH,
+  element: ManagerDashboardPreviewPage,
+};
+export const designPreviewPublicRoutes: RouteDef[] = [
+  designPreviewRoute,
+  shellPreviewRoute,
+  managerDashboardPreviewRoute,
+];
+export function isDesignPreviewPath(pathname: string): boolean {
+  return pathname === DESIGN_PREVIEW_PATH || pathname.startsWith(`${DESIGN_PREVIEW_PATH}/`);
+}
 
 // ── Shared public routes (available when not logged in) ─────────────
 export const publicRoutes: RouteDef[] = [
@@ -137,6 +151,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/legal", element: LegalPage },
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
+  { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
@@ -345,6 +360,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/legal", element: LegalPage },
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
+  { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
@@ -365,6 +381,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
+  { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },

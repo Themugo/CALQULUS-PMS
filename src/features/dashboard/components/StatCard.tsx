@@ -17,6 +17,8 @@ interface StatCardProps {
   sparkUnit?: string;
   /** Label shown below the sparkline (default: "7-day trend") */
   sparkCaption?: string;
+  /** Smaller value type for restrained KPI rows */
+  compact?: boolean;
 }
 
 const iconColorMap = {
@@ -40,6 +42,7 @@ export function StatCard({
   sparkLabels,
   sparkUnit = "item",
   sparkCaption = "7-day trend",
+  compact = false,
 }: StatCardProps) {
   const colors = iconColorMap[iconColor];
 
@@ -53,11 +56,11 @@ export function StatCard({
   const sparkMax = sparkData ? Math.max(...sparkData, 1) : 1;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className={cn("border border-border bg-card card-shadow", compact ? "rounded-xl p-3.5" : "rounded-lg p-4")}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1 min-w-0 flex-1">
           <p className="meta-text uppercase tracking-wider truncate">{title}</p>
-          <p className="metric-value truncate">{value}</p>
+          <p className={cn("truncate tracking-tight text-foreground", compact ? "text-xl font-semibold" : "metric-value")}>{value}</p>
           {change && (
             <div className="flex items-center gap-1.5">
               <TrendIcon

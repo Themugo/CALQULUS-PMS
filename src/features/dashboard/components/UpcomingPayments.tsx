@@ -22,12 +22,11 @@ interface Payment {
   daysUntilDue: number;
 }
 
-export function UpcomingPayments() {
+export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }) {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const { formatCurrency } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-  const assignedPropertyIdsKey = assignedPropertyIds.join(',');
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -157,11 +156,13 @@ export function UpcomingPayments() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 card-shadow animate-fade-in">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <Skeleton className="h-5 sm:h-6 w-32 sm:w-40" />
-          <Skeleton className="h-5 w-16 sm:w-20" />
-        </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 card-shadow">
+        {showHeader ? (
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <Skeleton className="h-5 sm:h-6 w-32 sm:w-40" />
+            <Skeleton className="h-5 w-16 sm:w-20" />
+          </div>
+        ) : null}
         <div className="space-y-2.5 sm:space-y-3">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-14 sm:h-16 w-full rounded-lg" />
@@ -172,15 +173,17 @@ export function UpcomingPayments() {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 sm:p-6 card-shadow animate-fade-in">
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground">
-          Upcoming Payments
-        </h3>
-        <Badge variant="secondary" className="font-medium text-xs">
-          {payments.length} pending
-        </Badge>
-      </div>
+    <div className="rounded-xl border border-border bg-card p-4 sm:p-6 card-shadow">
+      {showHeader ? (
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="font-heading text-base sm:text-lg font-semibold text-card-foreground">
+            Upcoming Payments
+          </h3>
+          <Badge variant="secondary" className="font-medium text-xs">
+            {payments.length} pending
+          </Badge>
+        </div>
+      ) : null}
       <div className="space-y-2.5 sm:space-y-3">
         {payments.length === 0 ? (
           <p className="text-xs sm:text-sm text-muted-foreground text-center py-3 sm:py-4">
@@ -195,7 +198,7 @@ export function UpcomingPayments() {
             >
               <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                 <AvatarImage src={payment.tenant_photo || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 text-[10px] sm:text-xs">
+                <AvatarFallback className="bg-primary/10 text-primary text-[10px] sm:text-xs">
                   {payment.tenant_name.split(" ").map((n) => n[0]).join("")}
                 </AvatarFallback>
               </Avatar>
@@ -224,7 +227,7 @@ export function UpcomingPayments() {
                     </Badge>
                   )}
                   {payment.status === "due_soon" && (
-                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-orange-500/20 text-orange-600 border-orange-500/30">
+                    <Badge className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 bg-warning/20 text-warning border-warning/30">
                       {payment.daysUntilDue}d
                     </Badge>
                   )}

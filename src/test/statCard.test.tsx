@@ -13,4 +13,13 @@ describe("StatCard", () => {
     expect(container.firstElementChild?.className).not.toContain("hover:-translate-y");
     expect(container.innerHTML).not.toContain("bg-gradient-to-br");
   });
+
+  it("uses restrained type when compact", () => {
+    const { container } = render(
+      <StatCard compact title="Properties" value="4" icon={Home} />,
+    );
+    const value = screen.getByText("4");
+    expect(value.className).toContain("text-xl");
+    expect(container.firstElementChild?.className).toContain("rounded-xl");
+  });
 });

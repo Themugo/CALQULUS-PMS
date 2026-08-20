@@ -14,10 +14,8 @@ import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { PageLoader } from "@/shared/components/PageLoader";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import {
-  DESIGN_PREVIEW_PATH,
-  SHELL_PREVIEW_PATH,
-  designPreviewRoute,
-  shellPreviewRoute,
+  isDesignPreviewPath,
+  designPreviewPublicRoutes,
   roleRouteConfigs,
   publicRoutes,
   adminDomainRoutes,
@@ -181,11 +179,8 @@ const AppRoutes = () => {
 
   if (loading) return <PageLoader />;
 
-  if (location.pathname === DESIGN_PREVIEW_PATH) {
-    return <Routes>{renderRoute(designPreviewRoute)}</Routes>;
-  }
-  if (location.pathname === SHELL_PREVIEW_PATH) {
-    return <Routes>{renderRoute(shellPreviewRoute)}</Routes>;
+  if (isDesignPreviewPath(location.pathname)) {
+    return <Routes>{designPreviewPublicRoutes.map((route) => renderRoute(route))}</Routes>;
   }
 
   // Open-access dev mode: route by URL path so every portal renders
