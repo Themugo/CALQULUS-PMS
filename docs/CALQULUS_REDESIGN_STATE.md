@@ -48,12 +48,13 @@ STOP. Do not redesign other Manager pages, other portals, or the authenticated s
 - Submanager property scoping via `useManagerScope` is unchanged
 
 ## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json`
-- `npx vitest run` for new dashboard/preview contracts
-- Playwright: `/design-preview/manager-dashboard` at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx eslint` on changed dashboard/preview files — pass
+- `npx vitest run` — **894 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-dashboard` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
-- `npm run build`
+- `npm run build` — pass
 
 ## NEXT STEP
 STOP. Do not continue to other Manager pages. After this checkpoint: Manager properties / tenants / billing, or shell unification — only when requested.
