@@ -48,10 +48,18 @@ health). Preview before claiming done.
   Occupancy bars are solid primary, not teal gradients.
 
 ### Phase 10 verification
-- Pending this turn.
+- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- ESLint on touched files — 0 errors; 2 pre-existing-style warnings
+  (`PendingApproval` hook deps; `MarketingWebsite` re-export)
+- `npx vitest run` — 857 passed; 1 skipped
+  (`noDefaultPalette` now passes; the black/emerald marketing canvas is gone)
+- Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
+  — 32 passed, 5 skipped (credential-gated auth)
+- `npm run build` — pass
+- Draft PR #59 on `cursor/phase-10-product-wide-polish-1e5d`. Not merged to `main`.
 
 ## CHECKPOINT
-Phase 10 polish is on `cursor/phase-10-product-wide-polish-1e5d`.
+Phase 10 polish is on `cursor/phase-10-product-wide-polish-1e5d`, draft PR #59.
 Do not merge to `main` until James asks.
 
 ## PREVIOUS PHASE
