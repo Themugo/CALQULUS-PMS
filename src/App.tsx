@@ -267,15 +267,14 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <WhiteLabelProvider>
-            <ErrorBoundary fallback={null}>
-              <PushNotificationPrompt />
-            </ErrorBoundary>
-            {/* Route prefetcher for optimized data loading */}
-            <RoutePrefetcher />
-            <ErrorBoundary>
-              <AppRoutes />
-            </ErrorBoundary>
-            <DevPortalSwitcher />
+              <ErrorBoundary fallback={null}>
+                <PushNotificationPrompt />
+              </ErrorBoundary>
+              <RoutePrefetcher />
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+              <DevPortalSwitcher />
             </WhiteLabelProvider>
           </AuthProvider>
         </BrowserRouter>
