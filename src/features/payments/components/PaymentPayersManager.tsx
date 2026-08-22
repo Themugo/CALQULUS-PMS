@@ -12,8 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import {
 import { errorToast } from "@/shared/lib/errorToast";
+import {
   Plus, Trash2, Briefcase, User, Users, Building2,
   Loader2, Info
 } from 'lucide-react';

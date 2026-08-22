@@ -14,8 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
-import {
 import { errorToast } from "@/shared/lib/errorToast";
+import {
   User, Briefcase, Phone, AlertTriangle, Home,
   ShieldAlert, CheckCircle, Save, Edit2, Loader2,
   Building2, Users, Flag

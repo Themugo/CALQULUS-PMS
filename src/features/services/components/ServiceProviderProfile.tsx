@@ -14,8 +14,8 @@ import { Switch } from '@/shared/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Separator } from '@/shared/components/ui/separator';
-import {
 import { errorToast } from "@/shared/lib/errorToast";
+import {
   Plus, Save, Trash2, Star, CheckCircle, Briefcase,
   Phone, MapPin, Clock, Loader2, AlertTriangle, ToggleRight
 } from 'lucide-react';
