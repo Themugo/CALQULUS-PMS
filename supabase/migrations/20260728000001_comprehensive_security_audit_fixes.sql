@@ -98,12 +98,13 @@ CREATE INDEX IF NOT EXISTS idx_user_roles_user_role
 -- ══════════════════════════════════════════════════════════════
 
 -- Ensure activity_logs has proper indexes for common queries
-CREATE INDEX IF NOT EXISTS idx_activity_logs_user_action
-  ON public.activity_logs (user_id, created_at DESC);
+-- (the actor column is actor_id, not user_id)
+CREATE INDEX IF NOT EXISTS idx_activity_logs_actor_action
+  ON public.activity_logs (actor_id, created_at DESC);
 
-CREATE INDEX IF EXISTS idx_activity_logs_resource
-  ON public.activity_logs (resource_type, resource_id)
-  WHERE resource_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_activity_logs_resource
+  ON public.activity_logs (entity_type, entity_id)
+  WHERE entity_id IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created
   ON public.activity_logs (created_at DESC);
@@ -121,10 +122,12 @@ CREATE INDEX IF NOT EXISTS idx_notif_failures_tx
 CREATE INDEX IF NOT EXISTS idx_rate_limits_user_function
   ON public.api_rate_limits (user_id, function_name, window_start DESC);
 
--- Index for cleanup queries
+-- Index for cleanup queries.
+-- NOTE: an index predicate must be IMMUTABLE, so a moving-window predicate on
+-- now() is not possible; a plain index on window_start serves the same
+-- range-scan cleanup queries.
 CREATE INDEX IF NOT EXISTS idx_rate_limits_window
-  ON public.api_rate_limits (window_start)
-  WHERE window_start < now() - interval '7 days';
+  ON public.api_rate_limits (window_start);
 
 -- ══════════════════════════════════════════════════════════════
 -- SECTION 5: Security Functions Enhancement (MEDIUM)
@@ -192,7 +195,8 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.can_access_property(uuid) TO authenticated;
+-- NOTE: the second parameter has a DEFAULT, but DEFAULTs do not create a
+-- separate 1-argument overload for GRANT — the function's identity is (uuid, uuid).
 GRANT EXECUTE ON FUNCTION public.can_access_property(uuid, uuid) TO authenticated;
 
 -- ══════════════════════════════════════════════════════════════
@@ -249,8 +253,9 @@ BEGIN
 END;
 $$;
 
+-- NOTE: DEFAULT parameters do not create a zero-argument overload for GRANT —
+-- the function's identity is (uuid).
 GRANT EXECUTE ON FUNCTION public.get_tenant_manager_id(uuid) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_tenant_manager_id() TO authenticated;
 
 -- ══════════════════════════════════════════════════════════════
 -- SECTION 7: Dead Letter Queue Enhancements (MEDIUM)
@@ -286,7 +291,8 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.check_idempotency_key(text) TO authenticated;
+-- NOTE: DEFAULT parameters do not create a 1-argument overload for GRANT —
+-- the function's identity is (text, text).
 GRANT EXECUTE ON FUNCTION public.check_idempotency_key(text, text) TO authenticated;
 
 -- ══════════════════════════════════════════════════════════════
@@ -297,18 +303,33 @@ GRANT EXECUTE ON FUNCTION public.check_idempotency_key(text, text) TO authentica
 CREATE OR REPLACE FUNCTION public.log_security_event(
   p_event_type text,
   p_details jsonb DEFAULT '{}'::jsonb,
-  p_severity text DEFAULT 'info' CHECK (p_severity IN ('info', 'warning', 'critical'))
+  p_severity text DEFAULT 'info'
+  -- NOTE: CHECK constraints are not permitted on function parameters in
+  -- PostgreSQL; severity is validated in the function body below.
 ) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_role text;
 BEGIN
-  -- Log to activity_logs with special resource_type
+  IF p_severity NOT IN ('info', 'warning', 'critical') THEN
+    RAISE EXCEPTION 'invalid severity: %', p_severity;
+  END IF;
+
+  -- Log to activity_logs with entity_type = 'security_event'.
+  -- NOTE: activity_logs columns are actor_id / actor_role / entity_type /
+  -- metadata (NOT user_id / resource_type / details as in audit_logs).
+  SELECT role INTO v_role FROM public.user_roles
+    WHERE user_id = auth.uid() LIMIT 1;
+
   INSERT INTO public.activity_logs (
-    user_id,
+    actor_id,
+    actor_role,
     action,
-    resource_type,
-    details
+    entity_type,
+    metadata
   ) VALUES (
     auth.uid(),
+    COALESCE(v_role, 'system'),
     p_event_type,
     'security_event',
     jsonb_build_object(
@@ -321,8 +342,8 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.log_security_event(text) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.log_security_event(text, jsonb) TO authenticated;
+-- NOTE: DEFAULT parameters do not create 1- or 2-argument overloads for GRANT —
+-- the function's identity is (text, jsonb, text).
 GRANT EXECUTE ON FUNCTION public.log_security_event(text, jsonb, text) TO authenticated;
 
 -- Function to get user's active sessions count (for security monitoring)

@@ -343,9 +343,9 @@ CREATE TABLE IF NOT EXISTS public.subscription_tiers (
   price_per_property numeric NOT NULL,
   price_flat numeric,
   features jsonb,
-  is_active boolean NOT NULL,
+  is_active boolean NOT NULL DEFAULT true,
   display_order integer NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -922,21 +922,45 @@ DELETE FROM public.water_meter_readings
 WHERE manager_id IS NOT NULL 
   AND manager_id NOT IN (SELECT id FROM public.profiles);
 
-DELETE FROM public.bank_transactions 
-WHERE manager_id IS NOT NULL 
-  AND manager_id NOT IN (SELECT id FROM public.profiles);
+-- bank_transactions is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'bank_transactions') THEN
+    DELETE FROM public.bank_transactions
+    WHERE manager_id IS NOT NULL
+      AND manager_id NOT IN (SELECT id FROM public.profiles);
+  END IF;
+END $$;
 
-DELETE FROM public.payment_allocations 
-WHERE manager_id IS NOT NULL 
-  AND manager_id NOT IN (SELECT id FROM public.profiles);
+-- payment_allocations is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'payment_allocations') THEN
+    DELETE FROM public.payment_allocations
+    WHERE manager_id IS NOT NULL
+      AND manager_id NOT IN (SELECT id FROM public.profiles);
+  END IF;
+END $$;
 
-DELETE FROM public.bank_integration_settings 
-WHERE manager_id IS NOT NULL 
-  AND manager_id NOT IN (SELECT id FROM public.profiles);
+-- bank_integration_settings is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'bank_integration_settings') THEN
+    DELETE FROM public.bank_integration_settings
+    WHERE manager_id IS NOT NULL
+      AND manager_id NOT IN (SELECT id FROM public.profiles);
+  END IF;
+END $$;
 
-DELETE FROM public.property_billing_config 
-WHERE manager_id IS NOT NULL 
-  AND manager_id NOT IN (SELECT id FROM public.profiles);
+-- property_billing_config is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'property_billing_config') THEN
+    DELETE FROM public.property_billing_config
+    WHERE manager_id IS NOT NULL
+      AND manager_id NOT IN (SELECT id FROM public.profiles);
+  END IF;
+END $$;
 
 DELETE FROM public.vacation_notices 
 WHERE manager_id IS NOT NULL 
@@ -1954,8 +1978,9 @@ END $$;
 -- payment_allocations → payment_transactions
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint 
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'payment_allocations')
+     AND NOT EXISTS (
+    SELECT 1 FROM pg_constraint
     WHERE conname = 'payment_allocations_transaction_id_fkey'
   ) THEN
     ALTER TABLE public.payment_allocations
@@ -1967,8 +1992,9 @@ END $$;
 -- payment_allocations → invoices
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint 
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'payment_allocations')
+     AND NOT EXISTS (
+    SELECT 1 FROM pg_constraint
     WHERE conname = 'payment_allocations_invoice_id_fkey'
   ) THEN
     ALTER TABLE public.payment_allocations
@@ -1980,8 +2006,9 @@ END $$;
 -- payment_allocations → tenants
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint 
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'payment_allocations')
+     AND NOT EXISTS (
+    SELECT 1 FROM pg_constraint
     WHERE conname = 'payment_allocations_tenant_id_fkey'
   ) THEN
     ALTER TABLE public.payment_allocations
@@ -1993,8 +2020,9 @@ END $$;
 -- payment_allocations → profiles (manager)
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint 
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'payment_allocations')
+     AND NOT EXISTS (
+    SELECT 1 FROM pg_constraint
     WHERE conname = 'payment_allocations_manager_id_fkey'
   ) THEN
     ALTER TABLE public.payment_allocations
@@ -2043,8 +2071,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS invoices_manager_invoice_number_key
   ON public.invoices(manager_id, invoice_number) WHERE invoice_number IS NOT NULL AND invoice_number != '';
 
 -- Prevent duplicate bank transactions from concurrent webhook deliveries
-CREATE UNIQUE INDEX IF NOT EXISTS bank_transactions_manager_external_id_key
-  ON public.bank_transactions(manager_id, external_id) WHERE external_id IS NOT NULL AND external_id != '';
+-- bank_transactions is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'bank_transactions') THEN
+    CREATE UNIQUE INDEX IF NOT EXISTS bank_transactions_manager_external_id_key
+      ON public.bank_transactions(manager_id, external_id) WHERE external_id IS NOT NULL AND external_id != '';
+  END IF;
+END $$;
 
 -- ── Performance Indexes ─────────────────────────────────────────────
 -- These indexes cover the most frequently queried columns across the
@@ -2118,7 +2152,13 @@ CREATE INDEX IF NOT EXISTS idx_company_settings_manager ON public.company_settin
 CREATE INDEX IF NOT EXISTS idx_mpesa_settings_manager ON public.manager_mpesa_settings(manager_user_id);
 
 -- manager_notification_settings: manager_user_id lookup
-CREATE INDEX IF NOT EXISTS idx_notification_settings_manager ON public.manager_notification_settings(manager_user_id);
+-- manager_notification_settings is created by a later migration; guard for clean-database replay
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'manager_notification_settings') THEN
+    CREATE INDEX IF NOT EXISTS idx_notification_settings_manager ON public.manager_notification_settings(manager_user_id);
+  END IF;
+END $$;
 
 -- receipt_settings: manager_user_id lookup
 CREATE INDEX IF NOT EXISTS idx_receipt_settings_manager ON public.receipt_settings(manager_user_id);
@@ -2196,7 +2236,7 @@ CREATE INDEX IF NOT EXISTS idx_manager_submanagers_submanager ON public.manager_
 CREATE INDEX IF NOT EXISTS idx_ewallet_settings_manager ON public.manager_ewallet_settings(manager_user_id);
 
 -- manager_profiles: manager_user_id lookup
-CREATE INDEX IF NOT EXISTS idx_manager_profiles_manager_user_id ON public.manager_profiles(manager_user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_manager_profiles_manager_user_id ON public.manager_profiles(manager_user_id);
 CREATE INDEX IF NOT EXISTS idx_manager_profiles_status ON public.manager_profiles(status);
 CREATE INDEX IF NOT EXISTS idx_manager_profiles_agency_id ON public.manager_profiles(agency_id);
 
@@ -2206,7 +2246,7 @@ CREATE INDEX IF NOT EXISTS idx_agency_members_manager_id ON public.agency_member
 CREATE INDEX IF NOT EXISTS idx_agency_members_member_user_id ON public.agency_members(member_user_id);
 
 -- subscription_tiers: tier_key lookup
-CREATE INDEX IF NOT EXISTS idx_subscription_tiers_tier_key ON public.subscription_tiers(tier_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscription_tiers_tier_key ON public.subscription_tiers(tier_key);
 CREATE INDEX IF NOT EXISTS idx_subscription_tiers_is_active ON public.subscription_tiers(is_active);
 
 -- manager_status_log: manager_user_id lookup

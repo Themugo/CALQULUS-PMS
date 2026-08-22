@@ -50,6 +50,7 @@ DROP POLICY IF EXISTS "Manager_upload_maintenance_photos" ON storage.objects;
 -- ══════════════════════════════════════════════════════════════
 
 -- SELECT: Tenant (own photo), Manager (their tenant), Submanager (their manager's tenant)
+DROP POLICY IF EXISTS "tenant_photos_scoped_select" ON storage.objects;
 CREATE POLICY "tenant_photos_scoped_select"
   ON storage.objects FOR SELECT TO authenticated
   USING (
@@ -78,6 +79,7 @@ CREATE POLICY "tenant_photos_scoped_select"
   );
 
 -- INSERT / UPDATE / DELETE: Tenant (own folder) or Manager/Submanager
+DROP POLICY IF EXISTS "tenant_photos_scoped_insert" ON storage.objects;
 CREATE POLICY "tenant_photos_scoped_insert"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
@@ -102,6 +104,7 @@ CREATE POLICY "tenant_photos_scoped_insert"
     )
   );
 
+DROP POLICY IF EXISTS "tenant_photos_scoped_update" ON storage.objects;
 CREATE POLICY "tenant_photos_scoped_update"
   ON storage.objects FOR UPDATE TO authenticated
   USING (
@@ -116,6 +119,7 @@ CREATE POLICY "tenant_photos_scoped_update"
   )
   WITH CHECK (bucket_id = 'tenant-photos');
 
+DROP POLICY IF EXISTS "tenant_photos_scoped_delete" ON storage.objects;
 CREATE POLICY "tenant_photos_scoped_delete"
   ON storage.objects FOR DELETE TO authenticated
   USING (
@@ -134,6 +138,7 @@ CREATE POLICY "tenant_photos_scoped_delete"
 -- ══════════════════════════════════════════════════════════════
 
 -- SELECT: Tenant (own lease/contract), Manager/Submanager (their property), Landlord (their property)
+DROP POLICY IF EXISTS "signed_contracts_scoped_select" ON storage.objects;
 CREATE POLICY "signed_contracts_scoped_select"
   ON storage.objects FOR SELECT TO authenticated
   USING (
@@ -164,6 +169,7 @@ CREATE POLICY "signed_contracts_scoped_select"
     )
   );
 
+DROP POLICY IF EXISTS "signed_contracts_scoped_insert" ON storage.objects;
 CREATE POLICY "signed_contracts_scoped_insert"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
@@ -176,11 +182,13 @@ CREATE POLICY "signed_contracts_scoped_insert"
     )
   );
 
+DROP POLICY IF EXISTS "signed_contracts_scoped_update" ON storage.objects;
 CREATE POLICY "signed_contracts_scoped_update"
   ON storage.objects FOR UPDATE TO authenticated
   USING (bucket_id = 'signed-contracts' AND owner = auth.uid())
   WITH CHECK (bucket_id = 'signed-contracts');
 
+DROP POLICY IF EXISTS "signed_contracts_scoped_delete" ON storage.objects;
 CREATE POLICY "signed_contracts_scoped_delete"
   ON storage.objects FOR DELETE TO authenticated
   USING (
@@ -197,6 +205,7 @@ CREATE POLICY "signed_contracts_scoped_delete"
 -- 5. Contracts (Private — Manager Subscription & Lease Templates)
 -- ══════════════════════════════════════════════════════════════
 
+DROP POLICY IF EXISTS "contracts_scoped_select" ON storage.objects;
 CREATE POLICY "contracts_scoped_select"
   ON storage.objects FOR SELECT TO authenticated
   USING (
@@ -234,6 +243,7 @@ CREATE POLICY "contracts_scoped_select"
     )
   );
 
+DROP POLICY IF EXISTS "contracts_scoped_insert" ON storage.objects;
 CREATE POLICY "contracts_scoped_insert"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
@@ -246,11 +256,13 @@ CREATE POLICY "contracts_scoped_insert"
     )
   );
 
+DROP POLICY IF EXISTS "contracts_scoped_update" ON storage.objects;
 CREATE POLICY "contracts_scoped_update"
   ON storage.objects FOR UPDATE TO authenticated
   USING (bucket_id = 'contracts' AND owner = auth.uid())
   WITH CHECK (bucket_id = 'contracts');
 
+DROP POLICY IF EXISTS "contracts_scoped_delete" ON storage.objects;
 CREATE POLICY "contracts_scoped_delete"
   ON storage.objects FOR DELETE TO authenticated
   USING (
@@ -267,6 +279,7 @@ CREATE POLICY "contracts_scoped_delete"
 -- 6. Maintenance Photos (Private — Tickets, Inspections, Meters)
 -- ══════════════════════════════════════════════════════════════
 
+DROP POLICY IF EXISTS "maintenance_photos_scoped_select" ON storage.objects;
 DROP POLICY IF EXISTS "maintenance_photos_scoped_select" ON storage.objects;
 CREATE POLICY "maintenance_photos_scoped_select"
   ON storage.objects FOR SELECT TO authenticated
@@ -285,6 +298,7 @@ CREATE POLICY "maintenance_photos_scoped_select"
   );
 
 DROP POLICY IF EXISTS "maintenance_photos_scoped_insert" ON storage.objects;
+DROP POLICY IF EXISTS "maintenance_photos_scoped_insert" ON storage.objects;
 CREATE POLICY "maintenance_photos_scoped_insert"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
@@ -301,6 +315,7 @@ CREATE POLICY "maintenance_photos_scoped_insert"
 -- 7. Property Images (Public Read, Manager/Submanager Write)
 -- ══════════════════════════════════════════════════════════════
 
+DROP POLICY IF EXISTS "property_images_scoped_write" ON storage.objects;
 CREATE POLICY "property_images_scoped_write"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
@@ -313,6 +328,7 @@ CREATE POLICY "property_images_scoped_write"
     )
   );
 
+DROP POLICY IF EXISTS "property_images_scoped_delete" ON storage.objects;
 CREATE POLICY "property_images_scoped_delete"
   ON storage.objects FOR DELETE TO authenticated
   USING (

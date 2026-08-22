@@ -304,9 +304,11 @@ CREATE POLICY "Managers can read invoice_line_items"
     )
   );
 
-CREATE POLICY "Managers can read landlord_invoices"
+-- landlord_invoices is webhost-to-landlord billing; it has no manager_id column.
+-- The webhost who issued the invoice reads it (service role inserts).
+CREATE POLICY "Webhosts can read landlord_invoices"
   ON public.landlord_invoices FOR SELECT
-  USING (manager_id = auth.uid());
+  USING (webhost_user_id = auth.uid());
 
 CREATE POLICY "Landlords can read own invoices"
   ON public.landlord_invoices FOR SELECT
@@ -366,11 +368,13 @@ INSERT INTO storage.buckets (id, name, public, avif_autodetection, file_size_lim
 -- 8. Harden existing storage bucket RLS by adding ownership checks
 -- These policies work alongside existing bucket_id-based policies
 
-CREATE POLICY IF NOT EXISTS "Users can only update their own objects"
+DROP POLICY IF EXISTS "Users can only update their own objects" ON storage.objects;
+CREATE POLICY "Users can only update their own objects"
   ON storage.objects FOR UPDATE
   USING (auth.uid() = owner);
 
-CREATE POLICY IF NOT EXISTS "Users can only delete their own objects"
+DROP POLICY IF EXISTS "Users can only delete their own objects" ON storage.objects;
+CREATE POLICY "Users can only delete their own objects"
   ON storage.objects FOR DELETE
   USING (auth.uid() = owner);
 

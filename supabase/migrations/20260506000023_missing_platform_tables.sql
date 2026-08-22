@@ -91,15 +91,32 @@ CREATE POLICY "manager_reads_own_platform_invoices"
   USING (manager_user_id = auth.uid());
 
 -- Auto-mark overdue
-CREATE OR REPLACE FUNCTION public.escalate_overdue_manager_invoices()
-RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+-- NOTE: the full escalation function (reminders, suspension, RETURNS integer) is
+-- created by earlier migration 20260506000017_monetisation_enforcement.sql.
+-- CREATE OR REPLACE cannot change a return type, so only create the minimal
+-- fallback here when the function does not already exist.
+DO $$
 BEGIN
-  UPDATE public.manager_invoices
-  SET status = 'overdue', updated_at = now()
-  WHERE status = 'pending'
-    AND due_date < CURRENT_DATE;
-END;
-$$;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public' AND p.proname = 'escalate_overdue_manager_invoices'
+  ) THEN
+    CREATE FUNCTION public.escalate_overdue_manager_invoices()
+    RETURNS integer LANGUAGE plpgsql SECURITY DEFINER AS $fn$
+    DECLARE
+      v_count integer;
+    BEGIN
+      UPDATE public.manager_invoices
+      SET status = 'overdue', updated_at = now()
+      WHERE status = 'pending'
+        AND due_date < CURRENT_DATE;
+      GET DIAGNOSTICS v_count = ROW_COUNT;
+      RETURN v_count;
+    END;
+    $fn$;
+  END IF;
+END $$;
 
 -- ── 3. manager_contracts ─────────────────────────────────────
 -- Service agreements between webhost and managers.

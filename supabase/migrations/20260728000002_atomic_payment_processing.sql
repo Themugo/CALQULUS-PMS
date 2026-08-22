@@ -280,34 +280,16 @@ END;
 $$;
 
 -- ── 4. Ensure idempotency constraints exist ─────────────────────────
--- These may already exist from earlier migrations
-DO $$
-BEGIN
-  -- Unique constraint on idempotent key
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_indexes
-    WHERE tablename = 'payment_transactions'
-      AND indexname = 'payment_tx_idempotent_key_unique'
-  ) THEN
-    ALTER TABLE public.payment_transactions
-      ADD CONSTRAINT payment_tx_idempotent_key_unique
-      UNIQUE (idempotent_key)
-      WHERE idempotent_key IS NOT NULL;
-  END IF;
+-- These may already exist from earlier migrations.
+-- NOTE: partial uniqueness cannot be expressed as ALTER TABLE ... ADD CONSTRAINT
+-- (PostgreSQL has no partial constraints) — use partial UNIQUE INDEXES instead.
+CREATE UNIQUE INDEX IF NOT EXISTS payment_tx_idempotent_key_unique
+  ON public.payment_transactions (idempotent_key)
+  WHERE idempotent_key IS NOT NULL;
 
-  -- Unique constraint on completed transaction + reference
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_indexes
-    WHERE tablename = 'payment_transactions'
-      AND indexname = 'payment_tx_ref_tenant_unique'
-  ) THEN
-    ALTER TABLE public.payment_transactions
-      ADD CONSTRAINT payment_tx_ref_tenant_unique
-      UNIQUE (tenant_id, bank_reference)
-      WHERE status = 'completed' AND bank_reference IS NOT NULL;
-  END IF;
-END;
-$$;
+CREATE UNIQUE INDEX IF NOT EXISTS payment_tx_ref_tenant_unique
+  ON public.payment_transactions (tenant_id, bank_reference)
+  WHERE status = 'completed' AND bank_reference IS NOT NULL;
 
 -- ── 5. Add idempotent_key column if not exists ────────────────────
 DO $$

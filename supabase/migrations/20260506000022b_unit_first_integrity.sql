@@ -93,7 +93,7 @@ SELECT
   t.email                                               AS tenant_email,
   t.phone                                               AS tenant_phone,
   l.id                                                  AS lease_id,
-  COALESCE(l.rent_amount, u.monthly_rent)               AS monthly_rent,
+  COALESCE(l.monthly_rent, u.monthly_rent)               AS monthly_rent,
   l.status                                              AS lease_status,
   COUNT(i.id) FILTER (WHERE i.status = 'pending')       AS pending_invoices,
   COUNT(i.id) FILTER (WHERE i.status = 'overdue')       AS overdue_invoices,

@@ -37,15 +37,23 @@ CREATE POLICY "submanager_reads_assigned_properties"
     )
   );
 
-DROP POLICY IF EXISTS "landlord_reads_owned_properties" ON public.properties;
-CREATE POLICY "landlord_reads_owned_properties"
-  ON public.properties FOR SELECT
-  USING (
-    id IN (
-      SELECT property_id FROM public.property_landlords
-      WHERE landlord_user_id = auth.uid()
-    )
-  );
+-- property_landlords is created by later migration 20260506000002; the same
+-- policy is (re)created by 20260506000012_complete_rbac_enforcement.sql.
+-- Guard so an empty-database replay does not fail.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'property_landlords') THEN
+    DROP POLICY IF EXISTS "landlord_reads_owned_properties" ON public.properties;
+    CREATE POLICY "landlord_reads_owned_properties"
+      ON public.properties FOR SELECT
+      USING (
+        id IN (
+          SELECT property_id FROM public.property_landlords
+          WHERE landlord_user_id = auth.uid()
+        )
+      );
+  END IF;
+END $$;
 
 -- Step 6: Verify the fix
 SELECT

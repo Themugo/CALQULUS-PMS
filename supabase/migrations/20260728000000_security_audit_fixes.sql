@@ -123,22 +123,16 @@ DROP POLICY IF EXISTS "Authenticated can read physical_invoices"
 CREATE POLICY "Scoped_physical_invoices"
   ON public.physical_invoices FOR SELECT
   USING (
-    -- Tenant sees own
+    -- Tenant sees own (physical_invoices.tenant_id links directly to user_roles.tenant_id)
     EXISTS (
-      SELECT 1 FROM public.invoices i
-      JOIN public.user_roles ur ON ur.tenant_id = i.tenant_id
-      WHERE i.id = physical_invoices.invoice_id
+      SELECT 1 FROM public.user_roles ur
+      WHERE ur.tenant_id = physical_invoices.tenant_id
         AND ur.user_id = auth.uid()
         AND ur.role = 'tenant'
     )
     OR
-    -- Manager sees theirs
-    EXISTS (
-      SELECT 1 FROM public.invoices i
-      JOIN public.properties p ON i.property_id = p.id
-      WHERE i.id = physical_invoices.invoice_id
-        AND p.manager_id = auth.uid()
-    )
+    -- Manager sees theirs (physical_invoices.manager_id is a direct column)
+    manager_id = auth.uid()
   );
 
 -- Fix: Restrict physical_receipts to managers
@@ -147,12 +141,8 @@ DROP POLICY IF EXISTS "Managers can manage physical_receipts"
 CREATE POLICY "Manager_only_physical_receipts"
   ON public.physical_receipts FOR ALL
   USING (
-    EXISTS (
-      SELECT 1 FROM public.invoices i
-      JOIN public.properties p ON i.property_id = p.id
-      WHERE i.id = physical_receipts.invoice_id
-        AND p.manager_id = auth.uid()
-    )
+    -- physical_receipts.manager_id is a direct column (no invoice_id exists)
+    manager_id = auth.uid()
   );
 
 -- Fix: Restrict unit_tenancy_history
@@ -188,13 +178,8 @@ CREATE POLICY "Scoped_payment_payers"
       WHERE user_id = auth.uid() AND role = 'tenant'
     )
     OR
-    -- Manager sees theirs
-    EXISTS (
-      SELECT 1 FROM public.invoices i
-      JOIN public.properties p ON i.property_id = p.id
-      WHERE i.id = payment_payers.invoice_id
-        AND p.manager_id = auth.uid()
-    )
+    -- Manager sees theirs (payment_payers.manager_id is a direct column)
+    manager_id = auth.uid()
   );
 
 -- ══════════════════════════════════════════════════════════════
@@ -237,6 +222,8 @@ GRANT EXECUTE ON FUNCTION public.create_account_activation(uuid, text, timestamp
 -- Complete storage policies with proper INSERT policy
 DROP POLICY IF EXISTS "Users can insert own objects" 
   ON storage.objects;
+DROP POLICY IF EXISTS "Users_can_insert_own_objects"
+  ON storage.objects;
 CREATE POLICY "Users_can_insert_own_objects"
   ON storage.objects FOR INSERT
   WITH CHECK (
@@ -258,7 +245,8 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Bucket policy: only owner or assigned manager can upload
-CREATE POLICY IF NOT EXISTS "Manager_upload_maintenance_photos"
+DROP POLICY IF EXISTS "Manager_upload_maintenance_photos" ON storage.objects;
+CREATE POLICY "Manager_upload_maintenance_photos"
   ON storage.objects FOR INSERT
   WITH CHECK (
     bucket_id = 'maintenance-photos' AND (
@@ -308,7 +296,7 @@ $$;
 GRANT EXECUTE ON FUNCTION public.log_activity(text, text, uuid, jsonb) 
   TO authenticated, service_role;
 
-COMMENT ON FUNCTION public.log_activity IS
+COMMENT ON FUNCTION public.log_activity(text, text, uuid, jsonb) IS
   'Bypasses RLS to log activity for audit trail. Use for all significant user actions.';
 
 -- ══════════════════════════════════════════════════════════════
