@@ -10,6 +10,13 @@
 -- can replay all migrations. It is applied BEFORE migration 1 in the local
 -- certification harness only.
 
+-- Hosted Supabase grants default table privileges to authenticated/anon via
+-- platform defaults (not migrations). Mirror that here so RLS behavior tests
+-- match production. Migration 22c revokes anon defaults as intended.
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated, anon;
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
 -- auth.jwt(): hosted Supabase exposes the decoded JWT claims as jsonb.
 CREATE OR REPLACE FUNCTION auth.jwt()
 RETURNS jsonb

@@ -16,7 +16,8 @@ interface Invitation {
   email: string;
   status: string;
   expires_at: string;
-  properties?: { name: string; address: string };
+  property_name?: string;
+  property_address?: string;
 }
 
 const LandlordInvitationAccept: React.FC = () => {
@@ -35,19 +36,20 @@ const LandlordInvitationAccept: React.FC = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
 
   const loadInvitation = useCallback(async () => {
-    const { data: inv, error } = await supabase
-      .from('landlord_invitations')
-      .select('*, properties(name, address)')
-      .eq('token', token!)
-      .maybeSingle();
+    // Token-gated SECURITY DEFINER RPC (public table read is locked down).
+    const { data, error } = await (supabase.rpc as CallableFunction)(
+      'get_landlord_invitation_by_token',
+      { p_token: token! },
+    );
+    const inv = (Array.isArray(data) ? data[0] : data) as Invitation | null;
 
     if (error || !inv) { setStatus('error'); return; }
-    if ((inv as Invitation).status === 'accepted') { setStatus('accepted'); return; }
-    if (new Date((inv as Invitation).expires_at) < new Date()) { setStatus('expired'); return; }
+    if (inv.status === 'accepted') { setStatus('accepted'); return; }
+    if (new Date(inv.expires_at) < new Date()) { setStatus('expired'); return; }
 
-    setInvitation(inv as Invitation);
-    setProperty((inv as Invitation).properties || null);
-    setForm(p => ({ ...p, email: (inv as Invitation).email }));
+    setInvitation(inv);
+    setProperty(inv.property_name ? { name: inv.property_name, address: inv.property_address || '' } : null);
+    setForm(p => ({ ...p, email: inv.email }));
     setStatus('found');
   }, [token]);
 
@@ -57,27 +59,16 @@ const LandlordInvitationAccept: React.FC = () => {
   }, [token, loadInvitation]);
 
   const acceptInvitation = useCallback(async () => {
-    if (!user || !invitation) return;
+    if (!user || !invitation || !token) return;
     setSubmitting(true);
     try {
-      // Create property_landlords link
-      await supabase.from('property_landlords').upsert({
-        property_id:      invitation.property_id,
-        landlord_user_id: user.id,
-        manager_id:       invitation.manager_id,
-        revenue_share_pct: 100,
-      }, { onConflict: 'property_id' });
-
-      // Create user_role as landlord if not exists
-      await supabase.from('user_roles').upsert({
-        user_id: user.id,
-        role:    'landlord',
-      }, { onConflict: 'user_id' });
-
-      // Mark invitation accepted
-      await supabase.from('landlord_invitations')
-        .update({ status: 'accepted', accepted_at: new Date().toISOString() })
-        .eq('id', invitation.id);
+      // Atomic SECURITY DEFINER accept: creates the property link, landlord
+      // role, and marks the invitation used in one transaction.
+      const { error } = await (supabase.rpc as CallableFunction)(
+        'accept_landlord_invitation',
+        { p_token: token },
+      );
+      if (error) throw error;
 
       toast({ title: 'Welcome!', description: `You now have access to ${property?.name}` });
       navigate('/landlord/dashboard');
@@ -86,7 +77,7 @@ const LandlordInvitationAccept: React.FC = () => {
       toast({ title: 'Failed to accept', description: message, variant: 'destructive' });
     }
     setSubmitting(false);
-  }, [user, invitation, toast, navigate, property]);
+  }, [user, invitation, token, toast, navigate, property]);
 
   useEffect(() => {
     if (user && invitation) acceptInvitation();

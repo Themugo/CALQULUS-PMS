@@ -8,7 +8,7 @@
 -- Base Schema: ONLY tables NOT created by any migration
 
 CREATE TABLE IF NOT EXISTS public.account_activations (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   expires_at timestamptz NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   token text NOT NULL,
@@ -25,30 +25,30 @@ CREATE TABLE IF NOT EXISTS public.admin_permissions (
   can_manage_properties boolean NOT NULL,
   can_manage_tenants boolean NOT NULL,
   can_view_activity_logs boolean NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   created_by text,
   id uuid DEFAULT gen_random_uuid(),
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   user_id uuid NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.agencies (
   address text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   email text,
   id uuid DEFAULT gen_random_uuid(),
   logo_url text,
   manager_id uuid,
   name text NOT NULL,
   phone text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.audit_logs (
   action text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   details jsonb,
   id uuid DEFAULT gen_random_uuid(),
   ip_address text,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS public.bank_details (
   account_number text NOT NULL,
   bank_name text NOT NULL,
   branch_name text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   is_default boolean,
   manager_id uuid NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS public.bank_details (
   swift_code text,
   till_number text,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -83,14 +83,14 @@ CREATE TABLE IF NOT EXISTS public.company_settings (
   address text,
   city text,
   company_name text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   email text,
   id uuid DEFAULT gen_random_uuid(),
   logo_url text,
   manager_user_id uuid,
   phone text,
   state text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   website text,
   zip_code text,
   PRIMARY KEY (id)
@@ -98,13 +98,13 @@ CREATE TABLE IF NOT EXISTS public.company_settings (
 
 CREATE TABLE IF NOT EXISTS public.contract_templates (
   content text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text,
   id uuid DEFAULT gen_random_uuid(),
   is_default boolean,
   manager_user_id uuid,
   name text NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS public.contracts (
   approved_at timestamptz,
   approved_by text,
   content text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   deleted_at timestamptz,
   deleted_by text,
   deletion_confirmed_at timestamptz,
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS public.contracts (
   tenant_signed_at timestamptz,
   title text NOT NULL,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   uploaded_contract_url text,
   valid_from text,
   valid_until text,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS public.contracts (
 
 CREATE TABLE IF NOT EXISTS public.deposit_deductions (
   amount numeric NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   created_by text,
   deduction_type text NOT NULL,
   description text NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS public.deposit_refunds (
   bank_account_name text,
   bank_account_number text,
   bank_name text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   final_balance numeric NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   move_out_date date NOT NULL,
@@ -171,26 +171,26 @@ CREATE TABLE IF NOT EXISTS public.deposit_refunds (
   status text NOT NULL,
   tenant_id uuid NOT NULL,
   total_deductions numeric NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.expenditures (
   amount numeric NOT NULL,
   category text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text,
   id uuid DEFAULT gen_random_uuid(),
   manager_id uuid NOT NULL,
   month text NOT NULL,
   property_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.invoices (
   amount numeric NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text,
   due_date date NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
@@ -200,12 +200,12 @@ CREATE TABLE IF NOT EXISTS public.invoices (
   paid_date date,
   status text NOT NULL,
   tenant_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.leases (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   deposit numeric,
   document_url text,
   end_date date NOT NULL,
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS public.leases (
   terms text,
   unit text NOT NULL,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS public.maintenance_requests (
   budget numeric,
   category text,
   completion_date date,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   created_by_role text,
   deduct_from_deposit boolean,
   deposit_deducted_at timestamptz,
@@ -247,12 +247,12 @@ CREATE TABLE IF NOT EXISTS public.maintenance_requests (
   title text NOT NULL,
   unit_id uuid,
   unit_number text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.manager_ewallet_settings (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   instructions text,
   is_enabled boolean NOT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS public.manager_ewallet_settings (
   property_id uuid,
   provider text NOT NULL,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   wallet_id uuid,
   wallet_name text,
   wallet_phone text,
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS public.manager_ewallet_settings (
 CREATE TABLE IF NOT EXISTS public.manager_mpesa_settings (
   consumer_key text,
   consumer_secret text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   is_live boolean NOT NULL,
   manager_user_id uuid NOT NULL,
@@ -283,12 +283,12 @@ CREATE TABLE IF NOT EXISTS public.manager_mpesa_settings (
   till_passkey text,
   till_shortcode text,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.manager_submanagers (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   manager_id uuid NOT NULL,
   submanager_user_id uuid NOT NULL,
@@ -307,18 +307,22 @@ CREATE TABLE IF NOT EXISTS public.manager_profiles (
   suspended_by uuid,
   approved_at timestamptz,
   approved_by uuid,
-  subscription_tier text NOT NULL,
-  max_properties integer NOT NULL,
-  max_units integer NOT NULL,
-  billing_day integer NOT NULL,
-  platform_rate numeric NOT NULL,
-  billing_method text NOT NULL,
-  property_count integer NOT NULL,
-  unit_count integer NOT NULL,
-  tenant_count integer NOT NULL,
+  -- Defaults mirror the intended definition in 20260506000014 (whose
+  -- CREATE TABLE IF NOT EXISTS is skipped when this base table exists first).
+  -- The tier CHECK constraint is intentionally omitted: migration 18 later
+  -- adds lite/pro tier keys that it would reject.
+  subscription_tier text NOT NULL DEFAULT 'starter',
+  max_properties integer NOT NULL DEFAULT 5,
+  max_units integer NOT NULL DEFAULT 50,
+  billing_day integer NOT NULL DEFAULT 1,
+  platform_rate numeric NOT NULL DEFAULT 500,
+  billing_method text NOT NULL DEFAULT 'mpesa',
+  property_count integer NOT NULL DEFAULT 0,
+  unit_count integer NOT NULL DEFAULT 0,
+  tenant_count integer NOT NULL DEFAULT 0,
   last_active_at timestamptz,
-  created_at timestamptz NOT NULL,
-  updated_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -359,13 +363,13 @@ CREATE TABLE IF NOT EXISTS public.manager_status_log (
   reason text,
   internal_note text,
   notify_manager boolean,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.manager_subscriptions (
   amount numeric NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   manager_user_id uuid NOT NULL,
   payment_method text,
@@ -377,13 +381,13 @@ CREATE TABLE IF NOT EXISTS public.manager_subscriptions (
   subscription_end text,
   subscription_start text,
   tier text NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.payment_receipts (
   amount numeric NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   invoice_id uuid,
   notes text,
@@ -394,7 +398,7 @@ CREATE TABLE IF NOT EXISTS public.payment_receipts (
   rejection_reason text,
   status text NOT NULL,
   tenant_id uuid NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   verified_at timestamptz,
   verified_by text,
   PRIMARY KEY (id)
@@ -405,7 +409,7 @@ CREATE TABLE IF NOT EXISTS public.payment_transactions (
   callback_secret text,
   checkout_request_id uuid,
   completed_at timestamptz,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   failure_reason text,
   id uuid DEFAULT gen_random_uuid(),
   initiated_at timestamptz NOT NULL,
@@ -417,26 +421,26 @@ CREATE TABLE IF NOT EXISTS public.payment_transactions (
   phone_number text NOT NULL,
   status text NOT NULL,
   tenant_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.profiles (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   currency text,
   email text NOT NULL,
   full_name text,
   id uuid DEFAULT gen_random_uuid(),
   phone text,
   photo_url text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.properties (
   address text NOT NULL,
   agency_id uuid,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   house_label_prefix text,
   house_number text,
   id uuid DEFAULT gen_random_uuid(),
@@ -444,14 +448,14 @@ CREATE TABLE IF NOT EXISTS public.properties (
   manager_id uuid,
   name text NOT NULL,
   number_of_floors numeric,
-  occupied numeric NOT NULL,
+  occupied numeric NOT NULL DEFAULT 0,
   payment_details text,
   property_type text,
   rent_per_house numeric,
-  revenue numeric NOT NULL,
-  status text NOT NULL,
-  units numeric NOT NULL,
-  updated_at timestamptz NOT NULL,
+  revenue numeric NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'active',
+  units numeric NOT NULL DEFAULT 0,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -459,19 +463,19 @@ CREATE TABLE IF NOT EXISTS public.property_amenity_charges (
   amount numeric NOT NULL,
   charge_label text NOT NULL,
   charge_type text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   is_active boolean NOT NULL,
   manager_id uuid NOT NULL,
   property_id uuid NOT NULL,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.property_deductions (
   amount numeric NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   deduction_name text NOT NULL,
   deduction_type text NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
@@ -479,14 +483,14 @@ CREATE TABLE IF NOT EXISTS public.property_deductions (
   is_recurring boolean NOT NULL,
   manager_id uuid NOT NULL,
   property_id uuid NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.property_history (
   action text NOT NULL,
   changed_by text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text NOT NULL,
   details jsonb,
   id uuid DEFAULT gen_random_uuid(),
@@ -496,25 +500,25 @@ CREATE TABLE IF NOT EXISTS public.property_history (
 
 CREATE TABLE IF NOT EXISTS public.push_subscriptions (
   auth_key text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   endpoint text NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   p256dh_key text NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   user_id uuid NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.receipt_settings (
   auto_send_receipts boolean NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   footer_message text,
   id uuid DEFAULT gen_random_uuid(),
   include_logo boolean,
   manager_user_id uuid NOT NULL,
   primary_color text,
   secondary_color text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
@@ -527,17 +531,17 @@ CREATE TABLE IF NOT EXISTS public.submanager_permissions (
   can_view_maintenance boolean NOT NULL,
   can_view_properties boolean NOT NULL,
   can_view_tenants boolean NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   manager_id uuid NOT NULL,
   restrict_to_assigned_properties boolean,
   submanager_user_id uuid NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.submanager_property_assignments (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   manager_id uuid NOT NULL,
   property_id uuid NOT NULL,
@@ -547,7 +551,7 @@ CREATE TABLE IF NOT EXISTS public.submanager_property_assignments (
 
 CREATE TABLE IF NOT EXISTS public.tenant_history (
   action text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL,
@@ -555,7 +559,7 @@ CREATE TABLE IF NOT EXISTS public.tenant_history (
 );
 
 CREATE TABLE IF NOT EXISTS public.tenant_invitations (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   email text NOT NULL,
   expires_at timestamptz NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
@@ -572,7 +576,7 @@ CREATE TABLE IF NOT EXISTS public.tenant_invitations (
 
 CREATE TABLE IF NOT EXISTS public.tenants (
   account_number text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   deposit_amount numeric,
   deposit_balance numeric,
   deposit_months numeric,
@@ -592,27 +596,27 @@ CREATE TABLE IF NOT EXISTS public.tenants (
   status text NOT NULL,
   unit text,
   unit_id uuid,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   whatsapp text,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.unit_water_config (
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   flat_rate_override numeric,
   has_meter boolean NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   meter_number text,
   property_id uuid NOT NULL,
   unit_id uuid NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.units (
   bathrooms numeric,
   bedrooms numeric,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   description text,
   id uuid DEFAULT gen_random_uuid(),
   monthly_rent numeric,
@@ -620,13 +624,13 @@ CREATE TABLE IF NOT EXISTS public.units (
   square_feet numeric,
   status text NOT NULL,
   unit_number text NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.uploaded_documents (
   contract_id uuid,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   file_name text NOT NULL,
   file_size numeric,
   file_type text,
@@ -639,7 +643,7 @@ CREATE TABLE IF NOT EXISTS public.uploaded_documents (
 
 CREATE TABLE IF NOT EXISTS public.user_roles (
   approval_status text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   id uuid DEFAULT gen_random_uuid(),
   role text NOT NULL,
   tenant_id uuid,
@@ -650,7 +654,7 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
 CREATE TABLE IF NOT EXISTS public.vacation_notices (
   acknowledged_at timestamptz,
   acknowledged_by text,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   forwarding_address text,
   id uuid DEFAULT gen_random_uuid(),
   intended_move_out_date date NOT NULL,
@@ -668,7 +672,7 @@ CREATE TABLE IF NOT EXISTS public.vacation_notices (
   tenant_signature text,
   tenant_signed_at timestamptz,
   unit_number text,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   uploaded_document_url text,
   PRIMARY KEY (id)
 );
@@ -676,7 +680,7 @@ CREATE TABLE IF NOT EXISTS public.vacation_notices (
 CREATE TABLE IF NOT EXISTS public.water_billing_config (
   billing_cycle_day numeric,
   billing_method text NOT NULL,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   flat_rate_amount numeric,
   id uuid DEFAULT gen_random_uuid(),
   invoice_mode text NOT NULL,
@@ -685,7 +689,7 @@ CREATE TABLE IF NOT EXISTS public.water_billing_config (
   meter_number text,
   property_id uuid NOT NULL,
   rate_per_unit numeric,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   water_provider text,
   PRIMARY KEY (id)
 );
@@ -694,7 +698,7 @@ CREATE TABLE IF NOT EXISTS public.water_meter_readings (
   billing_period_end text,
   billing_period_start text,
   consumption numeric,
-  created_at timestamptz NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
   current_reading numeric NOT NULL,
   id uuid DEFAULT gen_random_uuid(),
   invoice_id uuid,
@@ -707,7 +711,7 @@ CREATE TABLE IF NOT EXISTS public.water_meter_readings (
   status text NOT NULL,
   total_amount numeric,
   unit_id uuid NOT NULL,
-  updated_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
 );
 
