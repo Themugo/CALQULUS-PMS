@@ -11,6 +11,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Users, UserPlus, Trash2 } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface TeamRow {
   id: string;
@@ -183,7 +184,7 @@ const LandlordTeamSettings: React.FC = () => {
       setEmail('');
       setLabel('');
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   const removeMember = useMutation({

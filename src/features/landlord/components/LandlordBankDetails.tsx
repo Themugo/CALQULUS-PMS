@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Save, Loader2, Smartphone, Landmark, Shield, CheckCircle } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const BANKS = [
   'Equity Bank', 'KCB Bank', 'NCBA Bank', 'Co-operative Bank',
@@ -106,7 +107,7 @@ const LandlordBankDetails: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['landlord-bank-details'] });
       toast({ title: 'Bank details saved', description: 'Your payout details have been updated.' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   if (isLoading) return <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>;

@@ -16,6 +16,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { useAuth, type PlatformAdminInfo, type PlatformAdminType } from '@/features/auth/AuthContext';
 import { Crown, Shield, User, UserPlus, Ban, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const ADMIN_TYPE_LABELS: Record<PlatformAdminType, string> = {
   owner: 'Owner',
@@ -136,7 +137,7 @@ const PlatformAdminManagement = () => {
       setNewAdmin({ email: '', password: '', displayName: '', adminType: 'admin' });
     },
     onError: (err: Error) => {
-      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+      errorToast('Failed', err);
     },
   });
 
@@ -173,7 +174,7 @@ const PlatformAdminManagement = () => {
       toast({ title: 'Updated' });
     },
     onError: (err: Error) => {
-      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+      errorToast('Failed', err);
     },
   });
 
@@ -196,7 +197,7 @@ const PlatformAdminManagement = () => {
       toast({ title: 'Admin removed' });
     },
     onError: (err: Error) => {
-      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+      errorToast('Failed', err);
     },
   });
 

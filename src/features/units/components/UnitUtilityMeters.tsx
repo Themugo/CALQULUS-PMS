@@ -17,6 +17,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import { Zap, Droplets, Flame, Wifi, Plus, Gauge, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface UtilityMeter {
   id: string;
@@ -107,7 +108,7 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
       setAddOpen(false);
       setForm(emptyForm);
     },
-    onError: (err: Error) => toast({ title: 'Failed to add meter', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to add meter', err),
   });
 
   const recordReading = useMutation({
@@ -126,7 +127,7 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
       setReadingMeter(null);
       setNewReading('');
     },
-    onError: (err: Error) => toast({ title: 'Failed to record reading', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to record reading', err),
   });
 
   const toggleActive = useMutation({
@@ -148,7 +149,7 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
       queryClient.invalidateQueries({ queryKey });
       toast({ title: 'Meter removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed to remove meter', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to remove meter', err),
   });
 
   return (

@@ -12,6 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/shared/components/ui/select';
 import { Plus, Trash2, X } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface UnitAmenity {
   id: string;
@@ -110,7 +111,7 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
       setIncluded(true);
       setExtraCharge('');
     },
-    onError: (err: Error) => toast({ title: 'Failed to add amenity', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to add amenity', err),
   });
 
   const removeAmenity = useMutation({
@@ -122,7 +123,7 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
       queryClient.invalidateQueries({ queryKey });
       toast({ title: 'Amenity removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed to remove amenity', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to remove amenity', err),
   });
 
   const totalExtra = (amenities || []).reduce((sum, a) => sum + (a.is_included ? 0 : Number(a.extra_charge || 0)), 0);

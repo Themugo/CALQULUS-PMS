@@ -104,7 +104,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
       queryClient.invalidateQueries({ queryKey: ['tenant-invoices'] });
     },
     onError: (err: Error) => {
-      toast({ title: 'Move-out failed', description: err.message, variant: 'destructive' });
+      errorToast('Move-out failed', err);
     },
   });
 

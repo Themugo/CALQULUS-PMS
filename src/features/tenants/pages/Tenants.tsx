@@ -1,6 +1,6 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { format } from "date-fns";
-import { logError } from "@/shared/lib/errorLogger";
+import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useRBAC } from "@/shared/hooks/useRBAC";
@@ -398,8 +398,9 @@ const Tenants = () => {
       const { data, error } = await query;
 
       if (error) {
-        setLoadError(error.message || "Failed to fetch tenants");
-        toast({ title: "Error", description: error.message || "Failed to fetch tenants", variant: "destructive" });
+        const msg = toUserFacingError(error, "Failed to fetch tenants");
+        setLoadError(msg);
+        toast({ title: "Error", description: msg, variant: "destructive" });
       } else {
         setTenants((data || []) as TenantData[]);
         if (data && data.length > 0) {

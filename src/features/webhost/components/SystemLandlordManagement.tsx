@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { onActivateKey } from '@/shared/lib/a11y';
+import { errorToast } from "@/shared/lib/errorToast";
 
 // System landlords are landlords whose property_landlords.manager_id IS NULL
 // These landlords are NOT under any manager/agency — they fall under webhost oversight.
@@ -188,7 +189,7 @@ const SystemLandlordManagement: React.FC = () => {
       toast({ title: `Payout ${vars.status}` });
       setPayoutDialog(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const pendingPayouts = payouts.filter(p => p.status === 'pending').length;

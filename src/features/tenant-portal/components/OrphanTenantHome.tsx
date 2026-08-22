@@ -42,6 +42,7 @@ import {
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import type { Database } from '@/integrations/supabase/types';
+import { errorToast } from "@/shared/lib/errorToast";
 
 type OrphanRecord = Database['public']['Tables']['orphan_tenant_records']['Row'];
 type OrphanPaymentEntry = Database['public']['Tables']['orphan_payment_entries']['Row'];
@@ -163,7 +164,7 @@ const OrphanTenantHome: React.FC = () => {
         description: '',
       });
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   // Upload receipt photo against existing payment
@@ -223,7 +224,7 @@ const OrphanTenantHome: React.FC = () => {
       setPreviewUrl(null);
       setPhotoForm({ phase: 'general', room: 'Bedroom', condition_rating: 'good', description: '', location_note: '' });
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   return (

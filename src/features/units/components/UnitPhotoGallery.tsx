@@ -11,6 +11,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/shared/components/ui/select';
 import { Star, Trash2, Plus, ImageOff, X } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface UnitPhoto {
   id: string;
@@ -87,7 +88,7 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
       setAddingType('general');
       setIsAdding(false);
     },
-    onError: (err: Error) => toast({ title: 'Failed to add photo', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to add photo', err),
   });
 
   const removePhoto = useMutation({
@@ -106,7 +107,7 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
       queryClient.invalidateQueries({ queryKey });
       toast({ title: 'Photo removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed to remove photo', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to remove photo', err),
   });
 
   const setCover = useMutation({
@@ -120,7 +121,7 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
       queryClient.invalidateQueries({ queryKey });
       toast({ title: 'Cover photo updated' });
     },
-    onError: (err: Error) => toast({ title: 'Failed to update cover photo', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to update cover photo', err),
   });
 
   return (

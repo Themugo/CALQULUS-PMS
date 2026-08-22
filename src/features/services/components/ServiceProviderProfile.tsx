@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Separator } from '@/shared/components/ui/separator';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   Plus, Save, Trash2, Star, CheckCircle, Briefcase,
   Phone, MapPin, Clock, Loader2, AlertTriangle, ToggleRight
 } from 'lucide-react';
@@ -160,7 +161,7 @@ const ServiceProviderProfile: React.FC = () => {
       // Now save rate card
       if (id) saveRateCard.mutate(id);
     },
-    onError: (e: Error) => toast({ title: 'Save failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Save failed', e),
   });
 
   // Save rate card
@@ -184,7 +185,7 @@ const ServiceProviderProfile: React.FC = () => {
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] }),
-    onError: (e: Error) => toast({ title: 'Rate card save failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Rate card save failed', e),
   });
 
   const deleteService = useMutation({

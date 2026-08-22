@@ -20,6 +20,7 @@ import {
   TrendingUp, AlertTriangle, Home, FileText, Loader2
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface Tenant {
   id: string;
@@ -185,7 +186,7 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
       setDialogOpen(false);
       setForm(p => ({ ...p, title: '', body: '', new_rent: '', effective_date: '' }));
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const previewNotice = notices.find(n => n.id === previewId);

@@ -16,6 +16,7 @@ import {
   Camera, Plus, Trash2, Save, Loader2, Shield, Info
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 // Default checklist template — manager can customise
 const DEFAULT_CHECKLIST = {
@@ -235,7 +236,7 @@ const UnitInspectionChecklist: React.FC<Props> = ({
       toast({ title: `${inspectionType === 'move_in' ? 'Move-in' : 'Move-out'} checklist saved`, description: 'This record is permanent and protects both parties.' });
       onSaved?.();
     },
-    onError: (err: Error) => toast({ title: 'Save failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Save failed', err),
   });
 
   // Count issues

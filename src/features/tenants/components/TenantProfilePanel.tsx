@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   User, Briefcase, Phone, AlertTriangle, Home,
   ShieldAlert, CheckCircle, Save, Edit2, Loader2,
   Building2, Users, Flag
@@ -221,7 +222,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
       queryClient.invalidateQueries({ queryKey: ['tenant-extended-profile', tenant.id] });
       onUpdate?.();
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   // Fetch multi-unit links

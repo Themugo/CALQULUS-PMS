@@ -21,6 +21,7 @@ import {
   Mail, MessageSquare, X
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface Tenant { id: string; name: string; email: string; phone: string | null; unit: string | null; property: string | null; unit_id: string | null; property_id: string | null; }
 interface LineItem { label: string; amount: number; }
@@ -263,7 +264,7 @@ const PhysicalDocumentEntry: React.FC = () => {
       setInvForm({ tenant_id: '', invoice_number: '', invoice_date: new Date().toISOString().slice(0, 10), due_date: '', description: '', notes: '' });
       setInvLines([{ label: 'Monthly Rent', amount: 0 }]);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   // Save receipt
@@ -296,7 +297,7 @@ const PhysicalDocumentEntry: React.FC = () => {
       setRecForm({ tenant_id: '', receipt_number: '', receipt_date: new Date().toISOString().slice(0, 10), amount: '', payment_method: 'cash', reference: '', description: 'Rent payment', received_by: '', notes: '' });
       setRecLines([{ label: 'Monthly Rent', amount: 0 }]);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   // Send digital copy
@@ -343,7 +344,7 @@ const PhysicalDocumentEntry: React.FC = () => {
       toast({ title: 'Digital copy sent' });
       setSendDigitalId(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const allDocs = [...physicalInvoices, ...physicalReceipts].find(d => d.id === sendDigitalId);

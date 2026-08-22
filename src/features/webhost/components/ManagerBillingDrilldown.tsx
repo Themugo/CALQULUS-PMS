@@ -22,6 +22,7 @@ import {
 import { Label } from '@/shared/components/ui/label';
 import { format } from 'date-fns';
 import { onActivateKey } from "@/shared/lib/a11y";
+import { errorToast } from "@/shared/lib/errorToast";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -125,7 +126,7 @@ const ManagerBillingDrilldown: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['manager-billing-drilldown', 'manager-invoices'] });
       setNewInvoiceFor(null); setNewAmount(''); setNewDesc('');
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   return (

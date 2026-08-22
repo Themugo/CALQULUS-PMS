@@ -17,6 +17,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Switch } from '@/shared/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Shield, Info } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 export interface PropertyLandlordAuthorityRow {
   id: string;
@@ -119,7 +120,7 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
       toast({ title: 'Authority settings saved', description: meta.title });
       setDelegateEmail('');
     },
-    onError: (err: Error) => toast({ title: 'Save failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Save failed', err),
   });
 
   return (

@@ -14,6 +14,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
 import { Key, Plus, CheckCircle, AlertTriangle, Loader2, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface UnitKeyTrackerProps {
   unitId: string;
@@ -95,7 +96,7 @@ const UnitKeyTracker: React.FC<UnitKeyTrackerProps> = ({
       setAddOpen(false);
       setForm(emptyForm());
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const returnKey = useMutation({
@@ -120,7 +121,7 @@ const UnitKeyTracker: React.FC<UnitKeyTrackerProps> = ({
       toast({ title: 'Key return recorded' });
       setReturnOpen(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const activeKeys = keys.filter(k => k.status === 'active');

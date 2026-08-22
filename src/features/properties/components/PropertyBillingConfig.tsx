@@ -13,6 +13,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Separator } from '@/shared/components/ui/separator';
 import { Save, Loader2, Receipt, Calendar, AlertTriangle, Zap, FileText, Info } from 'lucide-react';
 import { useCurrency } from '@/shared/hooks/useCurrency';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const INVOICE_MODES = [
   {
@@ -127,7 +128,7 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
       queryClient.invalidateQueries({ queryKey: ['property-billing-config', propertyId] });
       toast({ title: 'Billing settings saved', description: 'All future invoices will use these settings.' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const f = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>

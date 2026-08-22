@@ -12,6 +12,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Star, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface ProviderReview {
   id: string;
@@ -98,7 +99,7 @@ export function ProviderReviewsSection({ providerId }: { providerId: string | nu
       setTitle('');
       setComment('');
     },
-    onError: (err: Error) => toast({ title: 'Failed to submit review', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to submit review', err),
   });
 
   return (

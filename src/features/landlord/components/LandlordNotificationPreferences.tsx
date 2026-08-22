@@ -9,6 +9,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Separator } from '@/shared/components/ui/separator';
 import { Save, Loader2, Bell, Mail, Smartphone, MessageSquare } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const EVENTS = [
   { key: 'payout_approved',       label: 'Payout request approved',    desc: 'When your manager approves a payout request' },
@@ -71,7 +72,7 @@ const LandlordNotificationPreferences: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['landlord-notif-prefs'] });
       toast({ title: 'Notification preferences saved' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const toggle = (key: string) => setPrefs(p => ({ ...p, [key]: !(p as Record<string, unknown>)[key] }));

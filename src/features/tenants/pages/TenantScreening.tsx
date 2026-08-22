@@ -25,6 +25,7 @@ import {
   IdCard, Banknote, FileWarning, ShieldCheck,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface BlacklistEntry {
   id: string;
@@ -146,7 +147,7 @@ export default function TenantScreening() {
       setAddOpen(false);
       setForm(emptyForm);
     },
-    onError: (err: Error) => toast({ title: 'Failed to add flag', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to add flag', err),
   });
 
   const removeEntry = useMutation({
@@ -167,7 +168,7 @@ export default function TenantScreening() {
       setRemoveTarget(null);
       setRemoveReason('');
     },
-    onError: (err: Error) => toast({ title: 'Failed to remove flag', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to remove flag', err),
   });
 
   const activeCount = (entries || []).filter((e) => e.is_active).length;

@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { UserPlus, Trash2, User, Building2, Mail, Phone } from "lucide-react";
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface PropertyLandlordLink {
   id: string;
@@ -182,7 +183,7 @@ const ManagerLandlords = () => {
       setInviteEmail("");
       setRevenueShare("100");
     },
-    onError: (err: Error) => toast({ title: "Failed", description: err.message, variant: "destructive" }),
+    onError: (err: Error) => errorToast("Failed", err),
   });
 
   const unlinkLandlord = useMutation({
@@ -196,7 +197,7 @@ const ManagerLandlords = () => {
       toast({ title: "Landlord unlinked" });
       setUnlinkTarget(null);
     },
-    onError: (err: Error) => toast({ title: "Failed", description: err.message, variant: "destructive" }),
+    onError: (err: Error) => errorToast("Failed", err),
   });
 
   return (

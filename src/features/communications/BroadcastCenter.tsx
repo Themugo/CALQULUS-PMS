@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { onActivateKey } from "@/shared/lib/a11y";
+import { errorToast } from "@/shared/lib/errorToast";
 
 // ── Message type presets ────────────────────────────────────────────
 const MESSAGE_TYPES = [
@@ -295,7 +296,7 @@ const BroadcastCenter: React.FC = () => {
       setBody('');
       setSubject('');
     },
-    onError: (err: Error) => toast({ title: 'Failed to send', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to send', err),
   });
 
   return (

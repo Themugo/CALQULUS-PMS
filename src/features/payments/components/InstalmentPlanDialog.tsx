@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Separator } from '@/shared/components/ui/separator';
 import { Calendar, CreditCard, AlertTriangle, CheckCircle } from 'lucide-react';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -109,7 +110,7 @@ const InstalmentPlanDialog: React.FC<Props> = ({
       onOpenChange(false);
       onSuccess();
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   return (

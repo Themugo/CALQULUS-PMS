@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   Plus, Pencil, Trash2, Droplets, Shield, Trash, Wifi,
   Car, Zap, Home, Settings2, CheckCircle, Loader2
 } from 'lucide-react';
@@ -156,7 +157,7 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
       toast({ title: editTarget ? 'Charge updated' : 'Charge added' });
       setDialogOpen(false);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const toggleActive = useMutation({
@@ -178,7 +179,7 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
       queryClient.invalidateQueries({ queryKey: ['unit-charge-configs', unitId] });
       toast({ title: 'Charge removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const totalMonthly = charges

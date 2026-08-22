@@ -22,6 +22,7 @@ import {
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { PawPrint, Car, Plus, Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const PET_TYPES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Reptile', 'Other'];
 
@@ -120,7 +121,7 @@ const TenantPetsVehicles: React.FC = () => {
       setPetOpen(false);
       setPetForm({ pet_type: 'Dog', breed: '', name: '', notes: '' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const addVehicle = useMutation({
@@ -159,7 +160,7 @@ const TenantPetsVehicles: React.FC = () => {
       setVehicleOpen(false);
       setVehicleForm({ make: '', model: '', colour: '', plate_number: '', notes: '' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   return (

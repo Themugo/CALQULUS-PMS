@@ -19,6 +19,7 @@ import {
   FileText, Loader2, RefreshCw, User, Building2
 } from 'lucide-react';
 import { format, addDays } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -103,7 +104,7 @@ const LandlordBilling: React.FC = () => {
       setCreateOpen(false);
       setForm({ landlord_user_id: '', amount: '', invoice_type: 'portal_access', description: '', due_date: format(addDays(new Date(), 14), 'yyyy-MM-dd') });
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   // Mark paid

@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { webhostOrganizationPath } from '@/features/webhost/lib/webhostPaths';
 import { format } from 'date-fns';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   UserCheck, UserX, Users, Building2, Home, Mail,
   AlertTriangle, CheckCircle, Clock, Ban, RefreshCw,
   ChevronDown, ChevronUp, UserPlus, Loader2,
@@ -220,7 +221,7 @@ const ManagerManagement: React.FC = () => {
       toast({ title: labels[actionDialog!.type] });
       setActionDialog(null); setActionReason('');
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const createManager = useMutation({
@@ -241,7 +242,7 @@ const ManagerManagement: React.FC = () => {
       );
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['webhost-managers-rich'] }); toast({ title: 'Manager created' }); setAddOpen(false); setNewMgr({ email: '', password: '', fullName: '' }); },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const ManagerCard = ({ m }: { m: Manager }) => {

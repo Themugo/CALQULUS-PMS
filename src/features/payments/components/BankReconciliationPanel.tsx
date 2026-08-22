@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { CheckCircle, AlertTriangle, Search, Landmark, RefreshCw, Link2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -126,7 +127,7 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
       setSelectedInvoiceId(AUTO_ALLOCATE);
       queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
     },
-    onError: (err: Error) => toast({ title: 'Match failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Match failed', err),
   });
 
   const ignoreTransaction = useMutation({
@@ -137,7 +138,7 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
       queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
       toast({ title: 'Transaction ignored' });
     },
-    onError: (e: Error) => toast({ title: 'Failed to ignore', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed to ignore', e),
   });
 
   const filtered = transactions.filter(t => {

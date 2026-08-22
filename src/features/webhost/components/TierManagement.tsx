@@ -26,6 +26,7 @@ import {
 } from '@/shared/constants/propertyTypes';
 import { onActivateKey } from "@/shared/lib/a11y";
 import { cn } from '@/shared/lib/utils';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const TIER_ICONS: Record<string, React.ElementType> = {
   lite: Zap, pro: Star, enterprise: Crown,
@@ -166,7 +167,7 @@ const TierManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['tier-management-limits'] });
       setEditedLimits(p => ({ ...p, [activeTier]: {} }));
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   // Save category billing multiplier
@@ -241,7 +242,7 @@ const TierManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
       setEditDialog(null);
     },
-    onError: (e: Error) => toast({ title: 'Failed to update tier', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed to update tier', e),
   });
 
   // Activate / deactivate a tier — toggles is_active. Warns (via confirmDialog) when
@@ -257,7 +258,7 @@ const TierManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
       setConfirmDialog(null);
     },
-    onError: (e: Error) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed', e),
   });
 
   // Delete a tier. Blocked when the tier has subscribers (do not silently orphan
@@ -272,7 +273,7 @@ const TierManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['tier-management-tiers'] });
       setConfirmDialog(null);
     },
-    onError: (e: Error) => toast({ title: 'Failed to delete', description: e.message, variant: 'destructive' }),
+    onError: (e: Error) => errorToast('Failed to delete', e),
   });
 
   const getEditedLimit = (group: string, field: 'max' | 'mult') => {

@@ -47,6 +47,7 @@ import TenantPaymentSchedule from '@/features/tenant-portal/components/TenantPay
 import UnitInspectionChecklist from '@/features/units/components/UnitInspectionChecklist';
 import { onActivateKey } from '@/shared/lib/a11y';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
+import { errorToast } from "@/shared/lib/errorToast";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -233,7 +234,7 @@ const TenantDocuments: React.FC = () => {
       setRefRequestOpen(false);
       setRefForm({ issued_to: '', issued_to_email: '', purpose: 'new_rental', message: '' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   // Submit lease renewal response
@@ -269,7 +270,7 @@ const TenantDocuments: React.FC = () => {
       setRenewalOpen(null);
       setRenewalForm({ decision: '', counter_rent: '', counter_term: '', message: '' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   return (

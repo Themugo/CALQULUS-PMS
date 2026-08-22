@@ -18,6 +18,7 @@ import {
 import { Plus, Pencil, Trash2, ScrollText, RefreshCw, AlertTriangle, Power, Info, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/shared/lib/utils';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface BillingRule {
   id: string;
@@ -138,7 +139,7 @@ export default function PlatformBillingRules() {
     },
     onError: (err: Error) => {
       setValidationError(err.message);
-      toast({ title: 'Failed to save rule', description: err.message, variant: 'destructive' });
+      errorToast('Failed to save rule', err);
     },
   });
 
@@ -152,7 +153,7 @@ export default function PlatformBillingRules() {
       queryClient.invalidateQueries({ queryKey: ['platform-billing-rules'] });
       setToggleTarget(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed to update rule', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to update rule', err),
   });
 
   const removeRule = useMutation({
@@ -165,7 +166,7 @@ export default function PlatformBillingRules() {
       toast({ title: 'Rule deleted' });
       setDeleteTarget(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed to delete rule', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed to delete rule', err),
   });
 
   const activeCount = rules?.filter(r => r.is_active).length ?? 0;

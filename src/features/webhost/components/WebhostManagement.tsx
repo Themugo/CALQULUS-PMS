@@ -18,6 +18,7 @@ import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { useAdminPermissions } from '@/shared/hooks/useAdminPermissions';
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
 import AdminPermissionsEditor from './AdminPermissionsEditor';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface Webhost {
   id: string;
@@ -173,11 +174,7 @@ const WebhostManagement = () => {
       });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to create webhost',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to create webhost', error);
     },
   });
 
@@ -196,11 +193,7 @@ const WebhostManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['webhost-stats'] });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to remove webhost',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to remove webhost', error);
     },
   });
 
@@ -327,11 +320,7 @@ const WebhostManagement = () => {
       setTransferTarget(null);
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to transfer super admin rights',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to transfer super admin rights', error);
     },
   });
 

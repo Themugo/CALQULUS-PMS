@@ -19,6 +19,7 @@ import {
 } from '@/shared/components/ui/select';
 import { AlertTriangle, Link, RefreshCw, Loader2, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface BankTx {
   id: string;
@@ -137,7 +138,7 @@ const UnmatchedBankTransactions: React.FC = () => {
       setSelectedTx(null);
       setSelectedInvoiceId('');
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const dismissTransaction = useMutation({

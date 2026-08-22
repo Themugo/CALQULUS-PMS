@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import ManualInvoiceForm from './ManualInvoiceForm';
+import { errorToast } from "@/shared/lib/errorToast";
 
 // Billing Configuration - will be overridden by database settings
 export const BILLING_CONFIG = {
@@ -212,11 +213,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       setIsDialogOpen(false);
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to create invoice',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to create invoice', error);
     },
   });
 
@@ -416,11 +413,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       queryClient.invalidateQueries({ queryKey: ['webhost-managers-rich'] });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to update invoice',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to update invoice', error);
     },
   });
 
@@ -439,11 +432,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       queryClient.invalidateQueries({ queryKey: ['manager-invoices'] });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to cancel invoice',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to cancel invoice', error);
     },
   });
 
@@ -457,11 +446,7 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       toast({ title: 'Reminder sent successfully' });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to send reminder',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to send reminder', error);
     },
   });
 

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   Plus, Trash2, Briefcase, User, Users, Building2,
   Loader2, Info
 } from 'lucide-react';
@@ -124,7 +125,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
       setDialogOpen(false);
       setForm(empty());
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const toggleActive = useMutation({

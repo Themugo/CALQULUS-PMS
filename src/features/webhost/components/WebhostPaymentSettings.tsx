@@ -11,6 +11,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Save, Building, Smartphone, CreditCard, Percent, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface PaymentSettings {
   id: string;
@@ -133,11 +134,7 @@ const WebhostPaymentSettings: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['webhost-payment-settings'] });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to save settings',
-        description: error.message,
-        variant: 'destructive',
-      });
+      errorToast('Failed to save settings', error);
     },
   });
 

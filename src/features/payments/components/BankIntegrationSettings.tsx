@@ -19,6 +19,7 @@ import {
   SelectTrigger, SelectValue,
 } from '@/shared/components/ui/select';
 import {
+import { errorToast } from "@/shared/lib/errorToast";
   Landmark, Plus, Trash2, Copy, CheckCircle,
   Loader2, Zap
 } from 'lucide-react';
@@ -148,7 +149,7 @@ const BankIntegrationSettings: React.FC = () => {
         webhook_secret: crypto.randomUUID().replace(/-/g, '').slice(0, 24),
       }));
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const toggleActive = useMutation({
@@ -159,7 +160,7 @@ const BankIntegrationSettings: React.FC = () => {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-integrations'] }),
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const deleteIntegration = useMutation({
@@ -173,7 +174,7 @@ const BankIntegrationSettings: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['bank-integrations'] });
       toast({ title: 'Integration removed' });
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const copyWebhook = (url: string, id: string) => {

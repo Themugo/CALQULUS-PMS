@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Send, Plus, MessageSquare, Loader2 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { onActivateKey } from "@/shared/lib/a11y";
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface Props {
   properties: Array<{ id: string; name: string; manager_name: string | null; manager_id?: string | null }>;
@@ -114,7 +115,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
         setReplyText('');
       }
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const unreadCount = (messages as LandlordMessage[]).filter((m) => m.recipient_id === user?.id && !m.is_read).length;

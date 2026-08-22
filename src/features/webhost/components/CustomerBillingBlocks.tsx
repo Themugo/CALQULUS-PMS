@@ -17,6 +17,7 @@ import { DollarSign, Plus, Pencil, Tag, Shield, Ban, RefreshCw, AlertTriangle, L
 import { useActivityLog } from '@/shared/hooks/useActivityLog';
 import { format, isBefore } from 'date-fns';
 import { cn } from '@/shared/lib/utils';
+import { errorToast } from "@/shared/lib/errorToast";
 
 interface CustomerBillingBlock {
   id: string;
@@ -254,7 +255,7 @@ const CustomerBillingBlocks = () => {
     },
     onError: (err: Error) => {
       setValidationError(err.message);
-      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+      errorToast('Failed', err);
     },
   });
 
@@ -268,7 +269,7 @@ const CustomerBillingBlocks = () => {
       toast({ title: 'Billing block removed' });
       setDeleteTarget(null);
     },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+    onError: (err: Error) => errorToast('Failed', err),
   });
 
   const getCustomerName = (customerId: string) => {
