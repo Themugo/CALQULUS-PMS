@@ -2,7 +2,7 @@ import { WORKFLOW_STEPS } from "@/features/marketing/publicConfig";
 
 export function OperationalWorkflow() {
   return (
-    <section id="how-it-works" className="scroll-mt-20 border-b border-border bg-card py-12 sm:py-16">
+    <section id="how-it-works" className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="public-section-title">Everything connected.</h2>

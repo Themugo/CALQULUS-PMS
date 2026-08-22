@@ -5,7 +5,7 @@ const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-prim
 
 export function PlatformOverview() {
   return (
-    <section id="platform" className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-16">
+    <section id="platform" className="scroll-mt-20 border-b border-border bg-card py-12 sm:py-16">
       <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.52fr)_minmax(0,0.48fr)] lg:gap-12 lg:px-8">
         <div>
           <p className={EYEBROW}>Platform</p>

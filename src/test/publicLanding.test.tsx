@@ -145,6 +145,16 @@ describe("PublicLandingPage", () => {
     expect(screen.getByRole("heading", { name: "Role-based access" })).toBeInTheDocument();
   });
 
+  it("uses the full dashboard only once — capability rows use dedicated lightweight visuals", () => {
+    renderAt("/");
+    const captions = screen.getAllByText(
+      /Illustrative manager dashboard\. Sample figures only/i,
+    );
+    expect(captions.length).toBe(1);
+    expect(screen.getByText("Property register")).toBeInTheDocument();
+    expect(screen.getByText("Billing runs")).toBeInTheDocument();
+  });
+
   it("does not fabricate certifications or fake social links", () => {
     renderAt("/");
     expect(screen.queryByText(/SOC ?2/i)).not.toBeInTheDocument();

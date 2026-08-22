@@ -1,13 +1,20 @@
 import { Check } from "lucide-react";
-import { ProductPreview } from "@/features/marketing/components/ProductPreview";
+import { PropertyOperationsVisual, FinancialOperationsVisual, MaintenanceVisual } from "@/features/marketing/components/ProductPreview";
 import { SHOWCASES } from "@/features/marketing/publicConfig";
 import { cn } from "@/shared/lib/utils";
 
 const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary";
 
+/** One dedicated lightweight visual per capability — the full dashboard lives only in the hero. */
+const VISUALS = {
+  operations: PropertyOperationsVisual,
+  financials: FinancialOperationsVisual,
+  maintenance: MaintenanceVisual,
+} as const;
+
 /**
- * Alternating product showcase. Every row reuses the same ProductPreview
- * visual — no per-section dashboard mockups.
+ * Alternating product showcase — text/visual rhythm flips per row; each row
+ * renders the specialized visual for its capability.
  */
 export function ProductShowcase() {
   return (
@@ -15,6 +22,7 @@ export function ProductShowcase() {
       <div className="mx-auto max-w-6xl space-y-14 px-4 sm:space-y-20 sm:px-6 lg:px-8">
         {SHOWCASES.map((item, index) => {
           const reversed = index % 2 === 1;
+          const Visual = VISUALS[item.id];
           return (
             <article
               key={item.id}
@@ -38,7 +46,7 @@ export function ProductShowcase() {
                 </ul>
               </div>
               <div className={cn(reversed && "lg:order-1")}>
-                <ProductPreview />
+                <Visual />
               </div>
             </article>
           );
