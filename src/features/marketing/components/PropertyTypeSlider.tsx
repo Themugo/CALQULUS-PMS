@@ -8,18 +8,21 @@ const TYPES = [
   {
     id: "residential" as PropertyVisualSlot,
     name: "Residential",
+    tagline: "Apartments and estates — rent, repairs and residents under control.",
     icon: Home,
     accent: CALQULUS_PORTAL_ACCENT.manager.hex,
   },
   {
     id: "commercial" as PropertyVisualSlot,
     name: "Commercial",
+    tagline: "Retail and mixed spaces — leases and collections in one view.",
     icon: Building2,
     accent: CALQULUS_PORTAL_ACCENT.landlord.hex,
   },
   {
     id: "office" as PropertyVisualSlot,
     name: "Office",
+    tagline: "Office buildings — occupancy and service workflows connected.",
     icon: Briefcase,
     accent: CALQULUS_PORTAL_ACCENT.tenant.hex,
   },
@@ -55,11 +58,10 @@ export function PropertyTypeSlider() {
 
   return (
     <section
-      id="platform"
-      className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-14"
+      className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-16"
       onKeyDown={onKeyDown}
     >
-      <div id="how-it-works" className="mx-auto max-w-6xl scroll-mt-20 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="public-section-title">Designed for every property type</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -83,20 +85,23 @@ export function PropertyTypeSlider() {
           >
             {TYPES.map((item) => (
               <li key={item.id} className="min-w-[85%] snap-center sm:min-w-[70%] lg:min-w-0">
-                <article className="relative h-[170px] overflow-hidden rounded-[14px] border border-border shadow-sm">
+                <article className="relative h-[190px] overflow-hidden rounded-[14px] border border-border shadow-sm">
                   <ArchitecturalSurface slot={item.id} />
                   <div
-                    className="absolute inset-0 bg-gradient-to-t from-navy-deep/80 via-navy-deep/20 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/25 to-transparent"
                     aria-hidden
                   />
-                  <div className="relative flex h-full items-end justify-between p-4">
-                    <h3 className="font-heading text-base font-semibold text-white sm:text-lg">{item.name}</h3>
-                    <span
-                      className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white"
-                      style={{ boxShadow: `inset 0 0 0 1px ${item.accent}66` }}
-                    >
-                      <item.icon className="h-4 w-4" aria-hidden />
-                    </span>
+                  <div className="relative flex h-full flex-col justify-end p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-heading text-base font-semibold text-white sm:text-lg">{item.name}</h3>
+                      <span
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white"
+                        style={{ boxShadow: `inset 0 0 0 1px ${item.accent}66` }}
+                      >
+                        <item.icon className="h-4 w-4" aria-hidden />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[13px] leading-snug text-white/78">{item.tagline}</p>
                   </div>
                 </article>
               </li>

@@ -1,11 +1,101 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Phase 3 — Manager Tenants, Tenant Detail, and Leases.
-STATUS: preview + live implementation complete. STOP after these three surfaces.
+Master Homepage Transformation — COMPLETE (2026-08-22). The public homepage is now the premium dark-navy-hero SaaS page; Phase 0A (shell audit + preview) remains done.
 
 ## CURRENT TASK
-STOP. Do not redesign billing, other portals, or the authenticated shell.
+Homepage transformation shipped. Next candidates: authenticated shell unification per Phase 0A findings (still NOT started — dashboards untouched).
+
+## MASTER HOMEPAGE TRANSFORMATION (2026-08-22)
+- **Hero**: `ExecutiveHero` rebuilt as premium dark navy (`public-hero-surface` + `public-hero-title-dark` + `public-hero-grid-dark` utilities in `src/index.css`); transparent-over-hero `PublicHeader` that transitions to solid blurred white on scroll (scroll listener, threshold 24px); hero pulls under the sticky header via `-mt-[72px] pt-[72px]`. Carousel (residential/commercial/office ArchitecturalSurface treatments) kept.
+- **New sections** (all content in `publicConfig.ts` single source of truth): `PlatformOverview` (#platform), `OperationalWorkflow` (#how-it-works, 8-step lifecycle), `ProductShowcase` (3 alternating rows reusing the SAME `ProductPreview` — no new dashboard mockups), `TrustSection` (4 trust cards, only real capabilities: RBAC, RLS, activity logs, financial workflows — no SOC2/ISO/PCI claims).
+- **Reused unchanged**: `PublicShell`, `PublicPricing`+`usePublicTiers`, `ArchitecturalSurface`, `BrandMark`, `Button`, `PortalExperiences` (#solutions), `PropertyTypeSlider` (gained §12 value-proposition taglines; released #platform/#how-it-works anchors).
+- **CompactCta**: §18 copy ("Ready to run your properties with clarity?"), Get started → signup, Explore the platform → #platform (fake "Contact us" mailto removed).
+- **PublicFooter**: fake social links (LinkedIn/Facebook/Instagram/X pointing at #contact) removed per "no fake social URLs".
+- **ProductPreview**: gained `captionClassName` + `elevated` props (dark-hero caption tone, stronger elevation); default rendering unchanged.
+- **a11y fix**: portal-card description `text-muted-foreground` → `text-foreground/75` and "View portal" links darkened via `color-mix(accent 72%, navy-deep)` — axe color-contrast (4.41/4.09 < 4.5) resolved.
+- **SEO** (`index.html` + route titles): "CALQULUS | Property Operations, Connected" + description "Run properties, tenants, leases, billing, payments and maintenance in one focused property operations platform."
+- **Tests**: `publicLanding.test.tsx` updated (11 tests: transparent-over-hero header, new sections, no-fabricated-certifications guard, final CTA); stale `homepage-executive.spec.ts` footer assertion fixed.
+- **Verification**: 952 unit tests pass (80 files), homepage+a11y+app e2e 28 passed/5 skipped (credential-gated), axe clean, no horizontal overflow 360–1440, screenshots verified 1440/768/390 + scrolled-header + mobile drawer. `npx tsc --noEmit` clean. eslint: 6 PRE-EXISTING parsing errors in untouched files (ServiceProviderProfile.tsx, TenantProfilePanel.tsx, PaymentPayersManager.tsx, etc.) — `npm run build` fails on pristine HEAD for the same reason; NOT caused by homepage work. Dev server renders fine (those are lazy routes).
+
+## PHASE 0A (COMPLETE 2026-08-21)
+STATUS: audit complete, shell preview verified at all target viewports. Dashboards/portals NOT migrated — see audit below.
+
+## PHASE 0A AUDIT — SHELL SHARING ACROSS PORTALS
+The shell is NOT shared. There are five separate implementations:
+
+- **Manager (+ Submanager role)** — shared `src/shared/components/layout/Layout.tsx` (423-line `Sidebar.tsx` + 120-line `Header.tsx` + `PageHeader` + `Footer` + `CommandPalette` + `NotificationsDropdown` + `ProfileMenu` + `WorkspaceSwitcher` + `BreadcrumbSystem` + `ContextPanel` + keyboard shortcuts + help center). ~20 manager pages use it.
+- **Landlord** — own `LandlordLayout.tsx` (171 lines): hand-rolled sidebar + topbar, no breadcrumbs, no notifications, no user menu, no workspace switcher, no command palette.
+- **Agency** — own `AgencyLayout.tsx` (193 lines): same hand-rolled pattern as Landlord.
+- **Tenant** — own `TenantLayout.tsx` (190 lines): narrower sidebar (`w-56` vs `w-64`), shorter header (`h-14` vs `h-16`), mobile bottom tab bar inline (`MOBILE_NAV`) instead of a drawer; also a second, now-dead `MobileBottomNav.tsx` (never imported anywhere).
+- **Admin + WebHost** — share `WebhostLayout.tsx` (215 lines): own NAV list, own breadcrumb text, no notifications/user menu.
+
+## PHASE 0A AUDIT — DUPLICATION & INCONSISTENCIES
+1. **Nav definitions duplicated 2–3×**: webhost NAV exists in both `WebhostLayout.tsx` and `Sidebar.tsx` (`webhostNavGroups`); agency in `AgencyLayout.tsx` + `agencyNavGroups`; tenant in `TenantLayout.tsx` (`DESK_NAV`/`MOBILE_NAV`) + `tenantNavGroups` + dead `MobileBottomNav.tsx`. They will drift.
+2. **Drawer/scrim/sign-out/user-email block copy-pasted** across Landlord/Agency/Webhost layouts with near-identical markup.
+3. **Loading spinner** (`h-8 w-8 animate-spin … border-primary`) duplicated in every portal layout.
+4. **Active-nav styles differ**: manager `Sidebar` uses `sidebarNavClass` (`bg-primary/10`), portal layouts use `deskNavClass` (`border + bg-primary/10`). Accent tint comes from `--portal-accent` via `data-portal` in both, so the difference is structural, not colour.
+5. **Chrome metrics differ per portal**: sidebar `w-64` (manager/landlord/agency/webhost) vs `w-56` (tenant); header `h-16` vs `h-14` (tenant); tenant mobile uses a bottom tab bar while every other portal uses a left drawer — inconsistent mobile pattern.
+6. **Breadcrumbs**: only the manager shell has `BreadcrumbSystem`; other portals hardcode "Portal / Title" text in the topbar (Tenant has none).
+7. **Notifications/user menu/search**: exist only in the manager shell (`NotificationsDropdown`, `ProfileMenu`, command palette). Other portals sign out from the sidebar footer.
+8. **`Layout.tsx` hardcodes `portalSurfaceProps("manager")`** for the shared shell — fine today (only manager uses it) but a landmine if another portal adopts it.
+9. **Dead code**: `src/features/tenant-portal/components/MobileBottomNav.tsx` is never imported.
+
+## PHASE 0A AUDIT — WHAT ALREADY MATCHES THE BRIEF
+- Palette tokens in `src/index.css` exactly match the brief (`#081A2E/#0D2744/#173F67/#2F6FED/#FFFFFF/#F7F9FC/#E5EAF0/#102033/#637286`); portal accents via `[data-portal]` (manager blue `#2F6FED`, landlord emerald `#23856B`, agency amber `#9A5A16`, tenant violet `#5C4A8A`, platform_admin indigo `#3E4C94`).
+- White sidebar + subtle border, white sticky topbar, light navy-tinted content background — no black dashboard, no dark sidebar.
+- Lucide icons everywhere, no emojis.
+- Shared state components exist: `EmptyState`, `ErrorState`, `LoadingState` (`src/shared/components/ui/`), plus `PageHeader` (title/description/breadcrumbs/actions/status).
+
+## FILES INSPECTED (Phase 0A)
+- `src/shared/components/layout/{Layout,Sidebar,Header,PageHeader,BreadcrumbSystem,ProfileMenu,NotificationsDropdown,WorkspaceSwitcher,ContextPanel,Footer}.tsx`
+- `src/features/landlord/components/LandlordLayout.tsx`
+- `src/features/agency/components/AgencyLayout.tsx`
+- `src/features/tenant-portal/components/{TenantLayout,MobileBottomNav}.tsx`
+- `src/features/webhost/components/WebhostLayout.tsx`
+- `src/core/design/{deskNav.ts,PortalAccentBar.tsx}`, `src/shared/theme/tokens.ts`, `src/index.css` (portal + sidebar tokens)
+- `src/shared/components/ui/{empty-state,error-state,loading-state}.tsx`
+- `src/features/design-preview/{pages/ShellPreviewPage.tsx,components/AuthenticatedShellPreview.tsx,shellPreviewConfig.ts}`
+- `src/app/routes.ts` (preview routes are public)
+
+## COMPONENTS TO REUSE (for the future unified shell)
+- `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`, `BrandMark`, `PortalAccentBar`, `portalSurfaceProps`, `deskNavClass`/`sidebarNavClass`
+- `BreadcrumbSystem`, `NotificationsDropdown`, `ProfileMenu`, `WorkspaceSwitcher`, `CommandPalette`, `Footer`
+- Preview chrome: `AuthenticatedShellPreview` + `SHELL_PREVIEW_PORTALS` (six identities incl. proposed WebHost teal `#17807A`)
+
+## COMPONENTS TO CREATE (later phase — NOT this one)
+- One unified `AppShell` (sidebar + topbar + page header) driven by per-portal nav config, replacing the four hand-rolled portal layouts; single source of nav truth per portal; consistent mobile drawer (tenant bottom bar is a deliberate exception candidate — decide explicitly).
+
+## FILES CHANGED (this phase)
+- `e2e/shell-preview.spec.ts` (new — chrome render + overflow at all 7 viewports for all 6 portal identities, incl. mobile drawer)
+- `docs/CALQULUS_REDESIGN_STATE.md`
+
+## KNOWN ISSUES
+- Five shell implementations (see audit); nav duplicated 2–3×; dead `MobileBottomNav.tsx`.
+- Dev-only `DevPortalSwitcher` overlay intercepts pointer events in the preview when the dev server runs with `VITE_ENABLE_DEV_ACCESS` unset/true — run preview/e2e with `VITE_ENABLE_DEV_ACCESS=false` (Playwright `webServer` env already does this when it spawns its own server).
+- Live portals NOT migrated to any unified shell; preview is chrome-only with labelled canvas slots (loading/empty/error/ready), no live data.
+- BrandMark logo image shows alt text ("CAI") in sandbox because the logo asset path doesn't resolve in this environment — cosmetic, sandbox-only.
+- `Layout.tsx` hardcodes the manager portal surface (audit item 8).
+
+## TEST STATUS
+- `npx vitest run src/test/shellPreview.test.tsx` — 4/4 passed
+- `npx eslint e2e/shell-preview.spec.ts` — clean
+- Playwright Chromium `e2e/shell-preview.spec.ts` — **8 passed**: shared chrome for all 6 portal identities + loading/empty/error states; no horizontal overflow at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (incl. open mobile drawer)
+
+## BUILD STATUS
+- Not re-run this phase (no production code changed; preview and test files only)
+
+## NEXT STEP
+STOP. Present the audit + preview for approval. Next phase (0B) would be building the unified `AppShell` and migrating portals one at a time, starting with Manager.
+
+Preview URL: `/design-preview/shell` (public, no auth)
+
+---
+
+## Previous checkpoint (Phase 3 manager tenants)
+
+Phase 3 — Manager Tenants, Tenant Detail, and Leases.
+STATUS: preview + live implementation complete. STOP after these three surfaces.
 
 ## COMPLETED
 - Inspected live Tenants (`/tenants`) and Leases (`/leases`). Tenant detail is a sheet on the tenants page (no `/tenants/:id` route).

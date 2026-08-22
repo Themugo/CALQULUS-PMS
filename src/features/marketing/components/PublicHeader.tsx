@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, Menu } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
@@ -24,23 +24,43 @@ import {
   homeSectionHref,
 } from "@/features/marketing/publicConfig";
 
-const navLinkClass =
-  "inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-[14px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const navLinkBase =
+  "inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2";
+const navLinkLight = `${navLinkBase} text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring`;
+const navLinkDark = `${navLinkBase} text-white/78 hover:bg-white/10 hover:text-white focus-visible:ring-white/70`;
 
 export function PublicHeader() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const onPricing = pathname === PUBLIC_ROUTES.pricing;
+  const overHero = pathname === PUBLIC_ROUTES.home && !scrolled;
+  const navLinkClass = overHero ? navLinkDark : navLinkLight;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-md">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b transition-colors duration-200",
+        overHero ? "border-transparent bg-transparent" : "border-border bg-card/95 backdrop-blur-md",
+      )}
+    >
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to={PUBLIC_ROUTES.home}
-          className="flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={cn(
+            "flex min-w-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2",
+            overHero ? "focus-visible:ring-white/70" : "focus-visible:ring-ring",
+          )}
           aria-label="CALQULUS home"
         >
-          <BrandMark size="nav" showWordmark subtitle="" fetchPriority="high" forcePlatform />
+          <BrandMark size="nav" showWordmark subtitle="" fetchPriority="high" forcePlatform inverse={overHero} />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
@@ -52,7 +72,7 @@ export function PublicHeader() {
           <Link
             to={PUBLIC_ROUTES.pricing}
             aria-current={onPricing ? "page" : undefined}
-            className={cn(navLinkClass, onPricing && "text-primary")}
+            className={cn(navLinkClass, onPricing && (overHero ? "text-white" : "text-primary"))}
           >
             Pricing
           </Link>
@@ -78,7 +98,15 @@ export function PublicHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="hidden min-h-11 text-[14px] sm:inline-flex">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "hidden min-h-11 text-[14px] sm:inline-flex",
+              overHero && "text-white/85 hover:bg-white/10 hover:text-white",
+            )}
+          >
             <Link to={PUBLIC_ROUTES.managerSignIn}>Sign in</Link>
           </Button>
           <Button asChild size="sm" className="min-h-11 btn-brand text-[14px]">
@@ -90,7 +118,10 @@ export function PublicHeader() {
               type="button"
               variant="outline"
               size="icon"
-              className="lg:hidden"
+              className={cn(
+                "lg:hidden",
+                overHero && "border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white",
+              )}
               aria-label="Open menu"
               onClick={() => setOpen(true)}
             >

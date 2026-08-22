@@ -27,11 +27,24 @@ const MAINTENANCE_ACTIVITY = [
   { label: "Inspection scheduled · Block C", status: "pending" },
 ] as const;
 
+interface ProductPreviewProps {
+  /** Tone for the caption — dark heroes need a light caption. */
+  captionClassName?: string;
+  /** Stronger elevation for placement on dark hero surfaces. */
+  elevated?: boolean;
+}
+
 /** Static illustration of the manager desk — not a live data view. */
-export function ProductPreview() {
+export function ProductPreview({ captionClassName = "text-muted-foreground", elevated = false }: ProductPreviewProps) {
   return (
     <figure className="mx-auto w-full max-w-lg md:max-w-none">
-      <div className="flex overflow-hidden rounded-[14px] border border-border bg-card shadow-sm">
+      <div
+        className={
+          elevated
+            ? "flex overflow-hidden rounded-[14px] border border-white/15 bg-card shadow-2xl shadow-navy-deep/70"
+            : "flex overflow-hidden rounded-[14px] border border-border bg-card shadow-sm"
+        }
+      >
         <nav
           aria-hidden
           className="hidden w-12 shrink-0 flex-col items-center gap-3 border-r border-border bg-sidebar py-3 sm:flex"
@@ -136,7 +149,7 @@ export function ProductPreview() {
           </div>
         </div>
       </div>
-      <figcaption className="mt-2.5 text-center text-xs text-muted-foreground">
+      <figcaption className={`mt-2.5 text-center text-xs ${captionClassName}`}>
         Illustrative manager dashboard. Sample figures only — not live customer data.
       </figcaption>
     </figure>

@@ -69,12 +69,12 @@ export function PortalExperiences() {
               <h3 className="mt-3 font-heading text-base font-semibold text-foreground sm:text-[17px]">
                 {portal.title}
               </h3>
-              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">{portal.description}</p>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-foreground/75">{portal.description}</p>
               <Link
                 to={portal.href}
                 aria-label={`View ${portal.title}`}
                 className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-medium hover:underline"
-                style={{ color: portal.accent }}
+                style={{ color: `color-mix(in srgb, ${portal.accent} 72%, var(--navy-deep))` }}
               >
                 View portal
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />

@@ -1,24 +1,28 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { CONTACT_EMAIL, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { FINAL_CTA, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
 export function CompactCta() {
   return (
-    <section id="contact" className="scroll-mt-20 border-t border-border bg-background py-10 sm:py-12">
+    <section id="contact" className="scroll-mt-20 bg-background py-10 sm:py-14">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-[14px] border border-border bg-navy-primary px-6 py-8 text-white sm:px-10 sm:py-9">
-          <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="public-hero-surface rounded-[16px] px-6 py-10 text-white sm:px-10 sm:py-12">
+          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div className="max-w-xl">
               <h2 className="font-heading text-xl font-bold tracking-tight sm:text-2xl">
-                Bring your property operations together.
+                {FINAL_CTA.title}
               </h2>
-              <p className="mt-1.5 text-sm text-white/72">
-                One platform for managers, landlords, agencies and tenants.
+              <p className="mt-2 text-sm leading-relaxed text-white/72 sm:text-[15px]">
+                {FINAL_CTA.copy}
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button asChild size="lg" className="btn-brand min-h-11">
-                <Link to={PUBLIC_ROUTES.managerSignUp}>Get started</Link>
+                <Link to={PUBLIC_ROUTES.managerSignUp}>
+                  {FINAL_CTA.primary}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </Button>
               <Button
                 asChild
@@ -26,7 +30,7 @@ export function CompactCta() {
                 variant="outline"
                 className="min-h-11 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
               >
-                <a href={`mailto:${CONTACT_EMAIL}`}>Contact us</a>
+                <a href="#platform">{FINAL_CTA.secondary}</a>
               </Button>
             </div>
           </div>

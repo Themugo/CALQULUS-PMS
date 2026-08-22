@@ -35,7 +35,7 @@ test.describe("Executive homepage", () => {
       "/pricing",
     );
     await expect(page.locator("footer")).toContainText(
-      "The operating system for property work",
+      "The intelligent property operations platform for Kenya and East Africa",
     );
   });
 

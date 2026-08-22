@@ -2,10 +2,14 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { CompactCta } from "@/features/marketing/components/CompactCta";
 import { ExecutiveHero } from "@/features/marketing/components/ExecutiveHero";
+import { OperationalWorkflow } from "@/features/marketing/components/OperationalWorkflow";
+import { PlatformOverview } from "@/features/marketing/components/PlatformOverview";
 import { PortalExperiences } from "@/features/marketing/components/PortalExperiences";
+import { ProductShowcase } from "@/features/marketing/components/ProductShowcase";
 import { PropertyTypeSlider } from "@/features/marketing/components/PropertyTypeSlider";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
 import { PublicShell } from "@/features/marketing/components/PublicShell";
+import { TrustSection } from "@/features/marketing/components/TrustSection";
 import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
@@ -17,8 +21,12 @@ function HomeView() {
   return (
     <>
       <ExecutiveHero />
+      <PlatformOverview />
       <PropertyTypeSlider />
+      <OperationalWorkflow />
       <PortalExperiences />
+      <ProductShowcase />
+      <TrustSection />
       <CompactCta />
     </>
   );
@@ -49,8 +57,8 @@ export function PublicLandingPage() {
 
   useEffect(() => {
     document.title = isPricing
-      ? "Pricing | CALQULUS PMS"
-      : "CALQULUS PMS | Property Management Platform for Kenya & East Africa";
+      ? "Pricing | CALQULUS"
+      : "CALQULUS | Property Operations, Connected";
   }, [isPricing]);
 
   useEffect(() => {

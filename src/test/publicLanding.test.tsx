@@ -35,10 +35,11 @@ describe("PublicLandingPage", () => {
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    expect(screen.getByRole("link", { name: /explore the platform/i })).toHaveAttribute(
-      "href",
-      "#platform",
-    );
+    const exploreLinks = screen.getAllByRole("link", { name: /explore the platform/i });
+    expect(exploreLinks.length).toBeGreaterThan(0);
+    for (const link of exploreLinks) {
+      expect(link).toHaveAttribute("href", "#platform");
+    }
     expect(screen.getByRole("link", { name: /view manager portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
@@ -97,19 +98,22 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("uses a white header, navy final CTA band, and navy footer chrome", () => {
+  it("uses a transparent-over-dark-hero header, navy final CTA band, and navy footer chrome", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
     expect(header.className).not.toMatch(/navy-primary/);
-    expect(header.className).toMatch(/bg-card/);
+    // Over the dark hero at the top of the homepage the header is transparent;
+    // it transitions to a solid blurred surface on scroll (see PublicHeader).
+    expect(header.className).toMatch(/bg-transparent/);
+    expect(container.querySelector(".public-hero-surface")).toBeTruthy();
     expect(container.querySelector("footer.bg-navy-deep")).toBeTruthy();
     expect(container.querySelector("#platform")).toBeTruthy();
     expect(container.querySelector("#how-it-works")).toBeTruthy();
     expect(container.querySelector("#solutions")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
-    expect(container.querySelector(".public-hero-grid")).toBeTruthy();
+    expect(container.querySelector(".public-hero-grid-dark")).toBeTruthy();
   });
 
   it("shows the property type slider instead of a feature grid", () => {
@@ -120,14 +124,47 @@ describe("PublicLandingPage", () => {
     expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
   });
 
-  it("renders a compact CTA band with get-started and contact actions", () => {
+  it("renders the connected workflow, showcase and trust sections", () => {
+    renderAt("/");
+    expect(screen.getByRole("heading", { name: "Everything connected." })).toBeInTheDocument();
+    for (const step of ["Property", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
+      expect(screen.getByRole("heading", { name: step })).toBeInTheDocument();
+    }
+    expect(
+      screen.getByRole("heading", { name: /every property, unit and occupant in one desk/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /billing, collections and statements that reconcile/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /repairs tracked from request to resolution/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /built for controlled property operations/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Role-based access" })).toBeInTheDocument();
+  });
+
+  it("does not fabricate certifications or fake social links", () => {
+    renderAt("/");
+    expect(screen.queryByText(/SOC ?2/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/ISO ?\d{4,5}/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/PCI/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
+  });
+
+  it("renders a final CTA band with get-started and explore actions", () => {
     renderAt("/");
     expect(
-      screen.getByRole("heading", { name: /bring your property operations together/i }),
+      screen.getByRole("heading", { name: /ready to run your properties with clarity/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Contact us" })).toHaveAttribute(
+    const ctaSection = screen.getByRole("heading", {
+      name: /ready to run your properties with clarity/i,
+    }).closest("section");
+    expect(ctaSection).not.toBeNull();
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
-      expect.stringContaining("mailto:"),
+      PUBLIC_ROUTES.managerSignUp,
     );
   });
 });
