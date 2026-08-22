@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useRBAC } from '@/shared/hooks/useRBAC';
 import { useToast } from '@/shared/hooks/use-toast';
+import { errorToast } from '@/shared/lib/errorToast';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
