@@ -48,7 +48,7 @@ export function ExecutiveHero() {
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:px-6 lg:min-h-[640px] lg:grid-cols-[minmax(0,0.46fr)_minmax(0,0.54fr)] lg:gap-10 lg:px-8 lg:pb-20 lg:pt-16 xl:gap-12">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9DBDF7]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--calqulus-primary-light)]">
             {HERO_CONTENT.eyebrow}
           </p>
           <p className="mt-2 text-xs font-medium text-white/55">{slide.context}</p>

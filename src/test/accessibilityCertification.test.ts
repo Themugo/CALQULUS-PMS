@@ -11,8 +11,8 @@ import {
 
 const src = (relative: string) => readFileSync(join(process.cwd(), relative), "utf8");
 
-/** Darker on-surface amber used by `.text-warning` — fill token stays #B7791F. */
-const WARNING_TEXT = "#9A5A16";
+/** On-surface amber used by `.text-warning` — the muted amber token itself. */
+const WARNING_TEXT = "#855512";
 
 describe("Phase 12 accessibility certification contracts", () => {
   it("sizes default and icon buttons to the 44px recommended touch target", () => {
@@ -128,15 +128,15 @@ describe("Phase 12 accessibility certification contracts", () => {
   });
 
   it("keeps the locked warning fill and uses a darker amber for small text", () => {
-    expect(CALQULUS_COLOR.warning).toBe("#B7791F");
+    expect(CALQULUS_COLOR.warning).toBe("#A66A16");
     expect(getContrastRatio(CALQULUS_COLOR.warning, CALQULUS_COLOR.white)).toBeGreaterThanOrEqual(3);
     expect(meetsWCAG_AA(CALQULUS_COLOR.warning, CALQULUS_COLOR.white, true)).toBe(true);
     expect(meetsWCAG_AA(WARNING_TEXT, CALQULUS_COLOR.white)).toBe(true);
     expect(meetsWCAG_AA(WARNING_TEXT, CALQULUS_COLOR.background)).toBe(true);
-    expect(src("src/index.css")).toContain("--warning-text: #9A5A16");
-    expect(src("src/index.css")).toContain("--primary-text: #2459D6");
-    expect(src("src/index.css")).toContain("--success-text: #1B6B56");
-    expect(src("src/index.css")).toContain("--destructive-text: #A33A3A");
+    expect(src("src/index.css")).toContain("--warning-text: var(--calqulus-warning-text)");
+    expect(src("src/index.css")).toContain("--primary-text: var(--calqulus-primary-active)");
+    expect(src("src/index.css")).toContain("--success-text: var(--calqulus-success-text)");
+    expect(src("src/index.css")).toContain("--destructive-text: var(--calqulus-danger-text)");
     expect(src("src/index.css")).toContain("color: var(--warning-text)");
     expect(meetsWCAG_AA(CALQULUS_COLOR.primaryActive, CALQULUS_COLOR.white)).toBe(true);
     expect(meetsWCAG_AA(CALQULUS_COLOR.primaryActive, CALQULUS_COLOR.background)).toBe(true);

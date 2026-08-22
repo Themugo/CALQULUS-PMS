@@ -21,38 +21,38 @@ export const CALQULUS_BRAND = {
 
 export const CALQULUS_COLOR = {
   /** Interactive blue — buttons, links, focus, selected controls. */
-  primary: "#2F6FED",
-  primaryHover: "#4C84F0",
-  primaryActive: "#2459D6",
-  accent: "#2F6FED",
+  primary: "#356FE5",
+  primaryHover: "#285FCC",
+  primaryActive: "#214FAE",
+  accent: "#356FE5",
 
   /** Navy identity scale — chrome only, never a page fill. */
-  navyDeep: "#081A2E",
-  navyPrimary: "#0D2744",
-  navySecondary: "#173F67",
+  navyDeep: "#0B2239",
+  navyPrimary: "#173650",
+  navySecondary: "#31577E",
 
   white: "#FFFFFF",
-  secondary: "#F7F9FC",
-  success: "#23856B",
-  warning: "#B7791F",
-  danger: "#C84B4B",
-  info: "#2F6FED",
+  secondary: "#F6F8FB",
+  success: "#2F8061",
+  warning: "#A66A16",
+  danger: "#B94A48",
+  info: "#3E6FAE",
 
   /** Atmosphere on navy chrome only. */
-  glow: "#2F6FED",
+  glow: "#356FE5",
   /** Reserved spark — not used as chrome. */
-  spark: "#F5A524",
+  spark: "#FFF4DF",
 
-  background: "#F7F9FC",
+  background: "#F6F8FB",
   surface: "#FFFFFF",
-  surfaceElevated: "#F7F9FC",
+  surfaceElevated: "#F6F8FB",
 
-  textPrimary: "#102033",
-  textSecondary: "#637286",
-  textMuted: "#637286",
+  textPrimary: "#102A43",
+  textSecondary: "#5F7185",
+  textMuted: "#5F7185",
 
-  border: "#E5EAF0",
-  focus: "#2F6FED",
+  border: "#DCE5EF",
+  focus: "#356FE5",
 } as const;
 
 /**
@@ -75,17 +75,17 @@ export const CALQULUS_PORTAL_ACCENT = {
     id: "agency",
     label: "Amber",
     /** Darker than marketing spark so text/chrome on white meets contrast. */
-    hex: "#9A5A16",
+    hex: CALQULUS_COLOR.warning,
   },
   tenant: {
     id: "tenant",
-    label: "Violet",
-    hex: "#5C4A8A",
+    label: "Slate Navy",
+    hex: "#6388AE",
   },
   platform_admin: {
     id: "platform_admin",
-    label: "Indigo",
-    hex: "#3E4C94",
+    label: "Steel Navy",
+    hex: "#426B94",
   },
 } as const;
 
@@ -129,8 +129,9 @@ export const CALQULUS_RADIUS = {
 /** Shadows tint with navy. No decorative glow. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px 0 rgb(13 39 68 / 0.06), 0 1px 1px -1px rgb(13 39 68 / 0.04)",
-  elevated: "0 8px 24px -12px rgb(13 39 68 / 0.16), 0 0 0 1px rgb(13 39 68 / 0.06)",
+  card: "0 1px 2px rgba(16, 42, 67, 0.05)",
+  elevated: "0 8px 24px rgba(16, 42, 67, 0.08)",
+  modal: "0 20px 50px rgba(16, 42, 67, 0.12)",
 } as const;
 
 export const CALQULUS_ICON = {

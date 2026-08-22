@@ -11,7 +11,7 @@ export function TrustSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-14">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9fbcf5]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--calqulus-primary-light)]">
               Trust
             </p>
             <h2 className="public-section-title mt-2 text-white">

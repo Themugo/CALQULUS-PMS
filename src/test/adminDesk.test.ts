@@ -65,8 +65,8 @@ describe("webhost role routing", () => {
 
 describe("platform admin identity", () => {
   it("uses indigo as the 2px accent", () => {
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#3E4C94");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Indigo");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#426B94");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Steel Navy");
   });
 });
 

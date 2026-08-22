@@ -153,6 +153,136 @@
   --container-padding: 2rem;
   --container-screens-2xl: 1400px;
 
+  /* ── CALQULUS palette remap ──────────────────────────────────────────
+     Raw Tailwind palette utilities across the app resolve to the muted
+     CALQULUS families instead of the default bright scales. One token
+     system: blue = brand, green = success, amber/yellow = warning,
+     red = danger, greys = slate-navy, violet/purple/pink = navy identity. */
+  --color-blue-50: #EAF1FF;
+  --color-blue-100: #D8E5FD;
+  --color-blue-200: #B9CFFB;
+  --color-blue-300: #8FB0F5;
+  --color-blue-400: #5F8CEC;
+  --color-blue-500: #356FE5;
+  --color-blue-600: #285FCC;
+  --color-blue-700: #214FAE;
+  --color-blue-800: #1D4189;
+  --color-blue-900: #1A386F;
+  --color-blue-950: #12264A;
+
+  --color-slate-50: #F6F8FB;
+  --color-slate-100: #EEF3F8;
+  --color-slate-200: #DCE5EF;
+  --color-slate-300: #C8D5E4;
+  --color-slate-400: #9DADBF;
+  --color-slate-500: #7D8DA0;
+  --color-slate-600: #5F7185;
+  --color-slate-700: #4A5A6E;
+  --color-slate-800: #33445A;
+  --color-slate-900: #1E3247;
+  --color-slate-950: #102A43;
+  --color-gray-50: var(--color-slate-50);
+  --color-gray-100: var(--color-slate-100);
+  --color-gray-200: var(--color-slate-200);
+  --color-gray-300: var(--color-slate-300);
+  --color-gray-400: var(--color-slate-400);
+  --color-gray-500: var(--color-slate-500);
+  --color-gray-600: var(--color-slate-600);
+  --color-gray-700: var(--color-slate-700);
+  --color-gray-800: var(--color-slate-800);
+  --color-gray-900: var(--color-slate-900);
+  --color-gray-950: var(--color-slate-950);
+  --color-green-50: #E8F5EF;
+  --color-green-100: #D2EBE0;
+  --color-green-200: #A8D7C4;
+  --color-green-300: #7ABFA4;
+  --color-green-400: #52A386;
+  --color-green-500: #3D9673;
+  --color-green-600: #2F8061;
+  --color-green-700: #276A50;
+  --color-green-800: #1F5440;
+  --color-green-900: #173F31;
+  --color-green-950: #0C241B;
+  --color-amber-50: #FFF4DF;
+  --color-amber-100: #FDEAC8;
+  --color-amber-200: #F5D49A;
+  --color-amber-300: #E8B96A;
+  --color-amber-400: #D39A3D;
+  --color-amber-500: #BC7F22;
+  --color-amber-600: #A66A16;
+  --color-amber-700: #855512;
+  --color-amber-800: #64400E;
+  --color-amber-900: #432B09;
+  --color-amber-950: #2A1B06;
+  --color-yellow-50: var(--color-amber-50);
+  --color-yellow-100: var(--color-amber-100);
+  --color-yellow-200: var(--color-amber-200);
+  --color-yellow-300: var(--color-amber-300);
+  --color-yellow-400: var(--color-amber-400);
+  --color-yellow-500: var(--color-amber-500);
+  --color-yellow-600: var(--color-amber-600);
+  --color-yellow-700: var(--color-amber-700);
+  --color-yellow-800: var(--color-amber-800);
+  --color-yellow-900: var(--color-amber-900);
+  --color-yellow-950: var(--color-amber-950);
+  --color-orange-50: var(--color-amber-50);
+  --color-orange-100: var(--color-amber-100);
+  --color-orange-200: var(--color-amber-200);
+  --color-orange-300: var(--color-amber-300);
+  --color-orange-400: var(--color-amber-400);
+  --color-orange-500: var(--color-amber-500);
+  --color-orange-600: var(--color-amber-600);
+  --color-orange-700: var(--color-amber-700);
+  --color-orange-800: var(--color-amber-800);
+  --color-orange-900: var(--color-amber-900);
+  --color-orange-950: var(--color-amber-950);
+
+  --color-cyan-50: var(--color-blue-50);
+  --color-cyan-100: var(--color-blue-100);
+  --color-cyan-200: var(--color-blue-200);
+  --color-cyan-300: var(--color-blue-300);
+  --color-cyan-400: var(--color-blue-400);
+  --color-cyan-500: var(--color-blue-500);
+  --color-cyan-600: var(--color-blue-600);
+  --color-cyan-700: var(--color-blue-700);
+  --color-cyan-800: var(--color-blue-800);
+  --color-cyan-900: var(--color-blue-900);
+  --color-cyan-950: var(--color-blue-950);
+
+  --color-red-50: #FBEAEA;
+  --color-red-100: #F6DADA;
+  --color-red-200: #ECBABA;
+  --color-red-300: #DE9494;
+  --color-red-400: #CD6B6A;
+  --color-red-500: #B94A48;
+  --color-red-600: #A53E3C;
+  --color-red-700: #863231;
+  --color-red-800: #672726;
+  --color-red-900: #481B1B;
+  --color-red-950: #2E1111;
+  --color-rose-50: var(--color-red-50);
+  --color-rose-100: var(--color-red-100);
+  --color-rose-200: var(--color-red-200);
+  --color-rose-300: var(--color-red-300);
+  --color-rose-400: var(--color-red-400);
+  --color-rose-500: var(--color-red-500);
+  --color-rose-600: var(--color-red-600);
+  --color-rose-700: var(--color-red-700);
+  --color-rose-800: var(--color-red-800);
+  --color-rose-900: var(--color-red-900);
+  --color-rose-950: var(--color-red-950);
+  --color-pink-50: var(--color-red-50);
+  --color-pink-100: var(--color-red-100);
+  --color-pink-200: var(--color-red-200);
+  --color-pink-300: var(--color-red-300);
+  --color-pink-400: var(--color-red-400);
+  --color-pink-500: var(--color-red-500);
+  --color-pink-600: var(--color-red-600);
+  --color-pink-700: var(--color-red-700);
+  --color-pink-800: var(--color-red-800);
+  --color-pink-900: var(--color-red-900);
+  --color-pink-950: var(--color-red-950);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -254,24 +384,82 @@
 
 @layer base {
   :root {
-    --background: #F7F9FC;
-    --secondary-background: #F7F9FC;
-    --foreground: #102033;
+    /* ── CALQULUS canonical premium navy palette (single source of truth) ── */
+    --calqulus-navy-50: #F4F7FB;
+    --calqulus-navy-100: #E8EEF7;
+    --calqulus-navy-200: #D5E0EF;
+    --calqulus-navy-300: #B8C9DE;
+    --calqulus-navy-400: #8EA8C5;
+    --calqulus-navy-500: #6388AE;
+    --calqulus-navy-600: #426B94;
+    --calqulus-navy-700: #31577E;
+    --calqulus-navy-800: #244766;
+    --calqulus-navy-900: #173650;
+    --calqulus-navy-950: #0B2239;
 
-    --card: #FFFFFF;
-    --card-foreground: #102033;
-    --surface: #FFFFFF;
-    --surface-elevated: #F7F9FC;
+    --calqulus-primary: #356FE5;
+    --calqulus-primary-hover: #285FCC;
+    --calqulus-primary-active: #214FAE;
+    --calqulus-primary-soft: #EAF1FF;
+    --calqulus-primary-light: #8FB8FF;
 
-    --popover: #FFFFFF;
-    --popover-foreground: #102033;
+    --calqulus-background: #F6F8FB;
+    --calqulus-background-soft: #EEF3F8;
+    --calqulus-background-muted: #E8EEF5;
+
+    --calqulus-surface: #FFFFFF;
+    --calqulus-surface-raised: #FFFFFF;
+    --calqulus-surface-soft: #F8FAFC;
+    --calqulus-surface-navy: #EDF3F9;
+
+    --calqulus-text: #102A43;
+    --calqulus-text-strong: #0B2239;
+    --calqulus-text-muted: #5F7185;
+    --calqulus-text-subtle: #7D8DA0;
+    --calqulus-text-on-navy: #FFFFFF;
+    --calqulus-text-on-navy-muted: #C7D5E5;
+
+    --calqulus-border: #DCE5EF;
+    --calqulus-border-strong: #C8D5E4;
+    --calqulus-border-soft: #E9EFF5;
+
+    --calqulus-success: #2F8061;
+    --calqulus-success-soft: #E8F5EF;
+    /* Small status text on soft tints needs darker steps for 4.5:1. */
+    --calqulus-success-text: #276A50;
+    --calqulus-warning: #A66A16;
+    --calqulus-warning-soft: #FFF4DF;
+    /* Small amber text needs a darker step to reach 4.5:1 on white. */
+    --calqulus-warning-text: #855512;
+    --calqulus-danger: #B94A48;
+    --calqulus-danger-soft: #FBEAEA;
+    --calqulus-danger-text: #A53E3C;
+    --calqulus-info: #3E6FAE;
+    --calqulus-info-soft: #EAF2FB;
+
+    --calqulus-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
+    --calqulus-shadow-md: 0 8px 24px rgba(16, 42, 67, 0.08);
+    --calqulus-shadow-lg: 0 20px 50px rgba(16, 42, 67, 0.12);
+
+    /* ── Semantic tokens re-pointed to the CALQULUS palette ── */
+    --background: var(--calqulus-background);
+    --secondary-background: var(--calqulus-background);
+    --foreground: var(--calqulus-text);
+
+    --card: var(--calqulus-surface);
+    --card-foreground: var(--calqulus-text);
+    --surface: var(--calqulus-surface);
+    --surface-elevated: var(--calqulus-background);
+
+    --popover: var(--calqulus-surface);
+    --popover-foreground: var(--calqulus-text);
 
     /* Interactive blue — buttons, links, focus */
-    --primary: #2F6FED;
+    --primary: var(--calqulus-primary);
     --primary-foreground: #FFFFFF;
-    --primary-hover: #4C84F0;
-    --primary-active: #2459D6;
-    --primary-text: #2459D6;
+    --primary-hover: var(--calqulus-primary-hover);
+    --primary-active: var(--calqulus-primary-active);
+    --primary-text: var(--calqulus-primary-active);
     /* Organization accent. Design-system --primary stays CALQULUS. */
     --brand-primary: var(--primary);
     --brand-primary-hover: var(--primary-hover);
@@ -290,42 +478,42 @@
     --portal-accent-surface: color-mix(in srgb, var(--portal-accent) 10%, #FFFFFF);
 
     /* Navy identity — chrome only, never a page fill */
-    --navy-primary: #0D2744;
-    --navy-deep: #081A2E;
-    --navy-mid: #173F67;
-    --navy-surface: #21507A;
-    --secondary-navy: #173F67;
-    --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --glow: #2F6FED;
-    --spark: #F5A524;
+    --navy-primary: var(--calqulus-navy-900);
+    --navy-deep: var(--calqulus-navy-950);
+    --navy-mid: var(--calqulus-navy-700);
+    --navy-surface: var(--calqulus-navy-800);
+    --secondary-navy: var(--calqulus-navy-700);
+    --soft-blue: var(--calqulus-primary-soft);
+    --glow: var(--calqulus-primary);
+    --spark: var(--calqulus-warning-soft);
 
-    --secondary: #F7F9FC;
-    --secondary-foreground: #637286;
+    --secondary: var(--calqulus-background);
+    --secondary-foreground: var(--calqulus-text-muted);
 
-    --muted: #F7F9FC;
-    --muted-foreground: #637286;
+    --muted: var(--calqulus-background);
+    --muted-foreground: var(--calqulus-text-muted);
 
-    --accent: #2F6FED;
+    --accent: var(--calqulus-primary);
     --accent-foreground: #FFFFFF;
 
-    --destructive: #C84B4B;
+    --destructive: var(--calqulus-danger);
     --destructive-foreground: #FFFFFF;
-    --destructive-text: #A33A3A;
-    --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
+    --destructive-text: var(--calqulus-danger-text);
+    --destructive-bg: var(--calqulus-danger-soft);
 
-    --success: #23856B;
+    --success: var(--calqulus-success);
     --success-foreground: #FFFFFF;
-    --success-text: #1B6B56;
-    --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
+    --success-text: var(--calqulus-success-text);
+    --success-bg: var(--calqulus-success-soft);
 
-    --warning: #B7791F;
+    --warning: var(--calqulus-warning);
     --warning-foreground: #FFFFFF;
-    --warning-text: #9A5A16;
-    --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
+    --warning-text: var(--calqulus-warning-text);
+    --warning-bg: var(--calqulus-warning-soft);
 
-    --info: #2F6FED;
+    --info: var(--calqulus-info);
     --info-foreground: #FFFFFF;
-    --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
+    --info-bg: var(--calqulus-info-soft);
 
     /* Legacy class aliases — identity or interaction, never a second palette */
     --purple: var(--navy-mid);
@@ -341,108 +529,38 @@
     --gold-foreground: var(--primary-foreground);
     --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
 
-    --border: #E5EAF0;
-    --input: #E5EAF0;
-    --ring: #2F6FED;
+    --border: var(--calqulus-border);
+    --input: var(--calqulus-border-strong);
+    --ring: var(--calqulus-primary);
 
     --radius: 0.75rem;
 
     /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
        sidebar is a desk surface now, not chrome. Selected nav uses
        interactive blue wash (bg-primary/10). Portal identity is the 2px stripe. */
-    --sidebar-background: #FFFFFF;
-    --sidebar-foreground: #102033;
-    --sidebar-primary: #2F6FED;
+    --sidebar-background: var(--calqulus-surface);
+    --sidebar-foreground: var(--calqulus-text);
+    --sidebar-primary: var(--calqulus-primary);
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #F7F9FC;
-    --sidebar-accent-foreground: #102033;
-    --sidebar-border: #E5EAF0;
-    --sidebar-ring: #2F6FED;
-    --sidebar-muted: #637286;
+    --sidebar-accent: var(--calqulus-background);
+    --sidebar-accent-foreground: var(--calqulus-text);
+    --sidebar-border: var(--calqulus-border);
+    --sidebar-ring: var(--calqulus-primary);
+    --sidebar-muted: var(--calqulus-text-muted);
   }
 
-  [data-portal="manager"] { --portal-accent: #2F6FED; }
-  [data-portal="landlord"] { --portal-accent: #23856B; }
-  [data-portal="agency"] { --portal-accent: #9A5A16; }
-  [data-portal="tenant"] { --portal-accent: #5C4A8A; }
-  [data-portal="platform_admin"] { --portal-accent: #3E4C94; }
+  [data-portal="manager"] { --portal-accent: var(--calqulus-primary); }
+  [data-portal="landlord"] { --portal-accent: var(--calqulus-success); }
+  [data-portal="agency"] { --portal-accent: var(--calqulus-warning); }
+  [data-portal="tenant"] { --portal-accent: var(--calqulus-navy-500); }
+  [data-portal="platform_admin"] { --portal-accent: var(--calqulus-navy-600); }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
      leftover `dark:` utilities cannot reintroduce a heavy dashboard.
      Production experience is always light. */
   .dark {
-    --background: #F7F9FC;
-    --secondary-background: #F7F9FC;
-    --foreground: #102033;
-    --card: #FFFFFF;
-    --card-foreground: #102033;
-    --surface: #FFFFFF;
-    --surface-elevated: #F7F9FC;
-    --popover: #FFFFFF;
-    --popover-foreground: #102033;
-    --primary: #2F6FED;
-    --primary-foreground: #FFFFFF;
-    --primary-hover: #4C84F0;
-    --primary-active: #2459D6;
-    --primary-text: #2459D6;
-    --brand-primary: var(--primary);
-    --brand-primary-foreground: #FFFFFF;
-    --navy-primary: #0D2744;
-    --navy-deep: #081A2E;
-    --navy-mid: #173F67;
-    --navy-surface: #21507A;
-    --secondary-navy: #173F67;
-    --soft-blue: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --glow: #2F6FED;
-    --spark: #F5A524;
-    --secondary: #F7F9FC;
-    --secondary-foreground: #637286;
-    --muted: #F7F9FC;
-    --muted-foreground: #637286;
-    --accent: #2F6FED;
-    --accent-foreground: #FFFFFF;
-    --destructive: #C84B4B;
-    --destructive-foreground: #FFFFFF;
-    --destructive-text: #A33A3A;
-    --destructive-bg: color-mix(in srgb, var(--destructive) 12%, #FFFFFF);
-    --success: #23856B;
-    --success-foreground: #FFFFFF;
-    --success-text: #1B6B56;
-    --success-bg: color-mix(in srgb, var(--success) 12%, #FFFFFF);
-    --warning: #B7791F;
-    --warning-foreground: #FFFFFF;
-    --warning-text: #9A5A16;
-    --warning-bg: color-mix(in srgb, var(--warning) 12%, #FFFFFF);
-    --info: #2F6FED;
-    --info-foreground: #FFFFFF;
-    --info-bg: color-mix(in srgb, var(--info) 12%, #FFFFFF);
-    --purple: var(--navy-mid);
-    --purple-foreground: #FFFFFF;
-    --purple-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
-    --indigo: var(--navy-mid);
-    --indigo-foreground: #FFFFFF;
-    --indigo-bg: color-mix(in srgb, var(--navy-mid) 10%, #FFFFFF);
-    --teal: var(--primary);
-    --teal-foreground: var(--primary-foreground);
-    --teal-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --gold: var(--primary);
-    --gold-foreground: var(--primary-foreground);
-    --gold-bg: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
-    --border: #E5EAF0;
-    --input: #E5EAF0;
-    --ring: #2F6FED;
-    /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
-       sidebar is a desk surface now, not chrome. Selected nav uses
-       interactive blue wash (bg-primary/10). Portal identity is the 2px stripe. */
-    --sidebar-background: #FFFFFF;
-    --sidebar-foreground: #102033;
-    --sidebar-primary: #2F6FED;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #F7F9FC;
-    --sidebar-accent-foreground: #102033;
-    --sidebar-border: #E5EAF0;
-    --sidebar-ring: #2F6FED;
-    --sidebar-muted: #637286;
+    /* Tokens cascade from :root — the light CALQULUS palette is the single
+       theme. No dark-only overrides. */
   }
 }
 
@@ -550,9 +668,9 @@
 
 @utility public-hero-grid-dark {
   background-image:
-    linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
-  background-size: 36px 36px;
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 92% 78% at 22% 0%, #000 8%, transparent 76%);
 }
 
@@ -569,26 +687,20 @@
 }
 
 /* Plain CSS so Tailwind does not nest @supports inside these backgrounds. */
+/* Property type cards share ONE CALQULUS navy treatment — no per-card
+   brand colors (green/violet/amber overlays removed). */
 .public-arch-residential,
 .public-arch-commercial,
 .public-arch-office {
   background-color: var(--navy-primary);
-}
-.public-arch-residential {
-  background-image: linear-gradient(160deg, var(--navy-primary) 0%, var(--navy-secondary) 55%, var(--primary) 100%);
-}
-.public-arch-commercial {
-  background-image: linear-gradient(155deg, var(--navy-secondary) 0%, var(--success) 58%, var(--navy-primary) 100%);
-}
-.public-arch-office {
-  background-image: linear-gradient(165deg, var(--navy-deep) 0%, #5C4A8A 52%, var(--navy-secondary) 100%);
+  background-image: linear-gradient(180deg, rgba(11, 34, 57, 0.05) 0%, rgba(11, 34, 57, 0.78) 100%);
 }
 
 @utility btn-brand {
   background-color: var(--primary);
   color: var(--primary-foreground);
   font-weight: 600;
-  box-shadow: 0 1px 2px 0 rgb(13 39 68 / 0.08);
+  box-shadow: var(--calqulus-shadow-sm);
   transition: all 0.15s ease-in-out;
 }
 
