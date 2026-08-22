@@ -535,23 +535,25 @@
 
     --radius: 0.75rem;
 
-    /* Phase 2 app shell: white sidebar, navy logo, subtle border - the
-       sidebar is a desk surface now, not chrome. Selected nav uses
-       interactive blue wash (bg-primary/10). Portal identity is the 2px stripe. */
-    --sidebar-background: var(--calqulus-surface);
-    --sidebar-foreground: var(--calqulus-text);
+    /* App shell sidebar: CALQULUS navy chrome carrying white/slate text.
+       One chrome for every portal — role identity stays the 2px stripe,
+       never a separate sidebar color system. Active nav = blue wash. */
+    --sidebar-background: var(--calqulus-navy-950);
+    --sidebar-foreground: var(--calqulus-text-on-navy);
     --sidebar-primary: var(--calqulus-primary);
     --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: var(--calqulus-background);
-    --sidebar-accent-foreground: var(--calqulus-text);
-    --sidebar-border: var(--calqulus-border);
-    --sidebar-ring: var(--calqulus-primary);
-    --sidebar-muted: var(--calqulus-text-muted);
+    --sidebar-accent: var(--calqulus-navy-800);
+    --sidebar-accent-foreground: var(--calqulus-text-on-navy);
+    --sidebar-border: var(--calqulus-navy-800);
+    --sidebar-ring: var(--calqulus-primary-light);
+    --sidebar-muted: var(--calqulus-text-on-navy-muted);
   }
 
+  /* Portal identity stripes — secondary accents only. Brand stays
+     CALQULUS NAVY + BLUE; status colors are never brand accents. */
   [data-portal="manager"] { --portal-accent: var(--calqulus-primary); }
-  [data-portal="landlord"] { --portal-accent: var(--calqulus-success); }
-  [data-portal="agency"] { --portal-accent: var(--calqulus-warning); }
+  [data-portal="landlord"] { --portal-accent: var(--calqulus-info); }
+  [data-portal="agency"] { --portal-accent: var(--calqulus-navy-600); }
   [data-portal="tenant"] { --portal-accent: var(--calqulus-navy-500); }
   [data-portal="platform_admin"] { --portal-accent: var(--calqulus-navy-600); }
 

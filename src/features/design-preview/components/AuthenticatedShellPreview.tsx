@@ -14,7 +14,7 @@ import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { LoadingState } from "@/shared/components/ui/loading-state";
 import { PortalAccentBar } from "@/core/design";
-import { CALQULUS_BRAND, CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { CALQULUS_BRAND } from "@/shared/theme/tokens";
 import { cn } from "@/shared/lib/utils";
 import {
   SHELL_PREVIEW_SAMPLE_ALERTS,
@@ -64,18 +64,18 @@ export function AuthenticatedShellPreview({ portal, canvas }: AuthenticatedShell
       <div className="flex min-h-[720px]">
         <aside
           className={cn(
-            "absolute inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-card transition-transform lg:static lg:translate-x-0",
+            "absolute inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar transition-transform lg:static lg:translate-x-0",
             menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
           aria-label={`${portal.label} navigation`}
         >
-          <div className="flex h-[68px] items-center justify-between border-b border-border px-4">
-            <BrandMark size="nav" showWordmark subtitle={portal.subtitle} forcePlatform />
+          <div className="flex h-[68px] items-center justify-between border-b border-sidebar-border px-4">
+            <BrandMark size="nav" showWordmark subtitle={portal.subtitle} forcePlatform inverse />
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent"
               aria-label="Close menu"
               onClick={() => setMenuOpen(false)}
             >
@@ -83,14 +83,14 @@ export function AuthenticatedShellPreview({ portal, canvas }: AuthenticatedShell
             </Button>
           </div>
 
-          <div className="border-b border-border px-3 py-3">
+          <div className="border-b border-sidebar-border px-3 py-3">
             <button
               type="button"
-              className="flex min-h-11 w-full items-center justify-between rounded-md border border-border bg-background px-3 text-left text-sm text-foreground"
+              className="flex min-h-11 w-full items-center justify-between rounded-md border border-sidebar-border bg-sidebar-accent/50 px-3 text-left text-sm text-sidebar-foreground"
               aria-label="Workspace selector"
             >
               <span className="truncate">{CALQULUS_BRAND.name} workspace</span>
-              <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-sidebar-muted" aria-hidden />
             </button>
           </div>
 
@@ -105,33 +105,19 @@ export function AuthenticatedShellPreview({ portal, canvas }: AuthenticatedShell
                       aria-current={active ? "page" : undefined}
                       onClick={() => selectItem(item.id)}
                       className={cn(
-                        "relative flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        active ? "font-semibold" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      )}
-                      style={
+                        "relative flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                         active
-                          ? {
-                              backgroundColor: `color-mix(in srgb, ${portal.accent} 12%, ${CALQULUS_COLOR.white})`,
-                              color: portal.accent,
-                            }
-                          : undefined
-                      }
+                          ? "bg-primary/85 font-semibold text-primary-foreground"
+                          : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                      )}
                     >
-                      {active ? (
-                        <span
-                          className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full"
-                          style={{ backgroundColor: portal.accent }}
-                          aria-hidden
-                        />
-                      ) : null}
                       <span
-                        className="flex h-7 w-7 items-center justify-center rounded-md"
-                        style={{
-                          backgroundColor: active
-                            ? `color-mix(in srgb, ${portal.accent} 16%, ${CALQULUS_COLOR.white})`
-                            : CALQULUS_COLOR.background,
-                          color: active ? portal.accent : undefined,
-                        }}
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-md",
+                          active
+                            ? "bg-white/15 text-primary-foreground"
+                            : "bg-sidebar-accent text-sidebar-muted",
+                        )}
                       >
                         <item.icon className="h-4 w-4" aria-hidden />
                       </span>
@@ -255,7 +241,7 @@ export function AuthenticatedShellPreview({ portal, canvas }: AuthenticatedShell
                 <Button type="button" variant="outline">
                   {portal.secondaryAction}
                 </Button>
-                <Button type="button" style={{ backgroundColor: portal.accent, color: CALQULUS_COLOR.white }}>
+                <Button type="button">
                   {portal.primaryAction}
                 </Button>
               </>

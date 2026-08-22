@@ -10,8 +10,9 @@ export const DESK_NAV_ACTIVE =
 export const DESK_NAV_IDLE =
   "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground";
 
-/** White manager rail: same selected wash, sidebar hover tokens when idle. */
-export const SIDEBAR_NAV_ACTIVE = "bg-primary/10 text-foreground font-semibold";
+/** Navy manager rail: unmistakable blue wash selected, slate-on-navy idle. */
+export const SIDEBAR_NAV_ACTIVE =
+  "bg-primary/85 text-primary-foreground font-semibold";
 
 export const SIDEBAR_NAV_IDLE =
   "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground";

@@ -30,6 +30,8 @@ export const CALQULUS_COLOR = {
   navyDeep: "#0B2239",
   navyPrimary: "#173650",
   navySecondary: "#31577E",
+  /** Navy 600 step used for platform-admin & agency accents. */
+  navy600: "#426B94",
 
   white: "#FFFFFF",
   secondary: "#F6F8FB",
@@ -68,14 +70,14 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   landlord: {
     id: "landlord",
-    label: "Emerald",
-    hex: CALQULUS_COLOR.success,
+    label: "Steel Blue",
+    /** Secondary accent only; status colors stay semantic. */
+    hex: CALQULUS_COLOR.info,
   },
   agency: {
     id: "agency",
-    label: "Amber",
-    /** Darker than marketing spark so text/chrome on white meets contrast. */
-    hex: CALQULUS_COLOR.warning,
+    label: "Deep Navy",
+    hex: CALQULUS_COLOR.navy600,
   },
   tenant: {
     id: "tenant",

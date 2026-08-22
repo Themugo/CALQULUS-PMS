@@ -6,7 +6,9 @@ import { DESK_NAV_ACTIVE, SIDEBAR_NAV_ACTIVE } from "@/core/design/deskNav";
 describe("Phase 10 desk polish", () => {
   it("selects navigation with interactive blue, not portal fill", () => {
     expect(DESK_NAV_ACTIVE).toContain("bg-primary/10");
-    expect(SIDEBAR_NAV_ACTIVE).toContain("bg-primary/10");
+    // Navy rail: unmistakable solid blue selected state.
+    expect(SIDEBAR_NAV_ACTIVE).toContain("bg-primary/85");
+    expect(SIDEBAR_NAV_ACTIVE).toContain("text-primary-foreground");
     expect(DESK_NAV_ACTIVE).not.toContain("portal-accent");
     expect(SIDEBAR_NAV_ACTIVE).not.toContain("portal-accent");
   });
