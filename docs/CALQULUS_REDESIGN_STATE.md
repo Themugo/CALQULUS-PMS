@@ -1,6 +1,9 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Manager Onboarding (phase 4, 2026-08-23) — 7-step flow (/onboarding/manager) over existing APIs: Account → Verification → Organization → Portfolio types → First property → Team invite → Complete. Uses company_settings + existing auth signup (submanager invite), audit log, and property paths. Backend remains authoritative; no plan selection yet.
+
+## HISTORY
 Onboarding / Authentication audit (2026-08-23) — see docs/CALQULUS_ONBOARDING_AUDIT.md. No auth logic modified.
 
 ## CURRENT TASK
