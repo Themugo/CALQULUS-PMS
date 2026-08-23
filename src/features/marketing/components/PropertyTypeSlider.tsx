@@ -1,5 +1,5 @@
 import { KeyboardEvent, useCallback, useRef, useState } from "react";
-import { Briefcase, Building2, ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { ArrowUpRight, Briefcase, Building2, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { ArchitecturalSurface, type PropertyVisualSlot } from "@/features/marketing/components/ArchitecturalSurface";
 import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 import { cn } from "@/shared/lib/utils";
@@ -63,9 +63,9 @@ export function PropertyTypeSlider() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="public-section-title">Designed for every property type</h2>
+          <h2 className="public-section-title">Built for every property.</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            Choose your property category to see how CALQULUS works for you.
+            Residential, commercial and office — one workspace.
           </p>
         </div>
 
@@ -85,23 +85,29 @@ export function PropertyTypeSlider() {
           >
             {TYPES.map((item) => (
               <li key={item.id} className="min-w-[85%] snap-center sm:min-w-[70%] lg:min-w-0">
-                <article className="relative h-[190px] overflow-hidden rounded-[14px] border border-border shadow-sm">
+                <article className="group relative h-[220px] overflow-hidden rounded-[14px] border border-border shadow-sm transition-shadow duration-200 hover:shadow-md">
                   <ArchitecturalSurface slot={item.id} />
                   <div
-                    className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/25 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent"
                     aria-hidden
                   />
-                  <div className="relative flex h-full flex-col justify-end p-4">
+                  <div className="relative flex h-full flex-col justify-end p-5">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-heading text-base font-semibold text-white sm:text-lg">{item.name}</h3>
-                      <span
-                        className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white"
-                        style={{ boxShadow: `inset 0 0 0 1px ${item.accent}66` }}
-                      >
-                        <item.icon className="h-4 w-4" aria-hidden />
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white"
+                          style={{ boxShadow: `inset 0 0 0 1px ${item.accent}66` }}
+                        >
+                          <item.icon className="h-4 w-4" aria-hidden />
+                        </span>
+                        <h3 className="font-heading text-base font-semibold text-white sm:text-lg">{item.name}</h3>
+                      </div>
+                      <ArrowUpRight
+                        className="h-4 w-4 text-white/70 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        aria-hidden
+                      />
                     </div>
-                    <p className="mt-1 text-[13px] leading-snug text-white/78">{item.tagline}</p>
+                    <p className="mt-1.5 max-w-[85%] text-[13px] leading-snug text-white/80">{item.tagline}</p>
                   </div>
                 </article>
               </li>

@@ -276,7 +276,7 @@ function HomepagePreview() {
           <div className="bg-card px-4 py-6">
             <p className="text-xs uppercase tracking-wider text-primary">Property operations, connected</p>
             <p className="mt-1 font-heading text-xl font-bold text-foreground">
-              Run your properties with clarity and control.
+              Run every property from one place.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Opening this page should feel like opening an enterprise operating system.

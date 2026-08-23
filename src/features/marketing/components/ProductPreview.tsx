@@ -127,11 +127,17 @@ export function PropertyOperationsVisual() {
   );
 }
 
+const FINANCE_SNAPSHOT = [
+  { label: "Collected", value: "KES 1.24M" },
+  { label: "Collection rate", value: "93%" },
+  { label: "Outstanding", value: "KES 210K" },
+] as const;
+
 export function FinancialOperationsVisual() {
   return (
     <div className="rounded-[14px] border border-border bg-background p-3 shadow-sm sm:p-4">
       <div className="grid grid-cols-3 gap-2">
-        {SNAPSHOT.slice(1).map((metric) => (
+        {FINANCE_SNAPSHOT.map((metric) => (
           <div key={metric.label} className="rounded-lg border border-border bg-card p-2">
             <p className="truncate text-[9px] font-medium uppercase tracking-wide text-muted-foreground">
               {metric.label}
@@ -199,7 +205,7 @@ export function ProductPreview({ captionClassName = "text-muted-foreground", ele
       <div
         className={
           elevated
-            ? "flex overflow-hidden rounded-[14px] border border-white/15 bg-card shadow-2xl shadow-navy-deep/70"
+            ? "flex overflow-hidden rounded-[14px] border border-border bg-card shadow-2xl shadow-navy-primary/15"
             : "flex overflow-hidden rounded-[14px] border border-border bg-card shadow-sm"
         }
       >

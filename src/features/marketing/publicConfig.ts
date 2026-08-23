@@ -32,84 +32,130 @@ export const PUBLIC_NAV = [
 
 /** Homepage hero copy — single source of truth. */
 export const HERO_CONTENT = {
-  eyebrow: "Property operations, connected",
-  titleLines: ["Run your properties", "with clarity and control."],
-  copy: "CALQULUS brings properties, tenants, leases, billing, payments and maintenance into one focused operational system.",
+  eyebrow: "Property operations",
+  titleLines: ["Run every property", "from one place."],
+  copy: "Properties, tenants, billing and maintenance — connected.",
   primaryCta: "Start managing",
-  secondaryCta: "Explore the platform",
+  secondaryCta: "Explore platform",
 } as const;
 
-/** Platform overview summary — verified capabilities only (see src/features/*). */
-export const PLATFORM_SUMMARY = [
-  "Properties, units and occupancy in one register",
-  "Tenants, leases and vacation notices kept current",
-  "Billing, payments and statements reconciled",
-  "Maintenance requests tracked to resolution",
-] as const;
-
-/** Operational lifecycle shown in the "Everything connected." section. */
-export const WORKFLOW_STEPS = [
-  { label: "Property", note: "Register buildings and portfolios" },
-  { label: "Units", note: "Track rentable spaces per property" },
-  { label: "Tenants", note: "Onboard residents with invitations" },
-  { label: "Leases", note: "Keep terms, deposits and renewals current" },
-  { label: "Billing", note: "Raise rent and water invoices" },
-  { label: "Payments", note: "Collect and reconcile receipts" },
-  { label: "Maintenance", note: "Resolve repairs end to end" },
-  { label: "Reporting", note: "See performance across the portfolio" },
-] as const;
-
-/** Product showcase items — each reuses the shared ProductPreview visual. */
-export const SHOWCASES = [
+/** Illustrative portfolio cards for the property carousel. Sample figures only. */
+export const PORTFOLIO_PROPERTIES = [
   {
-    id: "operations",
-    category: "Property operations",
-    headline: "Every property, unit and occupant in one desk.",
-    copy: "Stop reconciling spreadsheets. CALQULUS keeps the property register, unit occupancy and tenant records in a single operational view.",
-    points: ["Property and unit register", "Occupancy at a glance", "Tenant records and invitations"],
+    name: "Kilimani Court",
+    slot: "residential",
+    units: 24,
+    occupied: 22,
+    occupancy: 92,
+    collected: "KES 1.24M collected",
+    status: "paid",
   },
+  {
+    name: "West View",
+    slot: "office",
+    units: 18,
+    occupied: 15,
+    occupancy: 83,
+    collected: "KES 0.86M collected",
+    status: "pending",
+  },
+  {
+    name: "Block C",
+    slot: "residential",
+    units: 30,
+    occupied: 23,
+    occupancy: 77,
+    collected: "KES 2.10M collected",
+    status: "overdue",
+  },
+  {
+    name: "Parklands Plaza",
+    slot: "commercial",
+    units: 12,
+    occupied: 12,
+    occupancy: 100,
+    collected: "KES 0.64M collected",
+    status: "paid",
+  },
+  {
+    name: "Ngong View",
+    slot: "residential",
+    units: 16,
+    occupied: 14,
+    occupancy: 88,
+    collected: "KES 0.72M collected",
+    status: "pending",
+  },
+] as const;
+
+/** Platform overview — capability tiles (verified features, see src/features/*). */
+export const PLATFORM_CAPABILITIES = [
+  "Properties",
+  "Units",
+  "Tenants",
+  "Leases",
+  "Billing",
+  "Payments",
+  "Maintenance",
+  "Reporting",
+] as const;
+
+/** Operational lifecycle shown in the visual flow section. */
+export const WORKFLOW_STEPS = [
+  { label: "Property", note: "Register buildings" },
+  { label: "Units", note: "Track rentable spaces" },
+  { label: "Tenants", note: "Onboard with invitations" },
+  { label: "Leases", note: "Keep terms current" },
+  { label: "Billing", note: "Raise rent and water" },
+  { label: "Payments", note: "Collect and reconcile" },
+  { label: "Maintenance", note: "Resolve repairs" },
+  { label: "Reporting", note: "See the portfolio" },
+] as const;
+
+/** Product showcase items — each reuses a dedicated lightweight visual. */
+export const SHOWCASES = [
   {
     id: "financials",
     category: "Financial operations",
-    headline: "Billing, collections and statements that reconcile.",
-    copy: "Rent and water billing flow into recorded payments, receipts and per-property statements — so the numbers always add up.",
-    points: ["Rent and water billing", "Payment recording and receipts", "Property statements and reports"],
+    headline: "Know what came in.",
+    copy: "Billing, payments and statements in sync.",
+    points: ["KES collected vs billed", "Billing runs and receipts", "Outstanding per property"],
   },
   {
     id: "maintenance",
     category: "Maintenance",
-    headline: "Repairs tracked from request to resolution.",
-    copy: "Tenants raise requests in their portal; managers assign, track and close work without losing sight of open items.",
-    points: ["Tenant maintenance requests", "Open-repair visibility", "Resolution tracking"],
+    headline: "Maintenance, under control.",
+    copy: "Requests, assignments and resolution in one list.",
+    points: ["Open and completed repairs", "Inspections per property", "Status visible end to end"],
   },
 ] as const;
 
 /** Trust points — only capabilities that exist in the application today. */
 export const TRUST_POINTS = [
   {
-    title: "Role-based access",
-    copy: "Managers, landlords, agencies and tenants each see only what their role allows.",
+    title: "Role-based",
+    copy: "Access by role — managers, landlords, agencies and tenants.",
   },
   {
-    title: "Controlled data access",
-    copy: "Row-level security keeps every account's data scoped to its own workspace.",
+    title: "Secure",
+    copy: "Controlled data access scoped to each workspace.",
   },
   {
-    title: "Operational visibility",
-    copy: "Activity is recorded across billing, payments and maintenance for accountable operations.",
+    title: "Auditable",
+    copy: "Activity history across billing, payments and maintenance.",
   },
   {
-    title: "Reliable financial workflows",
-    copy: "Invoices, payments and receipts follow one consistent, auditable path.",
+    title: "Reliable",
+    copy: "Financial records following one consistent path.",
   },
 ] as const;
 
 /** Final call-to-action copy. */
 export const FINAL_CTA = {
-  title: "Ready to run your properties with clarity?",
-  copy: "Bring your properties, tenants, leases, billing and maintenance into one operational system.",
+  title: "Ready to run your portfolio?",
+  copy: "Start with CALQULUS.",
   primary: "Get started",
-  secondary: "Explore the platform",
+  secondary: "Explore platform",
 } as const;
 
 export const RESOURCE_LINKS = [

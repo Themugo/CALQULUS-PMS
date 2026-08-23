@@ -1,6 +1,52 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from 'vitest';
 
+// Embla-based carousels (ui/carousel) initialize ResizeObserver at mount;
+// jsdom does not ship one. Minimal no-op polyfill keeps carousel renders stable.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  class ResizeObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(globalThis, 'ResizeObserver', {
+    value: ResizeObserverMock,
+    configurable: true,
+  });
+}
+
+// jsdom does not implement matchMedia; embla resolves media-option queries.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  Object.defineProperty(window, 'matchMedia', {
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+    configurable: true,
+  });
+}
+
+// jsdom does not implement IntersectionObserver; embla uses it for
+// in-view slide detection.
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  class IntersectionObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() { return []; }
+  }
+  Object.defineProperty(globalThis, "IntersectionObserver", {
+    value: IntersectionObserverMock,
+    configurable: true,
+  });
+}
+
 // Node 26 exposes an experimental `localStorage` global that is undefined
 // unless --localstorage-file is provided, shadowing jsdom's window.localStorage.
 // Provide a stable in-memory polyfill so bare `localStorage` references in

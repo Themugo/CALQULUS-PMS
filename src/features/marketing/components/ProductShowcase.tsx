@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
-import { PropertyOperationsVisual, FinancialOperationsVisual, MaintenanceVisual } from "@/features/marketing/components/ProductPreview";
+import { FinancialOperationsVisual, MaintenanceVisual } from "@/features/marketing/components/ProductPreview";
+import { ArchitecturalSurface } from "@/features/marketing/components/ArchitecturalSurface";
 import { SHOWCASES } from "@/features/marketing/publicConfig";
 import { cn } from "@/shared/lib/utils";
 
@@ -7,14 +8,14 @@ const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-prim
 
 /** One dedicated lightweight visual per capability — the full dashboard lives only in the hero. */
 const VISUALS = {
-  operations: PropertyOperationsVisual,
   financials: FinancialOperationsVisual,
   maintenance: MaintenanceVisual,
 } as const;
 
 /**
  * Alternating product showcase — text/visual rhythm flips per row; each row
- * renders the specialized visual for its capability.
+ * renders the specialized visual for its capability. The maintenance row pairs
+ * the interface with a premium property visual.
  */
 export function ProductShowcase() {
   return (
@@ -45,8 +46,19 @@ export function ProductShowcase() {
                   ))}
                 </ul>
               </div>
-              <div className={cn(reversed && "lg:order-1")}>
-                <Visual />
+              <div className={cn("relative", reversed && "lg:order-1")}>
+                {item.id === "maintenance" && (
+                  <div
+                    className="pointer-events-none absolute -right-3 -top-8 hidden h-40 w-56 overflow-hidden rounded-[14px] border border-border opacity-70 shadow-sm sm:block"
+                    aria-hidden
+                  >
+                    <ArchitecturalSurface slot="residential" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                  </div>
+                )}
+                <div className="relative">
+                  <Visual />
+                </div>
               </div>
             </article>
           );

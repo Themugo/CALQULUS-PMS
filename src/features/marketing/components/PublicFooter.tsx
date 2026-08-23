@@ -1,11 +1,7 @@
-import { FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
-import { Button } from "@/shared/components/ui/button";
 import {
   COMPANY_LINKS,
-  CONTACT_EMAIL,
   LEGAL_LINKS,
   PLATFORM_LINKS,
   PORTAL_LINKS,
@@ -16,27 +12,17 @@ import {
 const footerLinkClass =
   "text-sm text-white/72 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
 
-
 export function PublicFooter() {
   const { pathname } = useLocation();
   const year = new Date().getFullYear();
 
-  const onNewsletter = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const email = new FormData(form).get("email");
-    if (typeof email === "string" && email.trim()) {
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Newsletter request")}&body=${encodeURIComponent(email.trim())}`;
-    }
-  };
-
   return (
     <footer className="bg-navy-deep text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_repeat(4,minmax(0,1fr))_minmax(0,1.1fr)] lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] lg:px-8">
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
           <BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform />
           <p className="mt-3 text-sm leading-6 text-white/68">
-            The intelligent property operations platform for Kenya and East Africa.
+            Run every property from one place.
           </p>
         </div>
 
@@ -103,29 +89,6 @@ export function PublicFooter() {
             ))}
           </ul>
         </nav>
-
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Stay updated</p>
-          <p className="mt-3 text-sm leading-6 text-white/68">
-            Subscribe to our newsletter for product updates and insights.
-          </p>
-          <form className="mt-4 flex gap-2" onSubmit={onNewsletter}>
-            <label htmlFor="newsletter-email" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="newsletter-email"
-              name="email"
-              type="email"
-              required
-              placeholder="Email"
-              className="h-11 min-w-0 flex-1 rounded-md border border-white/15 bg-white/5 px-3 text-sm text-white placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            />
-            <Button type="submit" size="icon" className="btn-brand h-11 w-11 shrink-0" aria-label="Subscribe">
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Button>
-          </form>
-        </div>
       </div>
 
       <div className="border-t border-white/10">

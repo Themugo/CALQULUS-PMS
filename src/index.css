@@ -689,6 +689,39 @@
   .public-section-title { font-size: 2rem; } /* 32px */
 }
 
+/* Premium light hero — tinted blue/navy atmosphere on the shared page
+   background. Dark navy stays reserved for chrome, not the page fill. */
+@utility public-hero-surface-light {
+  background-color: #F4F7FB;
+  background-image:
+    radial-gradient(62% 70% at 84% 4%, color-mix(in srgb, var(--primary) 10%, transparent) 0%, transparent 60%),
+    radial-gradient(50% 60% at 2% 96%, color-mix(in srgb, var(--calqulus-navy-200) 55%, transparent) 0%, transparent 68%),
+    linear-gradient(180deg, #FAFCFE 0%, #F4F7FB 100%);
+}
+
+@utility public-hero-title-light {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.375rem;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+}
+@media (min-width: 768px) {
+  .public-hero-title-light { font-size: 3rem; }
+}
+@media (min-width: 1280px) {
+  .public-hero-title-light { font-size: 3.25rem; }
+}
+
+@utility public-hero-grid-light {
+  background-image:
+    linear-gradient(rgb(23 54 80 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(23 54 80 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 88% 70% at 50% 0%, #000 10%, transparent 74%);
+}
+
 /* Plain CSS so Tailwind does not nest @supports inside these backgrounds. */
 /* Property type cards share ONE CALQULUS navy treatment — no per-card
    brand colors (green/violet/amber overlays removed). */

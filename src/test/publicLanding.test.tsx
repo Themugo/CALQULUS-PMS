@@ -19,13 +19,13 @@ function renderAt(path: string) {
 }
 
 describe("PublicLandingPage", () => {
-  it("renders the executive homepage with a single h1", () => {
+  it("renders the product-first homepage with a single h1", () => {
     renderAt("/");
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Run your properties with clarity and control.");
+    expect(headings[0]).toHaveTextContent("Run every property from one place.");
     expect(
-      screen.getByText(/properties, tenants, leases, billing, payments and maintenance/i),
+      screen.getByText(/properties, tenants, billing and maintenance/i),
     ).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe("PublicLandingPage", () => {
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    const exploreLinks = screen.getAllByRole("link", { name: /explore the platform/i });
+    const exploreLinks = screen.getAllByRole("link", { name: /explore platform/i });
     expect(exploreLinks.length).toBeGreaterThan(0);
     for (const link of exploreLinks) {
       expect(link).toHaveAttribute("href", "#platform");
@@ -98,51 +98,55 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("uses a transparent-over-dark-hero header, navy final CTA band, and navy footer chrome", () => {
+  it("uses a frosted header, a light hero surface, and navy footer chrome", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
-    expect(header.className).not.toMatch(/navy-primary/);
-    // Over the dark hero at the top of the homepage the header is transparent;
-    // it transitions to a solid blurred surface on scroll (see PublicHeader).
-    expect(header.className).toMatch(/bg-transparent/);
-    expect(container.querySelector(".public-hero-surface")).toBeTruthy();
+    // The public header is a consistent frosted light surface across the site.
+    expect(header.className).toMatch(/bg-card\/90/);
+    expect(header.className).toMatch(/backdrop-blur/);
+    expect(container.querySelector(".public-hero-surface-light")).toBeTruthy();
+    expect(container.querySelector(".public-hero-grid-light")).toBeTruthy();
     expect(container.querySelector("footer.bg-navy-deep")).toBeTruthy();
     expect(container.querySelector("#platform")).toBeTruthy();
     expect(container.querySelector("#how-it-works")).toBeTruthy();
     expect(container.querySelector("#solutions")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
-    expect(container.querySelector(".public-hero-grid-dark")).toBeTruthy();
   });
 
-  it("shows the property type slider instead of a feature grid", () => {
+  it("shows the property portfolio carousel with sample cards", () => {
     renderAt("/");
-    expect(screen.getByRole("heading", { name: /designed for every property type/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /see what's happening across your properties/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Kilimani Court" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "West View" })).toBeInTheDocument();
+    expect(screen.getAllByText(/sample properties/i).length).toBeGreaterThan(0);
+  });
+
+  it("shows the compact capability grid and property type slider", () => {
+    renderAt("/");
+    expect(
+      screen.getByRole("heading", { name: /everything you need\. one workspace\./i }),
+    ).toBeInTheDocument();
+    for (const tile of ["Properties", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
+      expect(screen.getAllByText(tile).length).toBeGreaterThan(0);
+    }
+    expect(screen.getByRole("heading", { name: /built for every property\./i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Residential" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Commercial" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
   });
 
-  it("renders the connected workflow, showcase and trust sections", () => {
+  it("renders the visual workflow, finance and maintenance showcases, and trust grid", () => {
     renderAt("/");
-    expect(screen.getByRole("heading", { name: "Everything connected." })).toBeInTheDocument();
-    for (const step of ["Property", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
-      expect(screen.getByRole("heading", { name: step })).toBeInTheDocument();
-    }
-    expect(
-      screen.getByRole("heading", { name: /every property, unit and occupant in one desk/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /billing, collections and statements that reconcile/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /repairs tracked from request to resolution/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /built for controlled property operations/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Role-based access" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /one property\. every operation\./i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /know what came in\./i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /maintenance, under control\./i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /built to keep operations moving\./i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Role-based" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Secure" })).toBeInTheDocument();
   });
 
   it("uses the full dashboard only once — capability rows use dedicated lightweight visuals", () => {
@@ -151,8 +155,8 @@ describe("PublicLandingPage", () => {
       /Illustrative manager dashboard\. Sample figures only/i,
     );
     expect(captions.length).toBe(1);
-    expect(screen.getByText("Property register")).toBeInTheDocument();
     expect(screen.getByText("Billing runs")).toBeInTheDocument();
+    expect(screen.getAllByText("Maintenance activity").length).toBeGreaterThan(0);
   });
 
   it("does not fabricate certifications or fake social links", () => {
@@ -163,13 +167,13 @@ describe("PublicLandingPage", () => {
     expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
   });
 
-  it("renders a final CTA band with get-started and explore actions", () => {
+  it("renders a tinted final CTA card with get-started and explore actions", () => {
     renderAt("/");
     expect(
-      screen.getByRole("heading", { name: /ready to run your properties with clarity/i }),
+      screen.getByRole("heading", { name: /ready to run your portfolio\?/i }),
     ).toBeInTheDocument();
     const ctaSection = screen.getByRole("heading", {
-      name: /ready to run your properties with clarity/i,
+      name: /ready to run your portfolio\?/i,
     }).closest("section");
     expect(ctaSection).not.toBeNull();
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(

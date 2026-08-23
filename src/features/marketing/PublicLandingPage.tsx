@@ -6,6 +6,7 @@ import { OperationalWorkflow } from "@/features/marketing/components/Operational
 import { PlatformOverview } from "@/features/marketing/components/PlatformOverview";
 import { PortalExperiences } from "@/features/marketing/components/PortalExperiences";
 import { ProductShowcase } from "@/features/marketing/components/ProductShowcase";
+import { PropertyCarousel } from "@/features/marketing/components/PropertyCarousel";
 import { PropertyTypeSlider } from "@/features/marketing/components/PropertyTypeSlider";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
 import { PublicShell } from "@/features/marketing/components/PublicShell";
@@ -21,11 +22,12 @@ function HomeView() {
   return (
     <>
       <ExecutiveHero />
+      <PropertyCarousel />
       <PlatformOverview />
       <PropertyTypeSlider />
       <OperationalWorkflow />
-      <PortalExperiences />
       <ProductShowcase />
+      <PortalExperiences />
       <TrustSection />
       <CompactCta />
     </>
