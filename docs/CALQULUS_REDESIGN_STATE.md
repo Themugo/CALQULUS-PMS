@@ -1,22 +1,25 @@
-# CALQULUS Redesign — Persistent State
+# CALQULUS Redesign ŌĆö Persistent State
 
 ## CURRENT PHASE
-Admin Access (phase 8, 2026-08-23) � audit only, no public registration. Invitation-controlled via PlatformAdminManagement (owner/business create admins); bootstrap-webhost for the first admin is dev-only. Server-side authorization enforced by ensureSignedInRole + RLS; MFA supported via user_mfa_secrets. Gaps documented in docs/CALQULUS_ADMIN_ACCESS_AUDIT.md.
+WebHost Access (phase 9, 2026-08-23) — audit only, no public registration. Same invitation-controlled model as Admin Access: bootstrap-webhost (dev-only) for the first operator; PlatformAdminManagement creates subsequent operators server-side. ensureSignedInRole reads user_roles from the DB; role is never trusted from the client. Tested unauthorized access + wrong password + wrong-role redirect.
 
 ## HISTORY
-Tenant Invitation (phase 7, 2026-08-23) — audit only, no parallel system. Existing email-link flow (validate_invitation_token RPC + create-tenant-account edge function) is secure: server-side validation, single-use, time-limited, email pre-associated, no client-trusted property IDs. Invalid-token falls through safely. Gaps documented in docs/CALQULUS_TENANT_INVITATION_AUDIT.md.
+Admin Access (phase 8, 2026-08-23) č audit only, no public registration. Invitation-controlled via PlatformAdminManagement (owner/business create admins); bootstrap-webhost for the first admin is dev-only. Server-side authorization enforced by ensureSignedInRole + RLS; MFA supported via user_mfa_secrets. Gaps documented in docs/CALQULUS_ADMIN_ACCESS_AUDIT.md.
 
 ## HISTORY
-Agency Onboarding (phase 6, 2026-08-23) — portfolio-centric journey at /agency/onboarding: Account → Verification → Agency profile → First client → First property → Team invite → Complete. Amber accent via data-portal=agency; company_settings for profile + client note; existing auth signup for team invite.
+Tenant Invitation (phase 7, 2026-08-23) ŌĆö audit only, no parallel system. Existing email-link flow (validate_invitation_token RPC + create-tenant-account edge function) is secure: server-side validation, single-use, time-limited, email pre-associated, no client-trusted property IDs. Invalid-token falls through safely. Gaps documented in docs/CALQULUS_TENANT_INVITATION_AUDIT.md.
 
 ## HISTORY
-Landlord Onboarding (phase 5, 2026-08-23) — investment-focused journey at /landlord/onboarding: Account → Verification → Profile → Portfolio types → First property → Financial setup (skip) → Complete. Emerald accent via data-portal=landlord; simple language; no plan selection.
+Agency Onboarding (phase 6, 2026-08-23) ŌĆö portfolio-centric journey at /agency/onboarding: Account ŌåÆ Verification ŌåÆ Agency profile ŌåÆ First client ŌåÆ First property ŌåÆ Team invite ŌåÆ Complete. Amber accent via data-portal=agency; company_settings for profile + client note; existing auth signup for team invite.
 
 ## HISTORY
-Manager Onboarding (phase 4, 2026-08-23) — 7-step flow (/onboarding/manager) over existing APIs: Account → Verification → Organization → Portfolio types → First property → Team invite → Complete. Uses company_settings + existing auth signup (submanager invite), audit log, and property paths. Backend remains authoritative; no plan selection yet.
+Landlord Onboarding (phase 5, 2026-08-23) ŌĆö investment-focused journey at /landlord/onboarding: Account ŌåÆ Verification ŌåÆ Profile ŌåÆ Portfolio types ŌåÆ First property ŌåÆ Financial setup (skip) ŌåÆ Complete. Emerald accent via data-portal=landlord; simple language; no plan selection.
 
 ## HISTORY
-Onboarding / Authentication audit (2026-08-23) — see docs/CALQULUS_ONBOARDING_AUDIT.md. No auth logic modified.
+Manager Onboarding (phase 4, 2026-08-23) ŌĆö 7-step flow (/onboarding/manager) over existing APIs: Account ŌåÆ Verification ŌåÆ Organization ŌåÆ Portfolio types ŌåÆ First property ŌåÆ Team invite ŌåÆ Complete. Uses company_settings + existing auth signup (submanager invite), audit log, and property paths. Backend remains authoritative; no plan selection yet.
+
+## HISTORY
+Onboarding / Authentication audit (2026-08-23) ŌĆö see docs/CALQULUS_ONBOARDING_AUDIT.md. No auth logic modified.
 
 ## CURRENT TASK
 Homepage + Webhost phases shipped. Next candidate per audit: Onboarding Phase 2 (unify portal auth shells).
@@ -28,42 +31,42 @@ Homepage + Webhost shipped. Next candidate per audit: Onboarding Phase 2 (unify 
 
 ## MASTER HOMEPAGE TRANSFORMATION (2026-08-22)
 - **Hero**: `ExecutiveHero` rebuilt as premium dark navy (`public-hero-surface` + `public-hero-title-dark` + `public-hero-grid-dark` utilities in `src/index.css`); transparent-over-hero `PublicHeader` that transitions to solid blurred white on scroll (scroll listener, threshold 24px); hero pulls under the sticky header via `-mt-[72px] pt-[72px]`. Carousel (residential/commercial/office ArchitecturalSurface treatments) kept.
-- **New sections** (all content in `publicConfig.ts` single source of truth): `PlatformOverview` (#platform), `OperationalWorkflow` (#how-it-works, 8-step lifecycle), `ProductShowcase` (3 alternating rows reusing the SAME `ProductPreview` — no new dashboard mockups), `TrustSection` (4 trust cards, only real capabilities: RBAC, RLS, activity logs, financial workflows — no SOC2/ISO/PCI claims).
-- **Reused unchanged**: `PublicShell`, `PublicPricing`+`usePublicTiers`, `ArchitecturalSurface`, `BrandMark`, `Button`, `PortalExperiences` (#solutions), `PropertyTypeSlider` (gained §12 value-proposition taglines; released #platform/#how-it-works anchors).
-- **CompactCta**: §18 copy ("Ready to run your properties with clarity?"), Get started → signup, Explore the platform → #platform (fake "Contact us" mailto removed).
+- **New sections** (all content in `publicConfig.ts` single source of truth): `PlatformOverview` (#platform), `OperationalWorkflow` (#how-it-works, 8-step lifecycle), `ProductShowcase` (3 alternating rows reusing the SAME `ProductPreview` ŌĆö no new dashboard mockups), `TrustSection` (4 trust cards, only real capabilities: RBAC, RLS, activity logs, financial workflows ŌĆö no SOC2/ISO/PCI claims).
+- **Reused unchanged**: `PublicShell`, `PublicPricing`+`usePublicTiers`, `ArchitecturalSurface`, `BrandMark`, `Button`, `PortalExperiences` (#solutions), `PropertyTypeSlider` (gained ┬¦12 value-proposition taglines; released #platform/#how-it-works anchors).
+- **CompactCta**: ┬¦18 copy ("Ready to run your properties with clarity?"), Get started ŌåÆ signup, Explore the platform ŌåÆ #platform (fake "Contact us" mailto removed).
 - **PublicFooter**: fake social links (LinkedIn/Facebook/Instagram/X pointing at #contact) removed per "no fake social URLs".
 - **ProductPreview**: gained `captionClassName` + `elevated` props (dark-hero caption tone, stronger elevation); default rendering unchanged.
-- **a11y fix**: portal-card description `text-muted-foreground` → `text-foreground/75` and "View portal" links darkened via `color-mix(accent 72%, navy-deep)` — axe color-contrast (4.41/4.09 < 4.5) resolved.
+- **a11y fix**: portal-card description `text-muted-foreground` ŌåÆ `text-foreground/75` and "View portal" links darkened via `color-mix(accent 72%, navy-deep)` ŌĆö axe color-contrast (4.41/4.09 < 4.5) resolved.
 - **SEO** (`index.html` + route titles): "CALQULUS | Property Operations, Connected" + description "Run properties, tenants, leases, billing, payments and maintenance in one focused property operations platform."
 - **Tests**: `publicLanding.test.tsx` updated (11 tests: transparent-over-hero header, new sections, no-fabricated-certifications guard, final CTA); stale `homepage-executive.spec.ts` footer assertion fixed.
-- **Verification**: 952 unit tests pass (80 files), homepage+a11y+app e2e 28 passed/5 skipped (credential-gated), axe clean, no horizontal overflow 360–1440, screenshots verified 1440/768/390 + scrolled-header + mobile drawer. `npx tsc --noEmit` clean. eslint: 6 PRE-EXISTING parsing errors in untouched files (ServiceProviderProfile.tsx, TenantProfilePanel.tsx, PaymentPayersManager.tsx, etc.) — `npm run build` fails on pristine HEAD for the same reason; NOT caused by homepage work. Dev server renders fine (those are lazy routes).
+- **Verification**: 952 unit tests pass (80 files), homepage+a11y+app e2e 28 passed/5 skipped (credential-gated), axe clean, no horizontal overflow 360ŌĆō1440, screenshots verified 1440/768/390 + scrolled-header + mobile drawer. `npx tsc --noEmit` clean. eslint: 6 PRE-EXISTING parsing errors in untouched files (ServiceProviderProfile.tsx, TenantProfilePanel.tsx, PaymentPayersManager.tsx, etc.) ŌĆö `npm run build` fails on pristine HEAD for the same reason; NOT caused by homepage work. Dev server renders fine (those are lazy routes).
 
 ## PHASE 0A (COMPLETE 2026-08-21)
-STATUS: audit complete, shell preview verified at all target viewports. Dashboards/portals NOT migrated — see audit below.
+STATUS: audit complete, shell preview verified at all target viewports. Dashboards/portals NOT migrated ŌĆö see audit below.
 
-## PHASE 0A AUDIT — SHELL SHARING ACROSS PORTALS
+## PHASE 0A AUDIT ŌĆö SHELL SHARING ACROSS PORTALS
 The shell is NOT shared. There are five separate implementations:
 
-- **Manager (+ Submanager role)** — shared `src/shared/components/layout/Layout.tsx` (423-line `Sidebar.tsx` + 120-line `Header.tsx` + `PageHeader` + `Footer` + `CommandPalette` + `NotificationsDropdown` + `ProfileMenu` + `WorkspaceSwitcher` + `BreadcrumbSystem` + `ContextPanel` + keyboard shortcuts + help center). ~20 manager pages use it.
-- **Landlord** — own `LandlordLayout.tsx` (171 lines): hand-rolled sidebar + topbar, no breadcrumbs, no notifications, no user menu, no workspace switcher, no command palette.
-- **Agency** — own `AgencyLayout.tsx` (193 lines): same hand-rolled pattern as Landlord.
-- **Tenant** — own `TenantLayout.tsx` (190 lines): narrower sidebar (`w-56` vs `w-64`), shorter header (`h-14` vs `h-16`), mobile bottom tab bar inline (`MOBILE_NAV`) instead of a drawer; also a second, now-dead `MobileBottomNav.tsx` (never imported anywhere).
-- **Admin + WebHost** — share `WebhostLayout.tsx` (215 lines): own NAV list, own breadcrumb text, no notifications/user menu.
+- **Manager (+ Submanager role)** ŌĆö shared `src/shared/components/layout/Layout.tsx` (423-line `Sidebar.tsx` + 120-line `Header.tsx` + `PageHeader` + `Footer` + `CommandPalette` + `NotificationsDropdown` + `ProfileMenu` + `WorkspaceSwitcher` + `BreadcrumbSystem` + `ContextPanel` + keyboard shortcuts + help center). ~20 manager pages use it.
+- **Landlord** ŌĆö own `LandlordLayout.tsx` (171 lines): hand-rolled sidebar + topbar, no breadcrumbs, no notifications, no user menu, no workspace switcher, no command palette.
+- **Agency** ŌĆö own `AgencyLayout.tsx` (193 lines): same hand-rolled pattern as Landlord.
+- **Tenant** ŌĆö own `TenantLayout.tsx` (190 lines): narrower sidebar (`w-56` vs `w-64`), shorter header (`h-14` vs `h-16`), mobile bottom tab bar inline (`MOBILE_NAV`) instead of a drawer; also a second, now-dead `MobileBottomNav.tsx` (never imported anywhere).
+- **Admin + WebHost** ŌĆö share `WebhostLayout.tsx` (215 lines): own NAV list, own breadcrumb text, no notifications/user menu.
 
-## PHASE 0A AUDIT — DUPLICATION & INCONSISTENCIES
-1. **Nav definitions duplicated 2–3×**: webhost NAV exists in both `WebhostLayout.tsx` and `Sidebar.tsx` (`webhostNavGroups`); agency in `AgencyLayout.tsx` + `agencyNavGroups`; tenant in `TenantLayout.tsx` (`DESK_NAV`/`MOBILE_NAV`) + `tenantNavGroups` + dead `MobileBottomNav.tsx`. They will drift.
+## PHASE 0A AUDIT ŌĆö DUPLICATION & INCONSISTENCIES
+1. **Nav definitions duplicated 2ŌĆō3├Ś**: webhost NAV exists in both `WebhostLayout.tsx` and `Sidebar.tsx` (`webhostNavGroups`); agency in `AgencyLayout.tsx` + `agencyNavGroups`; tenant in `TenantLayout.tsx` (`DESK_NAV`/`MOBILE_NAV`) + `tenantNavGroups` + dead `MobileBottomNav.tsx`. They will drift.
 2. **Drawer/scrim/sign-out/user-email block copy-pasted** across Landlord/Agency/Webhost layouts with near-identical markup.
-3. **Loading spinner** (`h-8 w-8 animate-spin … border-primary`) duplicated in every portal layout.
+3. **Loading spinner** (`h-8 w-8 animate-spin ŌĆ” border-primary`) duplicated in every portal layout.
 4. **Active-nav styles differ**: manager `Sidebar` uses `sidebarNavClass` (`bg-primary/10`), portal layouts use `deskNavClass` (`border + bg-primary/10`). Accent tint comes from `--portal-accent` via `data-portal` in both, so the difference is structural, not colour.
-5. **Chrome metrics differ per portal**: sidebar `w-64` (manager/landlord/agency/webhost) vs `w-56` (tenant); header `h-16` vs `h-14` (tenant); tenant mobile uses a bottom tab bar while every other portal uses a left drawer — inconsistent mobile pattern.
+5. **Chrome metrics differ per portal**: sidebar `w-64` (manager/landlord/agency/webhost) vs `w-56` (tenant); header `h-16` vs `h-14` (tenant); tenant mobile uses a bottom tab bar while every other portal uses a left drawer ŌĆö inconsistent mobile pattern.
 6. **Breadcrumbs**: only the manager shell has `BreadcrumbSystem`; other portals hardcode "Portal / Title" text in the topbar (Tenant has none).
 7. **Notifications/user menu/search**: exist only in the manager shell (`NotificationsDropdown`, `ProfileMenu`, command palette). Other portals sign out from the sidebar footer.
-8. **`Layout.tsx` hardcodes `portalSurfaceProps("manager")`** for the shared shell — fine today (only manager uses it) but a landmine if another portal adopts it.
+8. **`Layout.tsx` hardcodes `portalSurfaceProps("manager")`** for the shared shell ŌĆö fine today (only manager uses it) but a landmine if another portal adopts it.
 9. **Dead code**: `src/features/tenant-portal/components/MobileBottomNav.tsx` is never imported.
 
-## PHASE 0A AUDIT — WHAT ALREADY MATCHES THE BRIEF
+## PHASE 0A AUDIT ŌĆö WHAT ALREADY MATCHES THE BRIEF
 - Palette tokens in `src/index.css` exactly match the brief (`#081A2E/#0D2744/#173F67/#2F6FED/#FFFFFF/#F7F9FC/#E5EAF0/#102033/#637286`); portal accents via `[data-portal]` (manager blue `#2F6FED`, landlord emerald `#23856B`, agency amber `#9A5A16`, tenant violet `#5C4A8A`, platform_admin indigo `#3E4C94`).
-- White sidebar + subtle border, white sticky topbar, light navy-tinted content background — no black dashboard, no dark sidebar.
+- White sidebar + subtle border, white sticky topbar, light navy-tinted content background ŌĆö no black dashboard, no dark sidebar.
 - Lucide icons everywhere, no emojis.
 - Shared state components exist: `EmptyState`, `ErrorState`, `LoadingState` (`src/shared/components/ui/`), plus `PageHeader` (title/description/breadcrumbs/actions/status).
 
@@ -83,24 +86,24 @@ The shell is NOT shared. There are five separate implementations:
 - `BreadcrumbSystem`, `NotificationsDropdown`, `ProfileMenu`, `WorkspaceSwitcher`, `CommandPalette`, `Footer`
 - Preview chrome: `AuthenticatedShellPreview` + `SHELL_PREVIEW_PORTALS` (six identities incl. proposed WebHost teal `#17807A`)
 
-## COMPONENTS TO CREATE (later phase — NOT this one)
-- One unified `AppShell` (sidebar + topbar + page header) driven by per-portal nav config, replacing the four hand-rolled portal layouts; single source of nav truth per portal; consistent mobile drawer (tenant bottom bar is a deliberate exception candidate — decide explicitly).
+## COMPONENTS TO CREATE (later phase ŌĆö NOT this one)
+- One unified `AppShell` (sidebar + topbar + page header) driven by per-portal nav config, replacing the four hand-rolled portal layouts; single source of nav truth per portal; consistent mobile drawer (tenant bottom bar is a deliberate exception candidate ŌĆö decide explicitly).
 
 ## FILES CHANGED (this phase)
-- `e2e/shell-preview.spec.ts` (new — chrome render + overflow at all 7 viewports for all 6 portal identities, incl. mobile drawer)
+- `e2e/shell-preview.spec.ts` (new ŌĆö chrome render + overflow at all 7 viewports for all 6 portal identities, incl. mobile drawer)
 - `docs/CALQULUS_REDESIGN_STATE.md`
 
 ## KNOWN ISSUES
-- Five shell implementations (see audit); nav duplicated 2–3×; dead `MobileBottomNav.tsx`.
-- Dev-only `DevPortalSwitcher` overlay intercepts pointer events in the preview when the dev server runs with `VITE_ENABLE_DEV_ACCESS` unset/true — run preview/e2e with `VITE_ENABLE_DEV_ACCESS=false` (Playwright `webServer` env already does this when it spawns its own server).
+- Five shell implementations (see audit); nav duplicated 2ŌĆō3├Ś; dead `MobileBottomNav.tsx`.
+- Dev-only `DevPortalSwitcher` overlay intercepts pointer events in the preview when the dev server runs with `VITE_ENABLE_DEV_ACCESS` unset/true ŌĆö run preview/e2e with `VITE_ENABLE_DEV_ACCESS=false` (Playwright `webServer` env already does this when it spawns its own server).
 - Live portals NOT migrated to any unified shell; preview is chrome-only with labelled canvas slots (loading/empty/error/ready), no live data.
-- BrandMark logo image shows alt text ("CAI") in sandbox because the logo asset path doesn't resolve in this environment — cosmetic, sandbox-only.
+- BrandMark logo image shows alt text ("CAI") in sandbox because the logo asset path doesn't resolve in this environment ŌĆö cosmetic, sandbox-only.
 - `Layout.tsx` hardcodes the manager portal surface (audit item 8).
 
 ## TEST STATUS
-- `npx vitest run src/test/shellPreview.test.tsx` — 4/4 passed
-- `npx eslint e2e/shell-preview.spec.ts` — clean
-- Playwright Chromium `e2e/shell-preview.spec.ts` — **8 passed**: shared chrome for all 6 portal identities + loading/empty/error states; no horizontal overflow at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (incl. open mobile drawer)
+- `npx vitest run src/test/shellPreview.test.tsx` ŌĆö 4/4 passed
+- `npx eslint e2e/shell-preview.spec.ts` ŌĆö clean
+- Playwright Chromium `e2e/shell-preview.spec.ts` ŌĆö **8 passed**: shared chrome for all 6 portal identities + loading/empty/error states; no horizontal overflow at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (incl. open mobile drawer)
 
 ## BUILD STATUS
 - Not re-run this phase (no production code changed; preview and test files only)
@@ -114,12 +117,12 @@ Preview URL: `/design-preview/shell` (public, no auth)
 
 ## Previous checkpoint (Phase 3 manager tenants)
 
-Phase 3 — Manager Tenants, Tenant Detail, and Leases.
+Phase 3 ŌĆö Manager Tenants, Tenant Detail, and Leases.
 STATUS: preview + live implementation complete. STOP after these three surfaces.
 
 ## COMPLETED
 - Inspected live Tenants (`/tenants`) and Leases (`/leases`). Tenant detail is a sheet on the tenants page (no `/tenants/:id` route).
-- Added layout preview at `/design-preview/manager-tenants` (Tenants / Tenant detail / Leases chrome — labelled slots only, no invented balances or expiry)
+- Added layout preview at `/design-preview/manager-tenants` (Tenants / Tenant detail / Leases chrome ŌĆö labelled slots only, no invented balances or expiry)
 - **Tenants:** header **Invite tenant** + **View leases**; searchable table in spec order (Tenant, Property / Unit, Lease, Rent, Balance, Status); row **View** opens detail; empty / loading / error kept; per-property **Add Tenant** and `InviteTenantDialog` / `MoveOutDialog` unchanged
 - **Tenant detail:** header is tenant name, property, unit, status; primary **View statement**; sections Overview, Lease, Financial, Payments, Maintenance, Documents, Activity; extra existing tabs (Payers, Notices, Portal) remain; profile still uses nested identity / employment / emergency sections
 - **Leases:** header **Create lease**; table Tenant, Property, Unit, Start date, Expiry, Rent, Status; Active / Expiring soon / Expired from stored status plus real `end_date` window; create form now shows inline field errors from existing `leaseSchema`; bulk deactivate confirmation kept
@@ -158,13 +161,13 @@ STATUS: preview + live implementation complete. STOP after these three surfaces.
 - Submanager scoping via `useManagerScope` is unchanged
 
 ## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx eslint` on changed tenants / leases / preview files — pass
-- `npx vitest run` — **904 passed**, 1 skipped
-- Playwright Chromium: `/design-preview/manager-tenants` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- `npx eslint` on changed tenants / leases / preview files ŌĆö pass
+- `npx vitest run` ŌĆö **904 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-tenants` ŌĆö 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
-- `npm run build` — pass
+- `npm run build` ŌĆö pass
 
 ## NEXT STEP
 STOP. Do not continue to billing, other portals, or shell unification.
@@ -176,19 +179,19 @@ Live URLs: `/tenants`, `/leases` (Manager session)
 
 ## Previous checkpoint (Phase 2 properties)
 
-Phase 2 — Manager Properties, Property Detail, and Units.
+Phase 2 ŌĆö Manager Properties, Property Detail, and Units.
 STATUS: preview + live implementation complete. Landed on `main` at `09faf96`.
 
 - Properties table, property overview, and `/units` portfolio table
 - Preview: `/design-preview/manager-properties`
-- Tests: typecheck, eslint, 900 vitest passed + 1 skipped, Playwright Chromium overflow at 1440–360, `npm run build` pass
+- Tests: typecheck, eslint, 900 vitest passed + 1 skipped, Playwright Chromium overflow at 1440ŌĆō360, `npm run build` pass
 
 ---
 - Inspected live Properties (`/properties`), Property Detail (`/properties/:id`), and unit CRUD (`UnitManagement` on the property record). There was no `/units` route; units lived on the property detail tab.
-- Added layout preview at `/design-preview/manager-properties` (Properties / Property detail / Units chrome — labelled slots only, no invented occupancy, rent, or balances)
+- Added layout preview at `/design-preview/manager-properties` (Properties / Property detail / Units chrome ŌĆö labelled slots only, no invented occupancy, rent, or balances)
 - **Properties:** header **Add property** + **View units**; search, occupancy/sort filter, and row **View**; professional table from existing columns (Property, Category, Units, Occupancy, Tenants, Revenue); empty / loading / error kept; add / edit / deactivate dialogs unchanged
 - **Property Detail:** header is property name, address, status, primary **Add tenant**; summary Units / Occupancy / Rent / Outstanding / Maintenance from live property, leases, unpaid invoices, and open maintenance; primary tabs Overview, Units, Tenants, Leases, Billing, Maintenance, Documents; extra existing tabs (Vacation, Water, Statement, Landlord, Settings, History) remain
-- **Units:** new `/units` portfolio table — Unit, Property, Tenant, Status, Rent, Lease, Balance from live `properties` + `units` + `tenants` + `leases` + unpaid `invoices`; semantic status badges; empty / loading / error
+- **Units:** new `/units` portfolio table ŌĆö Unit, Property, Tenant, Status, Rent, Lease, Balance from live `properties` + `units` + `tenants` + `leases` + unpaid `invoices`; semantic status badges; empty / loading / error
 - Property-scoped unit CRUD (`UnitManagement`) preserved, including **Add House** / **Update House** forms
 - Sidebar PORTFOLIO now includes Units between Properties and Landlords; webhost/landlord `/units` blocks and manager role paths updated
 
@@ -201,12 +204,12 @@ STATUS: preview + live implementation complete. Landed on `main` at `09faf96`.
 - `src/shared/components/layout/{Layout,PageHeader,Sidebar}.tsx`
 
 ## COMPONENTS TO REUSE
-- Existing property CRUD dialogs, `PropertyTableRow`, `UnitManagement`, `AddTenantToPropertyDialog`, property detail tabs (`PropertyLeasesTab`, `PropertyBillingTab`, `PropertyMaintenanceTab`, `PropertyAgreementsTab`, …)
+- Existing property CRUD dialogs, `PropertyTableRow`, `UnitManagement`, `AddTenantToPropertyDialog`, property detail tabs (`PropertyLeasesTab`, `PropertyBillingTab`, `PropertyMaintenanceTab`, `PropertyAgreementsTab`, ŌĆ”)
 - `StatCard`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`, `statusBadgeClass`
 
 ## COMPONENTS TO CREATE
-- `src/features/units/pages/Units.tsx` — portfolio units table
-- `src/features/units/lib/portfolioUnits.ts` — live join of properties / units / tenants / leases / invoices
+- `src/features/units/pages/Units.tsx` ŌĆö portfolio units table
+- `src/features/units/lib/portfolioUnits.ts` ŌĆö live join of properties / units / tenants / leases / invoices
 - Preview: `ManagerPropertiesPreview` + `ManagerPropertiesPreviewPage`
 
 ## FILES CHANGED (this phase)
@@ -230,13 +233,13 @@ STATUS: preview + live implementation complete. Landed on `main` at `09faf96`.
 - New `/units` page reads existing tables in memory (no new RPC / migration)
 
 ## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx eslint` on changed properties / units / preview files — pass
-- `npx vitest run` — **900 passed**, 1 skipped
-- Playwright Chromium: `/design-preview/manager-properties` — 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- `npx eslint` on changed properties / units / preview files ŌĆö pass
+- `npx vitest run` ŌĆö **900 passed**, 1 skipped
+- Playwright Chromium: `/design-preview/manager-properties` ŌĆö 8 passed at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360 (no horizontal overflow)
 
 ## BUILD STATUS
-- `npm run build` — pass
+- `npm run build` ŌĆö pass
 
 ## NEXT STEP
 STOP. Do not continue to tenants, billing, leases, other portals, or shell unification.
@@ -248,20 +251,20 @@ Live URLs: `/properties`, `/properties/:id`, `/units` (Manager session)
 
 ## Previous checkpoint (Phase 1 dashboard)
 
-Phase 1 — Manager portal executive operations dashboard.
+Phase 1 ŌĆö Manager portal executive operations dashboard.
 STATUS: preview + live implementation complete.
 
 - Live dashboard header is **Dashboard** / *Portfolio overview and today's operational priorities.*
 - Primary **Add property**, secondary **View reports**; attention strip from `buildAttentionItems`
 - Four KPIs: Properties, Units, Occupancy, Collections; collections-first hierarchy
 - Preview: `/design-preview/manager-dashboard`
-- Tests: typecheck, eslint, 894 vitest passed + 1 skipped, Playwright Chromium overflow at 1440–360, `npm run build` pass
+- Tests: typecheck, eslint, 894 vitest passed + 1 skipped, Playwright Chromium overflow at 1440ŌĆō360, `npm run build` pass
 
 ---
 
 ## Previous checkpoint (Phase 0A shell)
 
-Phase 0A — Authenticated application shell audit + preview.
+Phase 0A ŌĆö Authenticated application shell audit + preview.
 STATUS: preview complete. Live portal layouts were not migrated.
 
 ### COMPLETED (shell)
@@ -346,28 +349,28 @@ Public `/` is six sections only. Do not restart the homepage.
 - `CompactCta.tsx`
 
 ## COMPONENTS MODIFIED
-- `PublicHeader.tsx` — 72px white header, Resources dropdown, existing Sheet mobile menu
-- `PublicFooter.tsx` — deep navy `#081A2E`, valid routes/mailto only
-- `ProductPreview.tsx` — KPI row, CSS bars, maintenance + Kilimani Court, illustrative caption
-- `PublicLandingPage.tsx` — compact HomeView only (pricing route unchanged)
+- `PublicHeader.tsx` ŌĆö 72px white header, Resources dropdown, existing Sheet mobile menu
+- `PublicFooter.tsx` ŌĆö deep navy `#081A2E`, valid routes/mailto only
+- `ProductPreview.tsx` ŌĆö KPI row, CSS bars, maintenance + Kilimani Court, illustrative caption
+- `PublicLandingPage.tsx` ŌĆö compact HomeView only (pricing route unchanged)
 
 ## KNOWN ISSUES
 - Property photography not yet inserted (intentional this phase; `data-image-slot` ready)
-- Company footer links (About/Careers/Partners/News) hash to `#contact` — no standalone pages exist
+- Company footer links (About/Careers/Partners/News) hash to `#contact` ŌĆö no standalone pages exist
 - Cookie policy uses existing `/legal?tab=privacy` (legal surface has privacy + terms only)
-- Social icons hash to `#contact` — no official social URLs in repo
+- Social icons hash to `#contact` ŌĆö no official social URLs in repo
 - Operator-owned: live Edge Function deploy + `20260820000000_tenants_select_role_in.sql` (unchanged)
 
 ## TEST STATUS
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- `npx eslint` on homepage marketing files — pass
-- `npx vitest run src/test/publicLanding.test.tsx src/test/publicConfig.test.ts` — 13 passed
-- `npx vitest run` — **886 passed**, 1 skipped
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- `npx eslint` on homepage marketing files ŌĆö pass
+- `npx vitest run src/test/publicLanding.test.tsx src/test/publicConfig.test.ts` ŌĆö 13 passed
+- `npx vitest run` ŌĆö **886 passed**, 1 skipped
 - Playwright visual pass at 1440 / 1280 / 1024 / 768 / 480 / 390 / 360: no horizontal overflow
-- Header ~73px; desktop hero ~561–581px two-column from 1024px; mobile stacks text then dashboard
+- Header ~73px; desktop hero ~561ŌĆō581px two-column from 1024px; mobile stacks text then dashboard
 
 ## BUILD STATUS
-- `npm run build` — pass
+- `npm run build` ŌĆö pass
 
 ## NEXT TASK
 STOP. Do not redesign other portals yet.
@@ -411,8 +414,8 @@ use the service role after a scoped caller check (by design for cron).
 - E2E portal tests still credential-gated
 
 ### Test status (Phase 13 checkpoint)
-- `npx vitest run` — **887 passed**, 1 skipped
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
+- `npx vitest run` ŌĆö **887 passed**, 1 skipped
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
 - Live `health-check` / RLS not re-probed this session
 
 ### Next exact action (after homepage merge)
@@ -423,7 +426,7 @@ Then operator deploys Edge Functions and applies
 Do not restart the redesign.
 
 
-### Phase 13 continuation (already on main) — files changed
+### Phase 13 continuation (already on main) ŌĆö files changed
 Frontend queries: `TenantBalanceSummary.tsx`, `TenantNotificationBell.tsx`,
 `TenantPaymentSchedule.tsx`, `TenantPortableHistory.tsx`,
 `UnitHistoryPanel.tsx`, `UnmatchedBankTransactions.tsx`.
@@ -478,15 +481,15 @@ webhooks (`mpesa-callback`, `stripe-webhook`, `bank-webhook`),
 - `health-check` remains in repo with `verify_jwt = false`; live deploy is
   still required for the 404 to clear.
 
-### Phase 13 findings (audit — original)
+### Phase 13 findings (audit ŌĆö original)
 Full report: `docs/audits/PHASE_13_FINAL_PRE_CLAUDE_CURSOR_AUDIT.md`.
 
 Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
 404 NOT_FOUND. Repo: 92 functions, 78 migrations, ~75 `@ts-nocheck` files.
 
 **CRITICAL**
-- `log-audit` — no JWT; service role inserts `activity_logs` (forgeable audit).
-- `notify-new-manager-signup` — no auth; mails every webhost via Resend.
+- `log-audit` ŌĆö no JWT; service role inserts `activity_logs` (forgeable audit).
+- `notify-new-manager-signup` ŌĆö no auth; mails every webhost via Resend.
 - `create-tenant-account` / `backfill-tenant-accounts` allow `webhost` (tenant
   firewall contradiction).
 - Live `health-check` not deployed (404).
@@ -496,7 +499,7 @@ Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
 **HIGH**
 - SMS functions auth any JWT, no role gate; bulk SMS up to 500 recipients.
 - Most of 92 Edge Functions do not use shared middleware.
-- Core ops pages `@ts-nocheck` (Leases, Tenants, Properties, Billing, …).
+- Core ops pages `@ts-nocheck` (Leases, Tenants, Properties, Billing, ŌĆ”).
 - Query errors often `return []` (empty book instead of failure).
 - Live schema vs 78 git migrations unverified; prior gate: `tenants` 42P17,
   `get_manager_dashboard_stats` 404 (2026-08-19, not re-proved this session).
@@ -516,7 +519,7 @@ Live this session: `https://www.calqulus.site` HTTP 200; Edge `health-check`
 
 **LOW**
 - FeatureGate CTA is a raw `<a>`; email templates off-brand; conflicting
-  “certification” filenames/scores.
+  ŌĆ£certificationŌĆØ filenames/scores.
 
 **What is strong (do not undo)**
 - Feature folders + lazy role routing; webhost frontend tenant hard-block;
@@ -547,7 +550,7 @@ Phase 13 gap remediations merged to `main` (`2bb9f70`). PRs #62 (audit) and
 migration still needs to be applied on the linked project.
 
 ## PREVIOUS PHASE
-Phase 12 — Accessibility certification. Audit keyboard navigation, focus,
+Phase 12 ŌĆö Accessibility certification. Audit keyboard navigation, focus,
 contrast, ARIA, semantic HTML, form labels, error messaging, screen readers,
 touch targets, colour-only states, tables, and dialogs. Fix issues. Do not
 change business logic.
@@ -593,23 +596,23 @@ changes.
 - Reduced motion already present; certification test asserts it.
 
 ### Phase 12 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — 0 errors
-- `npx vitest run` — 877 passed; 1 skipped
-- Playwright Chromium `e2e/a11y.spec.ts` — 10 passed (axe WCAG 2A/2AA
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö 0 errors
+- `npx vitest run` ŌĆö 877 passed; 1 skipped
+- Playwright Chromium `e2e/a11y.spec.ts` ŌĆö 10 passed (axe WCAG 2A/2AA
   critical+serious on design preview, homepage, all five login portals;
   skip link; labelled dialog; table `scope="col"`)
 - Playwright Chromium (`responsive-certification`, `design-preview`,
-  `app`, `homepage-executive`) — 46 passed, 5 skipped (credential-gated)
-- `npm run build` — pass
+  `app`, `homepage-executive`) ŌĆö 46 passed, 5 skipped (credential-gated)
+- `npm run build` ŌĆö pass
 - Merged to `main` as `2f505ce`. PR #61.
 
 ## PREVIOUS PHASE
-Phase 11 — Responsive certification. Merged to `main` (`a1e23d1`). PR #60.
+Phase 11 ŌĆö Responsive certification. Merged to `main` (`a1e23d1`). PR #60.
 Audit at 1440, 1280, 1024, 768, 480, 390, and 360. Do not hide information.
 Tenant received highest mobile priority.
 
-Phase 10 — Product-wide polish. James issued a refinement-only brief: audit
+Phase 10 ŌĆö Product-wide polish. James issued a refinement-only brief: audit
 spacing, typography, colour, buttons, cards, tables, forms, icons, charts,
 navigation, headers, footers, modals, badges, empty states, loading, errors,
 and success. Merged to `main` (`7b69d54`). PR #59.
@@ -619,7 +622,7 @@ and success. Merged to `main` (`7b69d54`). PR #59.
   `--portal-accent-muted`. Agency, Tenant, and Platform Admin already use
   `bg-primary/10`. Design preview already shows the correct selected wash.
 - App desks rendered the full five-column `Footer` (portal marketing links,
-  fake compact “Operational” pulse). Compact footer existed but was unused
+  fake compact ŌĆ£OperationalŌĆØ pulse). Compact footer existed but was unused
   except as a variant name.
 - `MarketingWebsite.tsx` is unrouted leftover chrome: black canvas,
   emerald/teal/sky classes. It is the `noDefaultPalette` fail. Live homepage
@@ -636,8 +639,8 @@ and success. Merged to `main` (`7b69d54`). PR #59.
 - Shared `deskNavClass` / `sidebarNavClass`: selected item is `bg-primary/10`.
   Portal colour stays the 2px `PortalAccentBar`. Manager and Landlord rails
   no longer fill with `--portal-accent-muted`.
-- Authenticated desks use the compact footer. Removed the fake “Operational”
-  pulse and the Sparkles “contact” icon.
+- Authenticated desks use the compact footer. Removed the fake ŌĆ£OperationalŌĆØ
+  pulse and the Sparkles ŌĆ£contactŌĆØ icon.
 - `DialogTitle` uses `type-subtitle`. Empty/error wells use `rounded-md` and
   type tokens. LazyImage placeholders are muted, not slate-900.
 - Unrouted `MarketingWebsite` re-exports `PublicLandingPage` (kills the black
@@ -647,26 +650,26 @@ and success. Merged to `main` (`7b69d54`). PR #59.
   Occupancy bars are solid primary, not teal gradients.
 
 ### Phase 10 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — 0 errors; 2 pre-existing-style warnings
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö 0 errors; 2 pre-existing-style warnings
   (`PendingApproval` hook deps; `MarketingWebsite` re-export)
-- `npx vitest run` — 857 passed; 1 skipped
+- `npx vitest run` ŌĆö 857 passed; 1 skipped
   (`noDefaultPalette` now passes; the black/emerald marketing canvas is gone)
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
-  — 32 passed, 5 skipped (credential-gated auth)
-- `npm run build` — pass
+  ŌĆö 32 passed, 5 skipped (credential-gated auth)
+- `npm run build` ŌĆö pass
 - Merged to `main` as `7b69d54`.
 
 ## PREVIOUS TASK
 Phase 10 polish complete and merged to `main`.
 
 ## PREVIOUS PHASE
-Phase 9 — White-label Brand Studio. James issued the Brand Studio brief:
+Phase 9 ŌĆö White-label Brand Studio. James issued the Brand Studio brief:
 Identity, Colours, Portal themes, Communications, Documents, Domain, live
 preview. Configuration-driven. No CSS injection. Merged to `main` (`ba1ee05`).
 
 ## PREVIOUS TASK
-Phase 9 Brand Studio complete and merged to `main`. Live editor is Settings →
+Phase 9 Brand Studio complete and merged to `main`. Live editor is Settings ŌåÆ
 Brand Studio. Platform Admin `/webhost/brand` stays CALQULUS preview.
 
 ### Phase 9 findings (before any changes)
@@ -677,17 +680,17 @@ Brand Studio. Platform Admin `/webhost/brand` stays CALQULUS preview.
 - `WhiteLabelProvider` applies at most `--brand-primary*` after
   `deriveBrandPalette` contrast checks. It never writes `--primary` or status
   tokens. Webhost / login stay CALQULUS (`get_org_brand()` returns null).
-- Settings → Branding was a dense form inside `CompanySettings`. Secondary,
+- Settings ŌåÆ Branding was a dense form inside `CompanySettings`. Secondary,
   accent, portal accents, statements, reports, and a draft preview were
   missing. Saving Organization also rewrote `brand_config` from stale state.
 - `MultiBrandStudio` / `CustomDomainConfig` / `BrandAssetManager` are
-  structural previews with fabricated DNS “verified” state. Not used for save.
+  structural previews with fabricated DNS ŌĆ£verifiedŌĆØ state. Not used for save.
 - Custom domain is stored on `brand_config.domains.customDomain`. DNS/TLS are
   not provisioned from the app. RLS: owner or webhost; UI still denies webhost
   org edits (platform chrome stays CALQULUS).
 
 ### Phase 9 implementation
-- `OrgBrandStudio` is the live editor at Settings → Branding (nav label Brand
+- `OrgBrandStudio` is the live editor at Settings ŌåÆ Branding (nav label Brand
   Studio). Draft preview, then Save. Named sections match the brief.
 - Colours and portal accents go through `deriveBrandPalette`. Unapproved
   primary cannot enable white-label. Status green/amber/red stay read-only.
@@ -699,24 +702,24 @@ Brand Studio. Platform Admin `/webhost/brand` stays CALQULUS preview.
 - Platform Admin Brand Studio remains a CALQULUS structural preview.
 
 ### Phase 9 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — 0 errors; 1 pre-existing warning
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö 0 errors; 1 pre-existing warning
   (`CompanySettings` `useEffect` missing `user` dep)
-- `npx vitest run` — 853 passed; 1 skipped; 1 pre-existing fail
+- `npx vitest run` ŌĆö 853 passed; 1 skipped; 1 pre-existing fail
   (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
-  — 32 passed, 5 skipped (credential-gated auth)
+  ŌĆö 32 passed, 5 skipped (credential-gated auth)
   Brand Studio preview: Identity, Colours, Portal themes, Communications,
   Documents, Domain, and live frames (Login / Header / Sidebar / Dashboard /
-  Buttons / Document) — pass
-- `npm run build` — pass
+  Buttons / Document) ŌĆö pass
+- `npm run build` ŌĆö pass
 - Merged to `main` as `39422fb`.
 
 ## PREVIOUS PHASE
-Phase 8 — Platform Admin. James issued the control-tower brief: white / navy /
+Phase 8 ŌĆö Platform Admin. James issued the control-tower brief: white / navy /
 indigo accent. Dashboard: Organizations, Users, Active sessions, Revenue,
 Transactions. System health: Database, API, Payments, Notifications, Storage
-where a live probe exists — never invented. Security: Authentication events,
+where a live probe exists ŌĆö never invented. Security: Authentication events,
 Failed logins, Permission events, Alerts. Business: Organizations,
 Subscriptions, Usage. Named pages: Dashboard, Organizations, Organization
 Detail, Users, Subscriptions, Audit Log, Security, Settings, Brand Studio.
@@ -749,11 +752,11 @@ Phase 8 platform admin desk complete and merged to `main`. Preview on
   `can_view_activity_logs`). Super-admin permission bootstrap kept.
 - Dashboard is a control tower: platform stats, probed health only,
   audit-derived security, business usage as property count. Sessions labelled
-  “Your sessions only” / “Not available”. Payments and Notifications always
-  “Not probed”.
+  ŌĆ£Your sessions onlyŌĆØ / ŌĆ£Not availableŌĆØ. Payments and Notifications always
+  ŌĆ£Not probedŌĆØ.
 - Organizations wrap `ManagerManagement` with an Open link to
   `/webhost/organizations/:userId`. Detail shows status, tier, properties,
-  units — no tenant PII. Users = role head-counts + `WebhostManagement`.
+  units ŌĆö no tenant PII. Users = role head-counts + `WebhostManagement`.
   Subscriptions = `ManagerBilling`. Audit = `SecurityAuditLogs` + `ActivityLog`
   with tenant entity rows hidden. Security = account access + auth/failed/
   permission lists from the audit log. Settings = platform admins + payment
@@ -761,21 +764,21 @@ Phase 8 platform admin desk complete and merged to `main`. Preview on
 - Extra existing screens stay reachable off-nav (properties, landlords,
   tiers, billing-rules, custom-pricing, contracts, issues).
 - `/design-preview` Platform Admin tab shows the named pages and control-tower
-  layout. Health tiles say Not probed / Probed live — no fake Healthy payments.
+  layout. Health tiles say Not probed / Probed live ŌĆö no fake Healthy payments.
 
 ### Phase 8 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — pass
-- `npx vitest run` — 848 passed; 1 pre-existing fail
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö pass
+- `npx vitest run` ŌĆö 848 passed; 1 pre-existing fail
   (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
-  — 32 passed, 5 skipped (credential-gated auth)
-  Platform Admin preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
-- `npm run build` — pass
+  ŌĆö 32 passed, 5 skipped (credential-gated auth)
+  Platform Admin preview overflow checks at 360 / 390 / 480 / 768 / 1280 ŌĆö pass
+- `npm run build` ŌĆö pass
 - Merged to `main` as `7f4d5ed`.
 
 ## PREVIOUS PHASE
-Phase 7 — Tenant experience. James issued the tenant brief: white / navy /
+Phase 7 ŌĆö Tenant experience. James issued the tenant brief: white / navy /
 violet accent, simple and mobile-first. Dashboard: Good morning, Your home
 (property / unit), Rent due (amount, due date, Pay rent), then Lease,
 Maintenance, Receipts, Documents, then recent activity. No large KPI
@@ -795,7 +798,7 @@ maintenance backends reused.
 - Each sub-page rebuilt its own header and bottom nav. Bottom nav had six
   cramped items including Inbox.
 - Receipts lived on the dashboard. Lease was labelled Contracts.
-- Payments was history plus three KPI cards, not a clear “what you owe”.
+- Payments was history plus three KPI cards, not a clear ŌĆ£what you oweŌĆØ.
 
 ### Phase 7 implementation
 - One `TenantLayout`: white desk, navy chrome, 2px violet accent. Mobile
@@ -810,22 +813,22 @@ maintenance backends reused.
 - Extra routes (inbox, vacation notices, services) stay reachable off-nav.
 
 ### Phase 7 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — pass
-- `npx vitest run` — 840 passed; 1 pre-existing fail
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö pass
+- `npx vitest run` ŌĆö 840 passed; 1 pre-existing fail
   (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
-  — 27 passed, 5 skipped (credential-gated auth)
-  Tenant preview overflow checks at 360 / 390 / 480 / 768 / 1280 — pass
-- `npm run build` — pass
+  ŌĆö 27 passed, 5 skipped (credential-gated auth)
+  Tenant preview overflow checks at 360 / 390 / 480 / 768 / 1280 ŌĆö pass
+- `npm run build` ŌĆö pass
 - Merged to `main` as `dd8fded`.
 
 ## PREVIOUS PHASE
-Phase 6 — Agency portal. James issued the agency desk brief: white / navy /
-amber-orange accent, core question “How are our clients and portfolios
-performing?”, named pages Dashboard, Clients, Portfolio, Property Detail,
+Phase 6 ŌĆö Agency portal. James issued the agency desk brief: white / navy /
+amber-orange accent, core question ŌĆ£How are our clients and portfolios
+performing?ŌĆØ, named pages Dashboard, Clients, Portfolio, Property Detail,
 Tenants, Billing, Reports, Settings. Agency must feel portfolio-oriented,
-client-oriented, and operational — not Manager with an orange colour.
+client-oriented, and operational ŌĆö not Manager with an orange colour.
 
 ## PREVIOUS TASK
 Phase 6 agency portal complete and merged to `main` (PR #55). Preview on
@@ -839,7 +842,7 @@ on `/agency/properties/:id`.
 - Agency already had a dedicated layout and `/agency/*` routes, but every
   operations page wrapped a Manager screen (`Properties`, `Tenants`,
   `Billing`, `Reports`, `Settings`, `ManagerLandlords`) inside **and** that
-  screen’s own `Layout`. Result: Manager chrome with an amber stripe.
+  screenŌĆÖs own `Layout`. Result: Manager chrome with an amber stripe.
 - Nav was a 13-item clone of Manager (Properties, Leases, Water Billing,
   Invites, Statements, Maintenance, Landlords, Vacation Notices).
 - Dashboard already queried properties/invoices/leases as `manager_id =
@@ -870,20 +873,20 @@ on `/agency/properties/:id`.
   operations permissions already documented.
 
 ### Phase 6 verification
-- `npx tsc --noEmit -p tsconfig.app.json` — pass
-- ESLint on touched files — pass
-- `npx vitest run` — 834 passed; 1 pre-existing fail
+- `npx tsc --noEmit -p tsconfig.app.json` ŌĆö pass
+- ESLint on touched files ŌĆö pass
+- `npx vitest run` ŌĆö 834 passed; 1 pre-existing fail
   (`noDefaultPalette` on `MarketingWebsite.tsx`, not this phase)
 - Playwright Chromium (`design-preview`, `a11y`, `app`, `homepage-executive`)
-  — 22 passed, 5 skipped (credential-gated auth)
-- `npm run build` — pass
+  ŌĆö 22 passed, 5 skipped (credential-gated auth)
+- `npm run build` ŌĆö pass
 - Merged to `main` as PR #55.
 
 ## PREVIOUS PHASE
-Phase 4E — Manager operations. James issued the manager operations brief:
+Phase 4E ŌĆö Manager operations. James issued the manager operations brief:
 redesign Maintenance, Reports, and Settings. Maintenance lanes: New,
 Assigned, In Progress, Awaiting, Completed. Reports filters: Period,
-Property, Report type — existing reports only, charts only where useful.
+Property, Report type ŌĆö existing reports only, charts only where useful.
 Settings groups: Organization, Users, Roles, Notifications, Billing,
 Integrations, Security, Branding. Do not invent functionality.
 
@@ -922,11 +925,11 @@ settings/report/maintenance backends unchanged.
 - Settings nav regrouped into the eight named groups. Branding is the
   existing Company white-label fields (`CompanySettings section="branding"`).
   Platform billing is a link to `/platform-billing`. Legacy `?tab=` ids kept.
-- Preview: `/design-preview` → Maintenance, Reports, Settings.
+- Preview: `/design-preview` ŌåÆ Maintenance, Reports, Settings.
 
 ## PREVIOUS PHASE
-Phase 5 — Landlord portal. James issued the landlord desk brief: redesign the
-entire landlord experience around “How is my property portfolio performing?”
+Phase 5 ŌĆö Landlord portal. James issued the landlord desk brief: redesign the
+entire landlord experience around ŌĆ£How is my property portfolio performing?ŌĆØ
 with white / navy / emerald accent, dedicated pages (Dashboard, Portfolio,
 Property Detail, Financial Performance, Statements, Maintenance, Documents,
 Settings), and an explicit ban on copying the Manager operations desk.
@@ -939,16 +942,16 @@ tenant-PII firewall unchanged.
 ### Phase 5 findings (before any changes)
 - Landlord had **one authenticated route**: `/landlord/dashboard`. Portfolio,
   statements, documents, payouts, messages, and settings were tabs inside
-  `LandlordDashboard.tsx`. Sidebar only listed “Portfolio”.
+  `LandlordDashboard.tsx`. Sidebar only listed ŌĆ£PortfolioŌĆØ.
 - Data was already landlord-safe: `get_landlord_portfolio_stats`,
   `get_landlord_revenue`, `get_landlord_property_ops` (no tenant names).
-  `payment_transactions` RLS still blocks landlords — recent transactions on
+  `payment_transactions` RLS still blocks landlords ŌĆö recent transactions on
   the dashboard are payout requests plus property-level collected totals,
   not a tenant payment ledger.
 - Dual-role users were only forced onto the landlord role for
   `/landlord/dashboard`. New desk paths like `/landlord/portfolio` would have
   matched manager `MANAGER_PATHS` `/landlord`. Fixed via `isLandlordDeskPath`
-  (`/landlord/…` except login/invitation; never `/landlords`).
+  (`/landlord/ŌĆ”` except login/invitation; never `/landlords`).
 
 ### Phase 5 implementation
 - New layout (`LandlordLayout`) with emerald 2px accent, white desk, navy
@@ -962,12 +965,12 @@ tenant-PII firewall unchanged.
   `LandlordPropertyDetail` (units/status only).
 - Financials vs Statements split the existing `LandlordFinancialStatement`
   (`mode="performance" | "statement"`). Payouts live on Statements.
-- Preview: `/design-preview` → Landlord lists every named page.
+- Preview: `/design-preview` ŌåÆ Landlord lists every named page.
 - Tests: `src/test/landlordDesk.test.ts` plus roleResolution coverage and
   design-preview E2E.
 
 ## PREVIOUS PHASE
-James issued "CALQULUS PHASE 4D — MANAGER FINANCE" right after Phase 4C -
+James issued "CALQULUS PHASE 4D ŌĆö MANAGER FINANCE" right after Phase 4C -
 redesign Billing and Payments. See historical notes below.
 
 
@@ -1204,8 +1207,8 @@ before touching anything:
   Settings/History - all real, working, currently-used functionality with
   no equivalent in the brief's 7-item list, so removing any would violate
   "preserve all current functionality."
-- Replaced five emoji-prefixed amenity badges (🛡 Gated, 🛗 Lift, ⚡
-  Generator, 💧 Borehole, 🪑 Furnished) with lucide icons (ShieldCheck/
+- Replaced five emoji-prefixed amenity badges (­¤øĪ Gated, ­¤øŚ Lift, ŌÜĪ
+  Generator, ­¤Æ¦ Borehole, ­¤¬æ Furnished) with lucide icons (ShieldCheck/
   MoveVertical/Zap/Droplets/Sofa) - emojis in production chrome read as
   inconsistent with the master brief's "premium typography... no
   unnecessary decoration" standard the rest of this redesign has followed.
@@ -1453,7 +1456,7 @@ accent) but visibly wrong for Agency (was blue, should be amber) and Tenant
    with the real sidebar. Updated to a white rail (`bg-sidebar border-r
    border-sidebar-border`) with a normal navy logo and a portal-accent icon,
    plus updated its doc comment and on-screen description text
-   ("navy rail" → "white rail") so the illustration matches reality.
+   ("navy rail" ŌåÆ "white rail") so the illustration matches reality.
 6. **Header height**: `Header.tsx` and `AgencyLayout.tsx`'s inline header
    were both `h-14` (56px), under the brief's 64-72px application-header
    spec. Bumped both to `h-16` (64px) - confirmed no other file has a
@@ -1553,29 +1556,29 @@ exemptions list):**
 
 Real bugs found and fixed along the way (not just type-satisfying noise):
 - **`MpesaPaymentDialog.tsx`**: `setCheckoutRequestId(data.checkoutRequestId)` was
-  calling a setter for a state variable that was never declared — dead code left
+  calling a setter for a state variable that was never declared ŌĆö dead code left
   over from a refactor (the real value flows straight into
   `pollPaymentStatus(data.checkoutRequestId)` on the next line, so nothing was
   actually broken, but this doesn't type-check and never worked).
 - **`BillingStatsBar.tsx` / `InvoiceTable.tsx`**: both referenced
   `invoice.paid_amount` / `invoice.balance_due` and an `invoice_status` value of
-  `"partially_paid"` — none of which exist in the live schema (`invoices` has no
+  `"partially_paid"` ŌĆö none of which exist in the live schema (`invoices` has no
   such columns, and the `invoice_status` enum is only
   `paid | pending | overdue | cancelled`). These branches were always silently
   falling back to the full invoice amount. Simplified to match what the schema
   actually supports rather than inventing a migration to match the aspirational
   UI code (brief says don't fabricate backend data/endpoints).
 - **`useBillingData.ts`**: `BillingLease` claimed to extend the full `LeaseRow`
-  but `fetchLeases()` only selects 7 columns — narrowed the type to match the
+  but `fetchLeases()` only selects 7 columns ŌĆö narrowed the type to match the
   real projection. Also normalized the `tenants` embed, which Supabase's
   generated types infer as an array even though `leases.tenant_id` is a forward
   FK that PostgREST actually returns as a single object at runtime.
 - **`src/integrations/supabase/client.ts`**: the offline/unconfigured-Supabase
   `NoopBuilder` fallback had a typing-order bug (chain methods were attached
   after the object was already cast to its final type) and a spurious `.catch()`
-  that real Supabase query builders don't have either — removed it for
+  that real Supabase query builders don't have either ŌĆö removed it for
   consistency rather than papering over the mismatch.
-- Added `getAutoTableFinalY()` to `src/shared/lib/pdf/companyPdfHeader.ts` — a
+- Added `getAutoTableFinalY()` to `src/shared/lib/pdf/companyPdfHeader.ts` ŌĆö a
   properly-typed helper for reading jspdf-autotable's runtime-injected
   `lastAutoTable` property, replacing one `as any` (in
   `propertyStatementPdfExport.ts`, also in the exemption list but not otherwise
@@ -1585,27 +1588,27 @@ Real bugs found and fixed along the way (not just type-satisfying noise):
   `ReturnType<typeof setTimeout>` / `ReturnType<typeof setInterval>` in
   `useKeyboardShortcuts.ts` and `observability.ts`.
 - `errorLogger.ts` and `Billing.tsx` were calling `.catch()` on Supabase
-  PromiseLike results, which don't have `.catch()` (only real Promises do) —
+  PromiseLike results, which don't have `.catch()` (only real Promises do) ŌĆö
   fixed via two-arg `.then(ok, err)` for the simple cases and an async/await +
   try/catch rewrite for the one nested case in `Billing.tsx`.
 
-**NOT done — 76 files still have `@ts-nocheck` and real errors underneath.**
+**NOT done ŌĆö 76 files still have `@ts-nocheck` and real errors underneath.**
 Re-added the marker to all 76 rather than leave them broken; the exemptions file
 now lists exactly these 76 (down from 86). Full remaining error count, captured
 this session by temporarily stripping `@ts-nocheck` from all 76 at once and
 running `tsc --noEmit`: **562 errors**, breakdown by TS code:
-- TS2339 (property doesn't exist) — 101
-- TS2304 (cannot find name) — 53
-- TS2322 (type not assignable) — 52
-- TS18046 (`unknown` used without narrowing) — 38
-- TS2345 (argument type mismatch) — 28
-- TS2561/TS2551 (property doesn't exist, did-you-mean suggestions) — 36 combined
-- TS2353 (unknown object property) — 17
-- TS18047/TS18048/TS18049 (possibly null/undefined) — 23 combined
+- TS2339 (property doesn't exist) ŌĆö 101
+- TS2304 (cannot find name) ŌĆö 53
+- TS2322 (type not assignable) ŌĆö 52
+- TS18046 (`unknown` used without narrowing) ŌĆö 38
+- TS2345 (argument type mismatch) ŌĆö 28
+- TS2561/TS2551 (property doesn't exist, did-you-mean suggestions) ŌĆö 36 combined
+- TS2353 (unknown object property) ŌĆö 17
+- TS18047/TS18048/TS18049 (possibly null/undefined) ŌĆö 23 combined
 - remainder (TS7006, TS2769, TS2459, TS2352, TS1345, TS2719, TS2552, TS2344,
-  TS2774) — ~18 combined
+  TS2774) ŌĆö ~18 combined
 
-This has NOT been triaged file-by-file the way the billing batch was — this is
+This has NOT been triaged file-by-file the way the billing batch was ŌĆö this is
 raw `tsc` output, not yet reviewed for real-bug-vs-noise the way the 10 finished
 files were. That review is the next step.
 
@@ -1635,12 +1638,12 @@ files were. That review is the next step.
 - `68cc979` feat(auth): rebuild the landlord portal as a revenue-only desk
 - `6aa9261` feat(auth): rebuild the manager portal as an operational desk
 - `905d00e` feat(marketing): rebuild the public homepage as an executive entry point
-- Merge `cursor/phase-8-platform-admin-1e5d` — platform admin pass
+- Merge `cursor/phase-8-platform-admin-1e5d` ŌĆö platform admin pass
 - Merge `cursor/phase-6-portal-excellence-1e5d`
-- Merge `cursor/phase-12-certification-1e5d` — quality-gate certification pass
+- Merge `cursor/phase-12-certification-1e5d` ŌĆö quality-gate certification pass
 - `71343cb` cert: independent 30-gate quality assessment (55/100), followed by fixes
   in `709d19e`
-- Round 5–9 (separate engagement, this agent): a11y/dead-code cleanup, corrupted
+- Round 5ŌĆō9 (separate engagement, this agent): a11y/dead-code cleanup, corrupted
   binary asset restoration, Vercel rewrite fix, npm audit fixes, mislabeled logo fix,
   TenantContracts/TenantContractsSection hook dedupe, orphaned-file cleanup,
   26 unused npm dependencies removed. These predate the redesign brief and are
@@ -1775,13 +1778,13 @@ narrower `include` (must also include `src/vite-env.d.ts` or you'll get false
 `ImportMeta.env`/module-not-found noise), run `tsc --noEmit -p` against it,
 triage real-bug-vs-noise, fix properly, re-run to confirm zero errors, THEN
 remove those files from the exemptions list. Do not remove `@ts-nocheck` from a
-batch without either finishing it in the same session or restoring the marker —
+batch without either finishing it in the same session or restoring the marker ŌĆö
 leaving files mid-fix with no `@ts-nocheck` and real errors regresses CI.
 Good next batches to try (grouped by shared root-cause potential):
 - `src/features/contracts/**` (5 files) + `src/features/payments/**` (6 files,
-  1 already done) — likely share the same PostgREST forward-FK array-vs-object
+  1 already done) ŌĆö likely share the same PostgREST forward-FK array-vs-object
   pattern fixed in billing this session.
-- `src/features/webhost/**` (15 files) — the largest single cluster, all
+- `src/features/webhost/**` (15 files) ŌĆö the largest single cluster, all
   platform-admin surfaces.
 - `src/features/tenant-portal/**` + `src/features/tenants/**` (11 files combined).
 
@@ -1831,7 +1834,7 @@ UnitManagement.tsx` (Lease + Balance columns added, "Next" nudge moved into
 the actions dropdown, colSpan updated 6->7 across five expanded-row cells).
 
 ## ROUTES CHANGED
-Not enumerated this session — no route-level regressions found in the build, but no
+Not enumerated this session ŌĆö no route-level regressions found in the build, but no
 explicit route diff against pre-redesign `main` was run either.
 
 ## COMPONENTS CREATED
@@ -1843,7 +1846,7 @@ explicit route diff against pre-redesign `main` was run either.
 
 ## COMPONENTS MODIFIED
 Effectively every portal dashboard and the homepage, per the commit list above.
-Exhaustive list not reconstructed — refer to git history per-commit.
+Exhaustive list not reconstructed ŌĆö refer to git history per-commit.
 
 Phase 3 session: `PublicLandingPage.tsx`, `PublicHeader.tsx`, `ProductPreview.tsx`,
 `publicConfig.ts` (see FILES CHANGED above for detail). `PublicFooter.tsx` and
@@ -1859,7 +1862,7 @@ created; `PropertyCard.tsx` removed.
 1. **86 files under `@ts-nocheck`** (see `docs/audits/TYPECHECK_EXEMPTIONS.txt`).
    This is the single largest piece of tracked debt right now. Documented, not
    hidden, but violates the brief's own code-quality rule.
-2. **This state file didn't exist until now** — any prior agent (Cursor) session
+2. **This state file didn't exist until now** ŌĆö any prior agent (Cursor) session
    notes, rationale, or "why this approach" context for specific redesign
    decisions is not recoverable beyond what commit messages say.
 3. Full `npm run test` (vitest) suite is large enough that it doesn't finish
@@ -1924,17 +1927,17 @@ worker builds.
 ## DESIGN DECISIONS
 (Reconstructed from commit messages, not first-hand)
 - Outfit remains the primary font (brief said "Inter unless the project already
-  has an equally appropriate font" — Cursor kept Outfit, treating it as
+  has an equally appropriate font" ŌĆö Cursor kept Outfit, treating it as
   already-appropriate rather than switching to Inter).
 - Portal colour is applied as an accent only (brief's "these are accents, not
-  separate design systems" rule) — enforced via `cf546a2` "lock portal accents
+  separate design systems" rule) ŌĆö enforced via `cf546a2` "lock portal accents
   ... to the Design Bible."
 - Chrome was deliberately moved from near-black toward mid-navy across two
   iterations (`20e0f0f`, then `6ff14e2`) rather than landing on the final navy
   value in one pass.
 
 ## DEVIATIONS FROM BLUEPRINT
-- **Palette — RESOLVED, doc is just stale.** Verified `src/index.css` directly:
+- **Palette ŌĆö RESOLVED, doc is just stale.** Verified `src/index.css` directly:
   the live tokens are exactly the brief's hex values (`--navy-deep: #081A2E`,
   `--navy-primary: #0D2744`, `--navy-mid/--secondary-navy: #173F67`,
   `--primary/--accent/--ring: #2F6FED`, `--background/--muted: #F7F9FC`,
@@ -1944,7 +1947,7 @@ worker builds.
   violet, platform_admin `#3E4C94` indigo. So `6ff14e2` did land the brief's exact
   palette. The *only* loose end is that `ENTERPRISE_DESIGN_SYSTEM.md` (a repo doc,
   not the brief) still documents the old `#304FFE`/`#546E7A` palette and hasn't
-  been updated to match — stale documentation, not a code problem. Small fix,
+  been updated to match ŌĆö stale documentation, not a code problem. Small fix,
   low priority.
 - Font: brief implies Inter as default; repo has standardized on Outfit and self-hosts
   it. Confirmed intentional (`ENTERPRISE_DESIGN_SYSTEM.md` explicitly: "This markdown
@@ -1955,7 +1958,7 @@ worker builds.
 
 ## Open question for James
 Cursor has already run through the homepage, all five portals, platform admin, and
-a white-label engine, plus a 30-gate certification pass — the palette/typography/
+a white-label engine, plus a 30-gate certification pass ŌĆö the palette/typography/
 portal-accent foundation is confirmed live and matches your brief exactly. Rather
 than risk duplicate or conflicting work by picking a phase at random, tell me where
 to focus. Candidates: pay down the `@ts-nocheck` debt (86 files), verify one specific
