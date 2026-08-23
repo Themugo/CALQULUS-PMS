@@ -352,6 +352,10 @@ Tier 3: Tenants
 - `lib/infrastructure.ts` extended: `getApplicationRuntime` (facts + worst-of probe health), `getNonSecretConfig` (safe entries only — never keys/tokens), `DEPLOYMENTS_NOT_INSTRUMENTED` constant.
 - **Deployment history is not instrumented** — single "Current live build" row (serving traffic now → Operational), Started/Completed = "Not recorded". Never fabricate history.
 
+## Global Design Audit (2026-08-24)
+- **Portal accents aligned to six-identity spec:** Manager Blue (unchanged), Landlord **Emerald** #2F9B74, Agency **Amber** #C08A37, Tenant **Violet** #7C5FD3, Admin/WebHost **Teal** #2C9183. Tokens and CSS variables both updated; accent stripes remain 2px-only.
+- `designTokens.test.ts` lockstep asserts new hexes + CSS vars. 969/970 tests pass; no layout changes.
+
 ## Webhost Operations (Phase 3, 2026-08-23)
 - New route `/webhost/operations`: Domains (real domain+protocol, SSL=protocol uppercase, expiry "Not available"), Monitoring (healthy/warning/degraded/down counts from probes), Services (probe states + `dataUpdatedAt` as last check), Logs (dense mono table from `activity_logs` where `entity_type='log'`).
 - Structured logs are written by the observability logger as `{level}:{component}:{action}` with the LogEntry in `metadata`. Parsed in `lib/operations.ts`; non-structured rows are dropped, never fabricated. Live logs only persist when a session exists.

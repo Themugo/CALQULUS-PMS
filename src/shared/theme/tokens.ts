@@ -72,19 +72,22 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   landlord: {
     id: "landlord",
-    label: "Steel Blue",
-    /** Secondary accent only; status colors stay semantic. */
-    hex: CALQULUS_COLOR.info,
+    label: "Emerald",
+    /** Secondary accent only; status colors stay semantic. Approved vs
+        the white-desk check in deriveBrandPalette. */
+    hex: "#2F9B74",
   },
   agency: {
     id: "agency",
-    label: "Deep Navy",
-    hex: CALQULUS_COLOR.navy600,
+    label: "Amber",
+    /** Warm enough to be a portal accent without turning into chrome. */
+    hex: "#C08A37",
   },
   tenant: {
     id: "tenant",
-    label: "Slate Navy",
-    hex: "#6388AE",
+    label: "Violet",
+    /** Status colours stay semantic; the violet is only identity. */
+    hex: "#7C5FD3",
   },
   platform_admin: {
     id: "platform_admin",

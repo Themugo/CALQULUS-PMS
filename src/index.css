@@ -406,6 +406,10 @@
     /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
     --calqulus-teal: #3BB7A6;
     --calqulus-teal-deep: #2C9183;
+    /* Portal accent hues (deep steps chosen to pass a white-desk check) */
+    --calqulus-emerald: #2F9B74;
+    --calqulus-amber: #C08A37;
+    --calqulus-violet: #7C5FD3;
 
     --calqulus-background: #F6F8FB;
     --calqulus-background-soft: #EEF3F8;
@@ -557,9 +561,9 @@
   /* Portal identity stripes — secondary accents only. Brand stays
      CALQULUS NAVY + BLUE; status colors are never brand accents. */
   [data-portal="manager"] { --portal-accent: var(--calqulus-primary); }
-  [data-portal="landlord"] { --portal-accent: var(--calqulus-info); }
-  [data-portal="agency"] { --portal-accent: var(--calqulus-navy-600); }
-  [data-portal="tenant"] { --portal-accent: var(--calqulus-navy-500); }
+  [data-portal="landlord"] { --portal-accent: var(--calqulus-emerald); }
+  [data-portal="agency"] { --portal-accent: var(--calqulus-amber); }
+  [data-portal="tenant"] { --portal-accent: var(--calqulus-violet); }
   [data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep); }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
