@@ -31,6 +31,7 @@ const LEVEL_ALIAS: Record<string, LogLevel | null> = {
 export type LogRowInput = {
   id: string;
   action: string;
+  entity_type: string | null;
   entity_label: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;

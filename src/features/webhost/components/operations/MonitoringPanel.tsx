@@ -1,7 +1,7 @@
 import { Activity } from "lucide-react";
 import { useAdminHealthProbes, type ComponentProbe } from "@/features/webhost/hooks/useAdminHealthProbes";
 import { INFRA_STATUS, deriveSystemStatus, type InfraStatus } from "@/features/webhost/lib/infrastructure";
-import { StatusCell } from "@/features/webhost/components/operations/ServicesPanel";
+import { StatusCell } from "@/features/webhost/components/operations/ServiceStatusCell";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 

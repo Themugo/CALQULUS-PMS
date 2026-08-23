@@ -10,28 +10,12 @@ import {
   getApplicationRuntime,
   type InfraStatus,
 } from "@/features/webhost/lib/infrastructure";
+import { StatusCell } from "@/features/webhost/components/operations/ServiceStatusCell";
 import { WEBHOST_ROUTES, webhostApplicationPath } from "@/features/webhost/lib/webhostPaths";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
-function StatusIcon({ status, className }: { status: InfraStatus; className?: string }) {
-  const cls = cn("h-3.5 w-3.5", INFRA_STATUS[status].text, className);
-  if (status === "operational") return <CheckCircle2 className={cls} />;
-  if (status === "down") return <XCircle className={cls} />;
-  if (status === "degraded") return <AlertTriangle className={cls} />;
-  return <CircleAlert className={cls} />;
-}
 
-function StatusCell({ status }: { status: InfraStatus }) {
-  const meta = INFRA_STATUS[status];
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span aria-hidden className={cn("h-2 w-2 rounded-full", meta.dot)} />
-      <StatusIcon status={status} />
-      <span className={cn("text-xs font-semibold", meta.text)}>{meta.label}</span>
-    </span>
-  );
-}
 
 export default function AdminDeployments() {
   const { data: probes = [], isLoading } = useAdminHealthProbes();

@@ -9,7 +9,7 @@ import {
   type LogRowInput,
   type ParsedLogRow,
 } from "@/features/webhost/lib/operations";
-import { withoutTenantEntities } from "@/features/webhost/lib/adminSecurity";
+import { isTenantEntityType } from "@/features/webhost/lib/adminSecurity";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
@@ -20,24 +20,24 @@ const LEVEL_ORDER: LogLevel[] = ["debug", "info", "warn", "error", "critical"];
 export function LogsPanel() {
   const [filter, setFilter] = useState<Filter>("all");
 
-  const { data: rawRows = [], isLoading } = useQuery<LogRowInput[]>({
+  const { data: logsRaw = [], isLoading } = useQuery<LogRowInput[]>({
     queryKey: ["platform-admin-logs"],
     queryFn: async () => {
       // Structured platform logs from the observability logger —
       // entity_type = 'log', action = `{level}:{component}:{action}`.
       const { data, error } = await supabase
         .from("activity_logs")
-        .select("id, action, entity_label, metadata, created_at")
+        .select("id, action, entity_type, entity_label, metadata, created_at")
         .eq("entity_type", "log")
         .order("created_at", { ascending: false })
         .limit(80);
       if (error) throw error;
-      return withoutTenantEntities((data ?? []) as LogRowInput[]);
+      const rows = ((data ?? []) as LogRowInput[]).filter((row) => !isTenantEntityType(row.entity_type));
+      return rows;
     },
     staleTime: 15_000,
   });
-
-  const logs = useMemo(() => parseLogRows(rawRows), [rawRows]);
+  const logs = useMemo(() => parseLogRows(logsRaw), [logsRaw]);
   const visible = useMemo(
     () => (filter === "all" ? logs : logs.filter((row) => row.level === filter)),
     [logs, filter],

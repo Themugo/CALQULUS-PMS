@@ -23,6 +23,7 @@ import {
   probeToInfraStatus,
   type InfraStatus,
 } from "@/features/webhost/lib/infrastructure";
+import { StatusCell } from "@/features/webhost/components/operations/ServiceStatusCell";
 import { groupSecurityEvents, withoutTenantEntities } from "@/features/webhost/lib/adminSecurity";
 import { WEBHOST_OPS_ROUTES, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -51,24 +52,7 @@ type UsersSlice = {
 const timeFmt = new Intl.DateTimeFormat("en-KE", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 const dayFmt = new Intl.DateTimeFormat("en-KE", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
 
-function StatusIcon({ status, className }: { status: InfraStatus; className?: string }) {
-  const cls = cn("h-3.5 w-3.5", INFRA_STATUS[status].text, className);
-  if (status === "operational") return <CheckCircle2 className={cls} />;
-  if (status === "down") return <XCircle className={cls} />;
-  if (status === "degraded") return <AlertTriangle className={cls} />;
-  return <CircleAlert className={cls} />;
-}
 
-function StatusCell({ status }: { status: InfraStatus }) {
-  const meta = INFRA_STATUS[status];
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span aria-hidden className={cn("h-2 w-2 rounded-full", meta.dot)} />
-      <StatusIcon status={status} />
-      <span className={cn("text-xs font-semibold", meta.text)}>{meta.label}</span>
-    </span>
-  );
-}
 
 function SectionTitle({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {
   return (
@@ -183,7 +167,7 @@ export default function AdminDashboard() {
               <span aria-hidden className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", INFRA_STATUS[systemStatus].dot)} />
               <div>
                 <p className="flex items-center gap-2 font-heading text-base font-semibold">
-                  <StatusIcon status={systemStatus} className="h-4 w-4" />
+                  <StatusCell status={systemStatus} className="h-4 w-4" />
                   {healthLoading ? "Probing services…" : `System ${INFRA_STATUS[systemStatus].label.toLowerCase()}`}
                 </p>
                 <p className="mt-0.5 text-xs text-white/70">
