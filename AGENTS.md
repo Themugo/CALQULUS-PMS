@@ -352,6 +352,11 @@ Tier 3: Tenants
 - `lib/infrastructure.ts` extended: `getApplicationRuntime` (facts + worst-of probe health), `getNonSecretConfig` (safe entries only — never keys/tokens), `DEPLOYMENTS_NOT_INSTRUMENTED` constant.
 - **Deployment history is not instrumented** — single "Current live build" row (serving traffic now → Operational), Started/Completed = "Not recorded". Never fabricate history.
 
+## Webhost Operations (Phase 3, 2026-08-23)
+- New route `/webhost/operations`: Domains (real domain+protocol, SSL=protocol uppercase, expiry "Not available"), Monitoring (healthy/warning/degraded/down counts from probes), Services (probe states + `dataUpdatedAt` as last check), Logs (dense mono table from `activity_logs` where `entity_type='log'`).
+- Structured logs are written by the observability logger as `{level}:{component}:{action}` with the LogEntry in `metadata`. Parsed in `lib/operations.ts`; non-structured rows are dropped, never fabricated. Live logs only persist when a session exists.
+- `lib/secrets.ts` (new shared): `isSecretKey` regex lifted from ErrorLogsTab; `maskSecrets`/`stringifyMasked` always redact secret-shaped keys before display. Reuse it for any log/audit viewer.
+
 ## Webhost Infrastructure Control Center (Phase 1, 2026-08-23)
 - `platform_admin` portal accent is now **Teal** (`#2C9183`, CSS var `--calqulus-teal-deep`; lighter step `--calqulus-teal: #3BB7A6`). Tests assert this value.
 - `AdminDashboard.tsx` = infrastructure control center: navy system-status band (worst-of probes), compact stat strip, Service health table (Operational/Warning/Degraded/Down from `lib/infrastructure.ts`), Applications table (real build/runtime facts), Alerts + Infrastructure activity from `activity_logs` (tenant firewall via `withoutTenantEntities`), Users & access strip.

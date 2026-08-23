@@ -4,6 +4,7 @@ export const WEBHOST_ROUTES = {
   dashboard: "/webhost",
   applications: "/webhost/applications",
   deployments: "/webhost/deployments",
+  operations: "/webhost/operations",
   organizations: "/webhost/organizations",
   users: "/webhost/users",
   subscriptions: "/webhost/subscriptions",

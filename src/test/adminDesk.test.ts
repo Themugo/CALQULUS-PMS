@@ -9,6 +9,8 @@ import {
   webhostOrganizationPath,
 } from "@/features/webhost/lib/webhostPaths";
 import { assembleAdminHealthProbes, PAYMENTS_HEALTH_DETAIL, type ComponentProbe } from "@/features/webhost/lib/adminHealth";
+import { parseLogRow, parseLogRows } from "@/features/webhost/lib/operations";
+import { isSecretKey, maskSecrets, stringifyMasked } from "@/features/webhost/lib/secrets";
 import {
   countProbed,
   DEPLOYMENTS_NOT_INSTRUMENTED,
@@ -63,6 +65,7 @@ describe("webhost role routing", () => {
         WEBHOST_ROUTES.applications,
         "/webhost/applications/:appId",
         WEBHOST_ROUTES.deployments,
+        WEBHOST_ROUTES.operations,
         WEBHOST_ROUTES.organizations,
         "/webhost/organizations/:userId",
         WEBHOST_ROUTES.users,
@@ -78,6 +81,7 @@ describe("webhost role routing", () => {
   it("treats application and deployment pages as the desk", () => {
     expect(isWebhostDeskPath(WEBHOST_ROUTES.applications)).toBe(true);
     expect(isWebhostDeskPath(WEBHOST_ROUTES.deployments)).toBe(true);
+    expect(isWebhostDeskPath(WEBHOST_ROUTES.operations)).toBe(true);
     expect(isWebhostDeskPath(webhostApplicationPath("calqulus-pms"))).toBe(true);
     expect(webhostApplicationPath("calqulus-pms")).toBe("/webhost/applications/calqulus-pms");
   });
@@ -264,5 +268,60 @@ describe("non-secret configuration", () => {
 describe("deployment history", () => {
   it("is explicitly not instrumented", () => {
     expect(DEPLOYMENTS_NOT_INSTRUMENTED).toContain("not instrumented");
+  });
+});
+
+describe("log parsing", () => {
+  it("parses structured observability rows from activity_logs", () => {
+    const row = parseLogRow({
+      id: "1",
+      action: "error:auth:login failed",
+      entity_label: "login failed",
+      metadata: { component: "auth", message: "wrong password" },
+      created_at: "2026-08-23T01:00:00.000Z",
+    });
+    expect(row).not.toBeNull();
+    expect(row?.level).toBe("error");
+    expect(row?.source).toBe("auth");
+  });
+
+  it("drops rows that are not structured logs rather than fabricating", () => {
+    expect(parseLogRow(id("warning:queue"))).toBeNull();
+    expect(parseLogRow(id("error:unkind"))).toBeNull();
+  });
+
+  it("skips nulls when batch parsing", () => {
+    const rows = [
+      { id: "a", action: "info:app:init", entity_label: "init", metadata: null, created_at: "t" },
+      { id: "b", action: "plain", entity_label: "plain", metadata: null, created_at: "t" },
+    ];
+    const parsed = parseLogRows(rows);
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0].level).toBe("info");
+  });
+
+  function id(action: string) {
+    return { id: "x", action, entity_label: action, metadata: null, created_at: "t" };
+  }
+});
+
+describe("secret masking", () => {
+  it("detects secret-shaped keys", () => {
+    expect(isSecretKey("password")).toBe(true);
+    expect(isSecretKey("api_key")).toBe(true);
+    expect(isSecretKey("service_role")).toBe(true);
+    expect(isSecretKey("component")).toBe(false);
+  });
+
+  it("redacts secrets in metadata", () => {
+    const out = maskSecrets({ component: "auth", api_key: "sk-live" });
+    expect(out.api_key).toBe("[redacted]");
+    expect(out.component).toBe("auth");
+  });
+
+  it("serializes without leaking secrets", () => {
+    const s = stringifyMasked({ token: "t", ok: "v" });
+    expect(s).not.toContain('t"');
+    expect(s).toContain("[redacted]");
   });
 });
