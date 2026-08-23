@@ -1,6 +1,9 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Tenant Invitation (phase 7, 2026-08-23) — audit only, no parallel system. Existing email-link flow (validate_invitation_token RPC + create-tenant-account edge function) is secure: server-side validation, single-use, time-limited, email pre-associated, no client-trusted property IDs. Invalid-token falls through safely. Gaps documented in docs/CALQULUS_TENANT_INVITATION_AUDIT.md.
+
+## HISTORY
 Agency Onboarding (phase 6, 2026-08-23) — portfolio-centric journey at /agency/onboarding: Account → Verification → Agency profile → First client → First property → Team invite → Complete. Amber accent via data-portal=agency; company_settings for profile + client note; existing auth signup for team invite.
 
 ## HISTORY
