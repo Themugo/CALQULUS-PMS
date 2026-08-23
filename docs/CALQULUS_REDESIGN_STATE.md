@@ -1,6 +1,9 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Agency Onboarding (phase 6, 2026-08-23) — portfolio-centric journey at /agency/onboarding: Account → Verification → Agency profile → First client → First property → Team invite → Complete. Amber accent via data-portal=agency; company_settings for profile + client note; existing auth signup for team invite.
+
+## HISTORY
 Landlord Onboarding (phase 5, 2026-08-23) — investment-focused journey at /landlord/onboarding: Account → Verification → Profile → Portfolio types → First property → Financial setup (skip) → Complete. Emerald accent via data-portal=landlord; simple language; no plan selection.
 
 ## HISTORY
