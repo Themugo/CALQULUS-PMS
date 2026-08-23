@@ -1,6 +1,9 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
+Admin Access (phase 8, 2026-08-23) � audit only, no public registration. Invitation-controlled via PlatformAdminManagement (owner/business create admins); bootstrap-webhost for the first admin is dev-only. Server-side authorization enforced by ensureSignedInRole + RLS; MFA supported via user_mfa_secrets. Gaps documented in docs/CALQULUS_ADMIN_ACCESS_AUDIT.md.
+
+## HISTORY
 Tenant Invitation (phase 7, 2026-08-23) — audit only, no parallel system. Existing email-link flow (validate_invitation_token RPC + create-tenant-account edge function) is secure: server-side validation, single-use, time-limited, email pre-associated, no client-trusted property IDs. Invalid-token falls through safely. Gaps documented in docs/CALQULUS_TENANT_INVITATION_AUDIT.md.
 
 ## HISTORY
