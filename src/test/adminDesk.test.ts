@@ -7,7 +7,13 @@ import {
   isWebhostPublicPath,
   webhostOrganizationPath,
 } from "@/features/webhost/lib/webhostPaths";
-import { assembleAdminHealthProbes, PAYMENTS_HEALTH_DETAIL } from "@/features/webhost/lib/adminHealth";
+import { assembleAdminHealthProbes, PAYMENTS_HEALTH_DETAIL, type ComponentProbe } from "@/features/webhost/lib/adminHealth";
+import {
+  countProbed,
+  deriveSystemStatus,
+  getApplicationFacts,
+  probeToInfraStatus,
+} from "@/features/webhost/lib/infrastructure";
 import { groupSecurityEvents, isTenantEntityType } from "@/features/webhost/lib/adminSecurity";
 import { pickRoleForPath } from "@/features/auth/lib/roleResolution";
 import { roleRouteConfigs } from "@/app/routes";
@@ -64,9 +70,9 @@ describe("webhost role routing", () => {
 });
 
 describe("platform admin identity", () => {
-  it("uses indigo as the 2px accent", () => {
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#426B94");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Steel Navy");
+  it("uses teal as the 2px accent", () => {
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Teal");
   });
 });
 
@@ -134,5 +140,66 @@ describe("system health probes", () => {
     const storage = probes.find((probe) => probe.id === "storage");
     expect(storage?.status).toBe("unavailable");
     expect(storage?.detail).toBe("No live probe");
+  });
+});
+
+describe("infrastructure status vocabulary", () => {
+  const probe = (id: ComponentProbe["id"], status: ComponentProbe["status"]): ComponentProbe => ({
+    id,
+    label: id,
+    status,
+    detail: "",
+  });
+
+  it("maps probe states to the four control-center states", () => {
+    expect(probeToInfraStatus("healthy")).toBe("operational");
+    expect(probeToInfraStatus("degraded")).toBe("degraded");
+    expect(probeToInfraStatus("unhealthy")).toBe("down");
+    expect(probeToInfraStatus("unavailable")).toBe("warning");
+  });
+
+  it("rolls probes into worst-of system status", () => {
+    expect(deriveSystemStatus([])).toBe("warning");
+    expect(deriveSystemStatus([probe("database", "healthy"), probe("api", "healthy")])).toBe("operational");
+    expect(deriveSystemStatus([probe("database", "healthy"), probe("api", "unavailable")])).toBe("warning");
+    expect(deriveSystemStatus([probe("database", "degraded"), probe("api", "unavailable")])).toBe("degraded");
+    expect(deriveSystemStatus([probe("database", "unhealthy"), probe("api", "healthy")])).toBe("down");
+  });
+
+  it("counts only services with a live probe", () => {
+    const counts = countProbed([
+      probe("database", "healthy"),
+      probe("api", "unavailable"),
+      probe("payments", "unavailable"),
+    ]);
+    expect(counts).toEqual({ probed: 1, total: 3 });
+  });
+});
+
+describe("application facts", () => {
+  it("reads environment, domain, protocol, and backend from real sources", () => {
+    const facts = getApplicationFacts(
+      { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+      { hostname: "www.calqulus.site", protocol: "https:" },
+    );
+    expect(facts).toEqual({
+      name: "CALQULUS PMS",
+      version: "1.0.0",
+      environment: "production",
+      domain: "www.calqulus.site",
+      protocol: "https",
+      backendProject: "aelzsqxllkypbzslxyju.supabase.co",
+      backendConfigured: true,
+    });
+  });
+
+  it("never fabricates a backend project from placeholder env", () => {
+    const facts = getApplicationFacts(
+      { PROD: false, VITE_SUPABASE_URL: "https://placeholder.supabase.co" },
+      { hostname: "localhost", protocol: "http:" },
+    );
+    expect(facts.backendConfigured).toBe(false);
+    expect(facts.backendProject).toBe("Not configured");
+    expect(facts.environment).toBe("development");
   });
 });

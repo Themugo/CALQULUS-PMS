@@ -88,8 +88,9 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   platform_admin: {
     id: "platform_admin",
-    label: "Steel Navy",
-    hex: "#426B94",
+    label: "Teal",
+    /** Deep teal step — keeps cyan identity legible on white chrome. */
+    hex: "#2C9183",
   },
 } as const;
 

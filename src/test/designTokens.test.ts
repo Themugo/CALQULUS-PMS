@@ -74,7 +74,7 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe(CALQULUS_COLOR.info);
     expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe(CALQULUS_COLOR.navy600);
     expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#6388AE");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#426B94");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
   });
 
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
@@ -144,6 +144,6 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain(`[data-portal="landlord"] { --portal-accent: var(--calqulus-info)`);
     expect(css).toContain(`[data-portal="agency"] { --portal-accent: var(--calqulus-navy-600)`);
     expect(css).toContain(`[data-portal="tenant"] { --portal-accent: var(--calqulus-navy-500)`);
-    expect(css).toContain(`[data-portal="platform_admin"] { --portal-accent: var(--calqulus-navy-600)`);
+    expect(css).toContain(`[data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep)`);
   });
 });

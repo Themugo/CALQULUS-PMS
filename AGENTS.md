@@ -347,6 +347,12 @@ Tier 3: Tenants
 - **Submanager is a role, not a portal**: Submanagers no longer have `/submanager` route. They use the same manager dashboard with permission restrictions via `can()`/`canWrite()` hooks.
 - **Removed agency_id from properties**: Properties no longer have `agency_id` field. Agency relationships are managed through `property_landlords.operating_model`.
 
+## Webhost Infrastructure Control Center (Phase 1, 2026-08-23)
+- `platform_admin` portal accent is now **Teal** (`#2C9183`, CSS var `--calqulus-teal-deep`; lighter step `--calqulus-teal: #3BB7A6`). Tests assert this value.
+- `AdminDashboard.tsx` = infrastructure control center: navy system-status band (worst-of probes), compact stat strip, Service health table (Operational/Warning/Degraded/Down from `lib/infrastructure.ts`), Applications table (real build/runtime facts), Alerts + Infrastructure activity from `activity_logs` (tenant firewall via `withoutTenantEntities`), Users & access strip.
+- **No invented hosting data**: deployments, servers, DNS, and SSL certs have no runtime source — the page states they are not instrumented. `DeploymentReleaseManager` (shared/components/ops) is hardcoded fake UI — do not mount it.
+- Status mapping: healthy→Operational, degraded→Degraded, unhealthy→Down, unavailable→Warning. Pure helpers in `src/features/webhost/lib/infrastructure.ts` (tested in `adminDesk.test.ts`).
+
 ## Key Decisions
 - **Three-role architecture**: Webhost sells to three portal types â€” Manager (full ops+collections), Agency (blended agent role), Landlord (guarded standalone, no tenant PII).
 - **Agency is a separate portal** at `/agency` with own login, sidebar, and dashboard. Manages properties on behalf of landlords (commission model) and/or collects rent directly.
