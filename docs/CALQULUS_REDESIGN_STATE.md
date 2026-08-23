@@ -1,10 +1,15 @@
 # CALQULUS Redesign — Persistent State
 
 ## CURRENT PHASE
-Master Homepage Transformation — COMPLETE (2026-08-22). The public homepage is now the premium dark-navy-hero SaaS page; Phase 0A (shell audit + preview) remains done.
+Onboarding / Authentication audit (2026-08-23) — see docs/CALQULUS_ONBOARDING_AUDIT.md. No auth logic modified.
 
 ## CURRENT TASK
-Homepage transformation shipped. Next candidates: authenticated shell unification per Phase 0A findings (still NOT started — dashboards untouched).
+Homepage + Webhost phases shipped. Next candidate per audit: Onboarding Phase 2 (unify portal auth shells).
+
+## MASTER HOMEPAGE TRANSFORMATION (2026-08-22) The public homepage is now the premium dark-navy-hero SaaS page; Phase 0A (shell audit + preview) remains done.
+
+## HISTORY
+Homepage + Webhost shipped. Next candidate per audit: Onboarding Phase 2 (unify portal auth shells).
 
 ## MASTER HOMEPAGE TRANSFORMATION (2026-08-22)
 - **Hero**: `ExecutiveHero` rebuilt as premium dark navy (`public-hero-surface` + `public-hero-title-dark` + `public-hero-grid-dark` utilities in `src/index.css`); transparent-over-hero `PublicHeader` that transitions to solid blurred white on scroll (scroll listener, threshold 24px); hero pulls under the sticky header via `-mt-[72px] pt-[72px]`. Carousel (residential/commercial/office ArchitecturalSurface treatments) kept.

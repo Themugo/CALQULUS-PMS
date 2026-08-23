@@ -17,6 +17,8 @@ const TenantAuth = lazy(() => import("@/features/auth/pages/TenantAuth"));
 const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
 const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRegister"));
 
+const RegisterExperience = lazy(() => import("@/features/auth/pages/RegisterExperience"));
+
 const LegalPage = lazy(() => import("@/features/legal/LegalPage"));
 const WebhostDashboard = lazy(() => import("@/features/webhost/pages/WebhostDashboard"));
 const AdminApplications = lazy(() => import("@/features/webhost/pages/AdminApplications"));
@@ -165,6 +167,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landing", redirect: "/" },
   { path: "/welcome", redirect: "/" },
   { path: "/pricing", element: PublicLandingPage },
+  { path: "/register", element: RegisterExperience },
   { path: "/health", element: HealthPage },
   { path: "/install", element: InstallApp },
   { path: "/legal", element: LegalPage },
