@@ -347,6 +347,11 @@ Tier 3: Tenants
 - **Submanager is a role, not a portal**: Submanagers no longer have `/submanager` route. They use the same manager dashboard with permission restrictions via `can()`/`canWrite()` hooks.
 - **Removed agency_id from properties**: Properties no longer have `agency_id` field. Agency relationships are managed through `property_landlords.operating_model`.
 
+## Webhost Applications + Deployments (Phase 2, 2026-08-23)
+- New routes: `/webhost/applications`, `/webhost/applications/:appId`, `/webhost/deployments` — registered in `roleRouteConfigs`, `webhostPaths.ts`, sidebar nav (Applications=new Deployments). `webhostApplicationPath(appId)` helper.
+- `lib/infrastructure.ts` extended: `getApplicationRuntime` (facts + worst-of probe health), `getNonSecretConfig` (safe entries only — never keys/tokens), `DEPLOYMENTS_NOT_INSTRUMENTED` constant.
+- **Deployment history is not instrumented** — single "Current live build" row (serving traffic now → Operational), Started/Completed = "Not recorded". Never fabricate history.
+
 ## Webhost Infrastructure Control Center (Phase 1, 2026-08-23)
 - `platform_admin` portal accent is now **Teal** (`#2C9183`, CSS var `--calqulus-teal-deep`; lighter step `--calqulus-teal: #3BB7A6`). Tests assert this value.
 - `AdminDashboard.tsx` = infrastructure control center: navy system-status band (worst-of probes), compact stat strip, Service health table (Operational/Warning/Degraded/Down from `lib/infrastructure.ts`), Applications table (real build/runtime facts), Alerts + Infrastructure activity from `activity_logs` (tenant firewall via `withoutTenantEntities`), Users & access strip.

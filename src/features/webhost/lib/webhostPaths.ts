@@ -2,6 +2,8 @@ export const WEBHOST_LOGIN = "/webhost/login";
 
 export const WEBHOST_ROUTES = {
   dashboard: "/webhost",
+  applications: "/webhost/applications",
+  deployments: "/webhost/deployments",
   organizations: "/webhost/organizations",
   users: "/webhost/users",
   subscriptions: "/webhost/subscriptions",
@@ -34,4 +36,9 @@ export function isWebhostDeskPath(pathname: string): boolean {
   if (pathname === "/webhost") return true;
   if (!pathname.startsWith("/webhost/")) return false;
   return !isWebhostPublicPath(pathname);
+}
+
+/** The only deployed application this desk serves. */
+export function webhostApplicationPath(appId: string): string {
+  return `${WEBHOST_ROUTES.applications}/${appId}`;
 }

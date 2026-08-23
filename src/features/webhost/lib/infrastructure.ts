@@ -81,3 +81,52 @@ export function getApplicationFacts(env: AppFactsEnv, location: Pick<Location, "
     backendConfigured,
   };
 }
+
+
+export type ApplicationRuntime = ApplicationFacts & {
+  id: 'calqulus-pms';
+  health: InfraStatus;
+  servicesReporting: number;
+  servicesTotal: number;
+};
+
+/** The one application this desk serves, with live health rolled in. */
+export function getApplicationRuntime(probes: ComponentProbe[], facts: ApplicationFacts): ApplicationRuntime {
+  const counts = countProbed(probes);
+  return {
+    ...facts,
+    id: 'calqulus-pms',
+    health: deriveSystemStatus(probes),
+    servicesReporting: counts.probed,
+    servicesTotal: counts.total,
+  };
+}
+
+export type NonSecretConfigEntry = {
+  key: string;
+  value: string;
+};
+
+/**
+ * Build/runtime configuration entries that are safe to display. Secrets
+ * (publishable keys, service keys, tokens) are never listed here.
+ */
+export function getNonSecretConfig(facts: ApplicationFacts): NonSecretConfigEntry[] {
+  return [
+    { key: 'Environment', value: facts.environment },
+    { key: 'Version', value: facts.version },
+    { key: 'Domain', value: facts.domain },
+    { key: 'Protocol', value: facts.protocol },
+    { key: 'Backend', value: facts.backendConfigured ? 'Supabase' : 'Not configured' },
+    { key: 'Backend project', value: facts.backendProject },
+  ];
+}
+
+/**
+ * Deployment history is not instrumented: Vercel deploys this app via its
+ * native GitHub integration and no deployment records are exposed to the
+ * runtime. There is exactly one live deployment — the build serving the
+ * page right now. Never fabricate history beyond this.
+ */
+export const DEPLOYMENTS_NOT_INSTRUMENTED =
+  'Deployment history is not instrumented. Vercel deploys from the GitHub integration; no deployment records are exposed to the app runtime.' as const;

@@ -153,9 +153,9 @@ export default function AdminDashboard() {
   });
 
   const statStrip: { label: string; value: string; href?: string }[] = [
-    { label: "Applications", value: "1" },
-    { label: "Domains", value: "1" },
-    { label: "Environments", value: "1" },
+    { label: "Applications", value: "1", href: WEBHOST_ROUTES.applications },
+    { label: "Domains", value: "1", href: WEBHOST_ROUTES.applications },
+    { label: "Environments", value: "1", href: WEBHOST_ROUTES.deployments },
     { label: "Services", value: healthLoading ? "…" : `${probedCount.probed}/${probedCount.total} probed` },
     {
       label: "Users",

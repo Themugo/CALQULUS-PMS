@@ -5,13 +5,17 @@ import {
   WEBHOST_ROUTES,
   isWebhostDeskPath,
   isWebhostPublicPath,
+  webhostApplicationPath,
   webhostOrganizationPath,
 } from "@/features/webhost/lib/webhostPaths";
 import { assembleAdminHealthProbes, PAYMENTS_HEALTH_DETAIL, type ComponentProbe } from "@/features/webhost/lib/adminHealth";
 import {
   countProbed,
+  DEPLOYMENTS_NOT_INSTRUMENTED,
   deriveSystemStatus,
   getApplicationFacts,
+  getApplicationRuntime,
+  getNonSecretConfig,
   probeToInfraStatus,
 } from "@/features/webhost/lib/infrastructure";
 import { groupSecurityEvents, isTenantEntityType } from "@/features/webhost/lib/adminSecurity";
@@ -56,6 +60,9 @@ describe("webhost role routing", () => {
     expect(paths).toEqual(
       expect.arrayContaining([
         WEBHOST_ROUTES.dashboard,
+        WEBHOST_ROUTES.applications,
+        "/webhost/applications/:appId",
+        WEBHOST_ROUTES.deployments,
         WEBHOST_ROUTES.organizations,
         "/webhost/organizations/:userId",
         WEBHOST_ROUTES.users,
@@ -66,6 +73,13 @@ describe("webhost role routing", () => {
         WEBHOST_ROUTES.brand,
       ]),
     );
+  });
+
+  it("treats application and deployment pages as the desk", () => {
+    expect(isWebhostDeskPath(WEBHOST_ROUTES.applications)).toBe(true);
+    expect(isWebhostDeskPath(WEBHOST_ROUTES.deployments)).toBe(true);
+    expect(isWebhostDeskPath(webhostApplicationPath("calqulus-pms"))).toBe(true);
+    expect(webhostApplicationPath("calqulus-pms")).toBe("/webhost/applications/calqulus-pms");
   });
 });
 
@@ -201,5 +215,54 @@ describe("application facts", () => {
     expect(facts.backendConfigured).toBe(false);
     expect(facts.backendProject).toBe("Not configured");
     expect(facts.environment).toBe("development");
+  });
+});
+
+
+describe("application runtime", () => {
+  const probe = (id: ComponentProbe["id"], status: ComponentProbe["status"]): ComponentProbe => ({
+    id,
+    label: id,
+    status,
+    detail: "",
+  });
+  const facts = getApplicationFacts(
+    { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+    { hostname: "www.calqulus.site", protocol: "https:" },
+  );
+
+  it("rolls live probe health into the application row", () => {
+    const app = getApplicationRuntime([probe("database", "healthy"), probe("api", "healthy")], facts);
+    expect(app.id).toBe("calqulus-pms");
+    expect(app.health).toBe("operational");
+    expect(app.servicesReporting).toBe(2);
+    expect(app.servicesTotal).toBe(2);
+  });
+
+  it("marks the application down when a service is unhealthy", () => {
+    const app = getApplicationRuntime([probe("database", "unhealthy")], facts);
+    expect(app.health).toBe("down");
+  });
+});
+
+describe("non-secret configuration", () => {
+  it("lists only safe entries and never keys or tokens", () => {
+    const facts = getApplicationFacts(
+      { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+      { hostname: "www.calqulus.site", protocol: "https:" },
+    );
+    const config = getNonSecretConfig(facts);
+    const joined = JSON.stringify(config).toLowerCase();
+    expect(joined).not.toContain("anon");
+    expect(joined).not.toContain("secret");
+    expect(joined).not.toContain("token");
+    expect(joined).not.toContain("service_role");
+    expect(config.find((e) => e.key === "Backend project")?.value).toBe("aelzsqxllkypbzslxyju.supabase.co");
+  });
+});
+
+describe("deployment history", () => {
+  it("is explicitly not instrumented", () => {
+    expect(DEPLOYMENTS_NOT_INSTRUMENTED).toContain("not instrumented");
   });
 });

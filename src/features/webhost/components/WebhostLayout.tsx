@@ -8,9 +8,11 @@ import {
   Handshake,
   LayoutDashboard,
   Layers,
+  Layers2,
   LogOut,
   Menu,
   Palette,
+  Rocket,
   ScrollText,
   Settings,
   ShieldAlert,
@@ -30,6 +32,8 @@ import { cn } from "@/shared/lib/utils";
 
 const NAV = [
   { label: "Dashboard", href: WEBHOST_ROUTES.dashboard, icon: LayoutDashboard, permission: null },
+  { label: "Applications", href: WEBHOST_ROUTES.applications, icon: Layers2, permission: null },
+  { label: "Deployments", href: WEBHOST_ROUTES.deployments, icon: Rocket, permission: null },
   { label: "Organizations", href: WEBHOST_ROUTES.organizations, icon: Building2, permission: "can_manage_managers" as const },
   { label: "Users", href: WEBHOST_ROUTES.users, icon: Users, permission: null },
   { label: "Properties", href: WEBHOST_OPS_ROUTES.properties, icon: Building2, permission: "can_manage_properties" as const },

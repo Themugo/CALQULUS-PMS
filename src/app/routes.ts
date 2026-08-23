@@ -19,6 +19,9 @@ const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRe
 
 const LegalPage = lazy(() => import("@/features/legal/LegalPage"));
 const WebhostDashboard = lazy(() => import("@/features/webhost/pages/WebhostDashboard"));
+const AdminApplications = lazy(() => import("@/features/webhost/pages/AdminApplications"));
+const AdminApplicationDetail = lazy(() => import("@/features/webhost/pages/AdminApplicationDetail"));
+const AdminDeployments = lazy(() => import("@/features/webhost/pages/AdminDeployments"));
 const AdminOrganizations = lazy(() => import("@/features/webhost/pages/AdminOrganizations"));
 const AdminOrganizationDetail = lazy(() => import("@/features/webhost/pages/AdminOrganizationDetail"));
 const AdminUsers = lazy(() => import("@/features/webhost/pages/AdminUsers"));
@@ -206,6 +209,9 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     routes: [
       { path: "/webhost/login", redirect: "/webhost" },
       { path: "/webhost", element: WebhostDashboard, protected: true },
+      { path: "/webhost/applications", element: AdminApplications, protected: true },
+      { path: "/webhost/applications/:appId", element: AdminApplicationDetail, protected: true },
+      { path: "/webhost/deployments", element: AdminDeployments, protected: true },
       { path: "/webhost/organizations", element: AdminOrganizations, protected: true },
       { path: "/webhost/organizations/:userId", element: AdminOrganizationDetail, protected: true },
       { path: "/webhost/users", element: AdminUsers, protected: true },
