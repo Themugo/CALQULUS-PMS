@@ -20,9 +20,11 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("establishes navy as chrome, not a page fill", () => {
-    expect(CALQULUS_COLOR.navyDeep).toBe("#0B2239");
+    // Deep navy is remapped to the mid step — darkest scale is out of chrome.
+    expect(CALQULUS_COLOR.navyDeep).toBe("#31577E");
     expect(CALQULUS_COLOR.navyPrimary).toBe("#173650");
     expect(CALQULUS_COLOR.navySecondary).toBe("#31577E");
+    expect(CALQULUS_COLOR.navyDeep).not.toBe("#0B2239");
     expect(CALQULUS_COLOR.navyDeep).not.toBe("#000000");
     expect(CALQULUS_COLOR.navyPrimary).not.toBe("#000000");
   });
@@ -119,9 +121,10 @@ describe("index.css Tailwind v4 production safety", () => {
     // Canonical --calqulus-* tokens carry the literal hex; semantic tokens
     // reference them so there is a single source of truth.
     expect(css).toContain(`--calqulus-primary: ${CALQULUS_COLOR.primary}`);
-    expect(css).toContain(`--calqulus-navy-950: ${CALQULUS_COLOR.navyDeep}`);
-    expect(css).toContain(`--calqulus-navy-900: ${CALQULUS_COLOR.navyPrimary}`);
     expect(css).toContain(`--calqulus-navy-700: ${CALQULUS_COLOR.navySecondary}`);
+    // navy-950 step stays in the scale but is no longer mapped into chrome.
+    expect(css).toContain(`--calqulus-navy-950: #0B2239`);
+    expect(css).toContain(`--calqulus-navy-900: ${CALQULUS_COLOR.navyPrimary}`);
     expect(css).toContain(`--calqulus-success: ${CALQULUS_COLOR.success}`);
     expect(css).toContain(`--calqulus-warning: ${CALQULUS_COLOR.warning}`);
     expect(css).toContain(`--calqulus-danger: ${CALQULUS_COLOR.danger}`);
@@ -131,7 +134,7 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain(`--calqulus-text-muted: ${CALQULUS_COLOR.textMuted}`);
     expect(css).toContain(`--calqulus-info: ${CALQULUS_COLOR.info}`);
     expect(css).toContain("--primary: var(--calqulus-primary)");
-    expect(css).toContain("--navy-deep: var(--calqulus-navy-950)");
+    expect(css).toContain("--navy-deep: var(--calqulus-navy-700)");
     expect(css).toContain("--background: var(--calqulus-background)");
     expect(css).toContain("--border: var(--calqulus-border)");
     expect(css).toContain("--foreground: var(--calqulus-text)");

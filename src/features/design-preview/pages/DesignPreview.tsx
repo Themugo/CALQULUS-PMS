@@ -234,8 +234,8 @@ function isPortal(id: PreviewId): id is PortalId {
 
 function HomepagePreview() {
   const foundation = [
-    { label: "Deep Navy", hex: CALQULUS_COLOR.navyDeep },
-    { label: "Mid Navy", hex: CALQULUS_COLOR.navyPrimary },
+    { label: "Mid Navy", hex: CALQULUS_COLOR.navyDeep },
+    { label: "Deep Navy (900)", hex: CALQULUS_COLOR.navyPrimary },
     { label: "Secondary Navy", hex: CALQULUS_COLOR.navySecondary },
     { label: "Interactive", hex: CALQULUS_COLOR.primary },
     { label: "White", hex: CALQULUS_COLOR.white },

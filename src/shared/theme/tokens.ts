@@ -26,8 +26,10 @@ export const CALQULUS_COLOR = {
   primaryActive: "#214FAE",
   accent: "#356FE5",
 
-  /** Navy identity scale — chrome only, never a page fill. */
-  navyDeep: "#0B2239",
+  /** Navy identity — chrome only, never a page fill. `navyDeep` is
+      remapped to the mid step with navySecondary; the 950 hex stays
+      out of the brand chrome. */
+  navyDeep: "#31577E",
   navyPrimary: "#173650",
   navySecondary: "#31577E",
   /** Navy 600 step used for platform-admin & agency accents. */

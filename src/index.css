@@ -477,9 +477,10 @@
     --portal-accent-border: color-mix(in srgb, var(--portal-accent) 28%, transparent);
     --portal-accent-surface: color-mix(in srgb, var(--portal-accent) 10%, #FFFFFF);
 
-    /* Navy identity — chrome only, never a page fill */
+    /* Navy identity — chrome only, never a page fill. Deep-navy alias is
+       remapped to the mid step so every `*-navy-deep` utility renders mid. */
     --navy-primary: var(--calqulus-navy-900);
-    --navy-deep: var(--calqulus-navy-950);
+    --navy-deep: var(--calqulus-navy-700);
     --navy-mid: var(--calqulus-navy-700);
     --navy-surface: var(--calqulus-navy-800);
     --secondary-navy: var(--calqulus-navy-700);
@@ -535,10 +536,10 @@
 
     --radius: 0.75rem;
 
-    /* App shell sidebar: CALQULUS navy chrome carrying white/slate text.
-       One chrome for every portal — role identity stays the 2px stripe,
-       never a separate sidebar color system. Active nav = blue wash. */
-    --sidebar-background: var(--calqulus-navy-950);
+    /* App shell sidebar: CALQULUS mid-navy chrome carrying white/slate
+       text. One chrome for every portal — role identity stays the 2px
+       stripe, never a separate sidebar color system. Active = blue wash. */
+    --sidebar-background: var(--calqulus-navy-700);
     --sidebar-foreground: var(--calqulus-text-on-navy);
     --sidebar-primary: var(--calqulus-primary);
     --sidebar-primary-foreground: #FFFFFF;
