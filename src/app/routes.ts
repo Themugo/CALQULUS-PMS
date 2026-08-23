@@ -18,6 +18,7 @@ const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
 const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRegister"));
 
 const RegisterExperience = lazy(() => import("@/features/auth/pages/RegisterExperience"));
+const OnboardingPage = lazy(() => import("@/features/onboarding/pages/OnboardingPage"));
 
 const LegalPage = lazy(() => import("@/features/legal/LegalPage"));
 const WebhostDashboard = lazy(() => import("@/features/webhost/pages/WebhostDashboard"));
@@ -243,7 +244,6 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/auth", redirect: "/" },
       { path: "/landlord", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
-      { path: "/dashboard/accountant", redirect: "/" },
       { path: "/dashboard/maintenance", redirect: "/" },
       { path: "/dashboard/leasing", redirect: "/" },
       { path: "/dashboard/support", redirect: "/" },
@@ -353,6 +353,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/tenant/signup", redirect: "/" },
       { path: "/portal/*", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
+      { path: "/onboarding", element: OnboardingPage, protected: true },
       { path: "/dashboard/accountant", redirect: "/" },
       { path: "/dashboard/maintenance", redirect: "/" },
       { path: "/dashboard/leasing", redirect: "/" },
