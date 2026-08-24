@@ -12,6 +12,8 @@ interface CreateTenantRequest {
   property: string;
   property_id?: string;
   unit: string;
+  userId?: string;
+  invitationToken?: string;
   move_in_date?: string;
   companyName?: string;
   portalUrl?: string;
@@ -258,29 +260,63 @@ Deno.serve(async (req: Request): Promise<Response> => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user: caller }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !caller) {
-      return new Response(
-        JSON.stringify({ error: "Invalid authentication" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
+    const body: CreateTenantRequest = await req.json();
+    const invitationToken = body.invitationToken?.trim() || null;
+
+    // ── Invitee path (Phase 7) ──────────────────────────────────────────
+    // An invited tenant calls this right after supabase.auth.signUp, so the
+    // caller is the brand-new tenant (or unauthenticated when email
+    // confirmation is pending). The invitation TOKEN — not the caller's
+    // role — is the credential. Property, unit, manager, and rent are
+    // resolved from the invitation row server-side; client-supplied values
+    // for those fields are ignored.
+    let invitation: {
+      id: string;
+      email: string;
+      tenant_name: string;
+      property_id: string | null;
+      property_name: string;
+      unit: string | null;
+      invited_by: string;
+      monthly_rent: number | null;
+      house_deposit: number | null;
+      water_deposit: number | null;
+    } | null = null;
+
+    let callerId: string | null = null;
+    if (invitationToken) {
+      if (!body.userId) {
+        return new Response(
+          JSON.stringify({ error: "userId is required when claiming an invitation" }),
+          { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      const { data: { user: caller }, error: authError } = await supabaseClient.auth.getUser();
+      if (authError || !caller) {
+        return new Response(
+          JSON.stringify({ error: "Invalid authentication" }),
+          { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      // Webhost is never allowed to create tenant accounts (tenant firewall).
+      const { data: roleRows } = await supabaseClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", caller.id);
+
+      const allowedCaller = new Set(["manager", "agency", "submanager"]);
+      if (!roleRows?.some((row) => allowedCaller.has(row.role))) {
+        return new Response(
+          JSON.stringify({ error: "Insufficient permissions" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+      callerId = caller.id;
     }
 
-    // Webhost is never allowed to create tenant accounts (tenant firewall).
-    const { data: roleRows } = await supabaseClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", caller.id);
-
-    const allowedCaller = new Set(["manager", "agency", "submanager"]);
-    if (!roleRows?.some((row) => allowedCaller.has(row.role))) {
-      return new Response(
-        JSON.stringify({ error: "Insufficient permissions" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-      );
-    }
-
-    const { name, email, phone, whatsapp, property, property_id, unit, move_in_date, companyName, portalUrl, manager_id, sendSms, sendWhatsapp, monthlyRent, depositAmount }: CreateTenantRequest = await req.json();
+    const { name, email, phone, whatsapp, property, property_id, unit, move_in_date, companyName, portalUrl, manager_id, sendSms, sendWhatsapp, monthlyRent, depositAmount } = body;
 
     if (!name || !email) {
       return new Response(
@@ -290,7 +326,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
 
     // Use the caller's ID as manager_id if not explicitly provided
-    const effectiveManagerId = manager_id || caller.id;
+    const effectiveManagerId = manager_id || callerId;
 
     // Use service role client to create auth user
     const supabaseAdmin = createClient(
@@ -298,9 +334,104 @@ Deno.serve(async (req: Request): Promise<Response> => {
       getEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
+    // ── Resolve the invitation server-side (Phase 7) ────────────────────
+    // The token is looked up with the service role. It must be pending and
+    // unexpired, and the auth user being linked must own the invited email.
+    if (invitationToken) {
+      const { data: inviteRows } = await supabaseAdmin
+        .from("tenant_invitations")
+        .select("id, email, tenant_name, property_id, property_name, unit, invited_by, status, expires_at, monthly_rent, house_deposit, water_deposit")
+        .eq("token", invitationToken)
+        .limit(1);
+
+      const invite = inviteRows?.[0];
+      if (!invite) {
+        return new Response(
+          JSON.stringify({ error: "Invitation not found" }),
+          { status: 404, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      const inviteExpired = invite.status === "pending" && new Date(invite.expires_at) <= new Date();
+      if (inviteExpired) {
+        return new Response(
+          JSON.stringify({ error: "This invitation has expired", code: "invitation_expired" }),
+          { status: 410, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      // The auth user being linked must own the invited email — an
+      // invitation can never be claimed into an account with a different
+      // email.
+      const { data: claimUserData, error: claimUserError } = await supabaseAdmin.auth.admin.getUserById(body.userId!);
+      const claimEmail = claimUserData?.user?.email?.toLowerCase();
+      if (claimUserError || !claimEmail || claimEmail !== invite.email.toLowerCase()) {
+        return new Response(
+          JSON.stringify({ error: "This invitation was sent to a different email address", code: "invitation_email_mismatch" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      if (invite.status !== "pending") {
+        // Refresh / back-navigation after a successful claim: if a tenant
+        // record already exists for this user, return it instead of failing.
+        // tenants has no user_id column — the link is user_roles.tenant_id.
+        const { data: roleLink } = await supabaseAdmin
+          .from("user_roles")
+          .select("tenant_id")
+          .eq("user_id", body.userId!)
+          .maybeSingle();
+        const { data: existingTenant } = roleLink?.tenant_id
+          ? await supabaseAdmin
+              .from("tenants")
+              .select("*")
+              .eq("id", roleLink.tenant_id)
+              .maybeSingle()
+          : { data: null };
+        if (existingTenant) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              tenant: existingTenant,
+              isNewUser: false,
+              alreadyClaimed: true,
+              summary: {
+                property: invite.property_name,
+                unit: invite.unit,
+                monthlyRent: invite.monthly_rent,
+                depositAmount: invite.house_deposit != null
+                  ? invite.house_deposit + (invite.water_deposit || 0)
+                  : null,
+              },
+              message: "Invitation already claimed",
+            }),
+            { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+          );
+        }
+        return new Response(
+          JSON.stringify({ error: "This invitation has already been used", code: "invitation_used" }),
+          { status: 410, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      invitation = invite;
+    }
+
+    // Server-resolved values: the invitation row wins over anything the
+    // client sent for property/unit/manager/rent.
+    const effProperty    = invitation ? invitation.property_name : property;
+    const effPropertyId  = invitation ? invitation.property_id   : property_id;
+    const effUnit        = invitation ? (invitation.unit ?? "")  : unit;
+    const effMonthlyRent = invitation ? invitation.monthly_rent  : monthlyRent;
+    const effDeposit     = invitation
+      ? (invitation.house_deposit != null ? invitation.house_deposit + (invitation.water_deposit || 0) : null)
+      : depositAmount;
+    const resolvedManagerId = invitation ? invitation.invited_by : effectiveManagerId;
+    const effEmail = invitation ? invitation.email : email;
+
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+    const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === effEmail.toLowerCase());
 
     let userId: string;
     let isNewUser = false;
@@ -349,13 +480,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Look up or create unit record for proper FK linkage
     let unitId: string | null = null;
-    if (property_id && unit) {
+    if (effPropertyId && effUnit) {
       // Check if unit exists
       const { data: existingUnit } = await supabaseAdmin
         .from("units")
         .select("id")
-        .eq("property_id", property_id)
-        .eq("unit_number", unit)
+        .eq("property_id", effPropertyId)
+        .eq("unit_number", effUnit)
         .maybeSingle();
 
       if (existingUnit) {
@@ -365,7 +496,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           .from("units")
           .update({
             status: "occupied",
-            ...(monthlyRent ? { monthly_rent: monthlyRent } : {}),
+            ...(effMonthlyRent ? { monthly_rent: effMonthlyRent } : {}),
           })
           .eq("id", unitId);
         if (unitUpdateError) throw new Error(`Failed to mark unit occupied: ${unitUpdateError.message}`);
@@ -374,11 +505,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
         const { data: newUnit, error: unitCreateError } = await supabaseAdmin
           .from("units")
           .insert({
-            property_id,
-            unit_number: unit,
-            label: unit,
-            monthly_rent: monthlyRent || null,
-            house_deposit: depositAmount || null,
+            property_id: effPropertyId,
+            unit_number: effUnit,
+            label: effUnit,
+            monthly_rent: effMonthlyRent || null,
+            house_deposit: effDeposit || null,
             status: "occupied",
           })
           .select("id")
@@ -391,14 +522,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { count: occupiedCount } = await supabaseAdmin
         .from("units")
         .select("id", { count: "exact", head: true })
-        .eq("property_id", property_id)
+        .eq("property_id", effPropertyId)
         .eq("status", "occupied");
 
       if (occupiedCount !== null) {
         await supabaseAdmin
           .from("properties")
           .update({ occupied: occupiedCount })
-          .eq("id", property_id);
+          .eq("id", effPropertyId);
       }
     }
 
@@ -407,17 +538,17 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .from("tenants")
       .insert({
         name,
-        email,
+        email: effEmail,
         phone: phone || null,
-        property,
-        property_id: property_id || null,
-        unit,
+        property: effProperty,
+        property_id: effPropertyId || null,
+        unit: effUnit,
         unit_id: unitId,
         status: "active",
         move_in_date: move_in_date || null,
-        manager_id: effectiveManagerId,
-        monthly_rent: monthlyRent || null,
-        deposit_amount: depositAmount || null,
+        manager_id: resolvedManagerId,
+        monthly_rent: effMonthlyRent || null,
+        deposit_amount: effDeposit || null,
       })
       .select()
       .single();
@@ -461,15 +592,28 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
     }
 
+    // ── Mark the invitation used (Phase 7) ────────────────────────────
+    // Guarded by status='pending' so a concurrent double-claim is a no-op.
+    if (invitation) {
+      const { error: markError } = await supabaseAdmin
+        .from("tenant_invitations")
+        .update({ status: "used", used_at: new Date().toISOString() })
+        .eq("id", invitation.id)
+        .eq("status", "pending");
+      if (markError) {
+        console.warn("Failed to mark invitation used (non-critical):", markError.message);
+      }
+    }
+
     // ── Sync payment details to tenant portal ─────────────────────────
     // Get manager's M-Pesa settings so tenant can see paybill details
     let paybillNumber: string | null = null;
     let accountReference: string | null = unit || null;
-    if (effectiveManagerId) {
+    if (resolvedManagerId) {
       const { data: mpesaSettings } = await supabaseAdmin
         .from("mpesa_settings")
         .select("paybill_shortcode, paybill_enabled, paybill_account_reference")
-        .eq("manager_id", effectiveManagerId)
+        .eq("manager_id", resolvedManagerId)
         .maybeSingle();
       if (mpesaSettings?.paybill_enabled) {
         paybillNumber  = (mpesaSettings as any).paybill_shortcode || null;
@@ -480,11 +624,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // Call sync_tenant_payment_details to populate the portal's payment details
     await supabaseAdmin.rpc("sync_tenant_payment_details", {
       p_tenant_id:          tenant.id,
-      p_manager_id:         effectiveManagerId || null,
-      p_property_id:        property_id || null,
+      p_manager_id:         resolvedManagerId || null,
+      p_property_id:        effPropertyId || null,
       p_unit_id:            unitId || null,
-      p_monthly_rent:       monthlyRent || null,
-      p_house_deposit:      depositAmount || null,
+      p_monthly_rent:       effMonthlyRent || null,
+      p_house_deposit:      effDeposit || null,
       p_water_deposit:      null,
       p_other_charges:      null,
       p_other_charges_desc: null,
@@ -554,6 +698,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         emailSent,
         smsSent,
         whatsappSent,
+        summary: {
+          property: effProperty || null,
+          unit: effUnit || null,
+          monthlyRent: effMonthlyRent ?? null,
+          depositAmount: effDeposit ?? null,
+        },
         message: isNewUser 
           ? `Tenant account created. Activation sent via ${methods.join(', ')}.`
           : "Tenant linked to existing user account",

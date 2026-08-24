@@ -12,6 +12,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
+import {
+  INVITATION_STATE_COPY,
+  buildInvitationSummary,
+  buildLeaseSummary,
+  normalizeInvitationState,
+  type InvitationState,
+} from '@/features/auth/lib/tenantInvitation';
+import { formatCurrency } from '@/shared/lib/formatCurrency';
 
 interface Invitation {
   id: string;
@@ -24,15 +32,17 @@ interface Invitation {
   status: string;
   expires_at: string;
   invited_by: string;
+  inviter_name: string | null;
   monthly_rent?: number | null;
   house_deposit?: number | null;
   water_deposit?: number | null;
 }
 
-interface LandlordContact {
-  full_name: string | null;
-  email: string;
-  phone: string | null;
+interface ClaimedSummary {
+  property: string | null;
+  unit: string | null;
+  monthlyRent: number | null;
+  depositAmount: number | null;
 }
 
 const TenantAuth = () => {
@@ -56,7 +66,8 @@ const TenantAuth = () => {
   
   // Invitation state
   const [invitation, setInvitation] = useState<Invitation | null>(null);
-  const [landlordContact, setLandlordContact] = useState<LandlordContact | null>(null);
+  const [tokenState, setTokenState] = useState<InvitationState | null>(null);
+  const [claimedSummary, setClaimedSummary] = useState<ClaimedSummary | null>(null);
   const [isLoadingInvitation, setIsLoadingInvitation] = useState(!!invitationToken);
 
   const validateEmail = (email: string): boolean => {
@@ -87,36 +98,24 @@ const TenantAuth = () => {
       // Use secure RPC function instead of direct table query
       const { data, error } = await supabase
         .rpc('validate_invitation_token', { token_value: invitationToken });
-      
+
       if (error || !data || data.length === 0) {
-        toast({
-          title: 'Invalid Invitation',
-          description: 'This invitation link is invalid or has expired. Please contact your property manager for a new invitation.',
-          variant: 'destructive',
-        });
+        // Classify the failure without exposing invitation contents:
+        // expired / used / invalid each get their own screen.
+        const { data: stateData } = await supabase
+          .rpc('invitation_token_state', { token_value: invitationToken });
+        setTokenState(normalizeInvitationState(stateData));
         setIsLoadingInvitation(false);
         return;
       }
-      
+
       const invitationData = data[0];
       setInvitation(invitationData);
+      setTokenState('pending');
       setSignupEmail(invitationData.email);
       setSignupFullName(invitationData.tenant_name);
       if (invitationData.phone) setSignupPhone(invitationData.phone);
-      
-      // Fetch landlord contact details
-      if (invitationData.invited_by) {
-        const { data: landlordData } = await supabase
-          .from('profiles')
-          .select('full_name, email, phone')
-          .eq('id', invitationData.invited_by)
-          .single();
-        
-        if (landlordData) {
-          setLandlordContact(landlordData);
-        }
-      }
-      
+
       setIsLoadingInvitation(false);
     };
     
@@ -204,27 +203,39 @@ const TenantAuth = () => {
         // For invited tenants: property/unit info from invitation
         // For self-registration (orphaned): no property/unit, accounting mode
 
+        // Invited tenants claim with the invitation TOKEN — the server
+        // resolves property/unit/manager/rent from the invitation row and
+        // never trusts client-supplied IDs. Self-registration (accounting
+        // mode) has no property linkage.
         const { data: createResult, error: createError } = await supabase.functions.invoke(
           'create-tenant-account',
           {
-            body: {
-              userId:       authData.user.id,
-              name:         signupFullName,
-              email:        signupEmail,
-              phone:        signupPhone || null,
-              property:     isSelfRegistration ? null : (invitation?.property_name || null),
-              property_id:  isSelfRegistration ? null : (invitation?.property_id   || null),
-              unit:         isSelfRegistration ? null : (invitation?.unit           || null),
-              manager_id:   isSelfRegistration ? null : (invitation?.invited_by     || null),
-              monthlyRent:  isSelfRegistration ? null : (invitation?.monthly_rent  || null),
-              depositAmount: isSelfRegistration ? null : (invitation?.house_deposit
-                ? (invitation.house_deposit + (invitation.water_deposit || 0))
-                : null),
-              sendSms:      false,
-              sendWhatsapp: false,
-              isExistingUser: true, // user already created via supabase.auth.signUp
-              isSelfRegistration: isSelfRegistration, // flag for orphaned tenant accounting mode
-            },
+            body: invitation && !isSelfRegistration
+              ? {
+                  userId:          authData.user.id,
+                  name:            signupFullName,
+                  email:           invitation.email,
+                  phone:           signupPhone || null,
+                  invitationToken: invitationToken,
+                  sendSms:      false,
+                  sendWhatsapp: false,
+                }
+              : {
+                  userId:       authData.user.id,
+                  name:         signupFullName,
+                  email:        signupEmail,
+                  phone:        signupPhone || null,
+                  property:     null,
+                  property_id:  null,
+                  unit:         null,
+                  manager_id:   null,
+                  monthlyRent:  null,
+                  depositAmount: null,
+                  sendSms:      false,
+                  sendWhatsapp: false,
+                  isExistingUser: true, // user already created via supabase.auth.signUp
+                  isSelfRegistration: true, // flag for orphaned tenant accounting mode
+                },
           }
         );
 
@@ -238,14 +249,6 @@ const TenantAuth = () => {
           });
           setIsSubmitting(false);
           return;
-        }
-
-        // Mark invitation as used if present
-        if (invitation && !isSelfRegistration) {
-          await supabase
-            .from('tenant_invitations')
-            .update({ status: 'used', used_at: new Date().toISOString() })
-            .eq('id', invitation.id);
         }
 
         // Notify manager that tenant has signed up (if from invitation)
@@ -264,12 +267,30 @@ const TenantAuth = () => {
         // Set registered email for verification screen
         setRegisteredEmail(signupEmail);
 
+        if (invitation && !isSelfRegistration) {
+          // Confirmation screen shows the server-resolved summary. When the
+          // project requires email confirmation there is no session yet —
+          // send the tenant through verification first.
+          if (authData.session) {
+            setClaimedSummary(createResult?.summary ?? {
+              property: invitation.property_name,
+              unit: invitation.unit,
+              monthlyRent: invitation.monthly_rent ?? null,
+              depositAmount: invitation.house_deposit != null
+                ? invitation.house_deposit + (invitation.water_deposit || 0)
+                : null,
+            });
+          } else {
+            setShowVerificationMessage(true);
+          }
+          setIsSubmitting(false);
+          return;
+        }
+
         // Success! Show toast - navigation will be handled by useEffect watching userRole
         toast({
-          title: isSelfRegistration ? 'Account Created for Accounting' : 'Welcome to CALQULUS PMS!',
-          description: isSelfRegistration 
-            ? 'Your account has been created. You can manage your rental records for accounting purposes.'
-            : 'Your account has been created successfully. Redirecting...',
+          title: 'Account Created for Accounting',
+          description: 'Your account has been created. You can manage your rental records for accounting purposes.',
         });
 
         // Force a session refresh to trigger role fetch
@@ -350,6 +371,80 @@ const TenantAuth = () => {
               </p>
             </div>
           </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Confirmation — account created from a valid invitation
+  if (claimedSummary) {
+    const summaryRows = buildInvitationSummary({
+      propertyName: claimedSummary.property,
+      unit: claimedSummary.unit,
+      inviterName: invitation?.inviter_name ?? null,
+    });
+    const leaseRows = buildLeaseSummary(
+      {
+        propertyName: null,
+        unit: null,
+        inviterName: null,
+        monthlyRent: claimedSummary.monthlyRent,
+        houseDeposit: claimedSummary.depositAmount,
+      },
+      (n) => formatCurrency(n),
+    );
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-4">
+        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-success/15 flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-success" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-foreground">Your account is ready</CardTitle>
+            <CardDescription className="text-muted-foreground mt-2">
+              Welcome, {signupFullName}. Your property account has been set up.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <dl className="rounded-lg border border-border bg-muted/50 divide-y divide-border">
+              {[...summaryRows, ...leaseRows].map((row) => (
+                <div key={row.label} className="flex items-center justify-between px-4 py-3">
+                  <dt className="text-sm text-muted-foreground">{row.label}</dt>
+                  <dd className="text-sm font-medium text-foreground">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Button className="w-full min-h-11 btn-brand" onClick={() => navigate('/portal')}>
+              Enter Tenant Portal
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Expired / used / invalid invitation — one honest screen per state
+  if (invitationToken && !isLoadingInvitation && tokenState && tokenState !== 'pending') {
+    const copy = INVITATION_STATE_COPY[tokenState];
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-4">
+        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <BrandMark size="hero" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-foreground">{copy.title}</CardTitle>
+            <CardDescription className="text-muted-foreground mt-2">{copy.body}</CardDescription>
+          </CardHeader>
+          {copy.cta && (
+            <CardContent>
+              <Button className="w-full min-h-11" onClick={() => navigate(copy.cta!.href)}>
+                {copy.cta.label}
+              </Button>
+            </CardContent>
+          )}
         </Card>
       </div>
     );
@@ -522,41 +617,25 @@ const TenantAuth = () => {
           <div className="flex justify-center mb-4">
             <BrandMark size="hero" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">Create Tenant Account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            {invitation ? "You're invited to access your property account." : 'Create Tenant Account'}
+          </CardTitle>
           <CardDescription className="text-muted-foreground">
             {invitation ? `Welcome, ${invitation.tenant_name}! Complete your registration.` : 'Sign up to access your rental portal'}
           </CardDescription>
           {invitation && (
-            <div className="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-              <p className="text-xs text-primary font-medium">
-                Property: {invitation.property_name}{invitation.unit ? ` - Unit ${invitation.unit}` : ''}
-              </p>
-              {landlordContact && (
-                <div className="pt-2 border-t border-primary/20">
-                  <p className="text-xs text-muted-foreground mb-1">Your Landlord/Manager:</p>
-                  <p className="text-sm font-medium text-foreground">{landlordContact.full_name || 'Property Manager'}</p>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {landlordContact.email && (
-                      <a 
-                        href={`mailto:${landlordContact.email}`}
-                        className="text-xs text-primary hover:underline flex items-center gap-1"
-                      >
-                        <Mail className="h-3 w-3" />
-                        {landlordContact.email}
-                      </a>
-                    )}
-                    {landlordContact.phone && (
-                      <a 
-                        href={`tel:${landlordContact.phone}`}
-                        className="text-xs text-primary hover:underline flex items-center gap-1"
-                      >
-                        📞 {landlordContact.phone}
-                      </a>
-                    )}
-                  </div>
+            <dl className="mt-3 rounded-lg border border-primary/20 bg-primary/10 divide-y divide-primary/10 text-left">
+              {buildInvitationSummary({
+                propertyName: invitation.property_name,
+                unit: invitation.unit,
+                inviterName: invitation.inviter_name,
+              }).map((row) => (
+                <div key={row.label} className="flex items-center justify-between px-3 py-2">
+                  <dt className="text-xs text-muted-foreground">{row.label}</dt>
+                  <dd className="text-sm font-medium text-foreground">{row.value}</dd>
                 </div>
-              )}
-            </div>
+              ))}
+            </dl>
           )}
         </CardHeader>
         <CardContent>
@@ -581,14 +660,18 @@ const TenantAuth = () => {
                 value={signupEmail}
                 onChange={(e) => handleEmailChange(e.target.value)}
                 required
-                className={emailError ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}
+                readOnly={!!invitation}
+                aria-readonly={!!invitation}
+                className={`${invitation ? 'bg-muted text-muted-foreground' : ''} ${emailError ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
               />
-              {emailError && (
+              {invitation ? (
+                <p className="text-xs text-muted-foreground">This email is linked to your invitation.</p>
+              ) : emailError ? (
                 <p className="text-xs text-destructive flex items-center gap-1">
                   <XCircle className="h-3 w-3" />
                   {emailError}
                 </p>
-              )}
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="signup-phone">Phone (Optional)</Label>
