@@ -197,6 +197,37 @@ const WebhostManagement = () => {
     },
   });
 
+  // Phase 8 — invitation-first admin creation. The invitee sets their own
+  // password via a secure, expiring, single-use link; admins never see it.
+  const inviteWebhost = useMutation({
+    mutationFn: async (data: { email: string; fullName: string }) => {
+      const { data: result, error } = await supabase.functions.invoke('send-admin-invitation', {
+        body: { email: data.email, displayName: data.fullName },
+      });
+      if (error) throw new Error(result?.error ?? error.message);
+      return result as { inviteUrl: string; emailSent: boolean; message: string };
+    },
+    onSuccess: (result) => {
+      toast({
+        title: result.emailSent ? 'Admin invitation sent' : 'Admin invitation created',
+        description: result.emailSent
+          ? 'The invitee will set their own password from the secure link.'
+          : `Share this link manually: ${result.inviteUrl}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['webhost-webhosts'] });
+      setIsDialogOpen(false);
+      setNewWebhost({ email: '', password: '', fullName: '' });
+    },
+    onError: (error: Error) => {
+      errorToast(toast, error, 'Could not send admin invitation');
+    },
+  });
+
+  const handleInviteWebhost = (e: React.FormEvent) => {
+    e.preventDefault();
+    inviteWebhost.mutate({ email: newWebhost.email, fullName: newWebhost.fullName });
+  };
+
   const handleCreateWebhost = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -385,12 +416,12 @@ const WebhostManagement = () => {
             </DialogTrigger>
             <DialogContent className="bg-card border-warning/15 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-foreground">Create New Webhost</DialogTitle>
+                <DialogTitle className="text-foreground">Invite CALQULUS ADMIN</DialogTitle>
                 <DialogDescription className="text-warning/70">
-                  Create a new webhost account and assign permissions
+                  Send a secure invitation — the invitee verifies their identity and sets their own password. You never see it.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleCreateWebhost} className="space-y-6">
+              <form onSubmit={handleInviteWebhost} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName" className="text-warning/80">Full Name</Label>
@@ -414,33 +445,16 @@ const WebhostManagement = () => {
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-warning/80">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={newWebhost.password}
-                    onChange={(e) => setNewWebhost({ ...newWebhost, password: e.target.value })}
-                    required
-                    minLength={8}
-                    className="bg-card border-warning/20 text-foreground"
-                  />
-                </div>
+                <p className="text-xs text-warning/70">
+                  New admins start with limited permissions. Elevate their level from this list after they accept.
+                </p>
 
-                <div className="border-t border-warning/30/30 pt-4">
-                  <h4 className="text-foreground font-medium mb-4">Admin Permissions</h4>
-                  <AdminPermissionsEditor
-                    permissions={newPermissions}
-                    onChange={setNewPermissions}
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-primary hover:bg-primary/90 text-white"
-                  disabled={createWebhost.isPending}
+                  disabled={inviteWebhost.isPending}
                 >
-                  {createWebhost.isPending ? 'Creating...' : 'Create Webhost Account'}
+                  {inviteWebhost.isPending ? 'Sending invitation...' : 'Send Admin Invitation'}
                 </Button>
               </form>
             </DialogContent>

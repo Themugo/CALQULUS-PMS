@@ -23,6 +23,7 @@ const ManagerOnboardingPage = lazy(() => import("@/features/onboarding/pages/Man
 
 const LegalPage = lazy(() => import("@/features/legal/LegalPage"));
 const WebhostDashboard = lazy(() => import("@/features/webhost/pages/WebhostDashboard"));
+const AdminInviteAccept = lazy(() => import("@/features/auth/pages/AdminInviteAccept"));
 const AdminApplications = lazy(() => import("@/features/webhost/pages/AdminApplications"));
 const AdminApplicationDetail = lazy(() => import("@/features/webhost/pages/AdminApplicationDetail"));
 const AdminDeployments = lazy(() => import("@/features/webhost/pages/AdminDeployments"));
@@ -188,6 +189,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/webhost/login", element: WebhostAuth },
+  { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "/agency/login", element: AgencyAuth },
   { path: "/activate", element: ActivateAccount },
   { path: "/reset-password", element: ResetPassword },
@@ -206,6 +208,7 @@ export const publicRoutes: RouteDef[] = [
 // ── Admin domain routes (when not logged in on admin.* subdomain) ───
 export const adminDomainRoutes: RouteDef[] = [
   { path: "/webhost/login", element: WebhostAuth },
+  { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "*", redirect: "/webhost/login" },
 ];
 
@@ -216,6 +219,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     fallback: "/webhost",
     routes: [
       { path: "/webhost/login", redirect: "/webhost" },
+      { path: "/webhost/invite", element: AdminInviteAccept },
       { path: "/webhost", element: WebhostDashboard, protected: true },
       { path: "/webhost/applications", element: AdminApplications, protected: true },
       { path: "/webhost/applications/:appId", element: AdminApplicationDetail, protected: true },
@@ -404,6 +408,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
   { path: "/webhost/login", element: WebhostAuth },
+  { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "/webhost", element: PageLoaderStub },
   { path: "/agency/login", element: AgencyAuth },
   { path: "/agency", element: PageLoaderStub },
@@ -427,6 +432,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/webhost/login", element: WebhostAuth },
+  { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "/agency/login", element: AgencyAuth },
   { path: "/tenant/login", element: TenantLogin },
   { path: "/tenant/signup", element: TenantSelfRegister },
