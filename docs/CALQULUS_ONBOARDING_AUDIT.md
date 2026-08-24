@@ -99,3 +99,98 @@ Each of the 24 cases was traced through the actual source (not assumed). Surface
 ---
 
 *Audit output only. No auth logic, routes, schema, or backend behavior were modified. Unresolved issues U1–U3 are documented with their owning layer for a future phase.*
+
+---
+
+# PHASE 12 — FINAL PRODUCT EXPERIENCE REVIEW (2026-08-24)
+
+**Review only — no code, auth logic, routes, or schema were modified.** This is a first-time-customer review of the entire journey starting from the CALQULUS homepage, across Manager, Landlord, Agency, Tenant, plus the Admin and WebHost invitation flows.
+
+**Verification gates (all green):**
+- `npx tsc --noEmit` → 0 errors
+- `npx eslint src` → 0 errors, 11 pre-existing `react-hooks/exhaustive-deps` warnings (unrelated to onboarding)
+- `npx vitest run` → 1063 passed, 1 skipped (86 files)
+- `npm run build` → success (precache 27 entries, ~810 KiB)
+
+---
+
+## Entry map (homepage → portal)
+
+| Role | Homepage path | Portal entry | Account creation |
+|------|---------------|--------------|------------------|
+| **Manager** | "Get started" / "Start managing" → `/auth?tab=signup` | `/auth` | **Self-serve sign-up** (email/password/name) |
+| **Landlord** | Solutions → Landlords → `/landlord/login` | `/landlord/login` | **Invite-only** — page states the manager invites you; no self-signup |
+| **Agency** | Solutions → Real Estate Agencies → `/agency/login` | `/agency/login` | **Login only** — page states the webhost/platform team provisions the account |
+| **Tenant** | Solutions → Tenants → `/tenant/login` | `/tenant/login` | **Invite-only** — "Open invitation" / "Enter invite code"; both need a manager invitation |
+| **Admin** | (not marketed) | `/webhost/invite` | **Invitation accept** — server-side token, no public registration |
+| **WebHost** | (not marketed) | `/webhost/login` | **Invitation / seeded** — no public registration |
+
+The homepage routes every role correctly and labels each portal. No homepage dead ends.
+
+---
+
+## First-time-customer journey review
+
+### Manager
+Single-page sign-up (`/auth?tab=signup`) → email verification → `/onboarding/manager` (7 steps: Account → Verification → Organization → Portfolio types → First property → Team invite → Complete) → Phase 10 completion screen reflecting real backend state. Each step has a one-line "why" ("Name the company that appears on invoices, receipts and statements"). Team invite is skippable. **Lowest-friction complete path.**
+
+### Landlord
+Invite email → accept → `/landlord/onboarding` (Account → Verification → Profile → Portfolio types → First property → Financial setup [skip] → Complete). The login page explicitly tells a cold visitor: *"Your manager invites you by email. If you have not received an invitation, contact them — this page does not create a landlord account."* No tenant PII surfaced. Profile copy explains purpose ("The name that appears on statements and payouts").
+
+### Agency
+`/agency/login` is **login-only** with a clear notice: *"Your webhost or platform team provisions the account."* Onboarding (`/agency/onboarding`) is the most explained of the four — every field names its purpose ("The name your clients and owners see on statements"; portfolio defaults "set the default for new client links — you can change it per client later"; operating-model options explain each payment flow). First client and team invite are skippable.
+
+### Tenant
+Two invite paths (`/tenant/invitation` magic link, `/tenant/signup` invite code) converge on a 3-step create-account (verify invite → profile → done). The page sets expectations: *"Both paths need a manager invitation. This page does not create a tenancy on its own."* Rent/deposit are pre-set by the manager — the tenant only accepts and sets a password. **Minimal fields, minimal friction.**
+
+### Admin / WebHost invitation
+`/webhost/invite` — invitation → identity verification (invited email) → invitee-chosen password → accept. The granted role is decided server-side; the page never sends a role. Token never displayed; per-state copy for expired/used/revoked/invalid. No public registration exists for either.
+
+---
+
+## Nine-dimension evaluation
+
+| Dimension | Verdict | Evidence |
+|-----------|---------|----------|
+| **Clarity** | Strong | Every portal labelled; invite-only portals say so and name who to contact; step copy explains purpose. |
+| **Trust** | Strong | No tenant PII to landlord/webhost; server-side roles; per-state invitation copy; real-state completion (no false checkmarks). |
+| **Speed** | Strong | Skeletons, route prefetching, React Query cache, code-split vendor chunks, 8s auth watchdog. Manager path is the shortest. |
+| **Security** | Strong | DB trigger is sole role writer; owner tier ungrantable via invite; server-side authorization; single-use time-limited invites; no user enumeration. |
+| **Visual quality** | Strong | Shared `PortalAuthShell`, per-role accent, navy+white foundation, calm Phase 10 completion ring. |
+| **Mobile UX** | Strong | viewport-fit=cover, responsive grids, min-h-11 touch targets, biometric login where supported. |
+| **Accessibility** | Good | aria-labels on toggles, `htmlFor`/`aria-invalid`/`aria-describedby` on inputs, skip-to-content on the public shell, focus-visible rings. Decorative hero grids use aria-hidden correctly. |
+| **Error recovery** | Good with one caveat | Sanitized messages on login/signup; per-state invitation recovery; auto-poll on approval. **Caveat = U3:** invitation-accept + onboarding-mutation paths still toast raw `error.message`. |
+| **Commercial readiness** | Strong | Published per-property/month KES pricing, per-tier pages, demo accounts, trial events, clear CTAs. |
+
+---
+
+## The 12 questions — answered
+
+1. **Can a non-technical property manager complete this without help?** **Yes.** One-page sign-up, plain-language 7-step flow, skippable team invite, real-state completion.
+2. **Can a landlord understand what CALQULUS needs from them?** **Yes.** Invite-only is stated up front; onboarding is short and explains each field in terms of statements/payouts.
+3. **Can an agency understand why each question is being asked?** **Yes — best of the four.** Every field names its purpose; the operating-model step explains each payment flow.
+4. **Can a tenant get into their account with minimum friction?** **Yes.** Invite → accept → set password; rent/deposit pre-set by the manager; two invite paths.
+5. **Can unauthorized users obtain elevated roles?** **No.** Role is written only by the DB trigger; the client cannot pick a role; owner tier cannot be granted via invitation; server-side authorization throughout.
+6. **Can an interrupted user resume?** **Yes** for completed steps (server-derived; Phase 10 reflects real state). **Caveat = U2:** unsubmitted in-progress field input is ephemeral and lost on refresh/close.
+7. **Are errors understandable?** **Mostly.** Login/signup errors are sanitized and clear. **Caveat = U3:** invitation-accept and onboarding-mutation errors can be raw/technical.
+8. **Are there unnecessary fields?** **No.** Tenant profile is minimal; agency profile is name-only; team invites are skippable; manager collects only what's needed to run the portfolio.
+9. **Are there dead ends?** **No** on the happy paths. Every invite-only portal names the recovery contact; every failure has a next step. (Expired-verification resend is the one gap — **U1.**)
+10. **Are there duplicated screens?** **Mostly no.** All four portal auth pages share `PortalAuthShell`; only `WebhostAuth` uses a custom hero. `LandlordAuth.tsx` is now **dead code** (superseded by `LandlordPortalAuth` on the route) — a candidate for removal, not a user-facing duplicate.
+11. **Are role permissions enforced server-side?** **Yes.** DB trigger + RLS + `ensureSignedInRole` + `ProtectedRoute`; nothing trusts client-supplied role.
+
+---
+
+## Phase 12 findings (carried forward, not fixed here)
+
+- **F1 = U1 (resend verification) — HIGH, frontend.** Still the only missing recovery path on an otherwise dead-end-free journey.
+- **F2 = U2 (unsaved field input lost on refresh) — MEDIUM, frontend.** Completed state is safe; only unsubmitted keystrokes are lost.
+- **F3 = U3 (raw error.message on invitation-accept + onboarding-mutation paths) — MEDIUM, frontend.** Clarity gap, not a silent failure.
+- **F4 — `LandlordAuth.tsx` is dead code (LOW, frontend).** Superseded by `LandlordPortalAuth` on the route; remove in a cleanup phase. Not user-facing.
+
+---
+
+## Final design standard — verdict
+
+**PREMIUM · TRUSTWORTHY · FAST · INTENTIONAL · EASY TO UNDERSTAND** — met across all four role journeys and both invitation flows. No feature was added for sophistication's sake during this review; the standard is held by *removing* friction (invite-only clarity, skippable optional steps, minimal fields) rather than adding steps.
+
+The remaining friction is concentrated in the three frontend-owned findings above (U1/U2/U3) plus one dead file. None of them block a first-time customer from completing onboarding; all are documented with their owning layer.
