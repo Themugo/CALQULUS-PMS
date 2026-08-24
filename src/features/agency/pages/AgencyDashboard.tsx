@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Handshake } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, Handshake, Wrench } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -11,7 +12,11 @@ import {
 } from "recharts";
 import AgencyLayout from "@/features/agency/components/AgencyLayout";
 import { useAgencyPortfolio } from "@/features/agency/lib/useAgencyPortfolio";
-import { AGENCY_OPS_ROUTES, AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
+import { AGENCY_OPS_ROUTES, AGENCY_ROUTES, agencyClientPath, agencyPropertyPath } from "@/features/agency/lib/agencyPaths";
+import { buildAgencyAttentionItems } from "@/features/agency/lib/agencyPortfolio";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/AuthContext";
+import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
 import { formatKes } from "@/features/landlord/lib/formatKes";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -23,19 +28,33 @@ const fmtCompact = (n: number) =>
   new Intl.NumberFormat("en-KE", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 
 export default function AgencyDashboard() {
+  const { user } = useAuth();
   const { data, isLoading, isError, refetch } = useAgencyPortfolio();
 
-  const attention = [
-    data && data.outstanding > 0
-      ? { label: "Arrears", value: formatKes(data.outstanding), detail: `${data.overdueInvoices} overdue invoice${data.overdueInvoices === 1 ? "" : "s"}`, href: AGENCY_ROUTES.billing }
-      : null,
-    data && data.expiringLeases > 0
-      ? { label: "Leases", value: `${data.expiringLeases} expiring`, detail: "Review before they lapse", href: AGENCY_OPS_ROUTES.leases }
-      : null,
-    data && data.unlinkedCount > 0
-      ? { label: "Unlinked buildings", value: `${data.unlinkedCount} without a client`, detail: "Link a landlord to the property", href: AGENCY_ROUTES.clients }
-      : null,
-  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
+  const attention = data
+    ? buildAgencyAttentionItems({
+        outstanding: data.outstanding,
+        overdueInvoices: data.overdueInvoices,
+        expiringLeases: data.expiringLeases,
+        unlinkedCount: data.unlinkedCount,
+        formatAmount: formatKes,
+        hrefs: { billing: AGENCY_ROUTES.billing, leases: AGENCY_OPS_ROUTES.leases, clients: AGENCY_ROUTES.clients },
+      })
+    : [];
+
+  const { data: openMaintenance = 0 } = useQuery({
+    queryKey: ["agency-dashboard-open-maintenance", user?.id],
+    enabled: Boolean(user?.id),
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("maintenance_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("manager_id", user!.id)
+        .in("status", ["pending", "in_progress"]);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
   return (
     <AgencyLayout
@@ -107,6 +126,20 @@ export default function AgencyDashboard() {
                 </Button>
               </div>
             ))}
+            {openMaintenance > 0 ? (
+              <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold">{openMaintenance} open</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Maintenance requests across client buildings</p>
+                </div>
+                <Button size="sm" variant="outline" className="min-h-11 shrink-0" asChild>
+                  <Link to={AGENCY_OPS_ROUTES.maintenance}>
+                    <Wrench className="mr-1.5 h-3.5 w-3.5" />
+                    Open maintenance
+                  </Link>
+                </Button>
+              </div>
+            ) : null}
           </div>
         )}
       </section>
@@ -126,7 +159,7 @@ export default function AgencyDashboard() {
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={fmtCompact} width={44} />
                   <Tooltip
                     contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
-                    formatter={(value, name) => [formatKes(Number(value ?? 0)), name === "paid" ? "Collected" : "Pending"]}
+                    formatter={(value, name) => [formatKes(Number(value ?? 0)), name === "paid" ? "Collected" : "Outstanding"]}
                   />
                   <Area type="monotone" dataKey="paid" stroke="hsl(var(--navy-mid))" strokeWidth={2} fill="transparent" />
                   <Area type="monotone" dataKey="pending" stroke="hsl(var(--warning))" strokeWidth={2} fill="transparent" />
@@ -134,6 +167,14 @@ export default function AgencyDashboard() {
               </ResponsiveContainer>
             </div>
           )}
+          <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-[hsl(var(--navy-mid))]" /> Collected
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-[hsl(var(--warning))]" /> Outstanding
+            </span>
+          </div>
         </section>
 
         <section className="rounded-lg border border-border bg-card p-5 xl:col-span-5">
@@ -163,7 +204,9 @@ export default function AgencyDashboard() {
                 {data!.clients.slice(0, 6).map((client) => (
                   <TableRow key={client.id}>
                     <TableCell>
-                      <p className="font-medium truncate">{client.name}</p>
+                      <Link to={agencyClientPath(client.id)} className="font-medium hover:underline truncate block">
+                        {client.name}
+                      </Link>
                       <p className="text-xs text-muted-foreground">{client.propertyCount} propert{client.propertyCount === 1 ? "y" : "ies"}</p>
                     </TableCell>
                     <TableCell className={`text-right text-sm ${occupancyRateColor(client.occupancyRate)}`}>{client.occupancyRate}%</TableCell>
@@ -176,12 +219,60 @@ export default function AgencyDashboard() {
         </section>
       </div>
 
-      {(data?.properties.length ?? 0) > 0 && (
-        <p className="text-xs text-muted-foreground">
-          Open a building from{" "}
-          <Link className="underline" to={AGENCY_ROUTES.portfolio}>Portfolio</Link>.
-        </p>
-      )}
+      <section className="mb-6 rounded-lg border border-border bg-card p-5">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold">Property performance</h2>
+            <p className="text-xs text-muted-foreground">Occupancy and collections by building</p>
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to={AGENCY_ROUTES.portfolio}>Portfolio</Link>
+          </Button>
+        </div>
+        {isLoading ? (
+          <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}</div>
+        ) : (data?.properties.length ?? 0) === 0 ? (
+          <p className="py-8 text-sm text-muted-foreground">No buildings on the book yet.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Property</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead className="text-right">Units</TableHead>
+                <TableHead className="text-right">Occ.</TableHead>
+                <TableHead className="text-right">Collected</TableHead>
+                <TableHead className="text-right">Outstanding</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data!.properties.slice(0, 5).map((property) => (
+                <TableRow key={property.id}>
+                  <TableCell>
+                    <Link to={agencyPropertyPath(property.id)} className="font-medium hover:underline truncate block">
+                      {property.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{property.clientName}</TableCell>
+                  <TableCell className="text-right text-sm">{property.occupied}/{property.units}</TableCell>
+                  <TableCell className={`text-right text-sm ${occupancyRateColor(property.occupancyRate)}`}>
+                    {property.occupancyRate}%
+                  </TableCell>
+                  <TableCell className="text-right text-sm font-medium">{formatKes(property.collectedMtd)}</TableCell>
+                  <TableCell className={`text-right text-sm ${property.outstanding > 0 ? "text-destructive" : ""}`}>
+                    {formatKes(property.outstanding)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </section>
+
+      <section className="rounded-lg border border-border bg-card p-5">
+        <h2 className="mb-3 text-sm font-semibold">Recent activity</h2>
+        <ManagerActivityLog compact limit={8} />
+      </section>
     </AgencyLayout>
   );
 }

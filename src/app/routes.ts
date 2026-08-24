@@ -80,6 +80,7 @@ const LandlordOnboardingPage = lazy(() => import("@/features/onboarding/pages/La
 const AgencyOnboardingPage = lazy(() => import("@/features/onboarding/pages/AgencyOnboardingPage"));
 const AgencyDashboard = lazy(() => import("@/features/agency/pages/AgencyDashboard"));
 const AgencyClients = lazy(() => import("@/features/agency/pages/AgencyClients"));
+const AgencyClientDetail = lazy(() => import("@/features/agency/pages/AgencyClientDetail"));
 const AgencyPortfolio = lazy(() => import("@/features/agency/pages/AgencyPortfolio"));
 const AgencyPropertyPage = lazy(() => import("@/features/agency/pages/AgencyPropertyPage"));
 const AgencyProperties = lazy(() => import("@/features/agency/pages/AgencyProperties"));
@@ -324,6 +325,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/agency", element: AgencyDashboard, protected: true },
       { path: "/agency/onboarding", element: AgencyOnboardingPage, protected: true },
       { path: "/agency/clients", element: AgencyClients, protected: true },
+      { path: "/agency/clients/:id", element: AgencyClientDetail, protected: true },
       { path: "/agency/portfolio", element: AgencyPortfolio, protected: true },
       { path: "/agency/properties/:id", element: AgencyPropertyPage, protected: true },
       { path: "/agency/properties", element: AgencyProperties, protected: true },

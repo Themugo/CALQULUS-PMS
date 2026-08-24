@@ -26,6 +26,10 @@ export function agencyPropertyPath(propertyId: string): string {
   return `/agency/properties/${propertyId}`;
 }
 
+export function agencyClientPath(clientId: string): string {
+  return `/agency/clients/${encodeURIComponent(clientId)}`;
+}
+
 export function isAgencyPublicPath(pathname: string): boolean {
   return pathname === AGENCY_LOGIN || pathname.startsWith(`${AGENCY_LOGIN}/`);
 }
