@@ -58,7 +58,7 @@ serve(async (req: Request): Promise<Response> => {
     // ── Resolve the invitation server-side ────────────────────────────
     const { data: inviteRows } = await supabaseAdmin
       .from("admin_invitations")
-      .select("id, email, display_name, status, expires_at, invited_by")
+      .select("id, email, display_name, admin_type, status, expires_at, invited_by")
       .eq("token", invitationToken)
       .limit(1);
 
@@ -135,17 +135,47 @@ serve(async (req: Request): Promise<Response> => {
       return json(req, { error: `Failed to grant admin role: ${roleError.message}` }, 500);
     }
 
-    // Baseline admin permissions (limited until an owner/business elevates).
+    // ── Seed the operator tier server-side (Phase 9) ──────────────────
+    // The platform_admins row is what makes this a full operator. The tier
+    // comes from the invitation (chosen by the inviter), never the client,
+    // and can never be 'owner' — the DB CHECK enforces business|admin.
+    const operatorTier = invite.admin_type === "business" ? "business" : "admin";
+    await supabaseAdmin
+      .from("platform_admins")
+      .upsert(
+        {
+          user_id: userId,
+          admin_type: operatorTier,
+          display_name: invite.display_name,
+          email: invite.email,
+          can_create_admins: operatorTier === "business",
+          can_manage_managers: true,
+          can_manage_billing: operatorTier === "business",
+          can_manage_properties: true,
+          can_manage_landlords: true,
+          can_view_activity_logs: true,
+          can_manage_platform_settings: operatorTier === "business",
+          is_immutable: false,
+          suspended: false,
+          created_by: invite.invited_by,
+        },
+        { onConflict: "user_id" },
+      )
+      .then(() => undefined, () => undefined);
+
+    // Baseline admin permissions, aligned to the operator tier. 'business'
+    // operators can manage billing and create further admins; 'admin'
+    // operators start limited until an owner/business elevates them.
     await supabaseAdmin
       .from("admin_permissions")
       .upsert(
         {
           user_id: userId,
-          admin_level: "limited_admin",
-          can_create_webhosts: false,
-          can_manage_managers: false,
-          can_manage_billing: false,
-          can_manage_properties: false,
+          admin_level: operatorTier === "business" ? "admin" : "limited_admin",
+          can_create_webhosts: operatorTier === "business",
+          can_manage_managers: true,
+          can_manage_billing: operatorTier === "business",
+          can_manage_properties: true,
           can_manage_tenants: false,
           can_view_activity_logs: true,
         },
@@ -171,7 +201,7 @@ serve(async (req: Request): Promise<Response> => {
       action: "admin_invitation_accepted",
       entity_type: "admin_invitations",
       entity_id: invite.id,
-      metadata: { invited_by: invite.invited_by, email: invite.email },
+      metadata: { invited_by: invite.invited_by, email: invite.email, admin_type: operatorTier },
     }).then(() => undefined, () => undefined);
 
     return json(req, {

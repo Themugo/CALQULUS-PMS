@@ -23,6 +23,7 @@ interface AdminInvitation {
   email: string;
   display_name: string;
   inviter_name: string | null;
+  admin_type: string | null;
   status: string;
   expires_at: string;
 }
@@ -155,6 +156,7 @@ const AdminInviteAccept = () => {
     email: invitation?.email ?? null,
     displayName: invitation?.display_name ?? null,
     inviterName: invitation?.inviter_name ?? null,
+    adminType: invitation?.admin_type ?? null,
   });
 
   return (

@@ -19,6 +19,7 @@ const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 interface SendAdminInviteRequest {
   email?: string;
   displayName?: string;
+  adminType?: string;
 }
 
 function escapeHtml(unsafe: string): string {
@@ -38,11 +39,15 @@ serve(
       rateLimit: { maxPerHour: 10, failClosed: false },
     },
     async (req, ctx) => {
-      const { email, displayName }: SendAdminInviteRequest = await req.json();
+      const { email, displayName, adminType }: SendAdminInviteRequest = await req.json();
 
       if (!email || !displayName?.trim()) {
         throw errorResponse("email and displayName are required", 400);
       }
+
+      // Operator tier is chosen by the inviter at issuance. 'owner' can
+      // never be granted through an invitation — there is exactly one owner.
+      const tier = adminType === "business" ? "business" : "admin";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         throw errorResponse("Invalid email address", 400);
       }
@@ -94,6 +99,7 @@ serve(
         .insert({
           email: email.toLowerCase(),
           display_name: displayName.trim(),
+          admin_type: tier,
           invited_by: ctx.user!.id,
         })
         .select("id, token, expires_at")
@@ -114,7 +120,7 @@ serve(
         action: "admin_invitation_sent",
         entity_type: "admin_invitations",
         entity_id: invitation.id,
-        metadata: { email: email.toLowerCase(), display_name: displayName.trim() },
+        metadata: { email: email.toLowerCase(), display_name: displayName.trim(), admin_type: tier },
       }).then(() => undefined, () => undefined);
 
       let emailSent = false;

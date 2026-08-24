@@ -45,12 +45,19 @@ export interface AdminInvitationView {
   email: string | null;
   displayName: string | null;
   inviterName: string | null;
+  adminType?: string | null;
 }
 
-/** Rows for the invitation card: email + inviter only (never token/status). */
+/** Human label for the operator tier the invitee is accepting. */
+export function adminTierLabel(adminType: string | null | undefined): string {
+  return adminType === "business" ? "Business operator" : "Admin operator";
+}
+
+/** Rows for the invitation card: email + tier + inviter (never token/status). */
 export function buildAdminInvitationSummary(inv: AdminInvitationView): { label: string; value: string }[] {
   const rows: { label: string; value: string }[] = [];
   if (inv.email) rows.push({ label: "Admin email", value: inv.email });
+  if (inv.adminType) rows.push({ label: "Operator access", value: adminTierLabel(inv.adminType) });
   if (inv.inviterName) rows.push({ label: "Invited by", value: inv.inviterName });
   return rows;
 }
