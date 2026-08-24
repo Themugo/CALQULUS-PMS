@@ -77,12 +77,12 @@ export default function TenantHome({
           <p className="mt-1 text-sm text-muted-foreground">Nothing due right now</p>
         )}
         <Button
-          className="mt-5 min-h-12 w-full text-base font-semibold"
+          className="mt-5 min-h-12 w-full text-base font-semibold bg-[var(--portal-accent)] text-white hover:bg-[var(--portal-accent)] hover:brightness-110"
           size="lg"
           disabled={payDisabled || !hasBalance}
           onClick={onPayRent}
         >
-          {hasBalance ? "Pay rent" : "All paid"}
+          {hasBalance ? "PAY RENT" : "All paid"}
         </Button>
       </section>
 

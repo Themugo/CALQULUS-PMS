@@ -356,6 +356,15 @@ Tier 3: Tenants
 - **Portal accents aligned to six-identity spec:** Manager Blue (unchanged), Landlord **Emerald** #2F9B74, Agency **Amber** #C08A37, Tenant **Violet** #7C5FD3, Admin/WebHost **Teal** #2C9183. Tokens and CSS variables both updated; accent stripes remain 2px-only.
 - `designTokens.test.ts` lockstep asserts new hexes + CSS vars. 969/970 tests pass; no layout changes.
 
+## Tenant Service Portal (Phase 7, 2026-08-24)
+- Tenant stays a service portal, never an enterprise dashboard. Answers: where do I live, what do I owe, when is it due, can I pay, do I have a maintenance issue, where are my documents.
+- Header (`TenantLayout`): CALQULUS wordmark + Notifications (`TenantNotificationBell`) + Profile link. Header cluster shows whenever `userRole` resolves (dev guest has role without `user`).
+- Home (`TenantHome`): greeting → Your home (property/unit) → Amount due + due date → dominant full-width **PAY RENT** painted with portal accent violet (`bg-[var(--portal-accent)]`), then shortcut row + recent activity. No charts/KPI grids/filters; single column `max-w-xl`.
+- Mobile nav labels: Home/Bills/Fix/Docs/Me ("Bills" renamed from "Pay").
+- Maintenance (`TenantMaintenance`): full-width "Report a problem" first, then Active/Past lists with issue/unit/status/date/updates.
+- Payments (`PaymentHistory` + `TenantBillsHub`): amount/due date/status/history/receipt; removed manager-facing copy ("Manager keys plug in at Settings → Payments").
+- Tests: `src/test/tenantPortalPhase7.test.ts` (13) — nav, header, PAY RENT accent, no charts, report-primary maintenance, payments columns, no manager internals, service-only routes. Older `responsiveCertification.test.ts` contract updated to new PAY RENT / Bills strings. Suite: 1117 passed / 1 skipped.
+
 ## Onboarding Completion + Activation (Phase 10, 2026-08-24)
 - **Audit**: Manager/Landlord/Agency onboarding pages each had a thin "complete" step (single check icon + one line + dashboard button). Facts were already real backend queries — kept.
 - **Shared completion experience**: `src/features/onboarding/components/OnboardingCompletion.tsx` + pure model `src/features/onboarding/lib/completion.ts` (`buildCompletionModel`, per-role `*CompletionItems` + `*Recommendations`).

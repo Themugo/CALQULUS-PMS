@@ -256,7 +256,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         </div>
 
         <p className="text-xs text-center text-muted-foreground">
-          Instant receipt by email & SMS after M-Pesa confirms · Manager keys plug in at Settings → Payments
+          Instant receipt by email & SMS after M-Pesa confirms.
         </p>
       </CardContent>
     </Card>

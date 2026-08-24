@@ -11,6 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthContext";
+import TenantNotificationBell from "@/features/tenant-portal/components/TenantNotificationBell";
 import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
@@ -31,7 +32,7 @@ const DESK_NAV = [
 
 const MOBILE_NAV = [
   { label: "Home", href: TENANT_ROUTES.dashboard, icon: Home },
-  { label: "Pay", href: TENANT_ROUTES.payments, icon: CreditCard },
+  { label: "Bills", href: TENANT_ROUTES.payments, icon: CreditCard },
   { label: "Fix", href: TENANT_ROUTES.maintenance, icon: Wrench },
   { label: "Docs", href: TENANT_ROUTES.documents, icon: FileText },
   { label: "Me", href: TENANT_ROUTES.profile, icon: User },
@@ -124,18 +125,29 @@ export default function TenantLayout({
       </aside>
 
       <div className="flex min-h-screen min-w-0 flex-col md:ml-56">
-        <header className="sticky top-0 z-30 flex h-14 min-w-0 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl md:px-6">
+        <header className="sticky top-0 z-30 flex h-14 min-w-0 items-center justify-between gap-2 border-b border-border bg-background/90 px-4 backdrop-blur-xl md:px-6">
           <BrandMark size="sm" showWordmark subtitle="Tenant" className="min-w-0 flex-1 md:hidden" />
           <p className="hidden truncate text-sm text-muted-foreground md:block">{title}</p>
-          {user ? (
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground hover:text-destructive md:hidden"
-              aria-label="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
+          {userRole ? (
+            <div className="flex items-center gap-1">
+              {user ? <TenantNotificationBell /> : null}
+              <Link
+                to={TENANT_ROUTES.profile}
+                aria-label="Profile"
+                aria-current={isNavActive(location.pathname, TENANT_ROUTES.profile) ? "page" : undefined}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <User className="h-5 w-5" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive md:hidden"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           ) : null}
         </header>
 

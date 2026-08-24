@@ -137,7 +137,7 @@ const TenantNotificationBell: React.FC = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-9 w-9"
+          className="relative min-h-11 min-w-11"
           aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
         >
           {unread > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}

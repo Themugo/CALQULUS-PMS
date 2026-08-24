@@ -27,14 +27,14 @@ describe("Phase 11 responsive certification contracts", () => {
   it("gives tenant amounts a wrapping tabular display", () => {
     const home = src("src/features/tenant-portal/components/TenantHome.tsx");
     expect(home).toContain("amount-display");
-    expect(home).toContain("Pay rent");
+    expect(home).toContain("PAY RENT");
     expect(home).not.toMatch(/text-4xl font-bold tracking-tight/);
   });
 
   it("keeps all five tenant mobile nav labels visible", () => {
     const layout = src("src/features/tenant-portal/components/TenantLayout.tsx");
     expect(layout).toContain('label: "Home"');
-    expect(layout).toContain('label: "Pay"');
+    expect(layout).toContain('label: "Bills"');
     expect(layout).toContain('label: "Fix"');
     expect(layout).toContain('label: "Docs"');
     expect(layout).toContain('label: "Me"');
