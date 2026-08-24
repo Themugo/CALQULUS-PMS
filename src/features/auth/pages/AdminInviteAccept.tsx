@@ -6,6 +6,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
+import { errorToast } from '@/shared/lib/errorToast';
 import { Shield, CheckCircle, Eye, EyeOff, Lock } from 'lucide-react';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
@@ -86,11 +87,7 @@ const AdminInviteAccept = () => {
       if (error) throw new Error(data?.error ?? error.message);
       setAccepted(true);
     } catch (err) {
-      toast({
-        title: 'Could not accept invitation',
-        description: err instanceof Error ? err.message : 'Something went wrong. Try again or ask for a new invitation.',
-        variant: 'destructive',
-      });
+      errorToast('Could not accept invitation', err, 'Something went wrong. Try again or ask for a new invitation.');
     } finally {
       setIsSubmitting(false);
     }

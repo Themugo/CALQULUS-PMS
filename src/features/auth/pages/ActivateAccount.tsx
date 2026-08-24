@@ -6,6 +6,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/shared/hooks/use-toast";
+import { errorToast } from "@/shared/lib/errorToast";
 import { Loader2, Eye, EyeOff, Check, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
@@ -95,8 +96,7 @@ const ActivateAccount = () => {
         throw new Error(data?.error || "Activation failed");
       }
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to activate account";
-      toast({ title: errorMessage, variant: "destructive" });
+      errorToast("Could not activate account", err, "Activation failed. Try again or ask your manager for a new link.");
     } finally {
       setIsLoading(false);
     }

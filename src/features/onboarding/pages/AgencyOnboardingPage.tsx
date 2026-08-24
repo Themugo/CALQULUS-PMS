@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useToast } from "@/shared/hooks/use-toast";
+import { errorToast } from "@/shared/lib/errorToast";
 import AgencyLayout from "@/features/agency/components/AgencyLayout";
 import { AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
 import { Button } from "@/shared/components/ui/button";
@@ -23,6 +24,8 @@ import {
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
 import { buildCompletionModel, agencyCompletionItems, agencyRecommendations } from "@/features/onboarding/lib/completion";
+import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
+import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
 const ORDER = AGENCY_ONBOARDING_STEPS.map((s) => s.id) as readonly string[];
 
@@ -76,14 +79,13 @@ export default function AgencyOnboardingPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [stepIdx, setStepIdx] = useState(0);
-  const [agencyName, setAgencyName] = useState("");
+  const userId = user?.id ?? null;
+  const [agencyName, setAgencyName, clearAgencyNameDraft] = useOnboardingDraft("agency-name", userId);
   const [focus, setFocus] = useState<AgencyPortfolioFocus | null>(null);
   const [collectionModel, setCollectionModel] = useState<AgencyCollectionModel | null>(null);
-  const [clientName, setClientName] = useState("");
-  const [teamEmail, setTeamEmail] = useState("");
+  const [clientName, setClientName, clearClientNameDraft] = useOnboardingDraft("client-name", userId);
+  const [teamEmail, setTeamEmail, clearTeamEmailDraft] = useOnboardingDraft("team-email", userId);
   const [isSaving, setIsSaving] = useState(false);
-
-  const userId = user?.id ?? null;
 
   const { data: facts, isLoading, error } = useQuery<AgencyFactsRow>({
     queryKey: ["agency-onboarding-facts", userId],
@@ -93,7 +95,7 @@ export default function AgencyOnboardingPage() {
 
   useEffect(() => {
     if (facts?.agencyName) setAgencyName((current) => current || facts.agencyName!);
-  }, [facts?.agencyName]);
+  }, [facts?.agencyName, setAgencyName]);
 
   const completedIds = useMemo(() => {
     if (!facts) return new Set<string>();
@@ -120,11 +122,12 @@ export default function AgencyOnboardingPage() {
       if (upsertError) throw upsertError;
     },
     onSuccess: () => {
+      clearAgencyNameDraft();
       toast({ title: "Saved", description: "Agency profile saved." });
       skipStep();
     },
     onError: (mutationError) => {
-      toast({ title: "Could not save profile", description: mutationError instanceof Error ? mutationError.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save profile", mutationError, "Check your connection and try again.");
     },
   });
 
@@ -138,7 +141,7 @@ export default function AgencyOnboardingPage() {
       skipStep();
     },
     onError: (mutationError) => {
-      toast({ title: "Could not save portfolio setup", description: mutationError instanceof Error ? mutationError.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save portfolio setup", mutationError, "Check your connection and try again.");
     },
   });
 
@@ -150,11 +153,12 @@ export default function AgencyOnboardingPage() {
       await saveOnboardingConfig(userId!, resolvedCompanyName, { firstClientName: clientName.trim() });
     },
     onSuccess: () => {
+      clearClientNameDraft();
       toast({ title: "Saved", description: "Client note saved — link the owner when you add your first property." });
       skipStep();
     },
     onError: (mutationError) => {
-      toast({ title: "Could not save client", description: mutationError instanceof Error ? mutationError.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save client", mutationError, "Check your connection and try again.");
     },
   });
 
@@ -172,11 +176,12 @@ export default function AgencyOnboardingPage() {
     },
     onSuccess: () => {
       setTeamEmail("");
+      clearTeamEmailDraft();
       toast({ title: "Invite sent", description: "The teammate will get an email with the invitation link." });
       skipStep();
     },
     onError: (mutationError) => {
-      toast({ title: "Could not invite team member", description: mutationError instanceof Error ? mutationError.message : "Try again.", variant: "destructive" });
+      errorToast("Could not invite team member", mutationError, "Check the email address and try again.");
     },
   });
 
@@ -254,11 +259,12 @@ export default function AgencyOnboardingPage() {
         {currentId === "verification" ? (
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading text-lg font-semibold">Verify your email</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Check your inbox for a verification link.</p>
-            <div className="mt-5 flex gap-2">
+            <p className="mt-1 text-sm text-muted-foreground">Check your inbox for a verification link. If it hasn't arrived, resend it below.</p>
+            <div className="mt-5 flex flex-wrap gap-2">
               <Button variant="outline" onClick={skipStep} className="gap-1.5">
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
+              <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/agency/onboarding`} />
               <Button variant="ghost" onClick={skipStep} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>

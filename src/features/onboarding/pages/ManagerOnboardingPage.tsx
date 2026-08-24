@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useToast } from "@/shared/hooks/use-toast";
+import { errorToast } from "@/shared/lib/errorToast";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -14,8 +15,10 @@ import { Check, Loader2, ArrowLeft, ArrowRight, SkipForward, Building2, Users, H
 import { cn } from "@/shared/lib/utils";
 import { MANAGER_ONBOARDING_STEPS, PROPERTY_GROUPS, type ManagerOnboardingStepId } from "@/features/onboarding/components/manager/ManagerOnboardingSteps";
 import { useManagerOnboardingState } from "@/features/onboarding/hooks/useManagerOnboardingState";
+import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
 import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
 import { buildCompletionModel, managerCompletionItems, managerRecommendations } from "@/features/onboarding/lib/completion";
+import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
 const ORDER = MANAGER_ONBOARDING_STEPS.map((s) => s.id) as readonly ManagerOnboardingStepId[];
 
@@ -25,12 +28,13 @@ export default function ManagerOnboardingPage() {
   const { user } = useAuth();
   const { managerId } = useManagerScope();
   const queryClient = useQueryClient();
+  const userId = user?.id ?? null;
   const [stepIdx, setStepIdx] = useState(0);
-  const [organizationName, setOrganizationName] = useState("");
+  const [organizationName, setOrganizationName, clearOrganizationDraft] = useOnboardingDraft("organization", userId);
   const [orgSaving, setOrgSaving] = useState(false);
   const [portfolioGroups, setPortfolioGroups] = useState<string[]>([]);
   const [portfolioSaving, setPortfolioSaving] = useState(false);
-  const [teamEmail, setTeamEmail] = useState("");
+  const [teamEmail, setTeamEmail, clearTeamDraft] = useOnboardingDraft("team-email", userId);
   const [teamSaving, setTeamSaving] = useState(false);
 
   const { progress, isLoading, error, refetch } = useManagerOnboardingState();
@@ -58,12 +62,13 @@ export default function ManagerOnboardingPage() {
     },
     onSuccess: async () => {
       setOrganizationName("");
+      clearOrganizationDraft();
       toast({ title: "Saved", description: "Your organization name has been saved." });
       await refetch();
       skipStep();
     },
     onError: (error) => {
-      toast({ title: "Could not save organization", description: error instanceof Error ? error.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save organization", error, "Check your connection and try again.");
     },
   });
 
@@ -85,7 +90,7 @@ export default function ManagerOnboardingPage() {
       skipStep();
     },
     onError: (error) => {
-      toast({ title: "Could not save portfolio", description: error instanceof Error ? error.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save portfolio", error, "Check your connection and try again.");
     },
   });
 
@@ -104,12 +109,13 @@ export default function ManagerOnboardingPage() {
     },
     onSuccess: async () => {
       setTeamEmail("");
+      clearTeamDraft();
       toast({ title: "Invite sent", description: "The team member will get an email with the invitation link." });
       await refetch();
       skipStep();
     },
     onError: (error) => {
-      toast({ title: "Could not invite team member", description: error instanceof Error ? error.message : "Try again.", variant: "destructive" });
+      errorToast("Could not invite team member", error, "Check the email address and try again.");
     },
   });
 
@@ -212,10 +218,11 @@ export default function ManagerOnboardingPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Check your inbox for a verification link. If you haven't received it, you can resend or use a different email.
             </p>
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               <Button variant="outline" onClick={skipStep} className="gap-1.5">
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
+              <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/onboarding/manager`} />
               <Button variant="ghost" onClick={skipStep} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>

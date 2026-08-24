@@ -10,6 +10,7 @@ import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
+import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import {
@@ -191,7 +192,7 @@ const TenantAuth = () => {
           title: 'Signup failed',
           description: authError.message.includes('already registered')
             ? 'This email is already registered. Please login instead.'
-            : authError.message,
+            : sanitizeAuthError(authError.message),
           variant: 'destructive',
         });
         setIsSubmitting(false);

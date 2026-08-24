@@ -153,10 +153,10 @@ if (demoPanel) {
   }
 }
 
-const landlordAuthPath = join(root, "src", "features", "auth", "pages", "LandlordAuth.tsx");
-const landlordAuth = read(landlordAuthPath);
+const landlordAuthPath = join(root, "src", "features", "auth", "pages", "LandlordPortalAuth.tsx");
+const landlordAuth = readIfExists(landlordAuthPath) ?? "";
 if (/Demo@2026|demo\.[a-z0-9_-]+@calqulusrms\.ink/i.test(landlordAuth) && !/VITE_ENABLE_PUBLIC_DEMO/.test(landlordAuth)) {
-  failures.push("LandlordAuth exposes demo credentials without VITE_ENABLE_PUBLIC_DEMO gating");
+  failures.push("LandlordPortalAuth exposes demo credentials without VITE_ENABLE_PUBLIC_DEMO gating");
 }
 
 const forbiddenProductionUrls = [
@@ -281,11 +281,19 @@ if (!/path:\s*"\/tenant\/invitation"/.test(routesSource)) {
   failures.push("Tenant invitation acceptance route must be public");
 }
 
-for (const loginPage of ["Auth.tsx", "LandlordAuth.tsx", "TenantLogin.tsx", "WebhostAuth.tsx"]) {
+for (const loginPage of ["Auth.tsx", "TenantLogin.tsx", "WebhostAuth.tsx"]) {
   const loginSource = read(join(root, "src", "features", "auth", "pages", loginPage));
   if (!/ensureSignedInRole/.test(loginSource)) {
     failures.push(`${loginPage} must validate the signed-in role for its portal`);
   }
+}
+
+// LandlordPortalAuth guards by redirecting every signed-in role to its own
+// portal (landlords to /landlord/dashboard, everyone else away) instead of
+// calling ensureSignedInRole.
+const landlordPortalAuth = read(join(root, "src", "features", "auth", "pages", "LandlordPortalAuth.tsx"));
+if (!/userRole\.role\s*===\s*'landlord'/.test(landlordPortalAuth)) {
+  failures.push("LandlordPortalAuth must route the signed-in role to the correct portal");
 }
 
 if (demoPanel) {

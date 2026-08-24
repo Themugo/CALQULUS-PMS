@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useToast } from "@/shared/hooks/use-toast";
+import { errorToast } from "@/shared/lib/errorToast";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -15,6 +16,8 @@ import { cn } from "@/shared/lib/utils";
 import { LANDLORD_ONBOARDING_STEPS, LANDLORD_PROPERTY_TYPES } from "@/features/onboarding/components/landlord/LandlordOnboardingSteps";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
+import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
 const ORDER = LANDLORD_ONBOARDING_STEPS.map((s) => s.id) as readonly string[];
 
@@ -48,10 +51,9 @@ export default function LandlordOnboardingPage() {
   const [stepIdx, setStepIdx] = useState(0);
   const [displayName, setDisplayName] = useState("");
   const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
-  const [orgName, setOrgName] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-
   const userId = user?.id ?? null;
+  const [orgName, setOrgName, clearOrgNameDraft] = useOnboardingDraft("profile-name", userId);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: facts, isLoading, error } = useQuery<LandlordFacts>({
     queryKey: ["landlord-onboarding-facts", userId],
@@ -84,11 +86,12 @@ export default function LandlordOnboardingPage() {
       if (error) throw error;
     },
     onSuccess: () => {
+      clearOrgNameDraft();
       toast({ title: "Saved", description: "Profile saved." });
       skipStep();
     },
     onError: (error) => {
-      toast({ title: "Could not save profile", description: error instanceof Error ? error.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save profile", error, "Check your connection and try again.");
     },
   });
 
@@ -109,7 +112,7 @@ export default function LandlordOnboardingPage() {
       skipStep();
     },
     onError: (error) => {
-      toast({ title: "Could not save portfolio", description: error instanceof Error ? error.message : "Try again.", variant: "destructive" });
+      errorToast("Could not save portfolio", error, "Check your connection and try again.");
     },
   });
 
@@ -198,11 +201,12 @@ export default function LandlordOnboardingPage() {
         {currentId === "verification" ? (
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading text-lg font-semibold">Verify your email</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Check your inbox for a verification link to keep your portfolio secure.</p>
-            <div className="mt-5 flex gap-2">
+            <p className="mt-1 text-sm text-muted-foreground">Check your inbox for a verification link to keep your portfolio secure. If it hasn't arrived, resend it below.</p>
+            <div className="mt-5 flex flex-wrap gap-2">
               <Button variant="outline" onClick={skipStep} className="gap-1.5">
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
+              <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/landlord/onboarding`} />
               <Button variant="ghost" onClick={skipStep} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>

@@ -194,3 +194,33 @@ Two invite paths (`/tenant/invitation` magic link, `/tenant/signup` invite code)
 **PREMIUM Â· TRUSTWORTHY Â· FAST Â· INTENTIONAL Â· EASY TO UNDERSTAND** â€” met across all four role journeys and both invitation flows. No feature was added for sophistication's sake during this review; the standard is held by *removing* friction (invite-only clarity, skippable optional steps, minimal fields) rather than adding steps.
 
 The remaining friction is concentrated in the three frontend-owned findings above (U1/U2/U3) plus one dead file. None of them block a first-time customer from completing onboarding; all are documented with their owning layer.
+
+---
+
+# PHASE 13 — Findings Remediation (2026-08-24)
+
+All four findings from Phases 11–12 are fixed. No auth logic, routes, or schema changed.
+
+## U1 — Resend verification (HIGH) — FIXED
+New `ResendVerificationButton` (`src/features/auth/components/ResendVerificationButton.tsx`) calls `supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo } })` with a 60-second client cooldown and enumeration-safe success copy ("If this address has an unverified account, a new link is on its way."). Mounted in the verification step of all three onboarding flows (manager `/onboarding/manager`, agency `/agency/onboarding`, landlord `/landlord/onboarding`) with the matching `emailRedirectTo`. The manager step's "you can resend" copy is now backed by a real control.
+
+## U2 — Unsaved field input lost on refresh/close (MEDIUM) — FIXED
+New `useOnboardingDraft` hook (`src/features/onboarding/hooks/useOnboardingDraft.ts`) wraps the existing `formDraft` sessionStorage helpers. Free-text fields now survive refresh and accidental close, keyed per user (`onboarding:{userId}:{field}`) so drafts never leak between accounts on a shared browser, session-scoped so they do not persist indefinitely, and cleared on successful submit so a stale draft never shadows server state. Wired into: manager (organization name, team email), agency (agency name, client name, team email), landlord (profile name).
+
+## U3 — Raw backend error text reaching users (MEDIUM) — FIXED
+All raw `error.message` toasts replaced with the existing `errorToast` helper, which logs the raw error to Sentry/`activity_logs` and shows only `toUserFacingError` output (short curated server messages pass through; PostgREST/RLS/JWT/network noise gets a friendly fallback). Covered: 3 manager onboarding mutations, 4 agency onboarding mutations, 2 landlord onboarding mutations, `AdminInviteAccept`, `ActivateAccount` (raw message was being shown as the toast title), and the `TenantAuth` signup fallback (now `sanitizeAuthError`).
+
+## F4 — Dead `LandlordAuth.tsx` (LOW) — FIXED
+File deleted; `/landlord/login` routes to `LandlordPortalAuth` (role-aware redirect guard). `scripts/audit-production.mjs` updated: the demo-credential check and the login-page role-guard check now target `LandlordPortalAuth.tsx` (guards by role-redirect instead of `ensureSignedInRole`).
+
+## Verification
+- `tsc --noEmit` — 0 errors
+- `eslint` (touched paths) — 0 errors, 1 pre-existing warning (`PendingApproval.tsx`, unrelated)
+- `vitest run` — 87 files passed / 1 skipped, **1072 tests passed / 1 skipped** (+9 new: 5 draft-hook, 4 resend-button)
+- `npm run build` — success
+- `npm run audit:prod` — only failure is pre-existing on clean `main` (`adminDesk.test.ts` contains the Supabase project URL; unrelated to these changes)
+
+## Remaining known items (not from these findings)
+- `adminDesk.test.ts` hardcodes the Supabase project URL and fails `audit:prod` on clean main — pre-existing.
+- Onboarding mutations have no explicit request timeout (audit case 18) and there is no offline banner on onboarding pages (cases 17/24) — accepted limitations, documented in Phase 11.
+
