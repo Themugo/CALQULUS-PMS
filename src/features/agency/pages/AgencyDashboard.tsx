@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Handshake } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -43,6 +43,24 @@ export default function AgencyDashboard() {
       description="Clients are landlords you run buildings for. Collections are rent received this month. Occupancy is occupied units across the book."
     >
       {isError ? <ErrorState title="Couldn't load the agency book" onRetry={() => void refetch()} className="mb-6" /> : null}
+
+      {!isLoading && data && data.clientCount === 0 && data.totalProperties === 0 ? (
+        <section className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-card p-5 sm:flex-row sm:items-center">
+          <Handshake className="h-5 w-5 shrink-0 text-[var(--portal-accent)]" aria-hidden />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm font-semibold">Finish setting up your agency</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Profile, portfolio defaults, first client, and first property — a few minutes.
+            </p>
+          </div>
+          <Button size="sm" className="min-h-11 shrink-0" asChild>
+            <Link to="/agency/onboarding">
+              Continue setup
+              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </section>
+      ) : null}
 
       <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-5">
         {isLoading || !data

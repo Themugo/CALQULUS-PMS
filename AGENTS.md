@@ -356,6 +356,17 @@ Tier 3: Tenants
 - **Portal accents aligned to six-identity spec:** Manager Blue (unchanged), Landlord **Emerald** #2F9B74, Agency **Amber** #C08A37, Tenant **Violet** #7C5FD3, Admin/WebHost **Teal** #2C9183. Tokens and CSS variables both updated; accent stripes remain 2px-only.
 - `designTokens.test.ts` lockstep asserts new hexes + CSS vars. 969/970 tests pass; no layout changes.
 
+## Agency Onboarding (Phase 6, 2026-08-24)
+- `/agency/onboarding` rebuilt on **AgencyLayout** (navy + white desk, 2px amber `#C08A37` accent bar, amber only on small icons — never fills). Previously it mounted the generic manager `Layout` (blue accent, wrong sidebar).
+- Journey (8 steps, locked by test): Account → Verification → Agency profile → Portfolio setup → First client → First property → Team → Complete. Steps in `src/features/onboarding/components/agency/AgencyOnboardingSteps.tsx`.
+- **Portfolio setup** (new step): portfolio focus (residential/commercial/mixed) + default collection model — options are a strict subset of real `property_landlords.operating_model` values (`agency_collects_full_management`, `agency_collects_pays_landlord`, `agency_manages_fee_from_landlord`). Persisted to `company_settings.brand_config.onboarding.portfolio` via read-modify-write (`saveOnboardingConfig` in the page; never clobbers `firstClientName` or `company_name`). Optional — "Skip for now".
+- **First client**: architecture links clients per property (`property_landlords`), so onboarding saves the owner name as a draft note (`brand_config.onboarding.firstClientName`) and points to `/agency/clients`. "Skip for now" allowed.
+- **Team**: optional invite via `supabase.auth.signUp` (submanager role, manager_id = agency user).
+- Completion derived from real facts only (`deriveAgencyCompletedSteps` pure helper): `company_settings.company_name` → profile, portfolio draft → portfolio, `property_landlords` count → clients, `properties` count → property. account/verification/team/complete are navigation steps — never auto-completed.
+- **Entry point**: `AgencyDashboard` shows a "Finish setting up your agency" banner when the book is empty (0 clients, 0 properties).
+- Profile name now prefills from `company_settings`; Back buttons actually go back (`goBack`), not forward.
+- Tests: `src/test/agencyOnboarding.test.ts` (11) — journey order, unique ids, route registration, operating-model alignment, draft parsing, completion mapping, amber token lock. Suite: 980 passed / 1 skipped.
+
 ## Webhost Operations (Phase 3, 2026-08-23)
 - New route `/webhost/operations`: Domains (real domain+protocol, SSL=protocol uppercase, expiry "Not available"), Monitoring (healthy/warning/degraded/down counts from probes), Services (probe states + `dataUpdatedAt` as last check), Logs (dense mono table from `activity_logs` where `entity_type='log'`).
 - Structured logs are written by the observability logger as `{level}:{component}:{action}` with the LogEntry in `metadata`. Parsed in `lib/operations.ts`; non-structured rows are dropped, never fabricated. Live logs only persist when a session exists.
