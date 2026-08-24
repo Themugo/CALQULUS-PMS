@@ -14,6 +14,8 @@ import { Check, Loader2, ArrowLeft, ArrowRight, SkipForward, Building2, Users, H
 import { cn } from "@/shared/lib/utils";
 import { MANAGER_ONBOARDING_STEPS, PROPERTY_GROUPS, type ManagerOnboardingStepId } from "@/features/onboarding/components/manager/ManagerOnboardingSteps";
 import { useManagerOnboardingState } from "@/features/onboarding/hooks/useManagerOnboardingState";
+import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
+import { buildCompletionModel, managerCompletionItems, managerRecommendations } from "@/features/onboarding/lib/completion";
 
 const ORDER = MANAGER_ONBOARDING_STEPS.map((s) => s.id) as readonly ManagerOnboardingStepId[];
 
@@ -363,17 +365,26 @@ export default function ManagerOnboardingPage() {
           </section>
         ) : null}
 
-        {currentId === "complete" ? (
-          <section className="rounded-xl border border-border bg-card p-6 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-success/15 text-success">
-              <Check className="h-6 w-6" aria-hidden />
-            </span>
-            <h2 className="mt-3 font-heading text-xl font-bold text-foreground">You're ready to manage your portfolio.</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Onboarding complete. You can add more properties, teammates, and settings anytime.</p>
-            <Button className="mt-5" onClick={() => navigate("/")}>
-              Go to Manager Dashboard
-            </Button>
-          </section>
+        {currentId === "complete" && stepMeta.facts ? (
+          <OnboardingCompletion
+            model={buildCompletionModel(
+              managerCompletionItems({
+                companyName: stepMeta.facts.companyName,
+                propertyTypeGroups: stepMeta.facts.propertyTypeGroups,
+                propertiesCount: stepMeta.facts.propertiesCount,
+                verifiedEmail: stepMeta.facts.verifiedEmail,
+              }),
+              managerRecommendations({
+                companyName: stepMeta.facts.companyName,
+                propertyTypeGroups: stepMeta.facts.propertyTypeGroups,
+                propertiesCount: stepMeta.facts.propertiesCount,
+                verifiedEmail: stepMeta.facts.verifiedEmail,
+              }),
+            )}
+            headline="You're ready to run your properties."
+            primaryAction={{ label: "Open Manager Dashboard", href: "/" }}
+            secondaryAction={{ label: "Add another property", href: "/properties" }}
+          />
         ) : null}
       </div>
     </Layout>

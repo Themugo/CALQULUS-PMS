@@ -9,6 +9,8 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Check, Loader2, ArrowLeft, ArrowRight, SkipForward, Home, Factory, Briefcase, Building2 } from "lucide-react";
+import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
+import { buildCompletionModel, landlordCompletionItems, landlordRecommendations } from "@/features/onboarding/lib/completion";
 import { cn } from "@/shared/lib/utils";
 import { LANDLORD_ONBOARDING_STEPS, LANDLORD_PROPERTY_TYPES } from "@/features/onboarding/components/landlord/LandlordOnboardingSteps";
 import { useQuery } from "@tanstack/react-query";
@@ -336,20 +338,22 @@ export default function LandlordOnboardingPage() {
           </section>
         ) : null}
 
-        {currentId === "complete" ? (
-          <section className="rounded-xl border border-border bg-card p-6 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-success/15 text-success">
-              <Check className="h-6 w-6" aria-hidden />
-            </span>
-            <h2 className="mt-3 font-heading text-xl font-bold text-foreground">Your portfolio is ready.</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {facts && facts.propertiesCount > 0 ? `${facts.propertiesCount} propert${facts.propertiesCount === 1 ? "y" : "ies"} linked. ` : ""}
-              Next: open your portfolio to add more properties or invite managers.
-            </p>
-            <Button className="mt-5" onClick={() => navigate("/landlord/dashboard")}>
-              Go to Landlord Dashboard
-            </Button>
-          </section>
+        {currentId === "complete" && facts ? (
+          <OnboardingCompletion
+            model={buildCompletionModel(
+              landlordCompletionItems({
+                companyName: facts.companyName,
+                propertiesCount: facts.propertiesCount,
+              }),
+              landlordRecommendations({
+                companyName: facts.companyName,
+                propertiesCount: facts.propertiesCount,
+              }),
+            )}
+            headline="Your portfolio is ready."
+            primaryAction={{ label: "Open Landlord Dashboard", href: "/landlord/dashboard" }}
+            secondaryAction={{ label: "Link another property", href: "/landlord/portfolio" }}
+          />
         ) : null}
       </div>
     </Layout>

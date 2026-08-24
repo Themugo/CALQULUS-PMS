@@ -356,6 +356,14 @@ Tier 3: Tenants
 - **Portal accents aligned to six-identity spec:** Manager Blue (unchanged), Landlord **Emerald** #2F9B74, Agency **Amber** #C08A37, Tenant **Violet** #7C5FD3, Admin/WebHost **Teal** #2C9183. Tokens and CSS variables both updated; accent stripes remain 2px-only.
 - `designTokens.test.ts` lockstep asserts new hexes + CSS vars. 969/970 tests pass; no layout changes.
 
+## Onboarding Completion + Activation (Phase 10, 2026-08-24)
+- **Audit**: Manager/Landlord/Agency onboarding pages each had a thin "complete" step (single check icon + one line + dashboard button). Facts were already real backend queries — kept.
+- **Shared completion experience**: `src/features/onboarding/components/OnboardingCompletion.tsx` + pure model `src/features/onboarding/lib/completion.ts` (`buildCompletionModel`, per-role `*CompletionItems` + `*Recommendations`).
+- **Reflects ACTUAL backend state — never a false checkmark**: each item's `done` comes from real facts (company_settings.company_name, properties count, property_landlords client links, portfolio draft, verifiedEmail). Incomplete items render "Needs attention — what remains" in a warning row. Success ring is green only when `allDone`, primary/accent otherwise. No confetti, no excessive animation; navy+white card, role accent inherited from the portal surface.
+- **Per role**: Manager — Account created / Email verified / Organization created / Portfolio configured / Property added → "You're ready to run your properties." Primary "Open Manager Dashboard" (`/`), secondary "Add another property" (`/properties`); recs: Add tenants, Configure billing, Invite your team. Landlord — Account/Profile/Property linked → `/landlord/dashboard` + `/landlord/portfolio`. Agency — Account/Agency profile/Portfolio/First client/First property → `/agency` + `/agency/properties`; recs prioritize missing client/property.
+- **Recommendations capped at 3** in `buildCompletionModel` — never a giant checklist; missing-item actions prioritized first.
+- Tests: `src/test/onboardingCompletion.test.ts` (14) — allDone only when verified, no false checkmarks, attention copy, 3-rec cap, per-role facts mapping + route prefixes. Suite: 1063 passed / 1 skipped.
+
 ## WebHost Operator Onboarding (Phase 9, 2026-08-24)
 - **Audit**: WebHost is NOT public registration — verified no `webhost/signup|register` route exists anywhere in `routes.ts`. Phase 8 flow extended to full operator tier; Phase 8 gap closed: accepted admins previously got `user_roles` + `admin_permissions` but NO `platform_admins` row (no operator tier).
 - **Migration `20260824000003_webhost_operator_phase9.sql`** (mirrored into `apply-live-p1-rpcs.sql`): `admin_invitations.admin_type` (`business|admin` CHECK — **'owner' can never be granted via invitation**; exactly one immutable owner). `validate_admin_invitation_token` re-created to also return `admin_type` (DROP + CREATE required for return-type change). **Must be applied to live DB.**

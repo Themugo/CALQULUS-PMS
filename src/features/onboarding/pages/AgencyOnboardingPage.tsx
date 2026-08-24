@@ -21,6 +21,8 @@ import {
   type AgencyPortfolioFocus,
 } from "@/features/onboarding/components/agency/AgencyOnboardingSteps";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
+import { buildCompletionModel, agencyCompletionItems, agencyRecommendations } from "@/features/onboarding/lib/completion";
 
 const ORDER = AGENCY_ONBOARDING_STEPS.map((s) => s.id) as readonly string[];
 
@@ -472,21 +474,26 @@ export default function AgencyOnboardingPage() {
           </section>
         ) : null}
 
-        {currentId === "complete" ? (
-          <section className="rounded-xl border border-border bg-card p-6 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-success/15 text-success">
-              <Check className="h-6 w-6" aria-hidden />
-            </span>
-            <h2 className="mt-3 font-heading text-xl font-bold text-foreground">Your agency is ready.</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {facts && facts.propertyCount > 0 ? `${facts.propertyCount} propert${facts.propertyCount === 1 ? "y" : "ies"} managed. ` : ""}
-              {facts && facts.clientCount > 0 ? `${facts.clientCount} client${facts.clientCount === 1 ? "" : "s"} linked. ` : ""}
-              Next: add more clients and properties from your dashboard.
-            </p>
-            <Button className="mt-5" onClick={() => navigate("/agency")}>
-              Go to Agency Dashboard
-            </Button>
-          </section>
+        {currentId === "complete" && facts ? (
+          <OnboardingCompletion
+            model={buildCompletionModel(
+              agencyCompletionItems({
+                agencyName: facts.agencyName,
+                propertyCount: facts.propertyCount,
+                clientCount: facts.clientCount,
+                portfolioConfigured: readAgencyPortfolioDraft(facts.brandConfig) !== null,
+              }),
+              agencyRecommendations({
+                agencyName: facts.agencyName,
+                propertyCount: facts.propertyCount,
+                clientCount: facts.clientCount,
+                portfolioConfigured: readAgencyPortfolioDraft(facts.brandConfig) !== null,
+              }),
+            )}
+            headline="Your agency is ready."
+            primaryAction={{ label: "Open Agency Dashboard", href: "/agency" }}
+            secondaryAction={{ label: "Add another property", href: "/agency/properties" }}
+          />
         ) : null}
       </div>
     </AgencyLayout>
