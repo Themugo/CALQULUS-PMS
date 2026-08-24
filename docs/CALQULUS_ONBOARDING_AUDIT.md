@@ -1,115 +1,101 @@
-# CALQULUS Onboarding & Authentication Audit
+# CALQULUS Onboarding — Edge Case + Failure Audit (Phase 11)
 
-**Date:** 2026-08-23 · **Scope:** registration, authentication, onboarding only. Dashboards, backend architecture, and business functionality intentionally untouched.
+**Date:** 2026-08-24 · **Scope:** the complete registration/onboarding system across all portals (Manager, Agency, Landlord, Tenant, WebHost/Admin). Audit only — **no auth logic, routes, or schema were modified.** No backend fixes were invented; unresolved issues are documented with their root cause and the correct owning layer.
 
----
-
-## CURRENT REGISTRATION FLOW
-
-| Portal | Entry | Endpoint | Role injection | Verification | Organization |
-|---|---|---|---|---|---|
-| **Manager** | `/auth?tab=signup` | `supabase.auth.signUp` | `data: { full_name, role: 'manager' }` → `handle_new_auth_user()` DB trigger writes `user_roles` | email confirmation required | none — first `properties` insert creates org via `company_settings` / agencies upsert |
-| **Agency** | `/agency/login` (login only; self-signup not exposed) | `supabase.auth.signInWithPassword` | invite / role assigned by admin | — | agencies created by manager or platform admin |
-| **Landlord** | `/landlord/login` (login only) | `supabase.auth.signInWithPassword` | invite only (self-signup removed) | — | landlord created by manager invite |
-| **Tenant** | `/tenant/signup` → `/tenant/invitation` → `/tenant/login` | `supabase.auth.signUp` (magic link) | invite code, then `TenantAuth` OTP | email + invite | created by manager via `send-tenant-invitation` |
-| **WebHost** | `/webhost/login` | `supabase.auth.signInWithPassword` | seeded by `bootstrap-webhost` edge function | — | seeded platform account |
-| **Submanager** | same manager routes | — | manager invites in Settings → Team | — | manager-owned |
-
-## CURRENT LOGIN FLOW
-
-1. `signIn(email, password)` → `supabase.auth.signInWithPassword`
-2. `ensureSignedInRole([portal roles])` reads `user_roles` and either admits to the portal's desk or redirects (tenant → `/portal`, webhost → `/webhost`, landlord → `/landlord/dashboard`).
-3. Session via `@supabase/supabase-js` (JWT in localStorage); `AuthContext` resolves `userRole` via `pickRoleForPath(roles, pathname)` — the correct role is selected by the URL, never trusted from the client.
-
-## CURRENT VERIFICATION FLOW
-
-- **Email confirmation:** required for manager sign-up; `emailRedirectTo` points back to the portal login path (`/auth`, `/agency/login`, `/landlord/login`, `/tenant/login`, `/webhost/login`).
-- **Resend verification:** exists in `Auth.tsx` (manager page) via `supabase.auth.resend`.
-- **Tenant:** magic link + OTP — `TenantSelfRegister` verifies invite code (`tenant_invitations`) then presents a 3-step form (verify → profile → done); `TenantAuth` handles OTP entry.
-- **Reset password:** `ResetPassword.tsx` uses the Supabase `recovery` flow; `ForgotPasswordDialog` triggers the email.
-
-## CURRENT INVITATION FLOW
-
-- **Tenant:** `send-tenant-invitation` edge function → writes `tenant_invitations` (email/phone) → email/SMS link with invite code → `TenantSelfRegister` verifies code → account created.
-- **Manager:** `notify-new-manager-signup` after manager/agency sign-up.
-- **WebHost:** seeded via `bootstrap-webhost`.
-
-## CURRENT ROLE FLOW
-
-- `AuthContext` does **not** trust any client-passed role. `signUp` sends `role` as metadata only — the DB trigger `handle_new_auth_user()` (hardened by migration `20260811000003`) sanitizes that metadata and writes `user_roles` rows. The comment in `AuthContext.signUp` explicitly says "The client must not upsert user_roles (privilege escalation)."
-- **Resolution:** `pickRoleForPath` chooses the correct role from the current pathname when a user has multiple roles — no session hijack risk.
-- **Approvals:** `user_roles.approval_status` (`pending`/`approved`/`rejected`/`suspended`). `PendingApproval` polls every 30 s until the role is approved.
-
-## CURRENT ORGANIZATION FLOW
-
-- No "Create organization" step in onboarding. Managers land on `/` (dashboard) and are nudged by `Portfolio setup N% complete` to add a company profile (Settings → Company) and their first property.
-- `company_settings` holds the org brand/white-label record; the agency row is upserted by manager signup.
-- **Organization duplicate risk:** none by design — one `company_settings` per `manager_user_id`.
-
-## CURRENT REDIRECT LOGIC
-
-- After sign-up, users land on the dashboard (`/`) unless a role requires otherwise; `pending` approval status routes to `/pending-approval`.
-- Auth pages redirect on `user && !loading` to their portal home. `pickRoleForPath` prevents cross-portal bounce.
-
-## CURRENT DATABASE RELATIONSHIPS
-
-- `auth.users` ←→ `user_roles` (role, approval_status, tenant_id)
-- `user_roles.manager_id` (submanagers) → `submanager_permissions`, `submanager_property_assignments`
-- `admin_permissions` (webhost)
-- `platform_admins` (3-tier: owner / business / admin, owner immutable)
-- `tenant_invitations` → `tenants` → `units`/`properties` → `property_landlords`
-- `manager_profiles` (org), `company_settings` (org brand)
-- `activity_logs` (RLS: `actor_id = auth.uid()`, insert via `rpc('log_activity')`)
-
-## CURRENT SECURITY CONTROLS
-
-- RLS on every table (migrations 202605xxxx → 2026082xxxx)
-- Sign-up metadata sanitized in `handle_new_auth_user` (client cannot pick role)
-- Password rules in `signupSchema` (8+ chars, upper, lower, number, special)
-- Rate limiting enforced by Supabase Auth
-- Login error mapping via `sanitizeAuthError` — no user enumeration
-- Dev auto-login is disabled in production builds (`isDevAccessEnabled` PROD gate)
-- Tenant firewall: `withoutTenantEntities` / `isTenantEntityType` on webhost queries
-- Biometric login gated behind stored credentials; requires sign-in fallback
-
-## CURRENT UX PROBLEMS
-
-1. **Two entry points to manager sign-up** (`/auth` and the marketing `Get started` CTA) plus the onboarding shell; role selection only happens *after* the user picks the wrong portal.
-2. **Duplicated auth components** — five separate `Auth.tsx` variants (manager/landlord/agency/tenant/webhost) with near-identical form markup, biometric logic, error mapping, password toggles. `AuthHeroChrome` exists but each page re-implements the shell.
-3. **Tenant flow is 3 pages deep** (`/tenant/signup` → `/tenant/invitation` → `/tenant/login`) before first login; manager flow is 1 page.
-4. **Password strength meter** is client-side only (`TenantSelfRegister`); manager sign-up only validates on submit.
-5. **Pending-approval** polling never lands the user on a helpful next step once approved (auto-poll exists but no redirect).
-6. **"Organization" step is implicit** — new manager must discover Settings → Company and Portfolio setup on their own.
-
-## CURRENT TECHNICAL RISKS
-
-1. `signUp` passes `role` as metadata and also tracks commercial events — a malicious client could spam `notify-new-manager-signup` and `send-welcome-email` edge functions (no rate-limit in the client; DB RLS stops the role write, not the notifications).
-2. Session persistence is in localStorage (Supabase default) — XSS exposure if a partner surface is ever added.
-3. `sanitizeAuthError` hides account-exists vs wrong-password, but the toast copy could be clearer about next steps.
-4. Tenant invite codes are plain strings in the URL (`?code=`) — leak via browser history/log; acceptable short-lived but worth noting.
-
-## CURRENT DUPLICATION
-
-| Pattern | Duplicated in |
-|---|---|
-| Email/password form + validation | manager, landlord, agency, tenant, webhost |
-| Biometric login logic | manager, landlord, agency |
-| Error mapping (`sanitizeAuthError`) | shared lib ✓ |
-| Hero/feature list per portal | 5 different copies |
-| Loading screen | `AuthLoadingScreen` shared ✓ |
-| Password visibility toggle | all 5 pages |
-| "Wrong portal" redirect | manager, landlord |
-
-## RECOMMENDED FLOW
-
-1. **Unify the shell:** one `PortalAuthShell` per portal role, driven by the same component with only the feature list and accent differing. Keep `Auth.tsx` for manager and reuse the shell for the rest.
-2. **One-page manager registration** (email → password → name → create) then land on `/` with the existing Portfolio setup panel as step 2.
-3. **Tenant:** keep the invite code flow but collapse `/tenant/signup` and `/tenant/invitation` into a single `/tenant/invite` page (verify code inline).
-4. **Explicit organization step (post-registration):** after first manager login, present "Company profile" as the first checklist item (existing Portfolio setup does this visually — wire it as the next-step target).
-5. **Plan/subscription selection:** currently absent — manager lands on the dashboard with a `trial_started` event but no plan choice. Defer until the commercial phase.
-6. **Verification:** keep email confirmation mandatory; surface a "resend" link on the PendingApproval screen too (manager page already has it).
-7. **No client-side role choice:** keep the DB trigger as the only role writer.
+This document supersedes the 2026-08-23 audit for the 24-case failure matrix below. The flow tables from that audit remain accurate and are not repeated here.
 
 ---
 
-*This document is the audit output; no auth logic, routes, or schema were modified.*
+## Method
+
+Each of the 24 cases was traced through the actual source (not assumed). Surfaces inspected:
+
+- Auth pages: `Auth.tsx` (manager), `TenantLogin.tsx`, `LandlordAuth.tsx`, `AgencyAuth.tsx`, `WebhostAuth.tsx`
+- Onboarding: `ManagerOnboardingPage.tsx`, `LandlordOnboardingPage.tsx`, `AgencyOnboardingPage.tsx`, `OnboardingCompletion.tsx`, `useManagerOnboardingState.ts`
+- Activation/invitation: `TenantSelfRegister.tsx`, `ActivateAccount.tsx`, `AdminInviteAccept.tsx`, `LandlordInvitationAccept.tsx`, `PendingApproval.tsx`
+- Shared: `authFlow.ts` (`sanitizeAuthError`, `ensureSignedInRole`), `validations.ts` (`signupSchema`, `passwordSchema`), `ProtectedRoute.tsx`, `AuthContext.tsx`, `adminInvitation.ts`, `integrations/supabase/client.ts`
+
+**Severity legend:** HANDLED / PARTIAL (works but a gap weakens the guarantee) / UNRESOLVED
+
+---
+
+## The 24 cases
+
+| # | Case | Status | What actually happens | Recovery path |
+|---|------|--------|------------------------|---------------|
+| 1 | Duplicate email | HANDLED | Supabase Auth returns "already registered"; `sanitizeAuthError` → "This email is already registered." No user enumeration (same message class as other failures). | User is told the email is registered → use login / forgot-password. |
+| 2 | Invalid email | HANDLED | Inline regex check on `Auth.tsx` (`signupEmailError`) + zod `signupSchema.email()` → "Please enter a valid email address" via `formatValidationErrors`. Blocked before submit. | Correct the email; form won't submit. |
+| 3 | Weak password | HANDLED | `passwordSchema` (8+ chars, upper, lower, number, special) enforced client-side on submit; admin invite requires ≥10 (`isAdminPasswordStrong`). Live strength meter on `Auth.tsx`/`TenantSelfRegister`. | Field-level messages list exactly which rule failed. |
+| 4 | Existing account (sign-up when already have one) | HANDLED | Same as #1 — duplicate-email path. Role is **not** overwritten (DB trigger `handle_new_auth_user` is the only role writer). | Directed to sign in. |
+| 5 | Unverified account (login before confirming) | HANDLED | Supabase returns "email not confirmed" → `sanitizeAuthError` → "Please verify your email address." | Told to verify. **See Issue U1 — no resend button.** |
+| 6 | Verification expired | PARTIAL | Confirmation-link expiry is handled by Supabase Auth; landing back on the portal shows the login form. There is **no dedicated "link expired" screen** — the user just sees login. | Re-request via resend — **but no resend UI exists (U1).** |
+| 7 | Resend verification | UNRESOLVED | **Not implemented.** The audit note "resend exists in Auth.tsx" is **stale** — `supabase.auth.resend` is not called anywhere in `src/`. Manager onboarding step 2 copy says "you can resend" but presents no resend control. | None in-app. **Issue U1.** |
+| 8 | Refresh during onboarding | PARTIAL | **Persisted facts survive** (org name, portfolio groups, properties, client links are read back from `company_settings`/`properties`/`property_landlords` via `useManagerOnboardingState` etc.). **Unsaved in-progress form input is lost** — `organizationName`, `portfolioGroups`, `teamEmail`, and `stepIdx` are ephemeral `useState`. | Completed steps are restored from backend; re-enter the current step's unsaved field. **Issue U2.** |
+| 9 | Close browser mid-onboarding | PARTIAL | Same as #8 — completed steps persist server-side; unsubmitted field input lost. Session persists (localStorage), so reopening returns to the portal. | Reopen → completed state intact; redo current field. **Issue U2.** |
+| 10 | Return later | HANDLED | Session persists (`persistSession: true`, `autoRefreshToken: true`). Completed onboarding facts reload from backend; completion screen reflects real state (Phase 10). | Log back in if session expired → resume where facts left off. |
+| 11 | Log in halfway through onboarding | HANDLED | Facts are server-backed, so any login on any device shows the true completion state. Onboarding is reachable post-login; not a hard gate. | Continue from persisted state. |
+| 12 | Wrong role / wrong portal | HANDLED | `ensureSignedInRole([portalRoles])` reads `user_roles` server-side and redirects: tenant→`/portal`, webhost→`/webhost`, landlord→`/landlord/dashboard`, manager→`/`. `pickRoleForPath` resolves multi-role users by URL. Role never trusted from client. | Clear "wrong portal" toast + automatic redirect to the correct desk. |
+| 13 | Unauthorized organization | HANDLED | `user_roles.approval_status` gate: `pending`/`rejected`/`suspended` managers are routed to `/pending-approval` (App-level + mirrored in `ProtectedRoute`, defence-in-depth). Auto-polls every 30 s → `navigate('/')` on approval. Cross-manager data blocked by RLS (`manager_id = auth.uid()`). | Pending screen explains status; rejected/suspended show reason; auto-redirect on approval. |
+| 14 | Expired invitation | HANDLED | Per-state copy: Admin `ADMIN_INVITATION_STATE_COPY.expired` ("valid 72 hours, ask the administrator for a new one"); Landlord `status==='expired'` ("ask your property manager to send a new one"); Tenant `validate_invitation_token` fails → "Invalid or expired." | Each names who to contact for a fresh invite. |
+| 15 | Used invitation | HANDLED | Admin `used` ("already accepted… sign in") + CTA to `/webhost/login`; Landlord `accepted` state + "Go to login"; Tenant `.eq('status','pending')` excludes used codes → "Invalid or expired." | Directed to sign in. |
+| 16 | Invalid invitation | HANDLED | Admin `invalid` ("link is not valid… use the exact link from your email"); Landlord `error` state ("invalid or has been used"); Tenant invalid code toast. | Use the exact link / request a new one. |
+| 17 | Network failure | PARTIAL | `sanitizeAuthError` maps "network"/"failed to fetch" → "Network error. Please check your connection and try again." React Query `retry: 1`. **But onboarding mutations surface raw `error.message` (Issue U3)** and there is no offline banner on onboarding pages. | Retry after reconnecting. **Issue U3.** |
+| 18 | API timeout | PARTIAL | Auth resolution has an 8 s watchdog (`authTimeoutMs`) → logs a warning, stops the spinner. Data queries rely on React Query retry. **No explicit request-timeout/abort on onboarding mutations** — a hung request leaves the button in a loading state until it settles. | Retry. **Issue U3.** |
+| 19 | Backend validation failure | PARTIAL | zod handles client-side. Server-side failures (RLS `403`, constraint violations) reach the UI as **raw `error.message`** in onboarding mutations and invitation-accept pages. Not silent, but not sanitized. | Toast shows an error (wording may be technical). **Issue U3.** |
+| 20 | Session expiry | HANDLED | `sanitizeAuthError` maps "jwt expired"/"session_not_found"/"session missing" → "Your session has expired. Please sign in again." `AuthContext` `onAuthStateChange`/`SIGNED_OUT` clears role state; `ProtectedRoute` redirects unauthenticated users to the portal login. | Sign in again; server-backed onboarding state intact. |
+| 21 | Logout during onboarding | HANDLED | `signOut` (Sidebar/ProfileMenu) clears session; `ProtectedRoute` redirects to login. Persisted facts survive (server-side). | Log back in → resume from persisted state. |
+| 22 | Browser back button | HANDLED | SPA routing; auth pages redirect on `user && !loading` to portal home (no back-to-login loop). `ProtectedRoute` re-evaluates on each navigation; `safeRedirect` prevents self-redirect loops. Step state is in-component (not URL), so back leaves the flow rather than corrupting it. | Forward navigation resumes; no broken state. |
+| 23 | Mobile browser | HANDLED | `index.html` viewport `width=device-width, viewport-fit=cover`. Onboarding + completion use responsive classes (`sm:grid-cols-7`, `flex-col sm:flex-row`, `min-h-11` touch targets, `w-full sm:w-auto` buttons). Biometric login available where supported. | Native mobile layout; no action needed. |
+| 24 | Slow network | PARTIAL | Loading skeletons on onboarding pages; React Query `staleTime` 30 s + `retry: 1`; `AuthLoadingScreen` on auth. **No explicit slow-network indicator** and mutations have no timeout (see #18). | Waits, then retries. **Issue U3.** |
+
+---
+
+## Security boundaries (verified)
+
+- **Role injection impossible:** client passes `role` only as metadata; `handle_new_auth_user` DB trigger (hardened, migration `20260811000003`) is the sole writer of `user_roles`. `AuthContext.signUp` comment: "The client must not upsert user_roles (privilege escalation)."
+- **Owner tier ungrantable via invitation:** `admin_invitations.admin_type` CHECK is `('business','admin')` — `owner` can never be issued through an invite (Phase 9). Exactly one immutable owner.
+- **Server-side authorization:** `ensureSignedInRole` + `ProtectedRoute` + RLS. `platform_admins` seeded server-side only (`accept-admin-invitation`, service_role).
+- **WebHost tenant firewall:** `ProtectedRoute` hard-blocks webhost from all tenant/manager operational prefixes; `withoutTenantEntities`/`isTenantEntityType` on webhost queries.
+- **Landlord revenue-only:** hard-blocked from manager/tenant routes; no tenant PII surface.
+- **No public admin/webhost registration:** verified — no `webhost/signup|register` route exists.
+- **Secrets hygiene:** `isSecretKey`/`maskSecrets`/`stringifyMasked` + `getNonSecretConfig` — no credential-shaped key/value reaches any onboarding or ops screen.
+- **Single-use, time-limited invitations:** admin (72 h), landlord (`expires_at`), tenant (`status='pending'` gate). Token never displayed; only email/tier/inviter shown.
+- **No user enumeration:** `sanitizeAuthError` collapses "already registered" / "invalid credentials" / "user not found" into non-distinguishing messages.
+
+---
+
+## Unresolved issues
+
+> These are **documented, not fixed** here. Each names the owning layer. No backend behavior was invented or changed in this audit.
+
+### U1 — No "resend verification" control (cases 5, 6, 7) — HIGH
+- **What:** `supabase.auth.resend` is never called in `src/`. The manager onboarding verification step copy ("you can resend") has no matching control. A user whose confirmation email expired or was lost has no in-app way to get a new one.
+- **Root cause / owner:** frontend — add a resend action (e.g. on the login page when "email not confirmed" is returned, and on the onboarding verification step) calling `supabase.auth.resend({ type: 'signup', email })`. The Auth API supports it (`GoTrueClient.resend`). Purely a UI wiring gap.
+- **Note:** the 2026-08-23 audit line "Resend verification exists in Auth.tsx" is **stale/incorrect** and should be disregarded.
+
+### U2 — Unsaved onboarding field input lost on refresh/close (cases 8, 9) — MEDIUM
+- **What:** completed steps persist server-side (good), but the *current step's* unsubmitted input (`organizationName`, `portfolioGroups`, `teamEmail`) and `stepIdx` are ephemeral `useState`. A refresh/close mid-step discards typed-but-unsaved input.
+- **Root cause / owner:** frontend — optionally persist per-step drafts to `sessionStorage` (or restore `stepIdx` from the persisted completion set). Completed state is **not** lost; only unsubmitted keystrokes are. Low data-loss severity, hence MEDIUM.
+
+### U3 — Raw backend error messages reach users on some paths (cases 17, 18, 19, 24) — MEDIUM
+- **What:** `sanitizeAuthError` is applied on the **login/signup** pages, but several onboarding/invitation surfaces toast raw `error.message`:
+  - `TenantSelfRegister.tsx` (lines 61, 84)
+  - `ActivateAccount.tsx` (line 98)
+  - `AdminInviteAccept.tsx` (line 91)
+  - `LandlordInvitationAccept.tsx` (lines 76, 99)
+  - Onboarding mutations (`ManagerOnboardingPage`, `LandlordOnboardingPage`, `AgencyOnboardingPage`) use `error instanceof Error ? error.message : "Try again."`
+- **Root cause / owner:** frontend — route these through a shared sanitizer (extend `sanitizeAuthError` or add a mutation-error mapper) so RLS/constraint/network failures produce clear, non-technical copy. Failures are **not silent** (a toast always fires), so this is a wording/clarity gap, not a swallowed error.
+- **Related:** no explicit request timeout/abort on onboarding mutations (#18) and no offline banner (#17/#24). Owning layer: frontend (React Query `networkMode`/`onError` + an `AbortController` timeout), not backend.
+
+---
+
+## Confirmations (no action needed)
+
+- Completed onboarding state is **never lost** — it is derived from backend rows, and the Phase 10 completion screen reflects actual state ("Needs attention" for anything incomplete, never a false checkmark).
+- No failure path is silent — every `catch` shows a toast or a dedicated state screen.
+- Wrong-role, unauthorized-org, expired/used/invalid-invitation, session-expiry, logout, back-button, and mobile cases all have a clear explanation **and** a recovery path.
+- No raw Supabase/Postgres error text reaches the **login/signup** forms (sanitized). The leak is confined to the invitation-accept and onboarding-mutation paths in U3.
+
+---
+
+*Audit output only. No auth logic, routes, schema, or backend behavior were modified. Unresolved issues U1–U3 are documented with their owning layer for a future phase.*

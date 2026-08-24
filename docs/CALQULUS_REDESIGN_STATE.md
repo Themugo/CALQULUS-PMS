@@ -1,6 +1,9 @@
 # CALQULUS Redesign ŌĆö Persistent State
 
 ## CURRENT PHASE
+Onboarding Edge Case + Failure Audit (phase 11, 2026-08-24) — audit only, no auth logic/routes/schema modified. All 24 edge/failure cases traced through real source across Manager/Agency/Landlord/Tenant/WebHost. Result: 16 HANDLED, 7 PARTIAL, 1 UNRESOLVED. Security boundaries verified (role-injection impossible, owner-tier ungrantable via invite, server-side authorization, webhost tenant firewall, no public admin registration, secrets hygiene, single-use time-limited invites, no user enumeration). Three unresolved issues documented with owning layer (no backend fixes invented): U1 no resend-verification control (HIGH, frontend), U2 unsaved onboarding field input lost on refresh/close (MEDIUM, frontend), U3 raw backend error.message reaches users on invitation-accept + onboarding-mutation paths (MEDIUM, frontend). Completed onboarding state is never lost (server-derived; Phase 10 completion reflects real state). Full matrix + recovery paths in docs/CALQULUS_ONBOARDING_AUDIT.md.
+
+## HISTORY
 WebHost Access (phase 9, 2026-08-23) — audit only, no public registration. Same invitation-controlled model as Admin Access: bootstrap-webhost (dev-only) for the first operator; PlatformAdminManagement creates subsequent operators server-side. ensureSignedInRole reads user_roles from the DB; role is never trusted from the client. Tested unauthorized access + wrong password + wrong-role redirect.
 
 ## HISTORY
