@@ -11,6 +11,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { AlertTriangle } from 'lucide-react';
 import { occupancyRateColor } from '@/shared/lib/statusBadge';
+import { LANDLORD_TREND_COLORS } from '@/features/landlord/lib/portfolioMetrics';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
@@ -167,7 +168,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
                           <TableCell className={row.emphasize ? 'font-semibold' : undefined}>{row.description}</TableCell>
                           <TableCell className="text-right tabular-nums">{row.income ? fmt(row.income) : '—'}</TableCell>
                           <TableCell className="text-right tabular-nums text-muted-foreground">{row.expense ? fmt(row.expense) : '—'}</TableCell>
-                          <TableCell className={`text-right tabular-nums ${row.emphasize ? 'font-bold text-success' : 'font-medium'}`}>
+                          <TableCell className={`text-right tabular-nums ${row.emphasize ? 'font-bold' : 'font-medium'}`}>
                             {fmt(row.balance)}
                           </TableCell>
                         </TableRow>
@@ -277,7 +278,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
                 <div className="h-px bg-border" />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Net to you ({property?.revenue_share_pct}%)</span>
-                  <span className="text-xl font-bold text-success">{fmt(Number(financials.net_to_landlord))}</span>
+                  <span className="text-xl font-bold tabular-nums">{fmt(Number(financials.net_to_landlord))}</span>
                 </div>
               </div>
             </CardContent>
@@ -300,7 +301,7 @@ const LandlordFinancialStatement: React.FC<Props> = ({ properties, mode = "full"
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={v => v >= 1000 ? `${v/1000}k` : String(v)} />
                 <Tooltip formatter={(v: number) => fmt(v)} />
-                <Bar dataKey="revenue" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill={LANDLORD_TREND_COLORS.net} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
             </div>

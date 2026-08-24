@@ -8,21 +8,9 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import {
-  FileText, Download, BarChart3, ClipboardCheck,
-  Home, FileSpreadsheet, Clock
-} from 'lucide-react';
+import { FileText, Download, Clock } from 'lucide-react';
 import { format } from 'date-fns';
-
-const DOC_TYPE_CONFIG: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
-  financial_statement:  { label: 'Financial statement', icon: BarChart3,       color: 'text-green-600' },
-  inspection_report:    { label: 'Inspection report',   icon: ClipboardCheck,  color: 'text-[hsl(214_73%_45%)]' },
-  occupancy_report:     { label: 'Occupancy report',    icon: Home,            color: 'text-[hsl(218_58%_38%)]' },
-  lease_summary:        { label: 'Lease summary',       icon: FileText,        color: 'text-warning' },
-  maintenance_summary:  { label: 'Maintenance summary', icon: FileSpreadsheet, color: 'text-red-600' },
-  property_photo:       { label: 'Property photo',      icon: Home,            color: 'text-slate-600' },
-  custom:               { label: 'Document',            icon: FileText,        color: 'text-slate-600' },
-};
+import { LANDLORD_DOCUMENT_TYPE } from '@/features/landlord/lib/documentTypes';
 
 const LandlordDocuments: React.FC = () => {
   const { user } = useAuth();
@@ -37,7 +25,7 @@ const LandlordDocuments: React.FC = () => {
         .eq('is_visible', true)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Array<{ id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; created_at: string }>;
+      return (data || []) as Array<{ id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; document_url?: string; created_at: string }>;
     },
     enabled: !!user?.id,
   });
@@ -61,8 +49,9 @@ const LandlordDocuments: React.FC = () => {
     </div>
   );
 
-  const DocRow = ({ doc }: { doc: { id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; created_at: string } }) => {
-    const cfg = DOC_TYPE_CONFIG[doc.document_type] ?? DOC_TYPE_CONFIG.custom;
+  const DocRow = ({ doc }: { doc: { id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; document_url?: string; created_at: string } }) => {
+    const cfg = LANDLORD_DOCUMENT_TYPE[doc.document_type] ?? LANDLORD_DOCUMENT_TYPE.custom;
+    const href = doc.file_url ?? doc.document_url;
     const Icon = cfg.icon;
     return (
       <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
@@ -87,8 +76,8 @@ const LandlordDocuments: React.FC = () => {
             {doc.description && <p className="text-xs text-muted-foreground mt-0.5">{doc.description}</p>}
           </div>
         </div>
-        {doc.document_url && (
-          <a href={doc.document_url} target="_blank" rel="noopener noreferrer" className="shrink-0 ml-3">
+        {href && (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="shrink-0 ml-3">
             <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
               <Download className="h-3.5 w-3.5" />
               Download
@@ -105,7 +94,7 @@ const LandlordDocuments: React.FC = () => {
         <TabsList className="flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="all" className="text-xs">All ({documents.length})</TabsTrigger>
           {allTypes.map(t => {
-            const cfg = DOC_TYPE_CONFIG[t] ?? DOC_TYPE_CONFIG.custom;
+            const cfg = LANDLORD_DOCUMENT_TYPE[t] ?? LANDLORD_DOCUMENT_TYPE.custom;
             const count = byType(t).length;
             return (
               <TabsTrigger key={t} value={t} className="text-xs">

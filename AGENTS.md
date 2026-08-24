@@ -416,6 +416,16 @@ Tier 3: Tenants
 - **No invented hosting data**: deployments, servers, DNS, and SSL certs have no runtime source — the page states they are not instrumented. `DeploymentReleaseManager` (shared/components/ops) is hardcoded fake UI — do not mount it.
 - Status mapping: healthy→Operational, degraded→Degraded, unhealthy→Down, unavailable→Warning. Pure helpers in `src/features/webhost/lib/infrastructure.ts` (tested in `adminDesk.test.ts`).
 
+## Frontend Refinement Phase 5 — Landlord Portal (2026-08-24)
+- **Identity**: white + deep navy foundation; emerald `#2F9B74` sparingly — 2px `PortalAccentBar`, navy summary band stripe/label, "Net" chart bars only. Nav active stays blue wash (`deskNavClass`), status colors stay semantic.
+- **Pure model** `src/features/landlord/lib/portfolioMetrics.ts`: `collectionRate` (0 when nothing billed, capped 100), `netShare`, `arrearsTone` (money is neutral; only arrears>0 → destructive), `buildAttentionItems` (arrears → maintenance → payouts → leases), `LANDLORD_TREND_COLORS` (collected=navyPrimary `#173650`, net=emerald; **never success green for money**), `LANDLORD_PROPERTY_TABS` = performance → units → maintenance → documents (no tenants tab — PII firewall).
+- **Dashboard** (`LandlordDashboard.tsx`): deep-navy "Your portfolio" summary band (collected-vs-billed emerald progress + Net-to-you figure) + 6-cell divide-x stat strip (Properties, Units, Occupancy, Collection rate, Outstanding, Net to you) — deliberately NOT the manager StatCard grid. Then Attention, Income & collection trend, Recent transactions, Property performance, Activity.
+- **Portfolio** (`LandlordPortfolio.tsx`): same totals strip above property cards; net share neutral semibold.
+- **Property detail** (`LandlordPropertyDetail.tsx`): performance-first tabs; new Documents tab queries `landlord_documents` by `property_id` + `is_visible`; fixed chart legend bug (both swatches were `bg-success`) and wrong `hsl(var(--teal))` fill (teal is platform-admin identity).
+- **Doc type map** moved to `lib/documentTypes.ts` (fast-refresh rule); `LandlordDocuments` download href fixed to `file_url ?? document_url`.
+- **Financial statement**: net/balance figures no longer `text-success`; 6-month net bar uses emerald accent.
+- Tests: `src/test/landlordPortalPhase5.test.ts` (18) — pure helpers + source invariants (no `text-success` money, no manager actions on dashboard, no tenant PII fields in detail). Suite: 1090 passed / 1 skipped. Preview verified on dev server port 12000 (empty states — no Supabase env in sandbox).
+
 ## Key Decisions
 - **Three-role architecture**: Webhost sells to three portal types â€” Manager (full ops+collections), Agency (blended agent role), Landlord (guarded standalone, no tenant PII).
 - **Agency is a separate portal** at `/agency` with own login, sidebar, and dashboard. Manages properties on behalf of landlords (commission model) and/or collects rent directly.

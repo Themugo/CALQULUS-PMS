@@ -4,7 +4,8 @@ import LandlordLayout from "@/features/landlord/components/LandlordLayout";
 import { LandlordPayoutDialog } from "@/features/landlord/components/LandlordPayoutDialog";
 import { useLandlordPortfolio } from "@/features/landlord/hooks/useLandlordPortfolio";
 import { formatKes, occupancyBarClass } from "@/features/landlord/lib/formatKes";
-import { landlordPropertyPath } from "@/features/landlord/lib/landlordPaths";
+import { LANDLORD_ROUTES, landlordPropertyPath } from "@/features/landlord/lib/landlordPaths";
+import { arrearsTone, collectionRate, netShare } from "@/features/landlord/lib/portfolioMetrics";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
@@ -16,13 +17,42 @@ import { occupancyRateColor } from "@/shared/lib/statusBadge";
 
 export default function LandlordPortfolio() {
   const { portfolio, properties, isLoading, isError, refetch } = useLandlordPortfolio();
+  const rate = collectionRate(portfolio.totalCollectedRent, portfolio.totalExpectedRent);
+
+  const summary: Array<{ label: string; value: string; className?: string }> = [
+    { label: "Properties", value: String(portfolio.totalProperties) },
+    { label: "Units", value: `${portfolio.totalOccupied}/${portfolio.totalUnits} occupied` },
+    { label: "Occupancy", value: `${portfolio.occupancyRate}%`, className: occupancyRateColor(portfolio.occupancyRate) },
+    { label: "Collection rate", value: `${rate}%` },
+    {
+      label: "Outstanding",
+      value: formatKes(portfolio.totalArrears),
+      className: arrearsTone(portfolio.totalArrears) === "destructive" ? "text-destructive" : undefined,
+    },
+    { label: "Net to you (MTD)", value: formatKes(portfolio.netLandlordShareMTD) },
+  ];
 
   return (
     <LandlordLayout
       title="Portfolio"
-      description="Occupancy, income, and your share per property. Tenant personal information is not shown here."
+      description="What you own and how each building is performing. Tenant personal information is not shown here."
     >
       {isError ? <ErrorState title="Couldn't load portfolio" onRetry={() => void refetch()} className="mb-6" /> : null}
+
+      {isLoading ? null : properties.length === 0 ? null : (
+        <section aria-label="Portfolio totals" className="mb-6 overflow-hidden rounded-xl border border-border bg-card">
+          <dl className="grid grid-cols-2 divide-x divide-border sm:grid-cols-3 lg:grid-cols-6">
+            {summary.map((stat) => (
+              <div key={stat.label} className="px-4 py-3">
+                <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{stat.label}</dt>
+                <dd className={`mt-0.5 font-heading text-lg font-semibold tabular-nums ${stat.className ?? ""}`}>
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       {isLoading ? (
         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-36 w-full rounded-xl" />)}</div>
@@ -70,14 +100,14 @@ export default function LandlordPortfolio() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Outstanding</p>
-                          <p className={`text-sm font-medium ${prop.outstandingArrears > 0 ? "text-destructive" : ""}`}>
+                          <p className={`text-sm font-medium ${arrearsTone(prop.outstandingArrears) === "destructive" ? "text-destructive" : ""}`}>
                             {formatKes(prop.outstandingArrears)}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Net to you</p>
-                          <p className="text-sm font-semibold text-success">
-                            {formatKes((prop.collectedRent * prop.revenue_share_pct) / 100)}
+                          <p className="text-sm font-semibold">
+                            {formatKes(netShare(prop.collectedRent, prop.revenue_share_pct))}
                           </p>
                         </div>
                       </div>
