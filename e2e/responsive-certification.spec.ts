@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 const VIEWPORTS = [
+  { width: 1920, height: 1080 },
   { width: 1440, height: 900 },
   { width: 1280, height: 800 },
   { width: 1024, height: 768 },
@@ -61,6 +62,14 @@ test.describe("Phase 11 responsive certification", () => {
 
         if (screen.name === "Tenant") {
           const tenant = page.locator("[data-preview='tenant-pages']");
+          if (viewport.width <= 480) {
+            const targets = await tenant.locator("nav a, nav button, a, button").evaluateAll((els) =>
+              els.filter((el) => (el as HTMLElement).offsetParent !== null)
+                .map((el) => el.getBoundingClientRect().height),
+            );
+            const undersized = targets.filter((h) => h > 0 && h < 44);
+            expect(undersized, `Tenant touch targets under 44px: ${undersized}`).toEqual([]);
+          }
           await expect(tenant.getByRole("button", { name: "Pay rent" }).first()).toBeVisible();
           await expect(tenant.getByText("KES 45,000").first()).toBeVisible();
           await expect(tenant.getByText("Due 5 Sep 2026").first()).toBeVisible();

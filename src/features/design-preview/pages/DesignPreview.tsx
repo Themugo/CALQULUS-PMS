@@ -257,7 +257,7 @@ function HomepagePreview() {
           <p className="type-label mb-2">Colour foundation</p>
           <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {foundation.map((swatch) => (
-              <li key={swatch.hex} className="flex items-center gap-2 min-h-11">
+              <li key={swatch.label} className="flex items-center gap-2 min-h-11">
                 <span
                   className="h-6 w-6 shrink-0 rounded-md border border-border"
                   style={{ backgroundColor: swatch.hex }}

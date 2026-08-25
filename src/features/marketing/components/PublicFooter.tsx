@@ -21,7 +21,7 @@ export function PublicFooter() {
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] lg:px-8">
         <div className="max-w-sm sm:col-span-2 lg:col-span-1">
           <BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform />
-          <p className="mt-3 text-sm leading-6 text-white/68">
+          <p className="mt-3 text-sm leading-6 text-white/75">
             Run every property from one place.
           </p>
         </div>
@@ -92,7 +92,7 @@ export function PublicFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-xs text-white/48 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-xs text-white/75 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>© {year} CALQULUS Limited. All rights reserved.</p>
           <nav aria-label="Legal" className="flex flex-wrap gap-x-4 gap-y-1">
             {LEGAL_LINKS.map((link) => (

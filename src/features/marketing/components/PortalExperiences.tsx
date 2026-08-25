@@ -163,7 +163,7 @@ export function PortalExperiences() {
                 to={portal.href}
                 aria-label={`View ${portal.title} portal`}
                 className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-medium hover:underline"
-                style={{ color: `color-mix(in srgb, ${portal.accent} 72%, var(--navy-deep))` }}
+                style={{ color: `color-mix(in srgb, ${portal.accent} 50%, var(--navy-deep))` }}
               >
                 View portal
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
