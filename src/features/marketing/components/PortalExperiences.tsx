@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Building2, LayoutGrid, User, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, Home, LayoutDashboard, TrendingUp, Users, type LucideIcon } from "lucide-react";
 import { HOMEPAGE_ROLE_ACCENTS, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
 const ROLES: {
@@ -12,15 +12,15 @@ const ROLES: {
 }[] = [
   {
     id: "manager",
-    icon: LayoutGrid,
+    icon: LayoutDashboard,
     title: "Manager",
-    visual: "Property operations, end to end",
+    visual: "Property operations",
     purpose: "Portfolio operations and collections in one workspace.",
     href: PUBLIC_ROUTES.managerSignUp,
   },
   {
     id: "landlord",
-    icon: Building2,
+    icon: TrendingUp,
     title: "Landlord",
     visual: "Portfolio and income",
     purpose: "Property performance and income, without tenant PII.",
@@ -36,7 +36,7 @@ const ROLES: {
   },
   {
     id: "tenant",
-    icon: User,
+    icon: Home,
     title: "Tenant",
     visual: "Home and rent",
     purpose: "Pay rent, request repairs and keep documents in one place.",

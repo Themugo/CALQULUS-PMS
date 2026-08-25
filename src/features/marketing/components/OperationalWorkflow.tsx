@@ -4,10 +4,10 @@ import {
   ChevronDown,
   ChevronRight,
   CreditCard,
-  Layers,
-  ScrollText,
+  FileText,
+  LayoutGrid,
+  Receipt,
   Users,
-  Wallet,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -15,10 +15,10 @@ import { WORKFLOW_STEPS } from "@/features/marketing/publicConfig";
 
 const STEP_ICONS: Record<(typeof WORKFLOW_STEPS)[number]["label"], LucideIcon> = {
   Property: Building2,
-  Units: Layers,
+  Units: LayoutGrid,
   Tenants: Users,
-  Leases: ScrollText,
-  Billing: Wallet,
+  Leases: FileText,
+  Billing: Receipt,
   Payments: CreditCard,
   Maintenance: Wrench,
   Reporting: BarChart3,

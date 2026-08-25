@@ -82,7 +82,7 @@ export function PropertyTypeSlider() {
           >
             {TYPES.map((item) => (
               <li key={item.id} className="min-w-[85%] snap-center sm:min-w-[70%] lg:min-w-0">
-                <article className="group relative h-[220px] overflow-hidden rounded-[14px] border border-border shadow-sm transition-shadow duration-200 hover:shadow-md">
+                <article className="group relative h-[220px] overflow-hidden rounded-[14px] border border-border shadow-sm transition-shadow duration-200 hover:shadow-md [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-out motion-safe:group-hover:[&_img]:scale-[1.045]">
                   <ArchitecturalSurface slot={item.id} imageSrc={PROPERTY_IMAGES[item.id]} />
                   <div
                     className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent"

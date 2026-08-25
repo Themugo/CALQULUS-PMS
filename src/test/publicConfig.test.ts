@@ -33,9 +33,9 @@ describe("public marketing config", () => {
     expect(homeSectionHref("contact", "/legal")).toBe("/#contact");
   });
 
-  it("exposes executive primary navigation hashes", () => {
-    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Solutions", "How it works"]);
-    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "solutions", "how-it-works"]);
+  it("exposes the approved primary navigation hashes", () => {
+    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Solutions"]);
+    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "solutions"]);
     expect(PUBLIC_ROUTES.legalCookies).toBe("/legal?tab=privacy");
   });
 });

@@ -27,7 +27,6 @@ export const PUBLIC_ROUTES = {
 export const PUBLIC_NAV = [
   { label: "Platform", hash: "platform" },
   { label: "Solutions", hash: "solutions" },
-  { label: "How it works", hash: "how-it-works" },
 ] as const;
 
 /** Homepage hero copy — single source of truth. Approved message hierarchy. */
@@ -67,7 +66,7 @@ export const PLATFORM_CAPABILITIES = [
 export const WORKFLOW_STEPS = [
   { label: "Property", note: "Register buildings" },
   { label: "Units", note: "Track rentable spaces" },
-  { label: "Tenants", note: "Onboard with invitations" },
+  { label: "Tenants", note: "Invite and onboard" },
   { label: "Leases", note: "Keep terms current" },
   { label: "Billing", note: "Raise rent and water" },
   { label: "Payments", note: "Collect and reconcile" },
@@ -103,12 +102,6 @@ export const FINAL_CTA = {
   secondary: "Sign in",
 } as const;
 
-export const RESOURCE_LINKS = [
-  { label: "Documentation", hash: "platform" },
-  { label: "Help center", href: `mailto:${CONTACT_EMAIL}` },
-  { label: "Support", href: `mailto:${CONTACT_EMAIL}` },
-] as const;
-
 export function homeSectionHref(hash: string, pathname: string): string {
   return pathname === PUBLIC_ROUTES.home ? `#${hash}` : `/#${hash}`;
 }
@@ -132,12 +125,6 @@ export const COMPANY_LINKS = [
   { label: "Careers", hash: "contact" },
   { label: "Partners", hash: "contact" },
   { label: "News", hash: "contact" },
-] as const;
-
-export const RESOURCE_FOOTER_LINKS = [
-  { label: "Documentation", hash: "platform" },
-  { label: "Help center", href: `mailto:${CONTACT_EMAIL}` },
-  { label: "Support", href: `mailto:${CONTACT_EMAIL}` },
 ] as const;
 
 export const LEGAL_LINKS = [

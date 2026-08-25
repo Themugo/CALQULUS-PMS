@@ -1,4 +1,4 @@
-import { Bell, Building2, LayoutDashboard, Search, Users, Wallet, Wrench, BarChart3 } from "lucide-react";
+import { Bell, Building2, LayoutDashboard, Search, Users, Receipt, Wrench, BarChart3 } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { invoiceStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 import { PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
@@ -7,7 +7,7 @@ const SIDEBAR_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, active: true },
   { label: "Properties", icon: Building2, active: false },
   { label: "Tenants", icon: Users, active: false },
-  { label: "Billing", icon: Wallet, active: false },
+  { label: "Billing", icon: Receipt, active: false },
   { label: "Maintenance", icon: Wrench, active: false },
   { label: "Reports", icon: BarChart3, active: false },
 ] as const;
@@ -38,34 +38,40 @@ interface ProductPreviewProps {
 
 /**
  * Restrained collections bar chart — CALQULUS blue for the current week,
- * lighter blue for history. Subtle grid, rounded tops, small axis ticks.
+ * lighter blue for history. Subtle hairline grid, rounded tops, small axis
+ * ticks, and the latest value in a clean pill.
  */
 function CollectionsChart() {
   return (
     <div
-      className="relative flex items-end gap-2 border-b border-border pb-2"
+      className="relative flex items-end gap-[7px] pt-6"
       role="img"
       aria-label="Illustrative collections chart for the last seven weeks"
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between pb-2" aria-hidden>
-        <span className="border-t border-border/60" />
-        <span className="border-t border-border/60" />
-        <span className="border-t border-border/60" />
+      <div className="pointer-events-none absolute inset-x-0 top-6 bottom-5 flex flex-col justify-between" aria-hidden>
+        <span className="border-t border-border/50" />
+        <span className="border-t border-border/50" />
+        <span className="border-t border-border/50" />
+        <span className="border-t border-border/50" />
       </div>
       {COLLECTION_TREND.map((height, index) => {
         const latest = index === COLLECTION_TREND.length - 1;
         return (
           <div key={index} className="relative z-[1] flex-1">
             {latest ? (
-              <span className="absolute -top-5 left-1/2 -translate-x-1/2 font-heading text-[10px] font-semibold text-primary">
+              <span className="absolute -top-6 left-1/2 -translate-x-1/2 rounded-full bg-primary/10 px-1.5 py-0.5 font-heading text-[10px] font-semibold leading-none text-primary">
                 {height}%
               </span>
             ) : null}
-            <div
-              className={`w-full rounded-t-[3px] ${latest ? "bg-primary" : "bg-primary/35"}`}
-              style={{ height: `${(height / 100) * 3.5}rem` }}
-            />
-            <p className="mt-1 text-center text-[8px] font-medium uppercase text-muted-foreground" aria-hidden>
+            <div className="flex h-14 items-end">
+              <div
+                className={`w-full rounded-t-[3px] transition-colors duration-200 ${
+                  latest ? "bg-primary" : "bg-primary/35 hover:bg-primary/55"
+                }`}
+                style={{ height: `${height}%` }}
+              />
+            </div>
+            <p className="mt-1.5 border-t border-border pb-0 pt-1.5 text-center text-[8px] font-medium tracking-wide text-muted-foreground" aria-hidden>
               {WEEK_TICKS[index]}
             </p>
           </div>
@@ -141,8 +147,8 @@ export function ProductPreview({ captionClassName = "text-muted-foreground", ele
               ))}
             </div>
 
-            <div className="mt-3 rounded-lg border border-border bg-card p-3 pb-2">
-              <p className="type-label mb-2">Collections, last 7 weeks</p>
+            <div className="mt-3 rounded-lg border border-border bg-card p-3 pb-3">
+              <p className="type-label mb-3">Collections, last 7 weeks</p>
               <CollectionsChart />
             </div>
 
@@ -162,17 +168,22 @@ export function ProductPreview({ captionClassName = "text-muted-foreground", ele
               </div>
               <div>
                 <p className="type-label mb-2">Property summary</p>
-                <div className="overflow-hidden rounded-lg border border-border bg-card">
+                <div className="group overflow-hidden rounded-lg border border-border bg-card">
                   <img
                     src={PROPERTY_THUMBS.residential}
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="h-14 w-full object-cover"
+                    className="h-14 w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-105"
                   />
-                  <div className="p-2.5">
-                    <p className="text-xs font-semibold text-foreground">Kilimani Court</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">24 units · 22 occupied</p>
+                  <div className="flex items-center justify-between gap-2 p-2.5">
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-foreground">Kilimani Court</p>
+                      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">24 units · 22 occupied</p>
+                    </div>
+                    <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 font-heading text-[10px] font-semibold leading-none text-primary">
+                      92%
+                    </span>
                   </div>
                 </div>
               </div>

@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -20,7 +14,6 @@ import { cn } from "@/shared/lib/utils";
 import {
   PUBLIC_NAV,
   PUBLIC_ROUTES,
-  RESOURCE_LINKS,
   homeSectionHref,
 } from "@/features/marketing/publicConfig";
 
@@ -58,25 +51,6 @@ export function PublicHeader() {
           >
             Pricing
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger className={navLinkClass} aria-label="Resources">
-              Resources
-              <ChevronDown className="ml-1 h-3.5 w-3.5" aria-hidden />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {RESOURCE_LINKS.map((item) =>
-                "href" in item ? (
-                  <DropdownMenuItem key={item.label} asChild>
-                    <a href={item.href}>{item.label}</a>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem key={item.label} asChild>
-                    <a href={homeSectionHref(item.hash, pathname)}>{item.label}</a>
-                  </DropdownMenuItem>
-                ),
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -128,27 +102,6 @@ export function PublicHeader() {
                 >
                   Pricing
                 </Link>
-                {RESOURCE_LINKS.map((item) =>
-                  "href" in item ? (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      className="min-h-11 rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <a
-                      key={item.label}
-                      href={homeSectionHref(item.hash, pathname)}
-                      onClick={() => setOpen(false)}
-                      className="min-h-11 rounded-md px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
-                    >
-                      {item.label}
-                    </a>
-                  ),
-                )}
                 <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
                   <Button asChild variant="outline" className="min-h-11 w-full">
                     <Link to={PUBLIC_ROUTES.managerSignIn} onClick={() => setOpen(false)}>

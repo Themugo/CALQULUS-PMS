@@ -5,7 +5,6 @@ import {
   LEGAL_LINKS,
   PLATFORM_LINKS,
   PORTAL_LINKS,
-  RESOURCE_FOOTER_LINKS,
   homeSectionHref,
 } from "@/features/marketing/publicConfig";
 
@@ -71,20 +70,14 @@ export function PublicFooter() {
           </ul>
         </nav>
 
-        <nav aria-label="Resources">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Resources</p>
+        <nav aria-label="Legal">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white">Legal</p>
           <ul className="mt-3 space-y-2">
-            {RESOURCE_FOOTER_LINKS.map((link) => (
+            {LEGAL_LINKS.map((link) => (
               <li key={link.label}>
-                {"href" in link ? (
-                  <a href={link.href} className={footerLinkClass}>
-                    {link.label}
-                  </a>
-                ) : (
-                  <a href={homeSectionHref(link.hash, pathname)} className={footerLinkClass}>
-                    {link.label}
-                  </a>
-                )}
+                <Link to={link.href} className={footerLinkClass}>
+                  {link.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -94,13 +87,6 @@ export function PublicFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-xs text-white/75 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>© {year} CALQULUS Limited. All rights reserved.</p>
-          <nav aria-label="Legal" className="flex flex-wrap gap-x-4 gap-y-1">
-            {LEGAL_LINKS.map((link) => (
-              <Link key={link.label} to={link.href} className="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
           <p aria-label="Language">English (KE)</p>
         </div>
       </div>

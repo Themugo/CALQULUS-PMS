@@ -58,14 +58,13 @@ describe("PublicLandingPage", () => {
     );
   });
 
-  it("uses restrained primary navigation in Platform / Solutions / How it works / Pricing order", () => {
+  it("uses the approved primary navigation in Platform / Solutions / Pricing order", () => {
     renderAt("/");
     const primary = screen.getByRole("navigation", { name: "Primary" });
     const labels = within(primary)
       .getAllByRole("link")
       .map((link) => link.textContent);
-    expect(labels).toEqual(["Platform", "Solutions", "How it works", "Pricing"]);
-    expect(within(primary).getByRole("button", { name: /resources/i })).toBeInTheDocument();
+    expect(labels).toEqual(["Platform", "Solutions", "Pricing"]);
     expect(primary).not.toHaveTextContent("Contact");
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute(

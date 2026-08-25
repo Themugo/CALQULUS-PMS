@@ -2,10 +2,10 @@ import {
   BarChart3,
   Building2,
   CreditCard,
-  Layers,
-  ScrollText,
+  FileText,
+  LayoutGrid,
+  Receipt,
   Users,
-  Wallet,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -15,10 +15,10 @@ const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-prim
 
 const CAPABILITY_ICONS: Record<(typeof PLATFORM_CAPABILITIES)[number], LucideIcon> = {
   Properties: Building2,
-  Units: Layers,
+  Units: LayoutGrid,
   Tenants: Users,
-  Leases: ScrollText,
-  Billing: Wallet,
+  Leases: FileText,
+  Billing: Receipt,
   Payments: CreditCard,
   Maintenance: Wrench,
   Reporting: BarChart3,
