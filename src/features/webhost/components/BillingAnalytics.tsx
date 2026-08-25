@@ -278,12 +278,12 @@ const BillingAnalytics = () => {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="monthLabel" stroke="#9ca3af" fontSize={12} />
-                  <YAxis stroke="#9ca3af" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="monthLabel" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #7c3aed', borderRadius: '8px' }}
-                    labelStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
                     formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                   />
                   <Area
@@ -348,7 +348,7 @@ const BillingAnalytics = () => {
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #7c3aed', borderRadius: '8px' }}
+                      contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
                       formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                     />
                   </PieChart>
@@ -382,19 +382,19 @@ const BillingAnalytics = () => {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={managerBreakdown.slice(0, 10)} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis type="number" stroke="#9ca3af" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
                 <YAxis 
                   type="category" 
                   dataKey="full_name" 
-                  stroke="#9ca3af" 
+                  stroke="hsl(var(--muted-foreground))" 
                   fontSize={12} 
                   width={120}
                   tickFormatter={(value) => value?.slice(0, 15) || 'Unknown'}
                 />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #7c3aed', borderRadius: '8px' }}
-                  labelStyle={{ color: '#fff' }}
+                  contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                  labelStyle={{ color: "hsl(var(--foreground))" }}
                   formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                 />
                 <Bar dataKey="total_paid" fill={BRAND_CHART_COLORS[0]} radius={[0, 4, 4, 0]} name="Paid" />
@@ -428,12 +428,12 @@ const BillingAnalytics = () => {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="monthLabel" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="monthLabel" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #7c3aed', borderRadius: '8px' }}
-                  labelStyle={{ color: '#fff' }}
+                  contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                  labelStyle={{ color: "hsl(var(--foreground))" }}
                   formatter={(value: number) => [`KES ${value.toLocaleString()}`, '']}
                 />
                 <Bar dataKey="netCollection" fill={CHART_STATUS_COLORS.positive} radius={[4, 4, 0, 0]} name="Net Collection" />

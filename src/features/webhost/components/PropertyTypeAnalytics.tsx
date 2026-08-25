@@ -158,12 +158,12 @@ const PropertyTypeAnalytics: React.FC = () => {
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-20" horizontal={false}/>
-                  <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} allowDecimals={false}/>
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: '#94a3b8' }} width={120}/>
+                  <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false}/>
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} width={120}/>
                   <Tooltip
-                    contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                    labelStyle={{ color: '#e2e8f0' }}
-                    itemStyle={{ color: '#94a3b8' }}
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
+                    itemStyle={{ color: "hsl(var(--muted-foreground))" }}
                   />
                   <Bar dataKey="count" name="Properties" fill={CALQULUS_COLOR.primary} radius={[0,3,3,0]}/>
                   <Bar dataKey="units"  name="Units"      fill={CALQULUS_COLOR.info} radius={[0,3,3,0]}/>
