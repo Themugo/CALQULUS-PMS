@@ -1,4 +1,5 @@
-import calqulusLogo from "@/assets/calqulus-logo-new.jpg";
+import calqulusLogo from "@/assets/calqulus-logo.webp";
+import calqulusLogo2x from "@/assets/calqulus-logo@2x.webp";
 import { cn } from "@/shared/lib/utils";
 import { PLATFORM_BRAND } from "@/core/brand/resolve";
 import { useWhiteLabel } from "@/core/whiteLabel/WhiteLabelProvider";
@@ -50,6 +51,8 @@ export function BrandMark({
     <div className={cn("flex items-center gap-2.5 min-w-0", className)}>
       <img
         src={logoSrc}
+        srcSet={orgLogo ? undefined : `${calqulusLogo} 112w, ${calqulusLogo2x} 224w`}
+        sizes="56px"
         alt={resolved.product}
         width={56}
         height={56}
