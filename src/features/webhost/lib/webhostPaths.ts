@@ -43,3 +43,31 @@ export function isWebhostDeskPath(pathname: string): boolean {
 export function webhostApplicationPath(appId: string): string {
   return `${WEBHOST_ROUTES.applications}/${appId}`;
 }
+
+/**
+ * The desk carries two identities on one security model:
+ *   control-plane — WebHost infrastructure (teal accent)
+ *   admin         — platform control: orgs, users, money, audit (indigo accent)
+ * Authorization never differs between surfaces.
+ */
+export type WebhostSurface = "control-plane" | "admin";
+
+const CONTROL_PLANE_PREFIXES = [
+  WEBHOST_ROUTES.applications,
+  WEBHOST_ROUTES.deployments,
+  WEBHOST_ROUTES.operations,
+] as const;
+
+export function webhostSurface(pathname: string): WebhostSurface {
+  if (pathname === WEBHOST_ROUTES.dashboard) return "control-plane";
+  return CONTROL_PLANE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+    ? "control-plane"
+    : "admin";
+}
+
+export function webhostSurfaceLabel(surface: WebhostSurface): string {
+  return surface === "control-plane" ? "WebHost" : "Admin";
+}
+
+/** Accent override for the Admin surface — control-plane keeps the teal portal accent. */
+export const ADMIN_SURFACE_ACCENT = "var(--calqulus-indigo)" as const;

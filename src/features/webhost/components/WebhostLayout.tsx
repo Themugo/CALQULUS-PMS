@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import {
   Activity,
@@ -28,27 +28,51 @@ import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { supabase } from "@/integrations/supabase/client";
-import { WEBHOST_LOGIN, WEBHOST_OPS_ROUTES, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
+import {
+  ADMIN_SURFACE_ACCENT,
+  WEBHOST_LOGIN,
+  WEBHOST_OPS_ROUTES,
+  WEBHOST_ROUTES,
+  webhostSurface,
+  webhostSurfaceLabel,
+} from "@/features/webhost/lib/webhostPaths";
 import { cn } from "@/shared/lib/utils";
 
-const NAV = [
-  { label: "Dashboard", href: WEBHOST_ROUTES.dashboard, icon: LayoutDashboard, permission: null },
-  { label: "Applications", href: WEBHOST_ROUTES.applications, icon: Layers2, permission: null },
-  { label: "Deployments", href: WEBHOST_ROUTES.deployments, icon: Rocket, permission: null },
-  { label: "Operations", href: WEBHOST_ROUTES.operations, icon: Activity, permission: null },
-  { label: "Organizations", href: WEBHOST_ROUTES.organizations, icon: Building2, permission: "can_manage_managers" as const },
-  { label: "Users", href: WEBHOST_ROUTES.users, icon: Users, permission: null },
-  { label: "Properties", href: WEBHOST_OPS_ROUTES.properties, icon: Building2, permission: "can_manage_properties" as const },
-  { label: "Landlords", href: WEBHOST_OPS_ROUTES.landlords, icon: Handshake, permission: "can_manage_system_landlords" as const },
-  { label: "Subscriptions", href: WEBHOST_ROUTES.subscriptions, icon: CreditCard, permission: "can_manage_billing" as const },
-  { label: "Tiers", href: WEBHOST_OPS_ROUTES.tiers, icon: Layers, permission: "can_manage_billing" as const },
-  { label: "Contracts", href: WEBHOST_OPS_ROUTES.contracts, icon: FileCheck, permission: "can_manage_managers" as const },
-  { label: "Audit Log", href: WEBHOST_ROUTES.audit, icon: ScrollText, permission: "can_view_activity_logs" as const },
-  { label: "Security", href: WEBHOST_ROUTES.security, icon: ShieldAlert, permission: "can_view_activity_logs" as const },
-  { label: "Issues", href: WEBHOST_OPS_ROUTES.issues, icon: TriangleAlert, permission: "can_view_activity_logs" as const },
-  { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings, permission: null },
-  { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette, permission: null },
+const NAV_GROUPS = [
+  {
+    label: "Control plane",
+    items: [
+      { label: "Dashboard", href: WEBHOST_ROUTES.dashboard, icon: LayoutDashboard, permission: null },
+      { label: "Applications", href: WEBHOST_ROUTES.applications, icon: Layers2, permission: null },
+      { label: "Deployments", href: WEBHOST_ROUTES.deployments, icon: Rocket, permission: null },
+      { label: "Operations", href: WEBHOST_ROUTES.operations, icon: Activity, permission: null },
+    ],
+  },
+  {
+    label: "Administration",
+    items: [
+      { label: "Organizations", href: WEBHOST_ROUTES.organizations, icon: Building2, permission: "can_manage_managers" as const },
+      { label: "Users", href: WEBHOST_ROUTES.users, icon: Users, permission: null },
+      { label: "Properties", href: WEBHOST_OPS_ROUTES.properties, icon: Building2, permission: "can_manage_properties" as const },
+      { label: "Landlords", href: WEBHOST_OPS_ROUTES.landlords, icon: Handshake, permission: "can_manage_system_landlords" as const },
+      { label: "Subscriptions", href: WEBHOST_ROUTES.subscriptions, icon: CreditCard, permission: "can_manage_billing" as const },
+      { label: "Tiers", href: WEBHOST_OPS_ROUTES.tiers, icon: Layers, permission: "can_manage_billing" as const },
+      { label: "Contracts", href: WEBHOST_OPS_ROUTES.contracts, icon: FileCheck, permission: "can_manage_managers" as const },
+      { label: "Audit Log", href: WEBHOST_ROUTES.audit, icon: ScrollText, permission: "can_view_activity_logs" as const },
+      { label: "Security", href: WEBHOST_ROUTES.security, icon: ShieldAlert, permission: "can_view_activity_logs" as const },
+      { label: "Issues", href: WEBHOST_OPS_ROUTES.issues, icon: TriangleAlert, permission: "can_view_activity_logs" as const },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings, permission: null },
+      { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette, permission: null },
+    ],
+  },
 ] as const;
+
+type NavItem = (typeof NAV_GROUPS)[number]["items"][number];
 
 interface WebhostLayoutProps {
   children: ReactNode;
@@ -101,7 +125,7 @@ export default function WebhostLayout({ children, title, description, actions }:
     return <Navigate to={WEBHOST_LOGIN} replace />;
   }
 
-  const canSee = (permission: (typeof NAV)[number]["permission"]) => {
+  const canSee = (permission: NavItem["permission"]) => {
     if (!permission) return true;
     return isSuperAdmin || hasWebhostPermission(permission);
   };
@@ -114,8 +138,14 @@ export default function WebhostLayout({ children, title, description, actions }:
     return location.pathname === href || location.pathname.startsWith(`${href}/`);
   };
 
+  const surface = webhostSurface(location.pathname);
+
   return (
-    <div className="min-h-screen bg-background text-foreground" {...portalSurfaceProps("platform_admin")}>
+    <div
+      className="min-h-screen bg-background text-foreground"
+      {...portalSurfaceProps("platform_admin")}
+      style={surface === "admin" ? ({ "--portal-accent": ADMIN_SURFACE_ACCENT } as CSSProperties) : undefined}
+    >
       <PortalAccentBar className="fixed left-0 right-0 top-0 z-[60]" />
       <a
         href="#main-content"
@@ -150,23 +180,34 @@ export default function WebhostLayout({ children, title, description, actions }:
           </button>
         </div>
 
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4" aria-label="Platform admin">
-          {NAV.filter((item) => canSee(item.permission)).map((item) => {
-            const active = isActive(item.href);
+        <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label="Platform admin">
+          {NAV_GROUPS.map((group) => {
+            const visible = group.items.filter((item) => canSee(item.permission));
+            if (visible.length === 0) return null;
             return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setSidebarOpen(false)}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  deskNavClass(active),
-                )}
-              >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1 truncate">{item.label}</span>
-              </Link>
+              <div key={group.label} className="space-y-0.5">
+                <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  {group.label}
+                </p>
+                {visible.map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                        deskNavClass(active),
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="flex-1 truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>
@@ -201,7 +242,7 @@ export default function WebhostLayout({ children, title, description, actions }:
               <Menu className="h-5 w-5" />
             </button>
             <div className="hidden min-w-0 items-center gap-2 text-sm text-muted-foreground sm:flex">
-              <span className="font-medium text-foreground">Platform admin</span>
+              <span className="font-medium text-foreground">{webhostSurfaceLabel(surface)}</span>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
               <span className="truncate">{title}</span>
             </div>

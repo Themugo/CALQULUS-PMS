@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { Search, Filter, Eye, Shield, FileText, CreditCard, Settings, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { isTenantEntityType } from '@/features/webhost/lib/adminSecurity';
+import { stringifyMasked } from '@/features/webhost/lib/secrets';
 
 const resourceTypeIcons: Record<string, React.ReactNode> = {
   contract: <FileText className="h-4 w-4" />,
@@ -55,7 +56,7 @@ export function SecurityAuditLogs() {
       log.actor_email?.toLowerCase().includes(query) ||
       log.entity_type.toLowerCase().includes(query) ||
       log.action.toLowerCase().includes(query) ||
-      (typeof log.metadata === 'object' && JSON.stringify(log.metadata).toLowerCase().includes(query))
+      (typeof log.metadata === 'object' && stringifyMasked(log.metadata as Record<string, unknown>).toLowerCase().includes(query))
     );
   });
 
@@ -203,7 +204,7 @@ export function SecurityAuditLogs() {
                       </div>
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
-                      {JSON.stringify(log.metadata).slice(0, 50)}...
+                      {log.metadata ? `${stringifyMasked(log.metadata as Record<string, unknown>).slice(0, 50)}…` : '—'}
                     </TableCell>
                     <TableCell className="text-right">
                       <Dialog>
@@ -267,7 +268,7 @@ export function SecurityAuditLogs() {
                               <div>
                                 <p className="text-muted-foreground mb-2">Details</p>
                                 <pre className="bg-secondary-background p-3 rounded-md text-xs overflow-x-auto">
-                                  {JSON.stringify(selectedLog.metadata, null, 2)}
+                                  {stringifyMasked(selectedLog.metadata as Record<string, unknown>)}
                                 </pre>
                               </div>
                               {selectedLog.actor_role && (

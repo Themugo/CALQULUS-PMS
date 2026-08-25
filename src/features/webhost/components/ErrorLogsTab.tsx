@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isSecretKey } from '@/features/webhost/lib/secrets';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -42,9 +43,6 @@ const metaOf = (log: ErrorLog): { context?: string; message?: string; url?: stri
     timestamp: typeof m.timestamp === 'string' ? m.timestamp : undefined,
   };
 };
-
-const isSecretKey = (k: string): boolean =>
-  /password|secret|token|api[_-]?key|service[_-]?role|private[_-]?key|authorization|cookie/i.test(k);
 
 const safeMetaString = (log: ErrorLog): string => {
   const m = (log.metadata ?? {}) as Record<string, unknown>;

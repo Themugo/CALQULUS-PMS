@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isTenantEntityType } from '@/features/webhost/lib/adminSecurity';
+import { stringifyMasked } from '@/features/webhost/lib/secrets';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Badge } from '@/shared/components/ui/badge';
@@ -187,7 +188,7 @@ const ActivityLog: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs max-w-48 truncate">
-                        {entry.metadata ? JSON.stringify(entry.metadata).slice(0, 80) : '—'}
+                        {entry.metadata ? stringifyMasked(entry.metadata).slice(0, 80) : '—'}
                       </TableCell>
                     </TableRow>
                   );

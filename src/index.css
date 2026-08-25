@@ -406,6 +406,8 @@
     /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
     --calqulus-teal: #3BB7A6;
     --calqulus-teal-deep: #2C9183;
+    /* Admin accent — indigo. Platform-control surfaces only; status colours stay semantic. */
+    --calqulus-indigo: #4658C9;
     /* Portal accent hues (deep steps chosen to pass a white-desk check) */
     --calqulus-emerald: #2F9B74;
     --calqulus-amber: #C08A37;

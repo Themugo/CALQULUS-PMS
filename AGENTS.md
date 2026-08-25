@@ -356,6 +356,14 @@ Tier 3: Tenants
 - **Portal accents aligned to six-identity spec:** Manager Blue (unchanged), Landlord **Emerald** #2F9B74, Agency **Amber** #C08A37, Tenant **Violet** #7C5FD3, Admin/WebHost **Teal** #2C9183. Tokens and CSS variables both updated; accent stripes remain 2px-only.
 - `designTokens.test.ts` lockstep asserts new hexes + CSS vars. 969/970 tests pass; no layout changes.
 
+## Admin + WebHost Desk (Phase 8, 2026-08-24)
+- One security model, two identities on `/webhost`: **control-plane** (WebHost — teal accent, Applications/Deployments/Domains/Services/Health/Logs) and **admin** (platform control — indigo accent, Organizations/Users/Subscriptions/Audit/Security). `webhostSurface(pathname)` + `ADMIN_SURFACE_ACCENT` in `lib/webhostPaths.ts`; `--calqulus-indigo: #4658C9` token in index.css. WebhostLayout applies `--portal-accent` override on admin surfaces + breadcrumb "WebHost ›"/"Admin ›".
+- **Sidebar grouped**: CONTROL PLANE / ADMINISTRATION / ACCOUNT (`NAV_GROUPS` in WebhostLayout).
+- **Secrets fix**: `ActivityLog` + `SecurityAuditLogs` previously rendered raw `JSON.stringify(metadata)` — now use `stringifyMasked` from `lib/secrets.ts` (table cells, detail dialog, and search filter). `ErrorLogsTab` now imports shared `isSecretKey` (duplicated regex removed).
+- Status vocabulary Operational/Warning/Degraded/Down with dot + icon + text (never colour alone) was already correct via `ServiceStatusCell` — locked by test.
+- Authorization untouched: all `/webhost/*` routes still `protected: true`; WebhostPermissionGate gates (`can_manage_managers`/`can_manage_billing`/`can_view_activity_logs`) unchanged; guest users see "You do not have permission".
+- Tests: `src/test/adminWebhostPhase8.test.ts` (17) — indigo/teal tokens, surface split, nav groups, masked viewers, canonical statuses, routes still protected, no fabricated deployments. Suite: 1134 passed / 1 skipped.
+
 ## Tenant Service Portal (Phase 7, 2026-08-24)
 - Tenant stays a service portal, never an enterprise dashboard. Answers: where do I live, what do I owe, when is it due, can I pay, do I have a maintenance issue, where are my documents.
 - Header (`TenantLayout`): CALQULUS wordmark + Notifications (`TenantNotificationBell`) + Profile link. Header cluster shows whenever `userRole` resolves (dev guest has role without `user`).
