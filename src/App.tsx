@@ -56,6 +56,19 @@ const RoutePrefetcher = () => {
     const path = location.pathname;
 
     if (path === "/") {
+      // The dashboard mounts lazy recharts charts immediately; warming the
+      // chunk during the initial data fetch removes the waterfall between
+      // stats arriving and charts painting (requestIdleCallback with a
+      // timeout fallback so startup work is never blocked).
+      const warmCharts = () => {
+        void import("@/features/dashboard/components/RevenueChart");
+      };
+      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        window.requestIdleCallback(warmCharts, { timeout: 2000 });
+      } else {
+        window.setTimeout(warmCharts, 500);
+      }
+
       // On dashboard, prefetch properties and tenants
       queryClient.prefetchQuery({
         queryKey: ['properties', 'list', managerId],
