@@ -10,6 +10,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Input } from '@/shared/components/ui/input';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { format } from 'date-fns';
 import {
   Activity, Search, User, Building, FileText,
@@ -143,10 +144,7 @@ const ActivityLog: React.FC = () => {
             {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-12 w-full bg-card/80" />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="py-12 text-center text-muted-foreground/70">
-            <Activity className="h-10 w-10 mx-auto mb-3 opacity-30" />
-            <p>No activity logs found</p>
-          </div>
+          <EmptyState icon={Activity} title="No activity logs found" />
         ) : (
           <div className="rounded-lg border border-border/60 overflow-hidden">
             <Table>

@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { toast } from "@/shared/hooks/use-toast";
 import { FeatureGate } from "@/shared/components/FeatureGate";
 import { formatDate } from "@/shared/lib/dateFormat";
@@ -227,10 +228,7 @@ const VacationNotices = () => {
               <Skeleton className="h-12 w-full" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <CalendarX className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No vacation notices yet</p>
-            </div>
+            <EmptyState icon={CalendarX} title="No vacation notices yet" />
           ) : (
             <div className="overflow-x-auto">
               <Table>

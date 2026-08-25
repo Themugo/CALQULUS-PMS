@@ -8,6 +8,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -781,11 +782,11 @@ const ManagerPaymentHistory = () => {
             {pendingLoading ? (
               <div className="py-8 text-center text-muted-foreground">Loading...</div>
             ) : pendingInvoices.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground">
-                <CheckCircle className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">All invoices paid up</p>
-                <p className="text-sm mt-1">No pending or overdue invoices</p>
-              </div>
+              <EmptyState
+                icon={CheckCircle}
+                title="All invoices paid up"
+                description="No pending or overdue invoices"
+              />
             ) : (
               <Table>
                 <TableHeader>

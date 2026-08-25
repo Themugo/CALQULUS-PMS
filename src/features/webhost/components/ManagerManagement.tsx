@@ -401,10 +401,7 @@ const ManagerManagement: React.FC = () => {
         ? `No managers match "${search.trim()}" in ${activeFilter}.`
         : EMPTY_COPY[activeFilter];
       return (
-        <div className="mt-4 py-12 text-center">
-          <Users className="h-10 w-10 mx-auto mb-3 text-secondary-foreground/40" />
-          <p className="text-sm text-secondary-foreground">{copy}</p>
-        </div>
+        <EmptyState className="mt-4" icon={Users} title={copy} />
       );
     }
     return (

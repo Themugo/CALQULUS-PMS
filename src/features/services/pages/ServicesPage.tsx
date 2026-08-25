@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import {
   Store, Briefcase, ClipboardList, CheckCircle, Clock,
   Wrench, Star, ArrowRight
@@ -118,11 +119,11 @@ const ServicesPage: React.FC = () => {
               {jobsLoading ? (
                 <Skeleton className="h-32 w-full" />
               ) : assignedJobs.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  <ClipboardList className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm font-medium">No jobs assigned yet</p>
-                  <p className="text-xs mt-1">Make sure your profile is complete and visible in the marketplace</p>
-                </div>
+                <EmptyState
+                  icon={ClipboardList}
+                  title="No jobs assigned yet"
+                  description="Make sure your profile is complete and visible in the marketplace"
+                />
               ) : (
                 <div className="space-y-3">
                   {assignedJobs.map(job => (

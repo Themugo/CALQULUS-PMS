@@ -23,6 +23,7 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -1071,12 +1072,7 @@ Status: PAID
                 <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
             ) : contracts.length === 0 ? (
-              <Card className="bg-card/50 border-border/50">
-                <CardContent className="py-12 text-center">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                  <p className="text-muted-foreground">No contracts yet</p>
-                </CardContent>
-              </Card>
+              <EmptyState icon={FileText} title="No contracts yet" />
             ) : (
               <div className="grid gap-4">
                 {contracts.map((contract) => (

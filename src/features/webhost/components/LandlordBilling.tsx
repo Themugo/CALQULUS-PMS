@@ -171,11 +171,11 @@ const LandlordBilling: React.FC = () => {
           {isLoading ? (
             <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-10 w-full bg-secondary-background"/>)}</div>
           ) : invoices.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              <Building2 className="h-10 w-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No landlord invoices yet</p>
-              <p className="text-xs mt-1">Create an invoice to bill a landlord for portal access or services</p>
-            </div>
+            <EmptyState
+              icon={Building2}
+              title="No landlord invoices yet"
+              description="Create an invoice to bill a landlord for portal access or services"
+            />
           ) : (
             <Table>
               <TableHeader>

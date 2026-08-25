@@ -18,6 +18,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Separator } from '@/shared/components/ui/separator';
 import { Switch } from '@/shared/components/ui/switch';
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import {
   FileDown, Send, Plus, X, Building2, CheckCircle2,
   AlertTriangle, Clock, TrendingUp, Loader2, Mail, Users,
@@ -592,9 +593,8 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
         <Skeleton className="h-48 w-full rounded-xl" />
       ) : properties.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <Building2 className="h-8 w-8 mx-auto mb-2 opacity-30" />
-            <p className="text-sm">No invoices found for {periodLabel}</p>
+          <CardContent className="p-6">
+            <EmptyState icon={Building2} title={`No invoices found for ${periodLabel}`} />
           </CardContent>
         </Card>
       ) : (

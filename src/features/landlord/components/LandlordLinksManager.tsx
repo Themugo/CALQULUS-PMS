@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/components/ui/alert-dialog";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { UserPlus, Trash2, User, Building2, Mail, Phone } from "lucide-react";
 import { errorToast } from "@/shared/lib/errorToast";
 
@@ -205,12 +206,11 @@ const LandlordLinksManager = () => {
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
         ) : landlords.length === 0 && unlinkedProperties.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Building2 className="h-12 w-12 mx-auto mb-3 text-muted-foreground/40" />
-              <p className="text-muted-foreground">No properties found. Add a property first to link landlords.</p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Building2}
+            title="No properties found"
+            description="Add a property first to link landlords."
+          />
         ) : (
           <>
             {unlinkedProperties.length > 0 && (

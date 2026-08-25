@@ -7,6 +7,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { Home, FileText, Wrench, FileSignature, CheckCircle, Clock, Archive, Calendar } from 'lucide-react';
 import { format, differenceInMonths } from 'date-fns';
 
@@ -195,13 +196,11 @@ const TenantPortableHistory: React.FC = () => {
         {/* ── Tenancy history ── */}
         <TabsContent value="units" className="mt-4 space-y-3">
           {tenancies.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              <Home className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="text-sm font-medium">No tenancy history yet</p>
-              <p className="text-xs mt-1 opacity-70">
-                Your rental history will appear here once linked by your manager
-              </p>
-            </div>
+            <EmptyState
+              icon={Home}
+              title="No tenancy history yet"
+              description="Your rental history will appear here once linked by your manager"
+            />
           ) : (
             tenancies.map((t: TenancyRecord) => {
               const months = t.move_out_date

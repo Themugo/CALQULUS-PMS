@@ -18,6 +18,8 @@ import {
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import {
   MessageSquare,
   Bell,
@@ -103,7 +105,7 @@ const TenantInbox: React.FC = () => {
   const tenantId = userRole?.tenant_id;
 
   // Formal notices from manager
-  const { data: notices = [], isLoading: noticesLoading, isError: noticesError, error: noticesQueryError } = useQuery({
+  const { data: notices = [], isLoading: noticesLoading, isError: noticesError, error: noticesQueryError, refetch: refetchNotices } = useQuery({
     queryKey: ['tenant-notices-inbox', tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
@@ -305,15 +307,13 @@ const TenantInbox: React.FC = () => {
           {noticesLoading ? (
             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
           ) : noticesError ? (
-            <div className="py-12 text-center text-destructive" role="alert">
-              <AlertTriangle className="h-10 w-10 mx-auto mb-3 opacity-70" />
-              <p className="text-sm">Could not load notices. {noticesQueryError instanceof Error ? noticesQueryError.message : "Try again."}</p>
-            </div>
+            <ErrorState
+              title="Could not load notices"
+              description={noticesQueryError instanceof Error ? noticesQueryError.message : "Try again."}
+              onRetry={() => refetchNotices()}
+            />
           ) : notices.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              <Bell className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No notices from your manager yet</p>
-            </div>
+            <EmptyState icon={Bell} title="No notices from your manager yet" />
           ) : (
             <VirtualizedList
               items={notices}
@@ -331,10 +331,7 @@ const TenantInbox: React.FC = () => {
           {messagesLoading ? (
             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)
           ) : messages.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              <MessageSquare className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No messages from your manager yet</p>
-            </div>
+            <EmptyState icon={MessageSquare} title="No messages from your manager yet" />
           ) : (
             messages.map((m) => <MessageCard key={m.id} msg={m} />)
           )}

@@ -8,6 +8,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { Download, FileSpreadsheet, RefreshCw, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { downloadPropertyStatementPDF } from '@/features/properties/lib/propertyStatementPdfExport';
@@ -278,10 +279,7 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
             {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
           </div>
         ) : rows.length === 0 ? (
-          <div className="py-12 text-center text-muted-foreground">
-            <FileSpreadsheet className="h-10 w-10 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No units found for this property</p>
-          </div>
+          <EmptyState icon={FileSpreadsheet} title="No units found for this property" />
         ) : (
           <table className="w-full text-xs border-collapse" style={{ minWidth: '900px' }}>
             <thead>

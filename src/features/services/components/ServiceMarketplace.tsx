@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Separator } from '@/shared/components/ui/separator';
+import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ProviderReviewsSection } from '@/features/services/components/ProviderReviewsSection';
 import {
   Search, Star, MapPin, Phone, CheckCircle, Clock,
@@ -184,11 +185,7 @@ const ServiceMarketplace: React.FC<ServiceMarketplaceProps> = ({
           {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 w-full" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-12 text-center text-muted-foreground">
-          <Wrench className="h-10 w-10 mx-auto mb-2 opacity-30" />
-          <p className="text-sm font-medium">No providers found</p>
-          <p className="text-xs mt-1">Try a different search or category</p>
-        </div>
+        <EmptyState icon={Wrench} title="No providers found" description="Try a different search or category" />
       ) : (
         <div className="space-y-3">
           {filtered.map((p: ServiceProviderItem) => (

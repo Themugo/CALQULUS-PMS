@@ -325,10 +325,7 @@ const SystemLandlordManagement: React.FC = () => {
                 </Button>
               </div>
             ) : filteredLandlords.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground">
-                <Home className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">{totalLandlords === 0 ? 'No landlords registered.' : (searchQ || statusFilter !== 'all') ? 'No landlords match the current filters.' : 'No landlords registered.'}</p>
-              </div>
+              <EmptyState icon={Home} title={totalLandlords === 0 ? 'No landlords registered.' : (searchQ || statusFilter !== 'all') ? 'No landlords match the current filters.' : 'No landlords registered.'} />
             ) : (
               <div className="divide-y divide-slate-800">
                 <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground bg-secondary-background">
@@ -448,10 +445,7 @@ const SystemLandlordManagement: React.FC = () => {
                 </Button>
               </div>
             ) : payouts.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground">
-                <Banknote className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">No payout requests routed to you yet.</p>
-              </div>
+              <EmptyState icon={Banknote} title="No payout requests routed to you yet." />
             ) : (
               <Table>
                 <TableHeader>
