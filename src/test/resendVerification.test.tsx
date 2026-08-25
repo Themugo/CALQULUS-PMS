@@ -71,6 +71,12 @@ describe("ResendVerificationButton", () => {
     fireEvent.click(screen.getByRole("button", { name: /resend verification email/i }));
     await waitFor(() => expect(mockResend).toHaveBeenCalledTimes(1));
 
-    expect(screen.getByRole("button", { name: /resend verification email/i })).toBeEnabled();
+    // A failed send must surface the error toast AND leave the button
+    // re-enabled with no cooldown. The toast is queued on a microtask, so
+    // wait for it rather than asserting immediately after the mock resolves
+    // (races under full-suite CPU contention).
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /resend verification email/i })).toBeEnabled(),
+    );
   });
 });

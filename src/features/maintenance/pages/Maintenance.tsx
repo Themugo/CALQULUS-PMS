@@ -1,5 +1,5 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
@@ -70,7 +70,11 @@ import {
   type MaintenanceLane,
 } from "@/features/maintenance/lib/maintenanceLane";
 import { MaintenanceActiveReport } from "@/features/maintenance/components/MaintenanceActiveReport";
-import { MaintenanceBudgetDashboard } from "@/features/maintenance/components/MaintenanceBudgetDashboard";
+const MaintenanceBudgetDashboard = lazy(() =>
+  import("@/features/maintenance/components/MaintenanceBudgetDashboard").then((m) => ({
+    default: m.MaintenanceBudgetDashboard,
+  })),
+);
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { LoadingState } from "@/shared/components/ui/loading-state";
 import {
@@ -498,7 +502,9 @@ export default function Maintenance() {
             onStartRequest={(id) => updateRequestStatus(id, "in_progress", "open")}
             onCompleteRequest={(id) => setCompleteTarget({ id, oldStatus: "in_progress" })}
           />
-          <MaintenanceBudgetDashboard requests={requests} />
+          <Suspense fallback={<div className="h-48 animate-pulse rounded-lg bg-muted" aria-hidden />}>
+            <MaintenanceBudgetDashboard requests={requests} />
+          </Suspense>
         </div>
       </details>
 
