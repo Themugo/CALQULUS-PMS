@@ -1,30 +1,27 @@
 import { KeyboardEvent, useCallback, useRef, useState } from "react";
 import { ArrowUpRight, Briefcase, Building2, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { ArchitecturalSurface, type PropertyVisualSlot } from "@/features/marketing/components/ArchitecturalSurface";
-import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
+import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { cn } from "@/shared/lib/utils";
 
 const TYPES = [
   {
     id: "residential" as PropertyVisualSlot,
     name: "Residential",
-    tagline: "Apartments and estates — rent, repairs and residents under control.",
+    tagline: "Apartments, estates and rental communities.",
     icon: Home,
-    accent: CALQULUS_PORTAL_ACCENT.manager.hex,
   },
   {
     id: "commercial" as PropertyVisualSlot,
     name: "Commercial",
-    tagline: "Retail and mixed spaces — leases and collections in one view.",
+    tagline: "Retail and mixed-use properties.",
     icon: Building2,
-    accent: CALQULUS_PORTAL_ACCENT.landlord.hex,
   },
   {
     id: "office" as PropertyVisualSlot,
     name: "Office",
-    tagline: "Office buildings — occupancy and service workflows connected.",
+    tagline: "Office buildings and managed workspaces.",
     icon: Briefcase,
-    accent: CALQULUS_PORTAL_ACCENT.tenant.hex,
   },
 ];
 
@@ -86,7 +83,7 @@ export function PropertyTypeSlider() {
             {TYPES.map((item) => (
               <li key={item.id} className="min-w-[85%] snap-center sm:min-w-[70%] lg:min-w-0">
                 <article className="group relative h-[220px] overflow-hidden rounded-[14px] border border-border shadow-sm transition-shadow duration-200 hover:shadow-md">
-                  <ArchitecturalSurface slot={item.id} />
+                  <ArchitecturalSurface slot={item.id} imageSrc={PROPERTY_IMAGES[item.id]} />
                   <div
                     className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent"
                     aria-hidden
@@ -94,10 +91,7 @@ export function PropertyTypeSlider() {
                   <div className="relative flex h-full flex-col justify-end p-5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span
-                          className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white"
-                          style={{ boxShadow: `inset 0 0 0 1px ${item.accent}66` }}
-                        >
+                        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-white ring-1 ring-white/25 backdrop-blur-sm">
                           <item.icon className="h-4 w-4" aria-hidden />
                         </span>
                         <h3 className="font-heading text-base font-semibold text-white sm:text-lg">{item.name}</h3>

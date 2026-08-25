@@ -30,63 +30,26 @@ export const PUBLIC_NAV = [
   { label: "How it works", hash: "how-it-works" },
 ] as const;
 
-/** Homepage hero copy — single source of truth. */
+/** Homepage hero copy — single source of truth. Approved message hierarchy. */
 export const HERO_CONTENT = {
-  eyebrow: "Property operations",
-  titleLines: ["Run every property", "from one place."],
-  copy: "Properties, tenants, billing and maintenance — connected.",
+  eyebrow: "Property operations, connected",
+  titleLines: ["Run your properties.", "Without the chaos."],
+  copy: "CALQULUS brings properties, tenants, leases, billing, payments and maintenance into one focused operational system.",
   primaryCta: "Start managing",
-  secondaryCta: "Explore platform",
+  secondaryCta: "See how it works",
 } as const;
 
-/** Illustrative portfolio cards for the property carousel. Sample figures only. */
-export const PORTFOLIO_PROPERTIES = [
-  {
-    name: "Kilimani Court",
-    slot: "residential",
-    units: 24,
-    occupied: 22,
-    occupancy: 92,
-    collected: "KES 1.24M collected",
-    status: "paid",
-  },
-  {
-    name: "West View",
-    slot: "office",
-    units: 18,
-    occupied: 15,
-    occupancy: 83,
-    collected: "KES 0.86M collected",
-    status: "pending",
-  },
-  {
-    name: "Block C",
-    slot: "residential",
-    units: 30,
-    occupied: 23,
-    occupancy: 77,
-    collected: "KES 2.10M collected",
-    status: "overdue",
-  },
-  {
-    name: "Parklands Plaza",
-    slot: "commercial",
-    units: 12,
-    occupied: 12,
-    occupancy: 100,
-    collected: "KES 0.64M collected",
-    status: "paid",
-  },
-  {
-    name: "Ngong View",
-    slot: "residential",
-    units: 16,
-    occupied: 14,
-    occupancy: 88,
-    collected: "KES 0.72M collected",
-    status: "pending",
-  },
-] as const;
+/**
+ * Homepage role-strip accents (master spec §14) — deliberately distinct from
+ * the in-app portal accents so the marketing page never turns multi-coloured:
+ * navy + white carry the page, these are small markers only.
+ */
+export const HOMEPAGE_ROLE_ACCENTS = {
+  manager: "#2F6FED",
+  landlord: "#0F8A6A",
+  agency: "#0F766E",
+  tenant: "#0284C7",
+} as const;
 
 /** Platform overview — capability tiles (verified features, see src/features/*). */
 export const PLATFORM_CAPABILITIES = [
@@ -112,24 +75,6 @@ export const WORKFLOW_STEPS = [
   { label: "Reporting", note: "See the portfolio" },
 ] as const;
 
-/** Product showcase items — each reuses a dedicated lightweight visual. */
-export const SHOWCASES = [
-  {
-    id: "financials",
-    category: "Financial operations",
-    headline: "Know what came in.",
-    copy: "Billing, payments and statements in sync.",
-    points: ["KES collected vs billed", "Billing runs and receipts", "Outstanding per property"],
-  },
-  {
-    id: "maintenance",
-    category: "Maintenance",
-    headline: "Maintenance, under control.",
-    copy: "Requests, assignments and resolution in one list.",
-    points: ["Open and completed repairs", "Inspections per property", "Status visible end to end"],
-  },
-] as const;
-
 /** Trust points — only capabilities that exist in the application today. */
 export const TRUST_POINTS = [
   {
@@ -145,17 +90,17 @@ export const TRUST_POINTS = [
     copy: "Activity history across billing, payments and maintenance.",
   },
   {
-    title: "Reliable",
-    copy: "Financial records following one consistent path.",
+    title: "Connected",
+    copy: "Properties, tenants, billing and maintenance on one record.",
   },
 ] as const;
 
 /** Final call-to-action copy. */
 export const FINAL_CTA = {
-  title: "Ready to run your portfolio?",
-  copy: "Start with CALQULUS.",
+  title: "Ready to run your portfolio with more control?",
+  copy: "One system for properties, tenants, billing and maintenance.",
   primary: "Get started",
-  secondary: "Explore platform",
+  secondary: "Sign in",
 } as const;
 
 export const RESOURCE_LINKS = [

@@ -1,41 +1,34 @@
-import { FileCheck, History, Lock, ShieldCheck, type LucideIcon } from "lucide-react";
+import { History, Lock, Network, ShieldCheck, type LucideIcon } from "lucide-react";
 import { TRUST_POINTS } from "@/features/marketing/publicConfig";
 
 const TRUST_ICONS: Record<(typeof TRUST_POINTS)[number]["title"], LucideIcon> = {
   "Role-based": Lock,
   Secure: ShieldCheck,
   Auditable: History,
-  Reliable: FileCheck,
+  Connected: Network,
 };
 
-/** Compact trust grid — four verified pillars, icons and short copy only. */
+/** Compact trust row — small icon, short title, one sentence per pillar. */
 export function TrustSection() {
   return (
-    <section className="border-b border-border bg-background py-12 sm:py-16">
+    <section className="border-b border-border bg-background py-10 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="public-section-title">Built to keep operations moving.</h2>
-        </div>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST_POINTS.map((point) => {
             const Icon = TRUST_ICONS[point.title];
             return (
-              <article
-                key={point.title}
-                className="rounded-[14px] border border-border bg-card p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <li key={point.title} className="flex items-start gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                   <Icon className="h-4 w-4" aria-hidden />
                 </span>
-                <h3 className="mt-3 font-heading text-base font-semibold text-foreground">
-                  {point.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{point.copy}</p>
-              </article>
+                <div className="min-w-0">
+                  <h3 className="font-heading text-sm font-semibold text-foreground">{point.title}</h3>
+                  <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{point.copy}</p>
+                </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </section>
   );

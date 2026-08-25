@@ -4,13 +4,14 @@ import { Button } from "@/shared/components/ui/button";
 import { ArchitecturalSurface } from "@/features/marketing/components/ArchitecturalSurface";
 import { ProductPreview } from "@/features/marketing/components/ProductPreview";
 import { HERO_CONTENT, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
 
-/** Faint property environment behind the dashboard — supports, never competes. */
+/** Faint Nairobi property photograph behind the dashboard — supports, never competes. */
 const propertyEnvironment = (
   <div className="pointer-events-none absolute inset-0" aria-hidden>
     <div className="absolute inset-x-2 -top-6 bottom-10 overflow-hidden rounded-[24px] opacity-30 sm:inset-x-6">
       <div className="absolute inset-0 opacity-60">
-        <ArchitecturalSurface slot="residential" />
+        <ArchitecturalSurface slot="residential" imageSrc={PROPERTY_THUMBS.residential} loading="eager" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-[#F4F7FB] via-transparent to-[#F4F7FB]/70" />
     </div>
@@ -49,7 +50,7 @@ export function ExecutiveHero() {
             variant="outline"
             className="h-12 min-h-11 border-border bg-card/70 px-6 backdrop-blur-sm hover:bg-card"
           >
-            <a href="#platform">{HERO_CONTENT.secondaryCta}</a>
+            <a href="#how-it-works">{HERO_CONTENT.secondaryCta}</a>
           </Button>
         </div>
       </div>

@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
 import { Bell, Building2, LayoutDashboard, Search, Users, Wallet, Wrench, BarChart3 } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { invoiceStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
+import { PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
 
 const SIDEBAR_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, active: true },
@@ -21,6 +21,7 @@ const SNAPSHOT = [
 
 /** Relative bar heights only — illustrative, not measured data. */
 const COLLECTION_TREND = [58, 64, 61, 74, 69, 83, 93] as const;
+const WEEK_TICKS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"] as const;
 
 const MAINTENANCE_ACTIVITY = [
   { label: "Leaking tap · Kilimani Court", status: "pending" },
@@ -35,165 +36,41 @@ interface ProductPreviewProps {
   elevated?: boolean;
 }
 
-const UNIT_REGISTER = [
-  { unit: "A-01", status: "paid", note: "Occupied" },
-  { unit: "A-02", status: "paid", note: "Occupied" },
-  { unit: "A-03", status: "pending", note: "Vacant" },
-  { unit: "B-01", status: "paid", note: "Occupied" },
-  { unit: "B-02", status: "pending", note: "Notice given" },
-  { unit: "B-03", status: "paid", note: "Occupied" },
-] as const;
-
-const BILLING_ROWS = [
-  { label: "Rent · Kilimani Court", amount: "KES 1.24M", status: "paid" },
-  { label: "Water · West View", amount: "KES 86K", status: "paid" },
-  { label: "Rent · Block C", amount: "KES 210K", status: "pending" },
-] as const;
-
-function MiniPanel({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-3">
-      <p className="type-label mb-2">{title}</p>
-      {children}
-    </div>
-  );
-}
-
-function StatusPill({ status }: { status: string }) {
-  return (
-    <span className={`${statusBadgeClass(invoiceStatusTone(status))} shrink-0`}>
-      {status === "paid" ? "Done" : "Open"}
-    </span>
-  );
-}
-
-function CollectionsChart({ compact = false }: { compact?: boolean }) {
+/**
+ * Restrained collections bar chart — CALQULUS blue for the current week,
+ * lighter blue for history. Subtle grid, rounded tops, small axis ticks.
+ */
+function CollectionsChart() {
   return (
     <div
-      className={`relative flex items-end gap-1.5 ${compact ? "h-10" : "h-14"}`}
+      className="relative flex items-end gap-2 border-b border-border pb-2"
       role="img"
       aria-label="Illustrative collections chart for the last seven weeks"
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between" aria-hidden>
-        <span className="border-t border-border" />
-        <span className="border-t border-border" />
-        <span className="border-t border-border" />
-        <span className="border-t border-border" />
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between pb-2" aria-hidden>
+        <span className="border-t border-border/60" />
+        <span className="border-t border-border/60" />
+        <span className="border-t border-border/60" />
       </div>
-      {COLLECTION_TREND.map((height, index) => (
-        <div
-          key={index}
-          className="relative z-[1] flex-1 rounded-sm bg-primary/70 last:bg-primary"
-          style={{ height: `${height}%` }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/**
- * Specialized lightweight visuals for the capability showcase — each presents
- * ONE product capability, so the full manager dashboard is never repeated
- * outside the hero. All figures are illustrative.
- */
-export function PropertyOperationsVisual() {
-  return (
-    <div className="rounded-[14px] border border-border bg-background p-3 shadow-sm sm:p-4">
-      <MiniPanel title="Property register">
-        <div className="flex items-center justify-between gap-2 rounded-md bg-primary/5 px-2.5 py-2">
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-foreground">Kilimani Court</p>
-            <p className="text-[11px] text-muted-foreground">24 units · 22 occupied</p>
-          </div>
-          <p className="font-heading text-sm font-semibold text-primary">92%</p>
-        </div>
-      </MiniPanel>
-      <div className="mt-3">
-        <MiniPanel title="Unit occupancy">
-          <ul className="divide-y divide-border">
-            {UNIT_REGISTER.map((row) => (
-              <li key={row.unit} className="flex items-center justify-between gap-2 py-1.5 text-xs">
-                <span className="font-medium text-foreground">{row.unit}</span>
-                <span className="min-w-0 truncate text-muted-foreground">{row.note}</span>
-                <span className={`${statusBadgeClass(invoiceStatusTone(row.status))} shrink-0`}>
-                  {row.note === "Vacant" ? "Open" : "Set"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </MiniPanel>
-      </div>
-    </div>
-  );
-}
-
-const FINANCE_SNAPSHOT = [
-  { label: "Collected", value: "KES 1.24M" },
-  { label: "Collection rate", value: "93%" },
-  { label: "Outstanding", value: "KES 210K" },
-] as const;
-
-export function FinancialOperationsVisual() {
-  return (
-    <div className="rounded-[14px] border border-border bg-background p-3 shadow-sm sm:p-4">
-      <div className="grid grid-cols-3 gap-2">
-        {FINANCE_SNAPSHOT.map((metric) => (
-          <div key={metric.label} className="rounded-lg border border-border bg-card p-2">
-            <p className="truncate text-[9px] font-medium uppercase tracking-wide text-muted-foreground">
-              {metric.label}
-            </p>
-            <p className="mt-1 truncate font-heading text-xs font-semibold leading-none tracking-tight text-foreground">
-              {metric.value}
+      {COLLECTION_TREND.map((height, index) => {
+        const latest = index === COLLECTION_TREND.length - 1;
+        return (
+          <div key={index} className="relative z-[1] flex-1">
+            {latest ? (
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 font-heading text-[10px] font-semibold text-primary">
+                {height}%
+              </span>
+            ) : null}
+            <div
+              className={`w-full rounded-t-[3px] ${latest ? "bg-primary" : "bg-primary/35"}`}
+              style={{ height: `${(height / 100) * 3.5}rem` }}
+            />
+            <p className="mt-1 text-center text-[8px] font-medium uppercase text-muted-foreground" aria-hidden>
+              {WEEK_TICKS[index]}
             </p>
           </div>
-        ))}
-      </div>
-      <div className="mt-3">
-        <MiniPanel title="Billing runs">
-          <ul className="divide-y divide-border">
-            {BILLING_ROWS.map((row) => (
-              <li key={row.label} className="flex items-center justify-between gap-2 py-1.5 text-xs">
-                <span className="min-w-0 truncate text-muted-foreground">{row.label}</span>
-                <span className="shrink-0 font-medium text-foreground">{row.amount}</span>
-                <StatusPill status={row.status} />
-              </li>
-            ))}
-          </ul>
-        </MiniPanel>
-      </div>
-      <div className="mt-3">
-        <MiniPanel title="Collections, last 7 weeks">
-          <CollectionsChart compact />
-        </MiniPanel>
-      </div>
-    </div>
-  );
-}
-
-export function MaintenanceVisual() {
-  return (
-    <div className="rounded-[14px] border border-border bg-background p-3 shadow-sm sm:p-4">
-      <MiniPanel title="Maintenance activity">
-        <ul className="divide-y divide-border">
-          {MAINTENANCE_ACTIVITY.map((item) => (
-            <li key={item.label} className="flex items-center justify-between gap-2 py-2 text-xs">
-              <span className="min-w-0 truncate text-muted-foreground">{item.label}</span>
-              <StatusPill status={item.status} />
-            </li>
-          ))}
-        </ul>
-      </MiniPanel>
-      <div className="mt-3">
-        <MiniPanel title="Property">
-          <div className="flex items-center justify-between gap-2 text-xs">
-            <div className="min-w-0">
-              <p className="truncate font-semibold text-foreground">Kilimani Court</p>
-              <p className="text-[11px] text-muted-foreground">Next inspection: 12 Sep</p>
-            </div>
-            <p className="shrink-0 font-heading text-sm font-semibold text-foreground">2 open</p>
-          </div>
-        </MiniPanel>
-      </div>
+        );
+      })}
     </div>
   );
 }
@@ -264,27 +141,9 @@ export function ProductPreview({ captionClassName = "text-muted-foreground", ele
               ))}
             </div>
 
-            <div className="mt-3 rounded-lg border border-border bg-card p-3">
+            <div className="mt-3 rounded-lg border border-border bg-card p-3 pb-2">
               <p className="type-label mb-2">Collections, last 7 weeks</p>
-              <div
-                className="relative flex h-14 items-end gap-1.5"
-                role="img"
-                aria-label="Illustrative collections chart for the last seven weeks"
-              >
-                <div className="pointer-events-none absolute inset-0 flex flex-col justify-between" aria-hidden>
-                  <span className="border-t border-border" />
-                  <span className="border-t border-border" />
-                  <span className="border-t border-border" />
-                  <span className="border-t border-border" />
-                </div>
-                {COLLECTION_TREND.map((height, index) => (
-                  <div
-                    key={index}
-                    className="relative z-[1] flex-1 rounded-sm bg-primary/70 last:bg-primary"
-                    style={{ height: `${height}%` }}
-                  />
-                ))}
-              </div>
+              <CollectionsChart />
             </div>
 
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -302,11 +161,19 @@ export function ProductPreview({ captionClassName = "text-muted-foreground", ele
                 </ul>
               </div>
               <div>
-                <p className="type-label mb-2">Property</p>
-                <div className="rounded-lg border border-border bg-card p-2.5">
-                  <p className="text-xs font-semibold text-foreground">Kilimani Court</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">24 units · 22 occupied</p>
-                  <p className="mt-1.5 text-[11px] text-muted-foreground">Next inspection: 12 Sep</p>
+                <p className="type-label mb-2">Property summary</p>
+                <div className="overflow-hidden rounded-lg border border-border bg-card">
+                  <img
+                    src={PROPERTY_THUMBS.residential}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-14 w-full object-cover"
+                  />
+                  <div className="p-2.5">
+                    <p className="text-xs font-semibold text-foreground">Kilimani Court</p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">24 units · 22 occupied</p>
+                  </div>
                 </div>
               </div>
             </div>

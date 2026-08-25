@@ -3,23 +3,24 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { ArchitecturalSurface } from "@/features/marketing/components/ArchitecturalSurface";
 import { FINAL_CTA, PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
 
-/** Premium tinted final CTA — subtle property visual behind a light card. */
+/** Deep-navy final CTA — compact, faint property photograph behind the copy. */
 export function CompactCta() {
   return (
     <section id="contact" className="scroll-mt-20 bg-background py-10 sm:py-14">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[16px] border border-primary/15 bg-[#EAF0F8] px-6 py-10 sm:px-10 sm:py-12">
-          <div className="pointer-events-none absolute inset-0 opacity-20" aria-hidden>
-            <ArchitecturalSurface slot="office" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#EAF0F8] via-[#EAF0F8]/70 to-transparent" />
+        <div className="relative overflow-hidden rounded-[16px] bg-navy-deep px-6 py-10 sm:px-10 sm:py-12">
+          <div className="pointer-events-none absolute inset-0 opacity-15" aria-hidden>
+            <ArchitecturalSurface slot="office" imageSrc={PROPERTY_THUMBS.office} />
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-deep via-navy-deep/70 to-navy-deep/30" />
           </div>
           <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div className="max-w-xl">
-              <h2 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-2xl">
                 {FINAL_CTA.title}
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
+              <p className="mt-2 text-sm leading-relaxed text-white/75 sm:text-[15px]">
                 {FINAL_CTA.copy}
               </p>
             </div>
@@ -34,9 +35,9 @@ export function CompactCta() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="min-h-11 border-border bg-card/70 backdrop-blur-sm hover:bg-card"
+                className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
               >
-                <a href="#platform">{FINAL_CTA.secondary}</a>
+                <Link to={PUBLIC_ROUTES.managerSignIn}>{FINAL_CTA.secondary}</Link>
               </Button>
             </div>
           </div>

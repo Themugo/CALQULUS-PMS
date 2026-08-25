@@ -5,8 +5,6 @@ import { ExecutiveHero } from "@/features/marketing/components/ExecutiveHero";
 import { OperationalWorkflow } from "@/features/marketing/components/OperationalWorkflow";
 import { PlatformOverview } from "@/features/marketing/components/PlatformOverview";
 import { PortalExperiences } from "@/features/marketing/components/PortalExperiences";
-import { ProductShowcase } from "@/features/marketing/components/ProductShowcase";
-import { PropertyCarousel } from "@/features/marketing/components/PropertyCarousel";
 import { PropertyTypeSlider } from "@/features/marketing/components/PropertyTypeSlider";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
 import { PublicShell } from "@/features/marketing/components/PublicShell";
@@ -18,16 +16,15 @@ const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8";
 const BAND = "scroll-mt-20 py-10 sm:py-12";
 const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary";
 
+/** Approved compact structure — hero, capabilities, types, roles, lifecycle, trust, CTA. */
 function HomeView() {
   return (
     <>
       <ExecutiveHero />
-      <PropertyCarousel />
       <PlatformOverview />
       <PropertyTypeSlider />
-      <OperationalWorkflow />
-      <ProductShowcase />
       <PortalExperiences />
+      <OperationalWorkflow />
       <TrustSection />
       <CompactCta />
     </>

@@ -19,27 +19,27 @@ function renderAt(path: string) {
 }
 
 describe("PublicLandingPage", () => {
-  it("renders the product-first homepage with a single h1", () => {
+  it("renders the approved hero hierarchy with a single h1", () => {
     renderAt("/");
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Run every property from one place.");
+    expect(headings[0]).toHaveTextContent("Run your properties. Without the chaos.");
+    expect(screen.getByText(/property operations, connected/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/properties, tenants, billing and maintenance/i),
+      screen.getByText(/brings properties, tenants, leases, billing, payments and maintenance/i),
     ).toBeInTheDocument();
   });
 
-  it("keeps working portal routes on the portal cards", () => {
+  it("keeps working portal routes on the hero, role strip and final CTA", () => {
     renderAt("/");
     expect(screen.getByRole("link", { name: /^start managing$/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    const exploreLinks = screen.getAllByRole("link", { name: /explore platform/i });
-    expect(exploreLinks.length).toBeGreaterThan(0);
-    for (const link of exploreLinks) {
-      expect(link).toHaveAttribute("href", "#platform");
-    }
+    expect(screen.getByRole("link", { name: /see how it works/i })).toHaveAttribute(
+      "href",
+      "#how-it-works",
+    );
     expect(screen.getByRole("link", { name: /view manager portal/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
@@ -115,18 +115,9 @@ describe("PublicLandingPage", () => {
     expect(container.querySelector(".bg-slate-950")).toBeNull();
   });
 
-  it("shows the property portfolio carousel with sample cards", () => {
+  it("follows the approved compact structure without extra sections", () => {
     renderAt("/");
-    expect(
-      screen.getByRole("heading", { name: /see what's happening across your properties/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Kilimani Court" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "West View" })).toBeInTheDocument();
-    expect(screen.getAllByText(/sample properties/i).length).toBeGreaterThan(0);
-  });
-
-  it("shows the compact capability grid and property type slider", () => {
-    renderAt("/");
+    // Approved order: capabilities → property types → roles → lifecycle → trust → final CTA.
     expect(
       screen.getByRole("heading", { name: /everything you need\. one workspace\./i }),
     ).toBeInTheDocument();
@@ -137,26 +128,34 @@ describe("PublicLandingPage", () => {
     expect(screen.getByRole("heading", { name: "Residential" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Commercial" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
-  });
-
-  it("renders the visual workflow, finance and maintenance showcases, and trust grid", () => {
-    renderAt("/");
+    expect(screen.getByRole("heading", { name: /one system\. every role\./i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /one property\. every operation\./i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /know what came in\./i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /maintenance, under control\./i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /built to keep operations moving\./i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Role-based" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Secure" })).toBeInTheDocument();
+    // Removed surplus sections stay gone.
+    expect(screen.queryByRole("heading", { name: /see what's happening across your properties/i })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /know what came in\./i })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /maintenance, under control\./i })).toBeNull();
+    expect(screen.queryByText(/sample properties/i)).toBeNull();
   });
 
-  it("uses the full dashboard only once — capability rows use dedicated lightweight visuals", () => {
+  it("renders the lifecycle flow and compact trust row", () => {
+    renderAt("/");
+    for (const step of ["Property", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
+      expect(screen.getAllByText(step).length).toBeGreaterThan(0);
+    }
+    for (const pillar of ["Role-based", "Secure", "Auditable", "Connected"]) {
+      expect(screen.getByRole("heading", { name: pillar })).toBeInTheDocument();
+    }
+  });
+
+  it("uses the full dashboard only once — the hero preview is the single product visual", () => {
     renderAt("/");
     const captions = screen.getAllByText(
       /Illustrative manager dashboard\. Sample figures only/i,
     );
     expect(captions.length).toBe(1);
-    expect(screen.getByText("Billing runs")).toBeInTheDocument();
-    expect(screen.getAllByText("Maintenance activity").length).toBeGreaterThan(0);
+    expect(screen.getByText("Maintenance activity")).toBeInTheDocument();
+    expect(screen.getByText("Property summary")).toBeInTheDocument();
+    expect(screen.getByText("Collections, last 7 weeks")).toBeInTheDocument();
   });
 
   it("does not fabricate certifications or fake social links", () => {
@@ -167,18 +166,21 @@ describe("PublicLandingPage", () => {
     expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
   });
 
-  it("renders a tinted final CTA card with get-started and explore actions", () => {
+  it("renders a deep-navy final CTA with get-started and sign-in actions", () => {
     renderAt("/");
-    expect(
-      screen.getByRole("heading", { name: /ready to run your portfolio\?/i }),
-    ).toBeInTheDocument();
-    const ctaSection = screen.getByRole("heading", {
-      name: /ready to run your portfolio\?/i,
-    }).closest("section");
+    const heading = screen.getByRole("heading", {
+      name: /ready to run your portfolio with more control\?/i,
+    });
+    const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
+    expect(ctaSection!.querySelector(".bg-navy-deep")).toBeTruthy();
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
+    );
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /sign in/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignIn,
     );
   });
 });

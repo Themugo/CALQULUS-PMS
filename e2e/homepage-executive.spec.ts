@@ -11,10 +11,10 @@ const VIEWPORTS = [
 ] as const;
 
 test.describe("Executive homepage", () => {
-  test("presents the Phase 1 positioning and live portal routes", async ({ page }) => {
+  test("presents the approved positioning and live portal routes", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("#main-content h1")).toHaveText(
-      "Run your properties with clarity and control.",
+      "Run your properties. Without the chaos.",
       { timeout: 15000 },
     );
     await expect(page.getByRole("navigation", { name: "Primary" })).toContainText("Platform");
@@ -35,7 +35,7 @@ test.describe("Executive homepage", () => {
       "/pricing",
     );
     await expect(page.locator("footer")).toContainText(
-      "The intelligent property operations platform for Kenya and East Africa",
+      "Run every property from one place.",
     );
   });
 
