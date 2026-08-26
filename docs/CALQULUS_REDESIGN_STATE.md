@@ -2,7 +2,25 @@
 
 ## CURRENT PHASE
 
-Tenant Portal Entry / Authentication (Phase 4: Tenant, 2026-08-26) - /tenant/login rebuilt as a residential home-service entry per tenant spec; auth handlers, biometric, role-gate, forgot dialog, invitation routes and onboarding logic preserved verbatim; no backend change.
+Manager Portal Entry ŌĆö Premium Final Refinement (2026-08-26) - /auth refined per the master prompt: shared portal chrome extracted, two-line headline, light-blue portal badge, widened 55/45 composition at max-w-1140, blurred architectural background, current-portal marking in the switcher, axe contrast fix in the preview. Status: completed. Auth logic, routes, validation, error handling, loading states, biometric, registration approval wording and invitation link all preserved verbatim; no backend change.
+
+## MANAGER PORTAL ENTRY REFINEMENT (2026-08-26)
+
+Scope: /auth only (manager sign-in + create-account). Frontend design refinement per master prompt; no new features, no route/auth/backend changes.
+
+Files: NEW `src/features/auth/components/PortalChrome.tsx` (shared portal shell parts: PortalHeader, PortalBadge, PortalSwitcher with aria-current marking, PortalFooter) + NEW `src/features/auth/lib/portals.ts` (PORTALS registry: manager/landlord/agency/tenant with href + accent dot - moved out of the component file to satisfy react-refresh lint). Reworked `ManagerPortalChrome.tsx` on the shared parts. `managerAuthShell.test.tsx` updated (two-line headline contract + current-portal switcher test; 6 tests). Auth.tsx presentation untouched.
+
+Refinements vs previous chrome: background photo now readable-but-quiet (opacity 30%, 3px blur, scale-105, navy veil 90/80/92); header tightened to py-4; MANAGER PORTAL badge moved to light-blue surface (bg-primary/12, border-primary/25); headline split into a deliberate two-line composition ("Run your properties" / "from one desk.") at 2rem/2.4rem leading 1.12; capability strip tightened (gap-x-5, same five small-icon labels); container widened max-w-5xl -> max-w-[1140px] with lg columns 1.2fr/1fr (~55/45) so the auth card visually dominates; preview card rounded-2xl with medium elevation (stats row 48 Units / 92% Occupied / KES 1.24M Collected / 4 Overdue, 7-period collection trend, exactly two lower panels - Maintenance activity + Property with the Kilimani Court photo raised to h-16); other-portals switcher now lists all four portals with the current one (Manager) marked via a filled chip + aria-current instead of a link; footer tightened.
+
+Accessibility fix: preview "Open" maintenance chips used text-warning-foreground (white) on bg-warning/15 - axe serious contrast failure. Now bg-warning/15 text-warning per repo convention (0 axe violations, wcag2a/aa).
+
+Responsive work: 0px horizontal overflow at 1440/1280/1024/768/430/414/390/375 (playwright-core + system chromium); mobile DOM order unchanged (identity -> auth card -> preview -> switcher -> legal), sign-in card precedes the preview. Sign-in tab, Create account tab (approval wording preserved), Forgot password dialog and Landlord switcher navigation all exercised manually in browser.
+
+Gates: lint 0 errors (11 pre-existing warnings); tsc clean; unit 1172 passed / 1 skipped; build clean (precache 765.65 KiB); axe 0 violations. Console shows only the observability logger's INFO "Application initialized" line (emitted via console.error in preview mode - pre-existing, unrelated).
+
+Known issues: none new. The observability INFO-via-console.error noise is pre-existing; ENTERPRISE_DESIGN_SYSTEM.md palette section remains stale (documented in earlier phase).
+
+Next recommended step: adopt the shared PortalChrome parts in the Landlord/Agency/Tenant entry chromes so all four portals share one shell (each currently ships its own internal switcher/footer copies), then repeat this refinement pass per portal.
 
 ## TENANT PORTAL ENTRY REDESIGN (Phase 4: Tenant, 2026-08-26)
 

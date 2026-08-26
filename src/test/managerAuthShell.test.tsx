@@ -18,12 +18,13 @@ function renderShell() {
 }
 
 describe("Manager portal entry chrome", () => {
-  it("renders the manager identity hierarchy: eyebrow, headline, capability line", () => {
+  it("renders the manager identity hierarchy: eyebrow, two-line headline, capability line", () => {
     renderShell();
     expect(screen.getAllByText(/^manager portal$/i).length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Run your properties from one desk.",
-    );
+    const headline = screen.getByRole("heading", { level: 1 });
+    expect(headline).toHaveTextContent("Run your properties from one desk.");
+    // Deliberate two-line composition: "Run your properties" / "from one desk."
+    expect(headline.querySelectorAll("span.block").length).toBe(2);
     for (const capability of ["Properties", "Tenants", "Billing", "Payments", "Maintenance"]) {
       expect(screen.getAllByText(capability).length).toBeGreaterThan(0);
     }
@@ -65,6 +66,15 @@ describe("Manager portal entry chrome", () => {
       "href",
       PUBLIC_ROUTES.tenantLogin,
     );
+  });
+
+  it("marks Manager as the current portal in the switcher (not a link)", () => {
+    renderShell();
+    const switcher = screen.getByRole("navigation", { name: /other calqulus portals/i });
+    const current = switcher.querySelector('[aria-current="true"]');
+    expect(current).not.toBeNull();
+    expect(current).toHaveTextContent(/^manager$/i);
+    expect(switcher.querySelectorAll("a").length).toBe(3);
   });
 
   it("keeps the legal footer compact", () => {
