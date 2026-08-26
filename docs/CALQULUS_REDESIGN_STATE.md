@@ -4,6 +4,22 @@
 
 Homepage - Compact Executive Product Landing (2026-08-26) - homepage re-tightened per master spec; existing routes/components/auth untouched, no backend change.
 
+## AGENCY PORTAL ENTRY REDESIGN (Phase 4, 2026-08-26)
+
+Scope: /agency/login only. Sign-in handlers, role redirect, Forgot dialog, provisioning-only rule preserved verbatim. No backend change.
+
+Files: NEW `src/features/auth/components/AgencyPortalChrome.tsx` (AgencyPortalShell + AgencyPortfolioPreview + internal PortalSwitcher/CompactPortalFooter); `AgencyAuth.tsx` now renders AgencyPortalShell with compact provisioning line inside the card; `AgencyDeskPreview.tsx` deleted (replaced). `agencyTenantAuthShell.test.tsx` trimmed to tenant-only; new `agencyAuthShell.test.tsx` (6 tests). Generic `PortalAuthShell` kept for tenant.
+
+Layout: navy base + office property photo at 20% opacity under 85-92% navy veil; header (BrandMark inverse + AGENCY + Back to CALQULUS); left identity (AGENCY PORTAL eyebrow + "Run your client portfolio with control." + 2-line description + 4-item capability line: Client properties / Landlords / Collections / Revenue share, each with teal icons); right white auth card (AGENCY chip + Welcome back + "Sign in to manage your client portfolio." + form + compact provisioning line). AgencyPortfolioPreview labeled ILLUSTRATIVE AGENCY VIEW: teal "Collected KES 2.1M" hero row on top, 4-stat row (Collected 2.1M / Your split 8% / Properties 6 / Landlords 4), 7-period collection trend (final bar teal, others navy-mid/25), client portfolio rows (Kilimani Court "Managed for 2 landlords" photo, Westlands House and Parklands Plaza "Managed for 1 landlord" icons). Portal switcher + compact footer below. Mobile DOM order: identity -> auth card -> preview -> switcher -> legal.
+
+Accent: teal #0F766E for agency chip, capability icons, collected figure, final trend bar, AGENCY VIEW badge; navy/white stay dominant. Other portals switcher uses manager blue / landlord emerald / tenant cyan dots.
+
+QA clarification: first responsive sweep rendered the agency dashboard because VITE_ENABLE_DEV_ACCESS defaulted to true in dev; re-ran with VITE_ENABLE_DEV_ACCESS=false to inspect the actual login page.
+
+Gates: lint 0 errors (11 pre-existing warnings); tsc clean; unit 1165 passed / 1 skipped (agencyAuthShell: 6 new, agencyTenantAuthShell: 1 remaining); build clean (precache 763.34 KiB). Responsive QA: 0px horizontal overflow at 1440/1280/1024/768/430/390/375; zero page errors or failed requests.
+
+Remaining visual issues: none known.
+
 ## LANDLORD PORTAL ENTRY REDESIGN (Phase 3, 2026-08-26)
 
 Scope: /landlord/login only. Sign-in handlers, role redirect, Forgot dialog, invitation-only rule preserved verbatim. No backend change.

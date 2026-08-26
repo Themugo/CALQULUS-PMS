@@ -5,25 +5,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Handshake, Eye, EyeOff, Building2, Users, CreditCard, Percent } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
-import { AgencyDeskPreview } from '@/features/auth/components/AgencyDeskPreview';
-import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
-
-const features: PortalAuthFeature[] = [
-  { icon: Building2, text: 'Client properties', detail: 'Buildings you run on behalf of landlords.', tint: 'bg-soft-blue text-primary' },
-  { icon: Users, text: 'Tenants & leases', detail: 'Invites, occupancy, and rent on those units.', tint: 'bg-navy-mid/10 text-navy-mid' },
-  { icon: Percent, text: 'Revenue share', detail: 'Configurable split per property.', tint: 'bg-primary/10 text-primary' },
-  { icon: CreditCard, text: 'Collections', detail: 'M-Pesa, statements, and payouts.', tint: 'bg-navy-mid/10 text-navy-mid' },
-];
-
-const otherPortals: PortalSwitchLink[] = [
-  { label: 'Manager', href: PUBLIC_ROUTES.managerSignIn },
-  { label: 'Landlord', href: PUBLIC_ROUTES.landlordLogin },
-  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
-];
+import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
+import { AgencyPortalShell } from '@/features/auth/components/AgencyPortalChrome';
 
 const AgencyAuth = () => {
   const navigate = useNavigate();
@@ -64,23 +50,7 @@ const AgencyAuth = () => {
   }
 
   return (
-    <PortalAuthShell
-      portal="agency"
-      portalName="Agency"
-      badgeLabel="Agency desk"
-      icon={Handshake}
-      tagline="Properties managed for landlords, with a configurable split."
-      heroTitle="Run the book on behalf of landlords."
-      heroDescription="Client buildings, tenants, rent, and statements sit on the same records. Payment destination follows the operating model set on each property."
-      features={features}
-      otherPortals={otherPortals}
-      formTitle="Sign in"
-      formSubtitle="Use the agency email for this book."
-      submitLabel="Sign in"
-      notice="This portal is for agencies. Your webhost or platform team provisions the account. It is not a landlord login and not a tenant login."
-      aside={<AgencyDeskPreview />}
-      variant="light"
-    >
+    <AgencyPortalShell>
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-sm font-medium text-foreground">Email address</Label>
@@ -128,7 +98,11 @@ const AgencyAuth = () => {
           )}
         </Button>
       </form>
-    </PortalAuthShell>
+
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        This portal is for agencies. Your webhost or platform team provisions the account.
+      </p>
+    </AgencyPortalShell>
   );
 };
 
