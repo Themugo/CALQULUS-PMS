@@ -165,17 +165,21 @@ describe("PublicLandingPage", () => {
     expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
   });
 
-  it("renders a deep-navy final CTA with a single get-started action", () => {
+  it("renders a deep-navy final CTA with get-started and sign-in actions", () => {
     renderAt("/");
     const heading = screen.getByRole("heading", {
-      name: /rent\. maintenance\. tenants\. payments\./i,
+      name: /ready to run your portfolio with more control\?/i,
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
     expect(ctaSection!.querySelector(".bg-navy-deep")).toBeTruthy();
-    const links = within(ctaSection as HTMLElement).getAllByRole("link");
-    expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAccessibleName("Get started");
-    expect(links[0]).toHaveAttribute("href", PUBLIC_ROUTES.managerSignUp);
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignUp,
+    );
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /sign in/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignIn,
+    );
   });
 });

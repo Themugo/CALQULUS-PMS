@@ -1,6 +1,22 @@
 # CALQULUS Redesign ŌĆö Persistent State
 
 ## CURRENT PHASE
+
+Homepage - Compact Executive Product Landing (2026-08-26) - homepage re-tightened per master spec; existing routes/components/auth untouched, no backend change.
+
+## HOMEPAGE REDESIGN STATE
+Completed: compact executive landing page with 8 bands (hero > capability strip > property types > role strip > lifecycle > trust > final CTA > footer).
+
+Components created: none - reused the existing marketing set.
+Components reused: ExecutiveHero, PlatformOverview, PropertyTypeSlider, PortalExperiences, OperationalWorkflow, TrustSection, CompactCta, PublicHeader, PublicFooter, PublicShell.
+Components removed: none; PropertyTypeSlider no longer uses slider buttons/scroll (static 3-panel grid).
+Structural changes: hero padding reduced; section vertical padding flattened (py-12/16 -> py-8/10 across sections); capability strip converted from 2x4 cards to a wrapped chip row; property types became 3 equal static panels with small icons; role copy shortened to one line each; lifecycle supporting copy shortened.
+Copy changes: One platform. Every property.; Built for the way property is managed.; All under control. (lifecycle heading); Ready to run your portfolio with more control? + Get started/Sign in final CTA (spec re-approved the two-button CTA).
+Responsive status: zero horizontal overflow at 1440/834/390; mobile stacks headline > copy > CTA > preview > capabilities > types > roles > workflow > CTA.
+Remaining issues: none in scope; 11 pre-existing eslint warnings untouched; e2e full suite environmentally blocked in sandbox.
+
+Verification: lint 0 errors, typecheck clean, 1151 passed / 1 skipped, build clean (precache 760.46 KiB).
+
 Onboarding Findings Remediation (phase 13, 2026-08-24) — all four Phase 11–12 findings fixed; no auth logic/routes/schema changed. U1: new ResendVerificationButton (supabase.auth.resend, 60s cooldown, enumeration-safe copy) mounted in manager/agency/landlord verification steps. U2: new useOnboardingDraft hook (sessionStorage, per-user keys, cleared on submit) wired into manager (org name, team email), agency (agency name, client name, team email), landlord (profile name). U3: all raw error.message toasts replaced with errorToast across 9 onboarding mutations + AdminInviteAccept + ActivateAccount + TenantAuth signup fallback (sanitizeAuthError). F4: dead LandlordAuth.tsx deleted; scripts/audit-production.mjs repointed to LandlordPortalAuth (role-redirect guard check). Verification green: tsc 0, eslint 0 (1 pre-existing warning), 1072 tests passed/1 skipped (+9 new), build OK. audit:prod failure on adminDesk.test.ts hardcoded Supabase URL is pre-existing on clean main. Full detail in docs/CALQULUS_ONBOARDING_AUDIT.md Phase 13.
 
 ## HISTORY

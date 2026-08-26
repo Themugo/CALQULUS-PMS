@@ -15,7 +15,7 @@ const ROLES: {
     icon: LayoutDashboard,
     title: "Manager",
     visual: "Property operations",
-    purpose: "Portfolio operations and collections in one workspace.",
+    purpose: "Run operations.",
     href: PUBLIC_ROUTES.managerSignUp,
   },
   {
@@ -23,7 +23,7 @@ const ROLES: {
     icon: TrendingUp,
     title: "Landlord",
     visual: "Portfolio and income",
-    purpose: "Property performance and income, without tenant PII.",
+    purpose: "Track your portfolio.",
     href: PUBLIC_ROUTES.landlordLogin,
   },
   {
@@ -31,7 +31,7 @@ const ROLES: {
     icon: Users,
     title: "Agency",
     visual: "Client portfolios",
-    purpose: "Manage properties for landlords on a commission model.",
+    purpose: "Manage properties and clients.",
     href: PUBLIC_ROUTES.agencyLogin,
   },
   {
@@ -39,7 +39,7 @@ const ROLES: {
     icon: Home,
     title: "Tenant",
     visual: "Home and rent",
-    purpose: "Pay rent, request repairs and keep documents in one place.",
+    purpose: "Pay rent and manage requests.",
     href: PUBLIC_ROUTES.tenantLogin,
   },
 ];
@@ -50,7 +50,7 @@ const ROLES: {
  */
 export function PortalExperiences() {
   return (
-    <section id="solutions" className="scroll-mt-20 bg-card py-12 sm:py-14">
+    <section id="solutions" className="scroll-mt-20 bg-card py-8 sm:py-9">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="public-section-title">One system. Every role.</h2>

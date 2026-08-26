@@ -27,12 +27,12 @@ const STEP_ICONS: Record<(typeof WORKFLOW_STEPS)[number]["label"], LucideIcon> =
 /** Visual operational lifecycle — compact UI cards chained by direction arrows. */
 export function OperationalWorkflow() {
   return (
-    <section id="how-it-works" className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-16">
+    <section id="how-it-works" className="scroll-mt-20 border-b border-border bg-background py-8 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="public-section-title">All under control.</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            The full lifecycle flows through one system.
+            One connected workspace for the daily work of managing property.
           </p>
         </div>
 

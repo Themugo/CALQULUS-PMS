@@ -8,7 +8,7 @@ import { PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
 /** Deep-navy final CTA — compact, faint property photograph behind the copy. */
 export function CompactCta() {
   return (
-    <section id="contact" className="scroll-mt-20 bg-background py-10 sm:py-14">
+    <section id="contact" className="scroll-mt-20 bg-background py-8 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[16px] bg-navy-deep px-6 py-10 sm:px-10 sm:py-12">
           <div className="pointer-events-none absolute inset-0 opacity-15" aria-hidden>
@@ -30,6 +30,14 @@ export function CompactCta() {
                   {FINAL_CTA.primary}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to={PUBLIC_ROUTES.managerSignIn}>{FINAL_CTA.secondary}</Link>
               </Button>
             </div>
           </div>

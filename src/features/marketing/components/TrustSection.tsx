@@ -11,7 +11,7 @@ const TRUST_ICONS: Record<(typeof TRUST_POINTS)[number]["title"], LucideIcon> = 
 /** Compact trust row — small icon, short title, one sentence per pillar. */
 export function TrustSection() {
   return (
-    <section className="border-b border-border bg-background py-10 sm:py-12">
+    <section className="border-b border-border bg-background py-8 sm:py-9">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST_POINTS.map((point) => {

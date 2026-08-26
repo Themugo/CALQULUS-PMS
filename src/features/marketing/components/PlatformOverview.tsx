@@ -30,19 +30,19 @@ const CAPABILITY_ICONS: Record<(typeof PLATFORM_CAPABILITIES)[number], LucideIco
  */
 export function PlatformOverview() {
   return (
-    <section id="platform" className="scroll-mt-20 border-b border-border bg-card py-12 sm:py-16">
+    <section id="platform" className="scroll-mt-20 border-b border-border bg-card py-8 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <p className={EYEBROW}>Platform</p>
           <h2 className="public-section-title mt-2">One platform. Every property.</h2>
         </div>
-        <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <ul className="mt-6 flex flex-wrap justify-center gap-3">
           {PLATFORM_CAPABILITIES.map((capability) => {
             const Icon = CAPABILITY_ICONS[capability];
             return (
               <li
                 key={capability}
-                className="flex items-center gap-3 rounded-[12px] border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                className="flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 shadow-sm transition-shadow duration-200 hover:shadow-md"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                   <Icon className="h-4 w-4" aria-hidden />

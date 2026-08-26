@@ -27,7 +27,7 @@ export function ExecutiveHero() {
     <section className="public-hero-surface-light relative -mt-[72px] overflow-hidden pt-[72px]">
       <div className="public-hero-grid-light pointer-events-none absolute inset-0" aria-hidden />
 
-      <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-14 text-center sm:px-6 sm:pt-16 lg:px-8 lg:pb-16">
+      <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-10 text-center sm:px-6 sm:pt-12 lg:px-8 lg:pb-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
           {HERO_CONTENT.eyebrow}
         </p>
