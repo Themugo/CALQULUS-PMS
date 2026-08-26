@@ -5,6 +5,8 @@
 Homepage - Compact Executive Product Landing (2026-08-26) - homepage re-tightened per master spec; existing routes/components/auth untouched, no backend change.
 
 ## HOMEPAGE REDESIGN STATE
+Visual polish pass (2026-08-26, enhanced per master prompt) - audit confirmed structure; no sections added/removed, no features/messaging added. CompactCta inner padding tightened (py-10/12 -> py-8/9); everything else re-verified as compliant (header, hero, chips, roles, lifecycle, trust, footer). Navy share measured at ~20%; accent colours stay chip-size. 57 inline SVG icons - all single-stroke lucide (one family), none beside prose sentences. FUTURE IDEA (not implemented): swapping property-commercial.webp into the hero Property-summary thumb would only be a crop change - skipped per "use imagery selectively". Responsive: zero horizontal overflow at 1440/834/390; mobile menu opens; mobile stack matches spec. Links: 0 broken links; mobile menu works; zero page errors in Playwright (one app info log only). Gate re-run: lint 0 errors (11 pre-existing warnings), typecheck clean, 1151 passed / 1 skipped, build clean (precache 760.46 KiB).
+
 Completed: compact executive landing page with 8 bands (hero > capability strip > property types > role strip > lifecycle > trust > final CTA > footer).
 
 Components created: none - reused the existing marketing set.

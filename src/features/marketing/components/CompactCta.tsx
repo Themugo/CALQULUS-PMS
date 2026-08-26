@@ -10,7 +10,7 @@ export function CompactCta() {
   return (
     <section id="contact" className="scroll-mt-20 bg-background py-8 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[16px] bg-navy-deep px-6 py-10 sm:px-10 sm:py-12">
+        <div className="relative overflow-hidden rounded-[16px] bg-navy-deep px-6 py-8 sm:px-10 sm:py-9">
           <div className="pointer-events-none absolute inset-0 opacity-15" aria-hidden>
             <ArchitecturalSurface slot="office" imageSrc={PROPERTY_THUMBS.office} />
             <div className="absolute inset-0 bg-gradient-to-r from-navy-deep via-navy-deep/70 to-navy-deep/30" />
