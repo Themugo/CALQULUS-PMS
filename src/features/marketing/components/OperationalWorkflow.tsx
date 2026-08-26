@@ -30,7 +30,7 @@ export function OperationalWorkflow() {
     <section id="how-it-works" className="scroll-mt-20 border-b border-border bg-background py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="public-section-title">One property. Every operation.</h2>
+          <h2 className="public-section-title">All under control.</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
             The full lifecycle flows through one system.
           </p>

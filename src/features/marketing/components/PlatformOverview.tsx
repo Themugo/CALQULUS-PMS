@@ -34,7 +34,7 @@ export function PlatformOverview() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <p className={EYEBROW}>Platform</p>
-          <h2 className="public-section-title mt-2">Everything you need. One workspace.</h2>
+          <h2 className="public-section-title mt-2">One platform. Every property.</h2>
         </div>
         <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PLATFORM_CAPABILITIES.map((capability) => {

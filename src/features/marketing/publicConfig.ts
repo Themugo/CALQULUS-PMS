@@ -94,12 +94,11 @@ export const TRUST_POINTS = [
   },
 ] as const;
 
-/** Final call-to-action copy. */
+/** Final call-to-action copy — single primary action (Get started). */
 export const FINAL_CTA = {
-  title: "Ready to run your portfolio with more control?",
-  copy: "One system for properties, tenants, billing and maintenance.",
+  title: "Rent. Maintenance. Tenants. Payments.",
+  copy: "All under control.",
   primary: "Get started",
-  secondary: "Sign in",
 } as const;
 
 export function homeSectionHref(hash: string, pathname: string): string {

@@ -60,7 +60,7 @@ export function PropertyTypeSlider() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="public-section-title">Built for every property.</h2>
+          <h2 className="public-section-title">Built for the way property is managed.</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
             Residential, commercial and office — one workspace.
           </p>

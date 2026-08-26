@@ -118,17 +118,17 @@ describe("PublicLandingPage", () => {
     renderAt("/");
     // Approved order: capabilities → property types → roles → lifecycle → trust → final CTA.
     expect(
-      screen.getByRole("heading", { name: /everything you need\. one workspace\./i }),
+      screen.getByRole("heading", { name: /one platform\. every property\./i }),
     ).toBeInTheDocument();
     for (const tile of ["Properties", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
       expect(screen.getAllByText(tile).length).toBeGreaterThan(0);
     }
-    expect(screen.getByRole("heading", { name: /built for every property\./i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /built for the way property is managed\./i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Residential" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Commercial" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /one system\. every role\./i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /one property\. every operation\./i })).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { name: /all under control\./i }).length).toBeGreaterThan(0);
     // Removed surplus sections stay gone.
     expect(screen.queryByRole("heading", { name: /see what's happening across your properties/i })).toBeNull();
     expect(screen.queryByRole("heading", { name: /know what came in\./i })).toBeNull();
@@ -165,21 +165,17 @@ describe("PublicLandingPage", () => {
     expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
   });
 
-  it("renders a deep-navy final CTA with get-started and sign-in actions", () => {
+  it("renders a deep-navy final CTA with a single get-started action", () => {
     renderAt("/");
     const heading = screen.getByRole("heading", {
-      name: /ready to run your portfolio with more control\?/i,
+      name: /rent\. maintenance\. tenants\. payments\./i,
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
     expect(ctaSection!.querySelector(".bg-navy-deep")).toBeTruthy();
-    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
-    );
-    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /sign in/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignIn,
-    );
+    const links = within(ctaSection as HTMLElement).getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAccessibleName("Get started");
+    expect(links[0]).toHaveAttribute("href", PUBLIC_ROUTES.managerSignUp);
   });
 });

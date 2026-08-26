@@ -31,14 +31,6 @@ export function CompactCta() {
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link to={PUBLIC_ROUTES.managerSignIn}>{FINAL_CTA.secondary}</Link>
-              </Button>
             </div>
           </div>
         </div>
