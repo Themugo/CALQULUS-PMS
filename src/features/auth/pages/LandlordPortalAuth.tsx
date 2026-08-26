@@ -5,25 +5,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Home, Eye, EyeOff, TrendingUp, FileText, Building2, Shield } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
-import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
-import { LandlordDeskPreview } from '@/features/auth/components/LandlordDeskPreview';
-import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
-
-const features: PortalAuthFeature[] = [
-  { icon: Building2, text: 'Properties', detail: 'Occupancy per building. No tenant names.', tint: 'bg-soft-blue text-primary' },
-  { icon: TrendingUp, text: 'Your share', detail: 'Collected rent after the revenue split.', tint: 'bg-primary/10 text-primary' },
-  { icon: FileText, text: 'Statements', detail: 'Monthly occupancy and revenue, not a tenant ledger.', tint: 'bg-navy-mid/10 text-navy-mid' },
-  { icon: Shield, text: 'Guarded view', detail: 'This portal never shows tenant PII.', tint: 'bg-navy-mid/10 text-navy-mid' },
-];
-
-const otherPortals: PortalSwitchLink[] = [
-  { label: 'Manager', href: PUBLIC_ROUTES.managerSignIn },
-  { label: 'Agency', href: PUBLIC_ROUTES.agencyLogin },
-  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
-];
+import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
+import { LandlordPortalShell } from '@/features/auth/components/LandlordPortalChrome';
 
 const LandlordPortalAuth = () => {
   const navigate = useNavigate();
@@ -63,23 +49,7 @@ const LandlordPortalAuth = () => {
   }
 
   return (
-    <PortalAuthShell
-      portal="landlord"
-      portalName="Landlord"
-      badgeLabel="Landlord desk"
-      icon={Home}
-      tagline="Occupancy, collections, and your share — never tenant PII."
-      heroTitle="How are my properties performing?"
-      heroDescription="Collected rent, occupancy, and net to you after the revenue split. Tenant names, phones, and payment breakdowns stay with the manager."
-      features={features}
-      otherPortals={otherPortals}
-      formTitle="Sign in"
-      formSubtitle="Use the email your property manager invited."
-      submitLabel="Sign in"
-      notice="This portal is for property owners. Your manager invites you by email. If you have not received an invitation, contact them — this page does not create a landlord account."
-      aside={<LandlordDeskPreview />}
-      variant="light"
-    >
+    <LandlordPortalShell>
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-sm font-medium text-foreground">Email address</Label>
@@ -127,7 +97,11 @@ const LandlordPortalAuth = () => {
           )}
         </Button>
       </form>
-    </PortalAuthShell>
+
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        This portal is for property owners. Your manager invites you by email.
+      </p>
+    </LandlordPortalShell>
   );
 };
 

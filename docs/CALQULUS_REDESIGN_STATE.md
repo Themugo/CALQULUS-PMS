@@ -4,6 +4,20 @@
 
 Homepage - Compact Executive Product Landing (2026-08-26) - homepage re-tightened per master spec; existing routes/components/auth untouched, no backend change.
 
+## LANDLORD PORTAL ENTRY REDESIGN (Phase 3, 2026-08-26)
+
+Scope: /landlord/login only. Sign-in handlers, role redirect, Forgot dialog, invitation-only rule preserved verbatim. No backend change.
+
+Files: NEW `src/features/auth/components/LandlordPortalChrome.tsx` (LandlordPortalShell + LandlordPerformancePreview + internal PortalSwitcher/CompactPortalFooter); `LandlordPortalAuth.tsx` now renders LandlordPortalShell with compact invitation line inside the card; `LandlordDeskPreview.tsx` deleted (replaced); `landlordAuthShell.test.tsx` rewritten (6 tests). Generic `PortalAuthShell` kept for agency/tenant.
+
+Layout: navy base + commercial property photo at 20% opacity under 85-92% navy veil; header (BrandMark inverse + LANDLORD + Back to CALQULUS); left identity (LANDLORD PORTAL eyebrow + "See how your properties are performing." + 2-line description + 5-item capability line: Properties / Occupancy / Your share / Statements / Privacy protected, each with emerald icons); right white auth card (LANDLORD chip + Welcome back + "Sign in to view your property performance." + form + compact invitation line). LandlordPerformancePreview labeled ILLUSTRATIVE LANDLORD VIEW: emerald "Net to you KES 784K" hero row on top, 4-stat row (Collected 980K / Occupancy 84% / Properties 2 / Net 784K), 6-month net-vs-collected trend (navy vs emerald bars), property rows (Kilimani Court 92%/80% with photo thumb, Westlands House 75%/80% with building icon), compact privacy line with shield. Portal switcher + compact footer below. Mobile DOM order: identity -> auth card -> preview -> switcher -> legal.
+
+Accent: emerald #0F8A6A for landlord chip, capability icons, net figure, net trend bars, ILLUSTRATIVE LANDLORD VIEW badge; navy/white stay dominant. Other portals switcher uses manager blue / agency teal / tenant cyan dots (no orange, no purple).
+
+Gates: lint 0 errors (11 pre-existing warnings); tsc clean; unit 1160 passed / 1 skipped (landlordAuthShell: 6 new); build clean (precache 763.34 KiB). Responsive QA: 0px horizontal overflow at 1440/1280/1024/768/430/390/375; zero page errors or failed requests.
+
+Remaining visual issues: none known.
+
 ## MANAGER PORTAL ENTRY REDESIGN (Phase 2, 2026-08-26)
 
 Scope: manager /auth page only. Auth/proxy logic untouched (handlers, biometric, validation, role-gate, toasts, tabs, forgot-password, invited-tenant link preserved verbatim).
