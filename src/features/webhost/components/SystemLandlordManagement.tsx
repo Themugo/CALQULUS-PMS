@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';

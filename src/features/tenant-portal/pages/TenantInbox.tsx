@@ -309,7 +309,7 @@ const TenantInbox: React.FC = () => {
           ) : noticesError ? (
             <ErrorState
               title="Could not load notices"
-              description={noticesQueryError instanceof Error ? noticesQueryError.message : "Try again."}
+              message={noticesQueryError instanceof Error ? noticesQueryError.message : "Try again."}
               onRetry={() => refetchNotices()}
             />
           ) : notices.length === 0 ? (

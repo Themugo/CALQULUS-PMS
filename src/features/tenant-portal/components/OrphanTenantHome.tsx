@@ -256,13 +256,13 @@ const OrphanTenantHome: React.FC = () => {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total recorded', value: fmt(totalPaid), color: 'text-success' },
-          { label: 'Payments logged', value: String(payments.length), color: 'text-primary' },
-          { label: 'Condition photos', value: String(photos.length), color: 'text-warning' },
+          { label: 'Total recorded', value: fmt(totalPaid) },
+          { label: 'Payments logged', value: String(payments.length) },
+          { label: 'Condition photos', value: String(photos.length) },
         ].map((k) => (
           <div key={k.label} className="rounded-xl border border-border/50 bg-card p-3 text-center">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
-            <p className={`text-lg font-bold ${k.color}`}>{k.value}</p>
+            <p className="text-lg font-bold text-foreground">{k.value}</p>
           </div>
         ))}
       </div>

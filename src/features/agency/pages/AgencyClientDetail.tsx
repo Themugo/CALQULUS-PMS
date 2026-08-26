@@ -76,7 +76,7 @@ export default function AgencyClientDetail() {
         .eq("landlord_user_id", id!)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (rows ?? []) as ClientDocument[];
+      return (rows ?? []) as unknown as ClientDocument[];
     },
   });
 

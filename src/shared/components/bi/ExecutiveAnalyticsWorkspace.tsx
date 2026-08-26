@@ -144,7 +144,7 @@ export function ExecutiveAnalyticsWorkspace() {
                 <Tooltip formatter={(v: number) => `KES ${v.toLocaleString()}`} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Area type="monotone" dataKey="Current" stroke={CALQULUS_COLOR.primary} fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
-                <Line type="monotone" dataKey="Previous" stroke="#94a3b8" strokeDasharray="5 5" strokeWidth={1.5} />
+                <Line type="monotone" dataKey="Previous" stroke={CALQULUS_COLOR.textSecondary} strokeDasharray="5 5" strokeWidth={1.5} />
                 <Line type="monotone" dataKey="Forecast" stroke={CALQULUS_COLOR.success} strokeDasharray="3 3" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>

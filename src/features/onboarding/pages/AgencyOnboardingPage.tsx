@@ -94,8 +94,8 @@ export default function AgencyOnboardingPage() {
   });
 
   useEffect(() => {
-    if (facts?.agencyName) setAgencyName((current) => current || facts.agencyName!);
-  }, [facts?.agencyName, setAgencyName]);
+    if (facts?.agencyName && !agencyName) setAgencyName(facts.agencyName);
+  }, [facts?.agencyName, agencyName, setAgencyName]);
 
   const completedIds = useMemo(() => {
     if (!facts) return new Set<string>();

@@ -66,7 +66,7 @@ const RoutePrefetcher = () => {
       if (typeof window !== "undefined" && "requestIdleCallback" in window) {
         window.requestIdleCallback(warmCharts, { timeout: 2000 });
       } else {
-        window.setTimeout(warmCharts, 500);
+        setTimeout(warmCharts, 500);
       }
 
       // On dashboard, prefetch properties and tenants
