@@ -28,7 +28,7 @@ test.describe("Accessibility", () => {
 
   test("tenant login has no critical or serious axe violations", async ({ page }) => {
     await page.goto("/tenant/login");
-    await expect(page.getByRole("heading", { name: /^sign in$/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole("heading", { name: /welcome home/i })).toBeVisible({ timeout: 15000 });
     await expectNoBlockingAxe(page);
   });
 

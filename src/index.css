@@ -750,6 +750,14 @@
   transition: all 0.15s ease-in-out;
 }
 
+@utility btn-tenant {
+  background-color: #0284c7;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: var(--calqulus-shadow-sm);
+  transition: all 0.15s ease-in-out;
+}
+
 @utility hero-gradient {
   background-color: var(--background);
   color: var(--foreground);
@@ -767,6 +775,10 @@
 @layer utilities {
   .btn-brand:hover {
     background-color: var(--primary-hover);
+  }
+
+  .btn-tenant:hover {
+    background-color: #0369a1;
   }
 
   .safe-area-bottom {
