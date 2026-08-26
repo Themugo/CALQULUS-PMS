@@ -1,44 +1,82 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { Building2 } from "lucide-react";
-import { PortalAuthShell } from "@/features/auth/components/AuthHeroChrome";
+import { ManagerPortalShell } from "@/features/auth/components/ManagerPortalChrome";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
-describe("Manager portal auth chrome", () => {
-  it("renders an operational desk instead of marketing slogans", () => {
-    render(
-      <MemoryRouter>
-        <PortalAuthShell
-          portalName="Manager"
-          badgeLabel="Manager desk"
-          icon={Building2}
-          tagline="This account runs the portfolio."
-          heroTitle="Open the manager desk."
-          heroDescription="Properties, tenants, rent, and repairs on the same records."
-          features={[
-            { icon: Building2, text: "Properties & units", detail: "Occupancy on the building record." },
-          ]}
-          otherPortals={[
-            { label: "Landlord", href: PUBLIC_ROUTES.landlordLogin },
-            { label: "Agency", href: PUBLIC_ROUTES.agencyLogin },
-            { label: "Tenant", href: PUBLIC_ROUTES.tenantLogin },
-          ]}
-          formTitle="Sign in"
-          formSubtitle="Use the email for this management account."
-          submitLabel="Sign in"
-        >
+function renderShell() {
+  return render(
+    <MemoryRouter>
+      <ManagerPortalShell formTitle="Welcome back">
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input type="email" aria-label="Email address" />
           <button type="submit">Sign in</button>
-        </PortalAuthShell>
-      </MemoryRouter>,
-    );
+        </form>
+      </ManagerPortalShell>
+    </MemoryRouter>,
+  );
+}
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Open the manager desk.");
-    expect(screen.queryByText(/empower tenants/i)).not.toBeInTheDocument();
-    expect(screen.getByText("Properties & units")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /landlord/i })).toHaveAttribute("href", PUBLIC_ROUTES.landlordLogin);
-    expect(document.querySelector(".desk-canvas")).toBeTruthy();
-    expect(document.querySelector(".public-canvas")).toBeNull();
-    expect(document.querySelector(".bg-navy-primary")).toBeNull();
+describe("Manager portal entry chrome", () => {
+  it("renders the manager identity hierarchy: eyebrow, headline, capability line", () => {
+    renderShell();
+    expect(screen.getAllByText(/^manager portal$/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Run your properties from one desk.",
+    );
+    for (const capability of ["Properties", "Tenants", "Billing", "Payments", "Maintenance"]) {
+      expect(screen.getAllByText(capability).length).toBeGreaterThan(0);
+    }
+    expect(screen.queryByText(/occupancy lives on the building record/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/open the manager desk/i)).not.toBeInTheDocument();
+  });
+
+  it("uses the property-photo background behind a navy veil", () => {
+    const { container } = renderShell();
+    expect(container.querySelector(".bg-navy-deep")).toBeTruthy();
+    const bgImage = container.querySelector('img[alt=""]');
+    expect(bgImage).not.toBeNull();
+    expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
+  });
+
+  it("renders the operational preview with illustrative-data labelling", () => {
+    renderShell();
+    expect(screen.getByText(/^illustrative data$/i)).toBeInTheDocument();
+    for (const value of ["48", "92%", "KES 1.24M", "4"]) {
+      expect(screen.getAllByText(value).length).toBeGreaterThan(0);
+    }
+    expect(screen.getByText(/collection trend/i)).toBeInTheDocument();
+    expect(screen.getByText(/maintenance activity/i)).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /kilimani court/i })).toBeInTheDocument();
+  });
+
+  it("keeps the other-portals switcher below the preview with working links", () => {
+    renderShell();
+    expect(screen.getByText(/other calqulus portals/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /landlord/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.landlordLogin,
+    );
+    expect(screen.getByRole("link", { name: /agency/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.agencyLogin,
+    );
+    expect(screen.getByRole("link", { name: /tenant/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.tenantLogin,
+    );
+  });
+
+  it("keeps the legal footer compact", () => {
+    renderShell();
+    expect(screen.getByRole("link", { name: /privacy/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.legalPrivacy,
+    );
+    expect(screen.getByRole("link", { name: /terms/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.legalTerms,
+    );
+    expect(screen.getByText(/© 2026 CALQULUS Limited/i)).toBeInTheDocument();
   });
 });

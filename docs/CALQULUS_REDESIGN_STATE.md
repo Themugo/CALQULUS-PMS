@@ -4,6 +4,20 @@
 
 Homepage - Compact Executive Product Landing (2026-08-26) - homepage re-tightened per master spec; existing routes/components/auth untouched, no backend change.
 
+## MANAGER PORTAL ENTRY REDESIGN (Phase 2, 2026-08-26)
+
+Scope: manager /auth page only. Auth/proxy logic untouched (handlers, biometric, validation, role-gate, toasts, tabs, forgot-password, invited-tenant link preserved verbatim).
+
+Files: NEW `src/features/auth/components/ManagerPortalChrome.tsx` (ManagerPortalShell + ManagerOperationalPreview + internal PortalSwitcher/CompactPortalFooter); `Auth.tsx` now renders ManagerPortalShell with formTitle = Welcome back / Create your manager account; `ManagerDeskPreview.tsx` deleted (replaced); `managerAuthShell.test.tsx` rewritten to lock the new chrome (5 tests). Old generic `PortalAuthShell` in AuthHeroChrome preserved for landlord/agency/tenant portals.
+
+Layout: navy-deep base + residential property photo at 22% opacity under an 85-92% navy veil; header (BrandMark inverse + MANAGER subtitle + Back to CALQULUS); left column eyebrow MANAGER PORTAL + headline "Run your properties from one desk." + 2-line description + inline capability line (Properties/Tenants/Billing/Payments/Maintenance, small icons); right column white auth card (MANAGER chip + formTitle + children); preview card labeled ILLUSTRATIVE DATA with 4 stats (48 Units, 92% Occupied, KES 1.24M Collected, 4 Overdue), 7-week collection trend (last bar solid primary, 93% pill), 3-row maintenance activity with Open/Done pills, and Kilimani Court property summary with photo thumb + 92% pill; OTHER CALQULUS PORTALS switcher (landlord #0F8A6A, agency #0F766E, tenant #0284C7 dots); compact footer (Privacy/Terms + copyright). Mobile DOM order: identity -> auth card -> preview -> switcher -> legal.
+
+Background asset: PROPERTY_IMAGES.residential (960x640, ~64 KB WebP, locally bundled); preview thumb: PROPERTY_THUMBS.residential (480x320, 23 KB, eager-safe).
+
+Gates: lint 0 errors (11 pre-existing warnings); tsc clean (app+node); unit 1155 passed / 1 skipped; build clean (precache 763.34 KiB). Responsive QA: 0px horizontal overflow at 1440/1280/1024/768/430/390/375; zero page errors or failed requests; signup tab renders "Create your manager account".
+
+Remaining visual issues: none known. Navy token (#254B73 computed, the system "navy-deep") retained for design-bible consistency with the certified homepage/footer - the spec hex #081A2E treated as the family reference, tokens kept.
+
 ## HOMEPAGE REDESIGN STATE
 Visual polish pass (2026-08-26, enhanced per master prompt) - audit confirmed structure; no sections added/removed, no features/messaging added. CompactCta inner padding tightened (py-10/12 -> py-8/9); everything else re-verified as compliant (header, hero, chips, roles, lifecycle, trust, footer). Navy share measured at ~20%; accent colours stay chip-size. 57 inline SVG icons - all single-stroke lucide (one family), none beside prose sentences. FUTURE IDEA (not implemented): swapping property-commercial.webp into the hero Property-summary thumb would only be a crop change - skipped per "use imagery selectively". Responsive: zero horizontal overflow at 1440/834/390; mobile menu opens; mobile stack matches spec. Links: 0 broken links; mobile menu works; zero page errors in Playwright (one app info log only). Gate re-run: lint 0 errors (11 pre-existing warnings), typecheck clean, 1151 passed / 1 skipped, build clean (precache 760.46 KiB).
 

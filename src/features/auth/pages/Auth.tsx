@@ -7,7 +7,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CheckCircle, XCircle, Eye, EyeOff, Building2, Users, CreditCard, Wrench } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
 import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
 import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
@@ -15,22 +15,8 @@ import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { trackCommercialEvent } from '@/features/dashboard/lib/commercialMetrics';
-import { AuthLoadingScreen, PortalAuthShell, type PortalAuthFeature, type PortalSwitchLink } from '@/features/auth/components/AuthHeroChrome';
-import { ManagerDeskPreview } from '@/features/auth/components/ManagerDeskPreview';
-import { PUBLIC_ROUTES } from '@/features/marketing/publicConfig';
-
-const features: PortalAuthFeature[] = [
-  { icon: Building2, text: 'Properties & units', detail: 'Occupancy lives on the building record.', tint: 'bg-soft-blue text-primary' },
-  { icon: Users, text: 'Tenants & leases', detail: 'Invites, terms, deposits, and move-in.', tint: 'bg-navy-mid/10 text-navy-mid' },
-  { icon: CreditCard, text: 'Rent & M-Pesa', detail: 'Invoices, receipts, and water billing.', tint: 'bg-primary/10 text-primary' },
-  { icon: Wrench, text: 'Repairs', detail: 'Tickets against the same units.', tint: 'bg-navy-mid/10 text-navy-mid' },
-];
-
-const otherPortals: PortalSwitchLink[] = [
-  { label: 'Landlord', href: PUBLIC_ROUTES.landlordLogin },
-  { label: 'Agency', href: PUBLIC_ROUTES.agencyLogin },
-  { label: 'Tenant', href: PUBLIC_ROUTES.tenantLogin },
-];
+import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
+import { ManagerPortalShell } from '@/features/auth/components/ManagerPortalChrome';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -192,26 +178,7 @@ const Auth = () => {
   }
 
   return (
-    <PortalAuthShell
-      portal="manager"
-      portalName="Manager"
-      badgeLabel="Manager desk"
-      icon={Building2}
-      tagline="This account runs the portfolio — properties, tenants, rent, and repairs."
-      heroTitle="Open the manager desk."
-      heroDescription="The same records you work after sign-in: properties, units, tenants, leases, invoices, M-Pesa receipts, maintenance, and landlord reports. Approval is required before platform billing starts."
-      features={features}
-      otherPortals={otherPortals}
-      formTitle={activeTab === 'signup' ? 'Create account' : 'Sign in'}
-      formSubtitle={
-        activeTab === 'signup'
-          ? 'Creates a manager account. You can add a property after approval.'
-          : 'Use the email for this management account.'
-      }
-      submitLabel="Sign in"
-      aside={<ManagerDeskPreview />}
-      variant="light"
-    >
+    <ManagerPortalShell formTitle={activeTab === 'signup' ? 'Create your manager account' : 'Welcome back'}>
       {biometricAvailable && hasStoredCredentials && !biometricLoading && (
         <div className="mb-6">
           <BiometricLoginButton biometryType={biometryType} onPress={handleBiometricLogin} isLoading={isBiometricLoggingIn} />
@@ -345,7 +312,7 @@ const Auth = () => {
           Accept invitation
         </Link>
       </p>
-    </PortalAuthShell>
+    </ManagerPortalShell>
   );
 };
 
