@@ -6,6 +6,7 @@ import {
   ChevronRight,
   CreditCard,
   FileCheck,
+  FileText,
   Handshake,
   LayoutDashboard,
   Layers,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
+import { resolveLandingEditorRole } from "@/features/marketing/landing/contentService";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
@@ -70,6 +72,7 @@ const NAV_GROUPS = [
     items: [
       { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings, permission: null },
       { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette, permission: null },
+      { label: "Landing Content", href: WEBHOST_ROUTES.landing, icon: FileText, permission: null },
     ],
   },
 ] as const;
@@ -136,6 +139,18 @@ export default function WebhostLayout({ children, title, description, actions }:
         isSuperAdmin ||
         hasWebhostPermission("can_manage_managers") ||
         platformAdminInfo?.can_read_unattached_tenants === true
+      );
+    }
+    // Landing content editing is only offered to webhost platform tiers
+    // (full or scoped). Non-webhost users never reach this layout, but the
+    // explicit check keeps the nav honest if the surface is ever reused.
+    if (item.href === WEBHOST_ROUTES.landing) {
+      return (
+        resolveLandingEditorRole(
+          userRole?.role,
+          platformAdminInfo?.admin_type,
+          platformAdminInfo?.can_manage_platform_settings,
+        ) !== null
       );
     }
     if (!item.permission) return true;

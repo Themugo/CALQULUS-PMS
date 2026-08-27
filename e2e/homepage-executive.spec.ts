@@ -13,16 +13,16 @@ const VIEWPORTS = [
 test.describe("Executive homepage", () => {
   test("presents the approved positioning and live portal routes", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("#main-content h1")).toHaveText(
-      "Run your properties. Without the chaos.",
-      { timeout: 15000 },
-    );
-    await expect(page.getByRole("navigation", { name: "Primary" })).toContainText("Platform");
-    await expect(page.getByRole("link", { name: /^start managing$/i })).toHaveAttribute(
+    await expect(page.locator("#main-content h1")).toContainText("Manage properties.", {
+      timeout: 15000,
+    });
+    await expect(page.locator("#main-content h1")).toContainText("Delight landlords. Empower tenants.");
+    await expect(page.getByRole("navigation", { name: "Primary" })).toContainText("Product");
+    await expect(page.getByRole("link", { name: /^book a demo$/i }).first()).toHaveAttribute(
       "href",
       "/auth?tab=signup",
     );
-    await expect(page.getByRole("link", { name: /manager portal/i })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: /start managing/i })).toHaveAttribute(
       "href",
       "/auth?tab=signup",
     );
@@ -35,7 +35,7 @@ test.describe("Executive homepage", () => {
       "/pricing",
     );
     await expect(page.locator("footer")).toContainText(
-      "Run every property from one place.",
+      "©",
     );
   });
 

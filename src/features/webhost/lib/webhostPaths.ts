@@ -12,6 +12,7 @@ export const WEBHOST_ROUTES = {
   security: "/webhost/security",
   settings: "/webhost/settings",
   brand: "/webhost/brand",
+  landing: "/webhost/landing",
   unattachedTenants: "/webhost/unattached-tenants",
 } as const;
 

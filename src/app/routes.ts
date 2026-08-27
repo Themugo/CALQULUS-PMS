@@ -36,6 +36,7 @@ const AdminAuditLog = lazy(() => import("@/features/webhost/pages/AdminAuditLog"
 const AdminSecurity = lazy(() => import("@/features/webhost/pages/AdminSecurity"));
 const AdminSettings = lazy(() => import("@/features/webhost/pages/AdminSettings"));
 const AdminBrandStudio = lazy(() => import("@/features/webhost/pages/AdminBrandStudio"));
+const AdminLandingContent = lazy(() => import("@/features/webhost/pages/AdminLandingContent"));
 const AdminUnattachedTenants = lazy(() => import("@/features/webhost/pages/AdminUnattachedTenants"));
 const AdminProperties = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminProperties })));
 const AdminLandlords = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminLandlords })));
@@ -251,6 +252,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/webhost/security", element: AdminSecurity, protected: true },
       { path: "/webhost/settings", element: AdminSettings, protected: true },
       { path: "/webhost/brand", element: AdminBrandStudio, protected: true },
+      { path: "/webhost/landing", element: AdminLandingContent, protected: true },
       { path: "/webhost/unattached-tenants", element: AdminUnattachedTenants, protected: true },
       { path: "/webhost/properties", element: AdminProperties, protected: true },
       { path: "/webhost/landlords", element: AdminLandlords, protected: true },

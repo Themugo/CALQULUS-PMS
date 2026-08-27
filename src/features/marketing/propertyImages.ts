@@ -3,7 +3,9 @@ import propertyCommercial from "@/assets/marketing/property-commercial.webp";
 import propertyOffice from "@/assets/marketing/property-office.webp";
 import propertyResidentialThumb from "@/assets/marketing/property-residential-thumb.webp";
 import propertyOfficeThumb from "@/assets/marketing/property-office-thumb.webp";
-import type { PropertyVisualSlot } from "@/features/marketing/components/ArchitecturalSurface";
+
+/** Property visual keys — residential | commercial | office (matches landing config). */
+export type PropertyVisualSlot = "residential" | "commercial" | "office";
 
 /**
  * Real Kenyan property photography (Unsplash License):

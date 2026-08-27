@@ -1,57 +1,42 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { CompactCta } from "@/features/marketing/components/CompactCta";
-import { ExecutiveHero } from "@/features/marketing/components/ExecutiveHero";
-import { OperationalWorkflow } from "@/features/marketing/components/OperationalWorkflow";
-import { PlatformOverview } from "@/features/marketing/components/PlatformOverview";
-import { PortalExperiences } from "@/features/marketing/components/PortalExperiences";
-import { PropertyTypeSlider } from "@/features/marketing/components/PropertyTypeSlider";
+import { LandingSections } from "@/features/marketing/landing/LandingPage";
+import { LandingShell } from "@/features/marketing/landing/components/LandingShell";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
-import { PublicShell } from "@/features/marketing/components/PublicShell";
-import { TrustSection } from "@/features/marketing/components/TrustSection";
 import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
+import { useDefaultLandingConfig } from "@/features/marketing/landing/useLandingConfig";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { SectionHeading } from "@/features/marketing/landing/components/SectionHeading";
+import { landingThemeToCssVars } from "@/features/marketing/theme/landingTheme";
 
 const CONTAINER = "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8";
 const BAND = "scroll-mt-20 py-10 sm:py-12";
-const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary";
-
-/** Approved compact structure — hero, capabilities, types, roles, lifecycle, trust, CTA. */
-function HomeView() {
-  return (
-    <>
-      <ExecutiveHero />
-      <PlatformOverview />
-      <PropertyTypeSlider />
-      <PortalExperiences />
-      <OperationalWorkflow />
-      <TrustSection />
-      <CompactCta />
-    </>
-  );
-}
 
 function PricingView() {
   const { data: tiers = [] } = usePublicTiers();
 
   return (
     <section className={`${CONTAINER} ${BAND}`}>
-      <div className="mb-6 max-w-2xl">
-        <p className={EYEBROW}>Pricing</p>
-        <h1 className="type-page-title mt-2 text-foreground">
-          Per property, per month, in Kenyan shillings.
-        </h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Multiply the published rate by the buildings you manage. Custom blocks exist for larger portfolios.
-        </p>
+      <SectionHeading
+        level={1}
+        eyebrow="Pricing"
+        title="Per property, per month, in Kenyan shillings."
+        sub="Multiply the published rate by the buildings you manage. Custom blocks exist for larger portfolios."
+      />
+      <div className="mt-8">
+        <PublicPricing tiers={tiers} />
       </div>
-      <PublicPricing tiers={tiers} />
     </section>
   );
 }
 
+/**
+ * Public landing page. Homepage renders the config-driven premium brilliant
+ * navy landing; `/pricing` shares the same branded shell + tone.
+ */
 export function PublicLandingPage() {
   const { pathname, hash } = useLocation();
+  const config = useDefaultLandingConfig();
   const isPricing = pathname === PUBLIC_ROUTES.pricing;
 
   useEffect(() => {
@@ -69,7 +54,13 @@ export function PublicLandingPage() {
     }
   }, [hash, pathname]);
 
-  return <PublicShell>{isPricing ? <PricingView /> : <HomeView />}</PublicShell>;
+  return (
+    <div style={landingThemeToCssVars(config.theme)}>
+      <LandingShell header={config.header} footer={config.footer}>
+        {isPricing ? <PricingView /> : <LandingSections config={config} />}
+      </LandingShell>
+    </div>
+  );
 }
 
 export default PublicLandingPage;
