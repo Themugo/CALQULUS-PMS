@@ -48,6 +48,7 @@ interface TenantInfo {
   unit: string | null;
   manager_id: string | null;
   property_id: string | null;
+  unit_id: string | null;
   statement_history_months: number | null;
 }
 
@@ -102,7 +103,7 @@ const TenantPortal = () => {
     if (!userRole?.tenant_id) return null;
     const { data, error } = await supabase
       .from('tenants')
-      .select('id, name, email, property, unit, property_id, manager_id, statement_history_months')
+      .select('id, name, email, property, unit, property_id, unit_id, manager_id, statement_history_months')
       .eq('id', userRole.tenant_id)
       .single();
     if (error) throw error;
@@ -139,6 +140,7 @@ const TenantPortal = () => {
       unit: data.unit,
       manager_id: managerId,
       property_id: data.property_id || null,
+      unit_id: data.unit_id || null,
       statement_history_months: data.statement_history_months,
     };
   }, [userRole?.tenant_id]);
@@ -212,6 +214,89 @@ const TenantPortal = () => {
       .maybeSingle()
       .then(({ data }) => setTenantPhone(data?.phone ?? null));
   }, [user?.id]);
+
+  // Active maintenance requests (open / in_progress) for the home surface
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const fetchActiveMaintenance = useCallback(async (): Promise<
+    { id: string; title: string; status: string }[]
+  > => {
+    if (!userRole?.tenant_id) return [];
+    const { data, error } = await supabase
+      .from('maintenance_requests')
+      .select('id, title, status')
+      .eq('tenant_id', userRole.tenant_id)
+      .in('status', ['open', 'in_progress'])
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as { id: string; title: string; status: string }[];
+  }, [userRole?.tenant_id]);
+
+  // Property + unit details for the home identity card (real image/type/bedrooms when present)
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const fetchHomeProperty = useCallback(async (): Promise<{
+    image_url: string | null;
+    property_type: string | null;
+    bedrooms: number | null;
+  }> => {
+    const empty = { image_url: null, property_type: null, bedrooms: null };
+    if (!tenantInfo?.property_id) return empty;
+    const [prop, unit] = await Promise.all([
+      supabase
+        .from('properties')
+        .select('image_url, property_type')
+        .eq('id', tenantInfo.property_id)
+        .maybeSingle(),
+      tenantInfo.unit_id
+        ? supabase.from('units').select('bedrooms').eq('id', tenantInfo.unit_id).maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+    return {
+      image_url: prop.data?.image_url ?? null,
+      property_type: prop.data?.property_type ?? null,
+      bedrooms: unit.data?.bedrooms ?? null,
+    };
+  }, [tenantInfo?.property_id, tenantInfo?.unit_id]);
+
+  // Recent notices (non-draft) surfaced to the tenant home
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const fetchRecentNotices = useCallback(async (): Promise<
+    { id: string; notice_type: string; title: string; created_at: string; unread: boolean }[]
+  > => {
+    if (!userRole?.tenant_id) return [];
+    const { data, error } = await supabase
+      .from('tenant_notices')
+      .select('id, notice_type, title, created_at, tenant_acknowledged')
+      .eq('tenant_id', userRole.tenant_id)
+      .neq('status', 'draft')
+      .order('created_at', { ascending: false })
+      .limit(4);
+    if (error) throw error;
+    return (data || []).map((n) => ({
+      id: n.id,
+      notice_type: n.notice_type,
+      title: n.title,
+      created_at: n.created_at,
+      unread: !n.tenant_acknowledged,
+    }));
+  }, [userRole?.tenant_id]);
+
+  const { data: activeMaintenance = [] } = useOfflineData(
+    `active-maintenance-${userRole?.tenant_id}`,
+    fetchActiveMaintenance,
+    { enabled: !!userRole?.tenant_id },
+  );
+
+  const { data: homeDetails = { image_url: null, property_type: null, bedrooms: null } } = useOfflineData(
+    `home-details-${userRole?.tenant_id}`,
+    fetchHomeProperty,
+    { enabled: !!userRole?.tenant_id && !!tenantInfo?.property_id },
+  );
+
+  const { data: recentNotices = [] } = useOfflineData(
+    `recent-notices-${userRole?.tenant_id}`,
+    fetchRecentNotices,
+    { enabled: !!userRole?.tenant_id },
+  );
 
   useEffect(() => {
     if (!userRole?.tenant_id) return;
@@ -477,6 +562,9 @@ const TenantPortal = () => {
           firstName={tenantInfo.name?.split(" ")[0] || "there"}
           propertyName={tenantInfo.property}
           unit={tenantInfo.unit}
+          propertyImage={homeDetails.image_url}
+          propertyType={homeDetails.property_type}
+          unitBedrooms={homeDetails.bedrooms}
           amountDue={stats.totalDue}
           dueDate={mostUrgent?.due_date ?? null}
           overdue={stats.overdueCount > 0}
@@ -484,6 +572,8 @@ const TenantPortal = () => {
           onPayRent={() => openStkPay(urgentInvoices as PayableInvoice[])}
           payDisabled={isOffline || urgentInvoices.length === 0}
           maintenanceOpen={maintenanceSummary.openCount}
+          activeMaintenance={activeMaintenance.map((m) => ({ title: m.title, status: m.status, href: '/portal/maintenance' }))}
+          recentNotices={recentNotices}
           recentActivity={recentActivity}
         />
       )}
