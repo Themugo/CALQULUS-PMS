@@ -115,9 +115,9 @@ export function DashboardKPI({
               className={cn(
                 "h-5 px-1.5 gap-0.5 text-[10px] font-bold border",
                 changeType === "increase"
-                  ? "bg-success/10 text-success dark:text-success border-success/30"
+                  ? "bg-success/10 text-success border-success/30"
                   : changeType === "decrease"
-                  ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30"
+                  ? "bg-destructive/10 text-destructive border-destructive/30"
                   : "bg-muted text-muted-foreground border-border"
               )}
             >

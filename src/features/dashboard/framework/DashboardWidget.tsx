@@ -58,8 +58,8 @@ export function DashboardWidget({
   const accentBorderClasses = {
     primary: "border-l-4 border-l-primary",
     emerald: "border-l-4 border-l-success",
-    amber: "border-l-4 border-l-amber-500",
-    red: "border-l-4 border-l-red-500",
+    amber: "border-l-4 border-l-warning",
+    red: "border-l-4 border-l-destructive",
     sky: "border-l-4 border-l-primary",
     purple: "border-l-4 border-l-navy-mid",
   };
