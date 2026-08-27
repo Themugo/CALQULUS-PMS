@@ -37,7 +37,7 @@ async function fetchLandlordPortfolio(userId: string): Promise<LandlordPortfolio
     .filter((id): id is string => Boolean(id));
 
   const [propsResult, unitsResult, profilesResult, portfolioStatsResult] = await Promise.all([
-    supabase.from("properties").select("id, name, address, units, occupied, revenue").in("id", propertyIds),
+    supabase.from("properties").select("id, name, address, image_url, units, occupied, revenue").in("id", propertyIds),
     supabase.from("units").select("id, property_id, status, rent_amount").in("property_id", propertyIds),
     managerIds.length > 0
       ? supabase.from("profiles").select("id, full_name, email").in("id", managerIds)
@@ -80,6 +80,7 @@ async function fetchLandlordPortfolio(userId: string): Promise<LandlordPortfolio
       id: p.id,
       name: p.name,
       address: p.address,
+      image_url: p.image_url ?? null,
       units: totalUnits,
       occupied: totalOccupied,
       vacant: totalVacant,

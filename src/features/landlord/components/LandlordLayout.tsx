@@ -21,15 +21,40 @@ import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { PortalAccentBar, deskNavClass, portalSurfaceProps } from "@/core/design";
 import { LANDLORD_LOGIN, LANDLORD_ROUTES } from "@/features/landlord/lib/landlordPaths";
 
-const NAV = [
-  { label: "Dashboard", href: LANDLORD_ROUTES.dashboard, icon: LayoutDashboard },
-  { label: "Portfolio", href: LANDLORD_ROUTES.portfolio, icon: Building2 },
-  { label: "Financials", href: LANDLORD_ROUTES.financials, icon: BarChart3 },
-  { label: "Statements", href: LANDLORD_ROUTES.statements, icon: FileSpreadsheet },
-  { label: "Maintenance", href: LANDLORD_ROUTES.maintenance, icon: Wrench },
-  { label: "Documents", href: LANDLORD_ROUTES.documents, icon: FileText },
-  { label: "Settings", href: LANDLORD_ROUTES.settings, icon: Settings },
-] as const;
+interface NavItem {
+  label: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+}
+
+const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
+  {
+    label: "Overview",
+    items: [{ label: "Dashboard", href: LANDLORD_ROUTES.dashboard, icon: LayoutDashboard }],
+  },
+  {
+    label: "Portfolio",
+    items: [{ label: "Portfolio", href: LANDLORD_ROUTES.portfolio, icon: Building2 }],
+  },
+  {
+    label: "Financials",
+    items: [
+      { label: "Financials", href: LANDLORD_ROUTES.financials, icon: BarChart3 },
+      { label: "Statements", href: LANDLORD_ROUTES.statements, icon: FileSpreadsheet },
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      { label: "Maintenance", href: LANDLORD_ROUTES.maintenance, icon: Wrench },
+      { label: "Documents", href: LANDLORD_ROUTES.documents, icon: FileText },
+    ],
+  },
+  {
+    label: "Account",
+    items: [{ label: "Settings", href: LANDLORD_ROUTES.settings, icon: Settings }],
+  },
+];
 
 interface LandlordLayoutProps {
   children: ReactNode;
@@ -45,7 +70,7 @@ export default function LandlordLayout({ children, title, description, actions }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" {...portalSurfaceProps("landlord")}>
+      <div className="min-h-screen flex items-center justify-center bg-background font-sans">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
@@ -55,19 +80,15 @@ export default function LandlordLayout({ children, title, description, actions }
     return <Navigate to={LANDLORD_LOGIN} replace />;
   }
 
-  const isActive = (href: string) => {
-    if (href === LANDLORD_ROUTES.dashboard) {
-      return location.pathname === href;
-    }
-    return location.pathname === href || location.pathname.startsWith(`${href}/`);
-  };
+  const isActive = (href: string) =>
+    location.pathname === href || location.pathname.startsWith(`${href}/`);
 
   return (
     <div className="min-h-screen bg-background text-foreground" {...portalSurfaceProps("landlord")}>
-      <PortalAccentBar className="fixed top-0 left-0 right-0 z-[60]" />
+      <PortalAccentBar className="h-0.5 w-full" />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-4 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:left-4 focus:top-6 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Skip to main content
       </a>
@@ -98,22 +119,31 @@ export default function LandlordLayout({ children, title, description, actions }
           </button>
         </div>
 
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4" aria-label="Landlord">
-          {NAV.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setSidebarOpen(false)}
-                aria-current={active ? "page" : undefined}
-                className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${deskNavClass(active)}`}
-              >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1 truncate">{item.label}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label="Landlord">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      aria-current={active ? "page" : undefined}
+                      className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${deskNavClass(active)}`}
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="flex-1 truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="flex-shrink-0 border-t border-border p-3">
@@ -135,7 +165,7 @@ export default function LandlordLayout({ children, title, description, actions }
       </aside>
 
       <div className="flex min-h-screen min-w-0 flex-col lg:ml-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -145,22 +175,27 @@ export default function LandlordLayout({ children, title, description, actions }
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="hidden min-w-0 items-center gap-2 text-sm text-muted-foreground sm:flex">
-              <span className="font-medium text-foreground">Landlord</span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
-              <span className="truncate">{title}</span>
+            <div className="flex min-w-0 items-center gap-2 text-sm">
+              <span className="hidden font-semibold uppercase tracking-wide text-[var(--portal-accent)] sm:inline">
+                CALQULUS
+                <span className="ml-1.5 text-muted-foreground">LANDLORD</span>
+              </span>
+              <ChevronRight className="hidden h-3.5 w-3.5 text-muted-foreground/50 sm:inline-block" />
+              <span className="truncate font-medium text-foreground">{title}</span>
             </div>
           </div>
+          <Link
+            to={LANDLORD_ROUTES.settings}
+            aria-label="Account settings"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
         </header>
 
-        <PageHeader
-          title={title}
-          description={description}
-          actions={actions}
-          className="border-0 px-4 py-4 sm:px-6 lg:px-8"
-        />
+        <PageHeader title={title} description={description} actions={actions} className="border-0 px-4 py-4 sm:px-6 lg:px-8" />
 
-        <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 overflow-x-clip px-4 pb-8 outline-none sm:px-6 lg:px-8">
+        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 min-w-0 overflow-x-clip px-4 pb-10 outline-none sm:px-6 lg:px-8">
           {children}
         </main>
 

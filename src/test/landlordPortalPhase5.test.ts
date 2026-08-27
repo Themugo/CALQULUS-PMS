@@ -124,11 +124,11 @@ describe("landlord portal source invariants", () => {
     expect(dashboard).not.toContain("CALQULUS_COLOR.success");
   });
 
-  it("dashboard leads with the navy portfolio summary band", () => {
+  it("dashboard leads with the navy portfolio summary band before the property list", () => {
     const dashboard = src("src/features/landlord/pages/LandlordDashboard.tsx");
     expect(dashboard).toContain("bg-navy-primary");
     expect(dashboard).toContain('aria-label="Portfolio summary"');
-    expect(dashboard.indexOf("Portfolio summary")).toBeLessThan(dashboard.indexOf("Property performance"));
+    expect(dashboard.indexOf("Portfolio summary")).toBeLessThan(dashboard.indexOf("Your properties"));
   });
 
   it("dashboard exposes no manager-only actions", () => {

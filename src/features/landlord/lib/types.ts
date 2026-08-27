@@ -2,6 +2,8 @@ export interface LandlordPropertySummary {
   id: string;
   name: string;
   address: string;
+  /** Optional property photo (real DB value); consumers must fall back gracefully. */
+  image_url: string | null;
   units: number;
   occupied: number;
   vacant: number;

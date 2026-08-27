@@ -1,5 +1,10 @@
 import { CALQULUS_COLOR, CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
-import type { LandlordPortfolioSnapshot } from "./types";
+import type {
+  LandlordActivity,
+  LandlordPayoutRequest,
+  LandlordPortfolioSnapshot,
+  LandlordPropertySummary,
+} from "./types";
 
 /**
  * Landlord portal money semantics.
@@ -101,6 +106,85 @@ export function buildAttentionItems(
  * Emerald is the portal identity accent — used here and almost nowhere else.
  * Money bars are never the generic success green.
  */
+/**
+ * Strongest-performing property derived only from real records. A property
+ * counts only when it has recorded collected rent this month and at least one
+ * unit; the winner is the highest landlord net share. Returns null — not a
+ * fabricated claim — when no property has real income yet.
+ */
+export interface LandlordInsight {
+  name: string;
+  /** Landlord's net share of that property's collected rent this month. */
+  net: number;
+  collected: number;
+  occupancyPct: number;
+}
+
+export function strongestProperty(properties: LandlordPropertySummary[]): LandlordInsight | null {
+  let best: LandlordInsight | null = null;
+  for (const p of properties) {
+    if (p.collectedRent <= 0 || p.units <= 0) continue;
+    const net = netShare(p.collectedRent, p.revenue_share_pct);
+    const occupancyPct = Math.round((p.occupied / p.units) * 100);
+    if (!best || net > best.net) best = { name: p.name, net, collected: p.collectedRent, occupancyPct };
+  }
+  return best;
+}
+
+/** Categories a landlord activity may belong to — only those with real backend data. */
+export type LandlordEventKind = "rent" | "payout" | "maintenance" | "document";
+
+export interface LandlordRecentEvent {
+  id: string;
+  kind: LandlordEventKind;
+  label: string;
+  detail: string;
+  timestamp: string;
+  propertyName?: string;
+  tone: "neutral" | "warning" | "positive";
+  amountLabel?: string;
+}
+
+/**
+ * Merges the two real activity sources into one chronological feed: open
+ * maintenance (from the portfolio RPC) and payout requests (from the payout
+ * hook). Documents/statements have no per-event feed in the backend, so they
+ * are intentionally not synthesised.
+ */
+export function buildRecentEvents(
+  activities: LandlordActivity[],
+  payouts: LandlordPayoutRequest[],
+): LandlordRecentEvent[] {
+  const events: LandlordRecentEvent[] = [];
+
+  for (const a of activities) {
+    events.push({
+      id: `activity-${a.id}`,
+      kind: "maintenance",
+      label: "Maintenance",
+      detail: a.description,
+      timestamp: a.timestamp,
+      propertyName: a.propertyName,
+      tone: "warning",
+    });
+  }
+
+  for (const p of payouts) {
+    events.push({
+      id: `payout-${p.id}`,
+      kind: "payout",
+      label: "Payout request",
+      detail: p.period_start ? `Period ${p.period_start.slice(0, 7)}` : "",
+      timestamp: p.created_at,
+      propertyName: p.property_name,
+      tone: "neutral",
+      amountLabel: String(p.amount),
+    });
+  }
+
+  return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
 export const LANDLORD_TREND_COLORS = {
   collected: CALQULUS_COLOR.navyPrimary,
   net: CALQULUS_PORTAL_ACCENT.landlord.hex,
