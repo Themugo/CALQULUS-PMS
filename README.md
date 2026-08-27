@@ -129,11 +129,16 @@ For deployment instructions, see the [deployment documentation](deployment/app-a
 
 ## Demo Accounts
 
-| Role      | Email                         | Password         |
-|-----------|-------------------------------|------------------|
-| Manager   | demo.manager@calqulusrms.com  | Demo@2026        |
-| Landlord  | demo.landlord@calqulusrms.com | Demo@2026        |
-| Test User | jimmythemugo@gmail.com        | CALQULUS RMS@2026!|
+These accounts are pre-seeded with sample data. Sign in at the matching portal:
+
+| Role          | Email                         | Password          |
+|---------------|-------------------------------|-------------------|
+| Demo Manager  | demo.manager@calqulusrms.com  | Demo@2026         |
+| Demo Landlord | demo.landlord@calqulusrms.com | Demo@2026         |
+| Test Manager  | jimmythemugo@gmail.com        | CALQULUS RMS@2026!|
+
+> The `Demo*` accounts use the `Demo@2026` password; the `Test Manager` account uses
+its own credentials. See [docs/DEMO_ACCOUNTS_AND_PAYMENT_FLOW.md](docs/DEMO_ACCOUNTS_AND_PAYMENT_FLOW.md) for details on seeding and the demo payment flow.
 
 ## License
 
