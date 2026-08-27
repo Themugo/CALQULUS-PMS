@@ -382,7 +382,7 @@ function SectionEditor({
           <CtaEditor label="Sign in" cta={c.header.signIn} onChange={(cta) => set("header", { ...c.header, signIn: cta })} />
           <CtaEditor label="Primary CTA" cta={c.header.primaryCta} onChange={(cta) => set("header", { ...c.header, primaryCta: cta })} />
           <OptionsList
-            title="Navigation links"
+            label="Navigation links"
             items={c.header.nav}
             keyOf={(n) => n.label + n.hash}
             onChange={(items) => set("header", { ...c.header, nav: items })}

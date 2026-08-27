@@ -201,9 +201,16 @@ export function createLandingContentAdapter(
 /** Filter a persisted JSON object down to the known section keys of the config. */
 export function pickLandingSections(persisted: Record<string, unknown>): Partial<LandingPageConfig> {
   const partial: Partial<LandingPageConfig> = {};
-  for (const key of Object.keys(defaultLandingConfig) as (keyof LandingPageConfig)[]) {
+  const keys = Object.keys(defaultLandingConfig) as LandingSectionKey[];
+  for (const key of keys) {
     if (key in persisted) {
-      partial[key] = persisted[key] as LandingPageConfig[typeof key];
+      // Keep only known keys, leaving the concrete section typing to the
+      // merge logic that consumes this partial.
+      if (key === "sections") {
+        partial[key] = Array.isArray(persisted[key]) ? (persisted[key] as LandingPageConfig["sections"]) : undefined;
+      } else {
+        (partial as Record<string, unknown>)[key] = persisted[key];
+      }
     }
   }
   return partial;

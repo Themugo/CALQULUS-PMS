@@ -280,23 +280,26 @@ const TenantPortal = () => {
     }));
   }, [userRole?.tenant_id]);
 
-  const { data: activeMaintenance = [] } = useOfflineData(
+  const { data: _activeMaintenance = [] } = useOfflineData(
     `active-maintenance-${userRole?.tenant_id}`,
     fetchActiveMaintenance,
     { enabled: !!userRole?.tenant_id },
   );
+  const activeMaintenance = _activeMaintenance ?? [];
 
-  const { data: homeDetails = { image_url: null, property_type: null, bedrooms: null } } = useOfflineData(
+  const { data: _homeDetails } = useOfflineData(
     `home-details-${userRole?.tenant_id}`,
     fetchHomeProperty,
     { enabled: !!userRole?.tenant_id && !!tenantInfo?.property_id },
   );
+  const homeDetails = _homeDetails ?? { image_url: null, property_type: null, bedrooms: null };
 
-  const { data: recentNotices = [] } = useOfflineData(
+  const { data: _recentNotices = [] } = useOfflineData(
     `recent-notices-${userRole?.tenant_id}`,
     fetchRecentNotices,
     { enabled: !!userRole?.tenant_id },
   );
+  const recentNotices = _recentNotices ?? [];
 
   useEffect(() => {
     if (!userRole?.tenant_id) return;
