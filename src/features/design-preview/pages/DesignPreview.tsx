@@ -148,6 +148,9 @@ export default function DesignPreview() {
           <Link to={PUBLIC_ROUTES.managerTenantsPreview} className="text-xs font-medium text-navy-mid hover:underline">
             Tenants
           </Link>
+          <Link to={PUBLIC_ROUTES.agencyDashboardPreview} className="text-xs font-medium text-navy-mid hover:underline">
+            Agency dashboard
+          </Link>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-navy-mid hover:underline">
             Public site
           </Link>

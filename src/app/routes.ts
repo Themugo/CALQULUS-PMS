@@ -103,6 +103,7 @@ const ShellPreviewPage = lazy(() => import("@/features/design-preview/pages/Shel
 const ManagerDashboardPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerDashboardPreviewPage"));
 const ManagerPropertiesPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerPropertiesPreviewPage"));
 const ManagerTenantsPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerTenantsPreviewPage"));
+const AgencyDashboardPreviewPage = lazy(() => import("@/features/design-preview/pages/AgencyDashboardPreviewPage"));
 const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 
 // ── Route definition types ──────────────────────────────────────────
@@ -137,6 +138,7 @@ export const SHELL_PREVIEW_PATH = "/design-preview/shell";
 export const MANAGER_DASHBOARD_PREVIEW_PATH = "/design-preview/manager-dashboard";
 export const MANAGER_PROPERTIES_PREVIEW_PATH = "/design-preview/manager-properties";
 export const MANAGER_TENANTS_PREVIEW_PATH = "/design-preview/manager-tenants";
+export const AGENCY_DASHBOARD_PREVIEW_PATH = "/design-preview/agency-dashboard";
 export const designPreviewRoute: RouteDef = {
   path: DESIGN_PREVIEW_PATH,
   element: DesignPreview,
@@ -157,12 +159,17 @@ export const managerTenantsPreviewRoute: RouteDef = {
   path: MANAGER_TENANTS_PREVIEW_PATH,
   element: ManagerTenantsPreviewPage,
 };
+export const agencyDashboardPreviewRoute: RouteDef = {
+  path: AGENCY_DASHBOARD_PREVIEW_PATH,
+  element: AgencyDashboardPreviewPage,
+};
 export const designPreviewPublicRoutes: RouteDef[] = [
   designPreviewRoute,
   shellPreviewRoute,
   managerDashboardPreviewRoute,
   managerPropertiesPreviewRoute,
   managerTenantsPreviewRoute,
+  agencyDashboardPreviewRoute,
 ];
 export function isDesignPreviewPath(pathname: string): boolean {
   return pathname === DESIGN_PREVIEW_PATH || pathname.startsWith(`${DESIGN_PREVIEW_PATH}/`);
@@ -182,6 +189,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },
+  { path: "/design-preview/agency-dashboard", element: AgencyDashboardPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
@@ -406,6 +414,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },
+  { path: "/design-preview/agency-dashboard", element: AgencyDashboardPreviewPage },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/auth", element: Auth },
@@ -430,6 +439,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },
+  { path: "/design-preview/agency-dashboard", element: AgencyDashboardPreviewPage },
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },
   { path: "/landlord/login", element: LandlordPortalAuth },
