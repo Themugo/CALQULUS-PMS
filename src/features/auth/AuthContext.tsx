@@ -28,9 +28,13 @@ export interface PlatformAdminInfo {
   email: string;
   can_create_admins: boolean;
   can_manage_managers: boolean;
+  can_manage_agencies: boolean;
+  can_manage_organizations: boolean;
   can_manage_billing: boolean;
   can_manage_properties: boolean;
   can_manage_landlords: boolean;
+  can_read_unattached_tenants: boolean;
+  can_resolve_unattached_tenants: boolean;
   can_view_activity_logs: boolean;
   can_manage_platform_settings: boolean;
   is_immutable: boolean;
@@ -243,7 +247,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchPlatformAdminInfo = useCallback(async (userId: string): Promise<PlatformAdminInfo | null> => {
     const { data } = await supabase
       .from('platform_admins')
-      .select('id, user_id, admin_type, display_name, email, can_create_admins, can_manage_managers, can_manage_billing, can_manage_properties, can_manage_landlords, can_view_activity_logs, can_manage_platform_settings, is_immutable, suspended')
+      .select('id, user_id, admin_type, display_name, email, can_create_admins, can_manage_managers, can_manage_agencies, can_manage_organizations, can_manage_billing, can_manage_properties, can_manage_landlords, can_read_unattached_tenants, can_resolve_unattached_tenants, can_view_activity_logs, can_manage_platform_settings, is_immutable, suspended')
       .eq('user_id', userId)
       .maybeSingle();
     return data as PlatformAdminInfo | null;

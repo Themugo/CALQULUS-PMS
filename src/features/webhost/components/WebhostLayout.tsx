@@ -17,6 +17,7 @@ import {
   ScrollText,
   Settings,
   ShieldAlert,
+  ShieldQuestion,
   TriangleAlert,
   Users,
   X,
@@ -61,6 +62,7 @@ const NAV_GROUPS = [
       { label: "Audit Log", href: WEBHOST_ROUTES.audit, icon: ScrollText, permission: "can_view_activity_logs" as const },
       { label: "Security", href: WEBHOST_ROUTES.security, icon: ShieldAlert, permission: "can_view_activity_logs" as const },
       { label: "Issues", href: WEBHOST_OPS_ROUTES.issues, icon: TriangleAlert, permission: "can_view_activity_logs" as const },
+      { label: "Unattached tenants", href: WEBHOST_ROUTES.unattachedTenants, icon: ShieldQuestion, permission: null },
     ],
   },
   {
@@ -82,7 +84,7 @@ interface WebhostLayoutProps {
 }
 
 export default function WebhostLayout({ children, title, description, actions }: WebhostLayoutProps) {
-  const { user, userRole, signOut, loading, webhostPermissions, hasWebhostPermission, isSuperAdmin } = useAuth();
+  const { user, userRole, signOut, loading, webhostPermissions, hasWebhostPermission, isSuperAdmin, platformAdminInfo } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -125,9 +127,19 @@ export default function WebhostLayout({ children, title, description, actions }:
     return <Navigate to={WEBHOST_LOGIN} replace />;
   }
 
-  const canSee = (permission: NavItem["permission"]) => {
-    if (!permission) return true;
-    return isSuperAdmin || hasWebhostPermission(permission);
+  const canSee = (item: NavItem) => {
+    // Recovery surface is gated by a platform-admins flag (granted to
+    // business + System Admins). Legacy owners/super-admins with manager
+    // management retain access.
+    if (item.href === WEBHOST_ROUTES.unattachedTenants) {
+      return (
+        isSuperAdmin ||
+        hasWebhostPermission("can_manage_managers") ||
+        platformAdminInfo?.can_read_unattached_tenants === true
+      );
+    }
+    if (!item.permission) return true;
+    return isSuperAdmin || hasWebhostPermission(item.permission);
   };
 
   const isActive = (href: string) => {
@@ -182,7 +194,7 @@ export default function WebhostLayout({ children, title, description, actions }:
 
         <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label="Platform admin">
           {NAV_GROUPS.map((group) => {
-            const visible = group.items.filter((item) => canSee(item.permission));
+            const visible = group.items.filter((item) => canSee(item));
             if (visible.length === 0) return null;
             return (
               <div key={group.label} className="space-y-0.5">

@@ -1387,3 +1387,162 @@ $$;
 
 REVOKE ALL ON FUNCTION public.validate_admin_invitation_token(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.validate_admin_invitation_token(text) TO anon, authenticated;
+-- ========== 20260827000000_platform_authority_system_admin.sql ==========
+-- Platform Authority, RBAC, Admin Hierarchy — Webhost -> System Admin
+-- delegated hierarchy + unattached-tenant recovery boundary.
+
+ALTER TABLE public.platform_admins
+  ADD COLUMN IF NOT EXISTS can_manage_agencies           boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_manage_organizations      boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_read_unattached_tenants   boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_resolve_unattached_tenants boolean NOT NULL DEFAULT false;
+
+ALTER TABLE public.admin_permissions
+  ADD COLUMN IF NOT EXISTS can_manage_agencies           boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_manage_organizations      boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_read_unattached_tenants   boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS can_resolve_unattached_tenants boolean NOT NULL DEFAULT false;
+
+CREATE OR REPLACE VIEW public.unattached_tenants_view AS
+SELECT
+  t.id            AS tenant_id,
+  t.name          AS tenant_name,
+  t.email         AS tenant_email,
+  t.phone         AS tenant_phone,
+  t.manager_id,
+  t.property_id,
+  t.unit_id,
+  t.property      AS property_label,
+  t.unit          AS unit_label,
+  t.status,
+  t.created_at,
+  t.updated_at
+FROM public.tenants t
+WHERE t.manager_id IS NULL
+  AND (t.property_id IS NULL OR t.unit_id IS NULL);
+
+ALTER VIEW public.unattached_tenants_view OWNER TO postgres;
+REVOKE ALL ON public.unattached_tenants_view FROM PUBLIC;
+GRANT SELECT ON public.unattached_tenants_view TO service_role;
+
+CREATE OR REPLACE FUNCTION public.user_is_platform_admin_any()
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
+$$ SELECT EXISTS (
+  SELECT 1 FROM public.platform_admins
+  WHERE user_id = auth.uid() AND suspended = false
+) $$;
+
+REVOKE EXECUTE ON FUNCTION public.user_is_platform_admin_any() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.user_is_platform_admin_any() TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.list_unattached_tenants()
+RETURNS TABLE (
+  tenant_id    uuid,
+  tenant_name  text,
+  tenant_email text,
+  manager_id   uuid,
+  property_id  uuid,
+  unit_id      uuid,
+  property_label text,
+  unit_label   text,
+  status       text
+)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NOT public.user_is_platform_admin_any() THEN
+    RAISE EXCEPTION 'Unauthorized' USING ERRCODE = '42501';
+  END IF;
+  RETURN QUERY
+  SELECT
+    u.tenant_id,
+    u.tenant_name,
+    u.tenant_email,
+    u.manager_id,
+    u.property_id,
+    u.unit_id,
+    u.property_label,
+    u.unit_label,
+    u.status
+  FROM public.unattached_tenants_view u
+  ORDER BY u.created_at DESC;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.list_unattached_tenants() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.list_unattached_tenants() TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.resolve_unattached_tenant(
+  p_tenant_id uuid,
+  p_manager_id uuid,
+  p_property_id uuid,
+  p_unit_id uuid
+)
+RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_may_resolve boolean;
+BEGIN
+  SELECT
+    EXISTS (
+      SELECT 1 FROM public.platform_admins pa
+      WHERE pa.user_id = auth.uid()
+        AND pa.suspended = false
+        AND pa.admin_type IN ('owner', 'business')
+    ) OR
+    EXISTS (
+      SELECT 1 FROM public.platform_admins pa
+      WHERE pa.user_id = auth.uid()
+        AND pa.suspended = false
+        AND pa.admin_type = 'admin'
+        AND pa.can_resolve_unattached_tenants = true
+    )
+  INTO v_may_resolve;
+
+  IF auth.role() != 'service_role' AND NOT v_may_resolve THEN
+    RAISE EXCEPTION 'Unauthorized: only Webhost or permitted System Admin can resolve unattached tenants'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM public.tenants t
+    WHERE t.id = p_tenant_id
+      AND t.manager_id IS NULL
+      AND (t.property_id IS NULL OR t.unit_id IS NULL)
+  ) THEN
+    RAISE EXCEPTION 'Tenant is not unattached or does not exist' USING ERRCODE = 'P0001';
+  END IF;
+
+  UPDATE public.tenants
+  SET manager_id   = COALESCE(p_manager_id,   manager_id),
+      property_id  = COALESCE(p_property_id,  property_id),
+      unit_id      = COALESCE(p_unit_id,      unit_id),
+      updated_at   = now()
+  WHERE id = p_tenant_id;
+
+  INSERT INTO public.activity_logs (
+    actor_id, actor_role, actor_email,
+    action, entity_type, entity_id, metadata
+  )
+  VALUES (
+    auth.uid(), 'webhost', NULL,
+    'unattached_tenant_resolved', 'tenant', p_tenant_id,
+    jsonb_build_object(
+      'manager_id', p_manager_id,
+      'property_id', p_property_id,
+      'unit_id', p_unit_id
+    )
+  );
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.resolve_unattached_tenant(uuid,uuid,uuid,uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.resolve_unattached_tenant(uuid,uuid,uuid,uuid) TO authenticated;
+
+UPDATE public.platform_admins
+   SET can_manage_agencies = true,
+       can_manage_landlords = true,
+       can_manage_managers = true,
+       can_read_unattached_tenants = true,
+       can_resolve_unattached_tenants = true
+ WHERE admin_type = 'admin'
+   AND suspended = false;
