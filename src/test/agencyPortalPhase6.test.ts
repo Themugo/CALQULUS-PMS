@@ -32,7 +32,7 @@ describe("agency client status", () => {
     expect(agencyClientStatusLabel("active")).toBe("Active");
   });
 
-  it("uses amber (portal accent) only for the attention chip, never success green", () => {
+  it("uses the portal accent only for the attention chip, never success green", () => {
     expect(agencyClientStatusChipClass("attention")).toContain("portal-accent");
     for (const status of ["active", "pending", "attention"] as const) {
       expect(agencyClientStatusChipClass(status)).not.toContain("success");
@@ -81,7 +81,7 @@ describe("agency attention ordering", () => {
 });
 
 describe("agency identity palette", () => {
-  it("charts use navy for collected and amber for outstanding — never success green", () => {
+  it("charts use navy for collected and the warning hue for outstanding — never success green", () => {
     expect(AGENCY_TREND_COLORS.collected).toContain("navy-mid");
     expect(AGENCY_TREND_COLORS.outstanding).toContain("warning");
     expect(Object.values(AGENCY_TREND_COLORS).join(" ")).not.toContain("success");

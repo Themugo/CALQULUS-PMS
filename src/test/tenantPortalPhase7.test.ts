@@ -51,7 +51,7 @@ describe("tenant home — service portal, not a dashboard", () => {
     expect(home).toMatch(/Due \{/);
   });
 
-  it("PAY RENT is the visually dominant action, painted with the portal accent (violet)", () => {
+  it("PAY RENT is the visually dominant action, painted with the portal accent", () => {
     expect(home).toContain('"PAY RENT"');
     expect(home).toContain("bg-[var(--portal-accent)]");
     expect(home).toContain("w-full");

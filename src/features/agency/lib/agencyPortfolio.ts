@@ -25,7 +25,7 @@ export function agencyClientStatusLabel(status: AgencyClientStatus): string {
   }
 }
 
-/** Amber (portal accent) = needs attention; neutral outline otherwise. */
+/** Portal accent (cyan) = needs attention; neutral outline otherwise. */
 export function agencyClientStatusChipClass(status: AgencyClientStatus): string {
   switch (status) {
     case "attention":
@@ -37,7 +37,7 @@ export function agencyClientStatusChipClass(status: AgencyClientStatus): string 
   }
 }
 
-/** Chart + bar palette: navy for collected, amber (portal accent) for outstanding — never success green. */
+/** Chart + bar palette: navy for collected, warning hue for outstanding — never success green. */
 export const AGENCY_TREND_COLORS = {
   collected: "hsl(var(--navy-mid))",
   outstanding: "hsl(var(--warning))",

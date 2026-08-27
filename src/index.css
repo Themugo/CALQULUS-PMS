@@ -410,6 +410,11 @@
     --calqulus-indigo: #4658C9;
     /* Portal accent hues (deep steps chosen to pass a white-desk check) */
     --calqulus-emerald: #2F9B74;
+    /* Agency — indigo/cyan family, matches agency portal chrome + marketing role accent. */
+    --calqulus-cyan: #0F766E;
+    /* Tenant — sky/cool blue, matches tenant portal chrome + marketing role accent. */
+    --calqulus-sky: #0284C7;
+    /* Deprecated portal-identity hues kept for design-preview history; not bound to data-portal. */
     --calqulus-amber: #C08A37;
     --calqulus-violet: #7C5FD3;
 
@@ -564,8 +569,8 @@
      CALQULUS NAVY + BLUE; status colors are never brand accents. */
   [data-portal="manager"] { --portal-accent: var(--calqulus-primary); }
   [data-portal="landlord"] { --portal-accent: var(--calqulus-emerald); }
-  [data-portal="agency"] { --portal-accent: var(--calqulus-amber); }
-  [data-portal="tenant"] { --portal-accent: var(--calqulus-violet); }
+  [data-portal="agency"] { --portal-accent: var(--calqulus-cyan); }
+  [data-portal="tenant"] { --portal-accent: var(--calqulus-sky); }
   [data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep); }
 
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so

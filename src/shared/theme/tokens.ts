@@ -79,15 +79,18 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   agency: {
     id: "agency",
-    label: "Amber",
-    /** Warm enough to be a portal accent without turning into chrome. */
-    hex: "#C08A37",
+    label: "Cyan",
+    /** Indigo/cyan family — matches the agency portal chrome + marketing role
+        accent so the token is the single source of truth. Status colours stay
+        semantic; the cyan is only identity. */
+    hex: "#0F766E",
   },
   tenant: {
     id: "tenant",
-    label: "Violet",
-    /** Status colours stay semantic; the violet is only identity. */
-    hex: "#7C5FD3",
+    label: "Sky",
+    /** Sky/cool blue family — matches the tenant portal chrome + marketing role
+       accent. Status colours stay semantic; the sky is only identity. */
+    hex: "#0284C7",
   },
   platform_admin: {
     id: "platform_admin",
