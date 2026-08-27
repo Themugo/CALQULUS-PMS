@@ -7,7 +7,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
 import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
-import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
+import { signupSchema, formatValidationErrors, isValidKenyanPhone } from '@/shared/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
@@ -135,9 +135,7 @@ const TenantAuth = () => {
 
   const validatePhone = (phone: string): boolean => {
     if (!phone) return true;
-    const trimmed = phone.trim();
-    const kenyanPattern = /^(07\d{8}|\+254\d{9})$/;
-    return kenyanPattern.test(trimmed);
+    return isValidKenyanPhone(phone.trim());
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -683,7 +681,7 @@ const TenantAuth = () => {
                 value={signupPhone}
                 onChange={(e) => setSignupPhone(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">Format: 07XXXXXXXX or +254XXXXXXXXX</p>
+              <p className="text-xs text-muted-foreground">Format: 07XXXXXXXX, +254XXXXXXXXX or 254XXXXXXXXX</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="signup-password">Password</Label>

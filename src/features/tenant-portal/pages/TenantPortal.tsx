@@ -552,7 +552,7 @@ const TenantPortal = () => {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     className="bg-background"
                   />
-                  <p className="text-xs text-muted-foreground">Format: 07XXXXXXXX or +254XXXXXXXXX</p>
+                  <p className="text-xs text-muted-foreground">Format: 07XXXXXXXX, +254XXXXXXXXX or 254XXXXXXXXX</p>
                 </div>
               )}
             </div>

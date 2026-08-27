@@ -1,5 +1,21 @@
 import { z } from 'zod';
 
+/**
+ * Kenyan phone number validation.
+ *
+ * Accepts the forms used across the app (07…, +254… and 254… international):
+ *   - 0712345678        (local, 0 prefix)
+ *   - +254712345678     (E.164, with +)
+ *   - 254712345678      (international, no +)
+ * The `+` and `0` prefixes are not interchangeable — callers should treat them
+ * as distinct inputs rather than silently rewriting them.
+ */
+export const KENYAN_PHONE_PATTERN = /^(07\d{8}|\+254\d{9}|254\d{9})$/;
+
+export function isValidKenyanPhone(phone: string): boolean {
+  return KENYAN_PHONE_PATTERN.test(phone);
+}
+
 // Tenant validation schema
 export const tenantSchema = z.object({
   name: z.string()
@@ -15,10 +31,9 @@ export const tenantSchema = z.object({
     .max(20, "Phone must be less than 20 characters")
     .refine((val) => {
       if (!val || val === "") return true;
-      // Kenyan format: 07XXXXXXXX or +254XXXXXXXXX
-      const kenyanPattern = /^(07\d{8}|\+254\d{9})$/;
-      return kenyanPattern.test(val);
-    }, "Enter a valid Kenyan phone number (07XXXXXXXX or +254XXXXXXXXX)")
+      // Kenyan format: 07XXXXXXXX, +254XXXXXXXXX or 254XXXXXXXXX
+      return isValidKenyanPhone(val);
+    }, "Enter a valid Kenyan phone number (07XXXXXXXX or 254XXXXXXXXX)")
     .optional()
     .or(z.literal("")),
   property_id: z.string().uuid("Property is required — tenants must be assigned to a property"),
