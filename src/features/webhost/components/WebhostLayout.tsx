@@ -6,6 +6,7 @@ import {
   ChevronRight,
   CreditCard,
   FileCheck,
+  FileText,
   Handshake,
   LayoutDashboard,
   Layers,
@@ -70,6 +71,7 @@ const NAV_GROUPS = [
     items: [
       { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings, permission: null },
       { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette, permission: null },
+      { label: "Landing Content", href: WEBHOST_ROUTES.landing, icon: FileText, permission: null },
     ],
   },
 ] as const;

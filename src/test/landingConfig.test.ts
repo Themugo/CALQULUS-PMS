@@ -9,6 +9,9 @@ import {
   canEditLandingSection,
   LANDING_PERMISSIONS,
   LANDING_EDITOR_ROLES,
+  resolveLandingEditorRole,
+  pickLandingSections,
+  mergeLandingConfig,
 } from "@/features/marketing/landing/contentService";
 import { LANDING_THEME } from "@/features/marketing/theme/landingTheme";
 
@@ -68,7 +71,11 @@ describe("landing theme + content model", () => {
   });
 
   it("enforces a webhost > admin permission split and never allows public edits", () => {
-    expect(LANDING_EDITOR_ROLES).toEqual(["webhost", "platform_admin", "admin"]);
+    // Roles map onto the real platform authority: webhost (owner/business/
+    // can_manage_platform_settings) is the full editor; 'admin' is scoped.
+    // 'platform_admin' is NOT a user_roles.role value — it is resolved from
+    // platform_admins.admin_type by resolveLandingEditorRole.
+    expect(LANDING_EDITOR_ROLES).toEqual(["webhost", "admin"]);
     // Webhost owns everything.
     for (const perm of Object.values(LANDING_PERMISSIONS.webhost)) {
       expect(canEditLandingSection("webhost", perm)).toBe(true);
@@ -81,5 +88,25 @@ describe("landing theme + content model", () => {
     expect(canEditLandingSection("manager", "hero")).toBe(false);
     expect(canEditLandingSection("tenant", "hero")).toBe(false);
     expect(canEditLandingSection(null, "hero")).toBe(false);
+  });
+
+  it("resolves the editor role from the platform tier", () => {
+    expect(resolveLandingEditorRole("webhost", "owner")).toBe("webhost");
+    expect(resolveLandingEditorRole("webhost", "business")).toBe("webhost");
+    expect(resolveLandingEditorRole("webhost", "admin")).toBe("admin");
+    expect(resolveLandingEditorRole("webhost", "admin", true)).toBe("webhost");
+    expect(resolveLandingEditorRole("webhost", null, false)).toBe("admin");
+    // Non-webhost users have no editor role.
+    expect(resolveLandingEditorRole("manager", "owner")).toBeNull();
+    expect(resolveLandingEditorRole("tenant", "admin")).toBeNull();
+    expect(resolveLandingEditorRole(null)).toBeNull();
+  });
+
+  it("filters persisted JSON to known sections and merges over defaults", () => {
+    const persisted = { hero: defaultLandingConfig.hero, unknown: "x" } as Record<string, unknown>;
+    const picked = pickLandingSections(persisted);
+    expect(Object.keys(picked)).toEqual(["hero"]);
+    const merged = mergeLandingConfig(defaultLandingConfig, picked);
+    expect(merged.hero).toEqual(defaultLandingConfig.hero);
   });
 });

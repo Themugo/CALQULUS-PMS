@@ -16,16 +16,26 @@
 import { defaultLandingConfig } from "@/features/marketing/landing/defaultLandingConfig";
 import type { LandingPageConfig } from "@/features/marketing/landing/landingContent";
 import type { LandingTheme } from "@/features/marketing/theme/landingTheme";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ─────────────────────── content permission model ────────────────── */
 
-export const LANDING_EDITOR_ROLES = ["webhost", "platform_admin", "admin"] as const;
+/**
+ * Editor roles that may edit landing content. These map onto the CALQULUS
+ * authority model:
+ *   - webhost: the platform account tier — full control. Backed by
+ *     `platform_admins` (owner/business/can_manage_platform_settings) with
+ *     `user_roles.role = 'webhost'`.
+ *   - admin: operational content editor — only a scoped subset of sections.
+ */
+export const LANDING_EDITOR_ROLES = ["webhost", "admin"] as const;
 export type LandingEditorRole = (typeof LANDING_EDITOR_ROLES)[number];
 
 /**
  * Which parts of the landing page a role may edit. Webhost owns everything;
  * Admin receives only a scoped subset assigned by the webhost. These are
- * frontend UX gates — the backend must stay authoritative.
+ * frontend UX gates — the backend (`upsert_landing_section` RPC + RLS) is
+ * authoritative.
  */
 export const LANDING_PERMISSIONS: Record<LandingEditorRole, LandingPagePermission[]> = {
   webhost: [
@@ -42,7 +52,6 @@ export const LANDING_PERMISSIONS: Record<LandingEditorRole, LandingPagePermissio
     "finalCta",
     "footer",
   ],
-  platform_admin: ["brand", "theme", "footer"],
   admin: ["hero", "capabilities", "roles", "metrics"],
 };
 
@@ -59,6 +68,30 @@ export type LandingPagePermission =
   | "metrics"
   | "finalCta"
   | "footer";
+
+/**
+ * Resolve the editor role for a webhost account from the platform tier.
+ * @param role  the authenticated user's role (user_roles.role).
+ * @param adminType the platform_admins.admin_type, when the caller is webhost.
+ * @param canManagePlatformSettings whether platform settings management is granted.
+ * @returns the LandingEditorRole used for permission checks, or null when the
+ *          caller is not a landing editor at all.
+ */
+export function resolveLandingEditorRole(
+  role: string | null | undefined,
+  adminType?: string | null,
+  canManagePlatformSettings?: boolean,
+): LandingEditorRole | null {
+  if (role === "webhost") {
+    // owner/business (or any account granted platform settings management)
+    // are the "webhost" full editors; plain 'admin' is the scoped editor.
+    if (adminType === "owner" || adminType === "business" || canManagePlatformSettings) {
+      return "webhost";
+    }
+    return "admin";
+  }
+  return null;
+}
 
 export function canEditLandingSection(
   role: LandingEditorRole | null | undefined,
@@ -81,10 +114,41 @@ export interface LandingPageAsset {
 
 /* ─────────────────────── service boundary ────────────────────────── */
 
+export type LandingSectionKey = keyof Pick<
+  LandingPageConfig,
+  | "brand"
+  | "theme"
+  | "header"
+  | "hero"
+  | "dashboard"
+  | "trust"
+  | "capabilities"
+  | "roles"
+  | "propertyTypes"
+  | "metrics"
+  | "finalCta"
+  | "footer"
+>;
+
+export type SaveLandingSectionResult =
+  | { ok: true; data: LandingPageConfig[LandingSectionKey] }
+  | { ok: false; error: string };
+
+/** Persist one section of the landing config (webhost/admin editor). */
+export type LandSectionSaver = (
+  section: LandingSectionKey,
+  payload: LandingPageConfig[LandingSectionKey],
+) => Promise<SaveLandingSectionResult>;
+
 export interface LandingContentProvider {
   /** Load the active landing config (defaults when nothing persisted). */
   getConfig(): Promise<LandingPageConfig>;
-  /** Persist config — clear boundary; NOT implemented (no fake DB). */
+  /**
+   * Persist a single section through the authorized backend
+   * (`upsert_landing_section`). Optional on the static adapter.
+   */
+  saveSection?: LandSectionSaver;
+  /** Persist config wholesale — only meaningful for full webhost editors. */
   saveConfig?(config: LandingPageConfig): Promise<void>;
   readiness: "static" | "service";
 }
@@ -93,9 +157,17 @@ interface LandingContentAdapterOptions {
   theme?: LandingTheme;
 }
 
+/** Merge persisted section values over the shipped defaults, without mutation. */
+export function mergeLandingConfig(
+  active: LandingPageConfig,
+  persisted: Partial<LandingPageConfig>,
+): LandingPageConfig {
+  return { ...active, ...persisted };
+}
+
 /**
- * Adapter boundary towards a future Supabase-backed content table. Currently
- * static: returns the shipped defaults and reports `readiness: "static"`.
+ * Static adapter — returns the shipped defaults and reports
+ * `readiness: "static"`. Used for unit tests and sandbox previews. Never writes.
  */
 export function createLandingContentAdapter(
   options: LandingContentAdapterOptions = {},
@@ -104,9 +176,87 @@ export function createLandingContentAdapter(
   return {
     readiness: "static",
     getConfig: async () => merged,
+    saveSection: undefined,
     saveConfig: undefined,
   };
 }
 
-/** The page-level singleton the landing page consumes. */
-export const landingContent: LandingContentProvider = createLandingContentAdapter();
+/** Filter a persisted JSON object down to the known section keys of the config. */
+export function pickLandingSections(persisted: Record<string, unknown>): Partial<LandingPageConfig> {
+  const partial: Partial<LandingPageConfig> = {};
+  for (const key of Object.keys(defaultLandingConfig) as (keyof LandingPageConfig)[]) {
+    if (key in persisted) {
+      partial[key] = persisted[key] as LandingPageConfig[typeof key];
+    }
+  }
+  return partial;
+}
+
+/**
+ * Supabase-backed landing content provider — the live CMS wiring.
+ *
+ * - getConfig(): reads the single published `landing_page_content` row and
+ *   merges it over the shipped defaults. When the row is absent (or Supabase
+ *   isn't configured in this environment) it falls back to defaults.
+ * - saveSection(): calls the `upsert_landing_section` RPC, which enforces the
+ *   section whitelist by platform tier server-side. Returns a typed result so
+ *   the editor UI can show success/failure without throwing.
+ *
+ * The public page reads through this provider, so webhost/admin edits persist
+ * and are served. Frontend permissions stay UX-only; the RPC is authoritative.
+ */
+export function createSupabaseLandingContentProvider(): LandingContentProvider {
+  let cache: LandingPageConfig | null = null;
+
+  const provider: LandingContentProvider = {
+    readiness: "service",
+    getConfig: async (): Promise<LandingPageConfig> => {
+      if (cache) return cache;
+      const { data, error } = await supabase
+        .from("landing_page_content")
+        .select("config")
+        .eq("scope", "landing")
+        .single();
+      if (error || !data?.config) {
+        cache = { ...defaultLandingConfig };
+        return cache;
+      }
+      const persisted = (data.config ?? {}) as Record<string, unknown>;
+      cache = mergeLandingConfig({ ...defaultLandingConfig }, pickLandingSections(persisted));
+      return cache;
+    },
+    saveSection: async (section, payload): Promise<SaveLandingSectionResult> => {
+      const { data, error } = await supabase.rpc("upsert_landing_section", {
+        p_section: section,
+        p_payload: payload,
+      });
+      if (error) return { ok: false, error: error.message };
+      // Refresh the local cache so edits render immediately on the next read.
+      if (cache) cache = { ...cache, [section]: (data ?? payload) as LandingPageConfig[LandingSectionKey] };
+      return { ok: true, data: (data ?? payload) as LandingPageConfig[LandingSectionKey] };
+    },
+    saveConfig: async (config: LandingPageConfig): Promise<void> => {
+      // Wholesale save is a webhost-tier operation; proxy through the scoped
+      // section updater so the RPC authorizes each key individually.
+      await saveAllLandingSections(provider, config);
+    },
+  };
+
+  return provider;
+}
+
+/** Persist a full config one section at a time through the authorized RPC. */
+export async function saveAllLandingSections(
+  provider: LandingContentProvider,
+  config: LandingPageConfig,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!provider.saveSection) return { ok: false, error: "Provider does not support section writes" };
+  for (const key of Object.keys(config) as LandingSectionKey[]) {
+    const result = await provider.saveSection(key, config[key]);
+    if (!result.ok) return { ok: false, error: result.error };
+  }
+  return { ok: true };
+}
+
+/** The page-level singleton the public landing page consumes. */
+export const landingContent: LandingContentProvider = createSupabaseLandingContentProvider();

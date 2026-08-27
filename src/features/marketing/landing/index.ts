@@ -11,9 +11,21 @@ export {
 
 export {
   createLandingContentAdapter,
+  createSupabaseLandingContentProvider,
+  landingContent,
+  mergeLandingConfig,
+  pickLandingSections,
+  saveAllLandingSections,
   canEditLandingSection,
+  resolveLandingEditorRole,
   LANDING_PERMISSIONS,
   LANDING_EDITOR_ROLES,
+} from "./contentService";
+export type {
+  LandingContentProvider,
+  LandingSectionKey,
+  LandSectionSaver,
+  SaveLandingSectionResult,
 } from "./contentService";
 
 export type {

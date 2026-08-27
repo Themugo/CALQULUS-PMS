@@ -6660,6 +6660,36 @@ export type Database = {
         Insert: Record<string, Json | null>
         Update: Record<string, Json | null>
         Relationships: []
+      },
+      landing_page_content: {
+        Row: {
+          config: Json
+          created_at: string
+          created_by: string | null
+          published: boolean
+          scope: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          published?: boolean
+          scope: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          published?: boolean
+          scope?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       // END PHASE12_MIGRATION_TABLES
     }
@@ -6667,6 +6697,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      upsert_landing_section: { Args: { p_section: string; p_payload: Json }; Returns: Json }
       get_admin_level: { Args: { _user_id: string }; Returns: string }
       get_auth_user_email: { Args: { _user_id: string }; Returns: string }
       get_landlord_portfolio_stats: { Args: Record<PropertyKey, never>; Returns: Json }
