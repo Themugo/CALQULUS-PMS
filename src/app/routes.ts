@@ -101,6 +101,7 @@ const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
 const ShellPreviewPage = lazy(() => import("@/features/design-preview/pages/ShellPreviewPage"));
 const ManagerDashboardPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerDashboardPreviewPage"));
+const ManagerOperationsPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerOperationsPreviewPage"));
 const ManagerPropertiesPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerPropertiesPreviewPage"));
 const ManagerTenantsPreviewPage = lazy(() => import("@/features/design-preview/pages/ManagerTenantsPreviewPage"));
 const AgencyDashboardPreviewPage = lazy(() => import("@/features/design-preview/pages/AgencyDashboardPreviewPage"));
@@ -136,6 +137,7 @@ export interface RoleRouteConfig {
 export const DESIGN_PREVIEW_PATH = "/design-preview";
 export const SHELL_PREVIEW_PATH = "/design-preview/shell";
 export const MANAGER_DASHBOARD_PREVIEW_PATH = "/design-preview/manager-dashboard";
+export const MANAGER_OPERATIONS_PREVIEW_PATH = "/design-preview/manager-operations";
 export const MANAGER_PROPERTIES_PREVIEW_PATH = "/design-preview/manager-properties";
 export const MANAGER_TENANTS_PREVIEW_PATH = "/design-preview/manager-tenants";
 export const AGENCY_DASHBOARD_PREVIEW_PATH = "/design-preview/agency-dashboard";
@@ -150,6 +152,10 @@ export const shellPreviewRoute: RouteDef = {
 export const managerDashboardPreviewRoute: RouteDef = {
   path: MANAGER_DASHBOARD_PREVIEW_PATH,
   element: ManagerDashboardPreviewPage,
+};
+export const managerOperationsPreviewRoute: RouteDef = {
+  path: MANAGER_OPERATIONS_PREVIEW_PATH,
+  element: ManagerOperationsPreviewPage,
 };
 export const managerPropertiesPreviewRoute: RouteDef = {
   path: MANAGER_PROPERTIES_PREVIEW_PATH,
@@ -167,6 +173,7 @@ export const designPreviewPublicRoutes: RouteDef[] = [
   designPreviewRoute,
   shellPreviewRoute,
   managerDashboardPreviewRoute,
+  managerOperationsPreviewRoute,
   managerPropertiesPreviewRoute,
   managerTenantsPreviewRoute,
   agencyDashboardPreviewRoute,
@@ -187,6 +194,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
+  { path: "/design-preview/manager-operations", element: ManagerOperationsPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },
   { path: "/design-preview/agency-dashboard", element: AgencyDashboardPreviewPage },
@@ -412,6 +420,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
+  { path: "/design-preview/manager-operations", element: ManagerOperationsPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },
   { path: "/design-preview/agency-dashboard", element: AgencyDashboardPreviewPage },
@@ -436,6 +445,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
   { path: "/design-preview", element: DesignPreview },
   { path: "/design-preview/shell", element: ShellPreviewPage },
+  { path: "/design-preview/manager-operations", element: ManagerOperationsPreviewPage },
   { path: "/design-preview/manager-dashboard", element: ManagerDashboardPreviewPage },
   { path: "/design-preview/manager-properties", element: ManagerPropertiesPreviewPage },
   { path: "/design-preview/manager-tenants", element: ManagerTenantsPreviewPage },

@@ -14,6 +14,7 @@ export const PUBLIC_ROUTES = {
   designPreview: "/design-preview",
   shellPreview: "/design-preview/shell",
   managerDashboardPreview: "/design-preview/manager-dashboard",
+  managerOperationsPreview: "/design-preview/manager-operations",
   managerPropertiesPreview: "/design-preview/manager-properties",
   managerTenantsPreview: "/design-preview/manager-tenants",
   agencyDashboardPreview: "/design-preview/agency-dashboard",

@@ -30,6 +30,7 @@ import { useManagerActivation } from "@/features/dashboard/hooks/useManagerActiv
 import { fetchManagerDashboardStats } from "@/features/dashboard/lib/dashboardStats";
 import { buildAttentionItems } from "@/features/dashboard/lib/attentionItems";
 import { queryKeys, STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
+import managerHeroImage from "@/assets/marketing/property-residential-thumb.webp";
 
 const RevenueChart = lazy(() =>
   import("@/features/dashboard/components/RevenueChart").then((m) => ({ default: m.RevenueChart })),
@@ -127,25 +128,6 @@ const Dashboard = () => {
       headerActions={
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            size="sm"
-            className="min-h-11"
-            onClick={() => navigate("/properties")}
-            aria-label="Add property"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Add property</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="min-h-11"
-            onClick={() => navigate("/reports")}
-            aria-label="View reports"
-          >
-            <BarChart3 className="h-4 w-4" />
-            <span className="hidden sm:inline">View reports</span>
-          </Button>
-          <Button
             variant="ghost" size="sm"
             onClick={refreshStats}
             className="min-h-11 min-w-11 h-11 w-11 text-muted-foreground hover:text-foreground"
@@ -180,14 +162,60 @@ const Dashboard = () => {
         </div>
       )}
 
-      <p className="mb-4 text-sm text-muted-foreground">
-        {getGreeting()}, {userName}
-        {isEmptyPortfolio
-          ? ` · Portfolio setup ${progress.percent}% complete`
-          : stats
-            ? ` · ${stats.totalProperties} properties · ${stats.occupiedUnits}/${stats.totalUnits} occupied`
-            : ""}
-      </p>
+      {/* Greeting / context hero — compact, with restrained property imagery */}
+      <section
+        aria-label="Portfolio overview"
+        className="relative mb-6 overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_0_rgb(13_39_68/0.06)]"
+      >
+        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="min-w-0">
+            <p className="meta-text mb-1 uppercase tracking-wider text-muted-foreground">
+              Portfolio overview
+            </p>
+            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              {getGreeting()}, <span className="capitalize">{userName}</span>
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isEmptyPortfolio
+                ? `Portfolio setup ${progress.percent}% complete`
+                : stats
+                  ? `${stats.totalProperties} properties · ${stats.occupiedUnits}/${stats.totalUnits} units occupied`
+                  : "A snapshot of how your portfolio is performing today."}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              className="min-h-11"
+              onClick={() => navigate("/properties")}
+              aria-label="Add property"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Add property</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11"
+              onClick={() => navigate("/reports")}
+              aria-label="View reports"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">View reports</span>
+            </Button>
+          </div>
+        </div>
+        {/* Subtle photographic veil — restrained, preserves readability */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 -z-0 hidden h-full w-72 lg:block" aria-hidden>
+          <img
+            src={managerHeroImage}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover opacity-[0.16]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 to-card/10" />
+        </div>
+      </section>
 
       {statsError && !loading && (
         <div className="mb-5">
@@ -203,14 +231,6 @@ const Dashboard = () => {
         <ManagerActivationEmpty />
       ) : (
         <>
-          <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
-            <div className="mb-3">
-              <h2 id="dashboard-attention" className="section-title">Attention</h2>
-              <p className="supporting-text hidden sm:block">Live issues only — overdue collections, open maintenance, expiring leases, and pending actions</p>
-            </div>
-            <AttentionStrip items={attentionItems} loading={loading} />
-          </section>
-
           {/* Portfolio setup nudge — only while onboarding is incomplete; folded in here rather
               than as a permanent section so a fully set-up manager never sees it again. */}
           {!progress.isComplete && (
@@ -219,9 +239,10 @@ const Dashboard = () => {
             </section>
           )}
 
-          <section className="mb-6 min-w-0" aria-labelledby="dashboard-portfolio">
+          {/* Executive KPI row — one unified metric system */}
+          <section className="mb-6 min-w-0" aria-labelledby="dashboard-kpi">
             <div className="mb-3">
-              <h2 id="dashboard-portfolio" className="section-title">Portfolio</h2>
+              <h2 id="dashboard-kpi" className="section-title">Portfolio</h2>
               <p className="supporting-text hidden sm:block">Properties, units, occupancy, and collections from live records</p>
             </div>
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
@@ -277,6 +298,29 @@ const Dashboard = () => {
                 <p className="supporting-text hidden sm:block">Collected versus expected rent, and outstanding balances by property</p>
               </div>
               <div className="grid gap-4">
+                {stats && (
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 rounded-xl border border-border bg-card px-4 py-3 card-shadow">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-success" aria-hidden />
+                      <span className="text-sm text-muted-foreground">Collection rate</span>
+                      <span className="text-sm font-semibold text-foreground">{stats.collectionRate}%</span>
+                    </div>
+                    <div className="hidden h-4 w-px bg-border sm:block" aria-hidden />
+                    <span className="text-sm text-muted-foreground">
+                      {stats.expectedRent > 0
+                        ? `${formatCurrency(stats.collectedRent)} collected of ${formatCurrency(stats.expectedRent)} due`
+                        : "No expected rent recorded this month"}
+                    </span>
+                    {stats.revenueChange !== 0 && (
+                      <span className="ml-auto text-sm">
+                        <span className={stats.revenueChange > 0 ? "text-success" : "text-destructive"}>
+                          {stats.revenueChange > 0 ? "▲" : "▼"} {Math.abs(stats.revenueChange)}%
+                        </span>{" "}
+                        <span className="text-muted-foreground">vs last month</span>
+                      </span>
+                    )}
+                  </div>
+                )}
                 <ErrorBoundary compact label="Revenue chart">
                   <Suspense fallback={<ChartFallback />}>
                     <RevenueChart />
@@ -313,7 +357,25 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {/* Needs attention — operational priorities, above the lower modules */}
+          <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
+            <div className="mb-3">
+              <h2 id="dashboard-attention" className="section-title">Needs attention</h2>
+              <p className="supporting-text hidden sm:block">Live issues only — overdue collections, open maintenance, expiring leases, and pending actions</p>
+            </div>
+            <AttentionStrip items={attentionItems} loading={loading} />
+          </section>
+
+          {/* Properties — compact portfolio table surfaced high */}
+          <section className="mb-6 min-w-0" aria-labelledby="dashboard-properties">
+            <div className="mb-3">
+              <h2 id="dashboard-properties" className="section-title">Property performance</h2>
+              <p className="supporting-text hidden sm:block">Occupancy per property from live records</p>
+            </div>
+            <PropertiesOverview showHeader={false} />
+          </section>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <section className="min-w-0" aria-labelledby="dashboard-activity">
               <div className="mb-3">
                 <h2 id="dashboard-activity" className="section-title">Recent activity</h2>
@@ -334,14 +396,6 @@ const Dashboard = () => {
               <UpcomingPayments showHeader={false} />
             </section>
           </div>
-
-          <section className="mb-2 min-w-0" aria-labelledby="dashboard-properties">
-            <div className="mb-3">
-              <h2 id="dashboard-properties" className="section-title">Property performance</h2>
-              <p className="supporting-text hidden sm:block">Occupancy per property from live records</p>
-            </div>
-            <PropertiesOverview showHeader={false} />
-          </section>
         </>
       )}
     </Layout>
