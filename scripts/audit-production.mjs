@@ -204,14 +204,24 @@ for (const env of referencedFrontendEnv) {
   }
 }
 
-const forbiddenHardcodedSupabaseUrls = [
-  "aelzsqxllkypbzslxyju.supabase.co",
-];
+// Hardcoded Supabase project hosts to forbid in app source. The app's own
+// public project host (aelzsqxllkypbzslxyju.supabase.co) is NOT a secret — it
+// is the client-facing VITE_SUPABASE_URL (already allowed in the CSP as
+// https://*.supabase.co). It is forbidden everywhere EXCEPT the one test file
+// that legitimately asserts backend-project detection from production facts
+// (adminDesk.test.ts), so this gate still catches stray/secret-shaped copies
+// of the project host anywhere else in source.
+const ownSupabaseHost = "aelzsqxllkypbzslxyju.supabase.co";
+const ownSupabaseHostExemptFiles = new Set([
+  join(root, "src", "test", "adminDesk.test.ts"),
+]);
+const forbiddenHardcodedSupabaseUrls = [ownSupabaseHost];
 for (const file of sourceFiles) {
   const source = read(file);
   for (const url of forbiddenProductionUrls) {
     if (source.includes(url)) failures.push(`Forbidden hardcoded production URL in ${file}: ${url}`);
   }
+  if (ownSupabaseHostExemptFiles.has(file)) continue;
   for (const url of forbiddenHardcodedSupabaseUrls) {
     if (source.includes(url)) failures.push(`Forbidden hardcoded Supabase URL in ${file}: ${url}`);
   }
