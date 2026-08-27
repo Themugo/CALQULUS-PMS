@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Eye, Save, ShieldQuestion } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, Save, ShieldQuestion, Trash2 } from "lucide-react";
 import WebhostLayout from "@/features/webhost/components/WebhostLayout";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -10,12 +10,14 @@ import { useAuth } from "@/features/auth/AuthContext";
 import {
   canEditLandingSection,
   resolveLandingEditorRole,
+  type LandingEditorRole,
   type LandingSectionKey,
 } from "@/features/marketing/landing/contentService";
 import type { LandingPageConfig } from "@/features/marketing/landing/landingContent";
 import { landingContent } from "@/features/marketing/landing/contentService";
 import { LandingPageInner } from "@/features/marketing/landing/LandingPage";
 import { landingThemeToCssVars } from "@/features/marketing/theme/landingTheme";
+import { supabase } from "@/integrations/supabase/client";
 
 type Tab = LandingSectionKey;
 
@@ -32,6 +34,17 @@ const SECTION_META: Record<Tab, string> = {
   metrics: "Metrics",
   finalCta: "Final CTA",
   footer: "Footer",
+  sections: "Order",
+};
+
+const SECTION_LABELS: Record<string, string> = {
+  hero: "Hero",
+  trust: "Trust strip",
+  capabilities: "Capabilities",
+  roles: "Roles",
+  propertyTypes: "Property types",
+  metrics: "Metrics",
+  finalCta: "Final CTA",
 };
 
 function TextField({
@@ -84,8 +97,87 @@ function CtaEditor({
   );
 }
 
+/** Image asset field: paste a URL or upload to the landing asset store. */
+function AssetField({
+  label,
+  value,
+  folder,
+  onChange,
+  onUpload,
+}: {
+  label: string;
+  value: string;
+  folder: string;
+  onChange: (v: string) => void;
+  onUpload?: (file: File) => Promise<{ ok: boolean; url?: string; error?: string }>;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  return (
+    <Field label={label} helper="Paste an image URL or upload one to the asset store." htmlFor={label}>
+      <div className="space-y-2">
+        <Input id={label} value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://… or /assets/…" />
+        <div className="flex items-center gap-2">
+          <label className="inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-muted">
+            {uploading ? "Uploading…" : "Upload image"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file || !onUpload) return;
+                setUploading(true);
+                setUploadError(null);
+                void onUpload(file).then((res) => {
+                  setUploading(false);
+                  if (res.ok && res.url) onChange(res.url);
+                  else setUploadError(res.error ?? "Upload failed");
+                });
+              }}
+            />
+          </label>
+          {value ? (
+            <a href={value} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground underline hover:text-foreground">
+              Preview
+            </a>
+          ) : null}
+        </div>
+        {uploadError ? <p className="text-xs text-destructive">{uploadError}</p> : null}
+      </div>
+    </Field>
+  );
+}
+
+/** Record a landing-content edit in the audit log (non-blocking). */
+async function logLandingEdit({
+  section,
+  editorRole,
+  editorId,
+}: {
+  section: string;
+  editorRole: LandingEditorRole;
+  editorId: string | null;
+}): Promise<void> {
+  try {
+    await supabase.rpc("log_activity", {
+      p_action: "content_edit",
+      p_entity_type: "landing_page_content",
+      p_entity_id: "landing",
+      p_entity_label: section,
+      p_property_id: null,
+      p_manager_id: null,
+      p_metadata: { section, editorRole },
+    });
+  } catch {
+    // Audit failures must never break the save flow.
+  }
+}
+
 export default function AdminLandingContent() {
-  const { userRole, platformAdminInfo } = useAuth();
+  const { user, userRole, platformAdminInfo } = useAuth();
 
   const editorRole = useMemo(
     () =>
@@ -161,6 +253,8 @@ export default function AdminLandingContent() {
       setBase(nextBase);
       setSaveState("saved");
       setSaveError(null);
+      // Audit the content change (non-blocking; backend is authoritative).
+      await logLandingEdit({ section: tab, editorRole, editorId: user?.id ?? null });
     } else {
       setSaveState("error");
       setSaveError(result?.error ?? "Save failed");
@@ -199,7 +293,7 @@ export default function AdminLandingContent() {
           </div>
 
           <div className="mt-4 space-y-5 rounded-xl border border-border bg-card p-4">
-            <SectionEditor tab={tab} config={draft} onChange={setSection} />
+            <SectionEditor tab={tab} config={draft} onChange={setSection} upload={landingContent.uploadLandingAsset} />
 
             <div className="flex items-center justify-between border-t border-border pt-4">
               <p className={cn("text-xs", saveState === "error" ? "text-destructive" : "text-muted-foreground")}>
@@ -251,10 +345,12 @@ function SectionEditor({
   tab,
   config,
   onChange,
+  upload,
 }: {
   tab: Tab;
   config: LandingPageConfig;
   onChange: <K extends LandingSectionKey>(section: K, value: LandingPageConfig[K]) => void;
+  upload?: (file: File, folder?: string) => Promise<{ ok: boolean; url?: string; error?: string }>;
 }) {
   const set = <K extends LandingSectionKey>(section: K, value: LandingPageConfig[K]) => onChange(section, value);
   const c = config;
@@ -363,8 +459,14 @@ function SectionEditor({
               <TextField label="Copy" value={item.copy} onChange={(v) => onChange({ ...item, copy: v })} />
               <div className="grid grid-cols-2 gap-2">
                 <TextField label="Accent" value={item.accent} onChange={(v) => onChange({ ...item, accent: v })} />
-                <TextField label="Image (optional)" value={item.image ?? ""} onChange={(v) => onChange({ ...item, image: v || undefined })} />
               </div>
+              <AssetField
+                label="Image (optional)"
+                value={item.image ?? ""}
+                folder="capabilities"
+                onChange={(v) => onChange({ ...item, image: v || undefined })}
+                onUpload={upload}
+              />
             </div>
           )}
         />
@@ -441,6 +543,19 @@ function SectionEditor({
           <TextField label="Copy" value={c.finalCta.copy} onChange={(v) => set("finalCta", { ...c.finalCta, copy: v })} textarea />
           <CtaEditor label="Primary" cta={c.finalCta.primary} onChange={(cta) => set("finalCta", { ...c.finalCta, primary: cta })} />
           <CtaEditor label="Secondary" cta={c.finalCta.secondary} onChange={(cta) => set("finalCta", { ...c.finalCta, secondary: cta })} />
+        </div>
+      );
+    case "sections":
+      return (
+        <div className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Controls the order (and visibility) of homepage sections. Move items up/down; remove to hide. Changes apply on the next published read.
+          </p>
+          <OrderEditor
+            items={c.sections}
+            onChange={(items) => set("sections", items)}
+            labelFor={(id) => SECTION_LABELS[id] ?? id}
+          />
         </div>
       );
     case "footer":
@@ -554,6 +669,67 @@ function OptionsList<T>({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Ordered, reorderable list with move up/down and remove. */
+function OrderEditor<T extends string>({
+  items,
+  onChange,
+  labelFor,
+}: {
+  items: T[];
+  onChange: (items: T[]) => void;
+  labelFor: (id: T) => string;
+}) {
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  const remove = (i: number) => onChange([...items.slice(0, i), ...items.slice(i + 1)]);
+
+  return (
+    <div className="space-y-2">
+      {items.map((id, i) => (
+        <div key={id} className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="w-5 text-center text-xs font-medium text-muted-foreground">{i + 1}</span>
+            <span className="text-sm font-medium">{labelFor(id)}</span>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              aria-label={`Move ${labelFor(id)} up`}
+              disabled={i === 0}
+              onClick={() => move(i, -1)}
+              className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label={`Move ${labelFor(id)} down`}
+              disabled={i === items.length - 1}
+              onClick={() => move(i, 1)}
+              className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label={`Hide ${labelFor(id)}`}
+              onClick={() => remove(i)}
+              className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

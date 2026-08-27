@@ -51,6 +51,7 @@ export const LANDING_PERMISSIONS: Record<LandingEditorRole, LandingPagePermissio
     "metrics",
     "finalCta",
     "footer",
+    "sections",
   ],
   admin: ["hero", "capabilities", "roles", "metrics"],
 };
@@ -67,7 +68,8 @@ export type LandingPagePermission =
   | "propertyTypes"
   | "metrics"
   | "finalCta"
-  | "footer";
+  | "footer"
+  | "sections";
 
 /**
  * Resolve the editor role for a webhost account from the platform tier.
@@ -128,10 +130,16 @@ export type LandingSectionKey = keyof Pick<
   | "metrics"
   | "finalCta"
   | "footer"
+  | "sections"
 >;
 
 export type SaveLandingSectionResult =
   | { ok: true; data: LandingPageConfig[LandingSectionKey] }
+  | { ok: false; error: string };
+
+/** Result of an asset upload to the landing CMS asset store. */
+export type UploadLandingAssetResult =
+  | { ok: true; url: string; path: string }
   | { ok: false; error: string };
 
 /** Persist one section of the landing config (webhost/admin editor). */
@@ -139,6 +147,12 @@ export type LandSectionSaver = (
   section: LandingSectionKey,
   payload: LandingPageConfig[LandingSectionKey],
 ) => Promise<SaveLandingSectionResult>;
+
+/** Upload an image into the landing asset store and return its public URL. */
+export type LandingAssetUploader = (file: File, folder?: string) => Promise<UploadLandingAssetResult>;
+
+/** Storage bucket used for public landing-marketing assets. */
+export const LANDING_ASSET_BUCKET = "landing-images";
 
 export interface LandingContentProvider {
   /** Load the active landing config (defaults when nothing persisted). */
@@ -150,6 +164,8 @@ export interface LandingContentProvider {
   saveSection?: LandSectionSaver;
   /** Persist config wholesale — only meaningful for full webhost editors. */
   saveConfig?(config: LandingPageConfig): Promise<void>;
+  /** Upload a marketing image to the landing asset store. */
+  uploadLandingAsset?: LandingAssetUploader;
   readiness: "static" | "service";
 }
 
@@ -178,6 +194,7 @@ export function createLandingContentAdapter(
     getConfig: async () => merged,
     saveSection: undefined,
     saveConfig: undefined,
+    uploadLandingAsset: async () => ({ ok: false, error: "Static adapter has no asset store" }),
   };
 }
 
@@ -208,8 +225,23 @@ export function pickLandingSections(persisted: Record<string, unknown>): Partial
 export function createSupabaseLandingContentProvider(): LandingContentProvider {
   let cache: LandingPageConfig | null = null;
 
+  const uploadLandingAsset: LandingAssetUploader = async (file, folder = "general") => {
+    if (!file) return { ok: false, error: "No file selected" };
+    const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+    const safeFolder = folder.replace(/[^a-z0-9-_]/gi, "").slice(0, 40);
+    const path = `${safeFolder}/${Date.now()}-${crypto.randomUUID?.().slice(0, 8) ?? Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const { error } = await supabase.storage.from(LANDING_ASSET_BUCKET).upload(path, file, {
+      cacheControl: "31536000",
+      upsert: false,
+    });
+    if (error) return { ok: false, error: error.message };
+    const { data } = supabase.storage.from(LANDING_ASSET_BUCKET).getPublicUrl(path);
+    return { ok: true, url: data.publicUrl, path };
+  };
+
   const provider: LandingContentProvider = {
     readiness: "service",
+    uploadLandingAsset: uploadLandingAsset,
     getConfig: async (): Promise<LandingPageConfig> => {
       if (cache) return cache;
       const { data, error } = await supabase

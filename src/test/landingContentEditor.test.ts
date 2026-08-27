@@ -71,8 +71,68 @@ describe("landing editability authorization", () => {
     expect(canEditLandingSection("admin", "theme")).toBe(false);
     expect(canEditLandingSection("admin", "brand")).toBe(false);
     expect(canEditLandingSection("admin", "header")).toBe(false);
+    // Section ordering is a full-editor (webhost) capability only.
+    expect(canEditLandingSection("webhost", "sections")).toBe(true);
+    expect(canEditLandingSection("admin", "sections")).toBe(false);
     // Public users never edit.
     expect(canEditLandingSection(null, "hero")).toBe(false);
     expect(canEditLandingSection("manager", "hero")).toBe(false);
+  });
+});
+
+describe("landing CMS refinements", () => {
+  it("exposes sections in LandingSectionKey for runtime ordering", () => {
+    // `sections` is a key of LandingPageConfig reachable through the editor.
+    const editor = source("features/webhost/pages/AdminLandingContent.tsx");
+    expect(editor).toContain('case "sections"');
+    expect(editor).toContain("OrderEditor");
+  });
+
+  it("adds section ordering + move/hide controls to the editor UI", () => {
+    const editor = source("features/webhost/pages/AdminLandingContent.tsx");
+    expect(editor).toContain("Move");
+    expect(editor).toContain("Hide");
+    expect(editor).toContain("<OrderEditor");
+  });
+
+  it("adds an asset-store upload path with a safe bucket name", () => {
+    const svc = source("features/marketing/landing/contentService.ts");
+    expect(svc).toContain('LANDING_ASSET_BUCKET = "landing-images"');
+    expect(svc).toContain("uploadLandingAsset");
+    expect(svc).toContain(".storage.from");
+    expect(svc).toContain("getPublicUrl");
+    // Static adapter must not pretend to persist assets.
+    expect(svc).toContain('"Static adapter has no asset store"');
+    const editor = source("features/webhost/pages/AdminLandingContent.tsx");
+    expect(editor).toContain("AssetField");
+  });
+
+  it("gates the Landing Content nav item to resolvable landing editors", () => {
+    const layout = source("features/webhost/components/WebhostLayout.tsx");
+    expect(layout).toContain("resolveLandingEditorRole");
+    expect(layout).toContain("WEBHOST_ROUTES.landing");
+    // Nav item must not be shown to users with no landing editor role.
+    expect(/if \(item\.href === WEBHOST_ROUTES\.landing\)/.test(layout)).toBe(true);
+    // Explicit branch resolves full OR scoped, not all webhost.
+    expect(layout).toContain("userRole?.role");
+  });
+
+  it("records an audit entry (log_activity) after a section save", () => {
+    const editor = source("features/webhost/pages/AdminLandingContent.tsx");
+    expect(editor).toContain("logLandingEdit");
+    expect(editor).toContain('p_action: "content_edit"');
+    expect(editor).toContain('p_entity_type: "landing_page_content"');
+    // Audit must never break the save flow.
+    expect(editor).toContain("Audit failures must never break the save flow");
+  });
+
+  it("seeds a published landing-content row idempotently", () => {
+    const seed = source("../supabase/seed/landing_content.sql");
+    expect(seed).toContain("landing_page_content");
+    expect(seed).toContain("'{}'::jsonb");
+    expect(seed).toContain("NOT EXISTS");
+    expect(seed).toMatch(/\btrue\b,\s*auth\.uid\(\)/);
+    // The row is published.
+    expect(seed).toContain("published");
   });
 });

@@ -20,12 +20,15 @@ export {
   resolveLandingEditorRole,
   LANDING_PERMISSIONS,
   LANDING_EDITOR_ROLES,
+  LANDING_ASSET_BUCKET,
 } from "./contentService";
 export type {
   LandingContentProvider,
   LandingSectionKey,
   LandSectionSaver,
   SaveLandingSectionResult,
+  LandingAssetUploader,
+  UploadLandingAssetResult,
 } from "./contentService";
 
 export type {
