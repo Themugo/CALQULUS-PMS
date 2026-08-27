@@ -247,6 +247,28 @@ export default function WebhostLayout({ children, title, description, actions }:
               <span className="truncate">{title}</span>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to={WEBHOST_ROUTES.settings}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+              aria-label="Platform settings"
+              title="Platform settings"
+            >
+              <Settings className="h-5 w-5" />
+            </Link>
+            <div
+              className="hidden h-10 items-center gap-2.5 rounded-lg border border-border bg-muted/30 pl-2.5 pr-3 sm:flex"
+              title={user?.email ?? "Platform administrator"}
+            >
+              <span
+                aria-hidden
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--portal-accent)]/15 text-[11px] font-bold uppercase text-[var(--portal-accent)]"
+              >
+                {(user?.email?.charAt(0) || "A")}
+              </span>
+              <span className="max-w-[120px] truncate text-xs font-medium text-foreground">{user?.email ?? "Platform admin"}</span>
+            </div>
+          </div>
         </header>
 
         <PageHeader title={title} description={description} actions={actions} className="border-0 px-4 py-4 sm:px-6 lg:px-8" />

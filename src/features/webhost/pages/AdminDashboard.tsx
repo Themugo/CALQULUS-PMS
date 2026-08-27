@@ -1,18 +1,21 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { startOfMonth } from "date-fns";
 import {
-  AlertTriangle,
+  Activity,
+  Building2,
   CheckCircle2,
   ChevronRight,
-  CircleAlert,
   Globe,
+  Layers,
   RefreshCw,
   Server,
   ShieldAlert,
-  XCircle,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/AuthContext";
 import WebhostLayout from "@/features/webhost/components/WebhostLayout";
 import { useAdminHealthProbes, type ComponentProbe } from "@/features/webhost/hooks/useAdminHealthProbes";
 import {
@@ -136,19 +139,95 @@ export default function AdminDashboard() {
     staleTime: 30_000,
   });
 
-  const statStrip: { label: string; value: string; href?: string }[] = [
-    { label: "Applications", value: "1", href: WEBHOST_ROUTES.applications },
-    { label: "Domains", value: "1", href: WEBHOST_ROUTES.applications },
-    { label: "Environments", value: "1", href: WEBHOST_ROUTES.deployments },
-    { label: "Services", value: healthLoading ? "…" : `${probedCount.probed}/${probedCount.total} probed` },
-    {
-      label: "Users",
-      value: usersLoading
-        ? "…"
-        : String((users?.managers ?? 0) + (users?.agencies ?? 0) + (users?.webhosts ?? 0) + (users?.landlords ?? 0) + (users?.submanagers ?? 0)),
-      href: WEBHOST_ROUTES.users,
+  // ── Platform scale — real counts from existing tables (no tenant PII) ──
+  const { data: scale, isLoading: scaleLoading } = useQuery({
+    queryKey: ["platform-admin-infra-scale"],
+    queryFn: async () => {
+      const [orgRoles, properties, units] = await Promise.all([
+        supabase
+          .from("user_roles")
+          .select("id", { count: "exact", head: true })
+          .in("role", ["manager", "agency"]),
+        supabase.from("properties").select("id", { count: "exact", head: true }),
+        supabase.from("units").select("id", { count: "exact", head: true }),
+      ]);
+      return {
+        organizations: orgRoles.count ?? 0,
+        properties: properties.count ?? 0,
+        units: units.count ?? 0,
+      };
     },
-  ];
+    staleTime: 30_000,
+  });
+
+  // ── Commercial overview — real platform billing derived from existing invoices ──
+  const { data: billing, isLoading: billingLoading } = useQuery<{
+    revenueMTD: number;
+    outstanding: number;
+    collectionRate: number;
+    activeSubs: number;
+    billedCount: number;
+    hasData: boolean;
+  }>({
+    queryKey: ["platform-admin-infra-commercial"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("manager_invoices")
+        .select("amount, status, invoice_type, due_date, paid_date, manager_user_id");
+      if (error) throw error;
+      const list = (data ?? []) as {
+        amount: number;
+        status: string;
+        invoice_type: string | null;
+        due_date: string;
+        paid_date: string | null;
+        manager_user_id: string | null;
+      }[];
+      const paid = list.filter((i) => i.status === "paid");
+      const now = new Date();
+      const mtdStart = startOfMonth(now);
+      const inMonth = () =>
+        paid
+          .filter((i) => {
+            const d = i.paid_date ? new Date(i.paid_date) : null;
+            return d && d >= mtdStart && d <= now;
+          })
+          .reduce((s, i) => s + Number(i.amount), 0);
+      const revenueMTD = inMonth();
+      const totalPaid = paid.reduce((s, i) => s + Number(i.amount), 0);
+      const totalBilled = list.reduce((s, i) => s + Number(i.amount), 0);
+      const outstanding = list
+        .filter((i) => i.status === "pending" || i.status === "overdue")
+        .reduce((s, i) => s + Number(i.amount), 0);
+      const activeSubs = new Set(paid.filter((i) => i.invoice_type === "subscription").map((i) => i.manager_user_id)).size;
+      return {
+        revenueMTD,
+        outstanding,
+        collectionRate: totalBilled > 0 ? (totalPaid / totalBilled) * 100 : 0,
+        activeSubs,
+        billedCount: list.length,
+        hasData: list.length > 0,
+      };
+    },
+    staleTime: 30_000,
+  });
+
+  const { user, platformAdminInfo } = useAuth();
+  const adminDisplayName = platformAdminInfo?.display_name || user?.email?.split("@")[0] || "administrator";
+  const adminDisplay = (name: string) =>
+    name
+      .split(/[\s._-]+/)
+      .filter(Boolean)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(" ");
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const todayFmt = new Intl.DateTimeFormat("en-KE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const totalUsers = (users?.managers ?? 0) + (users?.agencies ?? 0) + (users?.webhosts ?? 0) + (users?.landlords ?? 0) + (users?.submanagers ?? 0);
+  const fmtKES = (n: number) => (n >= 1_000_000 ? `KSh ${(n / 1_000_000).toFixed(2)}M` : `KSh ${n.toLocaleString("en-KE")}`);
+
+  const orgQuery = { organizations: scale?.organizations ?? 0, properties: scale?.properties ?? 0, units: scale?.units ?? 0 };
 
   return (
     <WebhostLayout
@@ -156,6 +235,124 @@ export default function AdminDashboard() {
       description="Platform services, application runtime, and access — without tenant records."
     >
       <div className="space-y-6">
+        {/* Executive page header */}
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--portal-accent)]">Platform command center</p>
+            <h1 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+              {greeting}, {adminDisplay(adminDisplayName)}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Platform health, scale, and commercial performance across every
+              organization on CALQULUS.
+            </p>
+          </div>
+          <div className="flex flex-shrink-0 items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
+              <Activity className="h-3.5 w-3.5 text-[var(--portal-accent)]" aria-hidden />
+              {todayFmt.format(new Date())}
+            </span>
+            <span className="hidden italic text-xs text-muted-foreground sm:block">Executive view</span>
+          </div>
+        </header>
+
+        {/* Platform scale — real counts, compact KPI cells */}
+        <section aria-label="Platform scale" className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            {
+              label: "Organizations",
+              value: scaleLoading ? "…" : String(orgQuery.organizations),
+              helper: "Manager & agency workspaces",
+              icon: Building2,
+              href: WEBHOST_ROUTES.organizations,
+            },
+            {
+              label: "Users",
+              value: usersLoading ? "…" : String(totalUsers),
+              helper: "Across all portal roles",
+              icon: Users,
+              href: WEBHOST_ROUTES.users,
+            },
+            {
+              label: "Properties",
+              value: scaleLoading ? "…" : String(orgQuery.properties),
+              helper: "Buildings managed",
+              icon: Layers,
+              href: WEBHOST_OPS_ROUTES.properties,
+            },
+            {
+              label: "Units",
+              value: scaleLoading ? "…" : String(orgQuery.units),
+              helper: "Across the platform",
+              icon: Server,
+              href: WEBHOST_ROUTES.subscriptions,
+            },
+          ].map(({ label, value, helper, icon: Icon, href }) => {
+            const cell = (
+              <div className="flex items-start gap-3">
+                <span
+                  aria-hidden
+                  className="mt-0.5 inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--portal-accent)]/10 text-[var(--portal-accent)]"
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+                  <p className="mt-0.5 font-heading text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{helper}</p>
+                </div>
+              </div>
+            );
+            return href ? (
+              <Link
+                key={label}
+                to={href}
+                className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-[var(--portal-accent)]/40 hover:bg-muted/30"
+              >
+                {cell}
+              </Link>
+            ) : (
+              <div key={label} className="rounded-xl border border-border bg-card p-4">
+                {cell}
+              </div>
+            );
+          })}
+        </section>
+
+        {/* Commercial overview — real platform billing */}
+        <section aria-label="Commercial overview" className="overflow-hidden rounded-xl border border-border bg-card">
+          <SectionTitle
+            aside={
+              <Link
+                to={WEBHOST_ROUTES.subscriptions}
+                className="inline-flex items-center gap-0.5 text-[11px] font-medium text-primary hover:underline"
+              >
+                Subscriptions <ChevronRight className="h-3 w-3" />
+              </Link>
+            }
+          >
+            Commercial overview
+          </SectionTitle>
+          <dl className="grid grid-cols-2 divide-x divide-border sm:grid-cols-4">
+            {[
+              { label: "Received this month", value: billingLoading ? "…" : fmtKES(billing?.revenueMTD ?? 0) },
+              { label: "Outstanding", value: billingLoading ? "…" : fmtKES(billing?.outstanding ?? 0) },
+              { label: "Active subscriptions", value: billingLoading ? "…" : String(billing?.activeSubs ?? 0) },
+              { label: "Collection rate", value: billingLoading ? "…" : `${Math.round(billing?.collectionRate ?? 0)}%` },
+            ].map((item) => (
+              <div key={item.label} className="px-4 py-3">
+                <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{item.label}</dt>
+                <dd className="mt-0.5 font-heading text-lg font-semibold tabular-nums">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {!billingLoading && !billing?.hasData ? (
+            <p className="border-t border-border px-4 py-2 text-[11px] text-muted-foreground">
+              No invoices billed yet. Revenue appears once subscriptions begin.
+            </p>
+          ) : null}
+        </section>
+
         {/* System status band — deep navy is chrome, never a page fill */}
         <section
           aria-label="System status"
@@ -199,29 +396,6 @@ export default function AdminDashboard() {
             {lastProbe ? `Last probe ${timeFmt.format(lastProbe)} · refreshes every 60s` : "Awaiting first probe"}
             {" · "}Deployments, servers, DNS, and certificates are not instrumented on this desk.
           </p>
-        </section>
-
-        {/* Compact stat strip — one bordered row, not cards */}
-        <section aria-label="Infrastructure totals" className="overflow-hidden rounded-xl border border-border bg-card">
-          <dl className="grid grid-cols-2 divide-x divide-border sm:grid-cols-5">
-            {statStrip.map((stat) => {
-              const body = (
-                <>
-                  <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{stat.label}</dt>
-                  <dd className="mt-0.5 font-heading text-lg font-semibold tabular-nums">{stat.value}</dd>
-                </>
-              );
-              return stat.href ? (
-                <Link key={stat.label} to={stat.href} className="px-4 py-3 transition-colors hover:bg-muted/40">
-                  {body}
-                </Link>
-              ) : (
-                <div key={stat.label} className="px-4 py-3">
-                  {body}
-                </div>
-              );
-            })}
-          </dl>
         </section>
 
         {/* Service health */}
@@ -317,7 +491,7 @@ export default function AdminDashboard() {
             </p>
           </section>
 
-          {/* Alerts */}
+          {/* Needs attention */}
           <section className="overflow-hidden rounded-xl border border-border bg-card">
             <SectionTitle
               aside={
@@ -329,7 +503,7 @@ export default function AdminDashboard() {
                 </Link>
               }
             >
-              Alerts
+              Needs attention
             </SectionTitle>
             {alertsLoading ? (
               <div className="space-y-2 p-4">
