@@ -53,7 +53,7 @@ describe("Manager portal entry chrome", () => {
 
   it("keeps the other-portals switcher below the preview with working links", () => {
     renderShell();
-    expect(screen.getByText(/other calqulus portals/i)).toBeInTheDocument();
+    expect(screen.getByText(/sign in as/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /landlord/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.landlordLogin,

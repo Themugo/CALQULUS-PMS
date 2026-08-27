@@ -1,6 +1,6 @@
 # CALQULUS PMS
 
-A modern property management platform for Kenya and East Africa, built with React, TypeScript, Supabase, and Tailwind CSS.
+A modern property management platform for Kenya and East Africa, built with React, TypeScript, Supabase, and Tailwind CSS. It connects webhosts, managers, landlords, agencies, and tenants in one operational system for properties, leases, billing, payments, and maintenance.
 
 ## Tech Stack
 
@@ -89,7 +89,7 @@ npm run verify
 
 ## Project Structure
 
-```
+```text
 src/
 ├── features/          # Feature-based modules
 │   ├── webhost/       # Webhost dashboard

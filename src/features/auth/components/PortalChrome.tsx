@@ -54,7 +54,7 @@ interface PortalSwitcherProps {
 export function PortalSwitcher({ currentId }: PortalSwitcherProps) {
   return (
     <nav aria-label="Other CALQULUS portals" className="mt-5">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">Other CALQULUS portals</p>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">Sign in as</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {PORTALS.map((portal) => {
           if (portal.id === currentId) {
