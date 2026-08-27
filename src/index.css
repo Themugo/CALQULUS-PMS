@@ -149,6 +149,22 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-muted: var(--sidebar-muted);
 
+  /* ── Landing-page brilliant-navy palette (public marketing) ──
+     Utilities: bg-landing-primary, text-landing-accent, border-landing-border … */
+  --color-landing-primary: var(--calqulus-landing-primary);
+  --color-landing-primarydark: var(--calqulus-landing-primaryDark);
+  --color-landing-primarylight: var(--calqulus-landing-primaryLight);
+  --color-landing-accent: var(--calqulus-landing-accent);
+  --color-landing-cyan: var(--calqulus-landing-cyan);
+  --color-landing-background: var(--calqulus-landing-background);
+  --color-landing-surface: var(--calqulus-landing-surface);
+  --color-landing-textprimary: var(--calqulus-landing-textPrimary);
+  --color-landing-textsecondary: var(--calqulus-landing-textSecondary);
+  --color-landing-border: var(--calqulus-landing-border);
+  --color-landing-success: var(--calqulus-landing-success);
+  --color-landing-warning: var(--calqulus-landing-warning);
+  --color-landing-danger: var(--calqulus-landing-danger);
+
   --breakpoint-xs: 24.375rem; /* 390px — phones in the certification set */
   --container-padding: 2rem;
   --container-screens-2xl: 1400px;
@@ -455,6 +471,23 @@
     --calqulus-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
     --calqulus-shadow-md: 0 8px 24px rgba(16, 42, 67, 0.08);
     --calqulus-shadow-lg: 0 20px 50px rgba(16, 42, 67, 0.12);
+
+    /* ── Landing-page premium brilliant-navy theme (public marketing) ──
+       Self-contained token set consumed by the landing page via utility
+       classes. Kept apart from the light desk palette. */
+    --calqulus-landing-primary: #123F8C;
+    --calqulus-landing-primaryDark: #0B2F6B;
+    --calqulus-landing-primaryLight: #EAF2FF;
+    --calqulus-landing-accent: #2F6FED;
+    --calqulus-landing-cyan: #16B8C4;
+    --calqulus-landing-background: #F7F9FC;
+    --calqulus-landing-surface: #FFFFFF;
+    --calqulus-landing-textPrimary: #10233F;
+    --calqulus-landing-textSecondary: #5E6F86;
+    --calqulus-landing-border: #DCE5F0;
+    --calqulus-landing-success: #159A72;
+    --calqulus-landing-warning: #D99A25;
+    --calqulus-landing-danger: #D9535B;
 
     /* ── Semantic tokens re-pointed to the CALQULUS palette ── */
     --background: var(--calqulus-background);
@@ -775,6 +808,75 @@
 
 @utility sidebar-gradient {
   background-color: var(--sidebar-background);
+}
+
+/* ── Landing page (public marketing) — brilliant-navy premium surface ──
+   These utilities render the brilliant-navy conversion theme on the public
+   homepage, kept apart from the light desk palette. */
+@utility landing-hero-surface {
+  background-color: var(--calqulus-landing-background);
+  background-image:
+    radial-gradient(58% 68% at 92% 8%, color-mix(in srgb, var(--calqulus-landing-primary) 9%, transparent) 0%, transparent 62%),
+    radial-gradient(46% 60% at 2% 100%, color-mix(in srgb, var(--calqulus-landing-primaryLight) 60%, transparent) 0%, transparent 68%),
+    linear-gradient(180deg, #FFFFFF 0%, var(--calqulus-landing-background) 100%);
+}
+
+@utility landing-grid {
+  background-image:
+    linear-gradient(rgb(18 63 140 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(18 63 140 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 86% 72% at 50% 0%, #000 10%, transparent 76%);
+}
+
+@utility landing-hero-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--calqulus-landing-textPrimary);
+}
+@media (min-width: 768px) {
+  .landing-hero-title { font-size: 2.75rem; }
+}
+@media (min-width: 1280px) {
+  .landing-hero-title { font-size: 3rem; }
+}
+
+@utility landing-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.625rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--calqulus-landing-textPrimary);
+}
+@media (min-width: 768px) {
+  .landing-section-title { font-size: 2rem; }
+}
+
+@utility landing-eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--calqulus-landing-accent);
+}
+
+@utility landing-card {
+  background-color: var(--calqulus-landing-surface);
+  border: 1px solid var(--calqulus-landing-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(18, 63, 140, 0.05), 0 2px 6px rgba(18, 63, 140, 0.04);
+}
+
+@layer utilities {
+  .landing-card:hover {
+    box-shadow: 0 8px 24px rgba(18, 63, 140, 0.1);
+  }
 }
 
 @layer utilities {

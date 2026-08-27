@@ -19,53 +19,45 @@ function renderAt(path: string) {
 }
 
 describe("PublicLandingPage", () => {
-  it("renders the approved hero hierarchy with a single h1", () => {
+  it("renders the premium hero hierarchy with a single h1", () => {
     renderAt("/");
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Run your properties. Without the chaos.");
+    expect(headings[0]).toHaveTextContent("Manage properties.");
+    expect(headings[0]).toHaveTextContent("Delight landlords. Empower tenants.");
     expect(screen.getByText(/property operations, connected/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/brings properties, tenants, leases, billing, payments and maintenance/i),
+      screen.getByText(/unifies property, lease, billing, payments, maintenance and reporting/i),
     ).toBeInTheDocument();
   });
 
-  it("keeps working portal routes on the hero, role strip and final CTA", () => {
+  it("keeps working portal routes on the hero and role grid", () => {
     renderAt("/");
-    expect(screen.getByRole("link", { name: /^start managing$/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
+    const demoLinks = screen.getAllByRole("link", { name: /^book a demo$/i });
+    expect(demoLinks.some((l) => l.getAttribute("href") === PUBLIC_ROUTES.managerSignUp)).toBe(true);
+    expect(screen.getByRole("link", { name: /explore the platform/i }).getAttribute("href")).toMatch(
+      /#capabilities$/,
     );
-    expect(screen.getByRole("link", { name: /see how it works/i })).toHaveAttribute(
-      "href",
-      "#how-it-works",
-    );
-    expect(screen.getByRole("link", { name: /view manager portal/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
-    );
-    expect(screen.getByRole("link", { name: /view landlord portal/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.landlordLogin,
-    );
-    expect(screen.getByRole("link", { name: /view agency portal/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.agencyLogin,
-    );
-    expect(screen.getByRole("link", { name: /view tenant portal/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.tenantLogin,
-    );
+    // Role cards — six roles with live portal destinations.
+    for (const label of [
+      "Start managing",
+      "Open landlord portal",
+      "Open agency portal",
+      "Open tenant portal",
+      "Admin access",
+      "Webhost access",
+    ]) {
+      expect(screen.getByRole("link", { name: new RegExp(`^${label}$`, "i") })).toBeTruthy();
+    }
   });
 
-  it("uses the approved primary navigation in Platform / Solutions / Pricing order", () => {
+  it("uses the approved primary navigation in Product / Solutions / Resources order with Pricing", () => {
     renderAt("/");
     const primary = screen.getByRole("navigation", { name: "Primary" });
     const labels = within(primary)
       .getAllByRole("link")
       .map((link) => link.textContent);
-    expect(labels).toEqual(["Platform", "Solutions", "Pricing"]);
-    expect(primary).not.toHaveTextContent("Contact");
+    expect(labels).toEqual(["Product", "Solutions", "Pricing", "Resources", "About"]);
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute(
       "href",
@@ -77,12 +69,12 @@ describe("PublicLandingPage", () => {
     );
   });
 
-  it("labels the dashboard visual as a preview", () => {
+  it("labels the dashboard visual as an illustrative preview", () => {
     renderAt("/");
     expect(screen.getAllByText(/illustrative manager dashboard/i).length).toBeGreaterThan(0);
   });
 
-  it("keeps the pricing route reachable and free of fabricated prices on the homepage", () => {
+  it("renders the pricing route and keeps it free of fabricated prices on the homepage", () => {
     renderAt("/");
     const pricingLinks = screen.getAllByRole("link", { name: /pricing/i });
     expect(pricingLinks.some((link) => link.getAttribute("href") === PUBLIC_ROUTES.pricing)).toBe(true);
@@ -97,87 +89,87 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
-  it("uses a frosted header, a light hero surface, and navy footer chrome", () => {
+  it("uses a white shimmering header, brilliant-navy chrome and light hero surface", () => {
     const { container } = renderAt("/");
-    expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
-    // The public header is a consistent frosted light surface across the site.
-    expect(header.className).toMatch(/bg-card\/90/);
+    expect(header.className).toMatch(/bg-landing-surface/);
     expect(header.className).toMatch(/backdrop-blur/);
-    expect(container.querySelector(".public-hero-surface-light")).toBeTruthy();
-    expect(container.querySelector(".public-hero-grid-light")).toBeTruthy();
-    expect(container.querySelector("footer.bg-navy-deep")).toBeTruthy();
-    expect(container.querySelector("#platform")).toBeTruthy();
-    expect(container.querySelector("#how-it-works")).toBeTruthy();
-    expect(container.querySelector("#solutions")).toBeTruthy();
-    expect(container.querySelector("#contact")).toBeTruthy();
+    expect(container.querySelector(".landing-hero-surface")).toBeTruthy();
+    expect(container.querySelector(".landing-grid")).toBeTruthy();
+    expect(container.querySelector("footer.bg-landing-primary")).toBeTruthy();
+    expect(container.querySelector("#capabilities")).toBeTruthy();
+    expect(container.querySelector("#roles")).toBeTruthy();
+    expect(container.querySelector("#property-types")).toBeTruthy();
+    expect(container.querySelector("#resources")).toBeTruthy();
+    expect(container.querySelector("#company")).toBeTruthy();
     expect(container.querySelector(".bg-slate-950")).toBeNull();
   });
 
   it("follows the approved compact structure without extra sections", () => {
     renderAt("/");
-    // Approved order: capabilities → property types → roles → lifecycle → trust → final CTA.
     expect(
-      screen.getByRole("heading", { name: /one platform\. every property\./i }),
+      screen.getByRole("heading", { name: /everything you need\. one platform\./i }),
     ).toBeInTheDocument();
-    for (const tile of ["Properties", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
-      expect(screen.getAllByText(tile).length).toBeGreaterThan(0);
+    for (const cap of ["Property & Units", "Leases & Tenants", "Billing & Payments", "Maintenance", "Reports & Insights", "Secure & Controlled"]) {
+      expect(screen.getByRole("heading", { name: cap })).toBeInTheDocument();
     }
-    expect(screen.getByRole("heading", { name: /built for the way property is managed\./i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /one platform\. every connection\./i }),
+    ).toBeInTheDocument();
+    for (const role of ["Property Managers", "Landlords", "Agencies", "Tenants", "System Administrators", "Webhosts"]) {
+      expect(screen.getByRole("heading", { name: role })).toBeInTheDocument();
+    }
+    // Property types remain compact three panels.
     expect(screen.getByRole("heading", { name: "Residential" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Commercial" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Office" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /one system\. every role\./i })).toBeInTheDocument();
-    expect(screen.getAllByRole("heading", { name: /all under control\./i }).length).toBeGreaterThan(0);
     // Removed surplus sections stay gone.
-    expect(screen.queryByRole("heading", { name: /see what's happening across your properties/i })).toBeNull();
-    expect(screen.queryByRole("heading", { name: /know what came in\./i })).toBeNull();
-    expect(screen.queryByRole("heading", { name: /maintenance, under control\./i })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /all under control\./i })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /one system\. every role\./i })).toBeNull();
     expect(screen.queryByText(/sample properties/i)).toBeNull();
   });
 
-  it("renders the lifecycle flow and compact trust row", () => {
+  it("renders capability tiles and trust strip", () => {
     renderAt("/");
-    for (const step of ["Property", "Units", "Tenants", "Leases", "Billing", "Payments", "Maintenance", "Reporting"]) {
-      expect(screen.getAllByText(step).length).toBeGreaterThan(0);
-    }
-    for (const pillar of ["Role-based", "Secure", "Auditable", "Connected"]) {
-      expect(screen.getByRole("heading", { name: pillar })).toBeInTheDocument();
+    const trust = screen.getByText(/built for property professionals/i);
+    expect(trust).toBeInTheDocument();
+    for (const sector of ["Residential", "Commercial", "Office", "Mixed-use"]) {
+      expect(screen.getAllByText(sector).length).toBeGreaterThan(0);
     }
   });
 
-  it("uses the full dashboard only once — the hero preview is the single product visual", () => {
+  it("uses the dashboard preview once — the hero preview is the single product visual", () => {
     renderAt("/");
-    const captions = screen.getAllByText(
-      /Illustrative manager dashboard\. Sample figures only/i,
-    );
+    const captions = screen.getAllByText(/Illustrative manager dashboard\. Sample figures only/i);
     expect(captions.length).toBe(1);
-    expect(screen.getByText("Maintenance activity")).toBeInTheDocument();
-    expect(screen.getByText("Property summary")).toBeInTheDocument();
+    expect(screen.getByText("Needs attention")).toBeInTheDocument();
+    expect(screen.getByText("Portfolio performance")).toBeInTheDocument();
     expect(screen.getByText("Collections, last 7 weeks")).toBeInTheDocument();
   });
 
-  it("does not fabricate certifications or fake social links", () => {
+  it("labels illustrative metrics rather than fabricating customer statistics", () => {
     renderAt("/");
+    expect(
+      screen.getByText(/Values marked · sample are illustrative capability indicators/i),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/SOC ?2/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/ISO ?\d{4,5}/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/PCI/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /linkedin|facebook|instagram/i })).not.toBeInTheDocument();
   });
 
-  it("renders a deep-navy final CTA with get-started and sign-in actions", () => {
+  it("renders the brilliant-navy final CTA with book-a-demo and sign-in actions", () => {
     renderAt("/");
     const heading = screen.getByRole("heading", {
       name: /ready to run your portfolio with more control\?/i,
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
-    expect(ctaSection!.querySelector(".bg-navy-deep")).toBeTruthy();
-    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
+    expect(ctaSection!.querySelector(".bg-landing-primary")).toBeTruthy();
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /^book a demo$/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /sign in/i })).toHaveAttribute(
+    expect(within(ctaSection as HTMLElement).getByRole("link", { name: /^sign in$/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignIn,
     );
