@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, LogOut, Menu, Settings, X } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
