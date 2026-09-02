@@ -12,16 +12,12 @@
  */
 
 import { serve } from "std/http/server.ts";
-import { requireEnv } from "../_shared/env.ts";
 import { isPositiveMoney, roundMoney } from "../_shared/money.ts";
 import {
   withMiddleware,
   errorResponse,
   AuthorizationError,
 } from "../_shared/middleware.ts";
-
-const SUPABASE_URL = requireEnv("SUPABASE_URL");
-const SERVICE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 serve(
   withMiddleware(
@@ -86,71 +82,30 @@ serve(
         }
       }
 
-      if (isInstallment && instalmentCount && instalmentCount > 1) {
-        const { data: unpaidInvoices } = await ctx.supabase
-          .from("invoices")
-          .select("id, amount, balance_due, original_amount")
-          .eq("tenant_id", tenantId)
-          .in("status", ["pending", "overdue"])
-          .order("due_date", { ascending: true });
-
-        const totalOwed = (unpaidInvoices ?? []).reduce(
-          (s, i: any) => s + Number(i.balance_due ?? i.amount), 0
-        );
-        const instalmentAmount = Math.ceil(totalOwed / instalmentCount);
-
-        await ctx.supabase.from("arrears_schedule").insert({
-          tenant_id: tenantId,
-          manager_id: effectiveManagerId,
-          invoice_id: invoiceId ?? null,
-          total_owed: totalOwed,
-          instalment_count: instalmentCount,
-          instalment_amount: instalmentAmount,
-          status: "active",
-          start_date: paymentDate ?? new Date().toISOString().slice(0, 10),
-          next_due_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
-          notes: notes ?? `Installment plan: ${instalmentCount} payments of ${instalmentAmount}`,
-        });
-
-        if (invoiceId) {
-          await ctx.supabase
-            .from("invoices")
-            .update({ installment_plan: true })
-            .eq("id", invoiceId);
-        }
+      if (isInstallment && instalmentCount && instalmentCount > 1 && !Number.isInteger(instalmentCount)) {
+        throw errorResponse("instalmentCount must be a whole number", 400);
       }
 
-      try {
-        const processRes = await fetch(`${SUPABASE_URL}/functions/v1/process-payment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${SERVICE_KEY}`,
-          },
-          body: JSON.stringify({
-            tenantId,
-            managerId: effectiveManagerId,
-            amount: Number(amount),
-            paymentMethod,
-            paymentDate: paymentDate ?? new Date().toISOString().slice(0, 10),
-            reference,
-            invoiceId: invoiceId ?? undefined,
-            recordedBy: ctx.user!.id,
-            notes,
-          }),
-        });
+      const { data, error } = await ctx.supabase.rpc("record_payment_with_installment_atomic", {
+        p_tenant_id: tenantId,
+        p_manager_id: effectiveManagerId,
+        p_amount: amount,
+        p_payment_method: paymentMethod,
+        p_payment_date: paymentDate ?? new Date().toISOString().slice(0, 10),
+        p_reference: reference,
+        p_invoice_id: invoiceId ?? null,
+        p_recorded_by: ctx.user!.id,
+        p_notes: notes ?? null,
+        p_instalment_count: instalmentCount ?? null,
+        p_is_installment: Boolean(isInstallment),
+      });
 
-        const result = await processRes.json().catch(() => ({ error: "Invalid response from payment service" }));
-
-        if (!processRes.ok) {
-          throw errorResponse(result.error || "Payment processing failed", processRes.status);
-        }
-
-        return result;
-      } catch (err) {
-        if (err instanceof Response) throw err;
-        throw errorResponse("Payment service unreachable. Please retry.", 502);
+      if (error) {
+        console.error("[record-payment] atomic RPC failed:", error.message);
+        throw errorResponse("Payment could not be recorded atomically. Please retry.", 400);
       }
+
+      return data;
     }
   )
 );
