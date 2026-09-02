@@ -42,7 +42,6 @@ export interface AtomicPaymentResult {
   creditBalance?: number;
   totalAllocated?: number;
   error?: string;
-  missingFunction?: boolean;
 }
 
 /**
@@ -73,13 +72,8 @@ export async function processPaymentAtomic(
   });
 
   if (error) {
-    const code = (error as { code?: string }).code ?? "";
-    const missingFunction =
-      code === "PGRST202" ||
-      code === "42883" ||
-      /does not exist|could not find the function/i.test(error.message);
     console.error("[atomic-payment] RPC failed:", error);
-    return { success: false, error: error.message, missingFunction };
+    return { success: false, error: error.message };
   }
 
   const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | null;
