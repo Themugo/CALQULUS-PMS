@@ -1000,6 +1000,66 @@ export type Database = {
           },
         ]
       }
+      platform_payment_transactions: {
+        Row: {
+          id: string
+          manager_invoice_id: string
+          manager_user_id: string
+          provider: string
+          payment_method: string
+          reference: string
+          provider_session_id: string | null
+          provider_payment_intent_id: string | null
+          amount: number
+          currency: string
+          status: string
+          failure_reason: string | null
+          metadata: Json
+          initiated_at: string
+          completed_at: string | null
+          updated_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          manager_invoice_id: string
+          manager_user_id: string
+          provider?: string
+          payment_method?: string
+          reference: string
+          provider_session_id?: string | null
+          provider_payment_intent_id?: string | null
+          amount: number
+          currency?: string
+          status?: string
+          failure_reason?: string | null
+          metadata?: Json
+          initiated_at?: string
+          completed_at?: string | null
+          updated_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          manager_invoice_id?: string
+          manager_user_id?: string
+          provider?: string
+          payment_method?: string
+          reference?: string
+          provider_session_id?: string | null
+          provider_payment_intent_id?: string | null
+          amount?: number
+          currency?: string
+          status?: string
+          failure_reason?: string | null
+          metadata?: Json
+          initiated_at?: string
+          completed_at?: string | null
+          updated_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       manager_invoices: {
         Row: {
           amount: number
@@ -6669,6 +6729,18 @@ export type Database = {
     Functions: {
       create_invoice_atomic_v2: {
         Args: { p_generation_key: string; p_lease_id?: string | null; p_tenant_id: string; p_property_id?: string | null; p_unit_id?: string | null; p_manager_id: string; p_amount: number; p_description: string; p_due_date: string; p_invoice_type?: string; p_line_items?: Json }
+        Returns: Json
+      }
+      create_platform_payment_atomic: {
+        Args: { p_manager_invoice_id: string; p_manager_user_id: string; p_amount: number; p_reference: string; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_currency?: string; p_metadata?: Json }
+        Returns: Json
+      }
+      bind_platform_payment_provider_atomic: {
+        Args: { p_transaction_id: string; p_manager_user_id: string; p_provider_session_id: string; p_provider_payment_intent_id?: string | null }
+        Returns: Json
+      }
+      update_platform_payment_atomic: {
+        Args: { p_reference: string; p_status: string; p_invoice_id?: string | null; p_manager_user_id?: string | null; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_amount?: number | null; p_failure_reason?: string | null }
         Returns: Json
       }
       create_invoice_atomic: {

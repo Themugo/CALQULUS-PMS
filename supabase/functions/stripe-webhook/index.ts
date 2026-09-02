@@ -110,27 +110,21 @@ serve(async (req) => {
             throw new Error(`Missing platform payment reference for invoice_id=${invoiceId}`);
           }
 
-          const { error: payErr } = await supabase
-            .from("payments")
-            .update({ status: "success" })
-            .eq("reference", reference);
-          if (payErr) throw new Error(`payments update: ${payErr.message}`);
-
-          const { error: invErr } = await supabase
-            .from("manager_invoices")
-            .update({
-              status:    "paid",
-              paid_date: new Date().toISOString(),
-            })
-            .eq("id", invoiceId);
-          if (invErr) throw new Error(`manager_invoices update: ${invErr.message}`);
-
-          const { error: reinstateErr } = await supabase.rpc("reinstate_manager_on_payment", {
-            p_invoice_id: invoiceId,
-          });
-          if (reinstateErr) {
-            log("reinstate_manager_on_payment skipped", { error: reinstateErr.message, invoiceId });
-          }
+          const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : null;
+          const { data: lifecycle, error: lifecycleErr } = await supabase.rpc(
+            "update_platform_payment_atomic",
+            {
+              p_reference: reference,
+              p_status: "success",
+              p_invoice_id: invoiceId,
+              p_manager_user_id: session.metadata?.manager_user_id,
+              p_provider_session_id: session.id,
+              p_provider_payment_intent_id: paymentIntentId,
+              p_amount: session.amount_total ? session.amount_total / 100 : null,
+            },
+          );
+          if (lifecycleErr) throw new Error(`platform payment lifecycle: ${lifecycleErr.message}`);
+          if (!lifecycle?.success) throw new Error("Platform payment lifecycle did not complete");
 
           await supabase
             .from("stripe_processed_events")
@@ -195,27 +189,50 @@ serve(async (req) => {
       case "invoice.payment_failed":
       case "charge.failed": {
         const obj = event.data.object as any;
-        const reference = obj.metadata?.reference ?? obj.payment_intent ?? null;
-        if (reference) {
-          await supabase
-            .from("payments")
-            .update({ status: "failed" })
-            .eq("reference", reference);
+        let reference = obj.metadata?.reference ?? null;
+        const paymentIntentId = typeof obj.payment_intent === "string" ? obj.payment_intent : null;
+        if (!reference && paymentIntentId) {
+          const { data: tx } = await supabase
+            .from("platform_payment_transactions")
+            .select("reference")
+            .eq("provider_payment_intent_id", paymentIntentId)
+            .maybeSingle();
+          reference = tx?.reference ?? null;
         }
-        log("Payment failure recorded", { type: event.type, reference });
+        if (reference) {
+          const { error } = await supabase.rpc("update_platform_payment_atomic", {
+            p_reference: reference,
+            p_status: "failed",
+            p_provider_payment_intent_id: paymentIntentId,
+            p_failure_reason: event.type,
+          });
+          if (error) throw new Error(`platform payment failure lifecycle: ${error.message}`);
+        }
+        log("Platform payment failure recorded", { type: event.type, reference });
         break;
       }
 
       case "charge.refunded": {
-        const charge    = event.data.object as Stripe.Charge;
-        const reference = charge.metadata?.reference ?? null;
-        if (reference) {
-          await supabase
-            .from("payments")
-            .update({ status: "refunded" })
-            .eq("reference", reference);
+        const charge = event.data.object as Stripe.Charge;
+        let reference = charge.metadata?.reference ?? null;
+        const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : null;
+        if (!reference && paymentIntentId) {
+          const { data: tx } = await supabase
+            .from("platform_payment_transactions")
+            .select("reference")
+            .eq("provider_payment_intent_id", paymentIntentId)
+            .maybeSingle();
+          reference = tx?.reference ?? null;
         }
-        log("Refund recorded", { reference });
+        if (reference) {
+          const { error } = await supabase.rpc("update_platform_payment_atomic", {
+            p_reference: reference,
+            p_status: "refunded",
+            p_provider_payment_intent_id: paymentIntentId,
+          });
+          if (error) throw new Error(`platform refund lifecycle: ${error.message}`);
+        }
+        log("Platform refund recorded", { reference });
         break;
       }
 

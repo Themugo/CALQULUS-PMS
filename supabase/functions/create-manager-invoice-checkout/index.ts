@@ -3,6 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import Stripe from "stripe/stripe@18.5.0";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
+import { authenticateUser } from "../_shared/auth.ts";
 
 const STRIPE_SECRET_KEY = requireEnv("STRIPE_SECRET_KEY");
 const SUPABASE_URL      = requireEnv("SUPABASE_URL");
@@ -12,6 +13,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
 
+  let paymentReference: string | null = null;
+  let paymentTransactionId: string | null = null;
   try {
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
@@ -22,12 +25,10 @@ serve(async (req) => {
     // ============================
     // AUTH
     // ============================
-    const token = req.headers.get("Authorization")!.replace("Bearer ", "");
-    const { data: userData } = await supabase.auth.getUser(token);
+    const auth = await authenticateUser(req);
+    if (!auth.success) return auth.response;
 
-    if (!userData.user) throw new Error("Unauthorized");
-
-    const user = userData.user;
+    const user = auth.user;
 
     // ============================
     // INPUT
@@ -55,17 +56,24 @@ serve(async (req) => {
     }
 
     // ============================
-    // CREATE PAYMENT RECORD
+    // CREATE PLATFORM PAYMENT INTENT
     // ============================
-    const reference = `STRIPE-${Date.now()}`;
-
-    await supabase.from("payments").insert({
-      invoice_id: invoice.id,
-      reference,
-      amount: invoice.amount,
-      method: "stripe",
-      status: "pending",
-    });
+    const reference = `STRIPE-${crypto.randomUUID()}`;
+    paymentReference = reference;
+    const { data: paymentIntent, error: paymentIntentError } = await supabase.rpc(
+      "create_platform_payment_atomic",
+      {
+        p_manager_invoice_id: invoice.id,
+        p_manager_user_id: user.id,
+        p_amount: invoice.amount,
+        p_reference: reference,
+        p_currency: "KES",
+        p_metadata: { invoice_id: invoice.id },
+      },
+    );
+    if (paymentIntentError) throw paymentIntentError;
+    if (!paymentIntent?.success) throw new Error("Unable to initialize platform payment");
+    paymentTransactionId = paymentIntent.transaction_id;
 
     // ============================
     // STRIPE CUSTOMER
@@ -80,7 +88,9 @@ serve(async (req) => {
     // ============================
     // CHECKOUT SESSION
     // ============================
-    const session = await stripe.checkout.sessions.create({
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email!,
       line_items: [
@@ -96,6 +106,13 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
+      payment_intent_data: {
+        metadata: {
+          reference,
+          invoice_id: invoice.id,
+          manager_user_id: user.id,
+        },
+      },
 
       success_url: `${req.headers.get("origin")}/manager-billing?payment=success`,
       cancel_url: `${req.headers.get("origin")}/manager-billing?payment=cancelled`,
@@ -106,13 +123,51 @@ serve(async (req) => {
         manager_user_id: user.id,
       },
     });
+    } catch (stripeError) {
+      await supabase.rpc("update_platform_payment_atomic", {
+        p_reference: reference,
+        p_status: "failed",
+        p_invoice_id: invoice.id,
+        p_manager_user_id: user.id,
+        p_failure_reason: "stripe_checkout_session_creation_failed",
+      }).catch(() => undefined);
+      throw stripeError;
+    }
+
+    // Bind the Stripe Checkout Session ID to the already-created local intent.
+    // The provider session is correlation data, not a second payment record.
+    const { error: bindError } = await supabase.rpc("bind_platform_payment_provider_atomic", {
+      p_transaction_id: paymentIntent.transaction_id,
+      p_manager_user_id: user.id,
+      p_provider_session_id: session.id,
+      p_provider_payment_intent_id: null,
+    });
+    if (bindError) {
+      await supabase.rpc("update_platform_payment_atomic", {
+        p_reference: reference,
+        p_status: "failed",
+        p_invoice_id: invoice.id,
+        p_manager_user_id: user.id,
+        p_provider_session_id: session.id,
+        p_failure_reason: "platform_payment_provider_binding_failed",
+      }).catch(() => undefined);
+      throw bindError;
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    if (paymentReference && paymentTransactionId) {
+      const cleanupClient = createClient(SUPABASE_URL, SERVICE_KEY);
+      await cleanupClient.rpc("update_platform_payment_atomic", {
+        p_reference: paymentReference,
+        p_status: "failed",
+        p_failure_reason: "checkout_initialization_failed",
+      }).catch(() => undefined);
+    }
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       status: 500,
     });
