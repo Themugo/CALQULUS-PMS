@@ -6,7 +6,9 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkManagerAccess } from "../_shared/authorization.ts";
+import { errorResponse } from "../_shared/errors.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -17,8 +19,8 @@ const log = (s: string, d?: unknown) => console.log(`[BANK-RECONCILE] ${s}`, d ?
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const caller = await identifyUserServiceOrCron(req);
+  if (!caller.ok) return caller.response;
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
@@ -48,6 +50,16 @@ serve(async (req) => {
       const effectiveManagerId = managerId ?? invoice.manager_id;
       if (!effectiveManagerId) return new Response(JSON.stringify({ error: "managerId required" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+
+      if (caller.userId) {
+        if (effectiveManagerId !== caller.userId || invoice.manager_id !== caller.userId) {
+          return errorResponse("You do not have access to this invoice", 403);
+        }
+        const access = await checkManagerAccess(caller.userId);
+        if (!access.allowed) return errorResponse(access.error ?? "Manager access denied", 403);
+      } else if (effectiveManagerId !== invoice.manager_id) {
+        return errorResponse("Invoice manager mismatch", 403);
+      }
 
       const { data: payment, error: paymentError } = await supabase.rpc("process_payment_atomic", {
         p_tenant_id: invoice.tenant_id,
@@ -116,6 +128,14 @@ serve(async (req) => {
 
     // Bulk auto-reconcile
     const { managerId } = body;
+    if (!managerId || typeof managerId !== "string") {
+      return errorResponse("managerId required", 400);
+    }
+    if (caller.userId) {
+      if (managerId !== caller.userId) return errorResponse("You do not have access to this portfolio", 403);
+      const access = await checkManagerAccess(caller.userId);
+      if (!access.allowed) return errorResponse(access.error ?? "Manager access denied", 403);
+    }
     const { data: bankTxs } = await supabase.from("bank_transactions")
       .select("*").eq("matched", false).eq("manager_id", managerId);
 
