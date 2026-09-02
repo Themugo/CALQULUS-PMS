@@ -120,20 +120,19 @@ const BankIntegrationSettings: React.FC = () => {
   const createIntegration = useMutation({
     mutationFn: async () => {
       if (!form.bank_name) throw new Error('Select a bank');
-      const { error } = await supabase
-        .from('bank_integration_settings')
-        .insert({
-          bank_name: form.bank_name,
-          account_number: form.account_number,
-          account_name: form.account_name,
-          paybill_number: form.paybill_number,
-          webhook_secret: form.webhook_secret,
-          auto_reconcile: form.auto_reconcile,
-          match_by: form.match_by,
-          manager_id: user!.id,
-          property_id: form.property_id && form.property_id !== 'default' ? form.property_id : null,
-        });
+      const { data: result, error } = await supabase.rpc('create_bank_integration_atomic', {
+        p_manager_id: user!.id,
+        p_bank_name: form.bank_name,
+        p_account_number: form.account_number || null,
+        p_account_name: form.account_name || null,
+        p_paybill_number: form.paybill_number || null,
+        p_webhook_secret: form.webhook_secret,
+        p_auto_reconcile: form.auto_reconcile,
+        p_match_by: form.match_by,
+        p_property_id: form.property_id && form.property_id !== 'default' ? form.property_id : null,
+      });
       if (error) throw error;
+      if (!result?.success) throw new Error('Bank integration creation did not complete');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-integrations'] });
@@ -154,10 +153,12 @@ const BankIntegrationSettings: React.FC = () => {
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase
-        .from('bank_integration_settings')
-        .update({ is_active: active }).eq('id', id);
+      const { data: result, error } = await supabase.rpc('set_bank_integration_active_atomic', {
+        p_bank_integration_id: id,
+        p_is_active: active,
+      });
       if (error) throw error;
+      if (!result?.success) throw new Error('Bank integration status update did not complete');
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-integrations'] }),
     onError: (err: Error) => errorToast('Failed', err),
@@ -165,10 +166,11 @@ const BankIntegrationSettings: React.FC = () => {
 
   const deleteIntegration = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('bank_integration_settings')
-        .delete().eq('id', id);
+      const { data: result, error } = await supabase.rpc('delete_bank_integration_atomic', {
+        p_bank_integration_id: id,
+      });
       if (error) throw error;
+      if (!result?.success) throw new Error('Bank integration removal did not complete');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-integrations'] });

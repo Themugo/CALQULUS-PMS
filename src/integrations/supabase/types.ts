@@ -6747,6 +6747,22 @@ export type Database = {
         Args: { p_manager_invoice_id: string; p_manager_user_id: string; p_amount: number; p_reference: string; p_payment_method?: string }
         Returns: Json
       }
+      cancel_manager_invoice_atomic: {
+        Args: { p_manager_invoice_id: string }
+        Returns: Json
+      }
+      create_bank_integration_atomic: {
+        Args: { p_manager_id: string; p_bank_name: string; p_account_number?: string | null; p_account_name?: string | null; p_paybill_number?: string | null; p_webhook_secret?: string | null; p_auto_reconcile?: boolean; p_match_by?: string; p_property_id?: string | null }
+        Returns: Json
+      }
+      set_bank_integration_active_atomic: {
+        Args: { p_bank_integration_id: string; p_is_active: boolean }
+        Returns: Json
+      }
+      delete_bank_integration_atomic: {
+        Args: { p_bank_integration_id: string }
+        Returns: Json
+      }
       update_platform_payment_atomic: {
         Args: { p_reference: string; p_status: string; p_invoice_id?: string | null; p_manager_user_id?: string | null; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_amount?: number | null; p_failure_reason?: string | null }
         Returns: Json

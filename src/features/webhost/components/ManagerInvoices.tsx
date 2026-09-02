@@ -180,25 +180,22 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
       net_collection: number;
       commission_rate: number;
     }) => {
-      const { data: inserted, error } = await supabase
-        .from('manager_invoices')
-        .insert({
-          manager_user_id: data.manager_user_id,
-          amount: data.amount,
-          description: data.description,
-          due_date: data.due_date,
-          invoice_number: '',
-          invoice_type: data.invoice_type,
-          net_collection: data.net_collection,
-          commission_rate: data.commission_rate,
-          property_count: 0,
-          rate_per_property: 0,
-        })
-        .select('id')
-        .single();
+      const { data: result, error } = await supabase.rpc('create_manager_invoice_atomic', {
+        p_manager_user_id: data.manager_user_id,
+        p_amount: data.amount,
+        p_due_date: data.due_date,
+        p_description: data.description,
+        p_invoice_type: data.invoice_type,
+        p_invoice_number: null,
+        p_property_count: 0,
+        p_rate_per_property: 0,
+        p_net_collection: data.net_collection,
+        p_commission_rate: data.commission_rate,
+      });
 
       if (error) throw error;
-      return inserted;
+      if (!result?.success || !result?.id) throw new Error('Invoice creation did not complete');
+      return { id: result.id };
     },
     onSuccess: async (data) => {
       toast({ title: 'Invoice created successfully' });
@@ -223,19 +220,18 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     
     setBulkActionLoading(true);
     try {
-      const { error } = await supabase
-        .from('manager_invoices')
-        .update({ 
-          status: 'paid', 
-          paid_date: new Date().toISOString().split('T')[0] 
-        })
-        .in('id', Array.from(selectedIds));
-
-      if (error) throw error;
-
-      // Reinstate suspended managers and send confirmations
       for (const id of selectedIds) {
-        await supabase.rpc('reinstate_manager_on_payment', { p_invoice_id: id }).catch(() => {});
+        const invoice = pendingInvoices.find((item) => item.id === id);
+        if (!invoice) continue;
+        const { data: result, error } = await supabase.rpc('record_platform_invoice_payment_atomic', {
+          p_manager_invoice_id: id,
+          p_manager_user_id: invoice.manager_user_id,
+          p_amount: Number(invoice.amount),
+          p_reference: `WEBHOST-${id}`,
+          p_payment_method: 'manual',
+        });
+        if (error) throw error;
+        if (!result?.success) throw new Error(`Payment settlement failed for ${invoice.invoice_number}`);
         await sendInvoiceNotification(id, 'payment_confirmed');
       }
 
@@ -260,12 +256,13 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
     
     setBulkActionLoading(true);
     try {
-      const { error } = await supabase
-        .from('manager_invoices')
-        .update({ status: 'cancelled' })
-        .in('id', Array.from(selectedIds));
-
-      if (error) throw error;
+      for (const id of selectedIds) {
+        const { data: result, error } = await supabase.rpc('cancel_manager_invoice_atomic', {
+          p_manager_invoice_id: id,
+        });
+        if (error) throw error;
+        if (!result?.success) throw new Error('Invoice cancellation did not complete');
+      }
 
       toast({ title: `${selectedIds.size} invoices cancelled` });
       setSelectedIds(new Set());
@@ -390,20 +387,17 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
   // Mark as paid mutation
   const markAsPaid = useMutation({
     mutationFn: async (invoiceId: string) => {
-      const { error } = await supabase
-        .from('manager_invoices')
-        .update({ 
-          status: 'paid', 
-          paid_date: new Date().toISOString().split('T')[0] 
-        })
-        .eq('id', invoiceId);
-
+      const invoice = invoices?.find((item) => item.id === invoiceId);
+      if (!invoice) throw new Error('Invoice not found');
+      const { data: result, error } = await supabase.rpc('record_platform_invoice_payment_atomic', {
+        p_manager_invoice_id: invoice.id,
+        p_manager_user_id: invoice.manager_user_id,
+        p_amount: Number(invoice.amount),
+        p_reference: `WEBHOST-${invoice.id}`,
+        p_payment_method: 'manual',
+      });
       if (error) throw error;
-
-      // Reinstate manager if they were suspended for non-payment
-      await supabase.rpc('reinstate_manager_on_payment', { p_invoice_id: invoiceId })
-        .catch(() => {}); // non-critical — manager already reinstated if they paid via portal
-
+      if (!result?.success) throw new Error('Invoice settlement did not complete');
       return invoiceId;
     },
     onSuccess: async (invoiceId) => {
@@ -420,12 +414,11 @@ const ManagerInvoices: React.FC<ManagerInvoicesProps> = ({ managers, invoices, i
   // Cancel invoice mutation
   const cancelInvoice = useMutation({
     mutationFn: async (invoiceId: string) => {
-      const { error } = await supabase
-        .from('manager_invoices')
-        .update({ status: 'cancelled' })
-        .eq('id', invoiceId);
-
+      const { data: result, error } = await supabase.rpc('cancel_manager_invoice_atomic', {
+        p_manager_invoice_id: invoiceId,
+      });
       if (error) throw error;
+      if (!result?.success) throw new Error('Invoice cancellation did not complete');
     },
     onSuccess: () => {
       toast({ title: 'Invoice cancelled' });
