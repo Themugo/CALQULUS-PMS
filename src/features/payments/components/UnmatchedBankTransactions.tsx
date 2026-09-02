@@ -104,30 +104,14 @@ const UnmatchedBankTransactions: React.FC = () => {
       const invoice = pendingInvoices.find(i => i.id === selectedInvoiceId);
       if (!invoice) throw new Error('Invoice not found');
 
-      // Call process-payment
-      const res = await supabase.functions.invoke('process-payment', {
-        body: {
-          tenantId:      invoice.tenant_id,
-          managerId:     user!.id,
-          amount:        selectedTx.amount,
-          paymentMethod: 'bank_transfer',
-          paymentDate:   selectedTx.transaction_date,
-          reference:     selectedTx.reference || selectedTx.id,
-          invoiceId:     selectedInvoiceId,
-          recordedBy:    user!.id,
-          notes:         `Manually matched from bank transaction. Bank: ${selectedTx.bank_name ?? 'Unknown'}. Payer: ${selectedTx.payer_name ?? 'Unknown'}`,
-        },
+      const { data, error } = await supabase.rpc('reconcile_bank_transaction_atomic', {
+        p_bank_transaction_id: selectedTx.id,
+        p_invoice_id: selectedInvoiceId,
+        p_manager_id: user!.id,
+        p_recorded_by: user!.id,
       });
-      if (res.error) throw res.error;
-
-      // Mark bank tx as matched
-      await supabase.from('bank_transactions').update({
-        matched: true,
-        matched_invoice_id: selectedInvoiceId,
-        matched_tenant_id: invoice.tenant_id,
-        match_confidence: 100,
-        match_method: 'manual',
-      }).eq('id', selectedTx.id);
+      if (error) throw error;
+      if (!data?.success) throw new Error('Bank reconciliation did not complete');
     },
     onSuccess: () => {
       toast({ title: 'Payment matched and recorded', description: 'Receipt sent to tenant.' });
@@ -143,7 +127,9 @@ const UnmatchedBankTransactions: React.FC = () => {
 
   const dismissTransaction = useMutation({
     mutationFn: async (txId: string) => {
-      await supabase.from('bank_transactions').update({ matched: true }).eq('id', txId);
+      const { data, error } = await supabase.rpc('dismiss_bank_transaction_atomic', { p_bank_transaction_id: txId, p_manager_id: user!.id });
+      if (error) throw error;
+      if (!data?.success) throw new Error('Transaction dismissal did not complete');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unmatched-bank-transactions'] });

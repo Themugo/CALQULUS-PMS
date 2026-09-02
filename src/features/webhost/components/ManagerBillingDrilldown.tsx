@@ -107,19 +107,17 @@ const ManagerBillingDrilldown: React.FC = () => {
   const createAdhocInvoice = useMutation({
     mutationFn: async () => {
       if (!newInvoiceFor || !newAmount) throw new Error('Amount required');
-      const invNum = `PLAT-ADHOC-${Date.now().toString(36).toUpperCase()}`;
       const dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + 14);
-      const { error } = await supabase.from('manager_invoices').insert({
-        manager_user_id: newInvoiceFor.user_id,
-        invoice_number: invNum,
-        amount: parseFloat(newAmount),
-        description: newDesc || 'Ad-hoc platform charge',
-        due_date: dueDate.toISOString().slice(0, 10),
-        status: 'pending',
-        invoice_type: 'one_time',
+      const { data, error } = await supabase.rpc('create_manager_invoice_atomic', {
+        p_manager_user_id: newInvoiceFor.user_id,
+        p_amount: parseFloat(newAmount),
+        p_due_date: dueDate.toISOString().slice(0, 10),
+        p_description: newDesc || 'Ad-hoc platform charge',
+        p_invoice_type: 'other',
       });
       if (error) throw error;
+      if (!data?.success) throw new Error('Invoice creation did not complete');
     },
     onSuccess: () => {
       toast({ title: 'Invoice created', description: `Invoice sent to ${newInvoiceFor?.email}` });
@@ -259,10 +257,17 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
 
   const markPaid = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('manager_invoices').update({
-        status: 'paid', paid_date: new Date().toISOString().slice(0, 10),
-      }).eq('id', id);
-      await supabase.rpc('reinstate_manager_on_payment' as any, { p_invoice_id: id }).catch(() => {});
+      const invoice = invoices.find((item: { id: string; amount: number; }) => item.id === id);
+      if (!invoice) throw new Error('Invoice not found');
+      const { data, error } = await supabase.rpc('record_platform_invoice_payment_atomic', {
+        p_manager_invoice_id: id,
+        p_manager_user_id: managerId,
+        p_amount: Number(invoice.amount),
+        p_reference: `WEBHOST-${id}-${Date.now()}`,
+        p_payment_method: 'manual',
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error('Payment settlement did not complete');
     },
     onSuccess: () => {
       toast({ title: 'Marked as paid' });

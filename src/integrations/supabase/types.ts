@@ -6739,6 +6739,14 @@ export type Database = {
         Args: { p_transaction_id: string; p_manager_user_id: string; p_provider_session_id: string; p_provider_payment_intent_id?: string | null }
         Returns: Json
       }
+      create_manager_invoice_atomic: {
+        Args: { p_manager_user_id: string; p_amount: number; p_due_date: string; p_description?: string | null; p_invoice_type?: string; p_invoice_number?: string | null; p_property_count?: number | null; p_rate_per_property?: number | null; p_net_collection?: number | null; p_commission_rate?: number | null; p_subscription_tier?: string | null; p_billing_period_start?: string | null; p_billing_period_end?: string | null }
+        Returns: Json
+      }
+      record_platform_invoice_payment_atomic: {
+        Args: { p_manager_invoice_id: string; p_manager_user_id: string; p_amount: number; p_reference: string; p_payment_method?: string }
+        Returns: Json
+      }
       update_platform_payment_atomic: {
         Args: { p_reference: string; p_status: string; p_invoice_id?: string | null; p_manager_user_id?: string | null; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_amount?: number | null; p_failure_reason?: string | null }
         Returns: Json
@@ -6906,7 +6914,8 @@ export type Database = {
       get_tenants_with_properties: { Args: { p_manager_id?: string }; Returns: string }
       lock_invoices_for_update: { Args: { p_invoice_ids?: string[] }; Returns: string }
       process_invoice_payment: { Args: { p_invoice_id?: string; p_transaction_id?: string; p_amount?: number }; Returns: number }
-      reconcile_bank_transaction_atomic: { Args: { p_bank_transaction_id: string; p_invoice_id: string; p_manager_id: string; p_recorded_by?: string }; Returns: Json }
+      reconcile_bank_transaction_atomic: { Args: { p_bank_transaction_id: string; p_invoice_id?: string | null; p_manager_id?: string | null; p_recorded_by?: string | null; p_tenant_id?: string | null }; Returns: Json }
+      dismiss_bank_transaction_atomic: { Args: { p_bank_transaction_id: string; p_manager_id: string }; Returns: Json }
       apply_tenant_credit_atomic: { Args: { p_tenant_id: string; p_manager_id?: string; p_recorded_by?: string }; Returns: Json }
       ingest_bank_webhook_atomic: { Args: { p_manager_id: string; p_bank_integration_id: string; p_external_id?: string; p_reference?: string; p_description?: string; p_amount: number; p_transaction_date: string; p_bank_name?: string; p_account_number?: string; p_payer_name?: string; p_payer_phone?: string; p_raw_payload?: Json; p_auto_reconcile?: boolean; p_match_by?: string }; Returns: Json }
       record_payment_with_installment_atomic: { Args: { p_tenant_id?: string; p_manager_id?: string; p_amount?: number; p_payment_method?: string; p_payment_date?: string; p_reference?: string; p_invoice_id?: string; p_recorded_by?: string; p_notes?: string; p_instalment_count?: number; p_is_installment?: boolean }; Returns: Json }

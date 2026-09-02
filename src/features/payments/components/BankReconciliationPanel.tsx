@@ -29,7 +29,8 @@ interface BankTx {
   payer_name: string;
   payer_phone: string;
   transaction_date: string;
-  match_status: 'unmatched' | 'matched' | 'ignored';
+  matched: boolean;
+  match_method: string | null;
   matched_invoice_id: string | null;
   matched_tenant_id: string | null;
 }
@@ -59,8 +60,8 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
     },
   });
 
-  const unmatched = transactions.filter(t => t.match_status === 'unmatched');
-  const matched   = transactions.filter(t => t.match_status === 'matched');
+  const unmatched = transactions.filter(t => !t.matched && t.match_method !== 'ignored');
+  const matched   = transactions.filter(t => t.matched && t.match_method !== 'ignored');
 
   // Tenants for matching
   const { data: tenants = [] } = useQuery({
@@ -95,30 +96,15 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
   const matchTransaction = useMutation({
     mutationFn: async () => {
       if (!matchDialog) return;
-      // Call process-payment with the bank transaction details
-      const tenant = tenants.find((t: { id: string }) => t.id === selectedTenantId);
-      const { data: _data, error } = await supabase.functions.invoke('process-payment', {
-        body: {
-          tenantId:      selectedTenantId,
-          managerId,
-          amount:        matchDialog.amount,
-          paymentMethod: 'bank_transfer',
-          paymentDate:   matchDialog.transaction_date,
-          reference:     matchDialog.external_id || matchDialog.reference,
-          invoiceId:     selectedInvoiceId === AUTO_ALLOCATE ? undefined : selectedInvoiceId,
-          notes:         `Bank reconciliation: ${matchDialog.payer_name} via ${matchDialog.bank_name}`,
-        },
+      const { data, error } = await supabase.rpc('reconcile_bank_transaction_atomic', {
+        p_bank_transaction_id: matchDialog.id,
+        p_invoice_id: selectedInvoiceId === AUTO_ALLOCATE ? null : selectedInvoiceId,
+        p_manager_id: managerId,
+        p_recorded_by: managerId,
+        p_tenant_id: selectedTenantId,
       });
       if (error) throw error;
-
-      // Mark bank transaction as matched
-      await (supabase.from('bank_transactions')
-        .update({
-          match_status:       'matched',
-          matched_tenant_id:  selectedTenantId,
-          matched_invoice_id: selectedInvoiceId === AUTO_ALLOCATE ? null : selectedInvoiceId,
-        })
-        .eq('id', matchDialog.id));
+      if (!data?.success) throw new Error('Bank reconciliation did not complete');
     },
     onSuccess: () => {
       toast({ title: 'Payment matched', description: 'Invoice updated and receipt sent.' });
@@ -132,7 +118,9 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
 
   const ignoreTransaction = useMutation({
     mutationFn: async (id: string) => {
-      await (supabase.from('bank_transactions').update({ match_status: 'ignored' }).eq('id', id));
+      const { data, error } = await supabase.rpc('dismiss_bank_transaction_atomic', { p_bank_transaction_id: id, p_manager_id: managerId });
+      if (error) throw error;
+      if (!data?.success) throw new Error('Transaction dismissal did not complete');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
@@ -222,14 +210,14 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
             <div className="space-y-2">
               {filtered.map(tx => (
                 <div key={tx.id} className={`flex items-center gap-3 p-3 rounded-lg border ${
-                  tx.match_status === 'matched' ? 'border-green-200 bg-green-50/30' :
-                  tx.match_status === 'ignored' ? 'border-border opacity-50' :
+                  tx.matched && tx.match_method !== 'ignored' ? 'border-green-200 bg-green-50/30' :
+                  tx.matched && tx.match_method === 'ignored' ? 'border-border opacity-50' :
                   'border-amber-200 bg-amber-50/30'
                 }`}>
                   <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    tx.match_status === 'matched' ? 'bg-green-100' : 'bg-amber-100'
+                    tx.matched && tx.match_method !== 'ignored' ? 'bg-green-100' : 'bg-amber-100'
                   }`}>
-                    {tx.match_status === 'matched'
+                    {tx.matched && tx.match_method !== 'ignored'
                       ? <CheckCircle className="h-4 w-4 text-green-600" />
                       : <AlertTriangle className="h-4 w-4 text-warning" />}
                   </div>
@@ -237,8 +225,8 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold">{fmt(tx.amount)}</p>
                       <Badge variant="outline" className="text-xs capitalize">{tx.bank_name}</Badge>
-                      <Badge variant="outline" className={`text-xs ${tx.match_status === 'matched' ? 'bg-green-100 text-green-800 border-green-200' : tx.match_status === 'ignored' ? '' : 'bg-amber-100 text-amber-800 border-amber-200'}`}>
-                        {tx.match_status}
+                      <Badge variant="outline" className={`text-xs ${tx.matched && tx.match_method !== 'ignored' ? 'bg-green-100 text-green-800 border-green-200' : tx.matched && tx.match_method === 'ignored' ? '' : 'bg-amber-100 text-amber-800 border-amber-200'}`}>
+                        {tx.matched ? (tx.match_method === 'ignored' ? 'ignored' : 'matched') : 'unmatched'}
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">

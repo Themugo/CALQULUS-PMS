@@ -179,15 +179,15 @@ const ManagerManagement: React.FC = () => {
             const regFee = Number((settings as { registration_fee?: number } | null)?.registration_fee ?? 3000);
             if (regFee > 0) {
               const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 7);
-              await supabase.from('manager_invoices').insert({
-                manager_user_id: manager.user_id,
-                invoice_number:  `REG-${manager.user_id.slice(0, 8).toUpperCase()}`,
-                amount:          regFee,
-                description:     'One-time platform registration fee',
-                due_date:        dueDate.toISOString().slice(0, 10),
-                status:          'pending',
-                invoice_type:    'registration',
+              const { error: invoiceError } = await supabase.rpc('create_manager_invoice_atomic', {
+                p_manager_user_id: manager.user_id,
+                p_amount: regFee,
+                p_due_date: dueDate.toISOString().slice(0, 10),
+                p_description: 'One-time platform registration fee',
+                p_invoice_type: 'registration',
+                p_invoice_number: `REG-${manager.user_id.slice(0, 8).toUpperCase()}`,
               });
+              if (invoiceError) throw invoiceError;
             }
           }
         } catch (_) { /* non-critical — table may not exist yet */ }
