@@ -131,14 +131,9 @@ serve(async (req) => {
           logStep('Safaricom query result', queryResult);
 
           if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
-            // Payment confirmed by Safaricom — update our DB and delegate
-            // invoice allocation/receipts to the central payment processor.
+            // Payment confirmed by Safaricom. The central processor owns the
+            // pending -> completed transition and all financial effects.
             const mpesaReceiptNumber = queryResult.MpesaReceiptNumber ?? transaction.bank_reference ?? reference;
-            await supabase.from('payment_transactions').update({
-              status:              'completed',
-              mpesa_receipt_number: mpesaReceiptNumber,
-              completed_at:        new Date().toISOString(),
-            }).eq('id', transaction.id);
 
             const processResp = await fetch(`${SUPABASE_URL}/functions/v1/process-payment`, {
               method: 'POST',

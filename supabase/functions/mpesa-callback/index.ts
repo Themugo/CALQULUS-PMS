@@ -129,27 +129,6 @@ serve(async (req) => {
       }
       const paidDate = new Date().toISOString().split("T")[0];
 
-      // Atomic update: only succeeds if status is still "pending"
-      // This prevents duplicate processing from race conditions
-      const { data: updatedTx, error: updateErr } = await supabase
-        .from("payment_transactions")
-        .update({
-          status: "completed",
-          mpesa_receipt_number: mpesaReceiptNumber,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", transaction.id)
-        .eq("status", "pending")  // Critical: atomic status check
-        .select()
-        .single();
-
-      // If no rows updated, another callback beat us
-      if (updateErr || !updatedTx) {
-        log("Concurrent update detected, skipping", { checkoutRequestId });
-        return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Already processed" }),
-          { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-      }
-
       const inv = transaction.invoices as any;
       // unit_number is not stored on payment_transactions — derive from the invoice's lease
       const unitNumber = inv?.leases?.unit ?? (transaction as any).unit_number ?? "N/A";
@@ -195,6 +174,7 @@ serve(async (req) => {
             propertyId:    transaction.property_id,
             unitNumber,
             phone:         transaction.phone_number,
+            notes:         `M-Pesa receipt ${mpesaReceiptNumber}`,
             transactionId: transaction.id,
           }),
         });

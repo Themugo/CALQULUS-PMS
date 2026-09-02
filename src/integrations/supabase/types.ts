@@ -5719,7 +5719,7 @@ export type Database = {
       payment_allocations: {
         Row: {
           id: string | null
-          transaction_id: string
+          transaction_id: string | null
           invoice_id: string
           tenant_id: string | null
           manager_id: string | null
@@ -5729,7 +5729,7 @@ export type Database = {
         }
         Insert: {
           id?: string | null
-          transaction_id: string
+          transaction_id: string | null
           invoice_id: string
           tenant_id?: string | null
           manager_id?: string | null
@@ -6835,6 +6835,7 @@ export type Database = {
       lock_invoices_for_update: { Args: { p_invoice_ids?: string[] }; Returns: string }
       process_invoice_payment: { Args: { p_invoice_id?: string; p_transaction_id?: string; p_amount?: number }; Returns: number }
       reconcile_bank_transaction_atomic: { Args: { p_bank_transaction_id: string; p_invoice_id: string; p_manager_id: string; p_recorded_by?: string }; Returns: Json }
+      apply_tenant_credit_atomic: { Args: { p_tenant_id: string; p_manager_id?: string; p_recorded_by?: string }; Returns: Json }
       record_payment_with_installment_atomic: { Args: { p_tenant_id?: string; p_manager_id?: string; p_amount?: number; p_payment_method?: string; p_payment_date?: string; p_reference?: string; p_invoice_id?: string; p_recorded_by?: string; p_notes?: string; p_instalment_count?: number; p_is_installment?: boolean }; Returns: Json }
       process_payment_atomic: { Args: { p_tenant_id?: string; p_manager_id?: string; p_amount?: number; p_payment_method?: string; p_payment_date?: string; p_reference?: string; p_invoice_id?: string; p_invoice_ids?: string[]; p_unit_id?: string; p_property_id?: string; p_unit_number?: string; p_phone?: string; p_recorded_by?: string; p_notes?: string; p_existing_transaction_id?: string }; Returns: Json }
       refresh_manager_stats: { Args: { p_manager_id?: string }; Returns: string }
