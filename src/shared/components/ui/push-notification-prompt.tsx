@@ -57,7 +57,7 @@ export const PushNotificationPrompt = () => {
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm animate-in slide-in-from-top-5 fade-in duration-300">
-      <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-xl shadow-xl p-4 backdrop-blur-sm">
+      <div className="bg-card border border-primary/20 rounded-[8px] calqulus-shadow-elevated p-4 ">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 animate-pulse">
             <Bell className="h-5 w-5 text-primary" />
@@ -118,7 +118,7 @@ export const NotificationSettingsCard = () => {
 
   if (!isSupported) {
     return (
-      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-[8px]">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
             <BellOff className="h-5 w-5 text-muted-foreground" />
@@ -148,7 +148,7 @@ export const NotificationSettingsCard = () => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-card border rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-card border rounded-[8px]">
       <div className="flex items-center gap-3">
         <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
           isSubscribed ? "bg-primary/10" : "bg-muted"

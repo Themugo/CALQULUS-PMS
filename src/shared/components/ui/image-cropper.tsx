@@ -129,7 +129,7 @@ export function ImageCropper({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="relative w-full h-[300px] bg-muted rounded-lg overflow-hidden">
+        <div className="relative w-full h-[300px] bg-muted rounded-[8px] overflow-hidden">
           <Cropper
             image={image}
             crop={crop}
@@ -139,7 +139,7 @@ export function ImageCropper({
             onZoomChange={onZoomChange}
             onCropComplete={onCropAreaComplete}
             classes={{
-              containerClassName: "rounded-lg",
+              containerClassName: "rounded-[8px]",
             }}
           />
         </div>

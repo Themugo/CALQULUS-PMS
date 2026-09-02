@@ -2,14 +2,15 @@
  * CALQULUS PMS design tokens — TypeScript source of truth.
  * Keep hex values in sync with CSS variables in src/index.css.
  *
- * Master redesign foundation:
- *   White / mist — dominant application surfaces
- *   Navy          — brand chrome (header, sidebar, footer), not page fill
- *   Interactive   — professional blue for buttons, links, focus
- *   Portal accents — 2px identity only, not separate design systems
+ * Canonical CALQULUS foundation:
+ *   Ivory          — dominant application canvas
+ *   Deep teal      — brand chrome, primary actions and focus
+ *   Ink            — primary content typography
+ *   Warm borders   — quiet structure
+ *   Portal accents — identity only, never a replacement for semantic status
  *   Green / amber / red — success / warning / danger only
  *
- * Outfit stays. Do not switch to Inter.
+ * Outfit stays for UI. Georgia is the local/system serif display fallback; no runtime webfont dependency.
  * Desks stay light. Never fill pages with black or deep navy.
  */
 
@@ -20,43 +21,47 @@ export const CALQULUS_BRAND = {
 } as const;
 
 export const CALQULUS_COLOR = {
-  /** Interactive blue — buttons, links, focus, selected controls. */
-  primary: "#356FE5",
-  primaryHover: "#285FCC",
-  primaryActive: "#214FAE",
-  accent: "#356FE5",
-
-  /** Navy identity — chrome only, never a page fill. `navyDeep` is
-      remapped to the mid step with navySecondary; the 950 hex stays
-      out of the brand chrome. */
-  navyDeep: "#31577E",
-  navyPrimary: "#173650",
-  navySecondary: "#31577E",
-  /** Navy 600 step used for platform-admin & agency accents. */
-  navy600: "#426B94",
-
+  ivory: "#F3EEE3",
+  ivorySoft: "#F7F3EA",
+  ivoryDeep: "#EAE4D7",
+  teal: "#1F625C",
+  tealDeep: "#174F4A",
+  tealMid: "#2D7069",
+  tealSoft: "#DDEBE7",
+  tealPale: "#EDF4F1",
+  ink: "#24221E",
+  inkMuted: "#625F57",
+  inkSubtle: "#817C72",
+  sage: "#B9D0C9",
   white: "#FFFFFF",
-  secondary: "#F6F8FB",
+  border: "#D8CFBE",
+  borderSoft: "#E4DDCF",
+
+  primary: "#1F625C",
+  primaryHover: "#174F4A",
+  primaryActive: "#123F3B",
+  accent: "#1F625C",
+
+  navyDeep: "#1F625C",
+  navyPrimary: "#174F4A",
+  navySecondary: "#1F625C",
+  navy600: "#2D7069",
+
+  secondary: "#F7F3EA",
   success: "#2F8061",
   warning: "#A66A16",
   danger: "#B94A48",
-  info: "#3E6FAE",
+  info: "#356F6A",
+  glow: "#1F625C",
+  spark: "#EDF4F1",
 
-  /** Atmosphere on navy chrome only. */
-  glow: "#356FE5",
-  /** Reserved spark — not used as chrome. */
-  spark: "#FFF4DF",
-
-  background: "#F6F8FB",
+  background: "#F3EEE3",
   surface: "#FFFFFF",
-  surfaceElevated: "#F6F8FB",
-
-  textPrimary: "#102A43",
-  textSecondary: "#5F7185",
-  textMuted: "#5F7185",
-
-  border: "#DCE5EF",
-  focus: "#356FE5",
+  surfaceElevated: "#F7F3EA",
+  textPrimary: "#24221E",
+  textSecondary: "#625F57",
+  textMuted: "#625F57",
+  focus: "#1F625C",
 } as const;
 
 /**
@@ -68,14 +73,14 @@ export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
     label: "Professional Blue",
-    hex: CALQULUS_COLOR.primary,
+    hex: CALQULUS_COLOR.teal,
   },
   landlord: {
     id: "landlord",
     label: "Emerald",
     /** Secondary accent only; status colors stay semantic. Approved vs
         the white-desk check in deriveBrandPalette. */
-    hex: "#2F9B74",
+    hex: CALQULUS_COLOR.success,
   },
   agency: {
     id: "agency",
@@ -83,20 +88,20 @@ export const CALQULUS_PORTAL_ACCENT = {
     /** Indigo/cyan family — matches the agency portal chrome + marketing role
         accent so the token is the single source of truth. Status colours stay
         semantic; the cyan is only identity. */
-    hex: "#0F766E",
+    hex: CALQULUS_COLOR.tealMid,
   },
   tenant: {
     id: "tenant",
     label: "Sky",
     /** Sky/cool blue family — matches the tenant portal chrome + marketing role
        accent. Status colours stay semantic; the sky is only identity. */
-    hex: "#0284C7",
+    hex: CALQULUS_COLOR.info,
   },
   platform_admin: {
     id: "platform_admin",
     label: "Teal",
     /** Deep teal step — keeps cyan identity legible on white chrome. */
-    hex: "#2C9183",
+    hex: CALQULUS_COLOR.tealMid,
   },
 } as const;
 
@@ -131,18 +136,18 @@ export const CALQULUS_SPACE = {
 } as const;
 
 export const CALQULUS_RADIUS = {
-  sm: "0.375rem",
-  md: "0.5rem",
-  lg: "0.75rem",
-  card: "0.75rem",
+  sm: "0.25rem",
+  md: "0.375rem",
+  lg: "0.5rem",
+  card: "0.5rem",
 } as const;
 
-/** Shadows tint with navy. No decorative glow. */
+/** Restrained warm-neutral shadows. No decorative glow. */
 export const CALQULUS_SHADOW = {
   none: "none",
-  card: "0 1px 2px rgba(16, 42, 67, 0.05)",
-  elevated: "0 8px 24px rgba(16, 42, 67, 0.08)",
-  modal: "0 20px 50px rgba(16, 42, 67, 0.12)",
+  card: "0 1px 2px rgba(36, 34, 30, 0.05)",
+  elevated: "0 8px 24px rgba(36, 34, 30, 0.08)",
+  modal: "0 20px 50px rgba(36, 34, 30, 0.12)",
 } as const;
 
 export const CALQULUS_ICON = {

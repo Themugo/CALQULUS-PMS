@@ -25,12 +25,12 @@ export function EmptyState({
     <div
       role="status"
       className={cn(
-        "flex min-h-[220px] flex-col items-center justify-center rounded-lg border border-dashed border-border p-8 text-center bg-card",
+        "flex min-h-[220px] flex-col items-center justify-center rounded-[8px] border border-dashed border-border p-8 text-center bg-card",
         className
       )}
       {...props}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted text-muted-foreground mb-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-muted text-muted-foreground mb-4">
         <Icon className={CALQULUS_ICON.lg} />
       </div>
       <h3 className={cn(CALQULUS_TYPE.cardTitle, "text-foreground mb-1")}>{title}</h3>

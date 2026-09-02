@@ -209,7 +209,7 @@ export function ImageUpload({
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           className={cn(
-            "relative rounded-lg border-2 border-dashed transition-colors",
+            "relative rounded-[8px] border-2 border-dashed transition-colors",
             isDragging
               ? "border-primary/50 bg-primary/10"
               : "border-border hover:border-muted-foreground/50",
@@ -218,7 +218,7 @@ export function ImageUpload({
         >
           {/* Drop overlay */}
           {isDragging && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-primary/10">
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[8px] bg-primary/10">
               <div className="flex flex-col items-center gap-2 text-primary">
                 <Upload className="h-8 w-8" />
                 <span className="text-sm font-medium">Drop image here</span>
@@ -274,7 +274,7 @@ export function ImageUpload({
 
             {/* Preview or placeholder */}
             {urlInput ? (
-              <div className="relative w-full h-24 rounded-md overflow-hidden border border-border bg-muted group">
+              <div className="relative w-full h-24 rounded-[6px] overflow-hidden border border-border bg-muted group">
                 <img
                   src={previewUrl}
                   alt="Preview"

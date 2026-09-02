@@ -71,8 +71,8 @@
 
 /* ── Theme (design tokens) ──────────────────────────────────────────── */
 @theme {
-  --font-sans: "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", sans-serif;
-  --font-heading: "Outfit", sans-serif;
+  --font-sans: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "Georgia", "Times New Roman", serif;
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -158,29 +158,29 @@
      CALQULUS families instead of the default bright scales. One token
      system: blue = brand, green = success, amber/yellow = warning,
      red = danger, greys = slate-navy, violet/purple/pink = navy identity. */
-  --color-blue-50: #EAF1FF;
-  --color-blue-100: #D8E5FD;
-  --color-blue-200: #B9CFFB;
-  --color-blue-300: #8FB0F5;
-  --color-blue-400: #5F8CEC;
-  --color-blue-500: #356FE5;
-  --color-blue-600: #285FCC;
-  --color-blue-700: #214FAE;
-  --color-blue-800: #1D4189;
-  --color-blue-900: #1A386F;
-  --color-blue-950: #12264A;
+  --color-blue-50: #EDF4F1;
+  --color-blue-100: #DDEBE7;
+  --color-blue-200: #B9D0C9;
+  --color-blue-300: #94B5AE;
+  --color-blue-400: #6F9790;
+  --color-blue-500: #1F625C;
+  --color-blue-600: #174F4A;
+  --color-blue-700: #123F3B;
+  --color-blue-800: #153F3B;
+  --color-blue-900: #123F3B;
+  --color-blue-950: #103B37;
 
-  --color-slate-50: #F6F8FB;
-  --color-slate-100: #EEF3F8;
-  --color-slate-200: #DCE5EF;
-  --color-slate-300: #C8D5E4;
-  --color-slate-400: #9DADBF;
-  --color-slate-500: #7D8DA0;
-  --color-slate-600: #5F7185;
-  --color-slate-700: #4A5A6E;
-  --color-slate-800: #33445A;
-  --color-slate-900: #1E3247;
-  --color-slate-950: #102A43;
+  --color-slate-50: #F3EEE3;
+  --color-slate-100: #F7F3EA;
+  --color-slate-200: #D8CFBE;
+  --color-slate-300: #C9BEAA;
+  --color-slate-400: #A69F93;
+  --color-slate-500: #817C72;
+  --color-slate-600: #625F57;
+  --color-slate-700: #4C4942;
+  --color-slate-800: #383630;
+  --color-slate-900: #2E2C28;
+  --color-slate-950: #24221E;
   --color-gray-50: var(--color-slate-50);
   --color-gray-100: var(--color-slate-100);
   --color-gray-200: var(--color-slate-200);
@@ -384,77 +384,83 @@
 
 @layer base {
   :root {
-    /* ── CALQULUS canonical premium navy palette (single source of truth) ── */
-    --calqulus-navy-50: #F4F7FB;
-    --calqulus-navy-100: #E8EEF7;
-    --calqulus-navy-200: #D5E0EF;
-    --calqulus-navy-300: #B8C9DE;
-    --calqulus-navy-400: #8EA8C5;
-    --calqulus-navy-500: #6388AE;
-    --calqulus-navy-600: #426B94;
-    --calqulus-navy-700: #31577E;
-    --calqulus-navy-800: #244766;
-    --calqulus-navy-900: #173650;
-    --calqulus-navy-950: #0B2239;
+    /* ── CALQULUS canonical palette (Phase 1) ──────────────────────────
+       Warm editorial light surfaces + deep teal brand chrome.
+       Functional status colours remain semantic and independent of brand. */
+    --calqulus-ivory: #F3EEE3;
+    --calqulus-ivory-soft: #F7F3EA;
+    --calqulus-ivory-deep: #EAE4D7;
 
-    --calqulus-primary: #356FE5;
-    --calqulus-primary-hover: #285FCC;
-    --calqulus-primary-active: #214FAE;
-    --calqulus-primary-soft: #EAF1FF;
-    --calqulus-primary-light: #8FB8FF;
+    --calqulus-teal: #1F625C;
+    --calqulus-teal-deep: #174F4A;
+    --calqulus-teal-mid: #2D7069;
+    --calqulus-teal-soft: #DDEBE7;
+    --calqulus-teal-pale: #EDF4F1;
 
-    /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
-    --calqulus-teal: #3BB7A6;
-    --calqulus-teal-deep: #2C9183;
-    /* Admin accent — indigo. Platform-control surfaces only; status colours stay semantic. */
-    --calqulus-indigo: #4658C9;
-    /* Portal accent hues (deep steps chosen to pass a white-desk check) */
-    --calqulus-emerald: #2F9B74;
-    /* Agency — indigo/cyan family, matches agency portal chrome + marketing role accent. */
-    --calqulus-cyan: #0F766E;
-    /* Tenant — sky/cool blue, matches tenant portal chrome + marketing role accent. */
-    --calqulus-sky: #0284C7;
-    /* Deprecated portal-identity hues kept for design-preview history; not bound to data-portal. */
-    --calqulus-amber: #C08A37;
-    --calqulus-violet: #7C5FD3;
+    --calqulus-ink: #24221E;
+    --calqulus-ink-muted: #625F57;
+    --calqulus-ink-subtle: #817C72;
+    --calqulus-sage: #B9D0C9;
+    --calqulus-border: #D8CFBE;
+    --calqulus-border-soft: #E4DDCF;
+    --calqulus-white: #FFFFFF;
 
-    --calqulus-background: #F6F8FB;
-    --calqulus-background-soft: #EEF3F8;
-    --calqulus-background-muted: #E8EEF5;
+    --calqulus-primary: var(--calqulus-teal);
+    --calqulus-primary-hover: var(--calqulus-teal-deep);
+    --calqulus-primary-active: #123F3B;
+    --calqulus-primary-soft: var(--calqulus-teal-pale);
+    --calqulus-primary-light: var(--calqulus-sage);
 
-    --calqulus-surface: #FFFFFF;
-    --calqulus-surface-raised: #FFFFFF;
-    --calqulus-surface-soft: #F8FAFC;
-    --calqulus-surface-navy: #EDF3F9;
-
-    --calqulus-text: #102A43;
-    --calqulus-text-strong: #0B2239;
-    --calqulus-text-muted: #5F7185;
-    --calqulus-text-subtle: #7D8DA0;
-    --calqulus-text-on-navy: #FFFFFF;
-    --calqulus-text-on-navy-muted: #C7D5E5;
-
-    --calqulus-border: #DCE5EF;
-    --calqulus-border-strong: #C8D5E4;
-    --calqulus-border-soft: #E9EFF5;
-
+    /* Semantic status palette — never use these as brand decoration. */
     --calqulus-success: #2F8061;
     --calqulus-success-soft: #E8F5EF;
-    /* Small status text on soft tints needs darker steps for 4.5:1. */
     --calqulus-success-text: #276A50;
     --calqulus-warning: #A66A16;
     --calqulus-warning-soft: #FFF4DF;
-    /* Small amber text needs a darker step to reach 4.5:1 on white. */
     --calqulus-warning-text: #855512;
     --calqulus-danger: #B94A48;
     --calqulus-danger-soft: #FBEAEA;
     --calqulus-danger-text: #A53E3C;
-    --calqulus-info: #3E6FAE;
-    --calqulus-info-soft: #EAF2FB;
+    --calqulus-info: #356F6A;
+    --calqulus-info-soft: var(--calqulus-teal-pale);
 
-    --calqulus-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
-    --calqulus-shadow-md: 0 8px 24px rgba(16, 42, 67, 0.08);
-    --calqulus-shadow-lg: 0 20px 50px rgba(16, 42, 67, 0.12);
+    /* Compatibility aliases: existing feature code can migrate incrementally. */
+    --calqulus-navy-50: var(--calqulus-ivory-soft);
+    --calqulus-navy-100: var(--calqulus-ivory-deep);
+    --calqulus-navy-200: var(--calqulus-border-soft);
+    --calqulus-navy-300: var(--calqulus-sage);
+    --calqulus-navy-400: #94B5AE;
+    --calqulus-navy-500: #6F9790;
+    --calqulus-navy-600: #4C7F78;
+    --calqulus-navy-700: var(--calqulus-teal);
+    --calqulus-navy-800: var(--calqulus-teal-deep);
+    --calqulus-navy-900: var(--calqulus-teal-deep);
+    --calqulus-navy-950: #103B37;
+    --calqulus-indigo: var(--calqulus-teal-mid);
+    --calqulus-emerald: var(--calqulus-success);
+    --calqulus-cyan: var(--calqulus-teal-mid);
+    --calqulus-sky: var(--calqulus-info);
+    --calqulus-amber: var(--calqulus-warning);
+    --calqulus-violet: var(--calqulus-teal-mid);
+
+    --calqulus-background: var(--calqulus-ivory);
+    --calqulus-background-soft: var(--calqulus-ivory-soft);
+    --calqulus-background-muted: var(--calqulus-ivory-deep);
+    --calqulus-surface: var(--calqulus-white);
+    --calqulus-surface-raised: var(--calqulus-white);
+    --calqulus-surface-soft: var(--calqulus-ivory-soft);
+    --calqulus-surface-navy: var(--calqulus-teal-pale);
+    --calqulus-text: var(--calqulus-ink);
+    --calqulus-text-strong: var(--calqulus-ink);
+    --calqulus-text-muted: var(--calqulus-ink-muted);
+    --calqulus-text-subtle: var(--calqulus-ink-subtle);
+    --calqulus-text-on-navy: var(--calqulus-white);
+    --calqulus-text-on-navy-muted: #D7E5E1;
+    --calqulus-border-strong: #C9BEAA;
+
+    --calqulus-shadow-sm: 0 1px 2px rgba(36, 34, 30, 0.05);
+    --calqulus-shadow-md: 0 8px 24px rgba(36, 34, 30, 0.08);
+    --calqulus-shadow-lg: 0 20px 50px rgba(36, 34, 30, 0.12);
 
     /* ── Semantic tokens re-pointed to the CALQULUS palette ── */
     --background: var(--calqulus-background);
@@ -469,7 +475,7 @@
     --popover: var(--calqulus-surface);
     --popover-foreground: var(--calqulus-text);
 
-    /* Interactive blue — buttons, links, focus */
+    /* Deep teal — primary actions, links, focus */
     --primary: var(--calqulus-primary);
     --primary-foreground: #FFFFFF;
     --primary-hover: var(--calqulus-primary-hover);
@@ -486,7 +492,7 @@
     --brand-primary-foreground: #FFFFFF;
 
     /* Portal identity stripe — overridden by [data-portal] */
-    --portal-accent: var(--navy-mid);
+    --portal-accent: var(--calqulus-teal);
     --portal-accent-foreground: #FFFFFF;
     --portal-accent-muted: color-mix(in srgb, var(--portal-accent) 18%, #FFFFFF);
     --portal-accent-border: color-mix(in srgb, var(--portal-accent) 28%, transparent);
@@ -549,7 +555,7 @@
     --input: var(--calqulus-border-strong);
     --ring: var(--calqulus-primary);
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     /* App shell sidebar: CALQULUS mid-navy chrome carrying white/slate
        text. One chrome for every portal — role identity stays the 2px
@@ -624,6 +630,14 @@
 @utility navy-executive-gradient {
   background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-primary) 100%);
   color: var(--primary-foreground);
+}
+
+@utility calqulus-shadow-elevated {
+  box-shadow: 0 8px 24px rgba(36, 34, 30, 0.08);
+}
+
+@utility calqulus-shadow-modal {
+  box-shadow: 0 20px 50px rgba(36, 34, 30, 0.12);
 }
 
 @utility card-shadow {
