@@ -314,9 +314,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
         );
       }
       callerId = caller.id;
+
+      // A submanager operates under the manager that granted their
+      // permissions. Resolve that owner server-side instead of trusting the
+      // manager_id in the request body. Managers/agencies own their own
+      // property namespace, so their authenticated user id remains the owner.
+      if (roleRows.some((row) => row.role === "submanager")) {
+        const { data: submanagerScope } = await supabaseClient
+          .from("submanager_permissions")
+          .select("manager_id")
+          .eq("submanager_user_id", caller.id)
+          .maybeSingle();
+        callerId = submanagerScope?.manager_id ?? null;
+      }
     }
 
-    const { name, email, phone, whatsapp, property, property_id, unit, move_in_date, companyName, portalUrl, manager_id, sendSms, sendWhatsapp, monthlyRent, depositAmount } = body;
+    const { name, email, phone, whatsapp, property, property_id, unit, move_in_date, companyName, portalUrl, manager_id: _ignoredManagerId, sendSms, sendWhatsapp, monthlyRent, depositAmount } = body;
 
     if (!name || !email) {
       return new Response(
@@ -325,8 +338,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Use the caller's ID as manager_id if not explicitly provided
-    const effectiveManagerId = manager_id || callerId;
+    // Never trust manager_id supplied by a client. For a normal authenticated
+    // caller, ownership is derived from the caller's authenticated role.
+    // Invitations are resolved from the invitation row below.
+    const effectiveManagerId = callerId;
 
     // Use service role client to create auth user
     const supabaseAdmin = createClient(
@@ -429,6 +444,47 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const resolvedManagerId = invitation ? invitation.invited_by : effectiveManagerId;
     const effEmail = invitation ? invitation.email : email;
 
+    if (!resolvedManagerId) {
+      return new Response(
+        JSON.stringify({ error: "Unable to resolve the owning manager" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
+    // For manager/submanager/agency callers, prove that the target property
+    // belongs to the effective manager before using the service-role client.
+    // This prevents a caller from supplying another manager's property_id.
+    if (!invitation && effPropertyId) {
+      const { data: targetProperty } = await supabaseClient
+        .from("properties")
+        .select("id, manager_id")
+        .eq("id", effPropertyId)
+        .maybeSingle();
+
+      if (!targetProperty || targetProperty.manager_id !== resolvedManagerId) {
+        return new Response(
+          JSON.stringify({ error: "You do not have access to this property" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+
+      // If a unit was supplied, it must belong to the same property.
+      if (effUnit) {
+        const { data: targetUnit } = await supabaseClient
+          .from("units")
+          .select("id, property_id")
+          .eq("property_id", effPropertyId)
+          .eq("unit_number", effUnit)
+          .maybeSingle();
+        if (targetUnit && targetUnit.property_id !== effPropertyId) {
+          return new Response(
+            JSON.stringify({ error: "Unit does not belong to this property" }),
+            { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
+
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === effEmail.toLowerCase());
@@ -444,7 +500,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       // They will set their own password via the activation flow
       const randomPassword = crypto.randomUUID() + crypto.randomUUID();
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email,
+        email: effEmail,
         password: randomPassword,
         email_confirm: true,
         user_metadata: { full_name: name },
@@ -561,14 +617,28 @@ Deno.serve(async (req: Request): Promise<Response> => {
       throw new Error(`Failed to create tenant record: ${tenantError.message}`);
     }
 
-    // Check if user_role already exists
-    const { data: existingRole } = await supabaseAdmin
+    // A user may have multiple roles, but we must never mutate an existing
+    // manager/agency/submanager role into a tenant role by attaching tenant_id
+    // to an unrelated role row. Only create/update an actual tenant role.
+    const { data: existingTenantRole } = await supabaseAdmin
       .from("user_roles")
-      .select("id")
+      .select("id, tenant_id")
       .eq("user_id", userId)
-      .single();
+      .eq("role", "tenant")
+      .maybeSingle();
 
-    if (!existingRole) {
+    const { data: existingNonTenantRoles } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .neq("role", "tenant");
+
+    if (existingNonTenantRoles?.length) {
+      if (isNewUser) await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error("This email belongs to an existing non-tenant account and cannot be converted to a tenant account.");
+    }
+
+    if (!existingTenantRole) {
       const { error: roleError } = await supabaseAdmin
         .from("user_roles")
         .insert({
@@ -581,14 +651,18 @@ Deno.serve(async (req: Request): Promise<Response> => {
         console.error("Error creating user role:", roleError);
         throw new Error(`Failed to create user role: ${roleError.message}`);
       }
-    } else {
+    } else if (existingTenantRole.tenant_id && existingTenantRole.tenant_id !== tenant.id) {
+      if (isNewUser) await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error("This user already has a different tenant account.");
+    } else if (!existingTenantRole.tenant_id) {
       const { error: updateRoleError } = await supabaseAdmin
         .from("user_roles")
         .update({ tenant_id: tenant.id })
-        .eq("user_id", userId);
+        .eq("id", existingTenantRole.id);
 
       if (updateRoleError) {
-        console.error("Error updating user role:", updateRoleError);
+        console.error("Error updating tenant role:", updateRoleError);
+        throw new Error(`Failed to link tenant role: ${updateRoleError.message}`);
       }
     }
 

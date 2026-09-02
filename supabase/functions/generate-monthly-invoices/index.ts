@@ -17,8 +17,10 @@ Deno.serve(async (req) => {
     const supabaseAnonKey = SUPABASE_ANON_KEY;
     const supabaseServiceKey = SERVICE_KEY;
     
-    // Get the authorization header
+    // Get the authorization header. Scheduled jobs use the service key and are
+    // routed through this canonical invoice-generation implementation too.
     const authHeader = req.headers.get("Authorization");
+    const isServiceCall = authHeader === `Bearer ${SERVICE_KEY}`;
     if (!authHeader) {
       console.error("No authorization header provided");
       return new Response(
@@ -30,63 +32,71 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create a client with the user's token to verify authentication
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    let requestedManagerId: string | null = null;
+    let authenticatedUserId: string | null = null;
 
-    // Verify the user is authenticated
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user) {
-      console.error("Invalid or expired token:", userError?.message);
-      return new Response(
-        JSON.stringify({ error: "Unauthorized - Invalid token" }),
-        { 
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-          status: 401 
-        }
-      );
-    }
+    if (!isServiceCall) {
+          // Create a client with the user's token to verify authentication
+          const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+            global: { headers: { Authorization: authHeader } }
+          });
 
-    // Check if user has manager role
-    const { data: userRole, error: roleError } = await userClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .single();
+          // Verify the user is authenticated
+          const { data: { user }, error: userError } = await userClient.auth.getUser();
+          if (userError || !user) {
+            console.error("Invalid or expired token:", userError?.message);
+            return new Response(
+              JSON.stringify({ error: "Unauthorized - Invalid token" }),
+              { 
+                headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+                status: 401 
+              }
+            );
+          }
 
-    if (roleError || !userRole) {
-      console.error("Error fetching user role:", roleError?.message);
-      return new Response(
-        JSON.stringify({ error: "Forbidden - Could not verify user role" }),
-        { 
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-          status: 403 
-        }
-      );
-    }
+          // Check if user has manager role
+          const { data: userRole, error: roleError } = await userClient
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", user.id)
+            .single();
 
-    // Rate limit: 3 bulk invoice generations per manager per hour
-    if (!await checkRateLimit(userClient, user.id, "generate-monthly-invoices", RATE_LIMITS["generate-monthly-invoices"])) {
-      return rateLimitResponse(req);
-    }
+          if (roleError || !userRole) {
+            console.error("Error fetching user role:", roleError?.message);
+            return new Response(
+              JSON.stringify({ error: "Forbidden - Could not verify user role" }),
+              { 
+                headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+                status: 403 
+              }
+            );
+          }
 
-    if (userRole.role !== "manager") {
-      console.error(`User ${user.id} has role '${userRole.role}', not 'manager'`);
-      return new Response(
-        JSON.stringify({ error: "Forbidden - Manager access required" }),
-        { 
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-          status: 403 
-        }
-      );
+          // Rate limit: 3 bulk invoice generations per manager per hour
+          if (!await checkRateLimit(userClient, user.id, "generate-monthly-invoices", RATE_LIMITS["generate-monthly-invoices"])) {
+            return rateLimitResponse(req);
+          }
+
+          if (userRole.role !== "manager") {
+            console.error(`User ${user.id} has role '${userRole.role}', not 'manager'`);
+            return new Response(
+              JSON.stringify({ error: "Forbidden - Manager access required" }),
+              { 
+                headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+                status: 403 
+              }
+            );
+          }
+          authenticatedUserId = user.id;
+          requestedManagerId = user.id;
+
     }
 
     // Use service role client for data operations (bypasses RLS for admin operations)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get all active leases with tenant info (including manager_id)
-    const { data: activeLeases, error: leasesError } = await supabase
+    let leasesQuery = supabase
       .from("leases")
       .select(`
         id,
@@ -102,6 +112,8 @@ Deno.serve(async (req) => {
         )
       `)
       .eq("status", "active");
+    if (requestedManagerId) leasesQuery = leasesQuery.eq("manager_id", requestedManagerId);
+    const { data: activeLeases, error: leasesError } = await leasesQuery;
 
     if (leasesError) {
       console.error("Error fetching leases:", leasesError);
@@ -157,7 +169,8 @@ Deno.serve(async (req) => {
     let invoicesCreated = 0;
 
     for (const lease of leasesToInvoice) {
-      const managerId = (lease.tenants as any)?.manager_id || user.id;
+      const managerId = (lease.tenants as any)?.manager_id || authenticatedUserId;
+      if (!managerId) throw new Error(`Lease ${lease.id} has no resolvable manager`);
 
       // Get property billing config for this lease
       const { data: billingCfg } = await supabase
@@ -180,34 +193,18 @@ Deno.serve(async (req) => {
       const charges = (chargeConfigs || []) as any[];
 
       const createInvoice = async (chargeList: any[], descPrefix: string) => {
-        const totalAmount = chargeList.filter((c: any) => !c.is_metered)
-          .reduce((s: number, c: any) => s + Number(c.amount), 0);
+        const billableCharges = chargeList.filter((c: any) => !c.is_metered);
+        const totalAmount = billableCharges.reduce((s: number, c: any) => s + Number(c.amount), 0);
         if (totalAmount <= 0) return null;
 
-        const chargeLabels = chargeList.map((c: any) => c.charge_label).join(", ");
-        const { data: inv, error: invErr } = await supabase
-          .from("invoices")
-          .insert({
-            invoice_number: "",
-            lease_id: lease.id,
-            tenant_id: lease.tenant_id,
-            unit_id: lease.unit_id ?? null,
-            property_id: lease.property_id ?? null,
-            amount: totalAmount,
-            original_amount: totalAmount,
-            balance_due: totalAmount,
-            paid_amount: 0,
-            description: `${chargeLabels} — ${lease.property} ${lease.unit} — ${dueDate.toLocaleString("default", { month: "long", year: "numeric" })}`,
-            due_date: dueDateStr,
-            status: "pending",
-            manager_id: managerId,
-          })
-          .select().single();
+        const chargeLabels = billableCharges.map((c: any) => c.charge_label).join(", ");
+        const billingPeriod = dueDateStr.slice(0, 7);
+        const generationKey = [
+          lease.id, billingPeriod, invoiceMode, descPrefix,
+          billableCharges.map((c: any) => String(c.id)).sort().join(","),
+        ].join("|");
 
-        if (invErr || !inv) return null;
-
-        const lineItems = chargeList.filter((c: any) => !c.is_metered).map((c: any) => ({
-          invoice_id: (inv as any).id,
+        const lineItems = billableCharges.map((c: any) => ({
           unit_charge_id: c.id,
           charge_type: c.charge_type,
           charge_label: c.charge_label,
@@ -216,10 +213,25 @@ Deno.serve(async (req) => {
           amount: Number(c.amount),
           is_manual: false,
         }));
-        if (lineItems.length > 0) {
-          await supabase.from("invoice_line_items" as any).insert(lineItems);
+
+        const { data: inv, error: invErr } = await supabase.rpc("create_invoice_atomic", {
+          p_generation_key: generationKey,
+          p_lease_id: lease.id,
+          p_tenant_id: lease.tenant_id,
+          p_property_id: lease.property_id ?? null,
+          p_unit_id: lease.unit_id ?? null,
+          p_manager_id: managerId,
+          p_amount: totalAmount,
+          p_description: `${chargeLabels || descPrefix} — ${lease.property} ${lease.unit} — ${dueDate.toLocaleString("default", { month: "long", year: "numeric" })}`,
+          p_due_date: dueDateStr,
+          p_line_items: lineItems,
+        });
+
+        if (invErr) {
+          console.error("Error creating atomic invoice:", invErr);
+          throw invErr;
         }
-        return inv;
+        return inv as any;
       };
 
       if (charges.length === 0) {

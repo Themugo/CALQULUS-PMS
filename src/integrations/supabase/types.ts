@@ -6667,6 +6667,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_invoice_atomic: {
+        Args: {
+          p_generation_key: string
+          p_lease_id: string
+          p_tenant_id: string
+          p_property_id: string | null
+          p_unit_id: string | null
+          p_manager_id: string
+          p_amount: number
+          p_description: string
+          p_due_date: string
+          p_line_items?: Json
+        }
+        Returns: Json
+      }
+      create_lease_atomic: {
+        Args: {
+          p_tenant_id: string
+          p_property_id: string
+          p_unit_id?: string
+          p_unit?: string
+          p_start_date?: string
+          p_end_date?: string
+          p_monthly_rent?: number
+          p_deposit?: number
+          p_terms?: string
+          p_status?: string
+          p_manager_id?: string
+        }
+        Returns: string
+      }
       get_admin_level: { Args: { _user_id: string }; Returns: string }
       get_auth_user_email: { Args: { _user_id: string }; Returns: string }
       get_landlord_portfolio_stats: { Args: Record<PropertyKey, never>; Returns: Json }

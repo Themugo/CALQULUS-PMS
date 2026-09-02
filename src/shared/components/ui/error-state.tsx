@@ -29,12 +29,12 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        "flex min-h-[200px] flex-col items-center justify-center rounded-[8px] border border-destructive/20 bg-destructive/5 p-6 text-center",
+        "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center",
         className
       )}
       {...props}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-destructive/10 text-destructive mb-3">
+      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-destructive/10 text-destructive mb-3">
         <AlertCircle className={CALQULUS_ICON.lg} />
       </div>
       <h3 className={cn(CALQULUS_TYPE.cardTitle, "text-foreground mb-1")}>{title}</h3>

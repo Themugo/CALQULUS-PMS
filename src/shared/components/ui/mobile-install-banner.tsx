@@ -88,10 +88,10 @@ export const MobileInstallBanner = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom-5 fade-in duration-500 safe-area-inset-bottom">
-      <div className="bg-card border-t border-primary/20 calqulus-shadow-elevated p-4 mx-3 mb-3 rounded-[8px] ">
+      <div className="bg-gradient-to-br from-primary/5 via-card to-card border-t border-primary/20 shadow-2xl p-4 mx-3 mb-3 rounded-2xl backdrop-blur-sm">
         <div className="flex items-start gap-4">
           <div className="relative">
-            <div className="h-14 w-14 rounded-[8px] overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-primary/20">
+            <div className="h-14 w-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-primary/20">
               <img src="/pwa-192x192.png" alt="CALQULUS PMS" className="h-full w-full object-cover" />
             </div>
             <div className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
@@ -125,7 +125,7 @@ export const MobileInstallBanner = () => {
             </div>
             
             {isIOS ? (
-              <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-[8px]">
+              <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-lg">
                 <Share className="h-4 w-4 text-primary flex-shrink-0" />
                 <span className="text-xs text-foreground">Tap Share → "Add to Home Screen"</span>
               </div>
@@ -135,7 +135,7 @@ export const MobileInstallBanner = () => {
                 Install Free
               </Button>
             ) : (
-              <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-[8px]">
+              <div className="flex items-center gap-2 mt-3 p-2 bg-muted/50 rounded-lg">
                 <MoreVertical className="h-4 w-4 text-primary flex-shrink-0" />
                 <span className="text-xs text-foreground">Tap Menu → "Install app"</span>
               </div>

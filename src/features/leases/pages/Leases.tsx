@@ -431,7 +431,6 @@ const Leases = () => {
   };
 
   const handleCreateLease = async () => {
-    // Validate input
     const validationResult = leaseSchema.safeParse(newLease);
     if (!validationResult.success) {
       setLeaseErrors(leaseFieldErrors(validationResult.error));
@@ -440,95 +439,41 @@ const Leases = () => {
     setLeaseErrors({});
 
     const monthlyRent = parseFloat(validationResult.data.monthly_rent);
-    const deposit = validationResult.data.deposit ? parseFloat(validationResult.data.deposit) : monthlyRent * 2;
-    const selectedProperty = properties.find(p => p.id === validationResult.data.property_id);
+    const deposit = validationResult.data.deposit
+      ? parseFloat(validationResult.data.deposit)
+      : monthlyRent * 2;
 
-    const { data: createdLease, error } = await supabase.from("leases").insert({
-      tenant_id: validationResult.data.tenant_id,
-      property_id: validationResult.data.property_id,
-      unit_id: validationResult.data.unit_id || null,
-      manager_id: managerId ?? null,
-      property: selectedProperty?.name || "",
-      unit: validationResult.data.unit,
-      start_date: validationResult.data.start_date,
-      end_date: validationResult.data.end_date,
-      monthly_rent: monthlyRent,
-      deposit: deposit,
-      terms: validationResult.data.terms || null,
-      status: "pending",
-    }).select("id").single();
+    const { data: createdLeaseId, error } = await supabase.rpc("create_lease_atomic", {
+      p_tenant_id: validationResult.data.tenant_id,
+      p_property_id: validationResult.data.property_id,
+      p_unit_id: validationResult.data.unit_id || null,
+      p_unit: validationResult.data.unit,
+      p_start_date: validationResult.data.start_date,
+      p_end_date: validationResult.data.end_date,
+      p_monthly_rent: monthlyRent,
+      p_deposit: deposit,
+      p_terms: validationResult.data.terms || null,
+      p_status: "pending",
+      p_manager_id: managerId ?? null,
+    });
 
     if (error) {
       toast({
         title: "Couldn't create lease",
-        description: toUserFacingError(error, "Could not create this lease. Your details are still here — try again."),
+        description: toUserFacingError(
+          error,
+          "Could not create this lease. No tenant, unit, or payment details were changed — try again."
+        ),
         variant: "destructive",
       });
       return;
     }
 
     const selectedTenant = tenants.find((t) => t.id === validationResult.data.tenant_id);
-    const { error: tenantSyncError } = await supabase
-      .from("tenants")
-      .update({
-        property_id: validationResult.data.property_id,
-        property: selectedProperty?.name || "",
-        unit_id: validationResult.data.unit_id || null,
-        unit: validationResult.data.unit,
-        monthly_rent: monthlyRent,
-        deposit_amount: deposit,
-        deposit_balance: deposit,
-      } as {
-        property_id: string;
-        property: string;
-        unit_id: string | null;
-        unit: string;
-        monthly_rent: number;
-        deposit_amount: number;
-        deposit_balance: number;
-      })
-      .eq("id", validationResult.data.tenant_id);
-    if (tenantSyncError) {
-      toast({
-        title: "Lease Created",
-        description: `Lease ${createdLease?.id ? "created" : "saved"}, but tenant sync failed: ${tenantSyncError.message}`,
-        variant: "destructive",
-      });
-    }
-
-    if (validationResult.data.unit_id) {
-      const { error: unitSyncError } = await supabase
-        .from("units")
-        .update({ status: "occupied", monthly_rent: monthlyRent })
-        .eq("id", validationResult.data.unit_id);
-      if (unitSyncError) {
-        toast({
-          title: "Lease Created",
-          description: `Lease saved, but unit status sync failed: ${unitSyncError.message}`,
-          variant: "destructive",
-        });
-      }
-    }
-
-    await supabase.rpc("sync_tenant_payment_details", {
-      p_tenant_id: validationResult.data.tenant_id,
-      p_manager_id: managerId ?? null,
-      p_property_id: validationResult.data.property_id || null,
-      p_unit_id: validationResult.data.unit_id || null,
-      p_monthly_rent: monthlyRent,
-      p_house_deposit: deposit,
-      p_water_deposit: null,
-      p_other_charges: null,
-      p_other_charges_desc: null,
-      p_payment_day: 1,
-      p_paybill: null,
-      p_account_ref: validationResult.data.unit || null,
-      p_tenancy_type: "standard",
-    }).catch(() => {});
 
     toast({
       title: "Lease Created",
-      description: `Lease agreement for ${selectedTenant?.name || "tenant"} has been created.`,
+      description: `Lease ${createdLeaseId ? "created" : "saved"} for ${selectedTenant?.name || "tenant"}.`,
     });
     invalidateManagerActivation(queryClient);
 

@@ -7,22 +7,22 @@ import { cn } from "@/shared/lib/utils";
 import { CALQULUS_ICON } from "@/shared/theme/tokens";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[6px] text-sm font-medium ring-offset-background transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:     "bg-primary text-primary-foreground font-semibold shadow-none hover:bg-primary-hover active:bg-primary-active active:scale-[0.99]",
-        destructive: "bg-destructive text-destructive-foreground shadow-none hover:bg-destructive/90 active:scale-[0.99]",
-        outline:     "border border-input bg-surface shadow-none hover:bg-muted hover:text-foreground active:scale-[0.99]",
-        secondary:   "bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/80 active:scale-[0.99]",
+        default:     "bg-primary text-primary-foreground font-semibold shadow-sm hover:bg-primary-hover active:bg-primary-active active:scale-[0.99]",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.99]",
+        outline:     "border border-input bg-surface shadow-sm hover:bg-muted hover:text-foreground active:scale-[0.99]",
+        secondary:   "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 active:scale-[0.99]",
         ghost:       "hover:bg-muted hover:text-foreground",
         link:        "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "min-h-11 h-11 px-4 py-2",
-        sm:      "min-h-9 h-9 rounded-[6px] px-3 text-xs",
-        lg:      "min-h-11 h-11 rounded-[6px] px-6 text-sm font-semibold",
-        icon:    "min-h-11 min-w-11 h-11 w-11 rounded-[6px]",
+        sm:      "min-h-9 h-9 rounded-md px-3 text-xs",
+        lg:      "min-h-11 h-11 rounded-md px-6 text-sm font-semibold",
+        icon:    "min-h-11 min-w-11 h-11 w-11 rounded-md",
       },
     },
     defaultVariants: {

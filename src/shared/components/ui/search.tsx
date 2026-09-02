@@ -37,7 +37,7 @@ export function SearchInput({
             onChange("");
             onClear?.();
           }}
-          className="absolute right-2.5 p-0.5 rounded-[4px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute right-2.5 p-0.5 rounded-sm hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <X className="h-3.5 w-3.5" />
           <span className="sr-only">Clear search</span>

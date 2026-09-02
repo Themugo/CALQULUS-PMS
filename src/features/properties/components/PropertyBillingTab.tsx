@@ -41,6 +41,7 @@ import { formatDate } from "@/shared/lib/dateFormat";
 import { MpesaPaymentDialog } from "@/features/billing/components/MpesaPaymentDialog";
 import TenantInvoiceForm from "@/features/billing/components/TenantInvoiceForm";
 import { ReceiptVerification } from "@/features/payments/components/ReceiptVerification";
+import { useMarkInvoicePaid } from "@/features/billing/hooks/useBillingData";
 
 type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled";
 
@@ -88,6 +89,8 @@ interface Lease {
   unit: string;
   monthly_rent: number;
   tenant_id: string | null;
+  property_id: string | null;
+  unit_id: string | null;
   tenants: { id: string; name: string; email: string; photo_url: string | null } | null;
 }
 
@@ -136,6 +139,8 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   const [expenditureValues, setExpenditureValues] = useState<Record<string, string>>({});
   const [savingExpenditure, setSavingExpenditure] = useState<string | null>(null);
   const [sendingReceiptId, setSendingReceiptId] = useState<string | null>(null);
+  const markInvoicePaid = useMarkInvoicePaid();
+
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -169,7 +174,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
       const tenantIds = data.map(i => i.tenant_id);
       
       const [leasesData, tenantsData] = await Promise.all([
-        leaseIds.length > 0 ? supabase.from("leases").select("id, property, unit").in("id", leaseIds) : Promise.resolve({ data: [] }),
+        leaseIds.length > 0 ? supabase.from("leases").select("id, property, unit, property_id, unit_id").in("id", leaseIds) : Promise.resolve({ data: [] }),
         tenantIds.length > 0 ? supabase.from("tenants").select("id, name, email, phone, photo_url").in("id", tenantIds) : Promise.resolve({ data: [] })
       ]);
       
@@ -192,7 +197,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   const fetchLeases = useCallback(async () => {
     const { data } = await supabase
       .from("leases")
-      .select("id, property, unit, monthly_rent, tenant_id")
+      .select("id, property, unit, monthly_rent, tenant_id, property_id, unit_id")
       .eq("property_id", propertyId)
       .eq("status", "active")
       .order("unit");
@@ -317,10 +322,19 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   };
 
   const handleMarkAsPaid = async (invoiceId: string) => {
-    const { error } = await supabase.from("invoices").update({ status: "paid" as InvoiceStatus, paid_date: new Date().toISOString().split("T")[0] }).eq("id", invoiceId);
-    if (!error) {
-      toast({ title: "Invoice Paid", description: "Invoice marked as paid." });
+    try {
+      // Do not mutate invoice.status directly. Payment recording must go through
+      // the atomic payment path so the payment transaction, allocation, balance,
+      // receipt and audit trail stay consistent.
+      await markInvoicePaid.mutateAsync({ invoiceId });
+      toast({ title: "Payment Recorded", description: "Payment recorded and invoice balance updated." });
       fetchInvoices();
+    } catch (error) {
+      toast({
+        title: "Payment failed",
+        description: error instanceof Error ? error.message : "Could not record this payment.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -531,7 +545,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                                 )}
                                 {invoice.status !== "paid" && !isViewOnly && (
                                   <>
-                                    <DropdownMenuItem onClick={() => handleMarkAsPaid(invoice.id)}>
+                                    <DropdownMenuItem disabled={markInvoicePaid.isPending} onClick={() => handleMarkAsPaid(invoice.id)}>
                                       <CheckCircle className="h-4 w-4 mr-2" /> Mark Paid
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => {
@@ -713,6 +727,12 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                 due_date:    data.due_date,
                 status:      "pending" as InvoiceStatus,
                 manager_id:  user?.id,
+                property_id: data.lease_id
+                  ? leases.find((l) => l.id === data.lease_id)?.property_id ?? propertyId
+                  : propertyId,
+                unit_id: data.lease_id
+                  ? leases.find((l) => l.id === data.lease_id)?.unit_id ?? null
+                  : null,
               });
               if (error) throw error;
               trackTimeToFirst("invoice", { managerId: user?.id, signupAt: user?.created_at });

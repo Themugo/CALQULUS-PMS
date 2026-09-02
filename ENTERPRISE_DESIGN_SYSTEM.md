@@ -1,5 +1,3 @@
-> **HISTORICAL — superseded by `docs/CALQULUS_DESIGN_SYSTEM.md`. Do not use this document as the active visual source of truth.**
-
 # CALQULUS RMS / PMS — ENTERPRISE DESIGN SYSTEM SPECIFICATION
 
 **Version:** 1.0 Enterprise  

@@ -78,13 +78,13 @@ export const DesktopInstallBanner = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-md animate-in slide-in-from-bottom-5 fade-in duration-500">
-      <div className="bg-card border border-primary/20 rounded-[8px] calqulus-shadow-elevated p-5 ">
+      <div className="bg-gradient-to-br from-primary/5 via-card to-card border border-primary/20 rounded-2xl shadow-2xl p-5 backdrop-blur-sm">
         <div className="flex items-start gap-4">
           <div className="relative">
-            <div className="h-12 w-12 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0 calqulus-shadow-elevated ring-2 ring-primary/10">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-primary/10">
               <Monitor className="h-6 w-6 text-primary" />
             </div>
-            <div className="absolute -top-1 -right-1 h-5 w-5 bg-success rounded-full flex items-center justify-center calqulus-shadow-elevated animate-pulse">
+            <div className="absolute -top-1 -right-1 h-5 w-5 bg-success rounded-full flex items-center justify-center shadow-lg animate-pulse">
               <Zap className="h-3 w-3 text-white" />
             </div>
           </div>
@@ -112,7 +112,7 @@ export const DesktopInstallBanner = () => {
             </div>
             
             <div className="flex items-center gap-3 mt-4">
-              <Button size="sm" onClick={handleInstallClick} className="h-9 calqulus-shadow-elevated px-4">
+              <Button size="sm" onClick={handleInstallClick} className="h-9 shadow-lg px-4">
                 <Download className="h-4 w-4 mr-2" />
                 Install Now
               </Button>
