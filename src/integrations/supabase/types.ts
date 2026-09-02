@@ -6763,6 +6763,14 @@ export type Database = {
         Args: { p_bank_integration_id: string }
         Returns: Json
       }
+      get_bank_webhook_secret_atomic: {
+        Args: { p_bank_integration_id: string }
+        Returns: Json
+      }
+      rotate_bank_webhook_secret_atomic: {
+        Args: { p_bank_integration_id: string }
+        Returns: Json
+      }
       update_platform_payment_atomic: {
         Args: { p_reference: string; p_status: string; p_invoice_id?: string | null; p_manager_user_id?: string | null; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_amount?: number | null; p_failure_reason?: string | null }
         Returns: Json

@@ -49,7 +49,6 @@ interface BankIntegration {
   account_name: string | null;
   is_active: boolean;
   auto_reconcile: boolean;
-  webhook_secret: string;
   match_by: string;
   paybill_number: string | null;
 }
@@ -60,6 +59,8 @@ const BankIntegrationSettings: React.FC = () => {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState<string | null>(null);
+  const [revealedSecrets, setRevealedSecrets] = useState<Record<string, string>>({});
+  const [secretBusy, setSecretBusy] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     property_id: '' as string,
@@ -95,7 +96,7 @@ const BankIntegrationSettings: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('bank_integration_settings')
-        .select('*')
+        .select('id, bank_name, property_id, account_number, account_name, is_active, auto_reconcile, match_by, paybill_number')
         .eq('manager_id', user!.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -163,6 +164,41 @@ const BankIntegrationSettings: React.FC = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bank-integrations'] }),
     onError: (err: Error) => errorToast('Failed', err),
   });
+
+  const revealSecret = async (id: string) => {
+    setSecretBusy(id);
+    try {
+      const { data, error } = await supabase.rpc('get_bank_webhook_secret_atomic', {
+        p_bank_integration_id: id,
+      });
+      if (error) throw error;
+      const secret = data?.webhook_secret as string | undefined;
+      if (!secret) throw new Error('Webhook secret was not returned');
+      setRevealedSecrets(prev => ({ ...prev, [id]: secret }));
+    } catch (err) {
+      errorToast('Failed to reveal webhook secret', err instanceof Error ? err : new Error('Unknown error'));
+    } finally {
+      setSecretBusy(null);
+    }
+  };
+
+  const rotateSecret = async (id: string) => {
+    setSecretBusy(id);
+    try {
+      const { data, error } = await supabase.rpc('rotate_bank_webhook_secret_atomic', {
+        p_bank_integration_id: id,
+      });
+      if (error) throw error;
+      const secret = data?.webhook_secret as string | undefined;
+      if (!secret) throw new Error('New webhook secret was not returned');
+      setRevealedSecrets(prev => ({ ...prev, [id]: secret }));
+      toast({ title: 'Webhook secret rotated', description: 'Update your bank webhook configuration with the new secret.' });
+    } catch (err) {
+      errorToast('Failed to rotate webhook secret', err instanceof Error ? err : new Error('Unknown error'));
+    } finally {
+      setSecretBusy(null);
+    }
+  };
 
   const deleteIntegration = useMutation({
     mutationFn: async (id: string) => {
@@ -286,9 +322,21 @@ const BankIntegrationSettings: React.FC = () => {
                           }
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Required header: <code className="bg-background border border-border rounded px-1 py-0.5">x-webhook-secret: {intg.webhook_secret}</code>
-                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span>Required header:</span>
+                        {revealedSecrets[intg.id] ? (
+                          <code className="bg-background border border-border rounded px-1.5 py-1">x-webhook-secret: {revealedSecrets[intg.id]}</code>
+                        ) : (
+                          <span className="font-medium">Secret hidden</span>
+                        )}
+                        <Button variant="outline" size="sm" className="h-7" disabled={secretBusy === intg.id} onClick={() => revealSecret(intg.id)}>
+                          {secretBusy === intg.id ? <Loader2 className="h-3.5 w-3.5 mr-1" /> : null}
+                          {revealedSecrets[intg.id] ? 'Reveal again' : 'Reveal secret'}
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-7" disabled={secretBusy === intg.id} onClick={() => rotateSecret(intg.id)}>
+                          Rotate
+                        </Button>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Match strategy: <span className="font-medium">{MATCH_BY_OPTIONS.find(m => m.value === intg.match_by)?.label}</span>
                       </p>

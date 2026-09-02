@@ -263,7 +263,7 @@ const ManagerInvoiceHistory: React.FC<{ managerId: string }> = ({ managerId }) =
         p_manager_invoice_id: id,
         p_manager_user_id: managerId,
         p_amount: Number(invoice.amount),
-        p_reference: `WEBHOST-${id}-${Date.now()}`,
+        p_reference: `WEBHOST-${id}`,
         p_payment_method: 'manual',
       });
       if (error) throw error;
