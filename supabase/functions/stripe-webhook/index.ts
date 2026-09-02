@@ -7,20 +7,13 @@
  *
  * This handler:
  *   1. Verifies the Stripe signature (returns 400 on failure).
- *   2. Checks `stripe_processed_events` and short-circuits if the event has
- *      already been handled — Stripe gets 200 OK so it stops retrying.
+ *   2. Claims `stripe_processed_events` before side effects without marking it
+ *      completed. Concurrent fresh claims are ignored; stale/failed claims retry.
  *   3. Handles checkout.session.completed, invoice.payment_failed,
  *      charge.refunded.
- *   4. Records the event_id atomically inside the same DB call sequence so a
- *      retry that lands while we are still processing gets a 200 on the next
- *      poll and never executes the update twice.
- *   5. On any unexpected error after signature verification, writes the
- *      event to `webhook_dead_letter` and still returns 200 to Stripe so it
- *      stops retrying. The webhost dashboard surfaces unresolved entries.
- *
- * Why return 200 even on dead-letter? If Stripe keeps retrying, the event
- * eventually expires and the failure becomes invisible. Better to capture
- * it ourselves and reconcile manually than to depend on Stripe's retry log.
+ *   4. Marks the event completed only after its side effects succeed.
+ *   5. On an unexpected error, records a dead-letter and returns HTTP 500 so
+ *      Stripe retries the failed claim.
  */
 
 import { serve } from "std/http/server.ts";
@@ -63,31 +56,30 @@ serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
-  // ── Idempotency ──────────────────────────────────────────────────────
-  // Insert FIRST. If the row already exists the unique constraint on
-  // event_id throws — that means we already processed this event, so we
-  // return 200 OK without re-running any side effects.
+  // ── Idempotency claim ────────────────────────────────────────────────
+  // Claim before side effects, but only mark completed AFTER every side effect
+  // succeeds. Failed/stale claims are retryable instead of permanently stuck.
   try {
-    const { error: dedupErr } = await supabase
-      .from("stripe_processed_events")
-      .insert({
-        event_id:   event.id,
-        event_type: event.type,
-      });
-
-    if (dedupErr) {
-      // Postgres unique-violation = 23505. Any other error is genuinely broken.
-      if ((dedupErr as any).code === "23505") {
-        log("Duplicate event — already processed", { eventId: event.id });
-        return new Response("ok", { status: 200 });
-      }
-      log("Idempotency insert error", { error: dedupErr.message });
-      // Continue anyway so we don't lose the payment. The dead-letter table
-      // will catch us if the side-effect itself fails.
+    const { data: claim, error: claimErr } = await supabase.rpc("claim_stripe_event_atomic", {
+      p_event_id: event.id,
+      p_event_type: event.type,
+    });
+    if (claimErr) throw new Error(`Stripe event claim failed: ${claimErr.message}`);
+    if (!claim?.success) {
+      throw new Error("Stripe event claim returned an unsuccessful result");
     }
-  } catch (e) {
-    log("Idempotency table missing or unreachable", { error: String(e) });
-    // Continue. Better to risk a rare duplicate than to drop a payment.
+    if (claim.should_process !== true) {
+      log("Stripe event already handled or in progress", { eventId: event.id, status: claim.status });
+      // Completed events are safe no-ops. A fresh processing claim means
+      // another worker owns the event; return 500 so Stripe retries instead
+      // of acknowledging a potentially unfinished financial side effect.
+      return new Response(claim.status === "completed" ? "ok" : "Webhook still processing", {
+        status: claim.status === "completed" ? 200 : 500,
+      });
+    }
+  } catch (err) {
+    log("Stripe event claim unavailable — refusing side effects", { error: String(err), eventId: event.id });
+    return new Response("Webhook temporarily unavailable", { status: 500 });
   }
 
   // ── Event handling ───────────────────────────────────────────────────
@@ -126,10 +118,10 @@ serve(async (req) => {
           if (lifecycleErr) throw new Error(`platform payment lifecycle: ${lifecycleErr.message}`);
           if (!lifecycle?.success) throw new Error("Platform payment lifecycle did not complete");
 
-          await supabase
-            .from("stripe_processed_events")
-            .update({ invoice_id: invoiceId, reference })
-            .eq("event_id", event.id);
+          const completed = await supabase.rpc("complete_stripe_event_atomic", {
+            p_event_id: event.id, p_invoice_id: invoiceId, p_reference: reference,
+          });
+          if (completed.error) throw new Error(`Stripe event completion: ${completed.error.message}`);
 
           log("manager checkout.session.completed handled", { invoiceId, reference });
           break;
@@ -177,10 +169,10 @@ serve(async (req) => {
           throw new Error(`process-payment returned ${processResp.status}: ${processText.slice(0, 300)}`);
         }
 
-        await supabase
-          .from("stripe_processed_events")
-          .update({ invoice_id: invoiceId, reference: paymentReference })
-          .eq("event_id", event.id);
+        const completed = await supabase.rpc("complete_stripe_event_atomic", {
+          p_event_id: event.id, p_invoice_id: invoiceId, p_reference: paymentReference,
+        });
+        if (completed.error) throw new Error(`Stripe event completion: ${completed.error.message}`);
 
         log("tenant checkout.session.completed handled", { invoiceId, reference: paymentReference });
         break;
@@ -240,6 +232,8 @@ serve(async (req) => {
         log("Unhandled event type", { type: event.type });
     }
 
+    const completed = await supabase.rpc("complete_stripe_event_atomic", { p_event_id: event.id });
+    if (completed.error) throw new Error(`Stripe event completion: ${completed.error.message}`);
     return new Response("ok", { status: 200 });
 
   } catch (err) {
@@ -250,6 +244,15 @@ serve(async (req) => {
       eventId: event.id, error: err instanceof Error ? err.message : String(err),
     });
     await recordWebhookFailure(supabase, "stripe", event.id, event, err);
-    return new Response("ok", { status: 200 });
+    try {
+      await supabase.rpc("fail_stripe_event_atomic", {
+        p_event_id: event.id,
+        p_error: err instanceof Error ? err.message : String(err),
+      });
+    } catch (stateErr) {
+      log("Unable to persist Stripe event failure state", { error: String(stateErr), eventId: event.id });
+    }
+    // 500 tells Stripe to retry. The DB claim is marked failed, so a retry can reclaim it.
+    return new Response("Webhook processing failed", { status: 500 });
   }
 });

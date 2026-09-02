@@ -6774,6 +6774,22 @@ export type Database = {
       update_platform_payment_atomic: {
         Args: { p_reference: string; p_status: string; p_invoice_id?: string | null; p_manager_user_id?: string | null; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_amount?: number | null; p_failure_reason?: string | null }
         Returns: Json
+      },
+      claim_stripe_event_atomic: {
+        Args: { p_event_id: string; p_event_type: string }
+        Returns: Json
+      },
+      complete_stripe_event_atomic: {
+        Args: { p_event_id: string; p_invoice_id?: string | null; p_reference?: string | null }
+        Returns: Json
+      },
+      fail_stripe_event_atomic: {
+        Args: { p_event_id: string; p_error: string }
+        Returns: Json
+      },
+      mark_payment_transaction_failed_atomic: {
+        Args: { p_transaction_id: string; p_failure_reason: string }
+        Returns: Json
       }
       create_invoice_atomic: {
         Args: {

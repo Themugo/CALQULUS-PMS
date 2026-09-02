@@ -100,10 +100,11 @@ serve(async (req) => {
     // A late ResultCode=0 still means money moved and must be allocated.
     const age = Date.now() - new Date(transaction.initiated_at).getTime();
     if (resultCode !== 0 && age > 10 * 60 * 1000) {
-      await supabase.from("payment_transactions").update({
-        status: "failed",
-        failure_reason: "Expired",
-      }).eq("id", transaction.id).eq("status", "pending");
+      const { error: failureError } = await supabase.rpc("mark_payment_transaction_failed_atomic", {
+        p_transaction_id: transaction.id,
+        p_failure_reason: "Expired",
+      });
+      if (failureError) throw new Error(`Failed to persist expired payment state: ${failureError.message}`);
 
       log("Transaction expired", { checkoutRequestId, age });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Expired" }),
@@ -212,9 +213,11 @@ serve(async (req) => {
       }
 
     } else {
-      await supabase.from("payment_transactions").update({
-        status: "failed", failure_reason: ResultDesc ?? "Payment cancelled or failed",
-      }).eq("id", transaction.id);
+      const { error: failureError } = await supabase.rpc("mark_payment_transaction_failed_atomic", {
+        p_transaction_id: transaction.id,
+        p_failure_reason: ResultDesc ?? "Payment cancelled or failed",
+      });
+      if (failureError) throw new Error(`Failed to persist payment failure state: ${failureError.message}`);
     }
 
     return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Callback processed" }),

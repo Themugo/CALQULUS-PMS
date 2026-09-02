@@ -188,10 +188,11 @@ serve(async (req) => {
           } else if (queryResult.ResultCode !== null) {
             // Definitive failure from Safaricom
             const reason = queryResult.ResultDesc ?? 'Payment was not completed';
-            await supabase.from('payment_transactions').update({
-              status:         'failed',
-              failure_reason: reason,
-            }).eq('id', transaction.id);
+            const { error: failureError } = await supabase.rpc("mark_payment_transaction_failed_atomic", {
+              p_transaction_id: transaction.id,
+              p_failure_reason: reason,
+            });
+            if (failureError) throw new Error(`Failed to persist payment failure state: ${failureError.message}`);
 
             return new Response(JSON.stringify({
               status:        'failed',
