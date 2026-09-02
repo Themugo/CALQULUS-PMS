@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
-import { isDevAccessEnabled } from '@/features/auth/lib/devAccess';
+import { DEV_PRESET_ACCOUNTS, isDevAccessEnabled } from '@/features/auth/lib/devAccess';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/shared/hooks/use-toast';
 import {
@@ -37,55 +37,19 @@ interface AccountPreset {
   badgeColor: string;
 }
 
-const PRESET_ACCOUNTS: AccountPreset[] = import.meta.env.PROD
-  ? []
-  : [
-  {
-    role: 'manager',
-    label: 'Manager (Full Ops)',
-    email: 'jimmythemugo@gmail.com',
-    pass: 'CALQULUS RMS@2026!',
-    defaultPath: '/',
-    icon: Building2,
-    badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-  },
-  {
-    role: 'webhost',
-    label: 'Webhost / Admin',
-    email: 'mugo.james27@gmail.com',
-    pass: 'CALQULUS RMS@2026!',
-    defaultPath: '/webhost',
-    icon: Shield,
-    badgeColor: 'bg-warning/20 text-amber-300 border-warning/30'
-  },
-  {
-    role: 'tenant',
-    label: 'Tenant Portal',
-    email: 'kamauwamakena@gmail.com',
-    pass: 'CALQULUS RMS@2026!',
-    defaultPath: '/portal',
-    icon: User,
-    badgeColor: 'bg-success/20 text-success border-success/30'
-  },
-  {
-    role: 'agency',
-    label: 'Agency Portal',
-    email: 'demo.manager@calqulusrms.com',
-    pass: 'Demo@2026',
-    defaultPath: '/agency',
-    icon: Handshake,
-    badgeColor: 'bg-navy-mid/20 text-navy-mid border-navy-mid/30'
-  },
-  {
-    role: 'landlord',
-    label: 'Landlord Portal',
-    email: 'demo.landlord@calqulusrms.com',
-    pass: 'Demo@2026',
-    defaultPath: '/landlord/dashboard',
-    icon: Home,
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-  }
-];
+const PRESET_PRESENTATION: Record<string, Pick<AccountPreset, 'icon' | 'badgeColor'>> = {
+  manager: { icon: Building2, badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
+  webhost: { icon: Shield, badgeColor: 'bg-warning/20 text-amber-300 border-warning/30' },
+  tenant: { icon: User, badgeColor: 'bg-success/20 text-success border-success/30' },
+  agency: { icon: Handshake, badgeColor: 'bg-navy-mid/20 text-navy-mid border-navy-mid/30' },
+  landlord: { icon: Home, badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30' },
+};
+
+const PRESET_ACCOUNTS: AccountPreset[] = DEV_PRESET_ACCOUNTS.map((preset) => ({
+  ...preset,
+  pass: preset.password,
+  ...(PRESET_PRESENTATION[preset.role] ?? { icon: Building2, badgeColor: 'bg-muted text-foreground border-border' }),
+}));
 
 const DIRECT_LINKS = [
   { label: 'Landing Page', path: '/', icon: Globe2 },

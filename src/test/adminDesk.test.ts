@@ -197,7 +197,7 @@ describe("infrastructure status vocabulary", () => {
 describe("application facts", () => {
   it("reads environment, domain, protocol, and backend from real sources", () => {
     const facts = getApplicationFacts(
-      { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+      { PROD: true, VITE_SUPABASE_URL: "https://example.supabase.co" },
       { hostname: "www.calqulus.site", protocol: "https:" },
     );
     expect(facts).toEqual({
@@ -206,7 +206,7 @@ describe("application facts", () => {
       environment: "production",
       domain: "www.calqulus.site",
       protocol: "https",
-      backendProject: "aelzsqxllkypbzslxyju.supabase.co",
+      backendProject: "example.supabase.co",
       backendConfigured: true,
     });
   });
@@ -231,7 +231,7 @@ describe("application runtime", () => {
     detail: "",
   });
   const facts = getApplicationFacts(
-    { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+    { PROD: true, VITE_SUPABASE_URL: "https://example.supabase.co" },
     { hostname: "www.calqulus.site", protocol: "https:" },
   );
 
@@ -252,7 +252,7 @@ describe("application runtime", () => {
 describe("non-secret configuration", () => {
   it("lists only safe entries and never keys or tokens", () => {
     const facts = getApplicationFacts(
-      { PROD: true, VITE_SUPABASE_URL: "https://aelzsqxllkypbzslxyju.supabase.co" },
+      { PROD: true, VITE_SUPABASE_URL: "https://example.supabase.co" },
       { hostname: "www.calqulus.site", protocol: "https:" },
     );
     const config = getNonSecretConfig(facts);
@@ -261,7 +261,7 @@ describe("non-secret configuration", () => {
     expect(joined).not.toContain("secret");
     expect(joined).not.toContain("token");
     expect(joined).not.toContain("service_role");
-    expect(config.find((e) => e.key === "Backend project")?.value).toBe("aelzsqxllkypbzslxyju.supabase.co");
+    expect(config.find((e) => e.key === "Backend project")?.value).toBe("example.supabase.co");
   });
 });
 

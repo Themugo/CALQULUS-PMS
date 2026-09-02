@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get Supabase URL and service role key from environment
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aelzsqxllkypbzslxyju.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+if (!SUPABASE_URL) {
+  console.error('Set SUPABASE_URL or VITE_SUPABASE_URL.');
+  process.exit(1);
+}
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_SERVICE_ROLE_KEY) {
@@ -19,7 +23,7 @@ async function scanAccounts() {
   try {
     // Get all users from auth.users
     const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-    
+
     if (authError) {
       console.error('❌ Error fetching auth users:', authError);
       return;
@@ -81,7 +85,7 @@ async function scanAccounts() {
       console.log(`Created:      ${user.created_at}`);
       console.log(`Last Sign In: ${user.last_sign_in_at || 'Never'}`);
       console.log(`Confirmed:    ${user.email_confirmed_at ? '✅ Yes' : '❌ No'}`);
-      
+
       if (profile) {
         console.log(`\n📋 Profile:`);
         console.log(`  Full Name: ${profile.full_name || 'Not set'}`);

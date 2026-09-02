@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get Supabase URL and service role key from environment
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aelzsqxllkypbzslxyju.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+if (!SUPABASE_URL) {
+  console.error('Set SUPABASE_URL or VITE_SUPABASE_URL.');
+  process.exit(1);
+}
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_SERVICE_ROLE_KEY) {
@@ -31,7 +35,7 @@ async function assignRoles() {
   try {
     // Get all users from auth
     const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
-    
+
     if (usersError) {
       console.error('❌ Error fetching users:', usersError);
       return;
@@ -50,9 +54,9 @@ async function assignRoles() {
 
     for (const assignment of ROLE_ASSIGNMENTS) {
       console.log(`🔧 Processing: ${assignment.email} → ${assignment.role}`);
-      
+
       const user = userMap.get(assignment.email);
-      
+
       if (!user) {
         console.log(`   ❌ User not found in auth.users`);
         failureCount++;
@@ -108,7 +112,7 @@ async function assignRoles() {
     const webhostUser = userMap.get('mugo.james27@gmail.com');
     if (webhostUser) {
       console.log(`🔧 Setting up platform admin for webhost...`);
-      
+
       // Check if platform_admins table exists and create entry
       const { error: adminError } = await supabase
         .from('platform_admins')
@@ -132,7 +136,7 @@ async function assignRoles() {
     const managerUser = userMap.get('demo.manager@calqulusrms.com');
     if (managerUser) {
       console.log(`🔧 Setting up manager profile for demo manager...`);
-      
+
       const { error: managerProfileError } = await supabase
         .from('manager_profiles')
         .upsert({

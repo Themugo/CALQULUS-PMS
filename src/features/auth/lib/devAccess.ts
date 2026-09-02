@@ -1,13 +1,8 @@
 // Open-access (no-login) development mode.
 //
-// When enabled the app:
-//   1. Silently signs into the default dev account on boot (no login wall).
-//   2. Skips login redirects and approval/role guards so every portal is
-//      reachable without limitations.
-//   3. Shows the 1-click account switcher for jumping between all portals.
-//
-// Production builds NEVER enable this, including when VITE_ENABLE_DEV_ACCESS
-// is set. Preset passwords are omitted from the production bundle.
+// Development accounts are configured through environment variables only.
+// Credentials are intentionally never stored in source control or bundled
+// into the application as defaults. Production builds always disable this.
 
 export interface DevPresetAccount {
   role: 'manager' | 'webhost' | 'tenant' | 'agency' | 'landlord';
@@ -23,6 +18,28 @@ export interface DevAccessEnv {
   VITE_ENABLE_DEV_ACCESS?: string;
 }
 
+type DevPresetRole = DevPresetAccount['role'];
+
+type ImportMetaEnv = {
+  PROD: boolean;
+  DEV: boolean;
+  VITE_ENABLE_DEV_ACCESS?: string;
+  VITE_DEV_ACCESS_EMAIL?: string;
+  VITE_DEV_ACCESS_PASSWORD?: string;
+  VITE_DEV_MANAGER_EMAIL?: string;
+  VITE_DEV_MANAGER_PASSWORD?: string;
+  VITE_DEV_WEBHOST_EMAIL?: string;
+  VITE_DEV_WEBHOST_PASSWORD?: string;
+  VITE_DEV_TENANT_EMAIL?: string;
+  VITE_DEV_TENANT_PASSWORD?: string;
+  VITE_DEV_AGENCY_EMAIL?: string;
+  VITE_DEV_AGENCY_PASSWORD?: string;
+  VITE_DEV_LANDLORD_EMAIL?: string;
+  VITE_DEV_LANDLORD_PASSWORD?: string;
+};
+
+const env = import.meta.env as ImportMetaEnv;
+
 /** Pure gate used by tests. Production (`PROD`) always wins. */
 export function isDevAccessEnabledFromEnv(env: DevAccessEnv): boolean {
   if (env.PROD) return false;
@@ -31,55 +48,34 @@ export function isDevAccessEnabledFromEnv(env: DevAccessEnv): boolean {
   return env.DEV;
 }
 
-export const DEV_PRESET_ACCOUNTS: DevPresetAccount[] = import.meta.env.PROD
-  ? []
-  : [
-      {
-        role: 'manager',
-        label: 'Manager (Full Ops)',
-        email: 'jimmythemugo@gmail.com',
-        password: 'CALQULUS RMS@2026!',
-        defaultPath: '/',
-      },
-      {
-        role: 'webhost',
-        label: 'Webhost / Admin',
-        email: 'mugo.james27@gmail.com',
-        password: 'CALQULUS RMS@2026!',
-        defaultPath: '/webhost',
-      },
-      {
-        role: 'tenant',
-        label: 'Tenant Portal',
-        email: 'kamauwamakena@gmail.com',
-        password: 'CALQULUS RMS@2026!',
-        defaultPath: '/portal',
-      },
-      {
-        role: 'agency',
-        label: 'Agency Portal',
-        email: 'demo.manager@calqulusrms.com',
-        password: 'Demo@2026',
-        defaultPath: '/agency',
-      },
-      {
-        role: 'landlord',
-        label: 'Landlord Portal',
-        email: 'demo.landlord@calqulusrms.com',
-        password: 'Demo@2026',
-        defaultPath: '/landlord/dashboard',
-      },
-    ];
+const PRESET_META: Array<Pick<DevPresetAccount, 'role' | 'label' | 'defaultPath'>> = [
+  { role: 'manager', label: 'Manager (Full Ops)', defaultPath: '/' },
+  { role: 'webhost', label: 'Webhost / Admin', defaultPath: '/webhost' },
+  { role: 'tenant', label: 'Tenant Portal', defaultPath: '/portal' },
+  { role: 'agency', label: 'Agency Portal', defaultPath: '/agency' },
+  { role: 'landlord', label: 'Landlord Portal', defaultPath: '/landlord/dashboard' },
+];
 
-export function isDevAccessEnabled(): boolean {
-  return isDevAccessEnabledFromEnv({
-    PROD: import.meta.env.PROD,
-    DEV: import.meta.env.DEV,
-    VITE_ENABLE_DEV_ACCESS: import.meta.env.VITE_ENABLE_DEV_ACCESS,
-  });
+function readPreset(role: DevPresetRole): DevPresetAccount | null {
+  if (env.PROD) return null;
+
+  const prefix = role.toUpperCase();
+  const email = env[`VITE_DEV_${prefix}_EMAIL` as keyof ImportMetaEnv] as string | undefined;
+  const password = env[`VITE_DEV_${prefix}_PASSWORD` as keyof ImportMetaEnv] as string | undefined;
+
+  if (!email || !password) return null;
+  const meta = PRESET_META.find((entry) => entry.role === role);
+  if (!meta) return null;
+
+  return { ...meta, email, password };
 }
 
-/** Account used for the silent auto-login. Defaults to the Manager account. */
+export const DEV_PRESET_ACCOUNTS: DevPresetAccount[] = isDevAccessEnabledFromEnv(env)
+  ? PRESET_META.map((entry) => readPreset(entry.role)).filter(
+      (account): account is DevPresetAccount => account !== null,
+    )
+  : [];
+
 const EMPTY_DEV_ACCOUNT: DevPresetAccount = {
   role: 'manager',
   label: '',
@@ -88,14 +84,25 @@ const EMPTY_DEV_ACCOUNT: DevPresetAccount = {
   defaultPath: '/',
 };
 
+/** Account used for silent auto-login. Generic overrides take precedence. */
 export function getDevDefaultAccount(): DevPresetAccount {
-  const base = DEV_PRESET_ACCOUNTS.find((a) => a.role === 'manager') ?? DEV_PRESET_ACCOUNTS[0] ?? EMPTY_DEV_ACCOUNT;
-  const overrideEmail = import.meta.env.VITE_DEV_ACCESS_EMAIL;
-  const overridePassword = import.meta.env.VITE_DEV_ACCESS_PASSWORD;
+  const overrideEmail = env.VITE_DEV_ACCESS_EMAIL?.trim();
+  const overridePassword = env.VITE_DEV_ACCESS_PASSWORD;
+  const base = DEV_PRESET_ACCOUNTS.find((account) => account.role === 'manager') ?? EMPTY_DEV_ACCOUNT;
+
   if (!overrideEmail && !overridePassword) return base;
+
   return {
     ...base,
     email: overrideEmail || base.email,
     password: overridePassword || base.password,
   };
+}
+
+export function isDevAccessEnabled(): boolean {
+  return isDevAccessEnabledFromEnv({
+    PROD: env.PROD,
+    DEV: env.DEV,
+    VITE_ENABLE_DEV_ACCESS: env.VITE_ENABLE_DEV_ACCESS,
+  });
 }
