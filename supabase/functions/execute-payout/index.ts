@@ -1,19 +1,20 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { createClient } from "supabase/supabase-js@2";
+import { authenticateUser } from "../_shared/auth.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
-import { requireEnv } from "../_shared/env.ts";
-
-const SUPABASE_URL = requireEnv("SUPABASE_URL");
-const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
   try {
-    const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+    const auth = await authenticateUser(req);
+    if (!auth.success) return auth.response;
 
-    // ── Caller authentication ─────────────────────────────────────────
+    const supabase = auth.supabaseAdmin;
+    const caller = auth.user;
+
+    // ── Caller authentication / authorization ─────────────────────────
     // CRITICAL, and also factually broken: previously unauthenticated,
     // AND it called `initiate-mpesa-payment` (Paystack collection alias;
     // canonical name: initiate-paystack-payment) with a payout-shaped body
@@ -28,20 +29,11 @@ serve(async (req) => {
     // (bank transfer / M-Pesa) happens manually outside the system;
     // a separate action should then call mark-payout-paid (or similar)
     // to record paid_at once that manual transfer is confirmed.
-    const authHeader = req.headers.get("Authorization") ?? "";
-    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authErr || !caller) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
-
-    const { data: roleRow } = await supabase.from("user_roles")
-      .select("role").eq("user_id", caller.id).maybeSingle();
-    if ((roleRow as any)?.role !== "webhost") {
-      return new Response(JSON.stringify({ error: "Forbidden: only platform admins may approve payout requests" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    const roleCheck = await checkRoleAccess(caller.id, ["webhost"]);
+    if (!roleCheck.allowed) {
+      return new Response(JSON.stringify({ error: roleCheck.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
 
     const allowed = await checkRateLimit(supabase, caller.id, "execute-payout", 20, { failClosed: true });

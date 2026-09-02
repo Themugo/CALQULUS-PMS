@@ -1,41 +1,28 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { createClient } from "supabase/supabase-js@2";
-import { requireEnv } from "../_shared/env.ts";
+import { authenticateUser } from "../_shared/auth.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
-
-const SUPABASE_URL = requireEnv("SUPABASE_URL");
-const SERVICE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+  const auth = await authenticateUser(req, { allowServiceRole: true });
+  if (!auth.success) return auth.response;
 
-  // ── Authentication ─────────────────────────────────────────────────
-  const authHeader = req.headers.get("Authorization") ?? "";
-  const isServiceCall = authHeader === `Bearer ${SERVICE_KEY}`;
+  const supabase = auth.supabaseAdmin;
+  const callerUserId = auth.user.id === "service-role" ? null : auth.user.id;
 
-  let callerUserId: string | null = null;
-
-  if (!isServiceCall) {
-    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authErr || !caller) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
-    const { data: roleRow } = await supabase.from("user_roles")
-      .select("role").eq("user_id", caller.id).maybeSingle();
-    if (!["webhost", "manager"].includes((roleRow as any)?.role)) {
-      return new Response(JSON.stringify({ error: "Forbidden: only webhosts and managers may apply penalties" }),
+  // ── Authorization ──────────────────────────────────────────────────
+  if (callerUserId) {
+    const roleCheck = await checkRoleAccess(callerUserId, ["webhost", "manager"]);
+    if (!roleCheck.allowed) {
+      return new Response(JSON.stringify({ error: roleCheck.error ?? "Forbidden" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
-    callerUserId = caller.id;
 
     const allowed = await checkRateLimit(
-      supabase, caller.id, "apply-penalties", 3,
+      supabase, callerUserId, "apply-penalties", 3,
       { failClosed: true },
     );
     if (!allowed) return rateLimitResponse(req);

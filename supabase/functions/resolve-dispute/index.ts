@@ -1,40 +1,34 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { createClient } from "supabase/supabase-js@2";
+import { authenticateUser } from "../_shared/auth.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
-import { requireEnv } from "../_shared/env.ts";
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
   try {
-    const supabase = createClient(
-      requireEnv("SUPABASE_URL"),
-      requireEnv("SUPABASE_SERVICE_ROLE_KEY")
-    );
+    const auth = await authenticateUser(req);
+    if (!auth.success) return auth.response;
 
-    // ── Caller authentication ─────────────────────────────────────────
+    const supabase = auth.supabaseAdmin;
+    const caller = auth.user;
+
+    // ── Caller authentication / authorization ─────────────────────────
     // Previously unauthenticated. This function can create a real
     // financial credit/debit adjustment (other_charges insert) from an
     // arbitrary adjustmentAmount — the most sensitive of the dispute
     // functions. Only the manager who owns the disputed tenant (or a
     // webhost admin) may resolve it.
-    const authHeader = req.headers.get("Authorization") ?? "";
-    const { data: { user: caller }, error: authErr } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authErr || !caller) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    const roleCheck = await checkRoleAccess(caller.id, ["manager", "submanager", "webhost"]);
+    if (!roleCheck.allowed) {
+      return new Response(JSON.stringify({ error: roleCheck.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
-
-    const { data: roleRow } = await supabase.from("user_roles")
+    const callerRoleRow = await supabase.from("user_roles")
       .select("role").eq("user_id", caller.id).maybeSingle();
-    const callerRole = (roleRow as any)?.role;
-    if (!["manager", "submanager", "webhost"].includes(callerRole)) {
-      return new Response(JSON.stringify({ error: "Forbidden: only managers or platform admins may resolve disputes" }),
-        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
+    const callerRole = (callerRoleRow.data as any)?.role;
 
     const allowed = await checkRateLimit(supabase, caller.id, "resolve-dispute", 30, { failClosed: true });
     if (!allowed) return rateLimitResponse(req);
