@@ -36,7 +36,7 @@ serve(async (req) => {
       const paidDate = paymentDate ?? new Date().toISOString().slice(0, 10);
 
       const { data: invoice } = await supabase.from("invoices")
-        .select(`id, invoice_number, amount, status, due_date, tenant_id, tenants(id, name, email, phone), leases(property, unit, unit_id, property_id)`)
+        .select(`id, invoice_number, amount, status, due_date, tenant_id, manager_id, tenants(id, name, email, phone), leases(property, unit, unit_id, property_id)`)
         .eq("id", invoiceId).single();
 
       if (!invoice) return new Response(JSON.stringify({ error: "Invoice not found" }),
@@ -45,16 +45,31 @@ serve(async (req) => {
       if (invoice.status === "paid") return new Response(JSON.stringify({ error: "Already paid" }),
         { status: 409, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
 
-      await supabase.from("invoices").update({ status: "paid", paid_date: paidDate }).eq("id", invoiceId);
+      const effectiveManagerId = managerId ?? invoice.manager_id;
+      if (!effectiveManagerId) return new Response(JSON.stringify({ error: "managerId required" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
 
-      await supabase.from("payment_transactions").insert({
-        invoice_id: invoiceId, tenant_id: invoice.tenant_id, manager_id: managerId ?? null,
-        unit_id: (invoice.leases as any)?.unit_id ?? null,
-        property_id: (invoice.leases as any)?.property_id ?? null,
-        amount: Number(amount), payment_type: "bank_transfer",
-        bank_reference: bankRef, status: "completed",
-        initiated_at: new Date().toISOString(), completed_at: new Date().toISOString(),
+      const { data: payment, error: paymentError } = await supabase.rpc("process_payment_atomic", {
+        p_tenant_id: invoice.tenant_id,
+        p_manager_id: effectiveManagerId,
+        p_amount: Number(amount),
+        p_payment_method: "bank_transfer",
+        p_payment_date: paidDate,
+        p_reference: bankRef,
+        p_invoice_id: invoiceId,
+        p_invoice_ids: null,
+        p_unit_id: (invoice.leases as any)?.unit_id ?? null,
+        p_property_id: (invoice.leases as any)?.property_id ?? null,
+        p_unit_number: (invoice.leases as any)?.unit ?? null,
+        p_phone: (invoice as any).tenants?.phone ?? null,
+        p_recorded_by: null,
+        p_notes: "Bank reconciliation",
+        p_existing_transaction_id: null,
       });
+
+      if (paymentError) throw new Error(`Atomic bank payment failed: ${paymentError.message}`);
+      const paymentResult = (Array.isArray(payment) ? payment[0] : payment) as any;
+      if (!paymentResult?.success) throw new Error("Atomic bank payment failed");
 
       // Outstanding balance
       const { data: unpaid } = await supabase.from("invoices").select("amount")
@@ -119,15 +134,17 @@ serve(async (req) => {
       }) as any;
 
       if (matchedInvoice) {
-        const paidDate = tx.transaction_date ?? new Date().toISOString().slice(0, 10);
-        await supabase.from("invoices").update({ status: "paid", paid_date: paidDate }).eq("id", matchedInvoice.id);
-        await supabase.from("payment_transactions").insert({
-          invoice_id: matchedInvoice.id, tenant_id: matchedInvoice.tenant_id,
-          manager_id: managerId, amount: Number(tx.amount),
-          payment_type: "bank_transfer", bank_reference: tx.reference,
-          status: "completed", completed_at: new Date().toISOString(),
+        const { data: payment, error: paymentError } = await supabase.rpc("reconcile_bank_transaction_atomic", {
+          p_bank_transaction_id: tx.id,
+          p_invoice_id: matchedInvoice.id,
+          p_manager_id: managerId,
+          p_recorded_by: null,
         });
-        await supabase.from("bank_transactions").update({ matched: true, matched_invoice_id: matchedInvoice.id }).eq("id", tx.id);
+        if (paymentError || !(payment as any)?.success) {
+          unmatched++;
+          log("Atomic bank reconciliation failed", { bankTransactionId: tx.id, error: paymentError?.message ?? "unknown" });
+          continue;
+        }
         fetch(`${SUPABASE_URL}/functions/v1/auto-send-receipt`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}` },

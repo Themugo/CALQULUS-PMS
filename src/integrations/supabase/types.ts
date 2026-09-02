@@ -6830,6 +6830,7 @@ export type Database = {
       get_tenants_with_properties: { Args: { p_manager_id?: string }; Returns: string }
       lock_invoices_for_update: { Args: { p_invoice_ids?: string[] }; Returns: string }
       process_invoice_payment: { Args: { p_invoice_id?: string; p_transaction_id?: string; p_amount?: number }; Returns: number }
+      reconcile_bank_transaction_atomic: { Args: { p_bank_transaction_id: string; p_invoice_id: string; p_manager_id: string; p_recorded_by?: string }; Returns: Json }
       process_payment_atomic: { Args: { p_tenant_id?: string; p_manager_id?: string; p_amount?: number; p_payment_method?: string; p_payment_date?: string; p_reference?: string; p_invoice_id?: string; p_invoice_ids?: string[]; p_unit_id?: string; p_property_id?: string; p_unit_number?: string; p_phone?: string; p_recorded_by?: string; p_notes?: string; p_existing_transaction_id?: string }; Returns: Json }
       refresh_manager_stats: { Args: { p_manager_id?: string }; Returns: string }
       reinstate_manager_on_payment: { Args: { p_invoice_id?: string }; Returns: string }
