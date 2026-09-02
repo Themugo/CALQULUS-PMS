@@ -311,17 +311,13 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
             ? `Water Bill - ${monthLabel} | ${unitName} | Prev: ${prevReading} → Curr: ${currReading} = ${consumption} m³ × KES ${ratePerUnit}/m³`
             : `Water Bill - ${monthLabel} | ${unitName} | Flat Rate`;
 
-          const { data: invoice, error: invError } = await supabase.from("invoices").insert({
-            tenant_id: tenant.id,
-            amount: waterAmount,
-            description,
-            due_date: dueDate.toISOString().split("T")[0],
-            invoice_number: "",
-            status: "pending",
-            manager_id: user.id,
-          }).select("id").single();
+          const { data: lease } = await supabase.from("leases").select("id, property_id, unit_id").eq("tenant_id", tenant.id).eq("manager_id", user.id).in("status", ["active", "current"]).order("start_date", { ascending: false }).limit(1).maybeSingle();
+          const { data: created, error: invError } = await supabase.functions.invoke("create-invoice", {
+            body: { tenantId: tenant.id, leaseId: lease?.id ?? null, amount: waterAmount, description, dueDate: dueDate.toISOString().split("T")[0], managerId: user.id, propertyId, unitId: selectedUnitId, invoiceType: "water", generationKey: `water:${reading.id}` },
+          });
 
-          if (!invError && invoice) {
+          if (!invError && created?.success) {
+            const invoice = { id: created.id };
             // Link reading to invoice
             await supabase.from('water_meter_readings')
               .update({ invoice_id: invoice.id, status: "invoiced" })

@@ -180,27 +180,18 @@ const Billing = () => {
       }
 
       const lease = leases.find((row) => row.id === leaseId);
-      const { data: inserted, error } = await supabase
-        .from("invoices")
-        .insert({
-          invoice_number: "",
-          lease_id: leaseId,
-          tenant_id: data.tenant_id,
-          amount: data.amount,
-          due_date: data.due_date,
-          description: data.description || "Invoice",
-          status: "pending",
-          manager_id: managerId ?? user.id,
-          property_id: lease?.property_id ?? null,
-          unit_id: lease?.unit_id ?? null,
-        })
-        .select("*, tenants(id,name,email,phone,photo_url), leases(property,unit)")
-        .single();
-
-      if (error) {
-        logError("billing.handleCreateInvoice", error);
-        toast({ title: "Error", description: toUserFacingError(error, "Failed to create invoice"), variant: "destructive" });
+      const { data: created, error } = await supabase.functions.invoke("create-invoice", {
+        body: { tenantId: data.tenant_id, leaseId, amount: data.amount, dueDate: data.due_date, description: data.description || "Invoice", managerId: managerId ?? user.id, propertyId: lease?.property_id ?? null, unitId: lease?.unit_id ?? null, generationKey: crypto.randomUUID() },
+      });
+      if (error || !created?.success) {
+        logError("billing.handleCreateInvoice", error ?? created?.error);
+        toast({ title: "Error", description: toUserFacingError(error ?? new Error(created?.error ?? "Failed to create invoice"), "Failed to create invoice"), variant: "destructive" });
         return;
+      }
+      const { data: inserted, error: fetchError } = await supabase.from("invoices").select("*, tenants(id,name,email,phone,photo_url), leases(property,unit)").eq("id", created.id).single();
+      if (fetchError || !inserted) {
+        logError("billing.handleCreateInvoice.fetch", fetchError);
+        throw fetchError ?? new Error("Created invoice could not be loaded");
       }
 
       toast({ title: "Invoice Created", description: "Invoice created and recorded." });

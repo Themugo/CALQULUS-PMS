@@ -6667,6 +6667,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_invoice_atomic_v2: {
+        Args: { p_generation_key: string; p_lease_id?: string | null; p_tenant_id: string; p_property_id?: string | null; p_unit_id?: string | null; p_manager_id: string; p_amount: number; p_description: string; p_due_date: string; p_invoice_type?: string; p_line_items?: Json }
+        Returns: Json
+      }
       create_invoice_atomic: {
         Args: {
           p_generation_key: string

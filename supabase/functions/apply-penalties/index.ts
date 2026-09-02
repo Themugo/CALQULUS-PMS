@@ -69,18 +69,13 @@ serve(async (req) => {
           .select("id").eq("invoice_number", penaltyInvNum).maybeSingle();
         if (existing.data) continue;
 
-        await supabase.from("invoices").insert({
-          manager_id:    invoice.manager_id,
-          tenant_id:     invoice.tenant_id,
-          property_id:   invoice.property_id ?? null,
-          invoice_number: penaltyInvNum,
-          amount:        penaltyAmount,
-          balance_due:   penaltyAmount,
-          description:   `Late payment penalty — ${invoice.invoice_number} (${daysOverdue} days overdue)`,
-          due_date:      today,
-          status:        "pending",
-          invoice_type:  "penalty",
+        const { error: penaltyError } = await supabase.rpc("create_invoice_atomic_v2", {
+          p_generation_key: `penalty:${invoice.id}:${today}`, p_lease_id: null, p_tenant_id: invoice.tenant_id,
+          p_property_id: invoice.property_id ?? null, p_unit_id: invoice.unit_id ?? null, p_manager_id: invoice.manager_id,
+          p_amount: penaltyAmount, p_description: `Late payment penalty — ${invoice.invoice_number} (${daysOverdue} days overdue)`,
+          p_due_date: today, p_invoice_type: "penalty", p_line_items: [],
         });
+        if (penaltyError) throw penaltyError;
         penaltiesApplied++;
       }
     }

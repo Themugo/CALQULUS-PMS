@@ -715,26 +715,11 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
             leases={leases}
             tenants={tenants}
             onSubmit={async (data) => {
-              const { error } = await supabase.from("invoices").insert({
-                // invoice_number is intentionally omitted — the DB trigger
-                // trg_set_invoice_number calls generate_invoice_number(manager_id)
-                // and produces INV-{YYYY}-{000001} format, collision-free per manager.
-                invoice_number: "",
-                tenant_id:   data.tenant_id,
-                lease_id:    data.lease_id,
-                amount:      data.amount,
-                description: data.description,
-                due_date:    data.due_date,
-                status:      "pending" as InvoiceStatus,
-                manager_id:  user?.id,
-                property_id: data.lease_id
-                  ? leases.find((l) => l.id === data.lease_id)?.property_id ?? propertyId
-                  : propertyId,
-                unit_id: data.lease_id
-                  ? leases.find((l) => l.id === data.lease_id)?.unit_id ?? null
-                  : null,
+              const lease = data.lease_id ? leases.find((l) => l.id === data.lease_id) : undefined;
+              const { data: created, error } = await supabase.functions.invoke("create-invoice", {
+                body: { tenantId: data.tenant_id, leaseId: data.lease_id, amount: data.amount, description: data.description, dueDate: data.due_date, managerId: user?.id, propertyId: lease?.property_id ?? propertyId, unitId: lease?.unit_id ?? null, generationKey: crypto.randomUUID() },
               });
-              if (error) throw error;
+              if (error || !created?.success) throw error ?? new Error(created?.error ?? "Failed to create invoice");
               trackTimeToFirst("invoice", { managerId: user?.id, signupAt: user?.created_at });
               invalidateManagerActivation(queryClient);
               setIsDialogOpen(false);
