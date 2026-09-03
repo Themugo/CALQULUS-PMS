@@ -6765,6 +6765,13 @@ export type Database = {
       save_maintenance_financials_atomic: { Args: { p_request_id: string; p_quoted_amount?: number | null; p_agreed_amount?: number | null; p_provider_notes?: string | null }; Returns: Json }
       record_maintenance_expenditure_atomic: { Args: { p_request_id: string; p_amount?: number | null; p_month?: string | null; p_description?: string | null }; Returns: Json }
       create_provider_review_atomic: { Args: { p_provider_id: string; p_rating: number; p_title?: string | null; p_comment?: string | null }; Returns: Json }
+      save_unit_photo_atomic: { Args: { p_unit_id: string; p_photo_url: string; p_photo_type?: string; p_caption?: string | null; p_display_order?: number | null }; Returns: Json }
+      delete_unit_photo_atomic: { Args: { p_photo_id: string }; Returns: Json }
+      set_unit_cover_photo_atomic: { Args: { p_photo_id: string }; Returns: Json }
+      save_landlord_bank_details_atomic: { Args: { p_mpesa_number?: string | null; p_mpesa_name?: string | null; p_bank_name?: string | null; p_bank_account_number?: string | null; p_bank_account_name?: string | null; p_bank_branch?: string | null; p_bank_code?: string | null; p_preferred_method?: string; p_minimum_payout?: number; p_auto_request?: boolean; p_auto_request_day?: number; p_kra_pin?: string | null; p_vat_registered?: boolean; p_vat_number?: string | null }; Returns: Json }
+      save_landlord_notification_preferences: { Args: { p_preferences: Json }; Returns: Json }
+      send_landlord_message_atomic: { Args: { p_property_id: string; p_recipient_id: string; p_body: string; p_subject?: string | null; p_parent_id?: string | null }; Returns: Json }
+      mark_landlord_messages_read_atomic: { Args: { p_message_ids: string[] }; Returns: Json }
       create_landlord_invoice_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_invoice_type?: string; p_description?: string | null; p_due_date?: string | null; p_manager_user_id?: string | null; p_property_id?: string | null; p_period_start?: string | null; p_period_end?: string | null }; Returns: Json }
       transition_landlord_invoice_atomic: { Args: { p_invoice_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null }; Returns: Json }
       record_orphan_payment_atomic: { Args: { p_user_id: string; p_record_id?: string | null; p_payment_date: string; p_amount: number; p_payment_method?: string | null; p_reference?: string | null; p_description?: string | null }; Returns: Json }

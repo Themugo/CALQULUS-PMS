@@ -76,9 +76,7 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
     if (!selectedThread) return;
     const unread = threadMessages(selectedThread).filter((m) => m.recipient_id === user?.id && !m.is_read);
     if (unread.length > 0) {
-      supabase.from('landlord_messages')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .in('id', unread.map((m) => m.id))
+      supabase.rpc('mark_landlord_messages_read_atomic', { p_message_ids: unread.map((m) => m.id) })
         .then(() => queryClient.invalidateQueries({ queryKey: ['landlord-messages'] }));
     }
   }, [selectedThread, threadMessages, user?.id, queryClient]);
@@ -94,14 +92,11 @@ const LandlordMessages: React.FC<Props> = ({ properties }) => {
       const managerId = prop?.manager_id ?? managers[0]?.id;
       if (!managerId) throw new Error('No manager found for this property');
 
-      const { error } = await supabase.from('landlord_messages').insert({
-        property_id:  form.property_id || null,
-        sender_id:    user!.id,
-        sender_role:  'landlord',
-        recipient_id: managerId,
-        subject:      isNew ? (form.subject || 'Message from landlord') : null,
-        body:         isNew ? form.body : replyText,
-        parent_id:    parentId ?? null,
+      const { error } = await supabase.rpc('send_landlord_message_atomic', {
+        p_property_id: form.property_id, p_recipient_id: managerId,
+        p_body: isNew ? form.body : replyText,
+        p_subject: isNew ? (form.subject || 'Message from landlord') : null,
+        p_parent_id: parentId ?? null,
       });
       if (error) throw error;
     },

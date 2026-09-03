@@ -69,58 +69,31 @@ export default function UnitPhotoGallery({ unitId, unitLabel, propertyId }: Unit
   const addPhoto = useMutation({
     mutationFn: async () => {
       if (!addingUrl) throw new Error('Upload or paste an image first');
-      const isFirstPhoto = !photos || photos.length === 0;
-      const { error } = await (supabase.from('unit_photos') as any).insert({
-        unit_id: unitId,
-        property_id: propertyId || null,
-        manager_id: user?.id || null,
-        photo_url: addingUrl,
-        photo_type: addingType,
-        display_order: photos?.length ?? 0,
-        is_cover: isFirstPhoto,
+      const { error } = await supabase.rpc('save_unit_photo_atomic', {
+        p_unit_id: unitId, p_photo_url: addingUrl, p_photo_type: addingType,
+        p_caption: null, p_display_order: photos?.length ?? null,
       });
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      toast({ title: 'Photo added' });
-      setAddingUrl('');
-      setAddingType('general');
-      setIsAdding(false);
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast({ title: 'Photo added' }); setAddingUrl(''); setAddingType('general'); setIsAdding(false); },
     onError: (err: Error) => errorToast('Failed to add photo', err),
   });
 
   const removePhoto = useMutation({
     mutationFn: async (photo: UnitPhoto) => {
-      const { error } = await (supabase.from('unit_photos') as any).delete().eq('id', photo.id);
+      const { error } = await supabase.rpc('delete_unit_photo_atomic', { p_photo_id: photo.id });
       if (error) throw error;
-      // If we removed the cover photo, promote the next one
-      if (photo.is_cover) {
-        const remaining = (photos || []).filter((p) => p.id !== photo.id);
-        if (remaining.length > 0) {
-          await (supabase.from('unit_photos') as any).update({ is_cover: true }).eq('id', remaining[0].id);
-        }
-      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      toast({ title: 'Photo removed' });
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast({ title: 'Photo removed' }); },
     onError: (err: Error) => errorToast('Failed to remove photo', err),
   });
 
   const setCover = useMutation({
     mutationFn: async (photo: UnitPhoto) => {
-      // Clear existing cover, then set the new one
-      await (supabase.from('unit_photos') as any).update({ is_cover: false }).eq('unit_id', unitId).eq('is_cover', true);
-      const { error } = await (supabase.from('unit_photos') as any).update({ is_cover: true }).eq('id', photo.id);
+      const { error } = await supabase.rpc('set_unit_cover_photo_atomic', { p_photo_id: photo.id });
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      toast({ title: 'Cover photo updated' });
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast({ title: 'Cover photo updated' }); },
     onError: (err: Error) => errorToast('Failed to update cover photo', err),
   });
 

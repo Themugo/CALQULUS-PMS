@@ -82,25 +82,15 @@ const LandlordBankDetails: React.FC = () => {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('landlord_bank_details')
-        .upsert({
-          landlord_user_id:    user!.id,
-          mpesa_number:        form.mpesa_number || null,
-          mpesa_name:          form.mpesa_name || null,
-          bank_name:           form.bank_name || null,
-          bank_account_number: form.bank_account_number || null,
-          bank_account_name:   form.bank_account_name || null,
-          bank_branch:         form.bank_branch || null,
-          bank_code:           form.bank_code || null,
-          preferred_method:    form.preferred_method,
-          minimum_payout:      form.minimum_payout ? Number(form.minimum_payout) : 0,
-          auto_request:        form.auto_request,
-          auto_request_day:    Number(form.auto_request_day),
-          kra_pin:             form.kra_pin || null,
-          vat_registered:      form.vat_registered,
-          vat_number:          form.vat_number || null,
-        }, { onConflict: 'landlord_user_id' });
+      const { error } = await supabase.rpc('save_landlord_bank_details_atomic', {
+        p_mpesa_number: form.mpesa_number || null, p_mpesa_name: form.mpesa_name || null,
+        p_bank_name: form.bank_name || null, p_bank_account_number: form.bank_account_number || null,
+        p_bank_account_name: form.bank_account_name || null, p_bank_branch: form.bank_branch || null,
+        p_bank_code: form.bank_code || null, p_preferred_method: form.preferred_method,
+        p_minimum_payout: form.minimum_payout ? Number(form.minimum_payout) : 0,
+        p_auto_request: form.auto_request, p_auto_request_day: Number(form.auto_request_day),
+        p_kra_pin: form.kra_pin || null, p_vat_registered: form.vat_registered, p_vat_number: form.vat_number || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {

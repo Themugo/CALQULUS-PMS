@@ -63,9 +63,7 @@ const LandlordNotificationPreferences: React.FC = () => {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('landlord_notification_preferences')
-        .upsert({ landlord_user_id: user!.id, ...prefs }, { onConflict: 'landlord_user_id' });
+      const { error } = await supabase.rpc('save_landlord_notification_preferences_atomic', { p_preferences: prefs });
       if (error) throw error;
     },
     onSuccess: () => {
