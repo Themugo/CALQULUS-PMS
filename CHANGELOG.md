@@ -207,3 +207,8 @@ These were identified during the audit but not yet addressed:
 - Added Ed25519 independent attestation signature verification.
 - Added fail-closed final production release decision engine with deterministic decision hash.
 - Added release attestation and production decision runbooks/policy.
+
+## Public landing page redesign
+- Reworked the public homepage into a shorter product-first landing experience: focused hero, real dashboard preview, three capability pillars, and a concise conversion section.
+- Reduced footer density and removed unsupported marketing claims/metrics.
+- Preserved existing public routes and authentication CTAs.

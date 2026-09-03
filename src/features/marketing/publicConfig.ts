@@ -34,8 +34,8 @@ export const PUBLIC_NAV = [
 /** Homepage hero copy — single source of truth. Approved message hierarchy. */
 export const HERO_CONTENT = {
   eyebrow: "Property operations, connected",
-  titleLines: ["Run your properties.", "Without the chaos."],
-  copy: "CALQULUS brings properties, tenants, leases, billing, payments and maintenance into one focused operational system.",
+  titleLines: ["Property management,", "without the clutter."],
+  copy: "CALQULUS brings properties, tenants, leases, billing, payments and maintenance into one focused workspace.",
   primaryCta: "Start managing",
   secondaryCta: "See how it works",
 } as const;
