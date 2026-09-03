@@ -205,6 +205,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
           size="icon"
           className="h-8 w-8"
           title="Transfer Tenant"
+          aria-label="Transfer tenant"
         >
           <ArrowRightLeft className="h-4 w-4" />
         </Button>

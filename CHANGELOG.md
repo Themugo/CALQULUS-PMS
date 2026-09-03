@@ -260,3 +260,11 @@ These were identified during the audit but not yet addressed:
 - Preserved active navigation semantics, keyboard accessibility, mobile bottom navigation, and role-specific navigation data.
 - Reduced shell transition overhead in the manager sidebar without changing navigation or permission logic.
 - Added structural regression coverage for responsive navigation behavior.
+
+
+## Phases 162–163 — Accessibility & Keyboard Interaction UX
+- Strengthened keyboard-visible focus treatment for dialog and sheet surfaces.
+- Added explicit accessible naming to previously icon-only transfer/password actions.
+- Added a touch-target utility for compact controls on coarse-pointer devices without changing desktop density.
+- Added structural regression coverage for the accessibility interaction layer.
+- Preserved existing business logic, data fetching, permissions, and mutation flows.

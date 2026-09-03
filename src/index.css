@@ -1055,3 +1055,8 @@
   font-weight: 650;
   letter-spacing: -0.025em;
 }
+
+/* Accessible touch target: keeps compact visual controls usable on touch devices. */
+@media (pointer: coarse) {
+  .touch-target { min-width: 44px; min-height: 44px; }
+}
