@@ -180,13 +180,13 @@ export function PortalDeskShell({
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="hidden min-w-0 items-center gap-2 text-sm text-muted-foreground sm:flex">
-              <span className="font-medium text-foreground">{portalLabel}</span>
+            <div className="min-w-0 items-center gap-2 text-sm text-muted-foreground flex">
+              <span className="hidden xs:inline font-medium text-foreground">{portalLabel}</span>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden />
-              <span className="truncate">{title}</span>
+              <span className="truncate max-w-[42vw] sm:max-w-none">{title}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">{headerRight}{settingsHref ? <Link to={settingsHref} aria-label={`${portalLabel} settings`} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><Settings className="h-4 w-4" /></Link> : null}</div>
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">{headerRight}{settingsHref ? <Link to={settingsHref} aria-label={`${portalLabel} settings`} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><Settings className="h-4 w-4" /></Link> : null}</div>
         </header>
 
         {!hideHeader ? <PageHeader title={title} description={description} actions={actions} className="border-0 px-4 py-4 sm:px-6 lg:px-8" /> : null}

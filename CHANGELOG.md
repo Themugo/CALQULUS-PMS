@@ -249,3 +249,9 @@ These were identified during the audit but not yet addressed:
 - Added a focused records hierarchy and live contract/document summary to the contracts workspace.
 - Preserved existing queries, mutations, filters, signature flows, uploads, and navigation.
 - Used live contract/document records only; no fabricated metrics or duplicate fetching introduced.
+
+## Phases 156–157 — Navigation + Responsive Application Shell
+- Refined the shared portal shell for compact, responsive headers and mobile-safe content spacing.
+- Preserved active navigation semantics, keyboard accessibility, mobile bottom navigation, and role-specific navigation data.
+- Reduced shell transition overhead in the manager sidebar without changing navigation or permission logic.
+- Added structural regression coverage for responsive navigation behavior.

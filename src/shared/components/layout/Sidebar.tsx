@@ -252,7 +252,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Sidebar Container */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen flex flex-col bg-sidebar-background border-r border-sidebar-border text-sidebar-foreground transition-all duration-300 ease-in-out select-none",
+          "fixed left-0 top-0 z-50 h-screen flex flex-col bg-sidebar-background border-r border-sidebar-border text-sidebar-foreground transition-[width,transform] duration-200 ease-out select-none",
           "lg:translate-x-0",
           collapsed ? "w-16" : "w-64",
           isOpen ? "translate-x-0" : "-translate-x-full"
