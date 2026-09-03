@@ -157,9 +157,10 @@ const TierManagement: React.FC = () => {
       for (const [group, vals] of Object.entries(limits)) {
         const max  = parseInt(vals.max) || 0;
         const mult = parseFloat(vals.mult) || 1.0;
-        await (supabase.from('property_tier_limits')
-          .upsert({ tier_key: activeTier, category_group: group, max_properties: max, price_multiplier: mult },
-            { onConflict: 'tier_key,category_group' }));
+        const { error } = await supabase.rpc('save_property_tier_limit_atomic', {
+          p_tier_key: activeTier, p_category_group: group, p_max_properties: max, p_price_multiplier: mult,
+        });
+        if (error) throw error;
       }
     },
     onSuccess: () => {
@@ -173,9 +174,11 @@ const TierManagement: React.FC = () => {
   // Save category billing multiplier
   const saveCategoryMultiplier = useMutation({
     mutationFn: async ({ key, multiplier }: { key: string; multiplier: number }) => {
-      await (supabase.from('property_categories')
-        .update({ billing_multiplier: multiplier })
-        .eq('key', key));
+      const current = categoryData.find(c => c.key === key);
+      const { error } = await supabase.rpc('update_property_category_billing_atomic', {
+        p_key: key, p_billing_multiplier: multiplier, p_requires_tier: current?.requires_tier ?? 'lite',
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Category rate updated' });
@@ -186,8 +189,11 @@ const TierManagement: React.FC = () => {
   // Toggle category requires_tier
   const setRequiresTier = useMutation({
     mutationFn: async ({ key, tier }: { key: string; tier: string }) => {
-      await (supabase.from('property_categories')
-        .update({ requires_tier: tier }).eq('key', key));
+      const current = categoryData.find(c => c.key === key);
+      const { error } = await supabase.rpc('update_property_category_billing_atomic', {
+        p_key: key, p_billing_multiplier: current?.billing_multiplier ?? 1, p_requires_tier: tier,
+      });
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['property-categories-webhost'] }),
   });
@@ -226,15 +232,11 @@ const TierManagement: React.FC = () => {
       const maxP = parseInt(editForm.max_properties) || 0;
       const maxU = parseInt(editForm.max_units) || 0;
       const featuresArr = editForm.features.split('\n').map(f => f.trim()).filter(Boolean);
-      const { error } = await supabase.from('subscription_tiers').update({
-        name,
-        description: editForm.description.trim() || null,
-        price_per_property: price,
-        max_properties: maxP,
-        max_units: maxU,
-        features: featuresArr,
-        is_active: editForm.is_active,
-      }).eq('id', editDialog.id);
+      const { error } = await supabase.rpc('save_subscription_tier_atomic', {
+        p_tier_id: editDialog.id, p_name: name, p_description: editForm.description.trim() || null,
+        p_price_per_property: price, p_price_flat: editDialog.price_flat ?? null, p_max_properties: maxP, p_max_units: maxU,
+        p_features: featuresArr, p_is_active: editForm.is_active,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -249,8 +251,11 @@ const TierManagement: React.FC = () => {
   // deactivating a tier that has active subscribers (REAL subscriber-impact check).
   const toggleTierActive = useMutation({
     mutationFn: async ({ tier, activate }: { tier: TierRow; activate: boolean }) => {
-      const { error } = await supabase.from('subscription_tiers')
-        .update({ is_active: activate }).eq('id', tier.id);
+      const { error } = await supabase.rpc('save_subscription_tier_atomic', {
+        p_tier_id: tier.id, p_name: tier.name, p_description: tier.description ?? null,
+        p_price_per_property: tier.price_per_property ?? 0, p_price_flat: tier.price_flat ?? null,
+        p_max_properties: tier.max_properties ?? 0, p_max_units: tier.max_units ?? 0, p_features: tier.features ?? [], p_is_active: activate,
+      });
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
@@ -265,7 +270,7 @@ const TierManagement: React.FC = () => {
   // subscription assignments). The backend table supports delete; we add a safety gate.
   const deleteTier = useMutation({
     mutationFn: async (tier: TierRow) => {
-      const { error } = await supabase.from('subscription_tiers').delete().eq('id', tier.id);
+      throw new Error('Tier deletion is disabled; deactivate the tier instead to preserve subscription history.');
       if (error) throw error;
     },
     onSuccess: () => {

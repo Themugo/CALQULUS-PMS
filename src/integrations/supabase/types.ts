@@ -6763,6 +6763,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      provision_platform_admin_atomic: { Args: { p_user_id: string; p_email: string; p_display_name: string; p_admin_type: string }; Returns: string }
+      transition_platform_admin_atomic: { Args: { p_admin_id: string; p_suspend: boolean; p_reason?: string | null }; Returns: undefined }
+      remove_platform_admin_atomic: { Args: { p_admin_id: string }; Returns: undefined }
+      save_subscription_tier_atomic: { Args: { p_tier_id: string; p_name: string; p_description?: string | null; p_price_per_property: number; p_price_flat?: number | null; p_max_properties: number; p_max_units: number; p_features?: Json; p_is_active: boolean }; Returns: string }
+      save_property_tier_limit_atomic: { Args: { p_tier_key: string; p_category_group: string; p_max_properties: number; p_price_multiplier: number }; Returns: string }
+      update_property_category_billing_atomic: { Args: { p_key: string; p_billing_multiplier: number; p_requires_tier: string }; Returns: undefined }
+
       save_insurance_policy_atomic: { Args: { p_policy_id?: string | null; p_provider_id?: string | null; p_property_id?: string | null; p_unit?: string | null; p_policy_type?: string | null; p_coverage_type?: string | null; p_coverage_amount?: number | null; p_premium?: number | null; p_deductible?: number | null; p_status?: string | null; p_start_date?: string | null; p_end_date?: string | null; p_renewal_date?: string | null }; Returns: Json }
       transition_insurance_claim_atomic: { Args: { p_claim_id: string; p_target_status: string; p_approved_amount?: number | null }; Returns: Json }
       save_work_order_atomic: { Args: { p_work_order_id?: string | null; p_contractor_id?: string | null; p_property_id?: string | null; p_unit?: string | null; p_category?: string | null; p_description?: string | null; p_priority?: string | null; p_budget?: number | null; p_estimated_cost?: number | null; p_scheduled_date?: string | null; p_status?: string | null }; Returns: Json }

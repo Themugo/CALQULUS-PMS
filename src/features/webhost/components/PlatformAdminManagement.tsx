@@ -87,50 +87,13 @@ const PlatformAdminManagement = () => {
       });
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user');
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: authData.user.id, role: 'webhost', approval_status: 'approved' });
-      if (roleError) throw roleError;
-      const { error: permError } = await supabase
-        .from('admin_permissions')
-        .insert({
-          user_id: authData.user.id,
-          admin_level: newAdmin.adminType === 'owner' ? 'super_admin' : newAdmin.adminType === 'business' ? 'super_admin' : 'admin',
-          can_manage_managers: true,
-          can_manage_billing: newAdmin.adminType !== 'admin',
-          can_manage_properties: true,
-          can_create_webhosts: newAdmin.adminType === 'owner',
-          can_manage_system_landlords: true,
-          can_view_activity_logs: true,
-          can_manage_agencies: true,
-          can_manage_organizations: newAdmin.adminType !== 'admin',
-          can_read_unattached_tenants: true,
-          can_resolve_unattached_tenants: newAdmin.adminType !== 'admin',
-          created_by: currentUser?.id,
-        });
-      if (permError) throw permError;
-      const { error } = await supabase
-        .from('platform_admins')
-        .insert({
-          user_id: authData.user.id,
-          admin_type: newAdmin.adminType,
-          display_name: newAdmin.displayName,
-          email: newAdmin.email,
-          can_create_admins: newAdmin.adminType === 'owner' || newAdmin.adminType === 'business',
-          can_manage_managers: true,
-          can_manage_agencies: true,
-          can_manage_organizations: newAdmin.adminType !== 'admin',
-          can_manage_billing: newAdmin.adminType !== 'admin',
-          can_manage_properties: true,
-          can_manage_landlords: true,
-          can_view_activity_logs: true,
-          can_manage_platform_settings: newAdmin.adminType === 'owner' || newAdmin.adminType === 'business',
-          can_read_unattached_tenants: true,
-          can_resolve_unattached_tenants: newAdmin.adminType !== 'admin',
-          is_immutable: newAdmin.adminType === 'owner',
-          created_by: currentUser?.id,
-        });
-      if (error) throw error;
+      const { error: provisionError } = await supabase.rpc('provision_platform_admin_atomic', {
+        p_user_id: authData.user.id,
+        p_email: newAdmin.email,
+        p_display_name: newAdmin.displayName,
+        p_admin_type: newAdmin.adminType,
+      });
+      if (provisionError) throw provisionError;
       logActivity({
         action: 'Created Platform Admin',
         entityType: 'platform_admins',
@@ -153,21 +116,10 @@ const PlatformAdminManagement = () => {
     mutationFn: async ({ admin, reason }: { admin: PlatformAdminInfo; reason: string }) => {
       if (!canSuspend(admin)) throw new Error('You do not have permission to suspend this admin');
       const newSuspended = !admin.suspended;
-      const { error } = await supabase
-        .from('platform_admins')
-        .update({
-          suspended: newSuspended,
-          suspended_at: newSuspended ? new Date().toISOString() : null,
-          suspended_by: newSuspended ? currentUser?.id : null,
-          suspension_reason: newSuspended ? reason : null,
-          updated_by: currentUser?.id,
-        })
-        .eq('id', admin.id);
+      const { error } = await supabase.rpc('transition_platform_admin_atomic', {
+        p_admin_id: admin.id, p_suspend: newSuspended, p_reason: reason || null,
+      });
       if (error) throw error;
-      // Also suspend/unsuspend admin_permissions for admin type
-      if (admin.admin_type === 'admin') {
-        await supabase.from('admin_permissions').update({ admin_level: newSuspended ? 'limited_admin' : 'admin' }).eq('user_id', admin.user_id);
-      }
       logActivity({
         action: newSuspended ? 'Suspended Platform Admin' : 'Unsuspended Platform Admin',
         entityType: 'platform_admins',
@@ -189,10 +141,8 @@ const PlatformAdminManagement = () => {
   const deleteAdmin = useMutation({
     mutationFn: async (admin: PlatformAdminInfo) => {
       if (admin.is_immutable) throw new Error('Cannot delete immutable admin');
-      // Remove platform_admin record, admin_permissions, and user_role
-      await supabase.from('platform_admins').delete().eq('id', admin.id);
-      await supabase.from('admin_permissions').delete().eq('user_id', admin.user_id);
-      await supabase.from('user_roles').delete().eq('user_id', admin.user_id).eq('role', 'webhost');
+      const { error } = await supabase.rpc('remove_platform_admin_atomic', { p_admin_id: admin.id });
+      if (error) throw error;
       logActivity({
         action: 'Deleted Platform Admin',
         entityType: 'platform_admins',
