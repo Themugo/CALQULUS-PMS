@@ -209,17 +209,11 @@ const OrphanTenantHome: React.FC = () => {
       const {
         data: { publicUrl },
       } = supabase.storage.from('maintenance-photos').getPublicUrl(path);
-      await supabase.from('move_condition_photos').insert({
-        user_id: user!.id,
-        tenant_id: null,
-        phase: photoForm.phase,
-        room: photoForm.room,
-        photo_url: publicUrl,
-        description: photoForm.description || null,
-        condition_rating: photoForm.condition_rating,
-        location_note: photoForm.location_note || null,
-        taken_at: new Date().toISOString(),
+      const { error } = await supabase.rpc('add_tenant_condition_photo_atomic', {
+        p_phase: photoForm.phase, p_room: photoForm.room, p_photo_url: publicUrl,
+        p_description: photoForm.description || null, p_condition_rating: photoForm.condition_rating, p_location_note: photoForm.location_note || null,
       });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Photo logged', description: 'Timestamped and saved to your record.' });

@@ -98,18 +98,9 @@ export function useTenantContracts() {
 
     setIsSigning(true);
     try {
-      // Determine new status - if manager already signed, mark as signed/active
-      const newStatus = selectedContract.manager_signature ? "signed" : "pending_signature";
       const signedAt = new Date().toISOString();
 
-      const { error } = await supabase
-        .from("contracts")
-        .update({
-          tenant_signature: signature,
-          tenant_signed_at: signedAt,
-          status: newStatus,
-        })
-        .eq("id", selectedContract.id);
+      const { error } = await supabase.rpc('sign_tenant_contract_atomic', { p_contract_id: selectedContract.id, p_signature: signature });
 
       if (error) throw error;
 
@@ -228,10 +219,7 @@ export function useTenantContracts() {
       // Store the file path - signed URLs will be generated when viewing
       const storagePath = `signed-contracts/${fileName}`;
 
-      const { error: updateError } = await supabase
-        .from("contracts")
-        .update({ uploaded_contract_url: storagePath })
-        .eq("id", contract.id);
+      const { error: updateError } = await supabase.rpc('attach_tenant_contract_document_atomic', { p_contract_id: contract.id, p_document_url: storagePath });
 
       if (updateError) throw updateError;
 

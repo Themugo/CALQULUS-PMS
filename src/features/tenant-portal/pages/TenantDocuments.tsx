@@ -216,15 +216,11 @@ const TenantDocuments: React.FC = () => {
   // Submit reference request
   const submitRefRequest = useMutation({
     mutationFn: async () => {
-      const { data: tenant } = await supabase.from('tenants').select('manager_id').eq('id', tenantId!).single();
-      const { error } = await supabase.from('tenant_reference_requests').insert({
-        tenant_id: tenantId,
-        tenant_user_id: user!.id,
-        manager_id: (tenant as { manager_id?: string })?.manager_id,
-        issued_to: refForm.issued_to || null,
-        issued_to_email: refForm.issued_to_email || null,
-        purpose: refForm.purpose,
-        message: refForm.message || null,
+      const { error } = await supabase.rpc('create_tenant_reference_request_atomic', {
+        p_issued_to: refForm.issued_to,
+        p_issued_to_email: refForm.issued_to_email,
+        p_purpose: refForm.purpose,
+        p_message: refForm.message,
       });
       if (error) throw error;
     },
@@ -241,28 +237,14 @@ const TenantDocuments: React.FC = () => {
   const submitRenewal = useMutation({
     mutationFn: async () => {
       if (!renewalOpen) return;
-      const { data: tenant } = await supabase.from('tenants').select('manager_id').eq('id', tenantId!).single();
-      const { error } = await supabase.from('tenant_lease_renewal_responses').insert({
-        tenant_id: tenantId,
-        tenant_user_id: user!.id,
-        manager_id: (tenant as { manager_id?: string })?.manager_id,
-        notice_id: renewalOpen.id,
-        decision: renewalForm.decision,
-        counter_rent: renewalForm.counter_rent ? Number(renewalForm.counter_rent) : null,
-        counter_term: renewalForm.counter_term ? Number(renewalForm.counter_term) : null,
-        message: renewalForm.message || null,
-        signed_at: new Date().toISOString(),
+      const { error } = await supabase.rpc('submit_tenant_renewal_response_atomic', {
+        p_notice_id: renewalOpen.id,
+        p_decision: renewalForm.decision,
+        p_counter_rent: renewalForm.counter_rent ? Number(renewalForm.counter_rent) : null,
+        p_counter_term: renewalForm.counter_term ? Number(renewalForm.counter_term) : null,
+        p_message: renewalForm.message || null,
       });
       if (error) throw error;
-      // Mark notice as acknowledged
-      await supabase
-        .from('tenant_notices')
-        .update({
-          tenant_acknowledged: true,
-          tenant_ack_at: new Date().toISOString(),
-          tenant_response: renewalForm.decision,
-        })
-        .eq('id', renewalOpen.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-renewal-notices'] });

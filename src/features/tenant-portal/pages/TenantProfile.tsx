@@ -153,19 +153,15 @@ const TenantProfile = () => {
   const saveNotificationPreferences = async (prefs: NotificationPreferences) => {
     setNotifications(prefs);
     try {
-      await supabase.from('tenant_notification_preferences').upsert(
-        {
-          tenant_user_id: user!.id,
-          tenant_id: userRole?.tenant_id ?? null,
+      const { error } = await supabase.rpc('save_tenant_notification_preferences_atomic', {
+        p_payload: {
           email_enabled: prefs.emailNotifications,
           payment_reminders: prefs.paymentReminders,
           lease_alerts: prefs.leaseAlerts,
           maintenance_updates: prefs.maintenanceUpdates,
-          manager_messages: true,
-          announcements: true,
         },
-        { onConflict: 'tenant_user_id' },
-      );
+      });
+      if (error) throw error;
       toast({
         title: 'Preferences saved',
         description: 'Your notification preferences have been updated',
@@ -200,7 +196,7 @@ const TenantProfile = () => {
         updateData.email = formData.email.trim();
       }
 
-      const { error } = await supabase.from('tenants').update(updateData).eq('id', userRole.tenant_id);
+      const { error } = await supabase.rpc('update_tenant_profile_atomic', { p_tenant_id: userRole.tenant_id, p_payload: updateData });
 
       if (error) {
         logError('TenantProfile.updateProfile', error);

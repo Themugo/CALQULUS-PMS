@@ -1,3 +1,11 @@
+## 2026-09-03
+
+### Phase 47–48 — Tenant Portal & Lease/Contract Mutation Convergence
+- Added 15 ownership-checked tenant portal and tenant contract RPCs.
+- Revoked direct authenticated writes on protected tenant portal mutation tables.
+- Converged tenant profile, references, renewals, vacation notices, pets/vehicles, notices/messages, condition photos, notifications, and contract signing/document attachment.
+- Added phase audit: `docs/audits/PHASE_47_48_TENANT_PORTAL_LEASE_CONVERGENCE.md`.
+
 # CALQULUS PMS — Changelog & Diff Summary
 
 **Comparing:** original uploaded codebase (`CALQULUS-PMS-main.zip`, branded "CALQULUS RMS") → current working tree

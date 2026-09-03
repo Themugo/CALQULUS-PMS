@@ -204,20 +204,12 @@ const TenantVacationNotices = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('vacation_notices').insert({
-        tenant_id: tenantInfo.id,
-        property_id: tenantInfo.property_id,
-        tenant_name: tenantInfo.name,
-        tenant_email: tenantInfo.email,
-        property_name: tenantInfo.property || 'Unknown Property',
-        unit_number: tenantInfo.unit,
-        intended_move_out_date: formData.intendedMoveOutDate,
-        reason: formData.reason.trim() || null,
-        forwarding_address: formData.forwardingAddress.trim() || null,
-        phone_number: formData.phoneNumber.trim() || null,
-        manager_id: tenantInfo.manager_id,
+      const { error } = await supabase.rpc('create_vacation_notice_atomic', {
+        p_move_out_date: formData.intendedMoveOutDate,
+        p_reason: formData.reason.trim() || null,
+        p_forwarding_address: formData.forwardingAddress.trim() || null,
+        p_phone: formData.phoneNumber.trim() || null,
       });
-
       if (error) throw error;
 
       toast({
@@ -275,14 +267,7 @@ const TenantVacationNotices = () => {
     setIsSigning(true);
     try {
       const signedAt = new Date().toISOString();
-      const { error } = await supabase
-        .from('vacation_notices')
-        .update({
-          tenant_signature: signature,
-          tenant_signed_at: signedAt,
-        })
-        .eq('id', selectedNotice.id);
-
+      const { error } = await supabase.rpc('sign_vacation_notice_atomic', { p_notice_id: selectedNotice.id, p_signature: signature });
       if (error) throw error;
 
       toast({
@@ -332,11 +317,7 @@ const TenantVacationNotices = () => {
 
       const { data: urlData } = supabase.storage.from('tenant-photos').getPublicUrl(filePath);
 
-      const { error: updateError } = await supabase
-        .from('vacation_notices')
-        .update({ uploaded_document_url: urlData.publicUrl })
-        .eq('id', noticeId);
-
+      const { error: updateError } = await supabase.rpc('attach_vacation_notice_document_atomic', { p_notice_id: noticeId, p_document_url: urlData.publicUrl });
       if (updateError) throw updateError;
 
       toast({

@@ -95,10 +95,8 @@ const TenantNotificationBell: React.FC = () => {
 
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      await supabase
-        .from('in_app_notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq('id', id);
+      const { error } = await supabase.rpc('update_tenant_notification_atomic', { p_notification_id: id, p_action: 'read' });
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenant-notifications', user?.id] }),
   });
@@ -107,20 +105,16 @@ const TenantNotificationBell: React.FC = () => {
     mutationFn: async () => {
       const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
       if (unreadIds.length === 0) return;
-      await supabase
-        .from('in_app_notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .in('id', unreadIds);
+      const { error } = await supabase.rpc('mark_all_tenant_notifications_read_atomic');
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenant-notifications', user?.id] }),
   });
 
   const dismiss = useMutation({
     mutationFn: async (id: string) => {
-      await supabase
-        .from('in_app_notifications')
-        .update({ is_dismissed: true, dismissed_at: new Date().toISOString() })
-        .eq('id', id);
+      const { error } = await supabase.rpc('update_tenant_notification_atomic', { p_notification_id: id, p_action: 'dismiss' });
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenant-notifications', user?.id] }),
   });

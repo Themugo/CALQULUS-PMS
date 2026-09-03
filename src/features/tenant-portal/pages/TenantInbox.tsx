@@ -142,10 +142,7 @@ const TenantInbox: React.FC = () => {
   // Acknowledge a notice
   const acknowledgeNotice = useMutation({
     mutationFn: async (noticeId: string) => {
-      const { error } = await supabase
-        .from('tenant_notices')
-        .update({ tenant_acknowledged: true, tenant_ack_at: new Date().toISOString() })
-        .eq('id', noticeId);
+      const { error } = await supabase.rpc('acknowledge_tenant_notice_atomic', { p_notice_id: noticeId });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -157,15 +154,7 @@ const TenantInbox: React.FC = () => {
   // Dispute a notice
   const disputeNotice = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const { error } = await supabase
-        .from('tenant_notices')
-        .update({
-          tenant_response: reason,
-          status: 'disputed',
-          tenant_acknowledged: true,
-          tenant_ack_at: new Date().toISOString(),
-        })
-        .eq('id', id);
+      const { error } = await supabase.rpc('acknowledge_tenant_notice_atomic', { p_notice_id: id, p_response: reason });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -180,7 +169,8 @@ const TenantInbox: React.FC = () => {
   // Mark message as read
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await supabase.rpc('mark_tenant_message_read_atomic', { p_message_id: id });
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenant-messages-inbox'] }),
   });

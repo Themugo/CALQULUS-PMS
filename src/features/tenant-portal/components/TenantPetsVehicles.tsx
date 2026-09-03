@@ -88,32 +88,11 @@ const TenantPetsVehicles: React.FC = () => {
   const addPet = useMutation({
     mutationFn: async () => {
       if (!petForm.pet_type) throw new Error('Select pet type');
-      const { error } = await supabase.from('tenant_pets').insert({
-        tenant_id: tenantId,
-        unit_id: tenantData?.unit_id,
-        manager_id: tenantData?.manager_id,
-        pet_type: petForm.pet_type.toLowerCase(),
-        breed: petForm.breed || null,
-        name: petForm.name || null,
-        notes: petForm.notes || null,
-        is_approved: false,
+      const { error } = await supabase.rpc('register_tenant_pet_atomic', {
+        p_pet_type: petForm.pet_type, p_breed: petForm.breed || null, p_name: petForm.name || null, p_notes: petForm.notes || null,
       });
       if (error) throw error;
 
-      // Notify manager
-      if (tenantData?.manager_id) {
-        await supabase
-          .from('in_app_notifications')
-          .insert({
-            user_id: tenantData.manager_id,
-            manager_id: tenantData.manager_id,
-            title: 'Pet registration request',
-            body: `Tenant has registered a ${petForm.pet_type}${petForm.name ? ` named ${petForm.name}` : ''} — approval required.`,
-            type: 'info',
-            source: 'system',
-          })
-          .catch(() => {});
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-pets'] });
@@ -127,16 +106,9 @@ const TenantPetsVehicles: React.FC = () => {
   const addVehicle = useMutation({
     mutationFn: async () => {
       if (!vehicleForm.plate_number.trim()) throw new Error('Plate number required');
-      const { error } = await supabase.from('tenant_vehicles').insert({
-        tenant_id: tenantId,
-        unit_id: tenantData?.unit_id,
-        manager_id: tenantData?.manager_id,
-        make: vehicleForm.make || null,
-        model: vehicleForm.model || null,
-        colour: vehicleForm.colour || null,
-        plate_number: vehicleForm.plate_number.trim().toUpperCase(),
-        notes: vehicleForm.notes || null,
-        is_approved: false,
+      const { error } = await supabase.rpc('register_tenant_vehicle_atomic', {
+        p_make: vehicleForm.make || null, p_model: vehicleForm.model || null, p_colour: vehicleForm.colour || null,
+        p_plate_number: vehicleForm.plate_number.trim().toUpperCase(), p_notes: vehicleForm.notes || null,
       });
       if (error) throw error;
 
