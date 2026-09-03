@@ -20,7 +20,8 @@ const checks = [
   ['signedReleaseManifest','SIGNED_RELEASE_MANIFEST_AUDIT.json'],
   ['securityRegressionDiff','SECURITY_REGRESSION_DIFF.json'],
   ['productionEvidenceIngestion','PRODUCTION_EVIDENCE_INGESTION.json'],
-  ['independentReleaseAttestation','INDEPENDENT_RELEASE_ATTESTATION.json']
+  ['independentReleaseAttestation','INDEPENDENT_RELEASE_ATTESTATION.json'],
+  ['attestationSignature','INDEPENDENT_ATTESTATION_SIGNATURE_AUDIT.json']
 ];
 const commandChecks = [
   ['securityBoundary','scripts/security-boundary-audit.mjs'],

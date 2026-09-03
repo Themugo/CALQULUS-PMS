@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T15:46:34.875Z",
+  "generatedAt": "2026-09-03T15:54:18.301Z",
   "status": "PASS",
   "algorithm": "SHA-256",
   "entryCount": 17,
@@ -17,22 +17,22 @@
     },
     {
       "file": "SIGNED_RELEASE_MANIFEST.json",
-      "sha256": "7f4b4068128fc4103ddec343739e4521087bf145fffaae888b2bc6a71f7c2818",
+      "sha256": "c34297bfb54420af228a6e150e11e0195ba06085ccad6af618b7d10eaf4d8f53",
       "bytes": 33258
     },
     {
       "file": "SIGNED_RELEASE_MANIFEST_AUDIT.json",
-      "sha256": "42e8644e7ae7b5a39716a37ad4021bc1c1d78bcb18f309492399de9875ca30aa",
+      "sha256": "b76b7b65e078f20fafe8917e9cbd9fadf324358024ee2eb39541532d97aa95a1",
       "bytes": 373
     },
     {
       "file": "DEPLOYMENT_ATTESTATION.json",
-      "sha256": "5cf1c0e8c811ac3c6ff794d5c7dcc070aaa53646f3a256cf00d64b92ae43bd1c",
+      "sha256": "a7066667a7e641fb802e16aa08cfac2244fefe8631bc304907e686d37d8c9927",
       "bytes": 654
     },
     {
       "file": "DEPLOYMENT_ATTESTATION_AUDIT.json",
-      "sha256": "9a3484c7b11e1bd2424f3d2f84421681863a72ab73ef083d37219d80a2b6c7e8",
+      "sha256": "f299a35c7451d06c19e878b8184344f36b9f4e6cb61664f550895b861263ebf0",
       "bytes": 485
     },
     {
@@ -42,12 +42,12 @@
     },
     {
       "file": "RELEASE_ARTIFACT_PROVENANCE.json",
-      "sha256": "56455d581fb0bf4277b77cfbc2f20f6b1a980a1b99123e71ccb9750c58a912a7",
+      "sha256": "20f8816c038ba8998cb4737523fa3d74b020761cd3a1cf4f1ae21baca1d51e1d",
       "bytes": 526
     },
     {
       "file": "DEPLOYMENT_DRIFT.json",
-      "sha256": "a2105c2f39ef4ae0d7577230190ab66dbe831f1429347c1ad4868f71cb05f738",
+      "sha256": "53e854de4c61e21c133ea9abecc9b37be4c979db790c3210f84ae52dfb064f34",
       "bytes": 605
     },
     {
@@ -72,25 +72,25 @@
     },
     {
       "file": "SECURITY_REGRESSION_MATRIX.json",
-      "sha256": "6b4a367f42a607eca6fb8d6f7189b601577ae972d127932aec7231f1e44d3269",
+      "sha256": "c11c8189b093eee76b090a7f229fb36a4d85aff4711d638531e7134d64490754",
       "bytes": 6058
     },
     {
       "file": "SECURITY_REGRESSION_DIFF.json",
-      "sha256": "9497cb7ff2102b6111bc021b6999323d3e6463caa712e10f3de8e735690ab3b3",
+      "sha256": "4bb0cd7c4f9dba1ef75350225d99c0dc999cf6fd1d5ca00fe8e9fad15e70aa75",
       "bytes": 515
     },
     {
       "file": "CI_RELEASE_GATE.json",
-      "sha256": "508cb1436b4fcf2f21734755c5967018b19d517708d7d07aa5b82a3e2369d1fa",
+      "sha256": "50f8952af9d84320c3ee914bc806bd5458a532ef63f480abba980fa7061099e2",
       "bytes": 680
     },
     {
       "file": "EXTERNAL_EVIDENCE_BINDING.json",
-      "sha256": "5f65434ba21f5819350e85240e098378b5dca0755018483d8be2efd1ac82ec30",
+      "sha256": "63d6889ca1377581acfcc0f0c71a90ea9d13ba8fbb96ad60bc3030d170c684aa",
       "bytes": 1198
     }
   ],
-  "chainHash": "0cc690814c1f9a68367e89dd29ff91a895cf960be62e9d95fb10869d67f26f83",
+  "chainHash": "0a51ad7984bb0a3a454f528ca6fbd4f4ad83d8f186af510156a5cf4f598ea1f2",
   "rule": "This ledger detects subsequent changes to recorded release evidence. It is a tamper-evident repository control, not an external immutable archive; final release certification still requires an independently retained copy or signing key."
 }

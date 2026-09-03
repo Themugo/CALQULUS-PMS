@@ -22,6 +22,7 @@ const names = [
   ['externalEvidenceBinding','EXTERNAL_EVIDENCE_BINDING_AUDIT.json'],
   ['productionEvidenceIngestion','PRODUCTION_EVIDENCE_INGESTION.json'],
   ['independentReleaseAttestation','INDEPENDENT_RELEASE_ATTESTATION.json'],
+  ['attestationSignature','INDEPENDENT_ATTESTATION_SIGNATURE_AUDIT.json'],
   ['productionReleaseCertification','PRODUCTION_RELEASE_CERTIFICATION.json']
 ];
 const read = f => { try { return JSON.parse(fs.readFileSync(path.join(audits, f), 'utf8')); } catch { return null; } };

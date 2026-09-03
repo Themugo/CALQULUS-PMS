@@ -101,7 +101,9 @@
     "ingest:production-evidence": "node scripts/ingest-production-evidence.mjs",
     "audit:production-evidence-ingestion": "node scripts/audit-production-evidence-ingestion.mjs",
     "capture:independent-attestation": "node scripts/capture-independent-release-attestation.mjs",
-    "audit:independent-attestation": "node scripts/audit-independent-release-attestation.mjs"
+    "audit:independent-attestation": "node scripts/audit-independent-release-attestation.mjs",
+    "audit:attestation-signature": "node scripts/audit-attestation-signature.mjs",
+    "audit:final-production-decision": "node scripts/audit-final-production-decision.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

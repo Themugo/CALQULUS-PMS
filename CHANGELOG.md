@@ -202,3 +202,8 @@ These were identified during the audit but not yet addressed:
 - Added tamper-evident binding of external release, deployment, migration, staging, restore, and approval identifiers.
 - Added fail-closed production release certification gate.
 - Added policies/runbook and npm audit commands.
+
+## Phases 138–139 — Attestation Signature & Final Production Decision
+- Added Ed25519 independent attestation signature verification.
+- Added fail-closed final production release decision engine with deterministic decision hash.
+- Added release attestation and production decision runbooks/policy.
