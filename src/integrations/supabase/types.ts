@@ -6727,6 +6727,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      save_unit_charge_config_atomic: { Args: { p_charge_id?: string | null; p_unit_id?: string | null; p_property_id?: string | null; p_charge_type?: string; p_charge_label?: string; p_amount?: number; p_is_metered?: boolean; p_billing_cycle?: string; p_auto_generate?: boolean; p_notes?: string | null }; Returns: Json }
+      set_unit_charge_active_atomic: { Args: { p_charge_id: string; p_active: boolean }; Returns: Json }
+      delete_unit_charge_atomic: { Args: { p_charge_id: string }; Returns: Json }
+      assign_tenant_to_unit_atomic: { Args: { p_tenant_id: string; p_property_id: string; p_unit_number: string }; Returns: Json }
+      unassign_tenant_from_unit_atomic: { Args: { p_tenant_id: string }; Returns: Json }
+      save_property_atomic: { Args: { p_property_id?: string | null; p_name?: string; p_address?: string; p_house_number?: string | null; p_house_label_prefix?: string | null; p_units?: number; p_image_url?: string | null; p_property_type?: string; p_number_of_floors?: number; p_rent_per_house?: number; p_payment_details?: string | null; p_category_key?: string | null }; Returns: Json }
+      deactivate_property_atomic: { Args: { p_property_id: string }; Returns: Json }
+      save_unit_atomic: { Args: { p_unit_id?: string | null; p_property_id?: string | null; p_unit_number?: string; p_label?: string | null; p_unit_type?: string; p_bedrooms?: number | null; p_bathrooms?: number | null; p_square_feet?: number | null; p_description?: string | null; p_monthly_rent?: number | null; p_house_deposit?: number | null; p_water_deposit?: number | null; p_floor_number?: number | null; p_furnished?: string; p_status?: string }; Returns: Json }
+      deactivate_unit_atomic: { Args: { p_unit_id: string }; Returns: Json }
       create_contract_atomic: { Args: { p_lease_id: string; p_tenant_id?: string | null; p_property_id?: string | null; p_unit_id?: string | null; p_template_id?: string | null; p_title?: string; p_content?: string; p_valid_from?: string | null; p_valid_until?: string | null; p_status?: string }; Returns: Json }
       transition_contract_atomic: { Args: { p_contract_id: string; p_action: string; p_target_status?: string | null; p_reason?: string | null; p_signature?: string | null; p_document_url?: string | null }; Returns: Json }
       transition_lease_atomic: { Args: { p_lease_id: string; p_target_status: string }; Returns: Json }

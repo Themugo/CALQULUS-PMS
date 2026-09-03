@@ -295,51 +295,13 @@ const PropertyDetail = () => {
 
     try {
       const unitNumber = assignUnit.trim();
-      let unitId: string | null = null;
-      const { data: existingUnit, error: lookupError } = await supabase
-        .from("units")
-        .select("id")
-        .eq("property_id", property.id)
-        .eq("unit_number", unitNumber)
-        .maybeSingle();
-      if (lookupError) throw lookupError;
-
-      if (existingUnit) {
-        unitId = existingUnit.id;
-        const { error: updateUnitError } = await supabase
-          .from("units")
-          .update({ status: "occupied" })
-          .eq("id", unitId);
-        if (updateUnitError) throw updateUnitError;
-      } else {
-        const { data: newUnit, error: createUnitError } = await supabase
-          .from("units")
-          .insert({ property_id: property.id, unit_number: unitNumber, status: "occupied" })
-          .select("id")
-          .single();
-        if (createUnitError) throw createUnitError;
-        unitId = newUnit.id;
-      }
-
-      const { error } = await supabase
-        .from("tenants")
-        .update({
-          property_id: property.id,
-          property: property.name,
-          unit: unitNumber,
-          unit_id: unitId,
-        })
-        .eq("id", selectedTenantId);
+      const { data: result, error } = await supabase.rpc("assign_tenant_to_unit_atomic", {
+        p_tenant_id: selectedTenantId,
+        p_property_id: property.id,
+        p_unit_number: unitNumber,
+      });
       if (error) throw error;
-
-      const { count } = await supabase
-        .from("units")
-        .select("id", { count: "exact", head: true })
-        .eq("property_id", property.id)
-        .eq("status", "occupied");
-      if (count !== null) {
-        await supabase.from("properties").update({ occupied: count }).eq("id", property.id);
-      }
+      if (!result) throw new Error("Tenant assignment did not return a result");
 
       toast({
         title: "Tenant Assigned",
@@ -361,15 +323,7 @@ const PropertyDetail = () => {
   };
 
   const handleRemoveTenant = async (tenantId: string) => {
-    const { error } = await supabase
-      .from("tenants")
-      .update({
-        property_id: null,
-        property: null,
-        unit: null,
-        unit_id: null,
-      })
-      .eq("id", tenantId);
+    const { error } = await supabase.rpc("unassign_tenant_from_unit_atomic", { p_tenant_id: tenantId });
 
     if (error) {
       toast({

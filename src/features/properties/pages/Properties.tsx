@@ -255,24 +255,19 @@ const Properties = () => {
     }
 
     setIsSaving(true);
-    const now = new Date().toISOString();
-    const { error } = await supabase.from("properties").insert({
-      name: validationResult.data.name,
-      address: validationResult.data.address,
-      house_number: newProperty.house_number.trim() || null,
-      house_label_prefix: newProperty.house_label_prefix.trim() || null,
-      units: validationResult.data.units ? parseInt(validationResult.data.units) : 0,
-      occupied: 0,
-      revenue: 0,
-      image_url: validationResult.data.image_url || null,
-      manager_id: managerId,
-      property_type: newProperty.property_type || 'flat',
-      number_of_floors: newProperty.number_of_floors ? parseInt(newProperty.number_of_floors) : 1,
-      rent_per_house: newProperty.rent_per_house ? parseFloat(newProperty.rent_per_house) : 0,
-      payment_details: newProperty.payment_details.trim() || null,
-      created_at: now,
-      updated_at: now,
-      status: 'active',
+    const { error } = await supabase.rpc("save_property_atomic", {
+      p_property_id: null,
+      p_name: validationResult.data.name,
+      p_address: validationResult.data.address,
+      p_house_number: newProperty.house_number.trim() || null,
+      p_house_label_prefix: newProperty.house_label_prefix.trim() || null,
+      p_units: validationResult.data.units ? parseInt(validationResult.data.units) : 0,
+      p_image_url: validationResult.data.image_url || null,
+      p_property_type: newProperty.property_type || "flat",
+      p_number_of_floors: newProperty.number_of_floors ? parseInt(newProperty.number_of_floors) : 1,
+      p_rent_per_house: newProperty.rent_per_house ? parseFloat(newProperty.rent_per_house) : 0,
+      p_payment_details: newProperty.payment_details.trim() || null,
+      p_category_key: newProperty.property_type || "residential_flat",
     });
 
     if (error) {
@@ -333,25 +328,20 @@ const Properties = () => {
     }
 
     setIsSaving(true);
-    const now = new Date().toISOString();
-    const { error } = await supabase
-      .from("properties")
-      .update({
-        name: validationResult.data.name,
-        address: validationResult.data.address,
-        house_number: editFormData.house_number.trim() || null,
-        house_label_prefix: editFormData.house_label_prefix.trim() || null,
-        units: validationResult.data.units ? parseInt(validationResult.data.units) : 0,
-        occupied: parseInt(editFormData.occupied) || 0,
-        revenue: parseFloat(editFormData.revenue) || 0,
-        image_url: validationResult.data.image_url || null,
-        property_type: editFormData.property_type || 'flat',
-        number_of_floors: editFormData.number_of_floors ? parseInt(editFormData.number_of_floors) : 1,
-        rent_per_house: editFormData.rent_per_house ? parseFloat(editFormData.rent_per_house) : 0,
-        payment_details: editFormData.payment_details.trim() || null,
-        updated_at: now,
-      })
-      .eq("id", editProperty.id);
+    const { error } = await supabase.rpc("save_property_atomic", {
+      p_property_id: editProperty.id,
+      p_name: validationResult.data.name,
+      p_address: validationResult.data.address,
+      p_house_number: editFormData.house_number.trim() || null,
+      p_house_label_prefix: editFormData.house_label_prefix.trim() || null,
+      p_units: validationResult.data.units ? parseInt(validationResult.data.units) : 0,
+      p_image_url: validationResult.data.image_url || null,
+      p_property_type: editFormData.property_type || "flat",
+      p_number_of_floors: editFormData.number_of_floors ? parseInt(editFormData.number_of_floors) : 1,
+      p_rent_per_house: editFormData.rent_per_house ? parseFloat(editFormData.rent_per_house) : 0,
+      p_payment_details: editFormData.payment_details.trim() || null,
+      p_category_key: editFormData.property_type || "residential_flat",
+    });
 
     if (error) {
       toast({ title: "Error", description: "Failed to update property", variant: "destructive" });
@@ -379,7 +369,7 @@ const Properties = () => {
     if (!deleteProperty) return;
 
     setIsDeleting(true);
-    const { error } = await supabase.from("properties").update({ status: 'inactive' }).eq("id", deleteProperty.id);
+    const { error } = await supabase.rpc("deactivate_property_atomic", { p_property_id: deleteProperty.id });
 
     if (error) {
       toast({ title: "Error", description: "Failed to deactivate property", variant: "destructive" });
