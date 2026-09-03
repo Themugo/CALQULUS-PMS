@@ -76,6 +76,7 @@ import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formD
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { MetricCard } from "@/shared/components/ui/metric-card";
 import { Home, Users, WalletCards } from "lucide-react";
 
 const EMPTY_PROPERTY_FORM = {
@@ -524,15 +525,7 @@ const Properties = () => {
             { label: "Revenue", value: formatCurrency(properties.reduce((sum, p) => sum + p.revenue, 0)), icon: WalletCards },
           ].map((item) => {
             const Icon = item.icon;
-            return (
-              <div key={item.label} className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </div>
-                <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">{item.value}</p>
-              </div>
-            );
+            return <MetricCard key={item.label} label={item.label} value={item.value} icon={Icon} />;
           })}
         </div>
       </div>

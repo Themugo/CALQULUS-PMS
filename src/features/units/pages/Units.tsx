@@ -32,6 +32,7 @@ import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
 import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { MetricCard } from "@/shared/components/ui/metric-card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
 import { Badge } from "@/shared/components/ui/badge";
 
@@ -124,15 +125,7 @@ const Units = () => {
             { label: "With balance", value: rows.filter((row) => row.balance > 0).length, icon: CircleDollarSign },
           ].map((item) => {
             const Icon = item.icon;
-            return (
-              <div key={item.label} className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </div>
-                <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">{item.value}</p>
-              </div>
-            );
+            return <MetricCard key={item.label} label={item.label} value={item.value} icon={Icon} />;
           })}
         </div>
       </div>
