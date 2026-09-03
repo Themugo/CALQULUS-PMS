@@ -289,3 +289,9 @@ These were identified during the audit but not yet addressed:
 - Added accessible relationships between portal navigation groups and their headings.
 - Strengthened visible keyboard focus treatment on portal navigation links.
 - Preserved role-based route filtering, active-route behavior, permissions and navigation data.
+
+
+## Phases 172–173 — Feedback & Confirmation UX
+- Added semantic success, warning and informational toast variants with shared helpers.
+- Applied semantic success feedback to property lifecycle actions.
+- Strengthened property deactivation confirmation with destructive styling, explicit accessible naming and loading copy.

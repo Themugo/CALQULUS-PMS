@@ -280,7 +280,7 @@ const Properties = () => {
         variant: "destructive",
       });
     } else {
-      toast({ title: "Property Added", description: `${validationResult.data.name} has been added successfully.` });
+      successToast({ title: "Property Added", description: `${validationResult.data.name} has been added successfully.` });
       logActivity({
         action: 'Created property',
         entityType: 'property',
@@ -342,7 +342,7 @@ const Properties = () => {
     if (error) {
       toast({ title: "Error", description: "Failed to update property", variant: "destructive" });
     } else {
-      toast({ title: "Property Updated", description: `${validationResult.data.name} has been updated successfully.` });
+      successToast({ title: "Property Updated", description: `${validationResult.data.name} has been updated successfully.` });
       logActivity({
         action: 'Updated property',
         entityType: 'property',
@@ -370,7 +370,7 @@ const Properties = () => {
     if (error) {
       toast({ title: "Error", description: "Failed to deactivate property", variant: "destructive" });
     } else {
-      toast({ title: "Property Deactivated", description: `${deleteProperty.name} has been deactivated and moved to history.` });
+      successToast({ title: "Property Deactivated", description: `${deleteProperty.name} has been deactivated and moved to history.` });
       logActivity({
         action: 'Deactivated property',
         entityType: 'property',
@@ -874,8 +874,8 @@ const Properties = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteProperty} disabled={isDeleting} className="bg-warning text-warning-foreground hover:bg-warning/90">
-              {isDeleting ? "Deactivating..." : "Deactivate"}
+            <AlertDialogAction onClick={handleDeleteProperty} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" aria-label={`Deactivate ${deleteProperty?.name ?? "property"}`}>
+              {isDeleting ? "Deactivating…" : "Deactivate"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
