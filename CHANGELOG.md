@@ -1,3 +1,10 @@
+## 2026-09-03 — Phases 120–121
+
+- Added release promotion lock and explicit production authorization binding.
+- Added production change trace capture/audit with migration and artifact SHA-256 hashes.
+- Integrated promotion lock and change trace into release evidence/reconciliation.
+- Production execution remains `EXTERNAL_REQUIRED` until real deployment, migration, authorization and recovery evidence is supplied.
+
 ## 2026-09-03
 
 ### Phase 47–48 — Tenant Portal & Lease/Contract Mutation Convergence

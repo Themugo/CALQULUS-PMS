@@ -25,7 +25,7 @@
     "decision": ""
   },
   "automatedEvidence": {
-    "capturedAt": "2026-09-03T14:18:57.153Z",
+    "capturedAt": "2026-09-03T14:24:30.575Z",
     "migrationReconciliation": {
       "status": "EXTERNAL_REQUIRED",
       "generatedAt": "2026-09-03T13:59:59.284Z"
@@ -56,15 +56,23 @@
     },
     "artifactProvenance": {
       "status": "PASS",
-      "generatedAt": "2026-09-03T14:18:56.777Z"
+      "generatedAt": "2026-09-03T14:24:30.353Z"
     },
     "deploymentDrift": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:18:56.903Z"
+      "generatedAt": "2026-09-03T14:24:30.391Z"
     },
     "rollbackReadiness": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:18:57.021Z"
+      "generatedAt": "2026-09-03T14:24:30.419Z"
+    },
+    "releasePromotionLock": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T14:24:30.539Z"
+    },
+    "productionChangeTrace": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T14:24:30.500Z"
     }
   }
 }
