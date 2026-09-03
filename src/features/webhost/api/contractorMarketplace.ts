@@ -154,73 +154,25 @@ export const contractorMarketplaceService = {
    * Create a new work order
    */
   async createWorkOrder(workOrder: Omit<WorkOrder, 'id' | 'createdDate'>): Promise<WorkOrder | null> {
-    const { data, error } = await supabase
-      .from('work_orders')
-      .insert({
-        contractor_id: workOrder.contractorId,
-        property_id: workOrder.propertyId,
-        unit: workOrder.unit,
-        category: workOrder.category,
-        description: workOrder.description,
-        priority: workOrder.priority,
-        budget: workOrder.budget,
-        estimated_cost: workOrder.estimatedCost,
-        scheduled_date: workOrder.scheduledDate?.toISOString(),
-        status: workOrder.status,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      logError('Error creating work order:', error);
-      return null;
-    }
-
-    return data ? {
-      ...data,
-      contractorId: data.contractor_id,
-      propertyId: data.property_id,
-      estimatedCost: data.estimated_cost,
-      scheduledDate: data.scheduled_date ? new Date(data.scheduled_date) : null,
-      completedDate: data.completed_date ? new Date(data.completed_date) : undefined,
-      createdDate: new Date(data.created_date),
-    } : null;
+    const { data, error } = await supabase.rpc('save_work_order_atomic', { p_work_order_id: null, p_contractor_id: workOrder.contractorId,
+      p_property_id: workOrder.propertyId, p_unit: workOrder.unit, p_category: workOrder.category, p_description: workOrder.description,
+      p_priority: workOrder.priority, p_budget: workOrder.budget, p_estimated_cost: workOrder.estimatedCost,
+      p_scheduled_date: workOrder.scheduledDate?.toISOString() ?? null, p_status: workOrder.status });
+    if (error) { logError('Error creating work order:', error); return null; }
+    return data as any;
   },
-
   /**
    * Update a work order
    */
   async updateWorkOrder(id: string, updates: Partial<WorkOrder>): Promise<WorkOrder | null> {
-    const { data, error } = await supabase
-      .from('work_orders')
-      .update({
-        contractor_id: updates.contractorId,
-        status: updates.status,
-        estimated_cost: updates.estimatedCost,
-        actual_cost: updates.actualCost,
-        scheduled_date: updates.scheduledDate?.toISOString(),
-        completed_date: updates.completedDate?.toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      logError('Error updating work order:', error);
-      return null;
-    }
-
-    return data ? {
-      ...data,
-      contractorId: data.contractor_id,
-      propertyId: data.property_id,
-      estimatedCost: data.estimated_cost,
-      scheduledDate: data.scheduled_date ? new Date(data.scheduled_date) : null,
-      completedDate: data.completed_date ? new Date(data.completed_date) : undefined,
-      createdDate: new Date(data.created_date),
-    } : null;
+    const { data, error } = await supabase.rpc('save_work_order_atomic', { p_work_order_id: id, p_contractor_id: updates.contractorId ?? null,
+      p_property_id: updates.propertyId ?? null, p_unit: updates.unit ?? null, p_category: updates.category ?? null,
+      p_description: updates.description ?? null, p_priority: updates.priority ?? 'medium', p_budget: updates.budget ?? 0,
+      p_estimated_cost: updates.estimatedCost ?? 0, p_scheduled_date: updates.scheduledDate?.toISOString() ?? null,
+      p_status: updates.status ?? 'pending' });
+    if (error) { logError('Error updating work order:', error); return null; }
+    return data as any;
   },
-
   /**
    * Fetch bids for a specific work order
    */
@@ -247,32 +199,12 @@ export const contractorMarketplaceService = {
    * Create a new bid
    */
   async createBid(bid: Omit<Bid, 'id' | 'submittedDate'>): Promise<Bid | null> {
-    const { data, error } = await supabase
-      .from('contractor_bids')
-      .insert({
-        work_order_id: bid.workOrderId,
-        contractor_id: bid.contractorId,
-        proposed_amount: bid.proposedAmount,
-        estimated_duration: bid.estimatedDuration,
-        status: bid.status,
-        notes: bid.notes,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      logError('Error creating bid:', error);
-      return null;
-    }
-
-    return data ? {
-      ...data,
-      workOrderId: data.work_order_id,
-      contractorId: data.contractor_id,
-      submittedDate: new Date(data.submitted_date),
-    } : null;
+    const { data, error } = await supabase.rpc('create_contractor_bid_atomic', { p_work_order_id: bid.workOrderId,
+      p_contractor_id: bid.contractorId, p_proposed_amount: bid.proposedAmount,
+      p_estimated_duration: bid.estimatedDuration, p_notes: bid.notes ?? null });
+    if (error) { logError('Error creating bid:', error); return null; }
+    return data as any;
   },
-
   /**
    * Get contractor performance metrics
    */
@@ -315,33 +247,16 @@ export const contractorMarketplaceService = {
    * Accept a bid for a work order
    */
   async acceptBid(bidId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('contractor_bids')
-      .update({ status: 'accepted' })
-      .eq('id', bidId);
-
-    if (error) {
-      logError('Error accepting bid:', error);
-      return false;
-    }
-
+    const { error } = await supabase.rpc('transition_contractor_bid_atomic', { p_bid_id: bidId, p_target_status: 'accepted' });
+    if (error) { logError('Error transitioning bid:', error); return false; }
     return true;
   },
-
   /**
    * Reject a bid for a work order
    */
   async rejectBid(bidId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('contractor_bids')
-      .update({ status: 'rejected' })
-      .eq('id', bidId);
-
-    if (error) {
-      logError('Error rejecting bid:', error);
-      return false;
-    }
-
+    const { error } = await supabase.rpc('transition_contractor_bid_atomic', { p_bid_id: bidId, p_target_status: 'rejected' });
+    if (error) { logError('Error transitioning bid:', error); return false; }
     return true;
-  },
+  }
 };

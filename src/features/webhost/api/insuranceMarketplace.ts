@@ -158,70 +158,32 @@ export const insuranceMarketplaceService = {
    * Create a new insurance policy
    */
   async createInsurancePolicy(policy: Omit<InsurancePolicy, 'id'>): Promise<InsurancePolicy | null> {
-    const { data, error } = await supabase
-      .from('insurance_policies')
-      .insert({
-        provider_id: policy.providerId,
-        property_id: policy.propertyId,
-        unit: policy.unit,
-        policy_type: policy.policyType,
-        coverage_type: policy.coverageType,
-        coverage_amount: policy.coverageAmount,
-        premium: policy.premium,
-        deductible: policy.deductible,
-        status: policy.status,
-        start_date: policy.startDate.toISOString(),
-        end_date: policy.endDate.toISOString(),
-        renewal_date: policy.renewalDate.toISOString(),
-      })
-      .select()
-      .single();
-
-    if (error) {
-      logError('Error creating insurance policy:', error);
-      return null;
-    }
-
-    return data ? {
-      ...data,
-      providerId: data.provider_id,
-      propertyId: data.property_id,
-      startDate: new Date(data.start_date),
-      endDate: new Date(data.end_date),
-      renewalDate: new Date(data.renewal_date),
-    } : null;
+    const { data, error } = await supabase.rpc('save_insurance_policy_atomic', {
+      p_policy_id: null, p_provider_id: policy.providerId, p_property_id: policy.propertyId,
+      p_unit: policy.unit, p_policy_type: policy.policyType, p_coverage_type: policy.coverageType,
+      p_coverage_amount: policy.coverageAmount, p_premium: policy.premium, p_deductible: policy.deductible,
+      p_status: policy.status, p_start_date: policy.startDate.toISOString(), p_end_date: policy.endDate.toISOString(),
+      p_renewal_date: policy.renewalDate.toISOString(),
+    });
+    if (error) { logError('Error creating insurance policy:', error); return null; }
+    const row = data as any;
+    return row ? { ...row, providerId: row.provider_id, propertyId: row.property_id, startDate: new Date(row.start_date), endDate: new Date(row.end_date), renewalDate: new Date(row.renewal_date) } : null;
   },
-
   /**
    * Update an insurance policy
    */
   async updateInsurancePolicy(id: string, updates: Partial<InsurancePolicy>): Promise<InsurancePolicy | null> {
-    const { data, error } = await supabase
-      .from('insurance_policies')
-      .update({
-        status: updates.status,
-        premium: updates.premium,
-        coverage_amount: updates.coverageAmount,
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      logError('Error updating insurance policy:', error);
-      return null;
-    }
-
-    return data ? {
-      ...data,
-      providerId: data.provider_id,
-      propertyId: data.property_id,
-      startDate: new Date(data.start_date),
-      endDate: new Date(data.end_date),
-      renewalDate: new Date(data.renewal_date),
-    } : null;
+    const { data, error } = await supabase.rpc('save_insurance_policy_atomic', {
+      p_policy_id: id, p_provider_id: updates.providerId ?? null, p_property_id: updates.propertyId ?? null,
+      p_unit: updates.unit ?? null, p_policy_type: updates.policyType ?? null, p_coverage_type: updates.coverageType ?? null,
+      p_coverage_amount: updates.coverageAmount ?? 0, p_premium: updates.premium ?? 0, p_deductible: updates.deductible ?? 0,
+      p_status: updates.status ?? 'active', p_start_date: updates.startDate?.toISOString() ?? null,
+      p_end_date: updates.endDate?.toISOString() ?? null, p_renewal_date: updates.renewalDate?.toISOString() ?? null,
+    });
+    if (error) { logError('Error updating insurance policy:', error); return null; }
+    const row = data as any;
+    return row ? { ...row, providerId: row.provider_id, propertyId: row.property_id, startDate: new Date(row.start_date), endDate: new Date(row.end_date), renewalDate: new Date(row.renewal_date) } : null;
   },
-
   /**
    * Fetch insurance claims with optional filtering
    */
@@ -370,57 +332,24 @@ export const insuranceMarketplaceService = {
    * Approve an insurance claim
    */
   async approveInsuranceClaim(id: string, approvedAmount: number): Promise<boolean> {
-    const { error } = await supabase
-      .from('insurance_claims')
-      .update({ 
-        status: 'approved',
-        approved_amount: approvedAmount,
-        approved_date: new Date().toISOString(),
-      })
-      .eq('id', id);
-
-    if (error) {
-      logError('Error approving insurance claim:', error);
-      return false;
-    }
-
+    const { error } = await supabase.rpc('transition_insurance_claim_atomic', { p_claim_id: id, p_target_status: 'approved', p_approved_amount: approvedAmount });
+    if (error) { logError('Error transitioning insurance claim:', error); return false; }
     return true;
   },
-
   /**
    * Reject an insurance claim
    */
   async rejectInsuranceClaim(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('insurance_claims')
-      .update({ status: 'rejected' })
-      .eq('id', id);
-
-    if (error) {
-      logError('Error rejecting insurance claim:', error);
-      return false;
-    }
-
+    const { error } = await supabase.rpc('transition_insurance_claim_atomic', { p_claim_id: id, p_target_status: 'rejected', p_approved_amount: null });
+    if (error) { logError('Error transitioning insurance claim:', error); return false; }
     return true;
   },
-
   /**
    * Mark a claim as paid
    */
   async markClaimAsPaid(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('insurance_claims')
-      .update({ 
-        status: 'paid',
-        paid_date: new Date().toISOString(),
-      })
-      .eq('id', id);
-
-    if (error) {
-      logError('Error marking claim as paid:', error);
-      return false;
-    }
-
+    const { error } = await supabase.rpc('transition_insurance_claim_atomic', { p_claim_id: id, p_target_status: 'paid', p_approved_amount: null });
+    if (error) { logError('Error transitioning insurance claim:', error); return false; }
     return true;
-  },
+  }
 };

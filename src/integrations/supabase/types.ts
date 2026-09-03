@@ -6757,6 +6757,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      save_insurance_policy_atomic: { Args: { p_policy_id?: string | null; p_provider_id?: string | null; p_property_id?: string | null; p_unit?: string | null; p_policy_type?: string | null; p_coverage_type?: string | null; p_coverage_amount?: number | null; p_premium?: number | null; p_deductible?: number | null; p_status?: string | null; p_start_date?: string | null; p_end_date?: string | null; p_renewal_date?: string | null }; Returns: Json }
+      transition_insurance_claim_atomic: { Args: { p_claim_id: string; p_target_status: string; p_approved_amount?: number | null }; Returns: Json }
+      save_work_order_atomic: { Args: { p_work_order_id?: string | null; p_contractor_id?: string | null; p_property_id?: string | null; p_unit?: string | null; p_category?: string | null; p_description?: string | null; p_priority?: string | null; p_budget?: number | null; p_estimated_cost?: number | null; p_scheduled_date?: string | null; p_status?: string | null }; Returns: Json }
+      create_contractor_bid_atomic: { Args: { p_work_order_id: string; p_contractor_id: string; p_proposed_amount: number; p_estimated_duration: string; p_notes?: string | null }; Returns: Json }
+      transition_contractor_bid_atomic: { Args: { p_bid_id: string; p_target_status: string }; Returns: Json }
       create_maintenance_request_atomic: { Args: { p_title: string; p_description: string; p_property_name: string; p_unit_number?: string | null; p_unit_id?: string | null; p_tenant_name?: string; p_tenant_email?: string; p_priority?: string; p_category?: string; p_expected_completion_date?: string | null; p_budget?: number | null; p_manager_id?: string | null; p_created_by_role?: string }; Returns: Json }
       transition_maintenance_request_atomic: { Args: { p_request_id: string; p_target_status: string }; Returns: Json }
       assign_maintenance_request_atomic: { Args: { p_request_id: string; p_assigned_to: string; p_provider_id?: string | null }; Returns: Json }
