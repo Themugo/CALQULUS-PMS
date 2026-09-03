@@ -194,3 +194,8 @@ These were identified during the audit but not yet addressed:
 - Added consolidated `audit:security-regression-matrix` covering security boundary, cross-role isolation, final security, migration, operations, deployment, supply-chain and release gates.
 - Matrix fails closed on repository `FAIL`/unknown statuses and preserves `EXTERNAL_REQUIRED` for live infrastructure evidence.
 - CI release workflow now runs the runtime dependency governance check with registry-backed outdated checks enabled.
+
+## Phases 134–135 — External Evidence Binding + Production Release Certification
+- Added tamper-evident binding of external release, deployment, migration, staging, restore, and approval identifiers.
+- Added fail-closed production release certification gate.
+- Added policies/runbook and npm audit commands.

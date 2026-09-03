@@ -1,12 +1,13 @@
 {
-  "generatedAt": "2026-09-03T15:32:30.826Z",
+  "generatedAt": "2026-09-03T15:38:59.889Z",
   "status": "EXTERNAL_REQUIRED",
-  "checkCount": 14,
+  "checkCount": 15,
   "failures": [],
   "missing": [],
   "externalRequired": [
     "securityRegressionMatrix",
-    "securityRegressionDiff"
+    "securityRegressionDiff",
+    "externalEvidenceBinding"
   ],
   "checks": {
     "securityBoundary": "PASS",
@@ -22,7 +23,8 @@
     "ciReleaseGate": "PASS",
     "securityRegressionMatrix": "EXTERNAL_REQUIRED",
     "securityRegressionDiff": "EXTERNAL_REQUIRED",
-    "releaseEvidenceIntegrity": "PASS"
+    "releaseEvidenceIntegrity": "PASS",
+    "externalEvidenceBinding": "EXTERNAL_REQUIRED"
   },
   "rule": "The consolidated security gate fails on an actual security regression or missing required repository control. Infrastructure-dependent evidence remains EXTERNAL_REQUIRED and cannot be converted to PASS by local automation."
 }

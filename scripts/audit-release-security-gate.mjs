@@ -18,7 +18,8 @@ const names = [
   ['ciReleaseGate','CI_RELEASE_GATE.json'],
   ['securityRegressionMatrix','SECURITY_REGRESSION_MATRIX.json'],
   ['securityRegressionDiff','SECURITY_REGRESSION_DIFF.json'],
-  ['releaseEvidenceIntegrity','RELEASE_EVIDENCE_INTEGRITY_AUDIT.json']
+  ['releaseEvidenceIntegrity','RELEASE_EVIDENCE_INTEGRITY_AUDIT.json'],
+  ['externalEvidenceBinding','EXTERNAL_EVIDENCE_BINDING_AUDIT.json']
 ];
 const read = f => { try { return JSON.parse(fs.readFileSync(path.join(audits, f), 'utf8')); } catch { return null; } };
 const commandChecks = [

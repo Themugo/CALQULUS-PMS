@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T14:36:35.056Z",
+  "generatedAt": "2026-09-03T15:38:59.534Z",
   "status": "BLOCKED",
   "requiredExternalEvidence": [
     "releaseCommit",
@@ -30,7 +30,9 @@
     "signedReleaseManifest": "EXTERNAL_REQUIRED",
     "deploymentAttestation": "EXTERNAL_REQUIRED",
     "dependencyProvenance": "NOT_RECORDED",
-    "ciReleaseGate": "NOT_RECORDED"
+    "ciReleaseGate": "NOT_RECORDED",
+    "externalEvidenceBinding": "NOT_RECORDED",
+    "productionReleaseCertification": "NOT_RECORDED"
   },
   "liveMigration": "EXTERNAL_REQUIRED",
   "liveSecurity": "EXTERNAL_REQUIRED",
@@ -44,6 +46,8 @@
   "deploymentAttestation": "EXTERNAL_REQUIRED",
   "dependencyProvenance": "PASS",
   "ciReleaseGate": "PASS",
+  "externalEvidenceBinding": "EXTERNAL_REQUIRED",
+  "productionReleaseCertification": "EXTERNAL_REQUIRED",
   "evidenceSecretScan": "PASS",
   "evidenceSha256": "0c493b74c1aa3723a3e75b7cd9262f8431defcd542efbc636c94559b5e3f32a6",
   "rule": "External deployment, restore, and approval evidence must be explicit. Repository automation cannot manufacture production proof."

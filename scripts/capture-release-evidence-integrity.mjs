@@ -21,7 +21,8 @@ const files = [
   'PRODUCTION_CHANGE_TRACE_AUDIT.json',
   'SECURITY_REGRESSION_MATRIX.json',
   'SECURITY_REGRESSION_DIFF.json',
-  'CI_RELEASE_GATE.json'
+  'CI_RELEASE_GATE.json',
+  'EXTERNAL_EVIDENCE_BINDING.json'
 ];
 const sha256 = (p) => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const present = files.filter(f => fs.existsSync(path.join(audits, f)));

@@ -94,7 +94,10 @@
     "audit:security-regression-diff": "node scripts/audit-security-regression-diff.mjs",
     "capture:release-evidence-integrity": "node scripts/capture-release-evidence-integrity.mjs",
     "audit:release-evidence-integrity": "node scripts/audit-release-evidence-integrity.mjs",
-    "audit:release-security-gate": "node scripts/audit-release-security-gate.mjs"
+    "audit:release-security-gate": "node scripts/audit-release-security-gate.mjs",
+    "capture:external-evidence-binding": "node scripts/capture-external-evidence-binding.mjs",
+    "audit:external-evidence-binding": "node scripts/audit-external-evidence-binding.mjs",
+    "audit:production-release-certification": "node scripts/audit-production-release-certification.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
