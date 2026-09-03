@@ -73,6 +73,8 @@ import { TablePager } from "@/shared/components/ui/table-pager";
 import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { Home, Users, WalletCards } from "lucide-react";
 
 const EMPTY_PROPERTY_FORM = {
   name: "",
@@ -501,6 +503,38 @@ const Properties = () => {
         </div>
       }
     >
+      <div className="mb-6">
+        <DashboardSectionHeader
+          eyebrow="Portfolio"
+          title="Your properties"
+          description="A clear view of the buildings, units and income you manage."
+          action={
+            <span className="hidden rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground sm:inline-flex">
+              {properties.length} total
+            </span>
+          }
+        />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[
+            { label: "Properties", value: properties.length, icon: Building2 },
+            { label: "Units", value: properties.reduce((sum, p) => sum + p.units, 0), icon: Home },
+            { label: "Occupied", value: properties.reduce((sum, p) => sum + p.occupied, 0), icon: Users },
+            { label: "Revenue", value: formatCurrency(properties.reduce((sum, p) => sum + p.revenue, 0)), icon: WalletCards },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.label} className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-muted-foreground">{item.label}</p>
+                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">{item.value}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Clean toolbar */}
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex flex-wrap items-center gap-2">

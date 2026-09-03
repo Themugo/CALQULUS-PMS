@@ -218,3 +218,9 @@ These were identified during the audit but not yet addressed:
 - Reworked the public homepage into a shorter product-first landing experience: focused hero, real dashboard preview, three capability pillars, and a concise conversion section.
 - Reduced footer density and removed unsupported marketing claims/metrics.
 - Preserved existing public routes and authentication CTAs.
+
+## UI phases 142–143
+- Refined the manager portfolio and units screens with shared dashboard hierarchy.
+- Added concise portfolio/unit summary cards using live records only.
+- Preserved existing routes, queries, mutations, filters, and navigation.
+- Added a lightweight portfolio navigation UI regression test.

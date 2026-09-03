@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Home, Search } from "lucide-react";
+import { Building2, CircleDollarSign, Home, Search, Users } from "lucide-react";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -30,6 +30,7 @@ import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 import { fetchPortfolioUnits, type PortfolioUnitRow } from "@/features/units/lib/portfolioUnits";
 import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 
 const unitStatusClass: Record<string, string> = {
   vacant: statusBadgeClass("success"),
@@ -106,6 +107,31 @@ const Units = () => {
         </Button>
       }
     >
+      <div className="mb-6">
+        <DashboardSectionHeader
+          eyebrow="Portfolio"
+          title="Units at a glance"
+          description="Search the live unit register and move directly into the property record."
+        />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+          {[
+            { label: "Units", value: rows.length, icon: Building2 },
+            { label: "Occupied", value: rows.filter((row) => row.status === "occupied").length, icon: Users },
+            { label: "With balance", value: rows.filter((row) => row.balance > 0).length, icon: CircleDollarSign },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.label} className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-muted-foreground">{item.label}</p>
+                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">{item.value}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
