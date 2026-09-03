@@ -152,21 +152,16 @@ const LandlordLinksManager = () => {
 
         if (profiles && profiles.length > 0) {
           const landlordUserId = profiles[0].id;
-          const { error } = await supabase.from("property_landlords").upsert({
-            property_id: linkPropertyId,
-            landlord_user_id: landlordUserId,
-            manager_id: user?.id,
-            revenue_share_pct: share,
-          }, { onConflict: "property_id" });
+          const { error } = await supabase.rpc('link_landlord_atomic' as never, {
+            p_property_id: linkPropertyId, p_landlord_user_id: landlordUserId, p_revenue_share_pct: share
+          });
           if (error) throw error;
           return { type: "linked" };
         }
       }
 
-      const { error } = await supabase.from("landlord_invitations").insert({
-        property_id: linkPropertyId,
-        manager_id: user?.id,
-        email: inviteEmail.trim().toLowerCase(),
+      const { error } = await supabase.rpc('create_landlord_invitation_atomic' as never, {
+        p_property_id: linkPropertyId, p_email: inviteEmail.trim().toLowerCase()
       });
       if (error) throw error;
       return { type: "invited" };
@@ -188,7 +183,7 @@ const LandlordLinksManager = () => {
 
   const unlinkLandlord = useMutation({
     mutationFn: async (linkId: string) => {
-      const { error } = await supabase.from("property_landlords").delete().eq("id", linkId);
+      const { error } = await supabase.rpc('unlink_landlord_atomic' as never, { p_link_id: linkId });
       if (error) throw error;
     },
     onSuccess: () => {

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
   OPERATING_MODELS,
   type OperatingModel,
-  shouldSetLandlordAsPropertyOperator,
   paymentDestinationForModel,
 } from '@/shared/constants/authorityModels';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -36,7 +34,6 @@ interface PropertyAuthorityPanelProps {
 }
 
 const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propertyId, link }) => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -84,35 +81,12 @@ const PropertyAuthorityPanel: React.FC<PropertyAuthorityPanelProps> = ({ propert
         delegatedManagerId = null;
       }
 
-      const paymentDest = paymentDestinationForModel(operatingModel);
-
-      const { error: linkError } = await supabase
-        .from('property_landlords')
-        .update({
-          operating_model: operatingModel,
-          payment_destination: paymentDest,
-          revenue_share_pct: share,
-          management_fee_pct: managementFee,
-          allows_delegated_manager: allowsDelegate,
-          delegated_manager_id: delegatedManagerId,
-        })
-        .eq('id', link.id);
-      if (linkError) throw linkError;
-
-      let operatorId = user?.id ?? null;
-      if (shouldSetLandlordAsPropertyOperator(operatingModel)) {
-        operatorId = allowsDelegate && delegatedManagerId ? delegatedManagerId : link.landlord_user_id;
-      } else if (delegatedManagerId && allowsDelegate) {
-        operatorId = delegatedManagerId;
-      }
-
-      if (operatorId) {
-        const { error: propError } = await supabase
-          .from('properties')
-          .update({ manager_id: operatorId })
-          .eq('id', propertyId);
-        if (propError) throw propError;
-      }
+      const { error: authorityError } = await supabase.rpc('update_landlord_authority_atomic' as never, {
+        p_link_id: link.id, p_operating_model: operatingModel, p_revenue_share_pct: share,
+        p_management_fee_pct: managementFee, p_allows_delegated_manager: allowsDelegate,
+        p_delegated_manager_id: delegatedManagerId
+      });
+      if (authorityError) throw authorityError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['property-landlord', propertyId] });

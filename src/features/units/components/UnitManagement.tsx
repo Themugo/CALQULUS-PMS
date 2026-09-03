@@ -339,10 +339,9 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
 
     if (selectedUnit) {
       // Update
-      const { error } = await supabase
-        .from('units')
-        .update(unitData)
-        .eq("id", selectedUnit.id);
+      const { error } = await supabase.rpc('save_unit_atomic' as never, {
+        p_unit_id: selectedUnit.id, p_property_id: propertyId, p_unit_number: unitData.unit_number, p_payload: unitData
+      });
 
       if (error) {
         toast({
@@ -371,11 +370,9 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       }
     } else {
       // Create
-      const { data: createdUnit, error } = await supabase
-        .from('units')
-        .insert(unitData)
-        .select("id")
-        .single();
+      const { data: createdUnit, error } = await supabase.rpc('save_unit_atomic' as never, {
+        p_unit_id: null, p_property_id: propertyId, p_unit_number: unitData.unit_number, p_payload: unitData
+      });
 
       if (error) {
         toast({
@@ -413,10 +410,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   const handleDelete = async () => {
     if (!selectedUnit) return;
 
-    const { error } = await supabase
-      .from('units')
-      .update({ status: 'inactive' })
-      .eq("id", selectedUnit.id);
+    const { error } = await supabase.rpc('transition_unit_atomic' as never, { p_unit_id: selectedUnit.id, p_status: 'inactive' });
 
     if (error) {
       toast({
