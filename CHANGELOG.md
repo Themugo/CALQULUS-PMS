@@ -224,3 +224,9 @@ These were identified during the audit but not yet addressed:
 - Added concise portfolio/unit summary cards using live records only.
 - Preserved existing routes, queries, mutations, filters, and navigation.
 - Added a lightweight portfolio navigation UI regression test.
+
+## Phases 146–147 — Unit Detail UX + Lease Management UX
+- Added a focused unit detail sheet from the portfolio register, using live row data and direct workflow links.
+- Clarified the unit workflow from property to tenant and lease records without duplicating data-fetch logic.
+- Added shared dashboard hierarchy to the lease workspace and tightened its operational framing.
+- Preserved existing lease filters, sorting, creation, document, statement, and mutation flows.

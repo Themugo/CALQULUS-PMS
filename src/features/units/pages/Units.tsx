@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, CircleDollarSign, Home, Search, Users } from "lucide-react";
+import { Building2, CircleDollarSign, Home, Search, Users, ArrowRight, UserRound, FileText } from "lucide-react";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -31,6 +31,8 @@ import { fetchPortfolioUnits, type PortfolioUnitRow } from "@/features/units/lib
 import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
+import { Badge } from "@/shared/components/ui/badge";
 
 const unitStatusClass: Record<string, string> = {
   vacant: statusBadgeClass("success"),
@@ -51,6 +53,7 @@ const Units = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
+  const [selectedUnit, setSelectedUnit] = useState<PortfolioUnitRow | null>(null);
 
   const fetchRows = useCallback(async () => {
     if (!managerId) {
@@ -109,9 +112,9 @@ const Units = () => {
     >
       <div className="mb-6">
         <DashboardSectionHeader
-          eyebrow="Portfolio"
+          eyebrow="Portfolio / Units"
           title="Units at a glance"
-          description="Search the live unit register and move directly into the property record."
+          description="Find a unit, confirm its occupancy and financial position, then move into the right record."
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {[
@@ -229,6 +232,9 @@ const Units = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" className="mr-1 min-h-10" onClick={() => setSelectedUnit(row)}>
+                        View
+                      </Button>
                       {row.balance > 0 ? (
                         <span className="font-medium text-destructive">{formatCurrency(row.balance)}</span>
                       ) : (
@@ -245,6 +251,51 @@ const Units = () => {
           </div>
         </>
       )}
+
+      <Sheet open={!!selectedUnit} onOpenChange={(open) => !open && setSelectedUnit(null)}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          {selectedUnit && (
+            <>
+              <SheetHeader className="text-left">
+                <div className="flex items-center gap-2">
+                  <Badge className={cn(unitStatusClass[selectedUnit.status] || statusBadgeClass("neutral"))}>{selectedUnit.status}</Badge>
+                </div>
+                <SheetTitle className="text-xl">Unit {selectedUnit.unitNumber}</SheetTitle>
+                <SheetDescription>{selectedUnit.propertyName}</SheetDescription>
+              </SheetHeader>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-3">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current position</p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div><p className="text-muted-foreground">Tenant</p><p className="font-medium">{selectedUnit.tenantName || "Vacant"}</p></div>
+                    <div><p className="text-muted-foreground">Rent</p><p className="font-medium">{selectedUnit.rent != null ? formatCurrency(selectedUnit.rent) : "—"}</p></div>
+                    <div><p className="text-muted-foreground">Lease</p><p className="font-medium capitalize">{selectedUnit.leaseStatus || "No lease"}</p></div>
+                    <div><p className="text-muted-foreground">Balance</p><p className={cn("font-medium", selectedUnit.balance > 0 && "text-destructive")}>{selectedUnit.balance > 0 ? formatCurrency(selectedUnit.balance) : "Clear"}</p></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Continue workflow</p>
+                  <Button asChild variant="outline" className="w-full justify-between min-h-11">
+                    <Link to={`/properties/${selectedUnit.propertyId}?tab=units`}>
+                      <span className="flex items-center gap-2"><Home className="h-4 w-4" /> Property & unit record</span><ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  {selectedUnit.tenantName && (
+                    <Button asChild variant="outline" className="w-full justify-between min-h-11">
+                      <Link to="/tenants"><span className="flex items-center gap-2"><UserRound className="h-4 w-4" /> Tenant management</span><ArrowRight className="h-4 w-4" /></Link>
+                    </Button>
+                  )}
+                  {selectedUnit.leaseStatus && (
+                    <Button asChild variant="outline" className="w-full justify-between min-h-11">
+                      <Link to="/leases"><span className="flex items-center gap-2"><FileText className="h-4 w-4" /> Lease management</span><ArrowRight className="h-4 w-4" /></Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </Layout>
   );
 };

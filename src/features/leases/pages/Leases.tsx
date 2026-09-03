@@ -63,6 +63,7 @@ import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { LeaseStatements } from "@/features/leases/components/LeaseStatements";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -737,6 +738,13 @@ const Leases = () => {
         </Button>
       }
     >
+      <div className="mb-6">
+        <DashboardSectionHeader
+          eyebrow="Operations / Lease management"
+          title="Agreements at a glance"
+          description="Keep occupancy, expiry and rent commitments visible without leaving the lease workspace."
+        />
+      </div>
       <Tabs defaultValue="agreements" className="w-full">
         <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-2 sm:flex">
           <TabsTrigger value="agreements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
