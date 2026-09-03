@@ -8,7 +8,10 @@ const commands=[
  ['deployment','npm',['run','audit:deployment-controls']],
  ['release','npm',['run','audit:release-readiness']],
  ['live-migrations','npm',['run','reconcile:live-migrations']],
+ ['staging-e2e','npm',['run','staging:e2e']],
+ ['release-evidence','npm',['run','capture:release-evidence']],
  ['production-evidence','npm',['run','audit:production-evidence']],
+ ['release-evidence-gate','npm',['run','audit:release-evidence']],
 ];
 const results=[];
 for(const [name,cmd,args] of commands){

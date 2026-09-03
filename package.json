@@ -55,7 +55,10 @@
     "audit:production-environment": "node scripts/audit-production-environment.mjs",
     "deploy:preflight": "node scripts/deploy-preflight.mjs",
     "staging:smoke": "node scripts/staging-smoke-evidence.mjs",
-    "audit:production-evidence": "node scripts/audit-production-evidence.mjs"
+    "audit:production-evidence": "node scripts/audit-production-evidence.mjs",
+    "staging:e2e": "node scripts/staging-e2e-evidence.mjs",
+    "audit:release-evidence": "node scripts/audit-release-evidence.mjs",
+    "capture:release-evidence": "node scripts/capture-release-evidence.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

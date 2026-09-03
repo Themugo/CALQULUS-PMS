@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:37:24.698Z",
+  "generatedAt": "2026-09-03T13:38:18.613Z",
   "checks": [
     {
       "name": "prod",
@@ -44,7 +44,7 @@
     {
       "name": "release-evidence",
       "status": "FAIL",
-      "detail": "\n> calqulus-pms@1.0.0 audit:release-evidence\n> node scripts/audit-release-evidence.mjs\n\nrelease-evidence-audit: BLOCKED\n- missing: releaseCommit, stagingMigrationRun, stagingSmokeRun, stagingRestoreRun, productionApproval\n- possible credential/token field detected in evidence\n"
+      "detail": "\n> calqulus-pms@1.0.0 audit:release-evidence\n> node scripts/audit-release-evidence.mjs\n\nrelease-evidence-audit: BLOCKED\n- missing: releaseCommit, stagingMigrationRun, stagingSmokeRun, stagingRestoreRun, productionApproval\n"
     }
   ],
   "status": "BLOCKED",
