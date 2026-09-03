@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useManagerScope } from '@/shared/hooks/useManagerScope';
 import { DashboardGrid, DashboardWidget, DashboardKPI, DashboardAlertBanner } from '@/features/dashboard/framework';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -15,35 +16,45 @@ import { format, differenceInMinutes, subDays } from 'date-fns';
 
 export default function MaintenanceDashboard() {
   const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['maintenance-dashboard-data', user?.id],
+    queryKey: ['maintenance-dashboard-data', managerId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user || !managerId) return null;
+      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return { allRequests: [], urgentRequests: [], metrics: { pendingCount: 0, inProgressCount: 0, urgentCount: 0, completedCount: 0, avgDispatchHours: null } };
 
       const [
         { data: allRequests },
         { data: urgentRequests },
         { data: inProgressRequests },
         { data: completedRequests },
+        { data: scopedProperties },
       ] = await Promise.all([
-        supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description, provider_started_at, completion_date').order('created_at', { ascending: false }).limit(20),
-        supabase.from('maintenance_requests').select('id, title, priority, status, created_at').eq('priority', 'urgent').neq('status', 'completed'),
-        supabase.from('maintenance_requests').select('id').eq('status', 'in_progress'),
-        supabase.from('maintenance_requests').select('id, created_at, provider_started_at, completion_date').gte('created_at', subDays(new Date(), 90).toISOString()).eq('status', 'completed'),
+        (() => { let q = supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description, provider_started_at, completion_date, manager_id, property_name').eq('manager_id', managerId).order('created_at', { ascending: false }).limit(50); return q; })(),
+        supabase.from('maintenance_requests').select('id, title, priority, status, created_at, manager_id, property_name').eq('manager_id', managerId).eq('priority', 'urgent').neq('status', 'completed'),
+        supabase.from('maintenance_requests').select('id, manager_id, property_name').eq('manager_id', managerId).eq('status', 'in_progress'),
+        supabase.from('maintenance_requests').select('id, created_at, provider_started_at, completion_date, manager_id, property_name').eq('manager_id', managerId).gte('created_at', subDays(new Date(), 90).toISOString()).eq('status', 'completed'),
+        (() => { let q = supabase.from('properties').select('id, name').eq('manager_id', managerId); if (restrictToAssignedProperties) q = q.in('id', assignedPropertyIds); return q; })(),
       ]);
 
-      const pendingCount = (allRequests || []).filter(r => r.status === 'pending').length;
-      const inProgressCount = (inProgressRequests || []).length;
-      const urgentCount = (urgentRequests || []).length;
-      const completedCount = (completedRequests || []).length;
-      const completedWithDispatch = (completedRequests || []).filter(r => r.created_at && r.provider_started_at);
+      const scopedNames = new Set((scopedProperties || []).map((p: any) => p.name));
+      const inScope = (rows: any[]) => restrictToAssignedProperties ? rows.filter((r) => scopedNames.has(r.property_name)) : rows;
+      const scopedAllRequests = inScope(allRequests || []);
+      const scopedUrgentRequests = inScope(urgentRequests || []);
+      const scopedInProgressRequests = inScope(inProgressRequests || []);
+      const scopedCompletedRequests = inScope(completedRequests || []);
+      const pendingCount = scopedAllRequests.filter(r => r.status === 'pending').length;
+      const inProgressCount = scopedInProgressRequests.length;
+      const urgentCount = scopedUrgentRequests.length;
+      const completedCount = scopedCompletedRequests.length;
+      const completedWithDispatch = scopedCompletedRequests.filter(r => r.created_at && r.provider_started_at);
       const avgDispatchHours = completedWithDispatch.length > 0
         ? completedWithDispatch.reduce((sum, r) => sum + Math.max(0, differenceInMinutes(new Date(r.provider_started_at as string), new Date(r.created_at as string))), 0) / completedWithDispatch.length / 60
         : null;
       return {
-        allRequests: allRequests || [],
-        urgentRequests: urgentRequests || [],
+        allRequests: scopedAllRequests,
+        urgentRequests: scopedUrgentRequests,
         metrics: {
           pendingCount,
           inProgressCount,
@@ -64,7 +75,7 @@ export default function MaintenanceDashboard() {
       id: 'urgent-repair-alert',
       type: 'critical' as const,
       title: 'Urgent Maintenance Tickets Pending',
-      message: `${data?.metrics.urgentCount || 0} urgent tickets require immediate vendor dispatch (dispatch priority: urgent).`,
+      message: `${data?.metrics.urgentCount || 0} urgent tickets require immediate vendor dispatch (priority: urgent).`,
       count: data?.metrics.urgentCount || 0,
       actionLabel: 'Dispatch Vendor',
       onAction: () => window.location.href = '/maintenance',

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useManagerScope } from '@/shared/hooks/useManagerScope';
 import { DashboardGrid, DashboardWidget, DashboardKPI, DashboardAlertBanner } from '@/features/dashboard/framework';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -22,11 +23,15 @@ const fmt = (n: number) =>
 
 export default function AccountantDashboard() {
   const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['accountant-dashboard-data', user?.id],
+    queryKey: ['accountant-dashboard-data', managerId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user || !managerId) return null;
+      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+        return { pendingInvoices: [], overdueInvoices: [], recentPaidInvoices: [], pendingPayouts: [], properties: [], metrics: { totalPending: 0, totalOverdue: 0, totalCollected: 0, totalPendingPayouts: 0 }, financialTrends: [] };
+      }
 
       const [
         { data: pendingInvoices },
@@ -35,11 +40,11 @@ export default function AccountantDashboard() {
         { data: pendingPayouts },
         { data: properties },
       ] = await Promise.all([
-        supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id').eq('status', 'pending').limit(10),
-        supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id').eq('status', 'overdue').limit(10),
-        supabase.from('invoices').select('id, invoice_number, amount, paid_date, status').eq('status', 'paid').gte('paid_date', startOfMonth(subMonths(new Date(), 5)).toISOString()).order('paid_date', { ascending: false }).limit(1000),
-        supabase.from('payout_requests').select('id, amount, status, created_at, property_id').eq('status', 'pending').limit(10),
-        supabase.from('properties').select('id, name, occupied, units').limit(10),
+        (() => { let q = supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id, property_id').eq('manager_id', managerId).eq('status', 'pending').limit(10); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id, property_id').eq('manager_id', managerId).eq('status', 'overdue').limit(10); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('invoices').select('id, invoice_number, amount, paid_date, status, property_id').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', startOfMonth(subMonths(new Date(), 5)).toISOString()).order('paid_date', { ascending: false }).limit(1000); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('payout_requests').select('id, amount, status, created_at, property_id').eq('manager_id', managerId).eq('status', 'pending').limit(10); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('properties').select('id, name, occupied, units').eq('manager_id', managerId); if (restrictToAssignedProperties) q = q.in('id', assignedPropertyIds); return q.limit(10); })(),
       ]);
 
       const totalPending = (pendingInvoices || []).reduce((acc, inv) => acc + (Number(inv.balance_due) || Number(inv.amount) || 0), 0);
@@ -82,7 +87,7 @@ export default function AccountantDashboard() {
       id: 'overdue-alert',
       type: 'warning' as const,
       title: 'Overdue Receivables Alert',
-      message: `${data?.overdueInvoices.length || 0} invoices are overdue totaling ${fmt(data?.metrics.totalOverdue || 0)}. Automated reminders have been dispatched.`,
+      message: `${data?.overdueInvoices.length || 0} invoices are overdue totaling ${fmt(data?.metrics.totalOverdue || 0)}. Review the overdue queue and follow up on delinquent accounts.`,
       count: data?.overdueInvoices.length || 0,
       actionLabel: 'View Invoices',
       onAction: () => window.location.href = '/statements',
@@ -110,7 +115,7 @@ export default function AccountantDashboard() {
             </Badge>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Real-time ledger tracking, bank reconciliations, owner disbursements, and accounts receivable controls.
+            Ledger tracking, bank reconciliation, owner disbursements, and accounts receivable controls.
           </p>
         </div>
 
@@ -119,9 +124,9 @@ export default function AccountantDashboard() {
             <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
             Sync Ledger
           </Button>
-          <Button size="sm" className="gap-1.5 h-9 font-semibold">
+          <Button size="sm" className="gap-1.5 h-9 font-semibold" onClick={() => window.location.href = '/billing'}>
             <Download className="h-3.5 w-3.5" />
-            Export General Ledger
+            Open Financial Records
           </Button>
         </div>
       </div>

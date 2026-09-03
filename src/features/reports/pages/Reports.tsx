@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useManagerScope } from '@/shared/hooks/useManagerScope';
 import { Layout } from '@/shared/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Tabs, TabsContent } from '@/shared/components/ui/tabs';
@@ -45,6 +46,7 @@ const REPORT_TYPES = [
 
 const Reports: React.FC = () => {
   const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const [period, setPeriod] = useState('6');
   const [propertyId, setPropertyId] = useState('all');
   const [reportType, setReportType] = useState<string>('revenue');
@@ -52,23 +54,24 @@ const Reports: React.FC = () => {
   const [selectedReportTitle, setSelectedReportTitle] = useState("Executive Performance Statement");
 
   const { data: reportProperties = [] } = useQuery({
-    queryKey: ['reports-property-list', user?.id],
+    queryKey: ['reports-property-list', managerId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('properties')
         .select('id, name')
-        .eq('manager_id', user!.id)
+        .eq('manager_id', managerId)
         .eq('status', 'active')
         .order('name');
+      const scoped = restrictToAssignedProperties ? (data ?? []).filter((p) => assignedPropertyIds.includes(p.id)) : (data ?? []);
       if (error) throw error;
-      return data ?? [];
+      return scoped;
     },
-    enabled: !!user?.id,
+    enabled: !!managerId,
   });
 
   // ── Revenue trend ──────────────────────────────────────────
   const { data: revenueTrend = [], isLoading: revLoading } = useQuery({
-    queryKey: ['reports-revenue-trend', user?.id, period, propertyId],
+    queryKey: ['reports-revenue-trend', managerId, period, propertyId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
       const months = parseInt(period);
       return Promise.all(
@@ -79,9 +82,10 @@ const Reports: React.FC = () => {
           let query = supabase
             .from('invoices')
             .select('amount, paid_amount, status')
-            .eq('manager_id', user!.id)
+            .eq('manager_id', managerId)
             .gte('due_date', start)
             .lte('due_date', end);
+          if (restrictToAssignedProperties) query = query.in('property_id', assignedPropertyIds);
           if (propertyId !== 'all') {
             query = query.eq('property_id', propertyId);
           }
@@ -95,19 +99,22 @@ const Reports: React.FC = () => {
         })
       );
     },
-    enabled: !!user?.id,
+    enabled: !!managerId,
   });
 
   // ── Occupancy trend ────────────────────────────────────────
   const { data: occupancySummary, isLoading: occLoading } = useQuery({
-    queryKey: ['reports-occupancy', user?.id],
+    queryKey: ['reports-occupancy', managerId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
-      const { data: props } = await supabase
+      let propsQuery = supabase
         .from('properties')
         .select('id, name, units, occupied')
-        .eq('manager_id', user!.id)
+        .eq('manager_id', managerId)
         .eq('status', 'active')
         .order('name');
+      if (restrictToAssignedProperties) propsQuery = propsQuery.in('id', assignedPropertyIds);
+      const { data: props, error: propsError } = await propsQuery;
+      if (propsError) throw propsError;
 
       const items = (props || []).map(p => ({
         id: p.id,
@@ -122,19 +129,20 @@ const Reports: React.FC = () => {
       const totalOccupied = items.reduce((s, p) => s + p.occupied, 0);
       return { items, totalUnits, totalOccupied, overallRate: totalUnits > 0 ? Math.round((totalOccupied / totalUnits) * 100) : 0 };
     },
-    enabled: !!user?.id,
+    enabled: !!managerId,
   });
 
   // ── Arrears aging ──────────────────────────────────────────
   const { data: arrearsAging = [], isLoading: arrearsLoading } = useQuery({
-    queryKey: ['reports-arrears', user?.id, propertyId],
+    queryKey: ['reports-arrears', managerId, propertyId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
       let query = supabase
         .from('invoices')
         .select('balance_due, due_date')
-        .eq('manager_id', user!.id)
+        .eq('manager_id', managerId)
         .eq('status', 'overdue')
         .order('due_date');
+      if (restrictToAssignedProperties) query = query.in('property_id', assignedPropertyIds);
       if (propertyId !== 'all') {
         query = query.eq('property_id', propertyId);
       }
@@ -152,39 +160,41 @@ const Reports: React.FC = () => {
       }
       return Object.entries(buckets).map(([name, value]) => ({ name, value }));
     },
-    enabled: !!user?.id,
+    enabled: !!managerId,
   });
 
   // ── Revenue by property ────────────────────────────────────
   const { data: revenueByProp = [], isLoading: propRevLoading } = useQuery({
-    queryKey: ['reports-revenue-by-property', user?.id, period, propertyId],
+    queryKey: ['reports-revenue-by-property', managerId, period, propertyId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
       const months = parseInt(period);
-      const start  = startOfMonth(subMonths(new Date(), months - 1)).toISOString();
-
+      const start = startOfMonth(subMonths(new Date(), months - 1)).toISOString();
       let propsQuery = supabase
         .from('properties')
         .select('id, name')
-        .eq('manager_id', user!.id)
+        .eq('manager_id', managerId)
         .eq('status', 'active');
-      if (propertyId !== 'all') {
-        propsQuery = propsQuery.eq('id', propertyId);
-      }
-      const { data: props } = await propsQuery;
+      if (restrictToAssignedProperties) propsQuery = propsQuery.in('id', assignedPropertyIds);
+      if (propertyId !== 'all') propsQuery = propsQuery.eq('id', propertyId);
+      const { data: props, error: propsError } = await propsQuery;
+      if (propsError) throw propsError;
+      if (!props?.length) return [];
 
-      return Promise.all((props || []).map(async (p) => {
-        const { data: invs } = await supabase
-          .from('invoices')
-          .select('paid_amount')
-          .eq('property_id', p.id)
-          .eq('status', 'paid')
-          .gte('paid_date', start);
-
-        const total = (invs || []).reduce((s, i) => s + Number(i.paid_amount ?? 0), 0);
-        return { name: p.name.length > 18 ? p.name.slice(0, 16) + '…' : p.name, revenue: total };
-      }));
+      const propertyIds = props.map((p) => p.id);
+      let invoicesQuery = supabase
+        .from('invoices')
+        .select('property_id, paid_amount')
+        .eq('manager_id', managerId)
+        .eq('status', 'paid')
+        .gte('paid_date', start)
+        .in('property_id', propertyIds);
+      const { data: invs, error: invoicesError } = await invoicesQuery;
+      if (invoicesError) throw invoicesError;
+      const totals = new Map<string, number>();
+      for (const inv of invs ?? []) totals.set(inv.property_id, (totals.get(inv.property_id) ?? 0) + Number(inv.paid_amount ?? 0));
+      return props.map((p) => ({ name: p.name.length > 18 ? p.name.slice(0, 16) + '…' : p.name, revenue: totals.get(p.id) ?? 0 }));
     },
-    enabled: !!user?.id,
+    enabled: !!managerId,
   });
 
   const totalArrears = arrearsAging.reduce((s, b) => s + b.value, 0);

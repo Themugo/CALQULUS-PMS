@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useManagerScope } from '@/shared/hooks/useManagerScope';
 import { DashboardGrid, DashboardWidget, DashboardKPI, DashboardAlertBanner } from '@/features/dashboard/framework';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -15,11 +16,13 @@ import { format, subDays } from 'date-fns';
 
 export default function LeasingDashboard() {
   const { user } = useAuth();
+  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['leasing-dashboard-data', user?.id],
+    queryKey: ['leasing-dashboard-data', managerId, restrictToAssignedProperties, assignedPropertyIds],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user || !managerId) return null;
+      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return { expiringLeases: [], pendingInvites: [], metrics: { totalUnits: 0, totalOccupied: 0, vacantUnits: 0, occupancyRate: 0, activeLeaseCount: 0, expiringCount: 0, pendingInviteCount: 0 } };
 
       const [
         { data: activeLeases },
@@ -27,10 +30,10 @@ export default function LeasingDashboard() {
         { data: properties },
         { data: pendingInvites },
       ] = await Promise.all([
-        supabase.from('leases').select('id, monthly_rent, status, start_date, end_date').eq('status', 'active'),
-        supabase.from('leases').select('id, monthly_rent, status, end_date, unit').eq('status', 'expiring').limit(10),
-        supabase.from('properties').select('id, name, units, occupied'),
-        supabase.from('tenant_invitations').select('id, email, name, created_at, status').eq('status', 'pending').limit(10),
+        (() => { let q = supabase.from('leases').select('id, monthly_rent, status, start_date, end_date, property_id').eq('status', 'active'); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('leases').select('id, monthly_rent, status, end_date, unit, property_id').eq('status', 'expiring').limit(10); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('properties').select('id, name, units, occupied').eq('manager_id', managerId); if (restrictToAssignedProperties) q = q.in('id', assignedPropertyIds); return q; })(),
+        (() => { let q = supabase.from('tenant_invitations').select('id, email, tenant_name, created_at, status, property_id').eq('invited_by', managerId).eq('status', 'pending').limit(10); if (restrictToAssignedProperties) q = q.in('property_id', assignedPropertyIds); return q; })(),
       ]);
 
       const totalUnits = (properties || []).reduce((sum, p) => sum + (p.units || 0), 0);
@@ -121,7 +124,7 @@ export default function LeasingDashboard() {
         <DashboardKPI
           title="Leases Expiring Soon"
           value={data?.metrics.expiringCount || 0}
-          subtitle="Renewal offers ready"
+          subtitle="Review renewal or move-out action"
           icon={Clock}
           color="navy"
         />
@@ -169,7 +172,7 @@ export default function LeasingDashboard() {
                       <TableCell className="text-xs font-bold">{l.monthly_rent ? `KES ${l.monthly_rent}` : 'N/A'}</TableCell>
                       <TableCell className="text-right">
                         <Button size="sm" variant="outline" className="h-6 text-[11px]" onClick={() => window.location.href = '/leases'}>
-                          Send Renewal
+                          Review Lease
                         </Button>
                       </TableCell>
                     </TableRow>
