@@ -42,7 +42,10 @@
     "audit:migration-chain": "node scripts/audit-migration-chain.mjs",
     "audit:final-security": "node scripts/audit-final-security.mjs",
     "audit:migration-repair-plan": "node scripts/prepare-migration-repair-plan.mjs",
-    "audit:release-certificate": "node scripts/audit-release-certificate.mjs"
+    "audit:release-certificate": "node scripts/audit-release-certificate.mjs",
+    "audit:staging-readiness": "node scripts/audit-staging-readiness.mjs",
+    "audit:disaster-recovery": "node scripts/audit-disaster-recovery.mjs",
+    "audit:release-readiness": "node scripts/audit-release-readiness.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

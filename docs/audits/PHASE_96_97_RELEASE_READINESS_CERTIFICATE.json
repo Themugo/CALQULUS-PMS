@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-09-03T13:08:21.723Z",
+  "checks": [
+    {
+      "name": "prod",
+      "status": "PASS"
+    },
+    {
+      "name": "security",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-role",
+      "status": "PASS"
+    },
+    {
+      "name": "final-security",
+      "status": "PASS"
+    },
+    {
+      "name": "migration",
+      "status": "PASS"
+    },
+    {
+      "name": "staging",
+      "status": "PASS"
+    },
+    {
+      "name": "recovery",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "externalGates": [
+    "live migration history reconciliation",
+    "staging migration execution",
+    "staging restore test",
+    "role-isolation smoke test",
+    "production smoke test"
+  ]
+}
