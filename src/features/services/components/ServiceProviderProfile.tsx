@@ -125,35 +125,25 @@ const ServiceProviderProfile: React.FC = () => {
     mutationFn: async () => {
       if (!form.business_name.trim()) throw new Error('Business name is required');
 
-      const payload = {
-        user_id:           user!.id,
-        business_name:     form.business_name.trim(),
-        contact_name:      form.contact_name || null,
-        phone:             form.phone || null,
-        whatsapp:          form.whatsapp || null,
-        email:             form.email || null,
-        bio:               form.bio || null,
-        county:            form.county || null,
-        town:              form.town || null,
-        service_radius_km: parseInt(form.service_radius_km) || 20,
-        response_time_hrs: parseInt(form.response_time_hrs) || 24,
-        is_available:      form.is_available,
-        added_by:          user!.id,
-        added_by_role:     'self',
-        status:            'active',
-      };
-
-      if (providerId) {
-        await (supabase.from('service_providers').update(payload).eq('id', providerId));
-      } else {
-        const { data, error } = await (supabase.from('service_providers')
-          .insert(payload).select('id').single());
-        if (error) throw error;
-        const inserted = data as { id: string };
-        setProviderId(inserted.id);
-        return inserted.id;
-      }
-      return providerId;
+      const { data, error } = await supabase.rpc('save_service_provider_profile_atomic', {
+        p_payload: {
+          business_name: form.business_name.trim(),
+          contact_name: form.contact_name || null,
+          phone: form.phone || null,
+          whatsapp: form.whatsapp || null,
+          email: form.email || null,
+          bio: form.bio || null,
+          county: form.county || null,
+          town: form.town || null,
+          service_radius_km: parseInt(form.service_radius_km) || 20,
+          response_time_hrs: parseInt(form.response_time_hrs) || 24,
+          is_available: form.is_available,
+        },
+      });
+      if (error) throw error;
+      const id = (data as { provider_id: string }).provider_id;
+      setProviderId(id);
+      return id;
     },
     onSuccess: (id) => {
       toast({ title: 'Profile saved' });
@@ -177,11 +167,11 @@ const ServiceProviderProfile: React.FC = () => {
           rate_max:     entry.rate_max ? parseFloat(entry.rate_max) : null,
           rate_notes:   entry.rate_notes || null,
         };
-        if (entry.id) {
-          await (supabase.from('provider_services').update(row).eq('id', entry.id));
-        } else {
-          await (supabase.from('provider_services').upsert(row, { onConflict: 'provider_id,category_key' }));
-        }
+        const { error } = await supabase.rpc('save_provider_service_atomic', {
+          p_provider_id: pid,
+          p_payload: row,
+        });
+        if (error) throw error;
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] }),
@@ -190,7 +180,8 @@ const ServiceProviderProfile: React.FC = () => {
 
   const deleteService = useMutation({
     mutationFn: async (id: string) => {
-      await (supabase.from('provider_services').delete().eq('id', id));
+      const { error } = await supabase.rpc('delete_provider_service_atomic', { p_provider_service_id: id });
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] });
@@ -237,8 +228,12 @@ const ServiceProviderProfile: React.FC = () => {
             onCheckedChange={v => {
               setForm(p => ({ ...p, is_available: v }));
               if (providerId) {
-                (supabase.from('service_providers').update({ is_available: v }).eq('id', providerId))
-                  .then(() => queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] }));
+                supabase.rpc('save_service_provider_profile_atomic', {
+                  p_payload: { ...form, is_available: v, service_radius_km: parseInt(form.service_radius_km) || 20, response_time_hrs: parseInt(form.response_time_hrs) || 24 },
+                }).then(({ error }) => {
+                  if (error) errorToast('Availability update failed', error);
+                  else queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] });
+                });
               }
             }}
           />
