@@ -127,13 +127,7 @@ const Settings = () => {
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("profile-photos").getPublicUrl(fileName);
       const newPhotoUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: user.id,
-        email: user.email,
-        full_name: fullName || user.user_metadata?.full_name || "",
-        phone: phone || null,
-        photo_url: newPhotoUrl,
-      });
+      const { error: profileError } = await supabase.rpc('update_profile_photo_atomic' as never, { p_photo_url: newPhotoUrl });
       if (profileError) throw profileError;
       setPhotoUrl(newPhotoUrl);
       toast({ title: "Photo Uploaded", description: "Your profile photo has been updated." });
@@ -158,7 +152,7 @@ const Settings = () => {
         const { error: removeError } = await supabase.storage.from("profile-photos").remove([filePath]);
         if (removeError) throw removeError;
       }
-      const { error: profileError } = await supabase.from("profiles").update({ photo_url: null }).eq("id", user.id);
+      const { error: profileError } = await supabase.rpc('update_profile_photo_atomic' as never, { p_photo_url: null });
       if (profileError) throw profileError;
       setPhotoUrl(null);
       toast({ title: "Photo Removed", description: "Your profile photo has been removed." });

@@ -95,17 +95,13 @@ const UnitKeyTracker: React.FC<UnitKeyTrackerProps> = ({
     mutationFn: async () => {
       if (!returnOpen) return;
       const isLost = returnForm.return_condition === 'lost';
-      const { error } = await supabase
-        .from('unit_key_records')
-        .update({
-          returned_date:         returnForm.returned_date,
-          returned_to:           user!.id,
-          return_condition:      returnForm.return_condition,
-          replacement_cost:      returnForm.replacement_cost ? Number(returnForm.replacement_cost) : null,
-          deducted_from_deposit: returnForm.deducted_from_deposit,
-          status:                isLost ? 'lost' : 'returned',
-        })
-        .eq('id', returnOpen.id);
+      const { error } = await supabase.rpc('return_unit_key_atomic' as never, {
+        p_key_id: returnOpen.id,
+        p_returned_date: returnForm.returned_date,
+        p_return_condition: returnForm.return_condition,
+        p_replacement_cost: returnForm.replacement_cost ? Number(returnForm.replacement_cost) : null,
+        p_deducted_from_deposit: returnForm.deducted_from_deposit,
+      });
       if (error) throw error;
     },
     onSuccess: () => {

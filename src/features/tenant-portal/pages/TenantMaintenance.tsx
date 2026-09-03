@@ -143,7 +143,7 @@ const TenantMaintenance = () => {
   const uploadPhotos = async (files: File[]): Promise<string[]> => {
     const urls: string[] = [];
     for (const file of files) {
-      const path = `maintenance/${Date.now()}-${file.name.replace(/\s/g, '-')}`;
+      const path = `maintenance/${user!.id}/${Date.now()}-${file.name.replace(/\s/g, '-')}`;
       const { error } = await supabase.storage.from('maintenance-photos').upload(path, file, { upsert: true });
       if (!error) {
         const {

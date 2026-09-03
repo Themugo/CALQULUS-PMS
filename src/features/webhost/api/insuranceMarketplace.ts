@@ -228,21 +228,15 @@ export const insuranceMarketplaceService = {
    * Create a new insurance claim
    */
   async createInsuranceClaim(claim: Omit<InsuranceClaim, 'id' | 'submittedDate'>): Promise<InsuranceClaim | null> {
-    const { data, error } = await supabase
-      .from('insurance_claims')
-      .insert({
-        policy_id: claim.policyId,
-        provider_id: claim.providerId,
-        property_id: claim.propertyId,
-        claim_type: claim.claimType,
-        description: claim.description,
-        claim_amount: claim.claimAmount,
-        approved_amount: claim.approvedAmount,
-        status: claim.status,
-        documents: claim.documents,
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('create_insurance_claim_atomic' as never, {
+      p_policy_id: claim.policyId,
+      p_provider_id: claim.providerId,
+      p_property_id: claim.propertyId,
+      p_claim_type: claim.claimType,
+      p_description: claim.description,
+      p_claim_amount: claim.claimAmount,
+      p_documents: claim.documents ?? null,
+    });
 
     if (error) {
       logError('Error creating insurance claim:', error);
@@ -264,17 +258,12 @@ export const insuranceMarketplaceService = {
    * Update an insurance claim
    */
   async updateInsuranceClaim(id: string, updates: Partial<InsuranceClaim>): Promise<InsuranceClaim | null> {
-    const { data, error } = await supabase
-      .from('insurance_claims')
-      .update({
-        status: updates.status,
-        approved_amount: updates.approvedAmount,
-        approved_date: updates.approvedDate?.toISOString(),
-        paid_date: updates.paidDate?.toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const targetStatus = updates.status || 'under_review';
+    const { data, error } = await supabase.rpc('transition_insurance_claim_atomic' as never, {
+      p_claim_id: id,
+      p_target_status: targetStatus,
+      p_approved_amount: updates.approvedAmount ?? null,
+    });
 
     if (error) {
       logError('Error updating insurance claim:', error);

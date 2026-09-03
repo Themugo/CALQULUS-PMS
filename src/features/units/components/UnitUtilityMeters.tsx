@@ -125,9 +125,9 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
 
   const toggleActive = useMutation({
     mutationFn: async (meter: UtilityMeter) => {
-      const { error } = await (supabase.from('unit_utility_meters') as any)
-        .update({ is_active: !meter.is_active })
-        .eq('id', meter.id);
+      const { error } = await supabase.rpc('set_unit_utility_meter_active_atomic' as never, {
+        p_meter_id: meter.id, p_is_active: !meter.is_active,
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),

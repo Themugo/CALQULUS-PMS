@@ -201,18 +201,11 @@ const TenantWaterPortal: React.FC = () => {
       });
       if (error) throw error;
 
-      await supabase
-        .from('in_app_notifications')
-        .insert({
-          user_id: tenantInfo!.tenant.manager_id,
-          manager_id: tenantInfo!.tenant.manager_id,
-          title: 'Meter reading submitted',
-          body: `${tenantInfo!.tenant.name} submitted a water meter reading for Unit ${tenantInfo!.tenant.unit}: ${curr} m³ (consumption: ${consumption} m³)`,
-          type: 'info',
-          source: 'system',
-          reference_type: 'water_meter',
-        })
-        .catch(() => {});
+      await supabase.rpc('notify_manager_of_tenant_meter_reading_atomic' as never, {
+        p_unit_id: tenantInfo!.tenant.unit_id,
+        p_reading: curr,
+        p_consumption: consumption,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-water-readings'] });

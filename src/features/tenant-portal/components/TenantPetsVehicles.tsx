@@ -112,19 +112,10 @@ const TenantPetsVehicles: React.FC = () => {
       });
       if (error) throw error;
 
-      if (tenantData?.manager_id) {
-        await supabase
-          .from('in_app_notifications')
-          .insert({
-            user_id: tenantData.manager_id,
-            manager_id: tenantData.manager_id,
-            title: 'Vehicle registration request',
-            body: `Tenant registered vehicle ${vehicleForm.plate_number.toUpperCase()} (${vehicleForm.colour} ${vehicleForm.make} ${vehicleForm.model}) — approval required.`,
-            type: 'info',
-            source: 'system',
-          })
-          .catch(() => {});
-      }
+      await supabase.rpc('notify_manager_of_tenant_vehicle_request_atomic' as never, {
+        p_plate_number: vehicleForm.plate_number.trim().toUpperCase(),
+        p_vehicle_description: `${vehicleForm.plate_number.toUpperCase()} (${vehicleForm.colour} ${vehicleForm.make} ${vehicleForm.model})`,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-vehicles'] });
