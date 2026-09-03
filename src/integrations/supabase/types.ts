@@ -6785,6 +6785,9 @@ export type Database = {
         Returns: Json
       }
       ensure_landlord_wallet_atomic: { Args: { p_landlord_user_id: string; p_currency?: string | null }; Returns: Json }
+      append_payment_log_atomic: { Args: { p_payment_id: string; p_event_type: string; p_event_data?: Json }; Returns: Database["public"]["Tables"]["payment_logs"]["Row"] }
+      record_commission_atomic: { Args: { p_invoice_id: string; p_manager_id: string; p_amount: number; p_rate_applied: number }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
+      transition_commission_atomic: { Args: { p_commission_id: string; p_status: string }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
       record_landlord_wallet_transaction_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_type: string; p_reference_type?: string | null; p_reference_id?: string | null; p_description?: string | null }; Returns: Json }
       create_dispute_atomic: {
         Args: { p_tenant_id: string; p_invoice_id?: string | null; p_reason: string; p_evidence_urls?: string[] }

@@ -1,40 +1,27 @@
 import { supabase } from "@/integrations/supabase/client";
 
+/** Append-only payment audit events. Financial state changes belong to the canonical payment RPCs. */
 export const paymentLogger = {
   async logPayment(data: {
-    invoiceId: string;
-    tenantId: string;
-    landlordId: string;
-    amount: number;
-    method: string;
-    transactionCode: string;
-    phone: string;
+    paymentId: string;
+    eventType: string;
+    eventData?: Record<string, unknown>;
   }) {
-    // 1. Save payment
-    const { data: payment } = await supabase
-      .from("payment_logs")
-      .insert({
-        invoice_id: data.invoiceId,
-        tenant_id: data.tenantId,
-        landlord_id: data.landlordId,
-        amount: data.amount,
-        method: data.method,
-        transaction_code: data.transactionCode,
-        phone_number: data.phone,
-        status: "pending",
-      })
-      .select()
-      .single();
+    const { data: paymentLog, error } = await supabase.rpc("append_payment_log_atomic", {
+      p_payment_id: data.paymentId,
+      p_event_type: data.eventType,
+      p_event_data: data.eventData ?? {},
+    });
 
-    return payment;
+    if (error) throw error;
+    return paymentLog;
   },
 
   async markVerified(paymentId: string) {
-    await supabase
-      .from("payment_logs")
-      .update({ status: "verified" })
-      .eq("id", paymentId);
-
+    await this.logPayment({
+      paymentId,
+      eventType: "verified",
+    });
     return true;
   },
 };
