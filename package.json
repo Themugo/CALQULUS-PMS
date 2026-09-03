@@ -61,7 +61,9 @@
     "capture:release-evidence": "node scripts/capture-release-evidence.mjs",
     "audit:staging-bootstrap": "node scripts/audit-staging-bootstrap.mjs",
     "verify:migration-integrity": "node scripts/verify-migration-integrity.mjs",
-    "audit:schema-drift": "node scripts/audit-schema-drift.mjs"
+    "audit:schema-drift": "node scripts/audit-schema-drift.mjs",
+    "audit:staging-connectivity": "node scripts/audit-staging-connectivity.mjs",
+    "audit:live-rls": "node scripts/audit-live-rls.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
