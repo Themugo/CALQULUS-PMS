@@ -6778,6 +6778,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      self_register_tenant_atomic: { Args: { p_name: string; p_phone?: string | null }; Returns: string }
       save_manager_bank_details_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: string }
       delete_manager_bank_details_atomic: { Args: { p_id: string }; Returns: boolean }
       save_manager_ewallet_settings_atomic: { Args: { p_payload: Json }; Returns: string }

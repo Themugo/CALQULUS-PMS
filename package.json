@@ -37,7 +37,8 @@
     "smoke:deploy": "node scripts/smoke-deploy.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test:all && npm run build && npm audit --audit-level=high && npm run audit:prod",
     "preview": "vite preview",
-    "audit:security-boundary": "node scripts/security-boundary-audit.mjs"
+    "audit:security-boundary": "node scripts/security-boundary-audit.mjs",
+    "audit:cross-role": "node scripts/cross-role-isolation-audit.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

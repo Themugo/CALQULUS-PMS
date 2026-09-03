@@ -40,8 +40,16 @@ serve(
       }
 
       // Tenants can only file disputes on their own account
-      if (ctx.user!.role === "tenant" && tenantId !== ctx.user!.id) {
-        throw new AuthorizationError("You can only file disputes on your own account");
+      if (ctx.user!.role === "tenant") {
+        const { data: ownTenantRole } = await ctx.supabase
+          .from("user_roles")
+          .select("tenant_id")
+          .eq("user_id", ctx.user!.id)
+          .eq("role", "tenant")
+          .maybeSingle();
+        if (!ownTenantRole?.tenant_id || tenantId !== ownTenantRole.tenant_id) {
+          throw new AuthorizationError("You can only file disputes on your own account");
+        }
       }
 
       let effectiveManagerId: string | null = managerId ?? null;
