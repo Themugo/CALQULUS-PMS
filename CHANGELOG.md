@@ -283,3 +283,9 @@ These were identified during the audit but not yet addressed:
 - Applied the shared workflow to Properties, Units, Tenants and Maintenance.
 - Preserved existing filtering, sorting, pagination and data-fetching logic.
 - Added accessible live filter status and clear-search controls.
+
+## Phases 170–171 — Navigation IA & Role UX
+- Added explicit workspace context labels to the manager sidebar.
+- Added accessible relationships between portal navigation groups and their headings.
+- Strengthened visible keyboard focus treatment on portal navigation links.
+- Preserved role-based route filtering, active-route behavior, permissions and navigation data.

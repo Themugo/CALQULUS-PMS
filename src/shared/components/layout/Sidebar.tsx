@@ -207,6 +207,16 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { favorites } = useNavHistory();
   const [collapsed, setCollapsed] = useState(false);
 
+  const workspaceLabel = isWebhost
+    ? "Platform control"
+    : isAgency
+    ? "Agency workspace"
+    : isLandlord
+    ? "Landlord workspace"
+    : isTenant
+    ? "Tenant workspace"
+    : "Property management";
+
   const rawNavGroups = isWebhost
     ? webhostNavGroups
     : isAgency
@@ -333,6 +343,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
 
           {/* Regular Groups */}
+          {!collapsed && (
+            <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted">
+              {workspaceLabel}
+            </div>
+          )}
           {navGroups.map((group, groupIdx) => (
             <div key={groupIdx} className="space-y-0.5">
               {!collapsed && group.title && (

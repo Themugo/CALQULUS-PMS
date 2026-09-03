@@ -122,9 +122,10 @@ export function PortalDeskShell({
         <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label={navLabel}>
           {navGroups.map((group) => {
             if (group.items.length === 0) return null;
+            const groupId = `nav-group-${group.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
             return (
-              <div key={group.label} className="space-y-0.5">
-                <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <div key={group.label} className="space-y-0.5" aria-labelledby={groupId}>
+                <p id={groupId} className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   {group.label}
                 </p>
                 {group.items.map((item) => {
@@ -137,7 +138,7 @@ export function PortalDeskShell({
                       onClick={closeSidebar}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                        "group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-card",
                         deskNavClass(active),
                       )}
                     >
