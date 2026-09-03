@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:54:33.878Z",
+  "generatedAt": "2026-09-03T13:59:58.649Z",
   "status": "EXTERNAL_REQUIRED",
   "baseUrl": null,
   "testFile": "e2e/phase104-authenticated-isolation.spec.ts",

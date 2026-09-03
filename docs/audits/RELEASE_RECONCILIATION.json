@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-09-03T13:59:59.524Z",
+  "status": "BLOCKED",
+  "requiredExternalEvidence": [
+    "releaseCommit",
+    "stagingMigrationRun",
+    "stagingSmokeRun",
+    "stagingRestoreRun",
+    "productionApproval"
+  ],
+  "missingExternalEvidence": [
+    "releaseCommit",
+    "stagingMigrationRun",
+    "stagingSmokeRun",
+    "stagingRestoreRun",
+    "productionApproval"
+  ],
+  "automatedChecks": {
+    "migrationReconciliation": "EXTERNAL_REQUIRED",
+    "stagingSmoke": "EXTERNAL_REQUIRED",
+    "stagingE2E": "EXTERNAL_REQUIRED",
+    "stagingRoleCertification": "EXTERNAL_REQUIRED",
+    "liveSecurity": "EXTERNAL_REQUIRED"
+  },
+  "liveMigration": "EXTERNAL_REQUIRED",
+  "liveSecurity": "EXTERNAL_REQUIRED",
+  "evidenceSecretScan": "PASS",
+  "evidenceSha256": "ed8afc751e1b46a1912d5c8cfd14580c2b511113ce72f5459e6f0b031e436b41",
+  "rule": "External deployment, restore, and approval evidence must be explicit. Repository automation cannot manufacture production proof."
+}
