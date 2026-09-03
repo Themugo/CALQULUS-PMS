@@ -142,15 +142,16 @@ const OrphanTenantHome: React.FC = () => {
   const addPayment = useMutation({
     mutationFn: async () => {
       if (!payForm.amount) throw new Error('Enter an amount');
-      await supabase.from('orphan_payment_entries').insert({
-        user_id: user!.id,
-        record_id: record?.id ?? null,
-        payment_date: payForm.payment_date,
-        amount: parseFloat(payForm.amount),
-        payment_method: payForm.payment_method,
-        reference: payForm.reference || null,
-        description: payForm.description || null,
+      const { error } = await supabase.rpc('record_orphan_payment_atomic', {
+        p_user_id: user!.id,
+        p_record_id: record?.id ?? null,
+        p_payment_date: payForm.payment_date,
+        p_amount: parseFloat(payForm.amount),
+        p_payment_method: payForm.payment_method,
+        p_reference: payForm.reference || null,
+        p_description: payForm.description || null,
       });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Payment recorded' });
@@ -178,7 +179,11 @@ const OrphanTenantHome: React.FC = () => {
       const {
         data: { publicUrl },
       } = supabase.storage.from('maintenance-photos').getPublicUrl(path);
-      await supabase.from('orphan_payment_entries').update({ receipt_photo: publicUrl }).eq('id', paymentId);
+      const { error: receiptError } = await supabase.rpc('attach_orphan_payment_receipt_atomic', {
+        p_payment_id: paymentId,
+        p_receipt_photo: publicUrl,
+      });
+      if (receiptError) throw receiptError;
       queryClient.invalidateQueries({ queryKey: ['orphan-payments'] });
       toast({ title: 'Receipt uploaded' });
     } catch (err: unknown) {

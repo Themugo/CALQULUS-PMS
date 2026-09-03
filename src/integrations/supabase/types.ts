@@ -6727,6 +6727,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_landlord_invoice_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_invoice_type?: string; p_description?: string | null; p_due_date?: string | null; p_manager_user_id?: string | null; p_property_id?: string | null; p_period_start?: string | null; p_period_end?: string | null }; Returns: Json }
+      transition_landlord_invoice_atomic: { Args: { p_invoice_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null }; Returns: Json }
+      record_orphan_payment_atomic: { Args: { p_user_id: string; p_record_id?: string | null; p_payment_date: string; p_amount: number; p_payment_method?: string | null; p_reference?: string | null; p_description?: string | null }; Returns: Json }
+      attach_orphan_payment_receipt_atomic: { Args: { p_payment_id: string; p_receipt_photo: string }; Returns: Json }
       create_payout_request_atomic: {
         Args: { p_property_id: string; p_landlord_user_id: string; p_amount: number; p_period_start: string; p_period_end: string; p_notes?: string | null }
         Returns: Json

@@ -86,17 +86,13 @@ const LandlordBilling: React.FC = () => {
   const createInvoice = useMutation({
     mutationFn: async () => {
       if (!form.landlord_user_id || !form.amount) throw new Error('Landlord and amount are required');
-      const invNum = `LAND-${Date.now().toString(36).toUpperCase()}`;
-      const { error } = await (supabase.from('landlord_invoices').insert({
-        landlord_user_id: form.landlord_user_id,
-        webhost_user_id:  user!.id,
-        invoice_number:   invNum,
-        invoice_type:     form.invoice_type,
-        amount:           parseFloat(form.amount),
-        description:      form.description || null,
-        due_date:         form.due_date,
-        status:           'pending',
-      }));
+      const { error } = await supabase.rpc('create_landlord_invoice_atomic', {
+        p_landlord_user_id: form.landlord_user_id,
+        p_amount: parseFloat(form.amount),
+        p_invoice_type: form.invoice_type,
+        p_description: form.description || null,
+        p_due_date: form.due_date,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -111,9 +107,10 @@ const LandlordBilling: React.FC = () => {
   // Mark paid
   const markPaid = useMutation({
     mutationFn: async (id: string) => {
-      await (supabase.from('landlord_invoices').update({
-        status: 'paid', paid_date: new Date().toISOString().slice(0, 10),
-      }).eq('id', id));
+      const { error } = await supabase.rpc('transition_landlord_invoice_atomic', {
+        p_invoice_id: id, p_target_status: 'paid', p_payment_method: 'manual', p_payment_reference: `WEBHOST-${id}`,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Invoice marked as paid' });
@@ -124,7 +121,10 @@ const LandlordBilling: React.FC = () => {
   // Waive invoice
   const waiveInvoice = useMutation({
     mutationFn: async (id: string) => {
-      await (supabase.from('landlord_invoices').update({ status: 'waived' }).eq('id', id));
+      const { error } = await supabase.rpc('transition_landlord_invoice_atomic', {
+        p_invoice_id: id, p_target_status: 'waived', p_payment_method: null, p_payment_reference: null,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Invoice waived' });
