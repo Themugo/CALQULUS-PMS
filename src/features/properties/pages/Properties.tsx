@@ -55,6 +55,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { ImageUpload } from "@/shared/components/ui/image-upload";
+import { FormSection } from "@/shared/components/ui/form-section";
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { propertySchema, formatValidationErrors } from "@/shared/lib/validations";
@@ -629,14 +630,15 @@ const Properties = () => {
             <DialogTitle className="font-heading text-foreground">Add New Property</DialogTitle>
             <DialogDescription>Enter the property details to add it to your portfolio.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="space-y-4 py-4">
+            <FormSection title="Property identity" description="The core details used across your portfolio and tenant records.">
             <div className="grid gap-2">
-              <Label htmlFor="name">Property Name *</Label>
-              <Input id="name" value={newProperty.name} onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })} placeholder="Sunset Apartments" className="bg-background border-border" />
+              <Label htmlFor="name">Property Name <span aria-hidden="true">*</span></Label>
+              <Input required autoComplete="organization" id="name" value={newProperty.name} onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })} placeholder="Sunset Apartments" className="bg-background border-border" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="address">Address *</Label>
-              <Input id="address" value={newProperty.address} onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })} placeholder="1234 Main St, City, State ZIP" className="bg-background border-border" />
+              <Input required autoComplete="street-address" id="address" value={newProperty.address} onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })} placeholder="1234 Main St, City, State ZIP" className="bg-background border-border" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -673,6 +675,8 @@ const Properties = () => {
                 <Input id="floors" type="number" min="1" value={newProperty.number_of_floors} onChange={(e) => setNewProperty({ ...newProperty, number_of_floors: e.target.value })} placeholder="e.g., 3" className="bg-background border-border" />
               </div>
             </div>
+            </FormSection>
+            <FormSection title="Property setup" description="Define the unit structure and default rental information.">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="units">Number of Units</Label>
@@ -693,6 +697,8 @@ const Properties = () => {
                 <Input id="house-label-prefix" value={newProperty.house_label_prefix} onChange={(e) => setNewProperty({ ...newProperty, house_label_prefix: e.target.value })} placeholder="e.g., HSE, APT" className="bg-background border-border" />
               </div>
             </div>
+            </FormSection>
+            <FormSection title="Tenant-facing details" description="Optional instructions and imagery shown alongside the property record.">
             <div className="grid gap-2">
               <Label htmlFor="payment-details">Payment Details</Label>
               <Input id="payment-details" value={newProperty.payment_details} onChange={(e) => setNewProperty({ ...newProperty, payment_details: e.target.value })} placeholder="e.g., Pay via M-Pesa to 123456" className="bg-background border-border" />
@@ -706,6 +712,7 @@ const Properties = () => {
               label="Property Image"
               placeholder="Upload or paste image URL"
             />
+            </FormSection>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>Cancel</Button>
@@ -785,15 +792,18 @@ const Properties = () => {
             <DialogTitle className="font-heading text-foreground">Edit Property</DialogTitle>
             <DialogDescription>Update the property information.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="space-y-4 py-4">
+            <FormSection title="Property identity" description="Keep the portfolio record accurate and easy to recognize.">
             <div className="grid gap-2">
-              <Label htmlFor="edit-name">Property Name *</Label>
-              <Input id="edit-name" value={editFormData.name} onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })} placeholder="Sunset Apartments" className="bg-background border-border" />
+              <Label htmlFor="edit-name">Property Name <span aria-hidden="true">*</span></Label>
+              <Input required autoComplete="organization" id="edit-name" value={editFormData.name} onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })} placeholder="Sunset Apartments" className="bg-background border-border" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-address">Address *</Label>
-              <Input id="edit-address" value={editFormData.address} onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })} placeholder="1234 Main St, City, State ZIP" className="bg-background border-border" />
+              <Input required autoComplete="street-address" id="edit-address" value={editFormData.address} onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })} placeholder="1234 Main St, City, State ZIP" className="bg-background border-border" />
             </div>
+            </FormSection>
+            <FormSection title="Property setup" description="Update the unit structure, type and default rental settings.">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-house-number">House Number</Label>
@@ -852,6 +862,8 @@ const Properties = () => {
               <Input id="edit-payment-details" value={editFormData.payment_details} onChange={(e) => setEditFormData({ ...editFormData, payment_details: e.target.value })} placeholder="e.g., Pay via M-Pesa to 123456, Acc: Property Name" className="bg-background border-border" />
               <p className="text-xs text-muted-foreground">Payment instructions shown to tenants</p>
             </div>
+            </FormSection>
+            <FormSection title="Tenant-facing details" description="Optional payment instructions and property imagery.">
             <ImageUpload
               value={editFormData.image_url}
               onChange={(url) => setEditFormData({ ...editFormData, image_url: url })}
@@ -860,6 +872,7 @@ const Properties = () => {
               label="Property Image"
               placeholder="Upload or paste image URL"
             />
+            </FormSection>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSaving}>Cancel</Button>

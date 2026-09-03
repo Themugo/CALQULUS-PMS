@@ -32,6 +32,7 @@ import { statusBadgeClass } from "@/shared/lib/statusBadge";
 import { invoiceOwedMinor, fromMinorUnits } from "@/shared/lib/money";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
+import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 
 type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "failed" | "refunded";
 
@@ -125,6 +126,7 @@ export function InvoiceTable({
 
   return (
     <>
+      <DataTableFrame minWidth="min-w-[820px]">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-border">
@@ -301,6 +303,7 @@ export function InvoiceTable({
           })}
         </TableBody>
       </Table>
+      </DataTableFrame>
       <TablePager page={slice} onPageChange={setPage} noun="invoices" />
     </>
   );
