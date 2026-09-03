@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-09-03T13:22:49.457Z",
+  "status": "BLOCKED",
+  "checks": [
+    {
+      "name": "deployment",
+      "status": "PASS",
+      "output": "\n> calqulus-pms@1.0.0 audit:deployment-controls\n> node scripts/audit-deployment-controls.mjs\n\ndeployment-controls: PASS\n- migrations: 158\n- destructive migration candidates: 58\n- verify_jwt=false functions: 36\n- git: not available in packaged workspace (external clean-commit gate required)\n"
+    },
+    {
+      "name": "release",
+      "status": "PASS",
+      "output": "\n> calqulus-pms@1.0.0 audit:release-readiness\n> node scripts/audit-release-readiness.mjs\n\nrelease-readiness: PASS\nPASS prod\nPASS security\nPASS cross-role\nPASS final-security\nPASS migration\nPASS staging\nPASS recovery\nPASS observability\nPASS edge-reliability\nPASS operations\n"
+    },
+    {
+      "name": "live-migrations",
+      "status": "PASS",
+      "output": "\n> calqulus-pms@1.0.0 reconcile:live-migrations\n> node scripts/reconcile-live-migrations.mjs\n\nlive-migration-reconciliation: EXTERNAL_REQUIRED\n"
+    }
+  ],
+  "missingEvidence": [
+    "releaseCommit"
+  ],
+  "decision": "Record external staging/recovery/approval evidence before production promotion."
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:16:54.509Z",
+  "generatedAt": "2026-09-03T13:22:49.307Z",
   "functionCount": 91,
   "publicJwtDisabledFunctions": [
     "send-overdue-notifications",

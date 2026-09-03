@@ -48,7 +48,10 @@
     "audit:release-readiness": "node scripts/audit-release-readiness.mjs",
     "audit:observability": "node scripts/audit-observability.mjs",
     "audit:operations-readiness": "node scripts/audit-operations-readiness.mjs",
-    "audit:edge-reliability": "node scripts/audit-edge-reliability.mjs"
+    "audit:edge-reliability": "node scripts/audit-edge-reliability.mjs",
+    "audit:deployment-controls": "node scripts/audit-deployment-controls.mjs",
+    "reconcile:live-migrations": "node scripts/reconcile-live-migrations.mjs",
+    "audit:go-live": "node scripts/audit-go-live.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
