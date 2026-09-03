@@ -140,75 +140,37 @@ const ManagerManagement: React.FC = () => {
     mutationFn: async () => {
       if (!actionDialog) return;
       const { manager, type } = actionDialog;
-
-      const logEntry = async (newStatus: string) => {
-        try {
-          await supabase.from('manager_status_log').insert({
-            manager_user_id: manager.user_id, changed_by: user!.id, changed_by_role: 'webhost',
-            old_status: manager.approval_status, new_status: newStatus, reason: actionReason || null,
-          });
-        } catch (_) { /* non-critical */ }
-      };
+      const action = type === 'unsuspend' ? 'reinstate' : type;
+      const { error } = await supabase.rpc('transition_manager_admin_atomic', {
+        p_manager_user_id: manager.user_id,
+        p_action: action,
+        p_reason: actionReason || null,
+        p_subscription_tier: type === 'set_tier' ? actionTier : null,
+      });
+      if (error) throw error;
 
       if (type === 'approve') {
-        await supabase.from('user_roles').update({ approval_status: 'approved' }).eq('user_id', manager.user_id).eq('role', 'manager');
-        await supabase.from('manager_profiles').upsert({ manager_user_id: manager.user_id, status: 'approved', approval_notes: actionReason || null, approved_at: new Date().toISOString(), approved_by: user!.id }, { onConflict: 'manager_user_id' });
-        await logEntry('approved');
         await supabase.functions.invoke('send-manager-approval-notification', { body: { managerId: manager.user_id, status: 'approved', managerEmail: manager.email, managerName: manager.full_name, note: actionReason } }).catch(() => {});
-
-        // Auto-create service agreement contract for newly approved manager
         try {
           await supabase.rpc('create_manager_contract_atomic', {
             p_manager_user_id: manager.user_id, p_manager_email: manager.email, p_manager_name: manager.full_name || manager.email,
             p_title: 'CALQULUS PMS Platform Service Agreement', p_description: 'Standard service agreement for CALQULUS PMS platform access',
             p_contract_type: 'service_agreement', p_uploaded_contract_url: null, p_valid_from: new Date().toISOString().slice(0, 10), p_valid_until: null,
           });
-        } catch (_) { /* non-critical */ }
-
-        // Auto-generate registration invoice if not already exists
+        } catch (_) {}
         try {
-          const { data: existingInv } = await supabase.from('manager_invoices')
-            .select('id').eq('manager_user_id', manager.user_id).eq('invoice_type', 'registration').maybeSingle();
+          const { data: existingInv } = await supabase.from('manager_invoices').select('id').eq('manager_user_id', manager.user_id).eq('invoice_type', 'registration').maybeSingle();
           if (!existingInv) {
             const { data: settings } = await supabase.from('webhost_payment_settings').select('registration_fee').maybeSingle();
             const regFee = Number((settings as { registration_fee?: number } | null)?.registration_fee ?? 3000);
             if (regFee > 0) {
               const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 7);
-              const { error: invoiceError } = await supabase.rpc('create_manager_invoice_atomic', {
-                p_manager_user_id: manager.user_id,
-                p_amount: regFee,
-                p_due_date: dueDate.toISOString().slice(0, 10),
-                p_description: 'One-time platform registration fee',
-                p_invoice_type: 'registration',
-                p_invoice_number: `REG-${manager.user_id.slice(0, 8).toUpperCase()}`,
-              });
-              if (invoiceError) throw invoiceError;
+              await supabase.rpc('create_manager_invoice_atomic', { p_manager_user_id: manager.user_id, p_amount: regFee, p_due_date: dueDate.toISOString().slice(0, 10), p_description: 'One-time platform registration fee', p_invoice_type: 'registration', p_invoice_number: `REG-${manager.user_id.slice(0, 8).toUpperCase()}` });
             }
           }
-        } catch (_) { /* non-critical — table may not exist yet */ }
+        } catch (_) {}
       } else if (type === 'reject') {
-        if (!actionReason.trim()) throw new Error('Rejection reason is required');
-        await supabase.from('user_roles').update({ approval_status: 'rejected' }).eq('user_id', manager.user_id).eq('role', 'manager');
-        await supabase.from('manager_profiles').upsert({ manager_user_id: manager.user_id, status: 'rejected', rejection_reason: actionReason }, { onConflict: 'manager_user_id' });
-        await logEntry('rejected');
         await supabase.functions.invoke('send-manager-approval-notification', { body: { managerId: manager.user_id, status: 'rejected', managerEmail: manager.email, reason: actionReason } }).catch(() => {});
-      } else if (type === 'suspend') {
-        if (!actionReason.trim()) throw new Error('Suspension reason is required');
-        await supabase.from('user_roles').update({ approval_status: 'suspended' }).eq('user_id', manager.user_id).eq('role', 'manager');
-        await supabase.from('manager_profiles').upsert({ manager_user_id: manager.user_id, status: 'suspended', suspension_reason: actionReason, suspended_at: new Date().toISOString(), suspended_by: user!.id }, { onConflict: 'manager_user_id' });
-        await logEntry('suspended');
-      } else if (type === 'unsuspend') {
-        await supabase.from('user_roles').update({ approval_status: 'approved' }).eq('user_id', manager.user_id).eq('role', 'manager');
-        await supabase.from('manager_profiles').update({ status: 'approved', suspension_reason: null, suspended_at: null }).eq('manager_user_id', manager.user_id);
-        await logEntry('approved');
-      } else if (type === 'set_tier') {
-        const tierMap: Record<string, { max_properties: number; max_units: number; platform_rate: number }> = {
-          starter: { max_properties: 5, max_units: 50, platform_rate: 500 },
-          growth: { max_properties: 20, max_units: 200, platform_rate: 450 },
-          professional: { max_properties: 50, max_units: 500, platform_rate: 400 },
-          enterprise: { max_properties: 999, max_units: 9999, platform_rate: 350 },
-        };
-        await supabase.from('manager_profiles').upsert({ manager_user_id: manager.user_id, subscription_tier: actionTier, ...tierMap[actionTier] }, { onConflict: 'manager_user_id' });
       }
     },
     onSuccess: () => {
@@ -232,10 +194,11 @@ const ManagerManagement: React.FC = () => {
       });
       if (error) throw error;
       if (!authData.user) throw new Error('Failed to create user');
-      await supabase.from('user_roles').upsert(
-        { user_id: authData.user.id, role: 'manager', approval_status: 'approved' },
-        { onConflict: 'user_id,role' },
-      );
+      const { error: provisionError } = await supabase.rpc('provision_manager_account_atomic', {
+        p_manager_user_id: authData.user.id,
+        p_full_name: newMgr.fullName || null,
+      });
+      if (provisionError) throw provisionError;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['webhost-managers-rich'] }); toast({ title: 'Manager created' }); setAddOpen(false); setNewMgr({ email: '', password: '', fullName: '' }); },
     onError: (err: Error) => errorToast('Failed', err),

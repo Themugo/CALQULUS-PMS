@@ -130,16 +130,11 @@ export default function WebhookDeadLetterPanel() {
 
   const resolveMutation = useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: "resolved" | "ignored"; notes?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase
-        .from("webhook_dead_letter")
-        .update({
-          status,
-          resolved_at: new Date().toISOString(),
-          resolved_by:  user?.id ?? null,
-          notes:        notes ?? null,
-        })
-        .eq("id", id);
+      const { error } = await supabase.rpc("transition_webhook_dead_letter_atomic", {
+        p_id: id,
+        p_status: status,
+        p_notes: notes ?? null,
+      });
       if (error) throw error;
     },
     onSuccess: (_, vars) => {

@@ -117,7 +117,20 @@ export const workflowOrchestrationService = {
    * Create a new workflow template
    */
   async createWorkflowTemplate(template: Omit<WorkflowTemplate, 'id' | 'lastUsed'>): Promise<WorkflowTemplate | null> {
-    const { data, error } = await supabase.rpc('save_workflow_template_atomic', { p_id: null, p_payload: { name: template.name, category: template.category, description: template.description, steps: template.steps, average_duration: template.averageDuration, usage_count: template.usageCount, status: template.status, last_used: new Date().toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_templates')
+      .insert({
+        name: template.name,
+        category: template.category,
+        description: template.description,
+        steps: template.steps,
+        average_duration: template.averageDuration,
+        usage_count: template.usageCount,
+        status: template.status,
+        last_used: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
     if (error) {
       logError('Error creating workflow template:', error);
@@ -134,7 +147,17 @@ export const workflowOrchestrationService = {
    * Update a workflow template
    */
   async updateWorkflowTemplate(id: string, updates: Partial<WorkflowTemplate>): Promise<WorkflowTemplate | null> {
-    const { data, error } = await supabase.rpc('save_workflow_template_atomic', { p_id: id, p_payload: { name: updates.name, description: updates.description, status: updates.status, last_used: updates.lastUsed?.toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_templates')
+      .update({
+        name: updates.name,
+        description: updates.description,
+        status: updates.status,
+        last_used: updates.lastUsed?.toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) {
       logError('Error updating workflow template:', error);
@@ -191,7 +214,22 @@ export const workflowOrchestrationService = {
    * Create a new workflow instance
    */
   async createWorkflowInstance(instance: Omit<WorkflowInstance, 'id' | 'startedDate'>): Promise<WorkflowInstance | null> {
-    const { data, error } = await supabase.rpc('save_workflow_instance_atomic', { p_id: null, p_payload: { template_id: instance.templateId, entity_id: instance.entityId, entity_name: instance.entityName, entity_type: instance.entityType, status: instance.status, current_step: instance.currentStep, total_steps: instance.totalSteps, progress: instance.progress, assignee: instance.assignee, estimated_completion: instance.estimatedCompletion?.toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_instances')
+      .insert({
+        template_id: instance.templateId,
+        entity_id: instance.entityId,
+        entity_name: instance.entityName,
+        entity_type: instance.entityType,
+        status: instance.status,
+        current_step: instance.currentStep,
+        total_steps: instance.totalSteps,
+        progress: instance.progress,
+        assignee: instance.assignee,
+        estimated_completion: instance.estimatedCompletion?.toISOString(),
+      })
+      .select()
+      .single();
 
     if (error) {
       logError('Error creating workflow instance:', error);
@@ -213,7 +251,18 @@ export const workflowOrchestrationService = {
    * Update a workflow instance
    */
   async updateWorkflowInstance(id: string, updates: Partial<WorkflowInstance>): Promise<WorkflowInstance | null> {
-    const { data, error } = await supabase.rpc('save_workflow_instance_atomic', { p_id: id, p_payload: { status: updates.status, current_step: updates.currentStep, progress: updates.progress, completed_date: updates.completedDate?.toISOString(), estimated_completion: updates.estimatedCompletion?.toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_instances')
+      .update({
+        status: updates.status,
+        current_step: updates.currentStep,
+        progress: updates.progress,
+        completed_date: updates.completedDate?.toISOString(),
+        estimated_completion: updates.estimatedCompletion?.toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) {
       logError('Error updating workflow instance:', error);
@@ -258,7 +307,21 @@ export const workflowOrchestrationService = {
    * Create a new workflow step
    */
   async createWorkflowStep(step: Omit<WorkflowStep, 'id'>): Promise<WorkflowStep | null> {
-    const { data, error } = await supabase.rpc('save_workflow_step_atomic', { p_id: null, p_payload: { workflow_instance_id: step.workflowInstanceId, step_number: step.stepNumber, name: step.name, description: step.description, type: step.type, status: step.status, assignee: step.assignee, started_date: step.startedDate?.toISOString(), completed_date: step.completedDate?.toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_steps')
+      .insert({
+        workflow_instance_id: step.workflowInstanceId,
+        step_number: step.stepNumber,
+        name: step.name,
+        description: step.description,
+        type: step.type,
+        status: step.status,
+        assignee: step.assignee,
+        started_date: step.startedDate?.toISOString(),
+        completed_date: step.completedDate?.toISOString(),
+      })
+      .select()
+      .single();
 
     if (error) {
       logError('Error creating workflow step:', error);
@@ -277,7 +340,17 @@ export const workflowOrchestrationService = {
    * Update a workflow step
    */
   async updateWorkflowStep(id: string, updates: Partial<WorkflowStep>): Promise<WorkflowStep | null> {
-    const { data, error } = await supabase.rpc('save_workflow_step_atomic', { p_id: id, p_payload: { status: updates.status, assignee: updates.assignee, started_date: updates.startedDate?.toISOString(), completed_date: updates.completedDate?.toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_steps')
+      .update({
+        status: updates.status,
+        assignee: updates.assignee,
+        started_date: updates.startedDate?.toISOString(),
+        completed_date: updates.completedDate?.toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) {
       logError('Error updating workflow step:', error);
@@ -316,7 +389,21 @@ export const workflowOrchestrationService = {
    * Create a new workflow automation
    */
   async createWorkflowAutomation(automation: Omit<WorkflowAutomation, 'id' | 'lastRun' | 'nextRun'>): Promise<WorkflowAutomation | null> {
-    const { data, error } = await supabase.rpc('save_workflow_automation_atomic', { p_id: null, p_payload: { name: automation.name, trigger: automation.trigger, action: automation.action, target: automation.target, frequency: automation.frequency, status: automation.status, success_rate: automation.successRate, last_run: new Date().toISOString(), next_run: new Date().toISOString() } });
+    const { data, error } = await supabase
+      .from('workflow_automations')
+      .insert({
+        name: automation.name,
+        trigger: automation.trigger,
+        action: automation.action,
+        target: automation.target,
+        frequency: automation.frequency,
+        status: automation.status,
+        success_rate: automation.successRate,
+        last_run: new Date().toISOString(),
+        next_run: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
     if (error) {
       logError('Error creating workflow automation:', error);
@@ -334,7 +421,17 @@ export const workflowOrchestrationService = {
    * Update a workflow automation
    */
   async updateWorkflowAutomation(id: string, updates: Partial<WorkflowAutomation>): Promise<WorkflowAutomation | null> {
-    const { data, error } = await supabase.rpc('save_workflow_automation_atomic', { p_id: id, p_payload: { status: updates.status, last_run: updates.lastRun?.toISOString(), next_run: updates.nextRun?.toISOString(), success_rate: updates.successRate } });
+    const { data, error } = await supabase
+      .from('workflow_automations')
+      .update({
+        status: updates.status,
+        last_run: updates.lastRun?.toISOString(),
+        next_run: updates.nextRun?.toISOString(),
+        success_rate: updates.successRate,
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) {
       logError('Error updating workflow automation:', error);
@@ -378,7 +475,10 @@ export const workflowOrchestrationService = {
    * Pause a running workflow
    */
   async pauseWorkflow(instanceId: string): Promise<boolean> {
-    const { error } = await supabase.rpc('save_workflow_instance_atomic', { p_id: instanceId, p_payload: { status: 'paused' } });
+    const { error } = await supabase
+      .from('workflow_instances')
+      .update({ status: 'paused' })
+      .eq('id', instanceId);
 
     if (error) {
       logError('Error pausing workflow:', error);
@@ -392,7 +492,10 @@ export const workflowOrchestrationService = {
    * Resume a paused workflow
    */
   async resumeWorkflow(instanceId: string): Promise<boolean> {
-    const { error } = await supabase.rpc('save_workflow_instance_atomic', { p_id: instanceId, p_payload: { status: 'running' } });
+    const { error } = await supabase
+      .from('workflow_instances')
+      .update({ status: 'running' })
+      .eq('id', instanceId);
 
     if (error) {
       logError('Error resuming workflow:', error);
@@ -406,7 +509,10 @@ export const workflowOrchestrationService = {
    * Cancel a workflow
    */
   async cancelWorkflow(instanceId: string): Promise<boolean> {
-    const { error } = await supabase.rpc('save_workflow_instance_atomic', { p_id: instanceId, p_payload: { status: 'cancelled' } });
+    const { error } = await supabase
+      .from('workflow_instances')
+      .update({ status: 'cancelled' })
+      .eq('id', instanceId);
 
     if (error) {
       logError('Error cancelling workflow:', error);
@@ -420,7 +526,10 @@ export const workflowOrchestrationService = {
    * Pause a workflow automation
    */
   async pauseAutomation(automationId: string): Promise<boolean> {
-    const { error } = await supabase.rpc('save_workflow_automation_atomic', { p_id: automationId, p_payload: { status: 'paused' } });
+    const { error } = await supabase
+      .from('workflow_automations')
+      .update({ status: 'paused' })
+      .eq('id', automationId);
 
     if (error) {
       logError('Error pausing automation:', error);
@@ -434,7 +543,10 @@ export const workflowOrchestrationService = {
    * Activate a workflow automation
    */
   async activateAutomation(automationId: string): Promise<boolean> {
-    const { error } = await supabase.rpc('save_workflow_automation_atomic', { p_id: automationId, p_payload: { status: 'active' } });
+    const { error } = await supabase
+      .from('workflow_automations')
+      .update({ status: 'active' })
+      .eq('id', automationId);
 
     if (error) {
       logError('Error activating automation:', error);
