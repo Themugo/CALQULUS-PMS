@@ -124,20 +124,20 @@ export default function TenantScreening() {
       if (!form.tenant_name.trim() && !form.tenant_email.trim() && !form.tenant_phone.trim() && !form.national_id.trim()) {
         throw new Error('Provide at least a name, email, phone, or national ID to identify who this flag is about');
       }
-      const { error } = await (supabase.from('tenant_blacklist') as any).insert({
-        manager_id: effectiveManagerId,
-        tenant_name: form.tenant_name.trim() || null,
-        tenant_email: form.tenant_email.trim() || null,
-        tenant_phone: form.tenant_phone.trim() || null,
-        national_id: form.national_id.trim() || null,
-        reason: form.reason.trim(),
-        category: form.category,
-        severity: form.severity,
-        incident_date: form.incident_date || null,
-        amount_owed: form.amount_owed ? Number(form.amount_owed) : 0,
-        notes: form.notes.trim() || null,
-        expires_at: form.expires_at || null,
-        is_active: true,
+      const { error } = await supabase.rpc('create_tenant_blacklist_atomic' as never, {
+        p_tenant_id: null,
+        p_property_id: null,
+        p_tenant_name: form.tenant_name.trim() || null,
+        p_tenant_email: form.tenant_email.trim() || null,
+        p_tenant_phone: form.tenant_phone.trim() || null,
+        p_national_id: form.national_id.trim() || null,
+        p_reason: form.reason.trim(),
+        p_category: form.category,
+        p_severity: form.severity,
+        p_incident_date: form.incident_date || null,
+        p_amount_owed: form.amount_owed ? Number(form.amount_owed) : 0,
+        p_notes: form.notes.trim() || null,
+        p_expires_at: form.expires_at || null,
       });
       if (error) throw error;
     },
@@ -153,13 +153,10 @@ export default function TenantScreening() {
   const removeEntry = useMutation({
     mutationFn: async () => {
       if (!removeTarget) return;
-      const { error } = await (supabase.from('tenant_blacklist') as any)
-        .update({
-          is_active: false,
-          removed_at: new Date().toISOString(),
-          removed_reason: removeReason.trim() || null,
-        })
-        .eq('id', removeTarget.id);
+      const { error } = await supabase.rpc('remove_tenant_blacklist_atomic' as never, {
+        p_entry_id: removeTarget.id,
+        p_reason: removeReason.trim() || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {

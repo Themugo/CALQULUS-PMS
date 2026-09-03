@@ -73,19 +73,11 @@ const UnitKeyTracker: React.FC<UnitKeyTrackerProps> = ({
 
   const issueKey = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('unit_key_records').insert({
-        unit_id:        unitId,
-        property_id:    propertyId,
-        manager_id:     user!.id,
-        tenant_id:      currentTenantId ?? null,
-        key_type:       form.key_type,
-        key_label:      form.key_label || null,
-        serial_number:  form.serial_number || null,
-        issued_date:    form.issued_date,
-        issued_by:      user!.id,
-        issued_to_name: form.issued_to_name || currentTenantName || null,
-        notes:          form.notes || null,
-        status:         'active',
+      const { error } = await supabase.rpc('issue_unit_key_atomic' as never, {
+        p_unit_id: unitId, p_key_type: form.key_type, p_key_label: form.key_label || null,
+        p_serial_number: form.serial_number || null, p_issued_date: form.issued_date,
+        p_issued_to_name: form.issued_to_name || currentTenantName || null,
+        p_tenant_id: currentTenantId ?? null, p_notes: form.notes || null,
       });
       if (error) throw error;
     },

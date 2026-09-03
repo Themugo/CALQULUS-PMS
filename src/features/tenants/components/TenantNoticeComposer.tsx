@@ -127,22 +127,13 @@ const TenantNoticeComposer: React.FC<TenantNoticeComposerProps> = ({ tenant, ten
 
   const sendNotice = useMutation({
     mutationFn: async (asDraft = false) => {
-      const { data, error } = await supabase.from('tenant_notices').insert({
-        tenant_id:           tenant.id,
-        unit_id:             tenant.unit_id ?? null,
-        property_id:         tenant.property_id ?? null,
-        manager_id:          user!.id,
-        tenancy_id:          tenancyId ?? null,
-        notice_type:         form.notice_type,
-        title:               form.title,
-        body:                form.body,
-        current_rent:        form.current_rent ? Number(form.current_rent) : null,
-        new_rent:            form.new_rent ? Number(form.new_rent) : null,
-        effective_date:      form.effective_date || null,
-        notice_period_days:  form.notice_period_days ? Number(form.notice_period_days) : null,
-        delivery_method:     form.delivery_method,
-        status:              asDraft ? 'draft' : 'sent',
-        sent_at:             asDraft ? null : new Date().toISOString(),
+      const { data, error } = await supabase.rpc('create_tenant_notice_atomic' as never, {
+        p_tenant_id: tenant.id, p_unit_id: tenant.unit_id ?? null, p_property_id: tenant.property_id ?? null,
+        p_tenancy_id: tenancyId ?? null, p_notice_type: form.notice_type, p_title: form.title, p_body: form.body,
+        p_current_rent: form.current_rent ? Number(form.current_rent) : null,
+        p_new_rent: form.new_rent ? Number(form.new_rent) : null, p_effective_date: form.effective_date || null,
+        p_notice_period_days: form.notice_period_days ? Number(form.notice_period_days) : null,
+        p_delivery_method: form.delivery_method, p_status: asDraft ? 'draft' : 'sent',
       });
       if (error) throw error;
 

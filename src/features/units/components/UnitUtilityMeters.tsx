@@ -87,18 +87,11 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
   const addMeter = useMutation({
     mutationFn: async () => {
       if (!form.meter_number.trim()) throw new Error('Meter number is required');
-      const { error } = await (supabase.from('unit_utility_meters') as any).insert({
-        unit_id: unitId,
-        property_id: propertyId,
-        manager_id: user?.id,
-        utility_type: form.utility_type,
-        meter_number: form.meter_number.trim(),
-        meter_label: form.meter_label.trim() || null,
-        provider: form.provider.trim() || null,
-        account_number: form.account_number.trim() || null,
-        billing_method: form.billing_method,
-        rate_per_unit: form.rate_per_unit ? Number(form.rate_per_unit) : null,
-        is_active: true,
+      const { error } = await supabase.rpc('save_unit_utility_meter_atomic' as never, {
+        p_meter_id: null, p_unit_id: unitId, p_utility_type: form.utility_type,
+        p_meter_number: form.meter_number.trim(), p_meter_label: form.meter_label.trim() || null,
+        p_provider: form.provider.trim() || null, p_account_number: form.account_number.trim() || null,
+        p_billing_method: form.billing_method, p_rate_per_unit: form.rate_per_unit ? Number(form.rate_per_unit) : null, p_is_active: true,
       });
       if (error) throw error;
     },
@@ -116,9 +109,9 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
       if (!readingMeter) return;
       const reading = Number(newReading);
       if (!newReading || isNaN(reading)) throw new Error('Enter a valid reading');
-      const { error } = await (supabase.from('unit_utility_meters') as any)
-        .update({ current_reading: reading, last_read_date: new Date().toISOString().slice(0, 10) })
-        .eq('id', readingMeter.id);
+      const { error } = await supabase.rpc('record_unit_utility_meter_reading_atomic' as never, {
+        p_meter_id: readingMeter.id, p_reading: reading, p_read_date: new Date().toISOString().slice(0, 10),
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -142,7 +135,7 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
 
   const removeMeter = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from('unit_utility_meters') as any).delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_unit_utility_meter_atomic' as never, { p_meter_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

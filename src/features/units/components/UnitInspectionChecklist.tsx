@@ -201,34 +201,15 @@ const UnitInspectionChecklist: React.FC<Props> = ({
         ...checklist.fixtures.filter(i => i.status !== 'working' && i.status !== 'not_applicable'),
       ];
 
-      if (inspectionId) {
-        const { error } = await supabase.from('unit_inspections')
-          .update({
-            checklist_items: checklist,
-            damage_found: issues.length > 0,
-            damage_description: issues.length > 0 ? `${issues.length} item(s) need attention at move-in` : null,
-            notes: overallNotes || null,
-            status: 'completed',
-          })
-          .eq('id', inspectionId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('unit_inspections').insert({
-          unit_id:         unitId,
-          tenant_id:       tenantId,
-          tenancy_id:      tenancyId ?? null,
-          inspection_type: inspectionType,
-          inspection_date: new Date().toISOString().slice(0, 10),
-          conducted_by:    user!.id,
-          checklist_items: checklist,
-          damage_found:    issues.length > 0,
-          damage_description: issues.length > 0 ? `${issues.length} item(s) not working/needs repair at ${inspectionType === 'move_in' ? 'move-in' : 'move-out'}` : null,
-          notes:           overallNotes || null,
-          status:          'completed',
-          tenant_present:  true,
-        });
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('save_unit_inspection_atomic' as never, {
+        p_inspection_id: inspectionId ?? null, p_unit_id: unitId, p_tenant_id: tenantId,
+        p_tenancy_id: tenancyId ?? null, p_inspection_type: inspectionType,
+        p_inspection_date: new Date().toISOString().slice(0, 10), p_checklist_items: checklist,
+        p_damage_found: issues.length > 0,
+        p_damage_description: issues.length > 0 ? `${issues.length} item(s) need attention at ${inspectionType === 'move_in' ? 'move-in' : 'move-out'}` : null,
+        p_notes: overallNotes || null, p_status: 'completed', p_tenant_present: true,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-inspections'] });

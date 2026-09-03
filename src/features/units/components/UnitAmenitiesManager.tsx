@@ -91,14 +91,9 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
         ? customLabel.trim()
         : AMENITY_TYPES.find((t) => t.value === newType)?.label ?? newType;
       if (!label) throw new Error('Give this amenity a name');
-      const { error } = await (supabase.from('unit_amenities') as any).insert({
-        unit_id: unitId,
-        property_id: propertyId,
-        manager_id: user?.id,
-        amenity_type: newType,
-        amenity_label: label,
-        is_included: included,
-        extra_charge: included ? 0 : (Number(extraCharge) || 0),
+      const { error } = await supabase.rpc('save_unit_amenity_atomic' as never, {
+        p_amenity_id: null, p_unit_id: unitId, p_amenity_type: newType, p_amenity_label: label,
+        p_is_included: included, p_extra_charge: included ? 0 : (Number(extraCharge) || 0),
       });
       if (error) throw error;
     },
@@ -116,7 +111,7 @@ export default function UnitAmenitiesManager({ unitId, propertyId, unitLabel }: 
 
   const removeAmenity = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from('unit_amenities') as any).delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_unit_amenity_atomic' as never, { p_amenity_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

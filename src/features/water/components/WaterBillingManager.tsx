@@ -217,12 +217,18 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
       is_active: isActive,
     };
 
-    let error;
-    if (config?.id) {
-      ({ error } = await supabase.from('water_billing_config').update(configData).eq("id", config.id));
-    } else {
-      ({ error } = await supabase.from('water_billing_config').insert(configData));
-    }
+    const { error } = await supabase.rpc('save_water_billing_config_atomic' as never, {
+      p_config_id: config?.id ?? null,
+      p_property_id: propertyId,
+      p_billing_method: billingMethod,
+      p_flat_rate_amount: parseFloat(flatRate) || 0,
+      p_rate_per_unit: parseFloat(ratePerUnit) || 0,
+      p_water_provider: providerValue,
+      p_meter_number: meterNumber,
+      p_invoice_mode: invoiceMode,
+      p_billing_cycle_day: parseInt(billingCycleDay) || 1,
+      p_is_active: isActive,
+    });
 
     if (error) {
       toast({ title: "Error", description: "Failed to save water billing settings", variant: "destructive" });
