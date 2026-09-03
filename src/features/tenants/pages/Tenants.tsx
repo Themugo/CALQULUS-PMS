@@ -61,6 +61,7 @@ import { statusBadgeClass, tenantStatusTone } from "@/shared/lib/statusBadge";
 import { cn } from "@/shared/lib/utils";
 import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientTable";
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
+import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 
 interface Property {
   id: string;
@@ -187,6 +188,7 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
         />
       ) : (
         <>
+        <DataTableFrame minWidth="min-w-[780px]">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border">
@@ -325,6 +327,7 @@ function TenantTable({ tenantList, isLoading, searchQuery, signedUrls, canApprov
             ))}
           </TableBody>
         </Table>
+        </DataTableFrame>
         <TablePager page={slice} onPageChange={setPage} noun="tenants" />
         </>
       )}
@@ -590,9 +593,9 @@ const Tenants = () => {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-            <SelectTrigger className="w-56 min-h-11 text-sm" aria-label="Filter by property">
+            <SelectTrigger className="w-full sm:w-56 min-h-11 text-sm" aria-label="Filter by property">
               <SelectValue placeholder="All Properties" />
             </SelectTrigger>
             <SelectContent>
@@ -609,7 +612,7 @@ const Tenants = () => {
               aria-label="Search tenants"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-56 min-h-11 pl-8 text-sm bg-card border-border"
+              className="w-full sm:w-56 min-h-11 pl-8 text-sm bg-card border-border"
             />
           </div>
         </div>

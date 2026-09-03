@@ -30,6 +30,7 @@ import { leaseStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 import { fetchPortfolioUnits, type PortfolioUnitRow } from "@/features/units/lib/portfolioUnits";
 import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
+import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
 import { Badge } from "@/shared/components/ui/badge";
@@ -183,6 +184,7 @@ const Units = () => {
       ) : (
         <>
           <div className="overflow-hidden rounded-xl border border-border bg-card card-shadow">
+            <DataTableFrame minWidth="min-w-[760px]">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -245,6 +247,7 @@ const Units = () => {
                 ))}
               </TableBody>
             </Table>
+            </DataTableFrame>
           </div>
           <div className="mt-3">
             <TablePager page={slice} onPageChange={setPage} noun="units" />

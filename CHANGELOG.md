@@ -268,3 +268,12 @@ These were identified during the audit but not yet addressed:
 - Added a touch-target utility for compact controls on coarse-pointer devices without changing desktop density.
 - Added structural regression coverage for the accessibility interaction layer.
 - Preserved existing business logic, data fetching, permissions, and mutation flows.
+
+## Phases 164–165 — Mobile UX + Responsive Data Workflows
+
+- Refined major portfolio tables with a shared mobile overflow cue and contained horizontal scrolling.
+- Improved responsive filter/search toolbars for properties and tenants.
+- Stacked property and invoice form grids on narrow screens while preserving desktop layouts.
+- Refined maintenance controls for narrow screens.
+- Added `mobileResponsivePhase6.test.ts` regression coverage for mobile table and form behavior.
+- No business logic, RPC contracts, permissions, or data-fetching behavior changed.

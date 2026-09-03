@@ -71,6 +71,7 @@ import { LoadingState } from "@/shared/components/ui/loading-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
+import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
@@ -538,9 +539,9 @@ const Properties = () => {
 
       {/* Clean toolbar */}
       <div className="flex flex-col gap-3 mb-6">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           {/* Search */}
-          <div className="relative flex-1 min-w-[160px] max-w-xs">
+          <div className="relative w-full sm:flex-1 sm:min-w-[160px] sm:max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search properties"
@@ -615,7 +616,7 @@ const Properties = () => {
         </div>
 
         {/* Summary line */}
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span>{filteredProperties.length} properties</span>
           <span>·</span>
           <span>{filteredProperties.reduce((sum, p) => sum + p.units, 0)} total units</span>
@@ -640,7 +641,7 @@ const Properties = () => {
               <Label htmlFor="address">Address *</Label>
               <Input required autoComplete="street-address" id="address" value={newProperty.address} onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })} placeholder="1234 Main St, City, State ZIP" className="bg-background border-border" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="property-type">Property Type</Label>
                 <Select value={newProperty.property_type} onValueChange={(value) => setNewProperty({ ...newProperty, property_type: value })}>
@@ -677,7 +678,7 @@ const Properties = () => {
             </div>
             </FormSection>
             <FormSection title="Property setup" description="Define the unit structure and default rental information.">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="units">Number of Units</Label>
                 <Input id="units" type="number" value={newProperty.units} onChange={(e) => setNewProperty({ ...newProperty, units: e.target.value })} placeholder="24" className="bg-background border-border" />
@@ -687,7 +688,7 @@ const Properties = () => {
                 <Input id="rent-per-house" type="number" min="0" value={newProperty.rent_per_house} onChange={(e) => setNewProperty({ ...newProperty, rent_per_house: e.target.value })} placeholder="e.g., 15000" className="bg-background border-border" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="house-number">House Number</Label>
                 <Input id="house-number" value={newProperty.house_number} onChange={(e) => setNewProperty({ ...newProperty, house_number: e.target.value })} placeholder="e.g., B12, Plot 45" className="bg-background border-border" />
@@ -753,6 +754,7 @@ const Properties = () => {
       ) : (
         <>
         <div className="overflow-hidden rounded-xl border border-border bg-card card-shadow">
+          <DataTableFrame minWidth="min-w-[760px]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -778,6 +780,7 @@ const Properties = () => {
               ))}
             </TableBody>
           </Table>
+          </DataTableFrame>
         </div>
         <div className="mt-3 rounded-xl border border-border overflow-hidden">
           <TablePager page={propertySlice} onPageChange={setPropertyPage} noun="properties" />
@@ -804,7 +807,7 @@ const Properties = () => {
             </div>
             </FormSection>
             <FormSection title="Property setup" description="Update the unit structure, type and default rental settings.">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-house-number">House Number</Label>
                 <Input id="edit-house-number" value={editFormData.house_number} onChange={(e) => setEditFormData({ ...editFormData, house_number: e.target.value })} placeholder="e.g., B12, Plot 45" className="bg-background border-border" />
@@ -815,7 +818,7 @@ const Properties = () => {
                 <p className="text-xs text-muted-foreground">Units will be labeled as PREFIX-001, PREFIX-002, etc.</p>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-units">Units</Label>
                 <Input id="edit-units" type="number" value={editFormData.units} onChange={(e) => setEditFormData({ ...editFormData, units: e.target.value })} className="bg-background border-border" />
@@ -829,7 +832,7 @@ const Properties = () => {
                 <Input id="edit-revenue" type="number" value={editFormData.revenue} onChange={(e) => setEditFormData({ ...editFormData, revenue: e.target.value })} className="bg-background border-border" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-property-type">Property Type</Label>
                 <Select value={editFormData.property_type} onValueChange={(value) => setEditFormData({ ...editFormData, property_type: value })}>

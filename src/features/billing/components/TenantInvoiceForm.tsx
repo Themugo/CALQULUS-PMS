@@ -195,7 +195,7 @@ const TenantInvoiceForm: React.FC<TenantInvoiceFormProps> = ({
       {/* Invoice For Selection */}
       <div className="space-y-2">
         <Label className="text-foreground">Invoice For *</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button
             type="button"
             variant={invoiceFor === 'tenant' ? 'default' : 'outline'}
@@ -284,7 +284,7 @@ const TenantInvoiceForm: React.FC<TenantInvoiceFormProps> = ({
       {/* Invoice Type Selection */}
       <div className="space-y-2">
         <Label className="text-foreground">Invoice Type</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button
             type="button"
             variant={invoiceType === 'rent' ? 'default' : 'outline'}
@@ -427,7 +427,7 @@ const TenantInvoiceForm: React.FC<TenantInvoiceFormProps> = ({
       </div>
 
       {/* Due Date & Notes Row */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label className="text-foreground">Due In</Label>
           <Select value={dueInDays} onValueChange={setDueInDays}>

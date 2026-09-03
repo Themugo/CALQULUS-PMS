@@ -512,7 +512,7 @@ export default function Maintenance() {
 
       {/* Actions Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4 sm:mb-6">
-        <div className="relative flex-1">
+        <div className="relative w-full sm:flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search requests..."
@@ -521,9 +521,9 @@ export default function Maintenance() {
             className="pl-9 bg-card border-border"
           />
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full xs:w-[140px] sm:w-[180px] bg-card border-border">
+            <SelectTrigger className="w-full sm:w-[180px] bg-card border-border">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
