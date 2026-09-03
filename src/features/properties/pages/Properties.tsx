@@ -77,6 +77,7 @@ import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { MetricCard } from "@/shared/components/ui/metric-card";
+import { SearchFilterBar } from "@/shared/components/ui/search-filter-bar";
 import { Home, Users, WalletCards } from "lucide-react";
 
 const EMPTY_PROPERTY_FORM = {
@@ -531,19 +532,15 @@ const Properties = () => {
       </div>
 
       {/* Clean toolbar */}
-      <div className="flex flex-col gap-3 mb-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-          {/* Search */}
-          <div className="relative w-full sm:flex-1 sm:min-w-[160px] sm:max-w-xs">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search properties"
-              aria-label="Search properties"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="min-h-11 pl-8 text-sm bg-background border-border"
-            />
-          </div>
+      <SearchFilterBar
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        placeholder="Search properties"
+        ariaLabel="Search properties"
+        activeFilterCount={filterOccupancy !== "all" ? 1 : 0}
+        onClearFilters={() => setFilterOccupancy("all")}
+        summary={`${filteredProperties.length} properties · ${filteredProperties.reduce((sum, p) => sum + p.units, 0)} total units · ${formatCurrency(filteredProperties.reduce((sum, p) => sum + p.revenue, 0))} revenue`}
+      >
 
           {/* Filters dropdown */}
           <DropdownMenu>
@@ -605,18 +602,7 @@ const Properties = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <div className="flex-1" />
-        </div>
-
-        {/* Summary line */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <span>{filteredProperties.length} properties</span>
-          <span>·</span>
-          <span>{filteredProperties.reduce((sum, p) => sum + p.units, 0)} total units</span>
-          <span>·</span>
-          <span>{formatCurrency(filteredProperties.reduce((sum, p) => sum + p.revenue, 0))} revenue</span>
-        </div>
-      </div>
+      </SearchFilterBar>
       {/* Add Property Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px] bg-card border-border max-h-[90vh] overflow-y-auto">

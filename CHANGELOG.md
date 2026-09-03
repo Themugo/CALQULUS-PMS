@@ -277,3 +277,9 @@ These were identified during the audit but not yet addressed:
 - Refined maintenance controls for narrow screens.
 - Added `mobileResponsivePhase6.test.ts` regression coverage for mobile table and form behavior.
 - No business logic, RPC contracts, permissions, or data-fetching behavior changed.
+
+## Phases 168-169 — Search, Filter & Toolbar UX
+- Added shared `SearchFilterBar` for consistent search, filter, active-filter and clear interactions.
+- Applied the shared workflow to Properties, Units, Tenants and Maintenance.
+- Preserved existing filtering, sorting, pagination and data-fetching logic.
+- Added accessible live filter status and clear-search controls.

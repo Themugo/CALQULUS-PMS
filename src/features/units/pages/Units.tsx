@@ -31,6 +31,7 @@ import { fetchPortfolioUnits, type PortfolioUnitRow } from "@/features/units/lib
 import { paginate } from "@/shared/lib/clientTable";
 import { TablePager } from "@/shared/components/ui/table-pager";
 import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
+import { SearchFilterBar } from "@/shared/components/ui/search-filter-bar";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { MetricCard } from "@/shared/components/ui/metric-card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
@@ -129,17 +130,14 @@ const Units = () => {
           })}
         </div>
       </div>
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <div className="relative min-w-0 flex-1 max-w-md">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search unit, property, or tenant"
-            aria-label="Search units"
-            className="min-h-11 pl-8"
-          />
-        </div>
+      <SearchFilterBar
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        placeholder="Search unit, property, or tenant"
+        ariaLabel="Search units"
+        activeFilterCount={statusFilter !== "all" ? 1 : 0}
+        onClearFilters={() => setStatusFilter("all")}
+      >
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-44 min-h-11" aria-label="Filter by status">
             <SelectValue placeholder="Status" />
@@ -152,7 +150,7 @@ const Units = () => {
             <SelectItem value="reserved">Reserved</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </SearchFilterBar>
 
       {loadError && !loading && (
         <div className="mb-4">

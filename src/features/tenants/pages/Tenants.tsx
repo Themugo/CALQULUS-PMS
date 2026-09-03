@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { SearchFilterBar } from "@/shared/components/ui/search-filter-bar";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import { DollarSign, Home, AlertTriangle } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -592,31 +593,26 @@ const Tenants = () => {
         <StatCard compact title="Onboarding" value={String(pendingTenants.length)} change="Pending tenants" changeType="neutral" icon={Clock} iconColor="warning" />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-          <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-            <SelectTrigger className="w-full sm:w-56 min-h-11 text-sm" aria-label="Filter by property">
-              <SelectValue placeholder="All Properties" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">All Properties</SelectItem>
-              {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search tenants..."
-              aria-label="Search tenants"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-56 min-h-11 pl-8 text-sm bg-card border-border"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchFilterBar
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        placeholder="Search tenants..."
+        ariaLabel="Search tenants"
+        activeFilterCount={propertyFilter ? 1 : 0}
+        onClearFilters={() => setPropertyFilter("")}
+      >
+        <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+          <SelectTrigger className="w-full sm:w-56 min-h-11 text-sm" aria-label="Filter by property">
+            <SelectValue placeholder="All Properties" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Properties</SelectItem>
+            {properties.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </SearchFilterBar>
 
       {loadError && !isLoading && (
         <div className="mb-4">

@@ -6,6 +6,7 @@ import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Layout } from "@/shared/components/layout/Layout";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { SearchFilterBar } from "@/shared/components/ui/search-filter-bar";
 import ServiceMarketplace from "@/features/services/components/ServiceMarketplace";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -511,19 +512,17 @@ export default function Maintenance() {
       </details>
 
       {/* Actions Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4 sm:mb-6">
-        <div className="relative w-full sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search requests..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-card border-border"
-          />
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <SearchFilterBar
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        placeholder="Search requests..."
+        ariaLabel="Search maintenance requests"
+        activeFilterCount={categoryFilter !== "all" ? 1 : 0}
+        onClearFilters={() => setCategoryFilter("all")}
+      >
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] bg-card border-border">
+            <SelectTrigger className="w-full sm:w-[180px] min-h-11 bg-card border-border" aria-label="Filter maintenance by category">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -535,208 +534,18 @@ export default function Maintenance() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex border border-border rounded-lg overflow-hidden">
-            <Button
-              variant={viewMode === "table" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("table")}
-              className="rounded-none h-8 sm:h-9 px-2.5 sm:px-3"
-            >
+          <div className="flex border border-border rounded-lg overflow-hidden self-start">
+            <Button variant={viewMode === "table" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("table")} className="rounded-none h-9 px-3">
               <LayoutList className="h-4 w-4" />
+              <span className="sr-only">Table view</span>
             </Button>
-            <Button
-              variant={viewMode === "cards" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("cards")}
-              className="rounded-none h-8 sm:h-9 px-2.5 sm:px-3"
-            >
+            <Button variant={viewMode === "cards" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("cards")} className="rounded-none h-9 px-3">
               <LayoutGrid className="h-4 w-4" />
+              <span className="sr-only">Card view</span>
             </Button>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="btn-brand sm:size-default">
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">New Request</span>
-                <span className="sm:hidden">New</span>
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-[500px] bg-card border-border max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-foreground text-base sm:text-lg">Submit Maintenance Request</DialogTitle>
-              <DialogDescription className="text-xs sm:text-sm">
-                Fill out the form below to submit a repair ticket.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title" className="text-sm">Issue Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    placeholder="e.g., Leaking faucet in kitchen"
-                    required
-                    className="bg-background border-border"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description" className="text-sm">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Describe the issue in detail..."
-                    required
-                    className="bg-background border-border min-h-[80px] sm:min-h-[100px]"
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="property" className="text-sm">Property</Label>
-                    <Select
-                      value={formData.property_id}
-                      onValueChange={(value) => {
-                        const property = properties.find(p => p.id === value);
-                        setFormData({ 
-                          ...formData, 
-                          property_id: value, 
-                          property_name: property?.name || "",
-                          unit_id: "",
-                          unit_number: ""
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="bg-background border-border">
-                        <SelectValue placeholder="Select property" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {properties.map((property) => (
-                          <SelectItem key={property.id} value={property.id}>
-                            {property.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="unit">Unit</Label>
-                    <Select
-                      value={formData.unit_id}
-                      onValueChange={(value) => {
-                        const unit = filteredUnits.find(u => u.id === value);
-                        setFormData({ 
-                          ...formData, 
-                          unit_id: value, 
-                          unit_number: unit?.unit_number || "" 
-                        });
-                      }}
-                      disabled={!formData.property_id}
-                    >
-                      <SelectTrigger className="bg-background border-border">
-                        <SelectValue placeholder={formData.property_id ? "Select unit" : "Select property first"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredUnits.map((unit) => (
-                          <SelectItem key={unit.id} value={unit.id}>
-                            {unit.unit_number}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="tenant_name" className="text-sm">Your Name</Label>
-                    <Input
-                      id="tenant_name"
-                      value={formData.tenant_name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tenant_name: e.target.value })
-                      }
-                      placeholder="Full name"
-                      required
-                      className="bg-background border-border"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="tenant_email">Email</Label>
-                    <Input
-                      id="tenant_email"
-                      type="email"
-                      value={formData.tenant_email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tenant_email: e.target.value })
-                      }
-                      placeholder="your@email.com"
-                      required
-                      className="bg-background border-border"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="priority" className="text-sm">Priority</Label>
-                    <Select
-                      value={formData.priority}
-                      onValueChange={(value: RequestPriority) =>
-                        setFormData({ ...formData, priority: value })
-                      }
-                    >
-                      <SelectTrigger className="bg-background border-border">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="urgent">Urgent</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="budget">Budget</Label>
-                    <Input
-                      id="budget"
-                      type="number"
-                      value={formData.budget}
-                      onChange={(e) =>
-                        setFormData({ ...formData, budget: e.target.value })
-                      }
-                      placeholder="e.g., 5000"
-                      className="bg-background border-border"
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="expected_date">Due Date (Expected Completion)</Label>
-                  <Input
-                    id="expected_date"
-                    type="date"
-                    value={formData.expected_completion_date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, expected_completion_date: e.target.value })
-                    }
-                    className="bg-background border-border"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="btn-brand">
-                  Submit Request
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
         </div>
-      </div>
+      </SearchFilterBar>
 
       {/* Tabs and Request List */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as MaintenanceLane)}>
