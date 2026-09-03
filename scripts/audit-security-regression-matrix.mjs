@@ -18,6 +18,7 @@ const checks = [
   ['secretSupplyChain','npm run audit:secret-supply-chain'],
   ['vulnerabilityGovernance','npm run audit:vulnerability-governance'],
   ['runtimeDependencyGovernance','npm run audit:runtime-dependency-governance'],
+  ['runtimeUpdatePolicy','npm run audit:runtime-update-policy'],
   ['ciReleaseGate','npm run audit:ci-release-gate']
 ];
 const results=[];
@@ -26,7 +27,7 @@ function statusFromReport(name, stdout='', stderr='') {
     observability:'OBSERVABILITY_AUDIT.json',operationsReadiness:'OPERATIONS_READINESS_CERTIFICATE.json',
     edgeReliability:'EDGE_RELIABILITY_INVENTORY.json',deploymentControls:'DEPLOYMENT_CONTROL_CERTIFICATE.json',
     dependencyProvenance:'DEPENDENCY_PROVENANCE.json',sbomAudit:'SBOM_AUDIT.json',secretSupplyChain:'SECRET_SUPPLY_CHAIN.json',
-    vulnerabilityGovernance:'VULNERABILITY_GOVERNANCE.json',runtimeDependencyGovernance:'RUNTIME_DEPENDENCY_GOVERNANCE.json',
+    vulnerabilityGovernance:'VULNERABILITY_GOVERNANCE.json',runtimeDependencyGovernance:'RUNTIME_DEPENDENCY_GOVERNANCE.json',runtimeUpdatePolicy:'RUNTIME_UPDATE_POLICY.json',
     ciReleaseGate:'CI_RELEASE_GATE.json'
   };
   if (files[name]) { try { return JSON.parse(fs.readFileSync(path.join(root,'docs','audits',files[name]),'utf8')).status || 'UNKNOWN'; } catch {} }

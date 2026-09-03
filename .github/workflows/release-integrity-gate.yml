@@ -25,6 +25,7 @@ jobs:
       - run: npm run audit:runtime-dependency-governance
         env:
           RUN_NETWORK_AUDITS: true
+      - run: npm run audit:runtime-update-policy
       - run: npm run generate:sbom
       - run: npm run audit:sbom
       - run: npm run audit:secret-supply-chain
@@ -44,6 +45,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit:dependency-provenance
+      - run: npm run audit:runtime-update-policy
+      - run: npm run audit:security-regression-diff
       - run: npm run generate:sbom
       - run: npm run audit:sbom
       - run: npm run audit:secret-supply-chain

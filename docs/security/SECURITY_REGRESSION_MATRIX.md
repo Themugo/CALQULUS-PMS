@@ -1,19 +1,8 @@
 # Security Regression Matrix
 
-The matrix runs the repository's security and release-control audits as one deterministic regression gate.
+The matrix is the release-security control plane for repository-local security checks. It is fail-closed for `FAIL` and `UNKNOWN` results and preserves `EXTERNAL_REQUIRED` for infrastructure-dependent evidence.
 
-## Blocking rules
+## Baseline / diff
+`capture:security-regression-baseline` stores a reviewed matrix snapshot. `audit:security-regression-diff` compares the current matrix with that snapshot and blocks any regression from `PASS` to `FAIL` or `UNKNOWN`.
 
-- Any individual `FAIL` blocks the matrix.
-- Repository-local checks must pass before release evidence can be considered valid.
-- Infrastructure-dependent checks may remain `EXTERNAL_REQUIRED` in packaged/offline workspaces.
-- `EXTERNAL_REQUIRED` is not converted to `PASS` by the matrix.
-- The matrix records command exit codes and the corresponding JSON audit status for traceability.
-
-Run locally with:
-
-```bash
-npm run audit:security-regression-matrix
-```
-
-CI should run the matrix after dependencies are installed and after the vulnerability scanner has access to the configured registry.
+Baseline capture must only be performed after the matrix has been reviewed. External-required checks remain external-required in the baseline.

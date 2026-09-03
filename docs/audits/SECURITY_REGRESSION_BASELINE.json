@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T15:26:22.644Z",
+  "generatedAt": "2026-09-03T15:25:58.743Z",
   "status": "EXTERNAL_REQUIRED",
   "checkCount": 15,
   "failCount": 0,
@@ -126,5 +126,7 @@
       "stderrTail": ""
     }
   ],
-  "rule": "Security regression is PASS only when all repository-local checks pass and every check produces a recognized status. Any FAIL blocks certification. External-dependent checks remain EXTERNAL_REQUIRED until executed against real staging/production infrastructure."
+  "rule": "Security regression is PASS only when all repository-local checks pass and every check produces a recognized status. Any FAIL blocks certification. External-dependent checks remain EXTERNAL_REQUIRED until executed against real staging/production infrastructure.",
+  "baselineCapturedAt": "2026-09-03T15:25:58.776Z",
+  "baselinePurpose": "Reviewed repository security regression baseline. External-required states are preserved and are not converted to PASS."
 }

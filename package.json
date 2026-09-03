@@ -88,7 +88,10 @@
     "audit:secret-supply-chain": "node scripts/scan-secret-supply-chain.mjs",
     "audit:vulnerability-governance": "node scripts/audit-vulnerability-governance.mjs",
     "audit:runtime-dependency-governance": "node scripts/audit-runtime-dependency-governance.mjs",
-    "audit:security-regression-matrix": "node scripts/audit-security-regression-matrix.mjs"
+    "audit:security-regression-matrix": "node scripts/audit-security-regression-matrix.mjs",
+    "audit:runtime-update-policy": "node scripts/audit-runtime-update-policy.mjs",
+    "capture:security-regression-baseline": "node scripts/capture-security-regression-baseline.mjs",
+    "audit:security-regression-diff": "node scripts/audit-security-regression-diff.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

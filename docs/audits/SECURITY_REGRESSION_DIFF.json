@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-09-03T15:26:22.683Z",
+  "status": "EXTERNAL_REQUIRED",
+  "baselinePresent": true,
+  "baselineSha256": "81bb97bd45415fe7e739b9d08ec81c35629e3ddaad7cfe29f3f1a5e0523ceecd",
+  "currentMatrixSha256": "6dd289615424935d30795c3c1a5c9b8f619e27f15343fac508ce70196191db2b",
+  "checkCount": 15,
+  "changes": [],
+  "regressions": [],
+  "rule": "Any transition from PASS to FAIL/UNKNOWN is a release-blocking regression. EXTERNAL_REQUIRED remains unresolved until real infrastructure evidence exists."
+}
