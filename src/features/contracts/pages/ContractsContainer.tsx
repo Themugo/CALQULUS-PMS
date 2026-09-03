@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { format } from "date-fns";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 
 export function ContractsContainer() {
   const { toast } = useToast();
@@ -248,6 +249,24 @@ export function ContractsContainer() {
     >
       <FeatureGate feature="contracts" featureLabel="Contracts">
       <div className="space-y-6">
+        <DashboardSectionHeader
+          eyebrow="Records / Contracts & documents"
+          title="Agreements at a glance"
+          description="Keep contract status, signatures and uploaded records visible before opening an individual agreement."
+        />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Contract workspace summary">
+          {[
+            ["Total", contracts.length],
+            ["Active", contracts.filter((c: any) => c.status === "active").length],
+            ["Awaiting signature", contracts.filter((c: any) => c.status === "pending_signature").length],
+            ["Uploaded", uploadedDocuments.length],
+          ].map(([label, value]) => (
+            <div key={String(label)} className="rounded-lg border border-border bg-card px-4 py-3">
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="mt-1 text-xl font-semibold tracking-tight text-foreground">{value}</p>
+            </div>
+          ))}
+        </div>
         <ContractsHeader
           searchQuery={filters.searchQuery}
           onSearchChange={(v) => updateFilter("searchQuery", v)}

@@ -237,3 +237,10 @@ These were identified during the audit but not yet addressed:
 - Added shared operational hierarchy to maintenance, clarifying the work queue before individual request actions.
 - Preserved existing billing and maintenance queries, mutations, filters, tabs, reports, exports and workflows.
 - Used existing live metrics only; no fabricated KPIs or duplicate data-fetching layers introduced.
+
+
+## Phases 150–151 — Communications + Documents UX
+- Added shared operational hierarchy to the communications workspace without changing message delivery or physical-document workflows.
+- Added a focused records hierarchy and live contract/document summary to the contracts workspace.
+- Preserved existing queries, mutations, filters, signature flows, uploads, and navigation.
+- Used live contract/document records only; no fabricated metrics or duplicate fetching introduced.
