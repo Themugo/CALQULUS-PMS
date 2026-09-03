@@ -1,3 +1,8 @@
+## Phases 154–155 — Settings, Profile & Account UX
+- Added a shared account hierarchy to manager settings, landlord settings and the tenant profile workspace.
+- Clarified the purpose of each account surface without changing existing permissions, authentication, profile, notification or payment settings flows.
+- Reused live data and existing mutations; no new data-fetching layer introduced.
+
 ## 140–141 — Product UI foundation + Manager dashboard refinement
 
 - Established a shared dashboard section-header hierarchy and restrained dashboard chrome.

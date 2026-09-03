@@ -31,6 +31,7 @@ import { PushNotificationSettings } from "@/features/settings/components/PushNot
 import { cn } from "@/shared/lib/utils";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
+import DashboardSectionHeader from "@/features/dashboard/components/DashboardSectionHeader";
 import {
   SETTINGS_GROUPS,
   findSettingsItem,
@@ -307,7 +308,13 @@ const Settings = () => {
 
   return (
     <Layout title="Settings" subtitle="Organization, users, roles, notifications, billing, integrations, security, branding">
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="space-y-5">
+        <DashboardSectionHeader
+          eyebrow="Workspace"
+          title="Settings, kept in order"
+          description="Manage your profile, organization, payments, notifications and access from one place."
+        />
+        <div className="flex flex-col lg:flex-row gap-6">
         {/* Mobile: Dropdown selector */}
         <div className="lg:hidden">
           <Select value={activeTab} onValueChange={selectTab}>

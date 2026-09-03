@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
+import DashboardSectionHeader from '@/features/dashboard/components/DashboardSectionHeader';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -418,7 +419,12 @@ const TenantProfile = () => {
 
   return (
     <TenantLayout title="Profile" description="Your details and notifications.">
-      <div className="mx-auto w-full max-w-xl space-y-6">
+      <div className="mx-auto w-full max-w-3xl space-y-6">
+        <DashboardSectionHeader
+          eyebrow="Account"
+          title="Your profile"
+          description="Keep your contact details, notifications and sign-in preferences up to date."
+        />
         {/* Profile Photo & Basic Info */}
         <Card>
           <CardContent className="pt-6">
