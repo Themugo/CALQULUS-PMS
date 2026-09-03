@@ -169,9 +169,7 @@ const ServicesPage: React.FC = () => {
                               <Button size="sm" className="h-8 text-xs gap-1"
                                 onClick={async () => {
                                   try {
-                                    const { error } = await supabase.from('maintenance_requests')
-                                      .update({ status: 'in_progress', provider_started_at: new Date().toISOString() } as { status: string; provider_started_at: string; })
-                                      .eq('id', job.id);
+                                    const { error } = await supabase.rpc('transition_maintenance_request_atomic', { p_request_id: job.id, p_target_status: 'in_progress' });
                                     if (error) throw error;
                                     toast({ title: 'Job started' });
                                   } catch (e) {
@@ -185,9 +183,7 @@ const ServicesPage: React.FC = () => {
                               <Button size="sm" className="h-8 text-xs gap-1"
                                 onClick={async () => {
                                   try {
-                                    const { error } = await supabase.from('maintenance_requests')
-                                      .update({ status: 'completed', provider_completed_at: new Date().toISOString(), completion_date: new Date().toISOString().slice(0,10) } as { status: string; provider_completed_at: string; completion_date: string; })
-                                      .eq('id', job.id);
+                                    const { error } = await supabase.rpc('transition_maintenance_request_atomic', { p_request_id: job.id, p_target_status: 'completed' });
                                     if (error) throw error;
                                     toast({ title: 'Job completed' });
                                   } catch (e) {

@@ -317,21 +317,20 @@ export default function Maintenance() {
       return;
     }
 
-    const { error } = await supabase.from("maintenance_requests").insert({
-      title: validationResult.data.title,
-      description: validationResult.data.description,
-      property_name: formData.property_name,
-      unit_number: formData.unit_number || null,
-      unit_id: formData.unit_id || null,
-      tenant_name: validationResult.data.tenant_name,
-      tenant_email: validationResult.data.tenant_email,
-      priority: validationResult.data.priority,
-      requested_date: new Date().toISOString().split('T')[0],
-      expected_completion_date: formData.expected_completion_date || null,
-      budget: formData.budget ? parseFloat(formData.budget) : null,
-      created_by_role: 'manager',
-      manager_id: managerId,
-      property_id: formData.property_id || null,
+    const { error } = await supabase.rpc("create_maintenance_request_atomic", {
+      p_title: validationResult.data.title,
+      p_description: validationResult.data.description,
+      p_property_name: formData.property_name,
+      p_unit_number: formData.unit_number || null,
+      p_unit_id: formData.unit_id || null,
+      p_tenant_name: validationResult.data.tenant_name,
+      p_tenant_email: validationResult.data.tenant_email,
+      p_priority: validationResult.data.priority,
+      p_category: "other",
+      p_expected_completion_date: formData.expected_completion_date || null,
+      p_budget: formData.budget ? parseFloat(formData.budget) : null,
+      p_manager_id: managerId,
+      p_created_by_role: "manager",
     });
 
     if (error) {
@@ -364,14 +363,10 @@ export default function Maintenance() {
   };
 
   const updateRequestStatus = async (id: string, status: RequestStatus, oldStatus?: RequestStatus) => {
-    const updateData: Record<string, unknown> = { status };
-    if (status === 'completed') {
-      updateData.completion_date = new Date().toISOString().split('T')[0];
-    }
-    const { error } = await supabase
-      .from("maintenance_requests")
-      .update(updateData)
-      .eq("id", id);
+    const { error } = await supabase.rpc("transition_maintenance_request_atomic", {
+      p_request_id: id,
+      p_target_status: status,
+    });
 
     if (error) {
       toast({
@@ -398,13 +393,11 @@ export default function Maintenance() {
   };
 
   const assignRequest = async (id: string, assignedTo: string, providerId?: string) => {
-    const { error } = await supabase
-      .from("maintenance_requests")
-      .update({
-        assigned_to: assignedTo,
-        assigned_provider_id: providerId || null,
-      } as unknown)
-      .eq("id", id);
+    const { error } = await supabase.rpc("assign_maintenance_request_atomic", {
+      p_request_id: id,
+      p_assigned_to: assignedTo,
+      p_provider_id: providerId || null,
+    });
 
     if (error) {
       toast({

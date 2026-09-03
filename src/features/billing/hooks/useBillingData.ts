@@ -397,24 +397,14 @@ export function useSaveExpenditure() {
       if (!managerId) throw new Error("Not authenticated");
       const monthDate = `${month}-01`;
 
-      if (existingId) {
-        const { error } = await supabase
-          .from("expenditures")
-          .update({ amount, updated_at: new Date().toISOString() })
-          .eq("id", existingId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("expenditures")
-          .insert({
-            manager_id: managerId,
-            category,
-            amount,
-            month: monthDate,
-            description: label,
-          });
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc("save_expenditure_atomic", {
+        p_manager_id: managerId,
+        p_category: category,
+        p_amount: amount,
+        p_month: month,
+        p_description: label,
+      });
+      if (error) throw error;
     },
     onSuccess: (_data, variables) => {
       if (!managerId) return;

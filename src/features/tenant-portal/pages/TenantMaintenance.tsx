@@ -255,14 +255,30 @@ const TenantMaintenance = () => {
         photos_urls: uploadedUrls.length > 0 ? uploadedUrls : null,
       };
 
-      const { data: newRequest, error } = await supabase.from('maintenance_requests').insert(payload).select().single();
+      const { data: rpcResult, error } = await supabase.rpc('create_maintenance_request_atomic', {
+        p_title: payload.title,
+        p_description: payload.description,
+        p_property_name: payload.property_name,
+        p_unit_number: payload.unit_number,
+        p_unit_id: null,
+        p_tenant_name: payload.tenant_name,
+        p_tenant_email: payload.tenant_email,
+        p_priority: payload.priority,
+        p_category: payload.category,
+        p_expected_completion_date: null,
+        p_budget: null,
+        p_manager_id: payload.manager_id,
+        p_created_by_role: 'tenant',
+      });
+      const newRequest = rpcResult as { request_id?: string } | null;
+      if (!newRequest?.request_id) throw new Error('Maintenance request was not created');
 
       if (error) throw error;
 
       supabase.functions
         .invoke('send-maintenance-notification', {
           body: {
-            requestId: newRequest.id,
+            requestId: newRequest.request_id,
             type: 'created',
           },
         })
