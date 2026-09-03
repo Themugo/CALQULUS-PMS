@@ -45,3 +45,19 @@ describe("dashboard shared data boundaries", () => {
     expect(read("src/features/dashboard/components/OpenMaintenancePreview.tsx")).not.toContain('.from("properties")');
   });
 });
+
+
+describe("dashboard intelligence presentation boundaries", () => {
+  it("surfaces collections pulse from existing dashboard stats", () => {
+    const dashboard = read("features/dashboard/pages/Dashboard.tsx");
+    expect(dashboard).toContain("Collections pulse");
+    expect(dashboard).toContain("stats.outstandingRent");
+  });
+
+  it("prioritizes lower-occupancy properties without adding a data query", () => {
+    const properties = read("features/dashboard/components/PropertiesOverview.tsx");
+    expect(properties).toContain("sort((a, b) =>");
+    expect(properties).toContain("Needs occupancy attention");
+    expect(properties).not.toContain("supabase.from");
+  });
+});

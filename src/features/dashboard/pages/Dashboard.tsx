@@ -303,6 +303,35 @@ const Dashboard = () => {
             </div>
           </section>
 
+          {stats && (
+            <section className="mb-6" aria-labelledby="dashboard-collections-pulse">
+              <DashboardSectionHeader
+                eyebrow="Collections pulse"
+                title="Know what needs collecting"
+                description="A compact view of this month's rent position before you open the billing queue"
+              />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+                  <p className="text-xs font-medium text-muted-foreground">Collected</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">{formatCurrency(stats.collectedRent)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">of {formatCurrency(stats.expectedRent)} expected</p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+                  <p className="text-xs font-medium text-muted-foreground">Outstanding</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">{formatCurrency(stats.outstandingRent)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{stats.overdueInvoices} overdue invoice{stats.overdueInvoices === 1 ? "" : "s"}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4 card-shadow">
+                  <p className="text-xs font-medium text-muted-foreground">Collection rate</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">{stats.collectionRate}%</p>
+                  <p className={stats.revenueChange < 0 ? "mt-1 text-xs text-destructive" : "mt-1 text-xs text-muted-foreground"}>
+                    {stats.revenueChange > 0 ? "+" : ""}{stats.revenueChange}% vs last month
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Priority queue — surface live exceptions before deeper analysis. */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
             <DashboardSectionHeader

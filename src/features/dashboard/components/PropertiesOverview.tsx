@@ -41,14 +41,28 @@ export function PropertiesOverview({ showHeader = true }: { showHeader?: boolean
       ) : (
         <Table>
           <TableHeader><TableRow><TableHead>Property</TableHead><TableHead>Address</TableHead><TableHead className="text-right">Occupancy</TableHead></TableRow></TableHeader>
-          <TableBody>{properties.slice(0, 8).map((property) => {
-            const occupancyRate = property.units > 0 ? Math.round((property.occupied / property.units) * 100) : 0;
-            return <TableRow key={property.id}>
-              <TableCell><Link to={`/properties/${property.id}`} className="font-medium text-foreground hover:underline">{property.name}</Link></TableCell>
-              <TableCell className="max-w-[16rem] truncate text-muted-foreground">{property.address}</TableCell>
-              <TableCell className="text-right"><div className="inline-flex min-w-[7rem] flex-col items-end gap-1"><span className="text-sm text-foreground">{property.occupied}/{property.units}</span><div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted"><div className={cn("h-full rounded-full", occupancyTone(occupancyRate))} style={{ width: `${occupancyRate}%` }} /></div></div></TableCell>
-            </TableRow>;
-          })}</TableBody>
+          <TableBody>{[...properties]
+            .sort((a, b) => {
+              const aRate = a.units > 0 ? a.occupied / a.units : 0;
+              const bRate = b.units > 0 ? b.occupied / b.units : 0;
+              return aRate - bRate || a.name.localeCompare(b.name);
+            })
+            .slice(0, 8)
+            .map((property) => {
+              const occupancyRate = property.units > 0 ? Math.round((property.occupied / property.units) * 100) : 0;
+              return <TableRow key={property.id}>
+                <TableCell>
+                  <div className="min-w-0">
+                    <Link to={`/properties/${property.id}`} className="font-medium text-foreground hover:underline">{property.name}</Link>
+                    {occupancyRate < 70 && property.units > 0 && (
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">Needs occupancy attention</p>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-[16rem] truncate text-muted-foreground">{property.address}</TableCell>
+                <TableCell className="text-right"><div className="inline-flex min-w-[7rem] flex-col items-end gap-1"><span className="text-sm text-foreground">{property.occupied}/{property.units} <span className="text-muted-foreground">({occupancyRate}%)</span></span><div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted"><div className={cn("h-full rounded-full", occupancyTone(occupancyRate))} style={{ width: `${occupancyRate}%` }} /></div></div></TableCell>
+              </TableRow>;
+            })}</TableBody>
         </Table>
       )}
     </div>
