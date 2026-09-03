@@ -376,26 +376,10 @@ export const RentCollectionSummary: React.FC<{ propertyId?: string | null }> = (
   const saveSchedule = async () => {
     setSchedSaving(true);
     try {
-      const payload = {
-        manager_id:  user!.id,
-        enabled:     schedEnabled,
-        send_day:    schedSendDay,
-        recipients:  schedRecipients,
-        updated_at:  new Date().toISOString(),
-      };
-      const db = supabase as unknown as {
-        from: (t: string) => {
-          insert: (d: object) => Promise<{ error: unknown }>;
-          update: (d: object) => { eq: (k: string, v: string) => Promise<{ error: unknown }> };
-        }
-      };
-      if (schedule?.id) {
-        const { error } = await db.from('rent_report_schedules').update(payload).eq('id', schedule.id);
-        if (error) throw error;
-      } else {
-        const { error } = await db.from('rent_report_schedules').insert(payload);
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('save_rent_report_schedule_atomic', {
+        p_enabled: schedEnabled, p_send_day: schedSendDay, p_recipients: schedRecipients,
+      });
+      if (error) throw error;
       await refetchSchedule();
       toast({
         title: 'Schedule saved',

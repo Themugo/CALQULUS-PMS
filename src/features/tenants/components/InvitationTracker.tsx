@@ -211,10 +211,7 @@ export function InvitationTracker() {
     
     setIsDeleting(true);
     try {
-      const { error } = await supabase
-        .from("tenant_invitations")
-        .delete()
-        .eq("id", deleteInvitation.id);
+      const { error } = await supabase.rpc('delete_tenant_invitation_atomic', { p_invitation_id: deleteInvitation.id });
 
       if (error) throw error;
 

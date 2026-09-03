@@ -127,143 +127,34 @@ const BroadcastCenter: React.FC = () => {
       if (audienceType === 'one_tenant' && !selectedTenantId) throw new Error('Select a tenant');
       if (audienceTenants.length === 0) throw new Error('No recipients found for selected audience');
 
-      // Create campaign record
-      const { data: campaign, error: campErr } = await supabase
-        .from('broadcast_campaigns')
-        .insert({
-          manager_id:       user!.id,
-          property_id:      selectedPropertyId || null,
-          name:             subject || `${messageType} — ${format(new Date(), 'dd/MM/yy')}`,
-          subject,
-          body,
-          message_type:     messageType,
-          audience_type:    audienceType,
-          send_sms:         sendSms,
-          send_email:       sendEmail,
-          send_whatsapp:    sendWhatsapp,
-          send_push:        sendPush,
-          send_app:         sendApp,
-          total_recipients: audienceTenants.length,
-          status:           'sending',
-        })
-        .select().single();
-
-      if (campErr) throw campErr;
+      // Core campaign/message/notification rows are created atomically by the database.
+      const { data: campaign, error: campErr } = await supabase.rpc('create_broadcast_campaign_atomic', {
+        p_payload: {
+          name: subject || `${messageType} — ${format(new Date(), 'dd/MM/yy')}`, subject, body,
+          message_type: messageType, audience_type: audienceType,
+          audience_filter: selectedPropertyId ? { property_id: selectedPropertyId } : null,
+          property_id: selectedPropertyId || null, send_sms: sendSms, send_email: sendEmail,
+          send_whatsapp: sendWhatsapp, send_push: sendPush, send_app: sendApp,
+        },
+        p_tenant_ids: audienceTenants.map(t => t.id),
+      });
+      if (campErr || !campaign) throw campErr || new Error('Failed to create broadcast campaign');
       const campaignId = (campaign as { id: string }).id;
 
-      // Create individual message records + fire notifications
       let smsSent = 0, emailSent = 0, waSent = 0, pushSent = 0;
-
       const notify = async (fn: string, payload: Record<string, unknown>) => {
         const { data, error } = await supabase.functions.invoke(fn, { body: payload });
         if (error) throw error;
-        if (data?.success === false || data?.skipped === true) {
-          throw new Error(data?.error || data?.message || data?.reason || `${fn} did not deliver`);
-        }
+        if (data?.success === false || data?.skipped === true) throw new Error(data?.error || data?.message || data?.reason || `${fn} did not deliver`);
       };
 
       const notifyFn = async (tenant: Tenant) => {
-        // Store in messages table
-        await supabase.from('messages').insert({
-          manager_id:     user!.id,
-          sender_id:      user!.id,
-          sender_role:    'manager',
-          recipient_id:   null, // will match by tenant_id
-          tenant_id:      tenant.id,
-          subject,
-          body,
-          message_type:   messageType,
-          sent_via_sms:   sendSms,
-          sent_via_email: sendEmail,
-          sent_via_whatsapp: sendWhatsapp,
-          sent_via_push:  sendPush,
-          sent_via_app:   sendApp,
-          campaign_id:    campaignId,
-          sent_at:        new Date().toISOString(),
-          recipient_type: audienceType === 'one_tenant' ? 'tenant' : audienceType,
-        });
-
-        let tenantUserId: string | null = null;
-        if (sendApp || sendPush) {
-          const { data: tenantRole } = await supabase
-            .from('user_roles')
-            .select('user_id')
-            .eq('tenant_id', tenant.id)
-            .eq('role', 'tenant')
-            .maybeSingle();
-          tenantUserId = tenantRole?.user_id ?? null;
-        }
-
-        // In-app notification
-        if (sendApp && tenantUserId) {
-          await supabase.from('in_app_notifications').insert({
-            manager_id:   user!.id,
-            user_id:      tenantUserId,
-            title:        subject || MESSAGE_TYPES.find(m => m.value === messageType)?.label || 'New message',
-            body:         body.slice(0, 200),
-            type:         messageType,
-            source:       'manager',
-            reference_type: 'message',
-          }).catch(() => {}); // non-blocking — may fail if tenant_id != user_id
-        }
-
-        if (sendPush && tenantUserId) {
-          const personalised = body.replace(/\[Tenant Name\]/g, tenant.name);
-          try {
-            await notify('send-push-notification', {
-              userId: tenantUserId,
-              title: subject || MESSAGE_TYPES.find(m => m.value === messageType)?.label || 'New message',
-              body: personalised.slice(0, 240),
-              url: '/portal',
-              tag: `broadcast-${campaignId}`,
-            });
-            pushSent++;
-          } catch (error) {
-            logError(`Broadcast push failed [tenant:${tenant.id}]`, error);
-          }
-        }
-
-        // SMS
-        if (sendSms && tenant.phone) {
-          const personalised = body.replace(/\[Tenant Name\]/g, tenant.name).replace(/\[Unit Number\]/g, tenant.unit || '');
-          try {
-            await notify('send-sms-notification', { phoneNumber: tenant.phone, message: personalised });
-            smsSent++;
-          } catch (error) {
-            logError(`Broadcast SMS failed [tenant:${tenant.id}]`, error);
-          }
-        }
-
-        // Email
-        if (sendEmail && tenant.email) {
-          const personalised = body.replace(/\[Tenant Name\]/g, tenant.name);
-          try {
-            await notify('send-invoice-email', {
-              tenantEmail: tenant.email,
-              tenantName: tenant.name,
-              companyName: 'CALQULUS PMS',
-              subject: subject || 'Message from your property manager',
-              body: personalised,
-            });
-            emailSent++;
-          } catch (error) {
-            logError(`Broadcast email failed [tenant:${tenant.id}]`, error);
-          }
-        }
-
-        // WhatsApp
-        if (sendWhatsapp && tenant.phone) {
-          const personalised = body.replace(/\[Tenant Name\]/g, tenant.name);
-          try {
-            await notify('send-whatsapp-notification', {
-              phoneNumber: tenant.phone, tenantName: tenant.name,
-              type: 'general', message: personalised,
-            });
-            waSent++;
-          } catch (error) {
-            logError(`Broadcast WhatsApp failed [tenant:${tenant.id}]`, error);
-          }
-        }
+        const tenantUserId = (await supabase.from('user_roles').select('user_id').eq('tenant_id', tenant.id).eq('role', 'tenant').maybeSingle()).data?.user_id ?? null;
+        const personalised = body.replace(/\[Tenant Name\]/g, tenant.name);
+        if (sendPush && tenantUserId) { try { await notify('send-push-notification', { userId: tenantUserId, title: subject || 'New message', body: personalised.slice(0,240), url:'/portal', tag:`broadcast-${campaignId}` }); pushSent++; } catch (error) { logError(`Broadcast push failed [tenant:${tenant.id}]`, error); } }
+        if (sendSms && tenant.phone) { try { await notify('send-sms-notification', { phoneNumber: tenant.phone, message: personalised }); smsSent++; } catch (error) { logError(`Broadcast SMS failed [tenant:${tenant.id}]`, error); } }
+        if (sendEmail && tenant.email) { try { await notify('send-email-notification', { to: tenant.email, subject: subject || 'New message', body: personalised }); emailSent++; } catch (error) { logError(`Broadcast email failed [tenant:${tenant.id}]`, error); } }
+        if (sendWhatsapp && tenant.phone) { try { await notify('send-whatsapp-notification', { phoneNumber: tenant.phone, tenantName: tenant.name, type:'general', message: personalised }); waSent++; } catch (error) { logError(`Broadcast WhatsApp failed [tenant:${tenant.id}]`, error); } }
       };
 
       // Send to all recipients (chunked to avoid timeout and rate limits)
@@ -277,14 +168,8 @@ const BroadcastCenter: React.FC = () => {
       }
 
       // Update campaign stats
-      await supabase.from('broadcast_campaigns').update({
-        status:        'sent',
-        sms_sent:      smsSent,
-        email_sent:    emailSent,
-        whatsapp_sent: waSent,
-        push_sent:     pushSent,
-        sent_at:       new Date().toISOString(),
-      }).eq('id', campaignId);
+      const { error: transitionError } = await supabase.rpc('transition_broadcast_campaign_atomic', { p_campaign_id: campaignId, p_status: 'sent', p_sms_sent: smsSent, p_email_sent: emailSent, p_whatsapp_sent: waSent, p_push_sent: pushSent });
+      if (transitionError) throw transitionError;
     },
     onSuccess: () => {
       toast({

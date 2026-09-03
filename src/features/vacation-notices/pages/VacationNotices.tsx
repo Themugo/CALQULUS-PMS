@@ -134,10 +134,7 @@ const VacationNotices = () => {
         updateData.acknowledged_by = user.id;
       }
 
-      const { error } = await supabase
-        .from("vacation_notices")
-        .update(updateData)
-        .eq("id", selectedNotice.id);
+      const { error } = await supabase.rpc('transition_vacation_notice_manager_atomic', { p_notice_id: selectedNotice.id, p_status: status, p_manager_notes: managerNotes });
 
       if (error) throw error;
 

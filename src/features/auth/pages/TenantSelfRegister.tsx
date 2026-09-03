@@ -75,9 +75,8 @@ const TenantSelfRegister = () => {
       });
       if (signUpError) throw signUpError;
       if (data.user) {
-        await supabase.from('tenant_invitations')
-          .update({ status: 'accepted', accepted_by: data.user.id, accepted_at: new Date().toISOString() })
-          .eq('id', inviteData.id);
+        const { error: acceptError } = await supabase.rpc('accept_tenant_invitation_atomic', { p_invitation_id: inviteData.id });
+        if (acceptError) throw acceptError;
       }
       setStep(2);
     } catch (err) {

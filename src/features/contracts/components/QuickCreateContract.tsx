@@ -198,10 +198,7 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
         }
 
         // Update the lease with the new tenant
-        const { error: leaseError } = await supabase
-          .from("leases")
-          .update({ tenant_id: createdTenant.id })
-          .eq("id", lease.id);
+        const { error: leaseError } = await supabase.rpc('assign_lease_tenant_atomic', { p_lease_id: lease.id, p_tenant_id: createdTenant.id });
 
         if (leaseError) throw leaseError;
 

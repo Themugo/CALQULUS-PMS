@@ -494,10 +494,7 @@ const ManagerPlatformBilling = () => {
       // Store the file path - signed URLs will be generated when viewing
       const storagePath = `contracts/${filePath}`;
 
-      const { error: updateError } = await supabase
-        .from("manager_contracts")
-        .update({ status: "signed", signature_url: storagePath, signed_at: new Date().toISOString() })
-        .eq("id", selectedContract.id);
+      const { error: updateError } = await supabase.rpc('sign_manager_contract_atomic', { p_contract_id: selectedContract.id, p_signature_url: storagePath });
 
       if (updateError) throw updateError;
 

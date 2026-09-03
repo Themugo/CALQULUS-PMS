@@ -68,15 +68,7 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
 
   const updateStatus = async (noticeId: string, status: string) => {
     setUpdating(true);
-    const { error } = await supabase
-      .from("vacation_notices")
-      .update({
-        status,
-        manager_notes: managerNotes || null,
-        acknowledged_at: new Date().toISOString(),
-        acknowledged_by: user?.id,
-      })
-      .eq("id", noticeId);
+    const { error } = await supabase.rpc('transition_vacation_notice_manager_atomic', { p_notice_id: noticeId, p_status: status, p_manager_notes: managerNotes || null });
 
     if (error) {
       toast({ title: "Failed to update notice", variant: "destructive" });
