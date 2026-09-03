@@ -25,7 +25,7 @@
     "decision": ""
   },
   "automatedEvidence": {
-    "capturedAt": "2026-09-03T14:24:30.575Z",
+    "capturedAt": "2026-09-03T14:29:06.576Z",
     "migrationReconciliation": {
       "status": "EXTERNAL_REQUIRED",
       "generatedAt": "2026-09-03T13:59:59.284Z"
@@ -73,6 +73,14 @@
     "productionChangeTrace": {
       "status": "EXTERNAL_REQUIRED",
       "generatedAt": "2026-09-03T14:24:30.500Z"
+    },
+    "signedReleaseManifest": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T14:29:06.485Z"
+    },
+    "deploymentAttestation": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T14:29:06.543Z"
     }
   }
 }

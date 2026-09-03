@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-09-03T14:29:06.514Z",
+  "status": "EXTERNAL_REQUIRED",
+  "releaseCommit": null,
+  "deploymentId": null,
+  "deploymentTarget": null,
+  "manifestSha256": "bfbdcb278d6e5d44ab2ceced6fa7c8e8b796533021cc6273d24344b7964c7ffb",
+  "artifactSetSha256": "bfbdcb278d6e5d44ab2ceced6fa7c8e8b796533021cc6273d24344b7964c7ffb",
+  "migrationRunId": null,
+  "deployedAt": null,
+  "deployedBy": null,
+  "attestationId": null,
+  "credentialsPersisted": false,
+  "rule": "Deployment attestation is valid only when an external deployment system records the exact release commit, manifest hash, deployment identity, and migration execution identity."
+}

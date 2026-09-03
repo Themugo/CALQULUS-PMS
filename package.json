@@ -76,7 +76,11 @@
     "audit:rollback-readiness": "node scripts/audit-rollback-readiness.mjs",
     "audit:release-promotion-lock": "node scripts/audit-release-promotion-lock.mjs",
     "capture:production-change-trace": "node scripts/capture-production-change-trace.mjs",
-    "audit:production-change-trace": "node scripts/audit-production-change-trace.mjs"
+    "audit:production-change-trace": "node scripts/audit-production-change-trace.mjs",
+    "create:signed-release-manifest": "node scripts/create-signed-release-manifest.mjs",
+    "audit:release-manifest": "node scripts/audit-release-manifest.mjs",
+    "capture:deployment-attestation": "node scripts/capture-deployment-attestation.mjs",
+    "audit:deployment-attestation": "node scripts/audit-deployment-attestation.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

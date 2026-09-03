@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-09-03T14:29:06.485Z",
+  "status": "EXTERNAL_REQUIRED",
+  "manifestPresent": true,
+  "artifactMismatches": [],
+  "signatureStatus": "EXTERNAL_REQUIRED",
+  "manifestHashValid": true,
+  "rule": "The release manifest must remain byte-for-byte hash consistent with its recorded files. A signed manifest is PASS only after valid Ed25519 verification."
+}
