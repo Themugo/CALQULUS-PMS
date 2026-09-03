@@ -136,58 +136,13 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
       if (!form.amount || !form.description) throw new Error('Amount and description required');
       const { data: { user: authUser } } = await supabase.auth.getUser();
 
-      const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', authUser!.id).maybeSingle();
-
-      const { error } = await supabase.from('deposit_deductions').insert({
-        tenant_id:           tenant.id,
-        unit_id:             unitId ?? null,
-        tenancy_id:          tenancyId ?? null,
-        category:            form.category,
-        description:         form.description,
-        amount:              Number(form.amount),
-        deduction_date:      form.deduction_date,
-        performed_by:        authUser!.id,
-        performed_by_name:   form.performed_by_name || (profile as { full_name: string | null } | null)?.full_name || 'Manager',
-        performed_by_role:   form.performed_by_role,
-        evidence_url:        form.evidence_url || null,
-        created_by:          authUser!.id,
-        deduction_type:      'manual',
-      } as {
-        tenant_id: string; unit_id: string | null; tenancy_id: string | null;
-        category: string | null; description: string; amount: number;
-        deduction_date: string; performed_by: string; performed_by_name: string;
-        performed_by_role: string | null; evidence_url: string | null;
-        created_by: string; deduction_type: string;
+      const { error } = await supabase.rpc('record_deposit_deduction_atomic', {
+        p_tenant_id: tenant.id, p_amount: Number(form.amount), p_description: form.description,
+        p_deduction_type: 'manual', p_maintenance_request_id: null, p_unit_id: unitId ?? null, p_tenancy_id: tenancyId ?? null,
+        p_category: form.category, p_deduction_date: form.deduction_date, p_performed_by_name: form.performed_by_name || null,
+        p_performed_by_role: form.performed_by_role, p_evidence_url: form.evidence_url || null,
       });
       if (error) throw error;
-
-      // Update deposit balance
-      const totalDeducted = deductions.reduce((s, d) => s + Number(d.amount), 0) + Number(form.amount);
-      const original = Number(tenant.deposit_amount ?? 0);
-      const newBalance = Math.max(0, original - totalDeducted);
-      const { error: balanceError } = await supabase
-        .from('tenants')
-        .update({ deposit_balance: newBalance })
-        .eq('id', tenant.id);
-      if (balanceError) throw balanceError;
-
-      // Record in the deposit ledger too, so there's an itemized audit
-      // trail rather than just an overwritten balance number.
-      if (unitId) {
-        try {
-          await (supabase.from('unit_deposit_ledger') as any).insert({
-            unit_id: unitId,
-            tenant_id: tenant.id,
-            manager_id: authUser!.id,
-            deposit_type: 'house',
-            entry_type: 'deduction',
-            amount: Number(form.amount),
-            balance_after: newBalance,
-            description: form.description,
-            transaction_date: form.deduction_date,
-          });
-        } catch { /* best-effort audit trail; deposit_deductions above is authoritative */ }
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deposit-deductions-full', tenant.id] });
@@ -204,30 +159,8 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
     mutationFn: async (id: string) => {
       const ded = deductions.find(d => d.id === id);
       if (!ded) return;
-      const { error } = await supabase.from('deposit_deductions').delete().eq('id', id);
+      const { error } = await supabase.rpc('reverse_deposit_deduction_atomic', { p_deduction_id: id });
       if (error) throw error;
-      const newBalance = (tenant.deposit_balance ?? 0) + Number(ded.amount);
-      const { error: balanceError } = await supabase
-        .from('tenants')
-        .update({ deposit_balance: newBalance })
-        .eq('id', tenant.id);
-      if (balanceError) throw balanceError;
-
-      if (unitId) {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        try {
-          await (supabase.from('unit_deposit_ledger') as any).insert({
-            unit_id: unitId,
-            tenant_id: tenant.id,
-            manager_id: authUser?.id ?? null,
-            deposit_type: 'house',
-            entry_type: 'refund',
-            amount: Number(ded.amount),
-            balance_after: newBalance,
-            description: `Reversed: ${ded.description}`,
-          });
-        } catch { /* best-effort audit trail */ }
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deposit-deductions-full', tenant.id] });

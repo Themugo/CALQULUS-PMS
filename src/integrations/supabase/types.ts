@@ -6747,6 +6747,12 @@ export type Database = {
         Args: { p_generation_key: string; p_lease_id?: string | null; p_tenant_id: string; p_property_id?: string | null; p_unit_id?: string | null; p_manager_id: string; p_amount: number; p_description: string; p_due_date: string; p_invoice_type?: string; p_line_items?: Json }
         Returns: Json
       }
+      record_deposit_deduction_atomic: { Args: { p_tenant_id: string; p_amount: number; p_description: string; p_deduction_type?: string; p_maintenance_request_id?: string | null; p_unit_id?: string | null; p_tenancy_id?: string | null; p_category?: string; p_deduction_date?: string; p_performed_by_name?: string | null; p_performed_by_role?: string; p_evidence_url?: string | null }; Returns: Json }
+      reverse_deposit_deduction_atomic: { Args: { p_deduction_id: string }; Returns: Json }
+      create_deposit_refund_atomic: { Args: { p_tenant_id: string; p_refund_method: string; p_move_out_date: string; p_refund_reference?: string | null; p_bank_name?: string | null; p_bank_account_name?: string | null; p_bank_account_number?: string | null; p_mpesa_number?: string | null; p_notes?: string | null; p_unit_id?: string | null; p_tenancy_id?: string | null }; Returns: Json }
+      transition_deposit_refund_atomic: { Args: { p_refund_id: string; p_status: string }; Returns: Json }
+      submit_payment_receipt_atomic: { Args: { p_tenant_id: string; p_invoice_id?: string | null; p_receipt_url: string; p_amount: number; p_payment_date: string; p_payment_method: string; p_reference_number?: string | null; p_notes?: string | null }; Returns: Json }
+      reject_payment_receipt_atomic: { Args: { p_receipt_id: string; p_rejection_reason: string; p_verified_by: string }; Returns: Json }
       cancel_invoice_atomic: {
         Args: { p_invoice_id: string }
         Returns: Json

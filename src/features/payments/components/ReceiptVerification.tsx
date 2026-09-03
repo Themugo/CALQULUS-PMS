@@ -268,16 +268,9 @@ export const ReceiptVerification = () => {
     try {
       const { data: userData } = await supabase.auth.getUser();
 
-      const { error } = await supabase
-        .from('payment_receipts')
-        .update({
-          status: 'rejected',
-          rejection_reason: rejectionReason,
-          verified_by: userData.user?.id,
-          verified_at: new Date().toISOString(),
-        })
-        .eq('id', selectedReceipt.id);
-
+      const { error } = await supabase.rpc('reject_payment_receipt_atomic', {
+        p_receipt_id: selectedReceipt.id, p_rejection_reason: rejectionReason, p_verified_by: userData.user?.id ?? user.id,
+      });
       if (error) throw error;
 
       // Send notification to tenant

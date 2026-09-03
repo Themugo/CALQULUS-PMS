@@ -235,38 +235,15 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      await supabase.from("deposit_deductions").insert({
-        tenant_id: tenant.id,
-        maintenance_request_id: deductionType === "maintenance" ? selectedMaintenanceId : null,
-        amount: deductionAmount,
-        description: description.trim(),
-        deduction_type: deductionType === "maintenance" 
-          ? (autoCalculate ? "maintenance_auto" : "maintenance_manual") 
-          : "manual",
-        created_by: user?.id,
-      } as {
-        tenant_id: string;
-        maintenance_request_id: string | null;
-        amount: number;
-        description: string;
-        deduction_type: string;
-        created_by: string | undefined;
+      const { data: result, error } = await supabase.rpc("record_deposit_deduction_atomic", {
+        p_tenant_id: tenant.id, p_amount: deductionAmount, p_description: description.trim(),
+        p_deduction_type: deductionType === "maintenance" ? (autoCalculate ? "maintenance_auto" : "maintenance_manual") : "manual",
+        p_maintenance_request_id: deductionType === "maintenance" ? selectedMaintenanceId || null : null,
+        p_unit_id: null, p_tenancy_id: null, p_category: deductionType === "maintenance" ? "maintenance" : "general",
+        p_deduction_date: new Date().toISOString().slice(0,10), p_performed_by_name: null, p_performed_by_role: "manager", p_evidence_url: null
       });
-
-      const newBalance = currentBalance - deductionAmount;
-      await supabase.from("tenants").update({ deposit_balance: newBalance }).eq("id", tenant.id);
-
-      if (deductionType === "maintenance" && selectedMaintenanceId) {
-        await supabase.from("maintenance_requests").update({
-          deduct_from_deposit: true,
-          deposit_deduction_amount: deductionAmount,
-          deposit_deducted_at: new Date().toISOString(),
-        } as {
-          deduct_from_deposit: boolean;
-          deposit_deduction_amount: number;
-          deposit_deducted_at: string;
-        }).eq("id", selectedMaintenanceId);
-      }
+      if (error) throw error;
+      const newBalance = Number(result?.balance_after ?? currentBalance - deductionAmount);
 
       toast({ title: "Deduction recorded", description: `KES ${deductionAmount.toLocaleString()} deducted. New balance: KES ${newBalance.toLocaleString()}` });
 
@@ -341,48 +318,14 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
       const totalDeductions = deductionHistory.reduce((sum, d) => sum + d.amount, 0);
       const refundAmountValue = currentBalance;
 
-      await supabase.from("deposit_refunds").insert({
-        tenant_id: tenant.id,
-        refund_amount: refundAmountValue,
-        original_deposit: originalDeposit,
-        total_deductions: totalDeductions,
-        final_balance: refundAmountValue,
-        refund_method: refundMethod,
-        refund_reference: refundReference || null,
-        bank_name: refundMethod === "bank_transfer" ? bankName : null,
-        bank_account_name: refundMethod === "bank_transfer" ? bankAccountName : null,
-        bank_account_number: refundMethod === "bank_transfer" ? bankAccountNumber : null,
-        mpesa_number: refundMethod === "mpesa" ? mpesaNumber : null,
-        notes: refundNotes || null,
-        move_out_date: moveOutDate,
-        status: "pending",
-        processed_by: user?.id,
-      } as {
-        tenant_id: string;
-        refund_amount: number;
-        original_deposit: number;
-        total_deductions: number;
-        final_balance: number;
-        refund_method: string;
-        refund_reference: string | null;
-        bank_name: string | null;
-        bank_account_name: string | null;
-        bank_account_number: string | null;
-        mpesa_number: string | null;
-        notes: string | null;
-        move_out_date: string;
-        status: string;
-        processed_by: string | undefined;
+      const { data: refundResult, error: refundError } = await supabase.rpc("create_deposit_refund_atomic", {
+        p_tenant_id: tenant.id, p_refund_method: refundMethod, p_move_out_date: moveOutDate,
+        p_refund_reference: refundReference || null, p_bank_name: refundMethod === "bank_transfer" ? bankName : null,
+        p_bank_account_name: refundMethod === "bank_transfer" ? bankAccountName : null, p_bank_account_number: refundMethod === "bank_transfer" ? bankAccountNumber : null,
+        p_mpesa_number: refundMethod === "mpesa" ? mpesaNumber : null, p_notes: refundNotes || null, p_unit_id: null, p_tenancy_id: null
       });
-
-      // Update tenant deposit balance to 0
-      await supabase.from("tenants").update({ 
-        deposit_balance: 0,
-        status: "inactive"
-      } as {
-        deposit_balance: number;
-        status: string;
-      }).eq("id", tenant.id);
+      if (refundError) throw refundError;
+      const refundAmountValue = Number(refundResult?.refund_amount ?? currentBalance);
 
       // Send email notification
       await sendRefundNotification("initiated", refundAmountValue);
@@ -410,15 +353,8 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      await supabase.from("deposit_refunds").update({
-        status: newStatus,
-        processed_at: newStatus === "completed" ? new Date().toISOString() : null,
-        processed_by: user?.id,
-      } as {
-        status: string;
-        processed_at: string | null;
-        processed_by: string | undefined;
-      }).eq("id", existingRefund.id);
+      const { error } = await supabase.rpc("transition_deposit_refund_atomic", { p_refund_id: existingRefund.id, p_status: newStatus });
+      if (error) throw error;
 
       // Send completion notification
       if (newStatus === "completed") {

@@ -89,16 +89,7 @@ export function PendingDepositRefunds() {
   const handleMarkComplete = async (refundId: string) => {
     setProcessingId(refundId);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { error } = await supabase
-        .from("deposit_refunds")
-        .update({
-          status: "completed",
-          processed_at: new Date().toISOString(),
-          processed_by: user?.id,
-        } as unknown)
-        .eq("id", refundId);
+      const { error } = await supabase.rpc("transition_deposit_refund_atomic", { p_refund_id: refundId, p_status: "completed" });
 
       if (error) { logError('PendingDepositRefunds.markComplete', error); return; }
 

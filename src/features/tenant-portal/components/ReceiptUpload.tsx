@@ -219,18 +219,11 @@ export const ReceiptUpload = ({
       const receiptPath = fileName;
 
       // Create receipt record with the file path
-      const { error: insertError } = await supabase.from('payment_receipts').insert({
-        tenant_id: tenantId,
-        invoice_id: selectedInvoice || null,
-        receipt_url: receiptPath, // Store path, not public URL
-        amount: parseFloat(amount),
-        payment_date: paymentDate,
-        payment_method: paymentMethod,
-        reference_number: referenceNumber || null,
-        notes: notes || null,
-        status: 'pending',
+      const { error: insertError } = await supabase.rpc('submit_payment_receipt_atomic', {
+        p_tenant_id: tenantId, p_invoice_id: selectedInvoice || null, p_receipt_url: receiptPath,
+        p_amount: parseFloat(amount), p_payment_date: paymentDate, p_payment_method: paymentMethod,
+        p_reference_number: referenceNumber || null, p_notes: notes || null,
       });
-
       if (insertError) throw insertError;
 
       // Notify manager about the new receipt upload
