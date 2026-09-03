@@ -40,7 +40,9 @@
     "audit:security-boundary": "node scripts/security-boundary-audit.mjs",
     "audit:cross-role": "node scripts/cross-role-isolation-audit.mjs",
     "audit:migration-chain": "node scripts/audit-migration-chain.mjs",
-    "audit:final-security": "node scripts/audit-final-security.mjs"
+    "audit:final-security": "node scripts/audit-final-security.mjs",
+    "audit:migration-repair-plan": "node scripts/prepare-migration-repair-plan.mjs",
+    "audit:release-certificate": "node scripts/audit-release-certificate.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
