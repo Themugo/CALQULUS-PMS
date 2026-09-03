@@ -668,6 +668,7 @@ const Properties = () => {
               value={newProperty.image_url}
               onChange={(url) => setNewProperty({ ...newProperty, image_url: url })}
               bucket="property-images"
+              folder={`managers/${user?.id ?? "unknown"}`}
               label="Property Image"
               placeholder="Upload or paste image URL"
             />
@@ -821,6 +822,7 @@ const Properties = () => {
               value={editFormData.image_url}
               onChange={(url) => setEditFormData({ ...editFormData, image_url: url })}
               bucket="property-images"
+              folder={`managers/${user?.id ?? "unknown"}`}
               label="Property Image"
               placeholder="Upload or paste image URL"
             />

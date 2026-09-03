@@ -54,12 +54,34 @@ serve(async (req) => {
       effectiveManagerId = (rel as any)?.manager_id ?? caller.id;
     }
 
-    if (callerRole !== "webhost" && propertyId) {
-      const { data: prop } = await supabase.from("properties").select("manager_id").eq("id", propertyId).maybeSingle();
-      if (!prop || (prop as any).manager_id !== effectiveManagerId) {
-        return new Response(JSON.stringify({ error: "Forbidden: property is not in your managed portfolio" }), {
-          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    // Validate the property/unit relationship together. Never trust a caller
+    // supplied propertyId or unitId independently: otherwise an authenticated
+    // manager could attach a tenant to another manager's unit.
+    if (callerRole !== "webhost") {
+      if (!propertyId && !unitId) {
+        return new Response(JSON.stringify({ error: "A managed property or unit is required" }), {
+          status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
+      }
+
+      if (propertyId) {
+        const { data: prop } = await supabase.from("properties").select("manager_id").eq("id", propertyId).maybeSingle();
+        if (!prop || (prop as any).manager_id !== effectiveManagerId) {
+          return new Response(JSON.stringify({ error: "Forbidden: property is not in your managed portfolio" }), {
+            status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      if (unitId) {
+        const { data: unit } = await supabase.from("units").select("property_id, properties!inner(manager_id)").eq("id", unitId).maybeSingle();
+        const unitPropertyId = (unit as any)?.property_id;
+        const unitManagerId = (unit as any)?.properties?.manager_id;
+        if (!unit || unitManagerId !== effectiveManagerId || (propertyId && unitPropertyId !== propertyId)) {
+          return new Response(JSON.stringify({ error: "Forbidden: unit is not in your managed property" }), {
+            status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+          });
+        }
       }
     }
 

@@ -8,6 +8,10 @@ export function imageExtension(file: File): string {
 
 export function publicStoragePath(publicUrl: string | null | undefined, bucket: string): string | null {
   if (!publicUrl) return null;
+  // Accept canonical bucket/path references used by private-storage writes.
+  const raw = publicUrl.split("?")[0];
+  const prefix = `${bucket}/`;
+  if (raw.startsWith(prefix)) return raw.slice(prefix.length);
 
   const markerPublic = `/object/public/${bucket}/`;
   const markerSign = `/object/sign/${bucket}/`;

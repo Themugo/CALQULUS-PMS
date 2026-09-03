@@ -115,8 +115,7 @@ export default function OrgBrandStudio() {
         .from("company-logos")
         .upload(fileName, file, { cacheControl: "3600", contentType: file.type, upsert: true });
       if (uploadError) throw uploadError;
-      const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(fileName);
-      patch({ logoUrl: `${urlData.publicUrl}?t=${Date.now()}` });
+      patch({ logoUrl: `company-logos/${fileName}?t=${Date.now()}` });
     } catch (error) {
       toast({
         title: "Upload failed",
@@ -150,28 +149,9 @@ export default function OrgBrandStudio() {
         white_label_enabled: whiteLabelOnPlan ? clean.whiteLabelEnabled : false,
         brand_config: orgBrandDraftToOverlay(clean) as Json,
       };
-      if (companyId) {
-        const { error } = await supabase.from("company_settings").update(payload).eq("id", companyId);
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from("company_settings")
-          .insert({ ...payload, manager_user_id: user.id })
-          .select("id")
-          .single();
-        if (error) throw error;
-        setCompanyId(data.id);
-      }
-      const { error: agencyError } = await supabase.from("agencies").upsert(
-        {
-          manager_id: user.id,
-          name: clean.companyName || "My Agency",
-        },
-        { onConflict: "manager_id" },
-      );
-      if (agencyError) {
-        // Brand record saved; agency name sync is best-effort.
-      }
+      const { data: savedCompanyId, error } = await supabase.rpc('save_manager_company_settings_atomic', { p_payload: payload });
+      if (error) throw error;
+      if (savedCompanyId) setCompanyId(savedCompanyId);
       setDraft(clean);
       setSaved(clean);
       invalidateManagerActivation(queryClient);

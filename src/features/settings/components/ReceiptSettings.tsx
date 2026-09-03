@@ -75,36 +75,11 @@ export const ReceiptSettings = () => {
 
     setSaving(true);
     try {
-      if (settings.id) {
-        const { error } = await supabase
-          .from("receipt_settings")
-          .update({
-            auto_send_receipts: settings.auto_send_receipts,
-            primary_color: settings.primary_color,
-            secondary_color: settings.secondary_color,
-            footer_message: settings.footer_message,
-            include_logo: settings.include_logo,
-          })
-          .eq("id", settings.id);
-
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from("receipt_settings")
-          .insert({
-            manager_user_id: user.id,
-            auto_send_receipts: settings.auto_send_receipts,
-            primary_color: settings.primary_color,
-            secondary_color: settings.secondary_color,
-            footer_message: settings.footer_message,
-            include_logo: settings.include_logo,
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        setSettings((prev) => ({ ...prev, id: data.id }));
-      }
+      const { data, error } = await supabase.rpc('save_manager_receipt_settings_atomic', {
+        p_payload: { ...settings, id: settings.id || null },
+      });
+      if (error) throw error;
+      if (!settings.id) setSettings((prev) => ({ ...prev, id: data }));
 
       toast({
         title: "Settings Saved",

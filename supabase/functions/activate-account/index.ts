@@ -2,6 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 interface ActivateAccountRequest {
   token: string;
   password: string;
@@ -43,6 +44,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
+
+    // Activation is intentionally unauthenticated, but token use is
+    // a credential-bearing operation and must be rate limited.
+    const rateLimitClient = createClient(
+      requireEnv("SUPABASE_URL"),
+      requireEnv("SUPABASE_ANON_KEY")
+    );
+    const clientKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "activation-anonymous";
+    const allowed = await checkRateLimit(rateLimitClient, clientKey, "activate-account", 10, { failClosed: true });
+    if (!allowed) return rateLimitResponse(req);
 
     // Use service role client to validate and use the token
     const supabaseAdmin = createClient(

@@ -65,12 +65,9 @@ export function ImageUpload({
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
-
-      onChange(publicUrl);
-      setUrlInput(publicUrl);
+      const storageReference = `${bucket}/${filePath}`;
+      onChange(storageReference);
+      setUrlInput(storageReference);
       toast({
         title: "Image uploaded",
         description: "Your image has been uploaded successfully.",

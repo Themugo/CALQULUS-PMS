@@ -404,13 +404,11 @@ const TierPricingEditor: React.FC = () => {
       for (const tier of tiers) {
         const newPrice = parseFloat(prices[tier.tier_key] ?? '0');
         if (isNaN(newPrice)) continue;
-        await (supabase.from('subscription_tiers')
-          .update({ price_per_property: newPrice })
-          .eq('id', tier.id));
-        // Also update manager_profiles for this tier
-        await (supabase.from('manager_profiles')
-          .update({ platform_rate: newPrice })
-          .eq('subscription_tier', tier.tier_key));
+        const { error } = await supabase.rpc('save_webhost_tier_price_atomic', {
+          p_tier_id: tier.id,
+          p_price_per_property: newPrice,
+        });
+        if (error) throw error;
       }
     },
     onSuccess: () => {

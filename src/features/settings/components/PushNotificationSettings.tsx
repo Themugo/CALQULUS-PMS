@@ -192,23 +192,13 @@ export const PushNotificationSettings: React.FC = () => {
     if (!user) return;
     setSavingPreferences(true);
     try {
-      const { error } = await (supabase
-        .from("manager_notification_settings" as never)
-        .upsert(
-          {
-            manager_user_id: user.id,
-            notify_email: preferences.notifyEmail,
-            notify_sms: preferences.notifySms,
-            notify_whatsapp: preferences.notifyWhatsapp,
-            notify_push: preferences.notifyPush,
-            notify_payments: preferences.topicPayments,
-            notify_maintenance: preferences.topicMaintenance,
-            notify_leases: preferences.topicLeases,
-            notify_security: preferences.topicSecurity,
-          },
-          { onConflict: "manager_user_id" }
-        ) as unknown as { error: unknown });
-
+      const { error } = await supabase.rpc('save_manager_notification_settings_atomic', {
+        p_payload: {
+          notify_email: preferences.notifyEmail,
+          notify_sms: preferences.notifySms,
+          notify_whatsapp: preferences.notifyWhatsapp,
+        },
+      });
       if (error) throw error;
 
       toast({

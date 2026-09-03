@@ -5738,6 +5738,11 @@ export type Database = {
           notify_email: boolean
           notify_sms: boolean
           notify_whatsapp: boolean
+          notify_push: boolean
+          notify_payments: boolean
+          notify_maintenance: boolean
+          notify_leases: boolean
+          notify_security: boolean
           whatsapp_provider: string | null
           whatsapp_from_number: string | null
           created_at: string
@@ -5749,6 +5754,11 @@ export type Database = {
           notify_email?: boolean
           notify_sms?: boolean
           notify_whatsapp?: boolean
+          notify_push?: boolean
+          notify_payments?: boolean
+          notify_maintenance?: boolean
+          notify_leases?: boolean
+          notify_security?: boolean
           whatsapp_provider?: string | null
           whatsapp_from_number?: string | null
           created_at?: string
@@ -5760,6 +5770,11 @@ export type Database = {
           notify_email?: boolean
           notify_sms?: boolean
           notify_whatsapp?: boolean
+          notify_push?: boolean
+          notify_payments?: boolean
+          notify_maintenance?: boolean
+          notify_leases?: boolean
+          notify_security?: boolean
           whatsapp_provider?: string | null
           whatsapp_from_number?: string | null
           created_at?: string
@@ -6763,6 +6778,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      save_manager_bank_details_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: string }
+      delete_manager_bank_details_atomic: { Args: { p_id: string }; Returns: boolean }
+      save_manager_ewallet_settings_atomic: { Args: { p_payload: Json }; Returns: string }
+      save_manager_company_settings_atomic: { Args: { p_payload: Json }; Returns: string }
+      save_manager_receipt_settings_atomic: { Args: { p_payload: Json }; Returns: string }
+      provision_submanager_atomic: { Args: { p_submanager_user_id: string; p_permissions: Json }; Returns: string }
+      save_submanager_permissions_atomic: { Args: { p_submanager_user_id: string; p_permissions: Json }; Returns: string }
+      save_submanager_property_assignments_atomic: { Args: { p_submanager_user_id: string; p_property_ids: string[]; p_restrict: boolean }; Returns: number }
+      remove_submanager_atomic: { Args: { p_submanager_id: string }; Returns: string }
+      save_workflow_template_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_instance_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_step_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_automation_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_utility_connection_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_utility_bill_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      update_profile_settings_atomic: { Args: { p_full_name: string; p_phone: string; p_email: string }; Returns: Database["public"]["Tables"]["profiles"]["Row"] }
+      save_webhost_tier_price_atomic: { Args: { p_tier_id: string; p_price_per_property: number }; Returns: boolean }
+      save_manager_notification_settings_atomic: { Args: { p_payload: Json }; Returns: string }
       create_in_app_notification_atomic: { Args: { p_user_id: string; p_title: string; p_body: string; p_type?: string; p_action_url?: string | null; p_action_label?: string | null; p_reference_id?: string | null; p_reference_type?: string | null; p_priority?: string; p_source?: string; p_manager_id?: string | null }; Returns: Database["public"]["Tables"]["in_app_notifications"]["Row"] }
       mark_in_app_notification_read_atomic: { Args: { p_notification_id: string }; Returns: Database["public"]["Tables"]["in_app_notifications"]["Row"] }
       mark_all_in_app_notifications_read_atomic: { Args: Record<string, never>; Returns: number }

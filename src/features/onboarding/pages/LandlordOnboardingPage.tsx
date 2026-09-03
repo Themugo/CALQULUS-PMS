@@ -76,13 +76,9 @@ export default function LandlordOnboardingPage() {
 
   const saveProfile = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("company_settings").upsert(
-        {
-          manager_user_id: userId,
-          company_name: orgName || "My property business",
-        },
-        { onConflict: "manager_user_id" },
-      );
+      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: { company_name: orgName || "My property business" },
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -97,14 +93,12 @@ export default function LandlordOnboardingPage() {
 
   const savePortfolio = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("company_settings").upsert(
-        {
-          manager_user_id: userId,
+      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: {
           company_name: orgName || "My property business",
           brand_config: { onboarding: { landlordPropertyTypes: propertyTypes } },
         },
-        { onConflict: "manager_user_id" },
-      );
+      });
       if (error) throw error;
     },
     onSuccess: () => {

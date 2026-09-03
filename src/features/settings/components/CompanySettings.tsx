@@ -110,39 +110,11 @@ export const CompanySettings = ({ section: _section = "all" }: { section?: Compa
         website: companyWebsite,
       };
 
-      if (companyId) {
-        const { error } = await supabase
-          .from("company_settings")
-          .update(companyPayload)
-          .eq("id", companyId);
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from("company_settings")
-          .insert({ ...companyPayload, manager_user_id: user?.id })
-          .select()
-          .single();
-        if (error) throw error;
-        setCompanyId(data.id);
-      }
-
-      // Sync extended fields (county, kra_pin, whatsapp, registration_number)
-      // to agencies table — these columns were added in migration 014
-      if (user?.id) {
-        const { error: agencyError } = await (supabase.from('agencies').upsert({
-          manager_id: user.id,
-          name: companyName || 'My Agency',
-          email: companyEmail || null,
-          phone: companyPhone || null,
-          address: address || null,
-          county: county || null,
-          kra_pin: kraPin || null,
-          registration_number: registrationNumber || null,
-          whatsapp: companyWhatsapp || null,
-          website: companyWebsite || null,
-        }, { onConflict: 'manager_id' }));
-        if (agencyError) throw agencyError;
-      }
+      const { data, error } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: { ...companyPayload, county, kra_pin: kraPin, registration_number: registrationNumber, whatsapp: companyWhatsapp },
+      });
+      if (error) throw error;
+      setCompanyId(data);
 
       toast({
         title: "Company Details Saved",

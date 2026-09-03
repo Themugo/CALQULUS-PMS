@@ -63,14 +63,12 @@ async function saveOnboardingConfig(userId: string, companyName: string, patch: 
   const onboarding = (current.onboarding && typeof current.onboarding === "object"
     ? current.onboarding
     : {}) as Record<string, unknown>;
-  const { error } = await supabase.from("company_settings").upsert(
-    {
-      manager_user_id: userId,
+  const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
+    p_payload: {
       company_name: companyName,
       brand_config: { ...current, onboarding: { ...onboarding, ...patch } },
     },
-    { onConflict: "manager_user_id" },
-  );
+  });
   if (error) throw error;
 }
 
@@ -115,10 +113,9 @@ export default function AgencyOnboardingPage() {
 
   const saveProfile = useMutation({
     mutationFn: async () => {
-      const { error: upsertError } = await supabase.from("company_settings").upsert(
-        { manager_user_id: userId, company_name: agencyName.trim() },
-        { onConflict: "manager_user_id" },
-      );
+      const { error: upsertError } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: { company_name: agencyName.trim() },
+      });
       if (upsertError) throw upsertError;
     },
     onSuccess: () => {

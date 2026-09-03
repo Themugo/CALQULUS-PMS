@@ -171,12 +171,10 @@ const Settings = () => {
     if (!user) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from("profiles").upsert({
-        id: user.id,
-        email: user.email,
-        full_name: fullName,
-        phone,
-        photo_url: photoUrl,
+      const { error } = await supabase.rpc('update_profile_settings_atomic', {
+        p_full_name: fullName,
+        p_phone: phone,
+        p_email: user.email || email,
       });
       if (error) throw error;
       toast({ title: "Profile Updated", description: "Your profile information has been saved." });

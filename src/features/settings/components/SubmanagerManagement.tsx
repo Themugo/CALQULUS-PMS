@@ -279,37 +279,11 @@ const SubmanagerManagement = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user');
 
-      // Create the user role as submanager
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: authData.user.id,
-          role: 'submanager',
-          approval_status: 'approved',
-        });
-
-      if (roleError) throw roleError;
-
-      // Create the manager-submanager relationship
-      const { error: relError } = await supabase
-        .from('manager_submanagers')
-        .insert({
-          manager_id: user.id,
-          submanager_user_id: authData.user.id,
-        });
-
-      if (relError) throw relError;
-
-      // Create the permissions record
-      const { error: permError } = await supabase
-        .from('submanager_permissions')
-        .insert({
-          submanager_user_id: authData.user.id,
-          manager_id: user.id,
-          ...newPermissions,
-        });
-
-      if (permError) throw permError;
+      const { error: provisionError } = await supabase.rpc('provision_submanager_atomic', {
+        p_submanager_user_id: authData.user.id,
+        p_permissions: newPermissions,
+      });
+      if (provisionError) throw provisionError;
 
       // Log activity
       logActivity({
@@ -351,33 +325,11 @@ const SubmanagerManagement = () => {
 
     setIsSavingPermissions(true);
     try {
-      // Check if permissions record exists
-      const { data: existing } = await supabase
-        .from('submanager_permissions')
-        .select('id')
-        .eq('submanager_user_id', selectedSubmanager.submanager_user_id)
-        .maybeSingle();
-
-      if (existing) {
-        // Update existing permissions
-        const { error } = await supabase
-          .from('submanager_permissions')
-          .update(editingPermissions)
-          .eq('submanager_user_id', selectedSubmanager.submanager_user_id);
-
-        if (error) throw error;
-      } else {
-        // Insert new permissions
-        const { error } = await supabase
-          .from('submanager_permissions')
-          .insert({
-            submanager_user_id: selectedSubmanager.submanager_user_id,
-            manager_id: user.id,
-            ...editingPermissions,
-          });
-
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('save_submanager_permissions_atomic', {
+        p_submanager_user_id: selectedSubmanager.submanager_user_id,
+        p_permissions: editingPermissions,
+      });
+      if (error) throw error;
 
       // Log activity
       logActivity({
@@ -418,36 +370,15 @@ const SubmanagerManagement = () => {
   // Remove a submanager
   const removeSubmanager = useMutation({
     mutationFn: async (submanagerId: string) => {
-      // First get the submanager_user_id
-      const { data: relationship } = await supabase
+      const { data: relationship, error } = await supabase
         .from('manager_submanagers')
         .select('submanager_user_id')
         .eq('id', submanagerId)
         .single();
-
-      if (relationship) {
-        // Remove the permissions
-        await supabase
-          .from('submanager_permissions')
-          .delete()
-          .eq('submanager_user_id', relationship.submanager_user_id);
-
-        // Remove the user role
-        await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', relationship.submanager_user_id)
-          .eq('role', 'submanager');
-      }
-
-      // Remove the relationship
-      const { error } = await supabase
-        .from('manager_submanagers')
-        .delete()
-        .eq('id', submanagerId);
-
       if (error) throw error;
-      
+      const { error: removeError } = await supabase.rpc('remove_submanager_atomic', { p_submanager_id: submanagerId });
+      if (removeError) throw removeError;
+
       return relationship;
     },
     onSuccess: (relationship) => {
@@ -530,40 +461,12 @@ const SubmanagerManagement = () => {
       const previousPropertyIds = selectedSubmanager.assigned_properties || [];
       const wasRestricted = selectedSubmanager.permissions?.restrict_to_assigned_properties || false;
       
-      // Delete existing assignments
-      await supabase
-        .from('submanager_property_assignments')
-        .delete()
-        .eq('submanager_user_id', selectedSubmanager.submanager_user_id);
-
-      // Insert new assignments
-      if (selectedPropertyIds.length > 0) {
-        const assignments = selectedPropertyIds.map(propertyId => ({
-          submanager_user_id: selectedSubmanager.submanager_user_id,
-          property_id: propertyId,
-          manager_id: user.id,
-        }));
-
-        const { error } = await supabase
-          .from('submanager_property_assignments')
-          .insert(assignments);
-
-        if (error) throw error;
-      }
-
-      // Update restrict flag in permissions
-      const { data: existingPerm } = await supabase
-        .from('submanager_permissions')
-        .select('id')
-        .eq('submanager_user_id', selectedSubmanager.submanager_user_id)
-        .maybeSingle();
-
-      if (existingPerm) {
-        await supabase
-          .from('submanager_permissions')
-          .update({ restrict_to_assigned_properties: editingPermissions.restrict_to_assigned_properties })
-          .eq('submanager_user_id', selectedSubmanager.submanager_user_id);
-      }
+      const { error } = await supabase.rpc('save_submanager_property_assignments_atomic', {
+        p_submanager_user_id: selectedSubmanager.submanager_user_id,
+        p_property_ids: selectedPropertyIds,
+        p_restrict: editingPermissions.restrict_to_assigned_properties,
+      });
+      if (error) throw error;
 
       // Get property names for logging and email
       const assignedPropertyNames = properties

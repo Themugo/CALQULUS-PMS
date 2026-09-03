@@ -50,14 +50,12 @@ export default function ManagerOnboardingPage() {
 
   const saveOrganization = useMutation({
     mutationFn: async (name: string) => {
-      const { error } = await supabase.from("company_settings").upsert(
-        {
-          manager_user_id: managerId,
+      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: {
           company_name: name,
           brand_config: { onboarding: { organizationComplete: true } },
         },
-        { onConflict: "manager_user_id" },
-      );
+      });
       if (error) throw error;
     },
     onSuccess: async () => {
@@ -74,14 +72,12 @@ export default function ManagerOnboardingPage() {
 
   const savePortfolio = useMutation({
     mutationFn: async (groups: string[]) => {
-      const { error } = await supabase.from("company_settings").upsert(
-        {
-          manager_user_id: managerId,
+      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
+        p_payload: {
           company_name: "CALQULUS Workspace",
           brand_config: { onboarding: { propertyGroups: groups } },
         },
-        { onConflict: "manager_user_id" },
-      );
+      });
       if (error) throw error;
     },
     onSuccess: async () => {
