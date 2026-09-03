@@ -92,30 +92,17 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
 
   const addPayer = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('payment_payers').insert({
-        tenant_id:         tenantId,
-        manager_id:        user!.id,
-        unit_id:           unitId ?? null,
-        property_id:       propertyId ?? null,
-        payer_type:        form.payer_type,
-        payer_name:        form.payer_name || null,
-        payer_email:       form.payer_email || null,
-        payer_phone:       form.payer_phone || null,
-        payer_organisation: form.payer_organisation || null,
-        payer_address:     form.payer_address || null,
-        national_id:       form.national_id || null,
-        pays_amount:       form.pays_amount ? Number(form.pays_amount) : null,
-        pays_percentage:   form.pays_percentage ? Number(form.pays_percentage) : null,
-        payment_day:       form.payment_day ? Number(form.payment_day) : null,
-        preferred_method:  form.preferred_method,
-        mpesa_number:      form.mpesa_number || null,
-        bank_account:      form.bank_account || null,
-        bank_name:         form.bank_name || null,
-        standing_order_ref: form.standing_order_ref || null,
-        start_date:        form.start_date || null,
-        end_date:          form.end_date || null,
-        notes:             form.notes || null,
-        is_active:         true,
+      const { error } = await supabase.rpc('save_payment_payer_atomic' as never, {
+        p_payer_id: null,
+        p_payload: {
+          tenant_id: tenantId, manager_id: user!.id, unit_id: unitId ?? null, property_id: propertyId ?? null,
+          payer_type: form.payer_type, payer_name: form.payer_name || null, payer_email: form.payer_email || null,
+          payer_phone: form.payer_phone || null, payer_organisation: form.payer_organisation || null, payer_address: form.payer_address || null,
+          national_id: form.national_id || null, pays_amount: form.pays_amount || null, pays_percentage: form.pays_percentage || null,
+          payment_day: form.payment_day || null, preferred_method: form.preferred_method, mpesa_number: form.mpesa_number || null,
+          bank_account: form.bank_account || null, bank_name: form.bank_name || null, standing_order_ref: form.standing_order_ref || null,
+          start_date: form.start_date || null, end_date: form.end_date || null, notes: form.notes || null, is_active: true,
+        },
       });
       if (error) throw error;
     },
@@ -130,7 +117,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.from('payment_payers').update({ is_active: active }).eq('id', id);
+      const { error } = await supabase.rpc('transition_payment_payer_atomic' as never, { p_payer_id: id, p_active: active });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['payment-payers', tenantId] }),
@@ -139,7 +126,7 @@ const PaymentPayersManager: React.FC<PaymentPayersManagerProps> = ({
 
   const deletePayer = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('payment_payers').delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_payment_payer_atomic' as never, { p_payer_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

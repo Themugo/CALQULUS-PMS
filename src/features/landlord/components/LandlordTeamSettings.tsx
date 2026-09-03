@@ -68,73 +68,6 @@ const LandlordTeamSettings: React.FC = () => {
     enabled: !!user,
   });
 
-  const syncSubmanagerBridge = async (
-    landlordId: string,
-    memberId: string,
-    perms: Record<string, boolean | string[]>,
-    propertyIds: string[],
-  ) => {
-    const { data: rel } = await supabase
-      .from('manager_submanagers')
-      .select('id')
-      .eq('submanager_user_id', memberId)
-      .maybeSingle();
-    if (!rel) {
-      await supabase.from('manager_submanagers').insert({ manager_id: landlordId, submanager_user_id: memberId });
-    }
-
-    const permPayload = {
-      submanager_user_id: memberId,
-      manager_id: landlordId,
-      can_view_properties: perms.can_view_properties as boolean,
-      can_view_tenants: perms.can_view_tenants as boolean,
-      can_view_leases: (perms.can_view_leases as boolean) ?? true,
-      can_view_invoices: (perms.can_view_invoices as boolean) ?? true,
-      can_view_maintenance: (perms.can_view_maintenance as boolean) ?? true,
-      can_view_contracts: (perms.can_view_contracts as boolean) ?? false,
-      can_view_activity_logs: (perms.can_view_activity_logs as boolean) ?? false,
-      restrict_to_assigned_properties: perms.restrict_to_assigned_properties as boolean,
-      can_record_payments: perms.can_record_payments as boolean,
-      can_edit_tenants: perms.can_edit_tenants as boolean,
-      can_manage_maintenance: (perms.can_manage_maintenance as boolean) ?? false,
-      can_create_invoices: (perms.can_create_invoices as boolean) ?? false,
-      can_approve_moveouts: (perms.can_approve_moveouts as boolean) ?? false,
-      can_send_notices: (perms.can_send_notices as boolean) ?? false,
-      can_upload_documents: (perms.can_upload_documents as boolean) ?? true,
-      assigned_property_ids: propertyIds,
-    };
-
-    const { data: existingPerm } = await supabase
-      .from('submanager_permissions')
-      .select('id')
-      .eq('submanager_user_id', memberId)
-      .maybeSingle();
-    if (existingPerm) {
-      await supabase.from('submanager_permissions').update(permPayload).eq('submanager_user_id', memberId);
-    } else {
-      await supabase.from('submanager_permissions').insert(permPayload);
-    }
-
-    await supabase.from('submanager_property_assignments').delete().eq('submanager_user_id', memberId);
-    if (propertyIds.length > 0) {
-      await supabase.from('submanager_property_assignments').insert(
-        propertyIds.map((property_id) => ({
-          submanager_user_id: memberId,
-          property_id,
-          manager_id: landlordId,
-        })),
-      );
-    }
-    await supabase.from('user_roles').upsert(
-      {
-        user_id: memberId,
-        role: 'submanager',
-        approval_status: 'approved',
-        tenant_id: null,
-      },
-      { onConflict: 'user_id,role' },
-    );
-  };
 
   const addMember = useMutation({
     mutationFn: async () => {
@@ -165,18 +98,13 @@ const LandlordTeamSettings: React.FC = () => {
         can_upload_documents: true,
       };
 
-      const { error } = await supabase.from('landlord_team_members').upsert(
-        {
-          landlord_user_id: user.id,
-          member_user_id: profile.id,
-          member_label: label.trim() || null,
-          assigned_property_ids: allPropertyIds,
-          ...perms,
-        },
-        { onConflict: 'landlord_user_id,member_user_id' },
-      );
+      const { error } = await supabase.rpc('save_landlord_team_member_atomic' as never, {
+        p_member_user_id: profile.id,
+        p_member_label: label.trim() || null,
+        p_assigned_property_ids: allPropertyIds,
+        p_permissions: perms,
+      });
       if (error) throw error;
-      await syncSubmanagerBridge(user.id, profile.id, perms, allPropertyIds);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['landlord-team'] });
@@ -189,7 +117,9 @@ const LandlordTeamSettings: React.FC = () => {
 
   const removeMember = useMutation({
     mutationFn: async (row: TeamRow) => {
-      const { error } = await supabase.from('landlord_team_members').delete().eq('id', row.id);
+      const { error } = await supabase.rpc('remove_landlord_team_member_atomic' as never, {
+        p_team_member_id: row.id,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -209,13 +139,14 @@ const LandlordTeamSettings: React.FC = () => {
       value: boolean;
     }) => {
       if (!user) return;
-      const { error } = await supabase
-        .from('landlord_team_members')
-        .update({ [key]: value })
-        .eq('id', row.id);
-      if (error) throw error;
       const updated = { ...row, [key]: value };
-      await syncSubmanagerBridge(user.id, row.member_user_id, updated as any, row.assigned_property_ids);
+      const { error } = await supabase.rpc('save_landlord_team_member_atomic' as never, {
+        p_member_user_id: row.member_user_id,
+        p_member_label: row.member_label,
+        p_assigned_property_ids: row.assigned_property_ids,
+        p_permissions: updated,
+      });
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['landlord-team'] }),
   });
