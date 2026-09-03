@@ -1,3 +1,10 @@
+
+## Phase 124–125 — Supply-Chain Integrity & CI Release Gate
+
+- Added dependency provenance audit for npm lockfile and package resolution integrity.
+- Added repository-local CI release integrity workflow for pull requests, `main`, and manual dispatch.
+- Added CI release gate audit and release reconciliation integration.
+- Production deployment, migration, authorization and rollback evidence remains externally required.
 ## 2026-09-03 — Phases 120–121
 
 - Added release promotion lock and explicit production authorization binding.

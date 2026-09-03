@@ -18,7 +18,7 @@ const missing = required.filter(k => {
   return Object.values(v).some(x => !String(x ?? '').trim());
 });
 const autoStatuses = Object.fromEntries([
-  'migrationReconciliation','stagingSmoke','stagingE2E','stagingRoleCertification','liveSecurity','rollbackExecution','artifactProvenance','deploymentDrift','rollbackReadiness','releasePromotionLock','productionChangeTrace','signedReleaseManifest','deploymentAttestation'
+  'migrationReconciliation','stagingSmoke','stagingE2E','stagingRoleCertification','liveSecurity','rollbackExecution','artifactProvenance','deploymentDrift','rollbackReadiness','releasePromotionLock','productionChangeTrace','signedReleaseManifest','deploymentAttestation','dependencyProvenance','ciReleaseGate'
 ].map(k => [k, automated[k]?.status || 'NOT_RECORDED']));
 const migration = read(path.join(root, 'docs', 'audits', 'LIVE_MIGRATION_RECONCILIATION.json'));
 const security = read(path.join(root, 'docs', 'audits', 'LIVE_SECURITY_EVIDENCE.json'));
@@ -30,6 +30,8 @@ const promotionLock = read(path.join(root, 'docs', 'audits', 'RELEASE_PROMOTION_
 const changeTrace = read(path.join(root, 'docs', 'audits', 'PRODUCTION_CHANGE_TRACE_AUDIT.json'));
 const signedManifest = read(path.join(root, 'docs', 'audits', 'SIGNED_RELEASE_MANIFEST_AUDIT.json'));
 const deploymentAttestation = read(path.join(root, 'docs', 'audits', 'DEPLOYMENT_ATTESTATION_AUDIT.json'));
+const dependencyProvenance = read(path.join(root, 'docs', 'audits', 'DEPENDENCY_PROVENANCE.json'));
+const ciReleaseGate = read(path.join(root, 'docs', 'audits', 'CI_RELEASE_GATE.json'));
 const report = {
   generatedAt: new Date().toISOString(),
   status: 'BLOCKED',
@@ -46,11 +48,13 @@ const report = {
   productionChangeTrace: changeTrace.status || 'NOT_RECORDED',
   signedReleaseManifest: signedManifest.status || 'NOT_RECORDED',
   deploymentAttestation: deploymentAttestation.status || 'NOT_RECORDED',
+  dependencyProvenance: dependencyProvenance.status || 'NOT_RECORDED',
+  ciReleaseGate: ciReleaseGate.status || 'NOT_RECORDED',
   evidenceSecretScan: forbidden.test(raw) ? 'FAIL' : 'PASS',
   evidenceSha256: fs.existsSync(evidencePath) ? crypto.createHash('sha256').update(raw).digest('hex') : null,
   rule: 'External deployment, restore, and approval evidence must be explicit. Repository automation cannot manufacture production proof.'
 };
-if (!missing.length && report.evidenceSecretScan === 'PASS' && migration.status === 'PASS' && security.status === 'PASS' && rollback.status === 'PASS' && provenance.status === 'PASS' && drift.status === 'PASS' && rollbackReadiness.status === 'PASS' && promotionLock.status === 'PASS' && changeTrace.status === 'PASS' && signedManifest.status === 'PASS' && deploymentAttestation.status === 'PASS') report.status = 'PASS';
+if (!missing.length && report.evidenceSecretScan === 'PASS' && migration.status === 'PASS' && security.status === 'PASS' && rollback.status === 'PASS' && provenance.status === 'PASS' && drift.status === 'PASS' && rollbackReadiness.status === 'PASS' && promotionLock.status === 'PASS' && changeTrace.status === 'PASS' && signedManifest.status === 'PASS' && deploymentAttestation.status === 'PASS' && dependencyProvenance.status === 'PASS' && ciReleaseGate.status === 'PASS') report.status = 'PASS';
 fs.writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
 console.log(`release-reconciliation: ${report.status}`);
 if (report.status !== 'PASS') process.exit(1);

@@ -80,7 +80,9 @@
     "create:signed-release-manifest": "node scripts/create-signed-release-manifest.mjs",
     "audit:release-manifest": "node scripts/audit-release-manifest.mjs",
     "capture:deployment-attestation": "node scripts/capture-deployment-attestation.mjs",
-    "audit:deployment-attestation": "node scripts/audit-deployment-attestation.mjs"
+    "audit:deployment-attestation": "node scripts/audit-deployment-attestation.mjs",
+    "audit:dependency-provenance": "node scripts/audit-dependency-provenance.mjs",
+    "audit:ci-release-gate": "node scripts/audit-ci-release-gate.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

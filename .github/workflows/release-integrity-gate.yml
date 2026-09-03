@@ -1,0 +1,40 @@
+name: Release Integrity Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-provenance:
+    name: Dependency provenance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run audit:dependency-provenance
+      - run: npm run audit:release-manifest
+
+  release-gate:
+    name: Release integrity gate
+    needs: dependency-provenance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run audit:dependency-provenance
+      - run: npm run audit:release-manifest
+      - run: npm run audit:ci-release-gate

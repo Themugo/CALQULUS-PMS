@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T14:29:06.448Z",
+  "generatedAt": "2026-09-03T14:36:33.806Z",
   "releaseCommit": null,
   "artifacts": [
     {
       "path": "package.json",
-      "sha256": "ff044e2c467a5cd2dd3897a0cc68c7bddf8a15b0158d83cea36852b853d87598",
-      "bytes": 9109
+      "sha256": "a76ea1bcf4656f8b7d0cb92844abe6815cd73d4e4c269606757adddeb00c611a",
+      "bytes": 9263
     },
     {
       "path": "package-lock.json",
@@ -817,7 +817,7 @@
     }
   ],
   "credentialsPersisted": false,
-  "manifestSha256": "bfbdcb278d6e5d44ab2ceced6fa7c8e8b796533021cc6273d24344b7964c7ffb",
+  "manifestSha256": "c364b70f7682a2d19e4867ca5a049ef78e7941d7d1ca5f1417cf37e8e069fc8b",
   "signature": null,
   "signatureAlgorithm": null,
   "publicKey": null,
