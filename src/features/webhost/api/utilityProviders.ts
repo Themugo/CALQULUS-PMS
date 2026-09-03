@@ -157,24 +157,7 @@ export const utilityProvidersService = {
    * Create a new utility connection
    */
   async createUtilityConnection(connection: Omit<UtilityConnection, 'id'>): Promise<UtilityConnection | null> {
-    const { data, error } = await supabase
-      .from('utility_connections')
-      .insert({
-        provider_id: connection.providerId,
-        property_id: connection.propertyId,
-        unit: connection.unit,
-        utility_type: connection.utilityType,
-        connection_type: connection.connectionType,
-        status: connection.status,
-        connection_date: connection.connectionDate.toISOString(),
-        monthly_rate: connection.monthlyRate,
-        current_reading: connection.currentReading,
-        previous_reading: connection.previousReading,
-        last_billing_date: connection.lastBillingDate?.toISOString(),
-        next_billing_date: connection.nextBillingDate?.toISOString(),
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('save_utility_connection_atomic', { p_id: null, p_payload: { provider_id: connection.providerId, property_id: connection.propertyId, unit: connection.unit, utility_type: connection.utilityType, connection_type: connection.connectionType, status: connection.status, connection_date: connection.connectionDate.toISOString(), monthly_rate: connection.monthlyRate, current_reading: connection.currentReading, previous_reading: connection.previousReading, last_billing_date: connection.lastBillingDate?.toISOString(), next_billing_date: connection.nextBillingDate?.toISOString() } });
 
     if (error) {
       logError('Error creating utility connection:', error);
@@ -195,18 +178,7 @@ export const utilityProvidersService = {
    * Update a utility connection
    */
   async updateUtilityConnection(id: string, updates: Partial<UtilityConnection>): Promise<UtilityConnection | null> {
-    const { data, error } = await supabase
-      .from('utility_connections')
-      .update({
-        status: updates.status,
-        current_reading: updates.currentReading,
-        previous_reading: updates.previousReading,
-        last_billing_date: updates.lastBillingDate?.toISOString(),
-        next_billing_date: updates.nextBillingDate?.toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('save_utility_connection_atomic', { p_id: id, p_payload: { status: updates.status, current_reading: updates.currentReading, previous_reading: updates.previousReading, last_billing_date: updates.lastBillingDate?.toISOString(), next_billing_date: updates.nextBillingDate?.toISOString() } });
 
     if (error) {
       logError('Error updating utility connection:', error);
@@ -267,24 +239,7 @@ export const utilityProvidersService = {
    * Create a new utility bill
    */
   async createUtilityBill(bill: Omit<UtilityBill, 'id' | 'generatedDate'>): Promise<UtilityBill | null> {
-    const { data, error } = await supabase
-      .from('utility_bills')
-      .insert({
-        connection_id: bill.connectionId,
-        provider_id: bill.providerId,
-        property_id: bill.propertyId,
-        unit: bill.unit,
-        utility_type: bill.utilityType,
-        billing_period: bill.billingPeriod,
-        consumption: bill.consumption,
-        rate: bill.rate,
-        amount: bill.amount,
-        status: bill.status,
-        due_date: bill.dueDate.toISOString(),
-        paid_date: bill.paidDate?.toISOString(),
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('save_utility_bill_atomic', { p_id: null, p_payload: { connection_id: bill.connectionId, provider_id: bill.providerId, property_id: bill.propertyId, unit: bill.unit, utility_type: bill.utilityType, billing_period: bill.billingPeriod, consumption: bill.consumption, rate: bill.rate, amount: bill.amount, status: bill.status, due_date: bill.dueDate.toISOString(), paid_date: bill.paidDate?.toISOString() } });
 
     if (error) {
       logError('Error creating utility bill:', error);
@@ -306,15 +261,7 @@ export const utilityProvidersService = {
    * Update a utility bill
    */
   async updateUtilityBill(id: string, updates: Partial<UtilityBill>): Promise<UtilityBill | null> {
-    const { data, error } = await supabase
-      .from('utility_bills')
-      .update({
-        status: updates.status,
-        paid_date: updates.paidDate?.toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('save_utility_bill_atomic', { p_id: id, p_payload: { status: updates.status, paid_date: updates.paidDate?.toISOString() } });
 
     if (error) {
       logError('Error updating utility bill:', error);
@@ -372,10 +319,7 @@ export const utilityProvidersService = {
    * Activate a utility connection
    */
   async activateUtilityConnection(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('utility_connections')
-      .update({ status: 'active' })
-      .eq('id', id);
+    const { error } = await supabase.rpc('save_utility_connection_atomic', { p_id: id, p_payload: { status: 'active' } });
 
     if (error) {
       logError('Error activating utility connection:', error);
@@ -389,13 +333,7 @@ export const utilityProvidersService = {
    * Mark a utility bill as paid
    */
   async markBillAsPaid(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('utility_bills')
-      .update({ 
-        status: 'paid',
-        paid_date: new Date().toISOString(),
-      })
-      .eq('id', id);
+    const { error } = await supabase.rpc('save_utility_bill_atomic', { p_id: id, p_payload: { status: 'paid', paid_date: new Date().toISOString() } });
 
     if (error) {
       logError('Error marking bill as paid:', error);

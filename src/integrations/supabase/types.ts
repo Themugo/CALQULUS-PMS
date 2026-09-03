@@ -6815,6 +6815,12 @@ export type Database = {
       delete_customer_billing_block_atomic: { Args: { p_block_id: string }; Returns: undefined }
       create_fraud_flag_atomic: { Args: { p_payment_id: string; p_reason: string; p_risk_score: number }; Returns: Database["public"]["Tables"]["fraud_flags"]["Row"] }
       transition_notification_failure_atomic: { Args: { p_id: string; p_status: string }; Returns: Database["public"]["Tables"]["notification_failures"]["Row"] }
+      save_workflow_template_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_instance_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_step_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_workflow_automation_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_utility_connection_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
+      save_utility_bill_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: Json }
 
       record_commission_atomic: { Args: { p_invoice_id: string; p_manager_id: string; p_amount: number; p_rate_applied: number }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
       transition_commission_atomic: { Args: { p_commission_id: string; p_status: string }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
