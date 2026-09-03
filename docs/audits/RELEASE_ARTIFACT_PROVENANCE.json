@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-09-03T14:13:30.274Z",
+  "status": "PASS",
+  "currentReleaseCommit": null,
+  "expectedReleaseCommit": null,
+  "manifestPresent": true,
+  "artifactCount": 4,
+  "artifactMismatches": [],
+  "immutableIdentityRule": "A release is immutable only when the recorded release commit and artifact SHA-256 manifest match the candidate being promoted.",
+  "requiredExternalEvidence": [],
+  "note": "This is a provenance check, not a digital signature. Promotion must use the exact reviewed commit/artifact set."
+}

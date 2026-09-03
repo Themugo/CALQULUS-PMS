@@ -25,14 +25,14 @@
     "decision": ""
   },
   "automatedEvidence": {
-    "capturedAt": "2026-09-03T13:54:34.164Z",
+    "capturedAt": "2026-09-03T14:13:30.135Z",
     "migrationReconciliation": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:54:33.560Z"
+      "generatedAt": "2026-09-03T13:59:59.284Z"
     },
     "stagingSmoke": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:29:53.221Z"
+      "generatedAt": "2026-09-03T13:59:58.769Z"
     },
     "stagingE2E": {
       "status": "EXTERNAL_REQUIRED",
@@ -40,15 +40,23 @@
     },
     "stagingRoleCertification": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:54:33.878Z"
+      "generatedAt": "2026-09-03T13:59:58.649Z"
     },
     "liveSecurity": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:54:34.010Z"
+      "generatedAt": "2026-09-03T13:59:59.400Z"
     },
     "disasterRecovery": {
       "status": "PASS",
       "generatedAt": "2026-09-03T13:54:32.867Z"
+    },
+    "rollbackExecution": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T14:13:21.314Z"
+    },
+    "artifactProvenance": {
+      "status": "PASS",
+      "generatedAt": "2026-09-03T14:13:21.189Z"
     }
   }
 }

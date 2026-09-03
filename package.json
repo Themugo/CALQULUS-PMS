@@ -69,7 +69,9 @@
     "staging:live-certify": "node scripts/run-live-staging-certification.mjs",
     "audit:release-reconciliation": "node scripts/audit-release-reconciliation.mjs",
     "capture:deployment-evidence": "node scripts/capture-deployment-evidence.mjs",
-    "audit:migration-attestation": "node scripts/audit-production-migration-attestation.mjs"
+    "audit:migration-attestation": "node scripts/audit-production-migration-attestation.mjs",
+    "capture:rollback-evidence": "node scripts/capture-rollback-evidence.mjs",
+    "audit:artifact-provenance": "node scripts/audit-artifact-provenance.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
