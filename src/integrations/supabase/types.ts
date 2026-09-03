@@ -6790,6 +6790,9 @@ export type Database = {
       save_platform_billing_rule_atomic: { Args: { p_rule_id?: string | null; p_payload: Json }; Returns: Database["public"]["Tables"]["platform_billing_rules"]["Row"] }
       transition_platform_billing_rule_atomic: { Args: { p_rule_id: string; p_is_active: boolean }; Returns: Database["public"]["Tables"]["platform_billing_rules"]["Row"] }
       delete_platform_billing_rule_atomic: { Args: { p_rule_id: string }; Returns: undefined }
+      transition_payment_processing_atomic: { Args: { p_id: string; p_status: string }; Returns: Database["public"]["Tables"]["payment_processing"]["Row"] }
+      create_loan_application_atomic: { Args: { p_payload: Json }; Returns: Database["public"]["Tables"]["loan_applications"]["Row"] }
+      transition_loan_application_atomic: { Args: { p_id: string; p_status: string }; Returns: Database["public"]["Tables"]["loan_applications"]["Row"] }
       save_customer_billing_block_atomic: { Args: { p_block_id?: string | null; p_payload: Json }; Returns: Database["public"]["Tables"]["customer_billing_blocks"]["Row"] }
       delete_customer_billing_block_atomic: { Args: { p_block_id: string }; Returns: undefined }
 

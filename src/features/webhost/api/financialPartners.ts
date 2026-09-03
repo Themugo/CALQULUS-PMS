@@ -156,22 +156,9 @@ export const financialPartnersService = {
    * Create a new loan application
    */
   async createLoanApplication(application: Omit<LoanApplication, 'id' | 'submittedDate'>): Promise<LoanApplication | null> {
-    const { data, error } = await supabase
-      .from('loan_applications')
-      .insert({
-        partner_id: application.partnerId,
-        property_id: application.propertyId,
-        applicant_name: application.applicantName,
-        amount: application.amount,
-        purpose: application.purpose,
-        term: application.term,
-        interest_rate: application.interestRate,
-        status: application.status,
-        monthly_payment: application.monthlyPayment,
-        total_repayment: application.totalRepayment,
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('create_loan_application_atomic', {
+      p_payload: { partner_id: application.partnerId, property_id: application.propertyId, applicant_name: application.applicantName, amount: application.amount, purpose: application.purpose, term: application.term, interest_rate: application.interestRate, monthly_payment: application.monthlyPayment, total_repayment: application.totalRepayment },
+    });
 
     if (error) {
       logError('Error creating loan application:', error);
@@ -193,17 +180,9 @@ export const financialPartnersService = {
    * Update a loan application
    */
   async updateLoanApplication(id: string, updates: Partial<LoanApplication>): Promise<LoanApplication | null> {
-    const { data, error } = await supabase
-      .from('loan_applications')
-      .update({
-        status: updates.status,
-        approved_date: updates.approvedDate?.toISOString(),
-        disbursed_date: updates.disbursedDate?.toISOString(),
-        repayment_start_date: updates.repaymentStartDate?.toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('transition_loan_application_atomic', {
+      p_id: id, p_status: updates.status ?? 'pending',
+    });
 
     if (error) {
       logError('Error updating loan application:', error);
@@ -246,10 +225,7 @@ export const financialPartnersService = {
    * Activate a payment processing provider
    */
   async activatePaymentProcessing(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('payment_processing')
-      .update({ status: 'active' })
-      .eq('id', id);
+    const { error } = await supabase.rpc('transition_payment_processing_atomic', { p_id: id, p_status: 'active' });
 
     if (error) {
       logError('Error activating payment processing:', error);
@@ -263,10 +239,7 @@ export const financialPartnersService = {
    * Deactivate a payment processing provider
    */
   async deactivatePaymentProcessing(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('payment_processing')
-      .update({ status: 'inactive' })
-      .eq('id', id);
+    const { error } = await supabase.rpc('transition_payment_processing_atomic', { p_id: id, p_status: 'inactive' });
 
     if (error) {
       logError('Error deactivating payment processing:', error);
@@ -317,13 +290,7 @@ export const financialPartnersService = {
    * Accept a loan application
    */
   async acceptLoanApplication(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('loan_applications')
-      .update({ 
-        status: 'approved',
-        approved_date: new Date().toISOString(),
-      })
-      .eq('id', id);
+    const { error } = await supabase.rpc('transition_loan_application_atomic', { p_id: id, p_status: 'approved' });
 
     if (error) {
       logError('Error accepting loan application:', error);
@@ -337,10 +304,7 @@ export const financialPartnersService = {
    * Reject a loan application
    */
   async rejectLoanApplication(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('loan_applications')
-      .update({ status: 'rejected' })
-      .eq('id', id);
+    const { error } = await supabase.rpc('transition_loan_application_atomic', { p_id: id, p_status: 'rejected' });
 
     if (error) {
       logError('Error rejecting loan application:', error);
