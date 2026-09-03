@@ -25,10 +25,10 @@
     "decision": ""
   },
   "automatedEvidence": {
-    "capturedAt": "2026-09-03T13:38:18.978Z",
+    "capturedAt": "2026-09-03T13:54:34.164Z",
     "migrationReconciliation": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:38:18.728Z"
+      "generatedAt": "2026-09-03T13:54:33.560Z"
     },
     "stagingSmoke": {
       "status": "EXTERNAL_REQUIRED",
@@ -36,11 +36,19 @@
     },
     "stagingE2E": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T13:38:18.858Z"
+      "generatedAt": "2026-09-03T13:54:33.741Z"
+    },
+    "stagingRoleCertification": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T13:54:33.878Z"
+    },
+    "liveSecurity": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T13:54:34.010Z"
     },
     "disasterRecovery": {
       "status": "PASS",
-      "generatedAt": "2026-09-03T13:38:18.105Z"
+      "generatedAt": "2026-09-03T13:54:32.867Z"
     }
   }
 }

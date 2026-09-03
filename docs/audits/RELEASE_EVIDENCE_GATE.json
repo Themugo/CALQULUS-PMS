@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:43:39.128Z",
+  "generatedAt": "2026-09-03T13:54:34.437Z",
   "status": "BLOCKED",
   "requiredEvidence": [
     "releaseCommit",
@@ -18,7 +18,9 @@
   "automatedChecks": {
     "migrationReconciliation": "EXTERNAL_REQUIRED",
     "stagingSmoke": "EXTERNAL_REQUIRED",
-    "stagingE2E": "EXTERNAL_REQUIRED"
+    "stagingE2E": "EXTERNAL_REQUIRED",
+    "stagingRoleCertification": "EXTERNAL_REQUIRED",
+    "liveSecurity": "EXTERNAL_REQUIRED"
   },
   "secretLeakDetected": false,
   "rule": "External evidence must be explicitly recorded; repository automation never invents staging, recovery, or production approval evidence."

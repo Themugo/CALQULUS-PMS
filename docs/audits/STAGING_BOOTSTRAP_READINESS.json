@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:49:56.342Z",
+  "generatedAt": "2026-09-03T13:54:43.645Z",
   "status": "EXTERNAL_REQUIRED",
   "missingEnvironment": [
     "VITE_SUPABASE_URL",

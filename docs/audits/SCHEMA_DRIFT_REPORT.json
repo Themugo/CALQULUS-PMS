@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:49:56.592Z",
+  "generatedAt": "2026-09-03T13:54:43.887Z",
   "status": "EXTERNAL_REQUIRED",
   "reason": "DATABASE_URL or SUPABASE_DB_URL is required; no live database is accessed implicitly."
 }

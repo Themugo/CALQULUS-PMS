@@ -13,6 +13,8 @@ evidence.automatedEvidence={
   migrationReconciliation:statusOnly('docs/audits/LIVE_MIGRATION_RECONCILIATION.json'),
   stagingSmoke:statusOnly('docs/audits/STAGING_SMOKE_EVIDENCE.json'),
   stagingE2E:statusOnly('docs/audits/STAGING_E2E_EVIDENCE.json'),
+  stagingRoleCertification:statusOnly('docs/audits/STAGING_ROLE_CERTIFICATION.json'),
+  liveSecurity:statusOnly('docs/audits/LIVE_SECURITY_EVIDENCE.json'),
   disasterRecovery:statusOnly('docs/audits/DISASTER_RECOVERY_CERTIFICATE.json')
 };
 // Never copy credentials, tokens, database URLs, or full command output into the release evidence file.

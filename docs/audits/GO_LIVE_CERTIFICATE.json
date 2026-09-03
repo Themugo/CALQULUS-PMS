@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:38:19.245Z",
+  "generatedAt": "2026-09-03T13:54:34.450Z",
   "status": "BLOCKED",
   "checks": [
     {
@@ -26,6 +26,16 @@
       "name": "staging-e2e",
       "status": "PASS",
       "output": "\n> calqulus-pms@1.0.0 staging:e2e\n> node scripts/staging-e2e-evidence.mjs\n\nstaging-e2e-evidence: EXTERNAL_REQUIRED\n- missing environment: E2E_MANAGER_EMAIL, E2E_MANAGER_PASSWORD, E2E_LANDLORD_EMAIL, E2E_LANDLORD_PASSWORD, E2E_TENANT_EMAIL, E2E_TENANT_PASSWORD, E2E_WEBHOST_EMAIL, E2E_WEBHOST_PASSWORD\n"
+    },
+    {
+      "name": "staging-certification",
+      "status": "PASS",
+      "output": "\n> calqulus-pms@1.0.0 staging:certify\n> node scripts/run-staging-certification.mjs\n\nstaging-certification: EXTERNAL_REQUIRED\n"
+    },
+    {
+      "name": "live-security",
+      "status": "PASS",
+      "output": "\n> calqulus-pms@1.0.0 capture:live-security\n> node scripts/capture-live-security-evidence.mjs\n\nlive-security-evidence: EXTERNAL_REQUIRED\n"
     },
     {
       "name": "release-evidence",

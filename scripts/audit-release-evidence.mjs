@@ -7,7 +7,7 @@ const required=['releaseCommit','stagingMigrationRun','stagingSmokeRun','staging
 const missing=[];
 for(const key of required){const v=evidence[key]; if(!v || (typeof v==='string' && !v.trim()) || (typeof v==='object' && Object.values(v).some(x=>!String(x||'').trim()))) missing.push(key);}
 const auto=evidence.automatedEvidence||{};
-const autoChecks={migrationReconciliation:auto.migrationReconciliation?.status||'NOT_RECORDED',stagingSmoke:auto.stagingSmoke?.status||'NOT_RECORDED',stagingE2E:auto.stagingE2E?.status||'NOT_RECORDED'};
+const autoChecks={migrationReconciliation:auto.migrationReconciliation?.status||'NOT_RECORDED',stagingSmoke:auto.stagingSmoke?.status||'NOT_RECORDED',stagingE2E:auto.stagingE2E?.status||'NOT_RECORDED',stagingRoleCertification:auto.stagingRoleCertification?.status||'NOT_RECORDED',liveSecurity:auto.liveSecurity?.status||'NOT_RECORDED'};
 const forbiddenKeys=/(^|\")((?:[^\"]*password[^\"]*)|(?:[^\"]*secret[^\"]*)|(?:[^\"]*access_token[^\"]*)|(?:database_url|supabase_db_url))(\"|\s*:)/i;
 const raw=fs.readFileSync(file,'utf8');
 const secretLeak=forbiddenKeys.test(raw);

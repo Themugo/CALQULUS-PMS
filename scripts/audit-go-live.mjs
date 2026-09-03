@@ -9,6 +9,8 @@ const commands=[
  ['release','npm',['run','audit:release-readiness']],
  ['live-migrations','npm',['run','reconcile:live-migrations']],
  ['staging-e2e','npm',['run','staging:e2e']],
+ ['staging-certification','npm',['run','staging:certify']],
+ ['live-security','npm',['run','capture:live-security']],
  ['release-evidence','npm',['run','capture:release-evidence']],
  ['production-evidence','npm',['run','audit:production-evidence']],
  ['release-evidence-gate','npm',['run','audit:release-evidence']],
