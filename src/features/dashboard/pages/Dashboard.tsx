@@ -13,7 +13,7 @@ import { PropertiesOverview } from "@/features/dashboard/components/PropertiesOv
 import {
   Home, RefreshCw, DollarSign, Building2, DoorOpen, Plus, BarChart3,
 } from "lucide-react";
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -76,7 +76,6 @@ const Dashboard = () => {
     data: stats = null,
     isPending: loading,
     isError: statsError,
-    refetch: refetchStats,
   } = useQuery({
     queryKey: [...queryKeys.dashboard.stats(managerId ?? ""), assignedKey],
     queryFn: () => fetchManagerDashboardStats(managerId!, statsScope),
@@ -102,14 +101,19 @@ const Dashboard = () => {
   );
 
   const refreshStats = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId ?? "") });
-    void refetchStats();
+    void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId ?? "") });
   };
+
+  const realtimeRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!managerId) return;
     const invalidate = () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId) });
+      if (realtimeRefreshTimer.current) return;
+      realtimeRefreshTimer.current = setTimeout(() => {
+        realtimeRefreshTimer.current = null;
+        void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId) });
+      }, 300);
     };
     const channels = [
       supabase.channel("dash-tenants").on("postgres_changes", { event: "*", schema: "public", table: "tenants" }, invalidate).subscribe(),
@@ -119,7 +123,13 @@ const Dashboard = () => {
       supabase.channel("dash-maint").on("postgres_changes", { event: "*", schema: "public", table: "maintenance_requests" }, invalidate).subscribe(),
       supabase.channel("dash-refunds").on("postgres_changes", { event: "*", schema: "public", table: "deposit_refunds" }, invalidate).subscribe(),
     ];
-    return () => { channels.forEach((ch) => supabase.removeChannel(ch)); };
+    return () => {
+      channels.forEach((ch) => supabase.removeChannel(ch));
+      if (realtimeRefreshTimer.current) {
+        clearTimeout(realtimeRefreshTimer.current);
+        realtimeRefreshTimer.current = null;
+      }
+    };
   }, [managerId, queryClient]);
 
   return (

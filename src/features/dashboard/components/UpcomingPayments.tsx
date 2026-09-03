@@ -1,7 +1,6 @@
 import { Badge } from "@/shared/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { formatDate } from "@/shared/lib/dateFormat";
@@ -27,7 +26,6 @@ export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const { formatCurrency } = useCurrency();
-  const navigate = useNavigate();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
 
   const fetchPayments = useCallback(async () => {
@@ -193,13 +191,10 @@ export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }
           </p>
         ) : (
           payments.map((payment, index) => (
-            <button
-              type="button"
+            <div
               key={payment.id}
-              className="group flex w-full items-center gap-2.5 rounded-lg bg-muted/30 p-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-4 sm:p-3 animate-slide-in touch-manipulation"
+              className="flex items-center gap-2.5 sm:gap-4 p-2.5 sm:p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors animate-slide-in touch-manipulation"
               style={{ animationDelay: `${index * 50}ms` }}
-              onClick={() => navigate(`/billing?filter=${payment.status === "overdue" ? "overdue" : "pending"}`)}
-              aria-label={`Review ${payment.status === "overdue" ? "overdue" : "pending"} invoice for ${payment.tenant_name}`}
             >
               <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                 <AvatarImage src={payment.tenant_photo || undefined} />
@@ -243,22 +238,10 @@ export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }
                   )}
                 </div>
               </div>
-              <span className="sr-only">Review billing</span>
-            </button>
+            </div>
           ))
         )}
       </div>
-      {payments.length > 0 ? (
-        <div className="mt-3 border-t border-border pt-3">
-          <button
-            type="button"
-            className="text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-            onClick={() => navigate(`/billing?filter=${payments.some((p) => p.status === "overdue") ? "overdue" : "pending"}`)}
-          >
-            Review billing <span aria-hidden>→</span>
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }
