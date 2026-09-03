@@ -326,13 +326,13 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
         is_default: account.is_default,
       };
 
-      const { data, error } = await supabase.rpc('save_manager_bank_details_atomic', {
-        p_id: account.id || null,
-        p_payload: payload,
-      });
-      if (error) throw error;
-      if (!account.id) {
-        setBankAccounts((prev) => [...prev, { ...account, id: data }]);
+      if (account.id) {
+        const { error } = await supabase.from('bank_details').update(payload).eq('id', account.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from('bank_details').insert(payload).select().single();
+        if (error) throw error;
+        setBankAccounts((prev) => [...prev, { ...account, id: data.id }]);
         setDialogOpen(false);
         setNewAccount(emptyBankDetails);
       }
@@ -351,7 +351,7 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
   const handleDelete = async (id: string) => {
     setDeleting(id);
     try {
-      const { error } = await supabase.rpc('delete_manager_bank_details_atomic', { p_id: id });
+      const { error } = await supabase.from('bank_details').delete().eq('id', id);
       if (error) throw error;
       setBankAccounts((prev) => prev.filter((a) => a.id !== id));
       toast({ title: 'Bank Account Deleted', description: 'The bank account has been removed.' });
@@ -364,10 +364,8 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
 
   const handleSetDefault = async (id: string) => {
     try {
-      const account = bankAccounts.find((a) => a.id === id);
-      if (!account) throw new Error('Bank account not found');
-      const { error } = await supabase.rpc('save_manager_bank_details_atomic', { p_id: id, p_payload: { ...account, is_default: true } });
-      if (error) throw error;
+      await supabase.from('bank_details').update({ is_default: false }).eq('manager_id', user?.id);
+      await supabase.from('bank_details').update({ is_default: true }).eq('id', id);
       setBankAccounts((prev) => prev.map((a) => ({ ...a, is_default: a.id === id })));
       toast({ title: 'Default Account Updated', description: 'This account is now the default for payments.' });
     } catch (error) {

@@ -127,21 +127,11 @@ const WebhostManagement = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user');
 
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: authData.user.id,
-          role: 'webhost',
-          approval_status: 'approved',
-        });
-
-      if (roleError) throw roleError;
-
-      // Create admin permissions
-      await createPermissions.mutateAsync({
-        user_id: authData.user.id,
-        ...newPermissions,
+      const { error: provisionError } = await supabase.rpc('provision_webhost_admin_atomic', {
+        p_user_id: authData.user.id,
+        p_admin_level: newPermissions.admin_level,
       });
+      if (provisionError) throw provisionError;
 
       return { user: authData.user, email: data.email, fullName: data.fullName };
     },
@@ -180,11 +170,9 @@ const WebhostManagement = () => {
 
   const deleteWebhost = useMutation({
     mutationFn: async (roleId: string) => {
-      const { error } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('id', roleId);
-
+      const target = webhosts?.find((item) => item.id === roleId);
+      if (!target) throw new Error('Webhost not found');
+      const { error } = await supabase.rpc('remove_webhost_atomic', { p_user_id: target.user_id });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -300,33 +288,10 @@ const WebhostManagement = () => {
         throw new Error('Missing permission records');
       }
 
-      // Demote current super admin to admin
-      const { error: demoteError } = await supabase
-        .from('admin_permissions')
-        .update({
-          admin_level: 'admin',
-          can_create_webhosts: false,
-        })
-        .eq('id', myPermissions.id);
-
-      if (demoteError) throw demoteError;
-
-      // Promote target to super admin
-      const { error: promoteError } = await supabase
-        .from('admin_permissions')
-        .update({
-          admin_level: 'super_admin',
-          can_manage_managers: true,
-          can_manage_billing: true,
-          can_manage_properties: true,
-          can_manage_system_landlords: true,
-          can_view_activity_logs: true,
-          can_create_webhosts: true,
-        })
-        .eq('id', targetWebhost.permissions.id);
-
-      if (promoteError) throw promoteError;
-
+      const { error } = await supabase.rpc('transfer_super_admin_atomic', {
+        p_target_user_id: targetWebhost.user_id,
+      });
+      if (error) throw error;
       return targetWebhost;
     },
     onSuccess: (targetWebhost) => {

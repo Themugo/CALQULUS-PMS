@@ -121,25 +121,8 @@ export const UserRoleManagement = () => {
         tenant_id: null,
       };
 
-      if (editingUser.role_record_id) {
-        // Update existing role
-        const { error } = await supabase
-          .from("user_roles")
-          .update({
-            role: selectedRole,
-            tenant_id: roleData.tenant_id,
-          })
-          .eq("id", editingUser.role_record_id);
-
-        if (error) throw error;
-      } else {
-        // Insert new role
-        const { error } = await supabase
-          .from("user_roles")
-          .insert(roleData);
-
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('assign_manager_role_atomic', { p_user_id: editingUser.id });
+      if (error) throw error;
 
       toast({
         title: "Role Updated",
@@ -206,12 +189,7 @@ export const UserRoleManagement = () => {
 
       if (signUpData.user) {
         // Create manager role for the new user
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({
-            user_id: signUpData.user.id,
-            role: "manager",
-          });
+        const { error: roleError } = await supabase.rpc('assign_manager_role_atomic', { p_user_id: signUpData.user.id });
 
         if (roleError) {
           // Don't throw - user was created, just role failed
@@ -257,11 +235,7 @@ export const UserRoleManagement = () => {
 
     setRemovingUserId(user.id);
     try {
-      const { error } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("id", user.role_record_id);
-
+      const { error } = await supabase.rpc('remove_manager_role_atomic', { p_user_id: user.id });
       if (error) throw error;
 
       toast({
@@ -281,6 +255,8 @@ export const UserRoleManagement = () => {
     }
   };
 
+  // Manager role minting/removal is now platform-admin-only. Managers use
+  // SubmanagerManagement for scoped delegation instead.
   if (!isManager) {
     return null;
   }

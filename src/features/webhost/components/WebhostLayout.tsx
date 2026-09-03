@@ -16,25 +16,11 @@ export default function WebhostLayout({ children, title, description, actions }:
 
   useEffect(() => {
     if (!loading && user && userRole?.role === "webhost" && !webhostPermissions) {
-      void supabase.from("admin_permissions").select("id").eq("user_id", user.id).maybeSingle().then(({ data }) => {
-        if (!data) {
-          void supabase.from("admin_permissions").insert({
-            user_id: user.id,
-            admin_level: "super_admin",
-            can_create_webhosts: true,
-            can_manage_managers: true,
-            can_manage_billing: true,
-            can_manage_properties: true,
-            can_manage_system_landlords: true,
-            can_view_activity_logs: true,
-          }).then(() => window.location.reload());
-        }
+      void supabase.rpc('bootstrap_super_admin_atomic').then(({ error }) => {
+        if (error && !error.message.includes('already exists')) console.warn('Admin bootstrap skipped:', error.message);
       });
     }
-  }, [loading, user, userRole, webhostPermissions]);
-
-  if (loading) return <PortalDeskLoading />;
-  if (!isDevAccessEnabled() && (!user || userRole?.role !== "webhost")) return <Navigate to={WEBHOST_LOGIN} replace />;
+  }, [loading, user, userRole?.role, webhostPermissions]);
 
   const canSee = (item: (typeof WEBHOST_NAV_GROUPS)[number]["items"][number]) => {
     if (item.href === WEBHOST_ROUTES.unattachedTenants) return isSuperAdmin || hasWebhostPermission("can_manage_managers") || platformAdminInfo?.can_read_unattached_tenants === true;

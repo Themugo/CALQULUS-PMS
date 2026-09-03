@@ -64,71 +64,36 @@ export const useAdminPermissions = () => {
 
   const bootstrapSuperAdmin = useMutation({
     mutationFn: async () => {
-      if (!user?.id) throw new Error('No user logged in');
-      const { data: existing } = await supabase
-        .from('admin_permissions')
-        .select('id').eq('admin_level', 'super_admin').limit(1);
-      if (existing && existing.length > 0) throw new Error('A super admin already exists');
-      const { data, error } = await supabase
-        .from('admin_permissions')
-        .insert({
-          user_id: user.id,
-          admin_level: 'super_admin',
-          can_manage_managers: true,
-          can_manage_billing: true,
-          can_manage_properties: true,
-          can_create_webhosts: true,
-          can_manage_system_landlords: true,
-          can_view_activity_logs: true,
-        })
-        .select().single();
+      const { data, error } = await supabase.rpc('bootstrap_super_admin_atomic');
       if (error) throw error;
-      return data;
+      return data as unknown as AdminPermissions;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-admin-permissions'] });
       toast({ title: 'Super admin initialized' });
     },
     onError: (error: Error) => {
-      if (!error.message.includes('duplicate') && !error.message.includes('already exists')) {
-        toast({ title: 'Failed to initialize', variant: 'destructive' });
-      }
+      if (!error.message.includes('already exists')) toast({ title: 'Failed to initialize', variant: 'destructive' });
     },
   });
 
   const createPermissions = useMutation({
     mutationFn: async (permissions: Partial<AdminPermissions> & { user_id: string }) => {
-      const { data, error } = await supabase
-        .from('admin_permissions')
-        .insert({
-          user_id: permissions.user_id,
-          admin_level: permissions.admin_level || 'limited_admin',
-          can_manage_managers: permissions.can_manage_managers ?? false,
-          can_manage_billing: permissions.can_manage_billing ?? false,
-          can_manage_properties: permissions.can_manage_properties ?? false,
-          can_create_webhosts: false,
-          can_manage_system_landlords: permissions.can_manage_system_landlords ?? false,
-          can_view_activity_logs: permissions.can_view_activity_logs ?? true,
-          created_by: user?.id,
-        })
-        .select().single();
-      if (error) throw error;
-      return data;
+      throw new Error('Admin permission creation is performed by the invitation/provisioning workflow');
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['all-admin-permissions'] });
-      toast({ title: 'Permissions created' });
-    },
-    onError: (err: Error) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
   });
 
   const updatePermissions = useMutation({
     mutationFn: async ({ id, ...permissions }: Partial<AdminPermissions> & { id: string }) => {
-      const sanitized = { ...permissions };
-      if (myPermissions?.admin_level !== 'super_admin') sanitized.can_create_webhosts = false;
-      const { data, error } = await supabase
-        .from('admin_permissions')
-        .update(sanitized).eq('id', id).select().single();
+      const { data, error } = await supabase.rpc('save_admin_permissions_atomic', {
+        p_id: id, p_admin_level: permissions.admin_level || 'limited_admin',
+        p_can_manage_managers: permissions.can_manage_managers ?? false,
+        p_can_manage_billing: permissions.can_manage_billing ?? false,
+        p_can_manage_properties: permissions.can_manage_properties ?? false,
+        p_can_manage_system_landlords: permissions.can_manage_system_landlords ?? false,
+        p_can_view_activity_logs: permissions.can_view_activity_logs ?? true,
+        p_can_create_webhosts: permissions.can_create_webhosts ?? false,
+      });
       if (error) throw error;
       return data;
     },
@@ -142,8 +107,11 @@ export const useAdminPermissions = () => {
 
   const deletePermissions = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('admin_permissions').delete().eq('id', id);
+      const { data, error } = await supabase.from('admin_permissions').select('user_id').eq('id', id).single();
       if (error) throw error;
+      const result = await supabase.rpc('remove_webhost_atomic', { p_user_id: data.user_id });
+      if (result.error) throw result.error;
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-admin-permissions'] });

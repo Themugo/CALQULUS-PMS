@@ -6763,15 +6763,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      save_manager_bank_details_atomic: { Args: { p_id?: string | null; p_payload: Json }; Returns: string }
-      delete_manager_bank_details_atomic: { Args: { p_id: string }; Returns: boolean }
-      save_manager_ewallet_settings_atomic: { Args: { p_payload: Json }; Returns: string }
-      save_manager_company_settings_atomic: { Args: { p_payload: Json }; Returns: string }
-      save_manager_receipt_settings_atomic: { Args: { p_payload: Json }; Returns: string }
-      provision_submanager_atomic: { Args: { p_submanager_user_id: string; p_permissions: Json }; Returns: string }
-      save_submanager_permissions_atomic: { Args: { p_submanager_user_id: string; p_permissions: Json }; Returns: string }
-      save_submanager_property_assignments_atomic: { Args: { p_submanager_user_id: string; p_property_ids: string[]; p_restrict: boolean }; Returns: number }
-      remove_submanager_atomic: { Args: { p_submanager_id: string }; Returns: string }
       provision_manager_account_atomic: { Args: { p_manager_user_id: string; p_full_name?: string | null }; Returns: Json }
       transition_manager_admin_atomic: { Args: { p_manager_user_id: string; p_action: string; p_reason?: string | null; p_subscription_tier?: string | null }; Returns: Json }
       transition_webhook_dead_letter_atomic: { Args: { p_id: string; p_status: string; p_notes?: string | null }; Returns: Database["public"]["Tables"]["webhook_dead_letter"]["Row"] }

@@ -151,7 +151,7 @@ export default function OrgBrandStudio() {
         brand_config: orgBrandDraftToOverlay(clean) as Json,
       };
       if (companyId) {
-        const { error } = await supabase.rpc('save_manager_company_settings_atomic', { p_payload: payload });
+        const { error } = await supabase.from("company_settings").update(payload).eq("id", companyId);
         if (error) throw error;
       } else {
         const { data, error } = await supabase
