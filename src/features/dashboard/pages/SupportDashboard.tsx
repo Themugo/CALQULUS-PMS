@@ -33,10 +33,8 @@ export default function SupportDashboard() {
         activityLogs: activityLogs || [],
         maintenanceTickets: maintenanceTickets || [],
         metrics: {
-          openTickets: (maintenanceTickets || []).length,
-          avgFirstResponseMins: 14,
-          csatScore: 98.2,
-          resolvedToday: 24,
+          pendingRequests: (maintenanceTickets || []).length,
+          recentActivityCount: (activityLogs || []).length,
         },
       };
     },
@@ -51,9 +49,9 @@ export default function SupportDashboard() {
       id: 'support-queue-alert',
       type: 'info' as const,
       title: 'Tenant Help Queue Active',
-      message: `${data?.metrics.openTickets || 0} unanswered tenant inquiries pending first response (SLA: < 30 mins).`,
-      count: data?.metrics.openTickets || 0,
-      actionLabel: 'Open Inbox',
+      message: `${data?.metrics.pendingRequests || 0} pending service requests surfaced from maintenance records.`,
+      count: data?.metrics.pendingRequests || 0,
+      actionLabel: 'Open Requests',
       onAction: () => window.location.href = '/maintenance',
     }
   ];
@@ -88,33 +86,31 @@ export default function SupportDashboard() {
       {/* KPIs */}
       <DashboardGrid columns={4}>
         <DashboardKPI
-          title="Open Ticket Queue"
-          value={data?.metrics.openTickets || 0}
+          title="Pending Service Requests"
+          value={data?.metrics.pendingRequests || 0}
           subtitle="Pending initial response"
           icon={Headphones}
           color="info"
         />
         <DashboardKPI
-          title="Avg First Response"
-          value={`${data?.metrics.avgFirstResponseMins || 0} mins`}
-          subtitle="Target: under 30 mins"
-          change="-4 mins"
-          changeType="increase"
+          title="Recent Activity"
+          value={data?.metrics.recentActivityCount || 0}
+          subtitle="Latest activity records loaded"
           icon={Clock}
           color="success"
         />
         <DashboardKPI
-          title="Satisfaction Rating"
-          value={`${data?.metrics.csatScore || 0}%`}
-          subtitle="Based on tenant feedback"
+          title="Support metrics"
+          value="Not tracked"
+          subtitle="No support satisfaction field is available"
           icon={CheckCircle2}
           color="navy"
-          progress={data?.metrics.csatScore}
+          
         />
         <DashboardKPI
-          title="Tickets Resolved Today"
-          value={data?.metrics.resolvedToday || 0}
-          subtitle="Closed successfully"
+          title="Data coverage"
+          value="Partial"
+          subtitle="Support-specific ticket resolution is not tracked"
           icon={MessageSquare}
           color="warning"
         />

@@ -11,7 +11,7 @@ import {
   Wrench, AlertTriangle, Clock, CheckCircle2, UserCheck, ShieldAlert,
   Building2, Plus, RefreshCw, PhoneCall, Filter, ExternalLink, ArrowRight
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, differenceInMinutes, subDays } from 'date-fns';
 
 export default function MaintenanceDashboard() {
   const { user } = useAuth();
@@ -27,17 +27,20 @@ export default function MaintenanceDashboard() {
         { data: inProgressRequests },
         { data: completedRequests },
       ] = await Promise.all([
-        supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description').order('created_at', { ascending: false }).limit(20),
+        supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description, provider_started_at, completion_date').order('created_at', { ascending: false }).limit(20),
         supabase.from('maintenance_requests').select('id, title, priority, status, created_at').eq('priority', 'urgent').neq('status', 'completed'),
         supabase.from('maintenance_requests').select('id').eq('status', 'in_progress'),
-        supabase.from('maintenance_requests').select('id').eq('status', 'completed'),
+        supabase.from('maintenance_requests').select('id, created_at, provider_started_at, completion_date').gte('created_at', subDays(new Date(), 90).toISOString()).eq('status', 'completed'),
       ]);
 
       const pendingCount = (allRequests || []).filter(r => r.status === 'pending').length;
       const inProgressCount = (inProgressRequests || []).length;
       const urgentCount = (urgentRequests || []).length;
       const completedCount = (completedRequests || []).length;
-
+      const completedWithDispatch = (completedRequests || []).filter(r => r.created_at && r.provider_started_at);
+      const avgDispatchHours = completedWithDispatch.length > 0
+        ? completedWithDispatch.reduce((sum, r) => sum + Math.max(0, differenceInMinutes(new Date(r.provider_started_at as string), new Date(r.created_at as string))), 0) / completedWithDispatch.length / 60
+        : null;
       return {
         allRequests: allRequests || [],
         urgentRequests: urgentRequests || [],
@@ -46,8 +49,7 @@ export default function MaintenanceDashboard() {
           inProgressCount,
           urgentCount,
           completedCount,
-          avgResponseHours: 3.2,
-          resolutionRate: 94.8,
+          avgDispatchHours,
         },
       };
     },
@@ -62,7 +64,7 @@ export default function MaintenanceDashboard() {
       id: 'urgent-repair-alert',
       type: 'critical' as const,
       title: 'Urgent Maintenance Tickets Pending',
-      message: `${data?.metrics.urgentCount || 0} urgent tickets require immediate vendor dispatch (SLA target: < 2 hours).`,
+      message: `${data?.metrics.urgentCount || 0} urgent tickets require immediate vendor dispatch (dispatch priority: urgent).`,
       count: data?.metrics.urgentCount || 0,
       actionLabel: 'Dispatch Vendor',
       onAction: () => window.location.href = '/maintenance',
@@ -106,8 +108,6 @@ export default function MaintenanceDashboard() {
           title="Urgent Repairs"
           value={data?.metrics.urgentCount || 0}
           subtitle="Immediate dispatch required"
-          change="SLA Critical"
-          changeType="decrease"
           icon={AlertTriangle}
           color="danger"
         />
@@ -126,14 +126,11 @@ export default function MaintenanceDashboard() {
           color="info"
         />
         <DashboardKPI
-          title="Avg SLA Response Time"
-          value={`${data?.metrics.avgResponseHours || 0} hrs`}
-          subtitle="Target: under 4.0 hrs"
-          change="-0.8 hrs"
-          changeType="increase"
+          title="Completed (90 days)"
+          value={data?.metrics.completedCount || 0}
+          subtitle={data?.metrics.avgDispatchHours != null ? `Avg dispatch ${data.metrics.avgDispatchHours.toFixed(1)} hrs` : "Dispatch time not yet measured"}
           icon={CheckCircle2}
           color="success"
-          progress={data?.metrics.resolutionRate}
         />
       </DashboardGrid>
 

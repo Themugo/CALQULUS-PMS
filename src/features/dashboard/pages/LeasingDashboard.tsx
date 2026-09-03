@@ -107,8 +107,6 @@ export default function LeasingDashboard() {
           title="Occupancy Rate"
           value={`${data?.metrics.occupancyRate || 0}%`}
           subtitle={`${data?.metrics.totalOccupied} / ${data?.metrics.totalUnits} units occupied`}
-          change="+2.5%"
-          changeType="increase"
           icon={Home}
           color="success"
           progress={data?.metrics.occupancyRate}

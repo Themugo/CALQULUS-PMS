@@ -37,7 +37,7 @@ export default function AccountantDashboard() {
       ] = await Promise.all([
         supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id').eq('status', 'pending').limit(10),
         supabase.from('invoices').select('id, invoice_number, amount, balance_due, due_date, status, tenant_id').eq('status', 'overdue').limit(10),
-        supabase.from('invoices').select('id, invoice_number, amount, paid_date, status').eq('status', 'paid').order('paid_date', { ascending: false }).limit(10),
+        supabase.from('invoices').select('id, invoice_number, amount, paid_date, status').eq('status', 'paid').gte('paid_date', startOfMonth(subMonths(new Date(), 5)).toISOString()).order('paid_date', { ascending: false }).limit(1000),
         supabase.from('payout_requests').select('id, amount, status, created_at, property_id').eq('status', 'pending').limit(10),
         supabase.from('properties').select('id, name, occupied, units').limit(10),
       ]);
@@ -47,15 +47,14 @@ export default function AccountantDashboard() {
       const totalCollected = (recentPaidInvoices || []).reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0);
       const totalPendingPayouts = (pendingPayouts || []).reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
 
-      // Financial trend mock/calculated points for chart
-      const financialTrends = [
-        { month: 'Oct', revenue: 1250000, expenses: 320000, net: 930000 },
-        { month: 'Nov', revenue: 1420000, expenses: 290000, net: 1130000 },
-        { month: 'Dec', revenue: 1380000, expenses: 410000, net: 970000 },
-        { month: 'Jan', revenue: 1550000, expenses: 350000, net: 1200000 },
-        { month: 'Feb', revenue: 1620000, expenses: 380000, net: 1240000 },
-        { month: 'Mar', revenue: 1780000, expenses: 310000, net: 1470000 },
-      ];
+      const financialTrends = Array.from({ length: 6 }, (_, index) => {
+        const monthDate = startOfMonth(subMonths(new Date(), 5 - index));
+        const nextMonth = endOfMonth(monthDate);
+        const revenue = (recentPaidInvoices || [])
+          .filter((invoice) => invoice.paid_date && new Date(invoice.paid_date) >= monthDate && new Date(invoice.paid_date) <= nextMonth)
+          .reduce((sum, invoice) => sum + (Number(invoice.amount) || 0), 0);
+        return { month: format(monthDate, 'MMM'), revenue };
+      });
 
       return {
         pendingInvoices: pendingInvoices || [],
@@ -68,8 +67,6 @@ export default function AccountantDashboard() {
           totalOverdue,
           totalCollected,
           totalPendingPayouts,
-          reconciliationRate: 98.4,
-          collectionRate: 92.5,
         },
         financialTrends,
       };
@@ -137,9 +134,6 @@ export default function AccountantDashboard() {
         <DashboardKPI
           title="Recent Collections (MTD)"
           value={fmt(data?.metrics.totalCollected || 0)}
-          change="+14.2%"
-          changeType="increase"
-          periodLabel="vs last month"
           icon={DollarSign}
           color="success"
         />
@@ -147,9 +141,6 @@ export default function AccountantDashboard() {
           title="Pending Receivables"
           value={fmt(data?.metrics.totalPending || 0)}
           subtitle={`${data?.pendingInvoices.length || 0} active invoices`}
-          change="-3.1%"
-          changeType="decrease"
-          periodLabel="vs last week"
           icon={CreditCard}
           color="warning"
         />
@@ -157,9 +148,6 @@ export default function AccountantDashboard() {
           title="Overdue Invoices"
           value={fmt(data?.metrics.totalOverdue || 0)}
           subtitle={`${data?.overdueInvoices.length || 0} delinquent accounts`}
-          change="+2.4%"
-          changeType="increase"
-          periodLabel="attention needed"
           icon={AlertCircle}
           color="danger"
         />
@@ -169,15 +157,14 @@ export default function AccountantDashboard() {
           subtitle={`${data?.pendingPayouts.length || 0} disbursements pending`}
           icon={Wallet}
           color="info"
-          progress={data?.metrics.reconciliationRate}
         />
       </DashboardGrid>
 
       {/* Main Charts & Financial Analysis */}
       <DashboardGrid columns={12}>
         <DashboardWidget
-          title="Revenue vs Operating Expenses"
-          description="Monthly cash flow overview and net margin trajectory"
+          title="Collections trend"
+          description="Recorded paid invoices over the last six months"
           icon={TrendingUp}
           colSpan={8}
           accentColor="emerald"
@@ -190,18 +177,13 @@ export default function AccountantDashboard() {
                     <stop offset="5%" stopColor={CALQULUS_COLOR.success} stopOpacity={0.3} />
                     <stop offset="95%" stopColor={CALQULUS_COLOR.success} stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CALQULUS_COLOR.danger} stopOpacity={0.3} />
-                    <stop offset="95%" stopColor={CALQULUS_COLOR.danger} stopOpacity={0} />
-                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tickFormatter={v => `${v / 1000}k`} tick={{ fontSize: 12 }} />
                 <Tooltip formatter={(value: any) => fmt(Number(value))} />
-                <Area type="monotone" dataKey="revenue" name="Total Revenue" stroke={CALQULUS_COLOR.success} fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="expenses" name="Expenses" stroke={CALQULUS_COLOR.danger} fillOpacity={1} fill="url(#colorExpenses)" strokeWidth={2} />
-              </AreaChart>
+                <Area type="monotone" dataKey="revenue" name="Recorded collections" stroke={CALQULUS_COLOR.success} fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
+                              </AreaChart>
             </ResponsiveContainer>
           </div>
         </DashboardWidget>
