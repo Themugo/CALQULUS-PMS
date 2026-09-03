@@ -119,9 +119,7 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
         invoice_prefix:       form.invoice_prefix.trim().toUpperCase() || 'INV',
         receipt_prefix:       form.receipt_prefix.trim().toUpperCase() || 'RCP',
       };
-      const { error } = await supabase
-        .from('property_billing_config')
-        .upsert(payload, { onConflict: 'property_id' });
+      const { error } = await supabase.rpc('save_property_billing_config_atomic' as any, { p_property_id: propertyId, p_payload: payload });
       if (error) throw error;
     },
     onSuccess: () => {

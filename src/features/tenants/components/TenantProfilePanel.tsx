@@ -213,7 +213,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
         risk_flag:                    form.risk_flag || 'clear',
         risk_reason:                  form.risk_reason,
       };
-      const { error } = await supabase.from('tenants').update(updates).eq('id', tenant.id);
+      const { error } = await supabase.rpc('update_tenant_profile_atomic' as any, { p_tenant_id: tenant.id, p_payload: updates });
       if (error) throw error;
     },
     onSuccess: () => {

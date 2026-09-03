@@ -98,14 +98,9 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
   const handleAddDeduction = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { error } = await supabase.from('property_deductions').insert({
-      property_id: propertyId,
-      manager_id: user.id,
-      deduction_name: dedName,
-      deduction_type: dedType,
-      amount: parseFloat(dedAmount) || 0,
-      is_recurring: true,
-      is_active: true,
+    const { error } = await supabase.rpc('save_property_deduction_atomic' as any, {
+      p_deduction_id: null, p_property_id: propertyId,
+      p_payload: { deduction_name: dedName, deduction_type: dedType, amount: parseFloat(dedAmount) || 0, is_recurring: true, is_active: true },
     });
     if (error) {
       toast({ title: "Error", description: "Failed to add deduction", variant: "destructive" });
@@ -132,22 +127,15 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
         amount: parseFloat(amenityAmount) || 0,
         is_active: true,
       }));
-      const { error } = await supabase.from('property_amenity_charges').insert(inserts);
+      const results = await Promise.all(units.map(u => supabase.rpc('save_property_amenity_charge_atomic' as any, { p_charge_id: null, p_property_id: propertyId, p_unit_id: u.id, p_payload: { charge_type: amenityType, charge_label: amenityLabel, amount: parseFloat(amenityAmount) || 0, is_active: true } })));
+      const error = results.find(r => r.error)?.error || null;
       if (error) {
         toast({ title: "Error", description: "Failed to add amenity charges", variant: "destructive" });
       } else {
         toast({ title: "Added", description: `${amenityLabel} added to all units` });
       }
     } else {
-      const { error } = await supabase.from('property_amenity_charges').insert({
-        property_id: propertyId,
-        unit_id: amenityUnitId,
-        manager_id: user!.id,
-        charge_type: amenityType,
-        charge_label: amenityLabel,
-        amount: parseFloat(amenityAmount) || 0,
-        is_active: true,
-      });
+      const { error } = await supabase.rpc('save_property_amenity_charge_atomic' as any, { p_charge_id: null, p_property_id: propertyId, p_unit_id: amenityUnitId, p_payload: { charge_type: amenityType, charge_label: amenityLabel, amount: parseFloat(amenityAmount) || 0, is_active: true } });
       if (error) {
         toast({ title: "Error", description: "Failed to add amenity charge", variant: "destructive" });
       } else {
@@ -160,17 +148,17 @@ export function PropertyDeductionsManager({ propertyId, propertyName }: Props) {
   };
 
   const handleDeleteDeduction = async (id: string) => {
-    await supabase.from('property_deductions').delete().eq("id", id);
+    await supabase.rpc('delete_property_deduction_atomic' as any, { p_id: id });
     fetchData();
   };
 
   const handleDeleteAmenity = async (id: string) => {
-    await supabase.from('property_amenity_charges').delete().eq("id", id);
+    await supabase.rpc('delete_property_amenity_charge_atomic' as any, { p_id: id });
     fetchData();
   };
 
   const handleToggleActive = async (table: string, id: string, isActive: boolean) => {
-    await supabase.from(table as any).update({ is_active: !isActive }).eq("id", id);
+    await supabase.rpc((table === 'property_deductions' ? 'transition_property_deduction_atomic' : 'transition_property_amenity_charge_atomic') as any, { p_id: id, p_is_active: !isActive });
     fetchData();
   };
 

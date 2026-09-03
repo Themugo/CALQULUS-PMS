@@ -144,26 +144,15 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
       const targetProperty = allProperties.find(p => p.id === selectedPropertyId);
       if (!targetProperty) throw new Error('Property not found');
 
-      // Update the tenant's property assignment
-      const { error: updateError } = await supabase
-        .from('tenants')
-        .update({
-          property_id: selectedPropertyId,
-          property: targetProperty.name,
-          unit: newUnit || null,
-        })
-        .eq('id', tenant.id);
-
-      if (updateError) throw updateError;
-
-      // Add history entry
-      await supabase
-        .from('tenant_history')
-        .insert({
-          tenant_id: tenant.id,
-          action: 'Transfer',
-          description: `Transferred to ${targetProperty.name}${newUnit ? ` - Unit ${newUnit}` : ''}. ${transferNotes || ''}`.trim(),
-        });
+      const { error: transferError } = await supabase.rpc('transfer_tenant_atomic' as any, {
+        p_tenant_id: tenant.id,
+        p_property_id: selectedPropertyId,
+        p_unit_id: null,
+        p_unit_number: newUnit || null,
+        p_destination_manager_id: selectedManagerId || targetProperty.manager_id || null,
+        p_notes: transferNotes || null,
+      });
+      if (transferError) throw transferError;
 
       // Log activity
       await logActivity({

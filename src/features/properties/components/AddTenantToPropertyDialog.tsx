@@ -193,12 +193,20 @@ export const AddTenantToPropertyDialog = ({
 
       if (insertedTenant) {
         const chargesData = serializeChargesForStorage(chargeItems);
-        await supabase.from("tenants").update({
-          deposit_months: formData.deposit_months ? parseInt(formData.deposit_months) : null,
-          other_charges: chargesData.otherCharges || null,
-          other_charges_description: chargesData.otherChargesDescription || null,
-          deposit_balance: formData.deposit_amount ? parseFloat(formData.deposit_amount) : null,
-        }).eq("id", insertedTenant.id);
+        let createdPhotoUrl: string | null = null;
+        if (photoFile) createdPhotoUrl = await uploadPhoto(insertedTenant.id);
+        const { error: finalizeError } = await supabase.rpc('finalize_tenant_creation_atomic' as any, {
+          p_tenant_id: insertedTenant.id,
+          p_payload: {
+            deposit_months: formData.deposit_months ? parseInt(formData.deposit_months) : null,
+            other_charges: chargesData.otherCharges || null,
+            other_charges_description: chargesData.otherChargesDescription || null,
+            deposit_balance: formData.deposit_amount ? parseFloat(formData.deposit_amount) : null,
+            photo_url: createdPhotoUrl,
+            history_description: `Tenant ${validationResult.data.name} was added to ${propertyName}`,
+          },
+        });
+        if (finalizeError) throw finalizeError;
 
         // Sync payment details to tenant portal
         await supabase.rpc("sync_tenant_payment_details" as never, {
@@ -216,19 +224,6 @@ export const AddTenantToPropertyDialog = ({
           p_account_ref:        insertedTenant.unit || null,
           p_tenancy_type:       "standard",
         }).catch(() => {}); // non-critical
-
-        if (photoFile) {
-          const photoUrl = await uploadPhoto(insertedTenant.id);
-          if (photoUrl) {
-            await supabase.from("tenants").update({ photo_url: photoUrl }).eq("id", insertedTenant.id);
-          }
-        }
-
-        await supabase.from("tenant_history").insert({
-          tenant_id: insertedTenant.id,
-          action: "Created",
-          description: `Tenant ${validationResult.data.name} was added to ${propertyName}`,
-        });
 
         logActivity({
           action: 'Created tenant',

@@ -87,13 +87,6 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
 
       if (error) throw error;
 
-      // Log to tenant_history for backwards compat
-      await supabase.from('tenant_history').insert({
-        tenant_id:   tenant.id,
-        action:      'move_out',
-        description: `${tenant.name} moved out of ${tenant.unit} on ${moveOutDate}. Reason: ${reason}. All history archived.`,
-      });
-
       return { tenancyId: data };
     },
     onSuccess: (data) => {

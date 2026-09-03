@@ -268,10 +268,7 @@ const TenantProfile = () => {
         data: { publicUrl },
       } = supabase.storage.from('tenant-photos').getPublicUrl(filePath);
 
-      const { error: updateError } = await supabase
-        .from('tenants')
-        .update({ photo_url: publicUrl })
-        .eq('id', userRole.tenant_id);
+      const { error: updateError } = await supabase.rpc('update_tenant_profile_atomic' as any, { p_tenant_id: userRole.tenant_id, p_payload: { photo_url: publicUrl } });
 
       if (updateError) throw updateError;
 
