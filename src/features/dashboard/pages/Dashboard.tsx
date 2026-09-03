@@ -293,6 +293,16 @@ const Dashboard = () => {
             </div>
           </section>
 
+          {/* Priority queue — surface live exceptions before deeper analysis. */}
+          <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
+            <DashboardSectionHeader
+              eyebrow="Action queue"
+              title="Needs attention"
+              description="Live issues ranked by urgency — collections, maintenance, leases, refunds, and vacancies"
+            />
+            <AttentionStrip items={attentionItems} loading={loading} />
+          </section>
+
           <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <section className="min-w-0 lg:col-span-2" aria-labelledby="dashboard-collections">
               <DashboardSectionHeader
@@ -359,16 +369,6 @@ const Dashboard = () => {
               </section>
             </div>
           </div>
-
-          {/* Needs attention — operational priorities, above the lower modules */}
-          <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
-            <DashboardSectionHeader
-              eyebrow="Action queue"
-              title="Needs attention"
-              description="Live issues only — overdue collections, open maintenance, expiring leases, and pending actions"
-            />
-            <AttentionStrip items={attentionItems} loading={loading} />
-          </section>
 
           {/* Properties — compact portfolio table surfaced high */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-properties">

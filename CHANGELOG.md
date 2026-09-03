@@ -1,4 +1,10 @@
 
+## Phases 174–175 — Dashboard Intelligence & Information Density
+- Reworked the manager dashboard action queue into a ranked, compact priority surface using existing live `AttentionItem` data only.
+- Moved **Needs attention** directly below the executive KPI row so operational exceptions are visible before deeper charts and portfolio detail.
+- Added affected-count context, urgency surfaces, explicit CTAs, and an all-clear state without introducing new data fetching or invented metrics.
+- Added `src/test/dashboardIntelligencePhase7.test.ts` covering dashboard ordering and the no-fetch priority rendering boundary.
+
 ## Phases 160–161 — Loading, Empty, Error & Confirmation UX
 - Standardized compact inline loading states across property sub-record views and receipts.
 - Reused Button loading semantics for primary property and invoice save actions, preserving existing mutations.
