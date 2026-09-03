@@ -68,19 +68,16 @@ export function useCreateLandlordPayout(properties: LandlordPropertySummary[]) {
       if (!user) throw new Error("You must be signed in to request a payout");
       const prop = properties.find((p) => p.id === input.propertyId);
       const managerId = prop?.manager_id ?? null;
-      const { error } = await supabase.from("payout_requests").insert({
-        property_id: input.propertyId,
-        landlord_user_id: user.id,
-        manager_id: managerId,
-        recipient_type: managerId ? "manager" : "webhost",
-        amount: input.amount,
-        period_start: input.periodStart,
-        period_end: input.periodEnd,
-        notes: input.notes || null,
-        status: "pending",
+      const { data, error } = await supabase.rpc("create_payout_request_atomic", {
+        p_property_id: input.propertyId,
+        p_landlord_user_id: user.id,
+        p_amount: input.amount,
+        p_period_start: input.periodStart,
+        p_period_end: input.periodEnd,
+        p_notes: input.notes || null,
       });
       if (error) throw error;
-      return { managed: Boolean(managerId) };
+      return { managed: Boolean(managerId), payout: data };
     },
     onSuccess: (result) => {
       toast({

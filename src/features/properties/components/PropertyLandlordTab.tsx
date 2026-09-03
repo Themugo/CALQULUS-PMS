@@ -214,13 +214,15 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
 
   const updatePayout = useMutation({
     mutationFn: async ({ id, status, extra }: { id: string; status: string; extra?: PayoutUpdateExtra }) => {
-      const update: Record<string, unknown> = { status, ...extra };
-      if (status === 'approved') update.approved_at = new Date().toISOString();
-      if (status === 'paid') update.paid_at = new Date().toISOString();
-      const { error } = await supabase
-        .from('payout_requests')
-        .update(update)
-        .eq('id', id);
+      const { error } = await supabase.rpc('transition_payout_request_atomic', {
+        p_payout_id: id,
+        p_target_status: status,
+        p_payment_method: extra?.payment_method as string | null ?? null,
+        p_payment_reference: extra?.payment_reference as string | null ?? null,
+        p_payment_proof_url: extra?.payment_proof_url as string | null ?? null,
+        p_rejection_reason: extra?.rejection_reason as string | null ?? null,
+        p_management_fee_pct: extra?.management_fee_pct as number | null ?? null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {

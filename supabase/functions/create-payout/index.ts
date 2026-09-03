@@ -75,21 +75,14 @@ serve(async (req) => {
 
     const recipientType = (link as any).manager_id ? "manager" : "webhost";
 
-    const { data: payoutRequest, error } = await supabase
-      .from("payout_requests")
-      .insert({
-        property_id: propertyId,
-        landlord_user_id: landlordId,
-        manager_id: (link as any).manager_id,
-        recipient_type: recipientType,
-        amount: Number(amount),
-        period_start: periodStart,
-        period_end: periodEnd,
-        notes: notes || null,
-        status: "pending",
-      })
-      .select()
-      .single();
+    const { data: payoutRequest, error } = await supabase.rpc("create_payout_request_atomic", {
+      p_property_id: propertyId,
+      p_landlord_user_id: landlordId,
+      p_amount: Number(amount),
+      p_period_start: periodStart,
+      p_period_end: periodEnd,
+      p_notes: notes || null,
+    });
 
     if (error) throw error;
 

@@ -6727,6 +6727,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_payout_request_atomic: {
+        Args: { p_property_id: string; p_landlord_user_id: string; p_amount: number; p_period_start: string; p_period_end: string; p_notes?: string | null }
+        Returns: Json
+      }
+      transition_payout_request_atomic: {
+        Args: { p_payout_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null; p_payment_proof_url?: string | null; p_rejection_reason?: string | null; p_management_fee_pct?: number | null }
+        Returns: Json
+      }
+      create_dispute_atomic: {
+        Args: { p_tenant_id: string; p_invoice_id?: string | null; p_reason: string; p_evidence_urls?: string[] }
+        Returns: Json
+      }
+      resolve_dispute_atomic: {
+        Args: { p_dispute_id: string; p_resolution_note: string; p_status?: string }
+        Returns: Json
+      }
       create_invoice_atomic_v2: {
         Args: { p_generation_key: string; p_lease_id?: string | null; p_tenant_id: string; p_property_id?: string | null; p_unit_id?: string | null; p_manager_id: string; p_amount: number; p_description: string; p_due_date: string; p_invoice_type?: string; p_line_items?: Json }
         Returns: Json

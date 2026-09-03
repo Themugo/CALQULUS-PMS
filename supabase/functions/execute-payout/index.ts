@@ -46,18 +46,13 @@ serve(async (req) => {
       });
     }
 
-    // Atomically claim the request: only proceed if it's still "pending",
-    // so two concurrent approvals can't both succeed.
-    const { data: approved, error: claimErr } = await supabase
-      .from("payout_requests")
-      .update({ status: "approved", approved_at: new Date().toISOString(), approved_by: caller.id })
-      .eq("id", payoutId)
-      .eq("status", "pending")
-      .select("*")
-      .maybeSingle();
+    const { data: approved, error: claimErr } = await supabase.rpc("transition_payout_request_atomic", {
+      p_payout_id: payoutId,
+      p_target_status: "approved",
+    });
 
     if (claimErr || !approved) {
-      return new Response(JSON.stringify({ error: "Payout request not found or not in pending status" }), {
+      return new Response(JSON.stringify({ error: claimErr?.message ?? "Payout request not found or not pending" }), {
         status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }

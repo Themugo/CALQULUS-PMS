@@ -77,21 +77,12 @@ serve(
         effectiveManagerId = tenantRow?.manager_id ?? null;
       }
 
-      const { data: dispute, error } = await ctx.supabase
-        .from("disputes")
-        .insert({
-          tenant_id: tenantId,
-          manager_id: effectiveManagerId,
-          invoice_id: invoiceId || null,
-          dispute_type: type,
-          description: description.trim(),
-          disputed_amount: amount || null,
-          evidence_urls: evidence || [],
-          status: "open",
-          opened_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
+      const { data: dispute, error } = await ctx.supabase.rpc("create_dispute_atomic", {
+        p_tenant_id: tenantId,
+        p_invoice_id: invoiceId || null,
+        p_reason: description.trim(),
+        p_evidence_urls: evidence || [],
+      });
 
       if (error) throw error;
 

@@ -177,12 +177,10 @@ const SystemLandlordManagement: React.FC = () => {
   // ── Approve / reject / mark paid payout ──────────────────────────
   const updatePayout = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const update: { status: string; approved_at?: string; paid_at?: string; approved_by?: string } = { status };
-      if (status === 'approved') update.approved_at = new Date().toISOString();
-      if (status === 'paid') { update.paid_at = new Date().toISOString(); update.approved_by = user?.id; }
-      const { error } = await supabase
-        .from('payout_requests')
-        .update(update).eq('id', id);
+      const { error } = await supabase.rpc('transition_payout_request_atomic', {
+        p_payout_id: id,
+        p_target_status: status,
+      });
       if (error) throw error;
     },
     onSuccess: (_, vars) => {

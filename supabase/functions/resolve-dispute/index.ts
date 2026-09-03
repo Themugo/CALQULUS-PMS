@@ -41,54 +41,35 @@ serve(async (req) => {
       });
     }
 
+    if (adjustmentAmount !== undefined && adjustmentAmount !== null && Number(adjustmentAmount) !== 0) {
+      return new Response(JSON.stringify({ error: "Financial dispute adjustments must use the supported invoice/credit atomic workflows; direct dispute adjustments are disabled." }), { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
     const { data: dispute, error: fetchError } = await supabase
       .from("disputes")
-      .select("*, tenants(id, name, manager_id)")
+      .select("id, tenant_id, invoice_id, status, tenants(id, manager_id)")
       .eq("id", disputeId)
       .single();
-
     if (fetchError || !dispute) throw new Error("Dispute not found");
 
+    const disputeTenant = (dispute as any).tenants;
     if (callerRole !== "webhost") {
       let effectiveManagerId = caller.id;
       if (callerRole === "submanager") {
-        const { data: rel } = await supabase.from("manager_submanagers")
-          .select("manager_id").eq("submanager_user_id", caller.id).maybeSingle();
+        const { data: rel } = await supabase.from("manager_submanagers").select("manager_id").eq("submanager_user_id", caller.id).maybeSingle();
         effectiveManagerId = (rel as any)?.manager_id ?? caller.id;
       }
-      const disputeTenant = (dispute as any).tenants;
       if (!disputeTenant || disputeTenant.manager_id !== effectiveManagerId) {
-        return new Response(JSON.stringify({ error: "Forbidden: dispute is not in your managed portfolio" }), {
-          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        });
+        return new Response(JSON.stringify({ error: "Forbidden: dispute is not in your managed portfolio" }), { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
       }
     }
 
-    const { error } = await supabase
-      .from("disputes")
-      .update({
-        status: "resolved",
-        resolution,
-        resolved_by: caller.id,
-        adjustment_amount: adjustmentAmount || null,
-        resolution_notes: notes || null,
-        resolved_at: new Date().toISOString(),
-      })
-      .eq("id", disputeId);
-
+    const { data: resolved, error } = await supabase.rpc("resolve_dispute_atomic", {
+      p_dispute_id: disputeId,
+      p_resolution_note: notes || resolution,
+      p_status: resolution.toLowerCase() === "dismissed" ? "dismissed" : "resolved",
+    });
     if (error) throw error;
-
-    // If there's a credit/debit adjustment, create an other_charge record
-    if (adjustmentAmount && dispute.invoice_id) {
-      await supabase.from("other_charges").insert({
-        tenant_id: dispute.tenant_id,
-        invoice_id: dispute.invoice_id,
-        description: `Dispute adjustment — ${resolution}`,
-        amount: Math.abs(adjustmentAmount),
-        charge_type: adjustmentAmount < 0 ? "credit" : "charge",
-        status: "pending",
-      });
-    }
 
     // Notify tenant
     if (dispute.tenant_id) {
