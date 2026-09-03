@@ -303,11 +303,14 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
     const existing = expenditures.find(e => e.category === category);
 
     try {
-      const { error } = await supabase.rpc("save_expenditure_atomic", {
-        p_manager_id: user.id, p_category: category, p_amount: amount, p_month: selectedMonth,
-        p_description: EXPENDITURE_CATEGORIES.find(c => c.key === category)?.label || category,
-      });
-      if (error) throw error;
+      if (existing) {
+        await supabase.from("expenditures").update({ amount, updated_at: new Date().toISOString() }).eq("id", existing.id);
+      } else {
+        await supabase.from("expenditures").insert({
+          manager_id: user.id, category, amount, month: monthDate, property_id: propertyId,
+          description: EXPENDITURE_CATEGORIES.find(c => c.key === category)?.label || category,
+        });
+      }
       toast({ title: "Saved", description: `Expenditure updated.` });
       setEditingExpenditure(null);
       fetchExpenditures();

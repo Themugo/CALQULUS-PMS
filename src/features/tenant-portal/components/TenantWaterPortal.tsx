@@ -185,14 +185,19 @@ const TenantWaterPortal: React.FC = () => {
       const rate = Number(wc?.rate_per_unit ?? 60);
       const total = consumption * rate;
 
-      const { error } = await supabase.rpc('submit_tenant_water_reading_atomic', {
+      const { error } = await supabase.rpc('create_water_meter_reading_atomic', {
+        p_property_id: tenantInfo!.tenant.property_id,
         p_unit_id: tenantInfo!.tenant.unit_id,
         p_previous_reading: prev,
         p_current_reading: curr,
         p_rate_per_unit: rate,
         p_reading_date: new Date().toISOString().slice(0, 10),
-        p_tenant_photo_url: photoUrl,
+        p_billing_period_start: null,
+        p_billing_period_end: null,
         p_notes: 'Self-reported by tenant',
+        p_submitted_by_tenant: true,
+        p_tenant_user_id: user!.id,
+        p_tenant_photo_url: photoUrl,
       });
       if (error) throw error;
 
@@ -223,8 +228,11 @@ const TenantWaterPortal: React.FC = () => {
   // Dispute a reading
   const disputeReading = useMutation({
     mutationFn: async (readingId: string) => {
-      const { error } = await supabase.rpc('dispute_water_reading_atomic', {
-        p_reading_id: readingId, p_reason: disputeReason,
+      const { error } = await supabase.rpc('transition_water_meter_reading_atomic', {
+        p_reading_id: readingId,
+        p_action: 'dispute',
+        p_invoice_id: null,
+        p_dispute_reason: disputeReason,
       });
       if (error) throw error;
     },

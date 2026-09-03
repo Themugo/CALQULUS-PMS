@@ -493,7 +493,10 @@ const Leases = () => {
   };
 
   const updateLeaseStatus = async (id: string, status: LeaseStatus) => {
-    const { error } = await supabase.rpc("transition_lease_atomic", { p_lease_id: id, p_target_status: status });
+    const { error } = await supabase.rpc("transition_lease_atomic", {
+      p_lease_id: id,
+      p_target_status: status,
+    });
 
     if (error) {
       toast({
@@ -563,7 +566,10 @@ const Leases = () => {
       // Store the file path - signed URLs will be generated when viewing
       const storagePath = `signed-contracts/${filePath}`;
 
-      const { error: updateError } = await supabase.rpc("attach_lease_document_atomic", { p_lease_id: leaseId, p_document_url: storagePath });
+      const { error: updateError } = await supabase.rpc('attach_lease_document_atomic', {
+        p_lease_id: leaseId,
+        p_document_url: storagePath,
+      });
 
       if (updateError) {
         toast({
@@ -633,7 +639,9 @@ const Leases = () => {
     if (selectedLeases.size === 0) return;
     setIsDeleting(true);
     const leaseIds = Array.from(selectedLeases);
-    const results = await Promise.all(leaseIds.map((leaseId) => supabase.rpc("transition_lease_atomic", { p_lease_id: leaseId, p_target_status: "terminated" })));
+    const results = await Promise.all(leaseIds.map((leaseId) =>
+      supabase.rpc("transition_lease_atomic", { p_lease_id: leaseId, p_target_status: "terminated" })
+    ));
     const error = results.find((result) => result.error)?.error ?? null;
     if (error) {
       toast({ title: "Error", description: "Failed to deactivate leases", variant: "destructive" });

@@ -289,46 +289,58 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
     setIsSaving(true);
 
     const unitData = {
-      property_id: propertyId,
-      unit_number: unitNumber.trim(),
-      label: unitLabel.trim() || unitNumber.trim(),
-      unit_type: unitType,
-      bedrooms: bedrooms ? parseInt(bedrooms) : null,
-      bathrooms: bathrooms ? parseFloat(bathrooms) : null,
-      square_feet: squareFeet ? parseInt(squareFeet) : null,
-      description: description.trim() || null,
-      monthly_rent: monthlyRent ? parseFloat(monthlyRent) : null,
-      house_deposit: houseDeposit ? parseFloat(houseDeposit) : null,
-      water_deposit: waterDeposit ? parseFloat(waterDeposit) : null,
-      floor_number: floorNumber ? parseInt(floorNumber) : null,
+      property_id:    propertyId,
+      unit_number:    unitNumber.trim(),
+      label:          unitLabel.trim() || unitNumber.trim(),
+      unit_type:      unitType,
+      bedrooms:       bedrooms ? parseInt(bedrooms) : null,
+      bathrooms:      bathrooms ? parseFloat(bathrooms) : null,
+      square_feet:    squareFeet ? parseInt(squareFeet) : null,
+      description:    description.trim() || null,
+      monthly_rent:   monthlyRent ? parseFloat(monthlyRent) : null,
+      house_deposit:  houseDeposit ? parseFloat(houseDeposit) : null,
+      water_deposit:  waterDeposit ? parseFloat(waterDeposit) : null,
+      floor_number:   floorNumber ? parseInt(floorNumber) : null,
       furnished,
       status,
     };
 
-    const saveUnit = async (unitId: string | null) => {
-      const { data, error } = await supabase.rpc("save_unit_atomic", {
-        p_unit_id: unitId,
-        p_property_id: propertyId,
-        p_unit_number: unitData.unit_number,
-        p_label: unitData.label,
-        p_unit_type: unitData.unit_type,
-        p_bedrooms: unitData.bedrooms,
-        p_bathrooms: unitData.bathrooms,
-        p_square_feet: unitData.square_feet,
-        p_description: unitData.description,
-        p_monthly_rent: unitData.monthly_rent,
-        p_house_deposit: unitData.house_deposit,
-        p_water_deposit: unitData.water_deposit,
-        p_floor_number: unitData.floor_number,
-        p_furnished: unitData.furnished,
-        p_status: unitData.status,
-      });
-      return { data, error };
+    const syncRentCharge = async (unitId: string, rent: number | null) => {
+      if (!rent || rent <= 0) return;
+
+      const { data: existingCharge, error: chargeLookupError } = await supabase
+        .from("unit_charge_configs")
+        .select("id")
+        .eq("unit_id", unitId)
+        .eq("charge_type", "rent")
+        .maybeSingle();
+      if (chargeLookupError) throw chargeLookupError;
+
+      const chargePayload = {
+        unit_id: unitId,
+        property_id: propertyId,
+        manager_id: user.id,
+        charge_type: "rent",
+        charge_label: "Monthly Rent",
+        amount: rent,
+        is_active: true,
+        is_metered: false,
+        billing_cycle: "monthly",
+        auto_generate: true,
+      };
+
+      const { error: chargeError } = existingCharge
+        ? await supabase.from("unit_charge_configs").update(chargePayload).eq("id", existingCharge.id)
+        : await supabase.from("unit_charge_configs").insert(chargePayload);
+      if (chargeError) throw chargeError;
     };
 
     if (selectedUnit) {
-      // Update atomically, including the rent charge configuration.
-      const { error } = await saveUnit(selectedUnit.id);
+      // Update
+      const { error } = await supabase
+        .from('units')
+        .update(unitData)
+        .eq("id", selectedUnit.id);
 
       if (error) {
         toast({
@@ -337,6 +349,15 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           variant: "destructive",
         });
       } else {
+        try {
+          await syncRentCharge(selectedUnit.id, unitData.monthly_rent);
+        } catch (chargeError) {
+          toast({
+            title: "Unit Updated",
+            description: chargeError instanceof Error ? `Saved unit, but rent charge sync failed: ${chargeError.message}` : "Saved unit, but rent charge sync failed.",
+            variant: "destructive",
+          });
+        }
         toast({
           title: "Unit Updated",
           description: `Unit ${unitNumber} has been updated.`,
@@ -347,18 +368,31 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
         onUnitsChange?.();
       }
     } else {
-      // Create atomically, including the rent charge configuration.
-      const { data: rpcData, error } = await saveUnit(null);
+      // Create
+      const { data: createdUnit, error } = await supabase
+        .from('units')
+        .insert(unitData)
+        .select("id")
+        .single();
 
       if (error) {
         toast({
           title: "Error",
-          description: error.message.toLowerCase().includes("unique")
+          description: error.message.includes("unique")
             ? "A unit with this number already exists"
             : toUserFacingError(error, "Could not create this unit. Your details are still here — try again."),
           variant: "destructive",
         });
       } else {
+        try {
+          if (createdUnit?.id) await syncRentCharge(createdUnit.id, unitData.monthly_rent);
+        } catch (chargeError) {
+          toast({
+            title: "Unit Created",
+            description: chargeError instanceof Error ? `Created unit, but rent charge sync failed: ${chargeError.message}` : "Created unit, but rent charge sync failed.",
+            variant: "destructive",
+          });
+        }
         toast({
           title: "Unit Created",
           description: `Unit ${unitNumber} has been added to ${propertyName}.`,
@@ -377,7 +411,10 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
   const handleDelete = async () => {
     if (!selectedUnit) return;
 
-    const { error } = await supabase.rpc("deactivate_unit_atomic", { p_unit_id: selectedUnit.id });
+    const { error } = await supabase
+      .from('units')
+      .update({ status: 'inactive' })
+      .eq("id", selectedUnit.id);
 
     if (error) {
       toast({

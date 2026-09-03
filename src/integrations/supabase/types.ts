@@ -6727,33 +6727,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      save_unit_charge_config_atomic: { Args: { p_charge_id?: string | null; p_unit_id?: string | null; p_property_id?: string | null; p_charge_type?: string; p_charge_label?: string; p_amount?: number; p_is_metered?: boolean; p_billing_cycle?: string; p_auto_generate?: boolean; p_notes?: string | null }; Returns: Json }
-      set_unit_charge_active_atomic: { Args: { p_charge_id: string; p_active: boolean }; Returns: Json }
-      delete_unit_charge_atomic: { Args: { p_charge_id: string }; Returns: Json }
-      assign_tenant_to_unit_atomic: { Args: { p_tenant_id: string; p_property_id: string; p_unit_number: string }; Returns: Json }
-      unassign_tenant_from_unit_atomic: { Args: { p_tenant_id: string }; Returns: Json }
-      save_property_atomic: { Args: { p_property_id?: string | null; p_name?: string; p_address?: string; p_house_number?: string | null; p_house_label_prefix?: string | null; p_units?: number; p_image_url?: string | null; p_property_type?: string; p_number_of_floors?: number; p_rent_per_house?: number; p_payment_details?: string | null; p_category_key?: string | null }; Returns: Json }
-      deactivate_property_atomic: { Args: { p_property_id: string }; Returns: Json }
-      save_unit_atomic: { Args: { p_unit_id?: string | null; p_property_id?: string | null; p_unit_number?: string; p_label?: string | null; p_unit_type?: string; p_bedrooms?: number | null; p_bathrooms?: number | null; p_square_feet?: number | null; p_description?: string | null; p_monthly_rent?: number | null; p_house_deposit?: number | null; p_water_deposit?: number | null; p_floor_number?: number | null; p_furnished?: string; p_status?: string }; Returns: Json }
-      deactivate_unit_atomic: { Args: { p_unit_id: string }; Returns: Json }
-      create_contract_atomic: { Args: { p_lease_id: string; p_tenant_id?: string | null; p_property_id?: string | null; p_unit_id?: string | null; p_template_id?: string | null; p_title?: string; p_content?: string; p_valid_from?: string | null; p_valid_until?: string | null; p_status?: string }; Returns: Json }
-      transition_contract_atomic: { Args: { p_contract_id: string; p_action: string; p_target_status?: string | null; p_reason?: string | null; p_signature?: string | null; p_document_url?: string | null }; Returns: Json }
-      transition_lease_atomic: { Args: { p_lease_id: string; p_target_status: string }; Returns: Json }
-      attach_lease_document_atomic: { Args: { p_lease_id: string; p_document_url: string }; Returns: Json }
-      assign_lease_tenant_atomic: { Args: { p_lease_id: string; p_tenant_id: string }; Returns: Json }
-      save_water_billing_config_atomic: { Args: { p_property_id: string; p_billing_method: string; p_rate_per_unit?: number | null; p_flat_rate_amount?: number | null; p_invoice_mode?: string; p_billing_cycle_day?: number; p_meter_number?: string | null; p_water_provider?: string | null; p_is_active?: boolean }; Returns: Json }
-      record_water_meter_reading_atomic: { Args: { p_property_id: string; p_unit_id: string; p_previous_reading: number; p_current_reading: number; p_rate_per_unit: number; p_reading_date?: string; p_total_amount?: number | null; p_notes?: string | null; p_billing_period_start?: string | null; p_billing_period_end?: string | null }; Returns: Json }
-      submit_tenant_water_reading_atomic: { Args: { p_unit_id: string; p_previous_reading: number; p_current_reading: number; p_rate_per_unit: number; p_reading_date?: string; p_tenant_photo_url?: string | null; p_notes?: string | null }; Returns: Json }
-      dispute_water_reading_atomic: { Args: { p_reading_id: string; p_reason: string }; Returns: Json }
-      link_water_reading_invoice_atomic: { Args: { p_reading_id: string; p_invoice_id: string }; Returns: Json }
       create_maintenance_request_atomic: { Args: { p_title: string; p_description: string; p_property_name: string; p_unit_number?: string | null; p_unit_id?: string | null; p_tenant_name?: string; p_tenant_email?: string; p_priority?: string; p_category?: string; p_expected_completion_date?: string | null; p_budget?: number | null; p_manager_id?: string | null; p_created_by_role?: string }; Returns: Json }
       transition_maintenance_request_atomic: { Args: { p_request_id: string; p_target_status: string }; Returns: Json }
       assign_maintenance_request_atomic: { Args: { p_request_id: string; p_assigned_to: string; p_provider_id?: string | null }; Returns: Json }
       save_expenditure_atomic: { Args: { p_manager_id: string; p_category: string; p_amount: number; p_month: string; p_description?: string | null }; Returns: Json }
-      save_unit_utility_meter_atomic: { Args: { p_unit_id: string; p_property_id: string; p_utility_type: string; p_meter_number: string; p_meter_label?: string | null; p_provider?: string | null; p_account_number?: string | null; p_billing_method?: string; p_rate_per_unit?: number | null; p_is_active?: boolean }; Returns: Json }
-      update_unit_utility_meter_reading_atomic: { Args: { p_meter_id: string; p_reading: number }; Returns: Json }
-      set_unit_utility_meter_active_atomic: { Args: { p_meter_id: string; p_is_active: boolean }; Returns: Json }
-      delete_unit_utility_meter_atomic: { Args: { p_meter_id: string }; Returns: Json }
       create_landlord_invoice_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_invoice_type?: string; p_description?: string | null; p_due_date?: string | null; p_manager_user_id?: string | null; p_property_id?: string | null; p_period_start?: string | null; p_period_end?: string | null }; Returns: Json }
       transition_landlord_invoice_atomic: { Args: { p_invoice_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null }; Returns: Json }
       record_orphan_payment_atomic: { Args: { p_user_id: string; p_record_id?: string | null; p_payment_date: string; p_amount: number; p_payment_method?: string | null; p_reference?: string | null; p_description?: string | null }; Returns: Json }
@@ -6872,6 +6849,40 @@ export type Database = {
           p_description: string
           p_due_date: string
           p_line_items?: Json
+        }
+        Returns: Json
+      }
+      attach_lease_document_atomic: {
+        Args: { p_lease_id: string; p_document_url: string }
+        Returns: boolean
+      }
+      create_water_meter_reading_atomic: {
+        Args: {
+          p_property_id: string
+          p_unit_id: string
+          p_previous_reading: number
+          p_current_reading: number
+          p_rate_per_unit: number
+          p_reading_date: string
+          p_billing_period_start?: string | null
+          p_billing_period_end?: string | null
+          p_notes?: string | null
+          p_submitted_by_tenant?: boolean
+          p_tenant_user_id?: string | null
+          p_tenant_photo_url?: string | null
+        }
+        Returns: string
+      }
+      transition_lease_atomic: {
+        Args: { p_lease_id: string; p_target_status: string }
+        Returns: Json
+      }
+      transition_water_meter_reading_atomic: {
+        Args: {
+          p_reading_id: string
+          p_action: string
+          p_invoice_id?: string | null
+          p_dispute_reason?: string | null
         }
         Returns: Json
       }

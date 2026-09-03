@@ -142,19 +142,15 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
         notes:         form.notes || null,
         is_active:     true,
       };
-      const { error } = await supabase.rpc("save_unit_charge_config_atomic", {
-        p_charge_id: editTarget?.id ?? null,
-        p_unit_id: unitId,
-        p_property_id: propertyId,
-        p_charge_type: payload.charge_type,
-        p_charge_label: payload.charge_label,
-        p_amount: payload.amount,
-        p_is_metered: payload.is_metered,
-        p_billing_cycle: payload.billing_cycle,
-        p_auto_generate: payload.auto_generate,
-        p_notes: payload.notes,
-      });
-      if (error) throw error;
+      if (editTarget) {
+        const { error } = await supabase
+          .from('unit_charge_configs').update(payload).eq('id', editTarget.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('unit_charge_configs').insert(payload);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unit-charge-configs', unitId] });
@@ -166,7 +162,8 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.rpc("set_unit_charge_active_atomic", { p_charge_id: id, p_active: active });
+      const { error } = await supabase
+        .from('unit_charge_configs').update({ is_active: active }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['unit-charge-configs', unitId] }),
@@ -174,7 +171,8 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
 
   const deleteCharge = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.rpc("delete_unit_charge_atomic", { p_charge_id: id });
+      const { error } = await supabase
+        .from('unit_charge_configs').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
