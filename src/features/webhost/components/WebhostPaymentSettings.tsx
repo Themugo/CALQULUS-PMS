@@ -83,59 +83,19 @@ const WebhostPaymentSettings: React.FC = () => {
     }
   }, [settings?.id, settings?.updated_at]);
 
-  // Save mutation
+  // Save mutation — all platform financial settings writes are server-authorized.
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<PaymentSettings>) => {
-      if (settings?.id) {
-        // Update existing
-        const { error } = await supabase
-          .from('webhost_payment_settings')
-          .update({
-            registration_fee: data.registration_fee,
-            subscription_rate: data.subscription_rate,
-            bank_name: data.bank_name || null,
-            bank_account_name: data.bank_account_name || null,
-            bank_account_number: data.bank_account_number || null,
-            bank_branch: data.bank_branch || null,
-            bank_swift_code: data.bank_swift_code || null,
-            mpesa_paybill_number: data.mpesa_paybill_number || null,
-            mpesa_paybill_account: data.mpesa_paybill_account || null,
-            mpesa_till_number: data.mpesa_till_number || null,
-            mpesa_phone_number: data.mpesa_phone_number || null,
-            payment_instructions: data.payment_instructions || null,
-          })
-          .eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        // Insert new
-        const { error } = await supabase
-          .from('webhost_payment_settings')
-          .insert({
-            registration_fee: data.registration_fee,
-            subscription_rate: data.subscription_rate,
-            bank_name: data.bank_name || null,
-            bank_account_name: data.bank_account_name || null,
-            bank_account_number: data.bank_account_number || null,
-            bank_branch: data.bank_branch || null,
-            bank_swift_code: data.bank_swift_code || null,
-            mpesa_paybill_number: data.mpesa_paybill_number || null,
-            mpesa_paybill_account: data.mpesa_paybill_account || null,
-            mpesa_till_number: data.mpesa_till_number || null,
-            mpesa_phone_number: data.mpesa_phone_number || null,
-            payment_instructions: data.payment_instructions || null,
-          });
-        
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('save_webhost_payment_settings_atomic', {
+        p_payload: data as any,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: 'Payment settings saved successfully' });
       queryClient.invalidateQueries({ queryKey: ['webhost-payment-settings'] });
     },
-    onError: (error: Error) => {
-      errorToast('Failed to save settings', error);
-    },
+    onError: (error: Error) => errorToast('Failed to save settings', error),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -6786,6 +6786,13 @@ export type Database = {
       }
       ensure_landlord_wallet_atomic: { Args: { p_landlord_user_id: string; p_currency?: string | null }; Returns: Json }
       append_payment_log_atomic: { Args: { p_payment_id: string; p_event_type: string; p_event_data?: Json }; Returns: Database["public"]["Tables"]["payment_logs"]["Row"] }
+      save_webhost_payment_settings_atomic: { Args: { p_payload: Json }; Returns: Database["public"]["Tables"]["webhost_payment_settings"]["Row"] }
+      save_platform_billing_rule_atomic: { Args: { p_rule_id?: string | null; p_payload: Json }; Returns: Database["public"]["Tables"]["platform_billing_rules"]["Row"] }
+      transition_platform_billing_rule_atomic: { Args: { p_rule_id: string; p_is_active: boolean }; Returns: Database["public"]["Tables"]["platform_billing_rules"]["Row"] }
+      delete_platform_billing_rule_atomic: { Args: { p_rule_id: string }; Returns: undefined }
+      save_customer_billing_block_atomic: { Args: { p_block_id?: string | null; p_payload: Json }; Returns: Database["public"]["Tables"]["customer_billing_blocks"]["Row"] }
+      delete_customer_billing_block_atomic: { Args: { p_block_id: string }; Returns: undefined }
+
       record_commission_atomic: { Args: { p_invoice_id: string; p_manager_id: string; p_amount: number; p_rate_applied: number }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
       transition_commission_atomic: { Args: { p_commission_id: string; p_status: string }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
       record_landlord_wallet_transaction_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_type: string; p_reference_type?: string | null; p_reference_id?: string | null; p_description?: string | null }; Returns: Json }

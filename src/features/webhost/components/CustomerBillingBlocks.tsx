@@ -238,11 +238,11 @@ const CustomerBillingBlocks = () => {
       };
 
       if (editingBlock) {
-        const { error } = await supabase.from('customer_billing_blocks').update(payload).eq('id', editingBlock.id);
+        const { error } = await supabase.rpc('save_customer_billing_block_atomic', { p_block_id: editingBlock.id, p_payload: payload as any });
         if (error) throw error;
         logActivity({ action: 'Updated Customer Billing Block', entityType: 'customer_billing_blocks', entityId: editingBlock.id });
       } else {
-        const { data, error } = await supabase.from('customer_billing_blocks').insert(payload).select().single();
+        const { data, error } = await supabase.rpc('save_customer_billing_block_atomic', { p_block_id: null, p_payload: payload as any });
         if (error) throw error;
         logActivity({ action: 'Created Customer Billing Block', entityType: 'customer_billing_blocks', entityId: data.id });
       }
@@ -261,7 +261,7 @@ const CustomerBillingBlocks = () => {
 
   const deleteBlock = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('customer_billing_blocks').delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_customer_billing_block_atomic', { p_block_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

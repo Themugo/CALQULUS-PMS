@@ -123,11 +123,10 @@ export default function PlatformBillingRules() {
         notes: form.notes.trim() || null,
       };
       if (isNew) {
-        const { error } = await (supabase.from('platform_billing_rules') as any).insert(payload);
+        const { error } = await supabase.rpc('save_platform_billing_rule_atomic', { p_rule_id: null, p_payload: payload });
         if (error) throw error;
       } else {
-        const { error } = await (supabase.from('platform_billing_rules') as any)
-          .update(payload).eq('id', editing!.id);
+        const { error } = await supabase.rpc('save_platform_billing_rule_atomic', { p_rule_id: editing!.id, p_payload: payload });
         if (error) throw error;
       }
     },
@@ -145,8 +144,7 @@ export default function PlatformBillingRules() {
 
   const toggleActive = useMutation({
     mutationFn: async (rule: BillingRule) => {
-      const { error } = await (supabase.from('platform_billing_rules') as any)
-        .update({ is_active: !rule.is_active }).eq('id', rule.id);
+      const { error } = await supabase.rpc('transition_platform_billing_rule_atomic', { p_rule_id: rule.id, p_is_active: !rule.is_active });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -158,7 +156,7 @@ export default function PlatformBillingRules() {
 
   const removeRule = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from('platform_billing_rules') as any).delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_platform_billing_rule_atomic', { p_rule_id: id });
       if (error) throw error;
     },
     onSuccess: () => {
