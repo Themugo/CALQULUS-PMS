@@ -7,6 +7,7 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { requireEnv, getEnv } from '../_shared/env.ts';
+import { startTelemetry, finishTelemetry, failTelemetry, withRequestId } from '../_shared/observability.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -42,9 +43,11 @@ interface ComponentHealth {
 const startTime = Date.now();
 
 serve(async (req: Request) => {
+  const telemetry = startTelemetry(req, 'health-check');
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    finishTelemetry(telemetry, 204);
+    return new Response(null, { headers: withRequestId(corsHeaders, telemetry.requestId), status: 204 });
   }
 
   const url = new URL(req.url);
@@ -188,6 +191,8 @@ serve(async (req: Request) => {
   // Return appropriate status code
   const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
 
+  finishTelemetry(telemetry, statusCode);
+
   return new Response(
     JSON.stringify(detailed ? health : {
       status: health.status,
@@ -195,12 +200,12 @@ serve(async (req: Request) => {
       version: health.version,
     }),
     {
-      headers: {
+      headers: withRequestId({
         ...corsHeaders,
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'X-Health-Status': health.status,
-      },
+      }, telemetry.requestId),
       status: statusCode,
     }
   );

@@ -45,7 +45,10 @@
     "audit:release-certificate": "node scripts/audit-release-certificate.mjs",
     "audit:staging-readiness": "node scripts/audit-staging-readiness.mjs",
     "audit:disaster-recovery": "node scripts/audit-disaster-recovery.mjs",
-    "audit:release-readiness": "node scripts/audit-release-readiness.mjs"
+    "audit:release-readiness": "node scripts/audit-release-readiness.mjs",
+    "audit:observability": "node scripts/audit-observability.mjs",
+    "audit:operations-readiness": "node scripts/audit-operations-readiness.mjs",
+    "audit:edge-reliability": "node scripts/audit-edge-reliability.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:08:21.723Z",
+  "generatedAt": "2026-09-03T13:16:54.518Z",
   "checks": [
     {
       "name": "prod",
@@ -27,6 +27,18 @@
     },
     {
       "name": "recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "observability",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-reliability",
+      "status": "PASS"
+    },
+    {
+      "name": "operations",
       "status": "PASS"
     }
   ],
