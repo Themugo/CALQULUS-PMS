@@ -168,3 +168,8 @@ These were identified during the audit but not yet addressed:
 5. `BillingStatsBar` renders nothing during loading (no skeleton)
 6. Zero `react-hook-form` + `zodResolver` usage despite both being installed dependencies — forms rely on manual `useState` validation
 7. CHECK constraints from §5 need `VALIDATE CONSTRAINT` run after a production data audit (see `20260605000000_validate_amount_check_constraints.sql`)
+
+## 2026-09-03 — Phases 49–50
+- Converged physical invoice/receipt capture and receipt-to-payment linking onto atomic RPCs.
+- Hardened tenant payment-detail snapshot writes behind a scoped manager/submanager RPC.
+- Revoked authenticated direct DML on physical receivables and tenant payment details.

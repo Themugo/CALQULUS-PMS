@@ -239,23 +239,19 @@ const PhysicalDocumentEntry: React.FC = () => {
     mutationFn: async () => {
       if (!invForm.tenant_id || !invForm.invoice_number || invTotal <= 0) throw new Error('Tenant, invoice number, and amount required');
       const tenant = selectedInvTenant!;
-      const { error } = await supabase.from('physical_invoices').insert({
-        manager_id:    user!.id,
-        tenant_id:     invForm.tenant_id,
-        unit_id:       tenant.unit_id,
-        property_id:   tenant.property_id,
-        invoice_number: invForm.invoice_number,
-        invoice_date:  invForm.invoice_date,
-        due_date:      invForm.due_date || null,
-        description:   invForm.description || 'Physical invoice',
-        amount:        invTotal,
-        total_amount:  invTotal,
-        line_items:    invLines,
-        notes:         invForm.notes || null,
-        recorded_by:   user!.id,
-        status:        'issued',
+      const { data, error } = await supabase.rpc('create_physical_invoice_atomic', {
+        p_tenant_id: invForm.tenant_id,
+        p_invoice_number: invForm.invoice_number,
+        p_invoice_date: invForm.invoice_date,
+        p_due_date: invForm.due_date || null,
+        p_description: invForm.description || 'Physical invoice',
+        p_amount: invTotal,
+        p_tax_amount: 0,
+        p_line_items: invLines,
+        p_notes: invForm.notes || null,
+        p_document_url: null,
       });
-      if (error) throw error;
+      if (error || !data?.success) throw error || new Error('Physical invoice could not be recorded');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['physical-invoices'] });
@@ -272,23 +268,20 @@ const PhysicalDocumentEntry: React.FC = () => {
     mutationFn: async () => {
       if (!recForm.tenant_id || !recForm.receipt_number || !recTotal) throw new Error('Tenant, receipt number, and amount required');
       const tenant = selectedRecTenant!;
-      const { error } = await supabase.from('physical_receipts').insert({
-        manager_id:    user!.id,
-        tenant_id:     recForm.tenant_id,
-        unit_id:       tenant.unit_id,
-        property_id:   tenant.property_id,
-        receipt_number: recForm.receipt_number,
-        receipt_date:  recForm.receipt_date,
-        amount:        recTotal,
-        payment_method: recForm.payment_method,
-        reference:     recForm.reference || null,
-        description:   recForm.description,
-        received_by:   recForm.received_by || null,
-        line_items:    recLines.some(l => l.amount > 0) ? recLines : null,
-        notes:         recForm.notes || null,
-        recorded_by:   user!.id,
+      const { data, error } = await supabase.rpc('create_physical_receipt_atomic', {
+        p_tenant_id: recForm.tenant_id,
+        p_receipt_number: recForm.receipt_number,
+        p_receipt_date: recForm.receipt_date,
+        p_amount: recTotal,
+        p_payment_method: recForm.payment_method,
+        p_reference: recForm.reference || null,
+        p_description: recForm.description,
+        p_received_by: recForm.received_by || null,
+        p_line_items: recLines.some(l => l.amount > 0) ? recLines : null,
+        p_notes: recForm.notes || null,
+        p_document_url: null,
       });
-      if (error) throw error;
+      if (error || !data?.success) throw error || new Error('Physical receipt could not be recorded');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['physical-receipts'] });
@@ -335,9 +328,13 @@ const PhysicalDocumentEntry: React.FC = () => {
 
       await Promise.allSettled(promises);
 
-      // Mark as digital sent
-      const table = isReceipt ? 'physical_receipts' : 'physical_invoices';
-      await supabase.from(table).update({ digital_receipt_sent: true, digital_sent_at: new Date().toISOString() }).eq('id', doc.id);
+      // Mark as digital sent through the same protected mutation boundary.
+      const { error: markError } = await supabase.rpc('mark_physical_document_sent_atomic', {
+        p_document_id: doc.id,
+        p_document_type: isReceipt ? 'receipt' : 'invoice',
+        p_sent_via: [sendVia.email && 'email', sendVia.sms && 'sms'].filter(Boolean).join(',') || 'digital',
+      });
+      if (markError) throw markError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['physical-receipts', 'physical-invoices'] });

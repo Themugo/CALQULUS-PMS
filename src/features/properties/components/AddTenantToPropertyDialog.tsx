@@ -209,7 +209,7 @@ export const AddTenantToPropertyDialog = ({
         if (finalizeError) throw finalizeError;
 
         // Sync payment details to tenant portal
-        await supabase.rpc("sync_tenant_payment_details" as never, {
+        await supabase.rpc("save_tenant_payment_details_atomic" as never, {
           p_tenant_id:          insertedTenant.id,
           p_manager_id:         user?.id ?? null,
           p_property_id:        propertyId || null,
