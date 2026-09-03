@@ -716,7 +716,7 @@ const Properties = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>Cancel</Button>
-            <Button onClick={handleAddProperty} className="btn-brand" disabled={isSaving}>{isSaving ? "Adding..." : "Add Property"}</Button>
+            <Button onClick={handleAddProperty} className="btn-brand" loading={isSaving}>Add Property</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -876,7 +876,7 @@ const Properties = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSaving}>Cancel</Button>
-            <Button onClick={handleUpdateProperty} className="btn-brand" disabled={isSaving}>{isSaving ? "Saving..." : "Save Changes"}</Button>
+            <Button onClick={handleUpdateProperty} className="btn-brand" loading={isSaving}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,3 +1,8 @@
+
+## Phases 160–161 — Loading, Empty, Error & Confirmation UX
+- Standardized compact inline loading states across property sub-record views and receipts.
+- Reused Button loading semantics for primary property and invoice save actions, preserving existing mutations.
+- Added structural regression coverage for shared state accessibility, retryable errors, intentional empty states, and action loading.
 ## Phases 154–155 — Settings, Profile & Account UX
 - Added a shared account hierarchy to manager settings, landlord settings and the tenant profile workspace.
 - Clarified the purpose of each account surface without changing existing permissions, authentication, profile, notification or payment settings flows.

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { Link } from "react-router-dom";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 
 interface Invoice {
   id: string;
@@ -97,7 +98,7 @@ export function PropertyInvoicesTab({ propertyId, tenants }: PropertyInvoicesTab
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading...</div>
+          <LoadingState label="Loading records…" variant="inline" className="py-4" />
         ) : invoices.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />

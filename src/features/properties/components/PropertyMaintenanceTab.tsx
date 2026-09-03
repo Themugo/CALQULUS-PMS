@@ -8,6 +8,7 @@ import { Wrench, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "react-router-dom";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 
 interface MaintenanceRequest {
   id: string;
@@ -80,7 +81,7 @@ export function PropertyMaintenanceTab({ propertyName }: PropertyMaintenanceTabP
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading...</div>
+          <LoadingState label="Loading records…" variant="inline" className="py-4" />
         ) : requests.length === 0 ? (
           <div className="text-center py-12">
             <CheckCircle2 className="h-12 w-12 mx-auto text-success/50 mb-4" />

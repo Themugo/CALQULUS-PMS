@@ -6,7 +6,7 @@ import { Skeleton } from "./skeleton";
 export interface LoadingStateProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: string;
   size?: "sm" | "md" | "lg";
-  variant?: "spinner" | "skeleton";
+  variant?: "spinner" | "skeleton" | "inline";
   rows?: number;
 }
 
@@ -23,6 +23,21 @@ export function LoadingState({
     md: "h-6 w-6",
     lg: "h-8 w-8",
   };
+
+  if (variant === "inline") {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        className={cn("flex min-h-16 items-center justify-center gap-2 px-4 py-5 text-sm text-muted-foreground", className)}
+        {...props}
+      >
+        <Loader2 className={cn("animate-spin", iconSizes[size])} aria-hidden="true" />
+        {label && <span>{label}</span>}
+      </div>
+    );
+  }
 
   if (variant === "skeleton") {
     return (

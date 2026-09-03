@@ -534,11 +534,9 @@ const Billing = () => {
             <Button
               onClick={handleSaveEditInvoice}
               className="btn-brand"
-              disabled={updateMutation.isPending}
+              loading={updateMutation.isPending}
             >
-              {updateMutation.isPending
-                ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving…</>
-                : <><Save className="h-4 w-4 mr-2" />Save Changes</>}
+              <Save className="h-4 w-4" />Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>

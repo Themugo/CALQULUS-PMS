@@ -11,6 +11,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { toast } from "@/shared/hooks/use-toast";
 import { cn } from "@/shared/lib/utils";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 
 interface VacationNotice {
   id: string;
@@ -98,7 +99,7 @@ export function PropertyVacationNoticesTab({ propertyId, propertyName }: Props) 
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+            <LoadingState label="Loading records…" variant="inline" className="py-4" />
           ) : notices.length === 0 ? (
             <div className="text-center py-12">
               <CalendarX className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />

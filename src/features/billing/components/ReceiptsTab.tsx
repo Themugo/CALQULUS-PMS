@@ -1,3 +1,4 @@
+import { LoadingState } from "@/shared/components/ui/loading-state";
 /**
  * ReceiptsTab.tsx
  * Full receipts functionality: table, bulk email, bulk SMS, WhatsApp, per-row actions.
@@ -206,7 +207,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
 
       <div className="rounded-xl border border-border bg-card card-shadow overflow-hidden animate-fade-in">
         {isLoading ? (
-          <div className="p-8 text-center text-muted-foreground flex items-center justify-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading receipts…</div>
+          <LoadingState label="Loading receipts…" variant="inline" />
         ) : filteredReceipts.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground"><CheckCircle2 className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>{paidInvoices.length === 0 ? "No receipts yet." : "No receipts match your search."}</p></div>
         ) : (

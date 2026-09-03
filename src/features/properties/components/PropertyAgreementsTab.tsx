@@ -13,6 +13,7 @@ import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { ContractPreview } from "@/features/contracts/components/ContractPreview";
 import { QuickCreateContract } from "@/features/contracts/components/QuickCreateContract";
 import { exportContractToPdf } from "@/features/contracts/lib/contractPdfExport";
+import { LoadingState } from "@/shared/components/ui/loading-state";
 
 interface Contract {
   id: string;
@@ -97,7 +98,7 @@ export function PropertyAgreementsTab({ propertyId, propertyName }: PropertyAgre
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+            <LoadingState label="Loading records…" variant="inline" className="py-4" />
           ) : contracts.length === 0 ? (
             <div className="text-center py-12">
               <FileSignature className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
