@@ -1,18 +1,19 @@
 {
-  "generatedAt": "2026-09-03T13:29:51.278Z",
+  "generatedAt": "2026-09-03T13:29:51.150Z",
   "status": "PASS",
-  "requiredArtifacts": [
+  "requiredFiles": [
     "supabase/config.toml",
-    "supabase/migrations",
-    "config/migration-history-policy.json",
-    "scripts/audit-migration-chain.mjs",
-    "scripts/audit-staging-readiness.mjs",
-    "scripts/audit-disaster-recovery.mjs",
-    "scripts/audit-release-readiness.mjs",
-    "scripts/smoke-deploy.mjs"
+    "scripts/deploy-production.mjs",
+    "scripts/smoke-deploy.mjs",
+    "scripts/audit-go-live.mjs",
+    "scripts/reconcile-live-migrations.mjs",
+    "docs/operations/STAGING_DEPLOYMENT_RUNBOOK.md",
+    "docs/operations/DISASTER_RECOVERY_RUNBOOK.md"
   ],
-  "migrationCount": 158,
-  "destructiveMigrationCount": 58,
+  "requiredClientVariables": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_PUBLISHABLE_KEY"
+  ],
   "verifyJwtFalseFunctions": [
     "backfill-tenant-accounts",
     "send-payment-confirmation",
@@ -51,13 +52,13 @@
     "send-payment-reminders",
     "auto-send-rent-report"
   ],
-  "gitWorkingTreeClean": null,
-  "externalGates": [
-    "live migration-history reconciliation",
-    "staging migration execution",
-    "staging smoke test",
-    "staging restore evidence",
-    "production promotion approval"
-  ],
-  "failures": []
+  "productionUnsafeDefaults": [],
+  "failures": [],
+  "externalEvidenceRequired": [
+    "Vercel environment variables configured",
+    "Supabase project secrets configured",
+    "production domain configured",
+    "live migration reconciliation",
+    "staging smoke and restore evidence"
+  ]
 }

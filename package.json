@@ -51,7 +51,11 @@
     "audit:edge-reliability": "node scripts/audit-edge-reliability.mjs",
     "audit:deployment-controls": "node scripts/audit-deployment-controls.mjs",
     "reconcile:live-migrations": "node scripts/reconcile-live-migrations.mjs",
-    "audit:go-live": "node scripts/audit-go-live.mjs"
+    "audit:go-live": "node scripts/audit-go-live.mjs",
+    "audit:production-environment": "node scripts/audit-production-environment.mjs",
+    "deploy:preflight": "node scripts/deploy-preflight.mjs",
+    "staging:smoke": "node scripts/staging-smoke-evidence.mjs",
+    "audit:production-evidence": "node scripts/audit-production-evidence.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

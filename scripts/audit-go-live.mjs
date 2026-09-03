@@ -4,9 +4,11 @@ import {execFileSync} from 'node:child_process';
 
 const root=process.cwd();
 const commands=[
+ ['environment','npm',['run','audit:production-environment']],
  ['deployment','npm',['run','audit:deployment-controls']],
  ['release','npm',['run','audit:release-readiness']],
  ['live-migrations','npm',['run','reconcile:live-migrations']],
+ ['production-evidence','npm',['run','audit:production-evidence']],
 ];
 const results=[];
 for(const [name,cmd,args] of commands){
