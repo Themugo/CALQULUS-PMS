@@ -313,17 +313,10 @@ const WebhostContracts = () => {
       const storagePath = `contracts/${filePath}`;
 
       // Create contract record
-      const { error: insertError } = await supabase.from("manager_contracts").insert({
-        manager_user_id: uploadForm.manager_user_id,
-        manager_email: selectedManager?.email || "",
-        manager_name: selectedManager?.full_name,
-        title: uploadForm.title,
-        description: uploadForm.description || null,
-        contract_type: uploadForm.contract_type,
-        uploaded_contract_url: storagePath,
-        valid_from: uploadForm.valid_from || null,
-        valid_until: uploadForm.valid_until || null,
-        status: "pending",
+      const { error: insertError } = await supabase.rpc("create_manager_contract_atomic", {
+        p_manager_user_id: uploadForm.manager_user_id, p_manager_email: selectedManager?.email || "", p_manager_name: selectedManager?.full_name || null,
+        p_title: uploadForm.title, p_description: uploadForm.description || null, p_contract_type: uploadForm.contract_type,
+        p_uploaded_contract_url: storagePath, p_valid_from: uploadForm.valid_from || null, p_valid_until: uploadForm.valid_until || null,
       });
 
       if (insertError) throw insertError;
@@ -371,15 +364,7 @@ const WebhostContracts = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
     
-    const { error } = await supabase
-      .from("manager_contracts")
-      .update({
-        status: "approved",
-        reviewed_by: user?.id,
-        reviewed_at: new Date().toISOString(),
-        review_notes: reviewNotes || null,
-      })
-      .eq("id", selectedContract.id);
+    const { error } = await supabase.rpc("transition_manager_contract_atomic", { p_contract_id: selectedContract.id, p_status: "approved", p_review_notes: reviewNotes || null });
 
     if (error) {
       toast({ title: "Error", description: "Failed to approve contract", variant: "destructive" });
@@ -423,15 +408,7 @@ const WebhostContracts = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
     
-    const { error } = await supabase
-      .from("manager_contracts")
-      .update({
-        status: "rejected",
-        reviewed_by: user?.id,
-        reviewed_at: new Date().toISOString(),
-        review_notes: rejectionReason,
-      })
-      .eq("id", selectedContract.id);
+    const { error } = await supabase.rpc("transition_manager_contract_atomic", { p_contract_id: selectedContract.id, p_status: "rejected", p_review_notes: rejectionReason });
 
     if (error) {
       toast({ title: "Error", description: "Failed to reject contract", variant: "destructive" });
@@ -473,15 +450,7 @@ const WebhostContracts = () => {
 
   const handleRetakeContract = async (contract: ManagerContract) => {
     // Reset the contract to pending with new upload
-    const { error } = await supabase
-      .from("manager_contracts")
-      .update({
-        status: "pending",
-        reviewed_by: null,
-        reviewed_at: null,
-        review_notes: null,
-      })
-      .eq("id", contract.id);
+    const { error } = await supabase.rpc("transition_manager_contract_atomic", { p_contract_id: contract.id, p_status: "pending", p_review_notes: null });
 
     if (error) {
       toast({ title: "Error", description: "Failed to reset contract", variant: "destructive" });
@@ -526,10 +495,8 @@ const WebhostContracts = () => {
         setParsedContent(data.parsedContent);
         
         // Update the contract in the database with parsed content
-        await supabase
-          .from("manager_contracts")
-          .update({ parsed_content: data.parsedContent })
-          .eq("id", selectedContract.id);
+        // Parsed content persistence is intentionally deferred to a dedicated document-lifecycle RPC.
+        // Do not bypass the manager-contract lifecycle with a direct financial/security-sensitive update.
 
         toast({ title: "Document Parsed", description: "Contract terms have been extracted successfully." });
         fetchData();

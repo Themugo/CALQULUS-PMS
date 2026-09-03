@@ -158,15 +158,10 @@ const ManagerManagement: React.FC = () => {
 
         // Auto-create service agreement contract for newly approved manager
         try {
-          await supabase.from('manager_contracts').insert({
-            manager_user_id: manager.user_id,
-            manager_email:   manager.email,
-            manager_name:    manager.full_name || manager.email,
-            title:           'CALQULUS PMS Platform Service Agreement',
-            contract_type:   'service_agreement',
-            description:     'Standard service agreement for CALQULUS PMS platform access',
-            status:          'pending_signature',
-            valid_from:      new Date().toISOString().slice(0, 10),
+          await supabase.rpc('create_manager_contract_atomic', {
+            p_manager_user_id: manager.user_id, p_manager_email: manager.email, p_manager_name: manager.full_name || manager.email,
+            p_title: 'CALQULUS PMS Platform Service Agreement', p_description: 'Standard service agreement for CALQULUS PMS platform access',
+            p_contract_type: 'service_agreement', p_uploaded_contract_url: null, p_valid_from: new Date().toISOString().slice(0, 10), p_valid_until: null,
           });
         } catch (_) { /* non-critical */ }
 

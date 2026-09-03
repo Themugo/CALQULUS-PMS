@@ -70,14 +70,11 @@ export async function createContract(payload: {
   valid_from?: string;
   valid_until?: string;
 }) {
-  const { data, error } = await supabase
-    .from("contracts")
-    .insert({
-      ...payload,
-      status: "draft",
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc("create_contract_atomic", {
+    p_lease_id: payload.lease_id, p_tenant_id: payload.tenant_id ?? null, p_property_id: payload.property_id ?? null,
+    p_unit_id: payload.unit_id ?? null, p_template_id: payload.template_id ?? null, p_title: payload.title,
+    p_content: payload.content, p_valid_from: payload.valid_from ?? null, p_valid_until: payload.valid_until ?? null, p_status: "draft",
+  });
 
   if (error) {
     logError("createContract", error);
@@ -94,10 +91,9 @@ export async function updateContractStatus(
   contractId: string,
   updates: Partial<ContractRow>
 ) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq("id", contractId);
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId, p_status: updates.status ?? null, p_updates: updates as Record<string, unknown>,
+  });
 
   if (error) {
     logError("updateContractStatus", error);
@@ -109,13 +105,9 @@ export async function updateContractStatus(
  * Add manager signature
  */
 export async function addManagerSignature(contractId: string, signature: string) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      manager_signature: signature,
-      manager_signed_at: new Date().toISOString(),
-    })
-    .eq("id", contractId);
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId, p_status: "signed", p_updates: { manager_signature: signature, manager_signed_at: new Date().toISOString() },
+  });
 
   if (error) {
     logError("addManagerSignature", error);
@@ -131,14 +123,7 @@ export async function softDeleteContract(
   userId: string,
   reason: string
 ) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      deleted_at: new Date().toISOString(),
-      deleted_by: userId,
-      deletion_reason: reason,
-    })
-    .eq("id", contractId);
+  const { error } = await supabase.rpc("soft_delete_contract_atomic", { p_contract_id: contractId, p_reason: reason, p_deleted_by: userId });
 
   if (error) {
     logError("softDeleteContract", error);
@@ -154,14 +139,10 @@ export async function bulkDeleteContracts(
   userId: string,
   reason: string
 ) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      deleted_at: new Date().toISOString(),
-      deleted_by: userId,
-      deletion_reason: reason,
-    })
-    .in("id", contractIds);
+  for (const contractId of contractIds) {
+    const { error } = await supabase.rpc("soft_delete_contract_atomic", { p_contract_id: contractId, p_reason: reason, p_deleted_by: userId });
+    if (error) throw error;
+  }
 
   if (error) {
     logError("bulkDeleteContracts", error);
@@ -173,13 +154,7 @@ export async function bulkDeleteContracts(
  * Submit contract for approval
  */
 export async function submitForApproval(contractId: string) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      pending_approval: true,
-      rejection_reason: null,
-    })
-    .eq("id", contractId);
+  const { error } = await supabase.rpc("transition_contract_atomic", { p_contract_id: contractId, p_status: "pending_approval", p_updates: { pending_approval: true, rejection_reason: null } });
 
   if (error) {
     logError("submitForApproval", error);

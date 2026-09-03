@@ -329,9 +329,11 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
         auto_generate: true,
       };
 
-      const { error: chargeError } = existingCharge
-        ? await supabase.from("unit_charge_configs").update(chargePayload).eq("id", existingCharge.id)
-        : await supabase.from("unit_charge_configs").insert(chargePayload);
+      const { error: chargeError } = await supabase.rpc("save_unit_charge_config_atomic", {
+        p_unit_id: unitId, p_charge_type: chargePayload.charge_type, p_charge_label: chargePayload.charge_label,
+        p_amount: chargePayload.amount, p_is_metered: chargePayload.is_metered, p_billing_cycle: chargePayload.billing_cycle,
+        p_auto_generate: chargePayload.auto_generate, p_notes: null, p_charge_id: existingCharge?.id ?? null,
+      });
       if (chargeError) throw chargeError;
     };
 

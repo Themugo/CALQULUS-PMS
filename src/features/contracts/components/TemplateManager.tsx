@@ -104,13 +104,7 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
       // Get current user ID for manager_user_id
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await supabase.from("contract_templates").insert({
-        name: importData.name,
-        description: importData.description || null,
-        content: importData.content,
-        is_default: false,
-        manager_user_id: user?.id,
-      });
+      const { error } = await supabase.rpc("save_contract_template_atomic", { p_template_id: null, p_name: importData.name, p_description: importData.description || null, p_content: importData.content, p_is_default: false });
 
       if (error) throw error;
 
@@ -168,15 +162,7 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
     }
 
     if (editingTemplate) {
-      const { error } = await supabase
-        .from("contract_templates")
-        .update({
-          name: formData.name,
-          description: formData.description || null,
-          content: formData.content,
-          is_default: formData.is_default,
-        })
-        .eq("id", editingTemplate.id);
+      const { error } = await supabase.rpc("save_contract_template_atomic", { p_template_id: editingTemplate.id, p_name: formData.name, p_description: formData.description || null, p_content: formData.content, p_is_default: formData.is_default });
 
       if (error) {
         toast({ title: "Error", description: "Failed to update template", variant: "destructive" });
@@ -188,13 +174,7 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
       // Get current user ID for manager_user_id
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await supabase.from("contract_templates").insert({
-        name: formData.name,
-        description: formData.description || null,
-        content: formData.content,
-        is_default: formData.is_default,
-        manager_user_id: user?.id,
-      });
+      const { error } = await supabase.rpc("save_contract_template_atomic", { p_template_id: null, p_name: formData.name, p_description: formData.description || null, p_content: formData.content, p_is_default: formData.is_default });
 
       if (error) {
         toast({ title: "Error", description: "Failed to create template", variant: "destructive" });
@@ -209,7 +189,7 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
   };
 
   const handleDelete = async (templateId: string) => {
-    const { error } = await supabase.from("contract_templates").delete().eq("id", templateId);
+    const { error } = await supabase.rpc("delete_contract_template_atomic", { p_template_id: templateId });
 
     if (error) {
       toast({ title: "Error", description: "Failed to delete template", variant: "destructive" });
@@ -221,14 +201,9 @@ export function TemplateManager({ templates, onRefresh }: TemplateManagerProps) 
   };
 
   const handleSetDefault = async (templateId: string) => {
-    // Remove default from all templates
-    await supabase.from("contract_templates").update({ is_default: false }).neq("id", "");
-    
-    // Set new default
-    const { error } = await supabase
-      .from("contract_templates")
-      .update({ is_default: true })
-      .eq("id", templateId);
+    const template = (templates || []).find((t) => t.id === templateId);
+    if (!template) return;
+    const { error } = await supabase.rpc("save_contract_template_atomic", { p_template_id: templateId, p_name: template.name, p_description: template.description || null, p_content: template.content, p_is_default: true });
 
     if (error) {
       toast({ title: "Error", description: "Failed to set default template", variant: "destructive" });

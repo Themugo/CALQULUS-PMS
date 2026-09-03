@@ -142,15 +142,12 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
         notes:         form.notes || null,
         is_active:     true,
       };
-      if (editTarget) {
-        const { error } = await supabase
-          .from('unit_charge_configs').update(payload).eq('id', editTarget.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('unit_charge_configs').insert(payload);
-        if (error) throw error;
-      }
+      const { error } = await supabase.rpc('save_unit_charge_config_atomic', {
+        p_unit_id: unitId, p_charge_type: payload.charge_type, p_charge_label: payload.charge_label,
+        p_amount: payload.amount, p_is_metered: payload.is_metered, p_billing_cycle: payload.billing_cycle,
+        p_auto_generate: payload.auto_generate, p_notes: payload.notes, p_charge_id: editTarget?.id ?? null,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['unit-charge-configs', unitId] });
@@ -162,8 +159,7 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase
-        .from('unit_charge_configs').update({ is_active: active }).eq('id', id);
+      const { error } = await supabase.rpc('transition_unit_charge_config_atomic', { p_charge_id: id, p_is_active: active });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['unit-charge-configs', unitId] }),
@@ -171,8 +167,7 @@ const UnitBillingConfig: React.FC<UnitBillingConfigProps> = ({
 
   const deleteCharge = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('unit_charge_configs').delete().eq('id', id);
+      const { error } = await supabase.rpc('delete_unit_charge_config_atomic', { p_charge_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

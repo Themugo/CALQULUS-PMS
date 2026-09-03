@@ -6837,6 +6837,16 @@ export type Database = {
         Args: { p_transaction_id: string; p_failure_reason: string }
         Returns: Json
       }
+      save_unit_charge_config_atomic: { Args: { p_unit_id: string; p_charge_type: string; p_charge_label: string; p_amount: number; p_is_metered?: boolean; p_billing_cycle?: string; p_auto_generate?: boolean; p_notes?: string | null; p_charge_id?: string | null }; Returns: Database["public"]["Tables"]["unit_charge_configs"]["Row"] }
+      transition_unit_charge_config_atomic: { Args: { p_charge_id: string; p_is_active: boolean }; Returns: Database["public"]["Tables"]["unit_charge_configs"]["Row"] }
+      delete_unit_charge_config_atomic: { Args: { p_charge_id: string }; Returns: boolean }
+      create_contract_atomic: { Args: { p_lease_id: string; p_tenant_id: string | null; p_property_id: string | null; p_unit_id: string | null; p_template_id: string | null; p_title: string; p_content: string; p_valid_from: string | null; p_valid_until: string | null; p_status?: string }; Returns: Database["public"]["Tables"]["contracts"]["Row"] }
+      transition_contract_atomic: { Args: { p_contract_id: string; p_status?: string | null; p_updates?: Json }; Returns: Database["public"]["Tables"]["contracts"]["Row"] }
+      soft_delete_contract_atomic: { Args: { p_contract_id: string; p_reason: string; p_deleted_by?: string | null }; Returns: Database["public"]["Tables"]["contracts"]["Row"] }
+      save_contract_template_atomic: { Args: { p_template_id: string | null; p_name: string; p_description: string | null; p_content: string; p_is_default: boolean }; Returns: Database["public"]["Tables"]["contract_templates"]["Row"] }
+      delete_contract_template_atomic: { Args: { p_template_id: string }; Returns: boolean }
+      create_manager_contract_atomic: { Args: { p_manager_user_id: string; p_manager_email?: string | null; p_manager_name?: string | null; p_title: string; p_description?: string | null; p_contract_type?: string; p_uploaded_contract_url?: string | null; p_valid_from?: string | null; p_valid_until?: string | null }; Returns: Database["public"]["Tables"]["manager_contracts"]["Row"] }
+      transition_manager_contract_atomic: { Args: { p_contract_id: string; p_status: string; p_review_notes?: string | null }; Returns: Database["public"]["Tables"]["manager_contracts"]["Row"] }
       create_invoice_atomic: {
         Args: {
           p_generation_key: string
