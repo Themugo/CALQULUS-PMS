@@ -5,6 +5,7 @@ import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { Layout } from "@/shared/components/layout/Layout";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import ServiceMarketplace from "@/features/services/components/ServiceMarketplace";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -468,6 +469,14 @@ export default function Maintenance() {
       title="Maintenance"
       subtitle="New, assigned, in progress, awaiting, completed — assign, start, or complete work orders"
     >
+      <div className="mb-5">
+        <DashboardSectionHeader
+          eyebrow="Operations / Maintenance"
+          title="Work queue at a glance"
+          description="See what needs attention, what is underway and what has been completed before opening individual work orders."
+        />
+      </div>
+
       {/* Lane counts — same five names as the tabs, not decorative KPI cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-border rounded-xl overflow-hidden bg-border mb-4 sm:mb-6">
         {isLoading

@@ -230,3 +230,10 @@ These were identified during the audit but not yet addressed:
 - Clarified the unit workflow from property to tenant and lease records without duplicating data-fetch logic.
 - Added shared dashboard hierarchy to the lease workspace and tightened its operational framing.
 - Preserved existing lease filters, sorting, creation, document, statement, and mutation flows.
+
+
+## Phases 148–149 — Billing & Maintenance UX
+- Added shared dashboard hierarchy to the manager billing workspace, framing invoices and receipts around live receivables and collections.
+- Added shared operational hierarchy to maintenance, clarifying the work queue before individual request actions.
+- Preserved existing billing and maintenance queries, mutations, filters, tabs, reports, exports and workflows.
+- Used existing live metrics only; no fabricated KPIs or duplicate data-fetching layers introduced.

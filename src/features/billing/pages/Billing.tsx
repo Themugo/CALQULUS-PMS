@@ -17,6 +17,7 @@ import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -310,6 +311,13 @@ const Billing = () => {
 
   return (
     <Layout title="Billing" subtitle="Invoice lifecycle — from billing through collection, with full payment traceability">
+      <div className="mb-5">
+        <DashboardSectionHeader
+          eyebrow="Money / Collections"
+          title="Receivables at a glance"
+          description="Track what has been billed, collected and remains outstanding before moving into invoice-level work."
+        />
+      </div>
       <Tabs
         value={mainTab}
         onValueChange={v => setMainTab(v as MainTab)}
