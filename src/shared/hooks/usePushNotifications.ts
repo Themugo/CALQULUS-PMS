@@ -96,11 +96,11 @@ export const usePushNotifications = () => {
       };
 
       // Insert/update subscription - use type assertion since table may be new
-      const { error } = await supabase
-        .from('push_subscriptions')
-        .upsert(subscriptionData, {
-          onConflict: "user_id,endpoint",
-        });
+      const { error } = await supabase.rpc('save_push_subscription_atomic', {
+        p_endpoint: subscriptionData.endpoint,
+        p_p256dh_key: subscriptionData.p256dh_key,
+        p_auth_key: subscriptionData.auth_key,
+      });
 
       if (error) {
         // Continue anyway - subscription is active locally
@@ -128,11 +128,7 @@ export const usePushNotifications = () => {
 
         // Remove from database
         if (user) {
-          await supabase
-            .from('push_subscriptions')
-            .delete()
-            .eq("user_id", user.id)
-            .eq("endpoint", subscription.endpoint);
+          await supabase.rpc('delete_push_subscription_atomic', { p_endpoint: subscription.endpoint });
         }
       }
 

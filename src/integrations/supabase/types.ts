@@ -6763,6 +6763,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_in_app_notification_atomic: { Args: { p_user_id: string; p_title: string; p_body: string; p_type?: string; p_action_url?: string | null; p_action_label?: string | null; p_reference_id?: string | null; p_reference_type?: string | null; p_priority?: string; p_source?: string; p_manager_id?: string | null }; Returns: Database["public"]["Tables"]["in_app_notifications"]["Row"] }
+      mark_in_app_notification_read_atomic: { Args: { p_notification_id: string }; Returns: Database["public"]["Tables"]["in_app_notifications"]["Row"] }
+      mark_all_in_app_notifications_read_atomic: { Args: Record<string, never>; Returns: number }
+      dismiss_in_app_notification_atomic: { Args: { p_notification_id: string }; Returns: Database["public"]["Tables"]["in_app_notifications"]["Row"] }
+      save_push_subscription_atomic: { Args: { p_endpoint: string; p_p256dh_key: string; p_auth_key: string }; Returns: Database["public"]["Tables"]["push_subscriptions"]["Row"] }
+      delete_push_subscription_atomic: { Args: { p_endpoint: string }; Returns: number }
+      update_profile_currency_atomic: { Args: { p_currency: string }; Returns: Database["public"]["Tables"]["profiles"]["Row"] }
+      append_activity_log_atomic: { Args: { p_action: string; p_entity_type: string; p_entity_id?: string | null; p_metadata?: Json }; Returns: Database["public"]["Tables"]["activity_logs"]["Row"] }
       provision_manager_account_atomic: { Args: { p_manager_user_id: string; p_full_name?: string | null }; Returns: Json }
       transition_manager_admin_atomic: { Args: { p_manager_user_id: string; p_action: string; p_reason?: string | null; p_subscription_tier?: string | null }; Returns: Json }
       transition_webhook_dead_letter_atomic: { Args: { p_id: string; p_status: string; p_notes?: string | null }; Returns: Database["public"]["Tables"]["webhook_dead_letter"]["Row"] }

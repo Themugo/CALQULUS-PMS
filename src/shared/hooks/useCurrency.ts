@@ -46,10 +46,7 @@ export function useCurrency() {
   const setCurrency = useCallback(async (value: CurrencyCode) => {
     setCurrencyState(value);
     if (userId) {
-      await supabase
-        .from("profiles")
-        .update({ currency: value })
-        .eq("id", userId);
+      await supabase.rpc('update_profile_currency_atomic', { p_currency: value });
     }
   }, [userId]);
 

@@ -68,18 +68,12 @@ export function useLogAuditEvent() {
       return null;
     }
 
-    const { data, error } = await supabase
-      .from('activity_logs')
-      .insert([{
-        actor_id: user.id,
-        actor_email: user.email || null,
-        action,
-        entity_type: resourceType,
-        entity_id: resourceId || null,
-        metadata: details || {},
-      }])
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('append_activity_log_atomic', {
+      p_action: action,
+      p_entity_type: resourceType,
+      p_entity_id: resourceId || null,
+      p_metadata: details || {},
+    });
 
     if (error) {
       return null;

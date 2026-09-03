@@ -138,9 +138,23 @@ async function runExpiryCheck(userId: string, managerId: string) {
   if (toInsert.length === 0) return;
 
   // 4. Batch insert
-  const { error: insertErr } = await supabase
-    .from("in_app_notifications")
-    .insert(toInsert as object[]);
+  let insertErr: Error | null = null;
+  for (const notification of toInsert) {
+    const { error } = await supabase.rpc('create_in_app_notification_atomic', {
+      p_user_id: notification.user_id,
+      p_title: notification.title,
+      p_body: notification.body,
+      p_type: notification.type,
+      p_action_url: notification.action_url,
+      p_action_label: notification.action_label,
+      p_reference_id: notification.reference_id,
+      p_reference_type: notification.reference_type,
+      p_priority: notification.priority,
+      p_source: notification.source,
+      p_manager_id: managerId,
+    });
+    if (error) { insertErr = error; break; }
+  }
 
   if (insertErr) {
     logError("useLeaseExpiryReminders.insertNotifications", insertErr);

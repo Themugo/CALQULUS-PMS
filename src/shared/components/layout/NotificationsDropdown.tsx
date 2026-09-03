@@ -147,14 +147,10 @@ export function NotificationsDropdown() {
 
         // Also insert a persistent in_app_notification for the manager
         if (user?.id) {
-          const { error } = await supabase.from("in_app_notifications").insert({
-            user_id: user.id,
-            title: notifTitle,
-            body: notifBody,
-            type: "maintenance",
-            priority: req.priority === "urgent" ? "urgent" : req.priority === "high" ? "high" : "normal",
-            action_url: "/maintenance",
-            action_label: "View request",
+          const { error } = await supabase.rpc('create_in_app_notification_atomic', {
+            p_user_id: user.id, p_title: notifTitle, p_body: notifBody, p_type: 'maintenance',
+            p_priority: req.priority === 'urgent' ? 'urgent' : req.priority === 'high' ? 'high' : 'normal',
+            p_action_url: '/maintenance', p_action_label: 'View request', p_manager_id: managerId,
           });
           if (error) logError("NotificationsDropdown.insertMaintNotif", error);
           // The INSERT channel above will optimistically prepend the row immediately
@@ -169,10 +165,7 @@ export function NotificationsDropdown() {
 
   const markRead = useMutation({
     mutationFn: async (id: string) => {
-      await supabase
-        .from("in_app_notifications")
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq("id", id);
+      await supabase.rpc('mark_in_app_notification_read_atomic', { p_notification_id: id });
     },
     onSuccess: invalidate,
   });
@@ -181,20 +174,14 @@ export function NotificationsDropdown() {
     mutationFn: async () => {
       const ids = notifications.filter(n => !n.is_read).map(n => n.id);
       if (!ids.length) return;
-      await supabase
-        .from("in_app_notifications")
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .in("id", ids);
+      await supabase.rpc('mark_all_in_app_notifications_read_atomic');
     },
     onSuccess: invalidate,
   });
 
   const dismiss = useMutation({
     mutationFn: async (id: string) => {
-      await supabase
-        .from("in_app_notifications")
-        .update({ is_dismissed: true })
-        .eq("id", id);
+      await supabase.rpc('dismiss_in_app_notification_atomic', { p_notification_id: id });
     },
     onSuccess: invalidate,
   });
