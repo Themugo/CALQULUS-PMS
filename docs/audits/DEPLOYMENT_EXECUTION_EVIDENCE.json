@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T14:13:21.067Z",
+  "generatedAt": "2026-09-03T14:18:56.650Z",
   "status": "EXTERNAL_REQUIRED",
   "releaseCommit": null,
   "deploymentId": null,
@@ -7,8 +7,8 @@
   "artifactManifest": [
     {
       "path": "package.json",
-      "sha256": "227366850a3ee472f769419763c546e599877164976d11ffe050d533e82a8041",
-      "bytes": 8360
+      "sha256": "ee8c8b91a9daac75ede8b6005182cc73d29fac518ae36109f2d0e96c3cb27c4e",
+      "bytes": 8510
     },
     {
       "path": "package-lock.json",

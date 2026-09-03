@@ -71,7 +71,9 @@
     "capture:deployment-evidence": "node scripts/capture-deployment-evidence.mjs",
     "audit:migration-attestation": "node scripts/audit-production-migration-attestation.mjs",
     "capture:rollback-evidence": "node scripts/capture-rollback-evidence.mjs",
-    "audit:artifact-provenance": "node scripts/audit-artifact-provenance.mjs"
+    "audit:artifact-provenance": "node scripts/audit-artifact-provenance.mjs",
+    "audit:deployment-drift": "node scripts/audit-deployment-drift.mjs",
+    "audit:rollback-readiness": "node scripts/audit-rollback-readiness.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

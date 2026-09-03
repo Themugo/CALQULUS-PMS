@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-09-03T14:19:06.555Z",
+  "status": "EXTERNAL_REQUIRED",
+  "releaseCommit": null,
+  "expectedReleaseCommit": null,
+  "gitCheckoutAvailable": false,
+  "gitDirty": null,
+  "manifestPresent": true,
+  "artifactCount": 4,
+  "artifactMismatches": [],
+  "driftDetected": "",
+  "requiredExternalEvidence": [
+    "RELEASE_COMMIT_EXPECTED and a real git checkout for commit identity when promoting",
+    "deployment artifact manifest must match candidate files"
+  ],
+  "rule": "Promotion is blocked when the candidate differs from the certified release commit or recorded artifact hashes."
+}

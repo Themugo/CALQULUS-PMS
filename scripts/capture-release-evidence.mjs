@@ -17,7 +17,9 @@ evidence.automatedEvidence={
   liveSecurity:statusOnly('docs/audits/LIVE_SECURITY_EVIDENCE.json'),
   disasterRecovery:statusOnly('docs/audits/DISASTER_RECOVERY_CERTIFICATE.json'),
   rollbackExecution:statusOnly('docs/audits/ROLLBACK_EXECUTION_EVIDENCE.json'),
-  artifactProvenance:statusOnly('docs/audits/RELEASE_ARTIFACT_PROVENANCE.json')
+  artifactProvenance:statusOnly('docs/audits/RELEASE_ARTIFACT_PROVENANCE.json'),
+  deploymentDrift:statusOnly('docs/audits/DEPLOYMENT_DRIFT.json'),
+  rollbackReadiness:statusOnly('docs/audits/ROLLBACK_READINESS.json')
 };
 // Never copy credentials, tokens, database URLs, or full command output into the release evidence file.
 delete evidence.automatedEvidence.migrationReconciliation.databaseUrl;

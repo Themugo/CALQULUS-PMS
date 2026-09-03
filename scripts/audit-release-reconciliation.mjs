@@ -18,12 +18,14 @@ const missing = required.filter(k => {
   return Object.values(v).some(x => !String(x ?? '').trim());
 });
 const autoStatuses = Object.fromEntries([
-  'migrationReconciliation','stagingSmoke','stagingE2E','stagingRoleCertification','liveSecurity','rollbackExecution','artifactProvenance'
+  'migrationReconciliation','stagingSmoke','stagingE2E','stagingRoleCertification','liveSecurity','rollbackExecution','artifactProvenance','deploymentDrift','rollbackReadiness'
 ].map(k => [k, automated[k]?.status || 'NOT_RECORDED']));
 const migration = read(path.join(root, 'docs', 'audits', 'LIVE_MIGRATION_RECONCILIATION.json'));
 const security = read(path.join(root, 'docs', 'audits', 'LIVE_SECURITY_EVIDENCE.json'));
 const rollback = read(path.join(root, 'docs', 'audits', 'ROLLBACK_EXECUTION_EVIDENCE.json'));
 const provenance = read(path.join(root, 'docs', 'audits', 'RELEASE_ARTIFACT_PROVENANCE.json'));
+const drift = read(path.join(root, 'docs', 'audits', 'DEPLOYMENT_DRIFT.json'));
+const rollbackReadiness = read(path.join(root, 'docs', 'audits', 'ROLLBACK_READINESS.json'));
 const report = {
   generatedAt: new Date().toISOString(),
   status: 'BLOCKED',
@@ -34,11 +36,13 @@ const report = {
   liveSecurity: security.status || 'NOT_RECORDED',
   rollbackExecution: rollback.status || 'NOT_RECORDED',
   artifactProvenance: provenance.status || 'NOT_RECORDED',
+  deploymentDrift: drift.status || 'NOT_RECORDED',
+  rollbackReadiness: rollbackReadiness.status || 'NOT_RECORDED',
   evidenceSecretScan: forbidden.test(raw) ? 'FAIL' : 'PASS',
   evidenceSha256: fs.existsSync(evidencePath) ? crypto.createHash('sha256').update(raw).digest('hex') : null,
   rule: 'External deployment, restore, and approval evidence must be explicit. Repository automation cannot manufacture production proof.'
 };
-if (!missing.length && report.evidenceSecretScan === 'PASS' && migration.status === 'PASS' && security.status === 'PASS' && rollback.status === 'PASS' && provenance.status === 'PASS') report.status = 'PASS';
+if (!missing.length && report.evidenceSecretScan === 'PASS' && migration.status === 'PASS' && security.status === 'PASS' && rollback.status === 'PASS' && provenance.status === 'PASS' && drift.status === 'PASS' && rollbackReadiness.status === 'PASS') report.status = 'PASS';
 fs.writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
 console.log(`release-reconciliation: ${report.status}`);
 if (report.status !== 'PASS') process.exit(1);
