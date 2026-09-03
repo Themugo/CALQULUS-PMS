@@ -1,4 +1,12 @@
 
+## 2026-09-03 — Phases 176–177: Dashboard Drill-down & Action Continuity
+
+- Dashboard payment rows now open the existing Billing workflow with the appropriate pending/overdue filter.
+- Maintenance preview rows now act as direct entry points into the existing maintenance workflow.
+- Added visible billing review continuity without introducing duplicate dashboard data fetching.
+- Added regression coverage for dashboard drill-down routing and the existing stats-fetch boundary.
+
+
 ## Phases 174–175 — Dashboard Intelligence & Information Density
 - Reworked the manager dashboard action queue into a ranked, compact priority surface using existing live `AttentionItem` data only.
 - Moved **Needs attention** directly below the executive KPI row so operational exceptions are visible before deeper charts and portfolio detail.
