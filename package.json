@@ -58,7 +58,10 @@
     "audit:production-evidence": "node scripts/audit-production-evidence.mjs",
     "staging:e2e": "node scripts/staging-e2e-evidence.mjs",
     "audit:release-evidence": "node scripts/audit-release-evidence.mjs",
-    "capture:release-evidence": "node scripts/capture-release-evidence.mjs"
+    "capture:release-evidence": "node scripts/capture-release-evidence.mjs",
+    "audit:staging-bootstrap": "node scripts/audit-staging-bootstrap.mjs",
+    "verify:migration-integrity": "node scripts/verify-migration-integrity.mjs",
+    "audit:schema-drift": "node scripts/audit-schema-drift.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
