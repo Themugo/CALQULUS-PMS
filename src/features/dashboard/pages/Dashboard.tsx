@@ -101,7 +101,7 @@ const Dashboard = () => {
   );
 
   const refreshStats = () => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId ?? "") });
+    void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
   };
 
   const realtimeRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -112,7 +112,7 @@ const Dashboard = () => {
       if (realtimeRefreshTimer.current) return;
       realtimeRefreshTimer.current = setTimeout(() => {
         realtimeRefreshTimer.current = null;
-        void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats(managerId) });
+        void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       }, 300);
     };
     const channels = [

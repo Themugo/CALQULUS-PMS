@@ -306,3 +306,10 @@ These were identified during the audit but not yet addressed:
 - Added semantic success, warning and informational toast variants with shared helpers.
 - Applied semantic success feedback to property lifecycle actions.
 - Strengthened property deactivation confirmation with destructive styling, explicit accessible naming and loading copy.
+
+## Dashboard Command Center Initiative — Phases 180–184
+- Centralized dashboard property and scoped-tenant queries through shared TanStack Query hooks.
+- Reused the same property dataset for portfolio performance and occupancy visualization.
+- Removed component-level realtime subscriptions from shared dashboard property/payment/revenue views; the dashboard cache is now the realtime invalidation boundary.
+- Preserved manager/submanager scope boundaries and existing RPC-first dashboard statistics.
+- Improved maintenance preview drill-down affordance and added regression coverage for shared query/invalidation boundaries.

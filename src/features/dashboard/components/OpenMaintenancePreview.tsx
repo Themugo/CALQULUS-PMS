@@ -6,6 +6,7 @@ import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { logError } from "@/shared/lib/errorLogger";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
+import { Link } from "react-router-dom";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { statusBadgeClass } from "@/shared/lib/statusBadge";
@@ -113,7 +114,7 @@ export function OpenMaintenancePreview() {
       <ul className="divide-y divide-border">
         {tickets.map((ticket) => (
           <li key={ticket.id} className="flex items-center justify-between gap-3 px-4 py-3">
-            <div className="min-w-0 flex items-start gap-3">
+            <Link to="/maintenance" className="min-w-0 flex flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="mt-0.5 h-8 w-8 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0">
                 {(ticket.priority === "urgent" || ticket.priority === "high")
                   ? <AlertTriangle className="h-4 w-4 text-destructive" />
@@ -128,7 +129,7 @@ export function OpenMaintenancePreview() {
                   {formatDate(ticket.created_at)}
                 </p>
               </div>
-            </div>
+            </Link>
             <span className={`${priorityTone(ticket.priority)} shrink-0 capitalize`}>
               {ticket.priority}
             </span>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
@@ -13,6 +13,7 @@ import {
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { useDashboardTenantIds } from "@/features/dashboard/hooks/useDashboardData";
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 
 interface MonthlyRevenue {
@@ -57,101 +58,38 @@ function RevenueCustomTooltip({ active, payload, label, formatCurrency }: Revenu
 }
 
 export function RevenueChart() {
-  const [data, setData] = useState<MonthlyRevenue[]>([]);
-  const [loading, setLoading] = useState(true);
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-
-  const fetchRevenueData = useCallback(async () => {
-    try {
-      if (!managerId) {
-        setData([]);
-        return;
-      }
-      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
-        setData([]);
-        return;
-      }
-
-      let scopedTenantIds: string[] | null = null;
-      if (restrictToAssignedProperties) {
-        const { data: scopedTenants } = await supabase
-          .from("tenants")
-          .select("id")
-          .eq("manager_id", managerId)
-          .in("property_id", assignedPropertyIds);
-        scopedTenantIds = (scopedTenants || []).map((tenant) => tenant.id);
-        if (scopedTenantIds.length === 0) {
-          setData([]);
-          return;
-        }
-      }
-
+  const { data: scopedTenantIds = [], isPending: tenantIdsLoading } = useDashboardTenantIds();
+  const assignedKey = assignedPropertyIds.join(",");
+  const { data = [], isPending: loading } = useQuery({
+    queryKey: ["dashboard", "revenue", managerId ?? "", assignedKey],
+    queryFn: async (): Promise<MonthlyRevenue[]> => {
+      if (!managerId || (restrictToAssignedProperties && scopedTenantIds.length === 0)) return [];
       const now = new Date();
       const months: MonthlyRevenue[] = [];
-
-      // Get last 6 months of data
       for (let i = 5; i >= 0; i--) {
         const monthDate = subMonths(now, i);
-        const monthStart = startOfMonth(monthDate).toISOString();
-        const monthEnd = endOfMonth(monthDate).toISOString();
-
-        let paidQuery = supabase
-          .from("invoices")
-          .select("amount")
-          .eq("manager_id", managerId)
-          .eq("status", "paid")
-          .gte("paid_date", monthStart.split("T")[0])
-          .lte("paid_date", monthEnd.split("T")[0]);
-         
-        let pendingQuery = supabase
-          .from("invoices")
-          .select("amount")
-          .eq("manager_id", managerId)
-          .in("status", ["pending", "overdue"])
-          .gte("due_date", monthStart.split("T")[0])
-          .lte("due_date", monthEnd.split("T")[0]);
-
-        if (scopedTenantIds) {
+        const monthStart = startOfMonth(monthDate).toISOString().split("T")[0];
+        const monthEnd = endOfMonth(monthDate).toISOString().split("T")[0];
+        let paidQuery = supabase.from("invoices").select("amount").eq("manager_id", managerId).eq("status", "paid").gte("paid_date", monthStart).lte("paid_date", monthEnd);
+        let pendingQuery = supabase.from("invoices").select("amount").eq("manager_id", managerId).in("status", ["pending", "overdue"]).gte("due_date", monthStart).lte("due_date", monthEnd);
+        if (restrictToAssignedProperties) {
           paidQuery = paidQuery.in("tenant_id", scopedTenantIds);
           pendingQuery = pendingQuery.in("tenant_id", scopedTenantIds);
         }
-
         const [paidResult, pendingResult] = await Promise.all([paidQuery, pendingQuery]);
-
+        if (paidResult.error) throw paidResult.error;
+        if (pendingResult.error) throw pendingResult.error;
         const paid = paidResult.data?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
         const pending = pendingResult.data?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
-
-        months.push({
-          month: format(monthDate, "MMM"),
-          revenue: paid + pending,
-          paid,
-          pending,
-        });
+        months.push({ month: format(monthDate, "MMM"), revenue: paid + pending, paid, pending });
       }
-
-      setData(months);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
-
-  useEffect(() => {
-    fetchRevenueData();
-
-    // Subscribe to real-time invoice changes
-    const channel = supabase
-      .channel("revenue-chart")
-      .on("postgres_changes", { event: "*", schema: "public", table: "invoices" }, () => {
-        fetchRevenueData();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchRevenueData]);
+      return months;
+    },
+    enabled: !!managerId && !tenantIdsLoading,
+    staleTime: 60 * 1000,
+  });
 
   if (loading) {
     return (

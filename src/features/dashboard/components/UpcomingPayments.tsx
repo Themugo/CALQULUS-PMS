@@ -1,13 +1,13 @@
 import { Badge } from "@/shared/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { isInvoiceOverdue, getDaysUntilDue } from "@/features/billing/lib/invoiceDueLogic";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
-import { logError } from "@/shared/lib/errorLogger";
+import { useDashboardTenantIds } from "@/features/dashboard/hooks/useDashboardData";
 
 type PaymentStatus = "upcoming" | "due_soon" | "due_today" | "overdue";
 
@@ -23,132 +23,34 @@ interface Payment {
 }
 
 export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }) {
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [loading, setLoading] = useState(true);
   const { formatCurrency } = useCurrency();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-
-  const fetchPayments = useCallback(async () => {
-    try {
-      if (!managerId) {
-        setPayments([]);
-        return;
-      }
-      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
-        setPayments([]);
-        return;
-      }
-
-      const _today = new Date().toISOString().split("T")[0];
-      let scopedTenantIds: string[] | null = null;
-
-      if (restrictToAssignedProperties) {
-        const { data: scopedTenants } = await supabase
-          .from("tenants")
-          .select("id")
-          .eq("manager_id", managerId)
-          .in("property_id", assignedPropertyIds);
-        scopedTenantIds = (scopedTenants || []).map((tenant) => tenant.id);
-        if (scopedTenantIds.length === 0) {
-          setPayments([]);
-          return;
-        }
-      }
-
-      // Fetch pending and overdue invoices with tenant info
-      let invoiceQuery = supabase
-        .from("invoices")
-        .select(`
-          id,
-          amount,
-          due_date,
-          status,
-          tenant_id
-        `)
-        .eq("manager_id", managerId)
-        .in("status", ["pending", "overdue"])
-        .order("due_date", { ascending: true })
-        .limit(6);
-
-      if (scopedTenantIds) {
-        invoiceQuery = invoiceQuery.in("tenant_id", scopedTenantIds);
-      }
-
+  const { data: scopedTenantIds = [], isPending: tenantIdsLoading } = useDashboardTenantIds();
+  const assignedKey = assignedPropertyIds.join(",");
+  const { data: payments = [], isPending: loading } = useQuery({
+    queryKey: ["dashboard", "upcoming-payments", managerId ?? "", assignedKey],
+    queryFn: async (): Promise<Payment[]> => {
+      if (!managerId || (restrictToAssignedProperties && scopedTenantIds.length === 0)) return [];
+      let invoiceQuery = supabase.from("invoices").select("id, amount, due_date, status, tenant_id").eq("manager_id", managerId).in("status", ["pending", "overdue"]).order("due_date", { ascending: true }).limit(6);
+      if (restrictToAssignedProperties) invoiceQuery = invoiceQuery.in("tenant_id", scopedTenantIds);
       const { data: invoices, error } = await invoiceQuery;
-
-      if (error) {
-        logError("UpcomingPayments.fetchPayments", error);
-        return;
-      }
-
-      if (!invoices || invoices.length === 0) {
-        setPayments([]);
-        return;
-      }
-
-      // Get unique tenant IDs
+      if (error) throw error;
+      if (!invoices?.length) return [];
       const tenantIds = [...new Set(invoices.map((inv) => inv.tenant_id).filter(Boolean))];
-
-      // Fetch tenant details
-      const { data: tenants } = await supabase
-        .from("tenants")
-        .select("id, name, photo_url, unit")
-        .eq("manager_id", managerId)
-        .in("id", tenantIds);
-
+      const { data: tenants, error: tenantError } = await supabase.from("tenants").select("id, name, photo_url, unit").eq("manager_id", managerId).in("id", tenantIds);
+      if (tenantError) throw tenantError;
       const tenantMap = new Map(tenants?.map((t) => [t.id, t]) || []);
-
-      const paymentsData: Payment[] = invoices.map((inv) => {
+      return invoices.map((inv) => {
         const tenant = tenantMap.get(inv.tenant_id);
         const daysUntilDue = getDaysUntilDue(inv.due_date);
         const isOverdue = inv.status === "overdue" || isInvoiceOverdue(inv.due_date, inv.status);
-        
-        // Determine status based on days until due
-        let status: PaymentStatus;
-        if (isOverdue) {
-          status = "overdue";
-        } else if (daysUntilDue === 0) {
-          status = "due_today";
-        } else if (daysUntilDue <= 3) {
-          status = "due_soon";
-        } else {
-          status = "upcoming";
-        }
-        
-        return {
-          id: inv.id,
-          tenant_name: tenant?.name || "Unknown Tenant",
-          tenant_photo: tenant?.photo_url || null,
-          unit: tenant?.unit || null,
-          amount: inv.amount,
-          due_date: inv.due_date,
-          status,
-          daysUntilDue,
-        };
+        const status: PaymentStatus = isOverdue ? "overdue" : daysUntilDue === 0 ? "due_today" : daysUntilDue <= 3 ? "due_soon" : "upcoming";
+        return { id: inv.id, tenant_name: tenant?.name || "Unknown Tenant", tenant_photo: tenant?.photo_url || null, unit: tenant?.unit || null, amount: inv.amount, due_date: inv.due_date, status, daysUntilDue };
       });
-
-      setPayments(paymentsData);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
-
-  useEffect(() => {
-    fetchPayments();
-
-    // Subscribe to real-time invoice changes
-    const channel = supabase
-      .channel('upcoming-payments')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, () => {
-        fetchPayments();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchPayments]);
+    },
+    enabled: !!managerId && !tenantIdsLoading,
+    staleTime: 30 * 1000,
+  });
 
   const formatDateStr = (dateStr: string) => {
     return formatDate(dateStr);

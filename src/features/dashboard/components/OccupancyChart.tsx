@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useManagerScope } from "@/shared/hooks/useManagerScope";
-import { logError } from "@/shared/lib/errorLogger";
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { useDashboardProperties } from "@/features/dashboard/hooks/useDashboardData";
 import {
   Bar,
   BarChart,
@@ -55,67 +52,14 @@ function OccupancyCustomTooltip({ active, payload }: OccupancyTooltipProps) {
 }
 
 export function OccupancyChart() {
-  const [data, setData] = useState<PropertyOccupancy[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
-
-  const fetchOccupancyData = useCallback(async () => {
-    try {
-      if (!managerId) {
-        setData([]);
-        return;
-      }
-      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
-        setData([]);
-        return;
-      }
-
-       
-      let query = supabase
-        .from("properties")
-        .select("name, units, occupied")
-        .eq("manager_id", managerId)
-        .order("name");
-
-      if (restrictToAssignedProperties) {
-        query = query.in("id", assignedPropertyIds);
-      }
-
-      const { data: properties, error } = await query;
-
-      if (error) { logError('OccupancyChart.fetchData', error); return; }
-
-      const occupancyData: PropertyOccupancy[] = (properties || []).map((p) => ({
-        name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
-        occupied: p.occupied,
-        vacant: p.units - p.occupied,
-        total: p.units,
-        rate: p.units > 0 ? Math.round((p.occupied / p.units) * 100) : 0,
-      }));
-
-      setData(occupancyData);
-    } catch (err) {
-      logError('OccupancyChart.fetchOccupancyData', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [assignedPropertyIds, managerId, restrictToAssignedProperties]);
-
-  useEffect(() => {
-    fetchOccupancyData();
-
-    // Subscribe to real-time property changes
-    const channel = supabase
-      .channel("occupancy-chart")
-      .on("postgres_changes", { event: "*", schema: "public", table: "properties" }, () => {
-        fetchOccupancyData();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchOccupancyData]);
+  const { data: properties = [], isPending: loading } = useDashboardProperties();
+  const data: PropertyOccupancy[] = properties.map((p) => ({
+    name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
+    occupied: p.occupied,
+    vacant: Math.max(0, p.units - p.occupied),
+    total: p.units,
+    rate: p.units > 0 ? Math.round((p.occupied / p.units) * 100) : 0,
+  }));
 
   const getBarColor = (rate: number) => {
     if (rate >= 90) return CALQULUS_COLOR.success;
