@@ -7,6 +7,7 @@ interface DashboardSectionHeaderProps {
   description?: string;
   action?: ReactNode;
   className?: string;
+  id?: string;
 }
 
 /** Shared dashboard hierarchy: quiet eyebrow, decisive title, optional action. */
@@ -16,6 +17,7 @@ export function DashboardSectionHeader({
   description,
   action,
   className,
+  id,
 }: DashboardSectionHeaderProps) {
   return (
     <div className={cn("mb-3 flex items-end justify-between gap-4", className)}>
@@ -25,7 +27,7 @@ export function DashboardSectionHeader({
             {eyebrow}
           </p>
         ) : null}
-        <h2 className="section-title">{title}</h2>
+        <h2 id={id} className="section-title">{title}</h2>
         {description ? <p className="supporting-text mt-0.5 hidden sm:block">{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}

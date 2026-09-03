@@ -253,6 +253,7 @@ const Dashboard = () => {
           {/* Executive KPI row — one unified metric system */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-kpi">
             <DashboardSectionHeader
+              id="dashboard-kpi"
               eyebrow="At a glance"
               title="Portfolio"
               description="Properties, units, occupancy, and collections from live records"
@@ -306,6 +307,7 @@ const Dashboard = () => {
           {stats && (
             <section className="mb-6" aria-labelledby="dashboard-collections-pulse">
               <DashboardSectionHeader
+                id="dashboard-collections-pulse"
                 eyebrow="Collections pulse"
                 title="Know what needs collecting"
                 description="A compact view of this month's rent position before you open the billing queue"
@@ -335,6 +337,7 @@ const Dashboard = () => {
           {/* Priority queue — surface live exceptions before deeper analysis. */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
             <DashboardSectionHeader
+              id="dashboard-attention"
               eyebrow="Action queue"
               title="Needs attention"
               description="Live issues ranked by urgency — collections, maintenance, leases, refunds, and vacancies"
@@ -346,6 +349,7 @@ const Dashboard = () => {
             <section className="min-w-0 lg:col-span-2" aria-labelledby="dashboard-collections">
               <DashboardSectionHeader
                 eyebrow="Cash flow"
+                id="dashboard-collections"
                 title="Collections performance"
                 description="Collected versus expected rent, and outstanding balances by property"
               />
@@ -385,6 +389,7 @@ const Dashboard = () => {
             <div className="flex min-w-0 flex-col gap-4">
               <section aria-labelledby="dashboard-occupancy">
                 <DashboardSectionHeader
+                  id="dashboard-occupancy"
                   eyebrow="Portfolio health"
                   title="Occupancy"
                   description="Occupied versus vacant units, by property"
@@ -398,6 +403,7 @@ const Dashboard = () => {
 
               <section aria-labelledby="dashboard-maintenance">
                 <DashboardSectionHeader
+                  id="dashboard-maintenance"
                   eyebrow="Operations"
                   title="Maintenance"
                   description={stats
@@ -412,6 +418,7 @@ const Dashboard = () => {
           {/* Properties — compact portfolio table surfaced high */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-properties">
             <DashboardSectionHeader
+              id="dashboard-properties"
               eyebrow="Portfolio detail"
               title="Property performance"
               description="Occupancy per property from live records"
@@ -423,6 +430,7 @@ const Dashboard = () => {
             <section className="min-w-0" aria-labelledby="dashboard-activity">
               <DashboardSectionHeader
                 eyebrow="Timeline"
+                id="dashboard-activity"
                 title="Recent activity"
                 description="Latest tenant, lease, and payment events"
               />
@@ -436,6 +444,7 @@ const Dashboard = () => {
             <section className="min-w-0" aria-labelledby="dashboard-upcoming">
               <DashboardSectionHeader
                 eyebrow="Next up"
+                id="dashboard-upcoming"
                 title="Upcoming actions"
                 description="Pending and overdue invoices from live billing"
               />

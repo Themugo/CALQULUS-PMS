@@ -1,5 +1,6 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
@@ -158,7 +159,9 @@ export default function Maintenance() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<MaintenanceLane>("new");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { toast } = useToast();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
@@ -425,6 +428,11 @@ export default function Maintenance() {
     }
   };
 
+  useEffect(() => {
+    const priority = searchParams.get("priority");
+    setPriorityFilter(["urgent", "high", "medium", "low"].includes(priority ?? "") ? priority! : "all");
+  }, [searchParams]);
+
   const filteredRequests = requests.filter((request) => {
     const matchesSearch =
       request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -432,13 +440,14 @@ export default function Maintenance() {
       request.property_name.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory = categoryFilter === "all" || request.category === categoryFilter;
+    const matchesPriority = priorityFilter === "all" || request.priority === priorityFilter;
 
-    return matchesSearch && matchesCategory && matchesMaintenanceLane(request.status, request.assigned_to, activeTab);
+    return matchesSearch && matchesCategory && matchesPriority && matchesMaintenanceLane(request.status, request.assigned_to, activeTab);
   });
 
   useEffect(() => {
     setRequestPage(1);
-  }, [searchQuery, activeTab, categoryFilter]);
+  }, [searchQuery, activeTab, categoryFilter, priorityFilter]);
 
   const sortedRequests = useMemo(() => {
     const getter = (request: MaintenanceRequest) => {

@@ -1,6 +1,7 @@
 import { Badge } from "@/shared/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { formatDate } from "@/shared/lib/dateFormat";
@@ -93,8 +94,10 @@ export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }
           </p>
         ) : (
           payments.map((payment, index) => (
-            <div
+            <Link
               key={payment.id}
+              to={`/billing?filter=${payment.status === "overdue" ? "overdue" : "pending"}`}
+              aria-label={`Open billing for ${payment.tenant_name}, ${payment.status.replace("_", " ")}`}
               className="flex items-center gap-2.5 sm:gap-4 p-2.5 sm:p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors animate-slide-in touch-manipulation"
               style={{ animationDelay: `${index * 50}ms` }}
             >
@@ -140,10 +143,20 @@ export function UpcomingPayments({ showHeader = true }: { showHeader?: boolean }
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>
+      {payments.length > 0 ? (
+        <div className="mt-3 border-t border-border pt-3">
+          <Link
+            to="/billing?filter=pending"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+          >
+            Review billing queue <span aria-hidden className="ml-1">→</span>
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }
