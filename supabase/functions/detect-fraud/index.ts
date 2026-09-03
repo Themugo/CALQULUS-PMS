@@ -58,7 +58,7 @@ serve(async (req) => {
 
   // ── Fetch payment ──────────────────────────────────────────────────
   const { data: payment, error: payErr } = await supabase
-    .from("payments")
+    .from("payment_transactions")
     .select("*")
     .eq("id", paymentId)
     .maybeSingle();
@@ -86,7 +86,7 @@ serve(async (req) => {
 
   // Rule 2: Multiple payments in short time
   const { data: recent } = await supabase
-    .from("payments")
+    .from("payment_transactions")
     .select("*")
     .eq("tenant_id", payment.tenant_id)
     .gte("created_at", new Date(Date.now() - 5 * 60 * 1000).toISOString());
@@ -98,9 +98,9 @@ serve(async (req) => {
 
   // Rule 3: Suspicious phone reuse
   const { data: samePhone } = await supabase
-    .from("payments")
+    .from("payment_transactions")
     .select("*")
-    .eq("phone", payment.phone);
+    .eq("phone", payment.phone_number);
 
   if (samePhone && samePhone.length > 10) {
     risk += 20;
@@ -109,11 +109,10 @@ serve(async (req) => {
 
   // ── Record fraud flag if risk threshold exceeded ───────────────────
   if (risk >= 40) {
-    await supabase.from("fraud_flags").insert({
-      tenant_id: payment.tenant_id,
-      payment_id: payment.id,
-      reason: reasons.join(", "),
-      risk_score: risk,
+    await supabase.rpc("create_fraud_flag_atomic", {
+      p_payment_id: payment.id,
+      p_reason: reasons.join(", "),
+      p_risk_score: risk,
     });
   }
 

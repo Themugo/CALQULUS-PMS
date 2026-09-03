@@ -107,15 +107,10 @@ export default function NotificationFailuresPanel() {
 
   const resolveMutation = useMutation({
     mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
-      const { error } = await supabase
-        .from("notification_failures")
-        .update({
-          status:      "resolved",
-          resolved_at: new Date().toISOString(),
-          // resolved_by is set by the DB RLS check that the caller is the
-          // owning manager; we just stamp the timestamp.
-        })
-        .eq("id", id);
+      const { error } = await supabase.rpc("transition_notification_failure_atomic", {
+        p_id: id,
+        p_status: "resolved",
+      });
       if (error) throw error;
       if (notes && notes.trim()) {
         logActivity({

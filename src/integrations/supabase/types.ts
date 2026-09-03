@@ -5448,6 +5448,8 @@ export type Database = {
           id: string | null
           invoice_id: string | null
           tenant_id: string | null
+          payment_id: string | null
+          risk_score: number | null
           flag_reason: string
           flag_severity: string
           flagged_at: string
@@ -5459,6 +5461,8 @@ export type Database = {
           id?: string | null
           invoice_id?: string | null
           tenant_id?: string | null
+          payment_id?: string | null
+          risk_score?: number | null
           flag_reason: string
           flag_severity?: string
           flagged_at?: string
@@ -5470,6 +5474,8 @@ export type Database = {
           id?: string | null
           invoice_id?: string | null
           tenant_id?: string | null
+          payment_id?: string | null
+          risk_score?: number | null
           flag_reason?: string
           flag_severity?: string
           flagged_at?: string
@@ -6800,6 +6806,8 @@ export type Database = {
       transition_loan_application_atomic: { Args: { p_id: string; p_status: string }; Returns: Database["public"]["Tables"]["loan_applications"]["Row"] }
       save_customer_billing_block_atomic: { Args: { p_block_id?: string | null; p_payload: Json }; Returns: Database["public"]["Tables"]["customer_billing_blocks"]["Row"] }
       delete_customer_billing_block_atomic: { Args: { p_block_id: string }; Returns: undefined }
+      create_fraud_flag_atomic: { Args: { p_payment_id: string; p_reason: string; p_risk_score: number }; Returns: Database["public"]["Tables"]["fraud_flags"]["Row"] }
+      transition_notification_failure_atomic: { Args: { p_id: string; p_status: string }; Returns: Database["public"]["Tables"]["notification_failures"]["Row"] }
 
       record_commission_atomic: { Args: { p_invoice_id: string; p_manager_id: string; p_amount: number; p_rate_applied: number }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
       transition_commission_atomic: { Args: { p_commission_id: string; p_status: string }; Returns: Database["public"]["Tables"]["commissions"]["Row"] }
