@@ -6784,6 +6784,8 @@ export type Database = {
         Args: { p_payout_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null; p_payment_proof_url?: string | null; p_rejection_reason?: string | null; p_management_fee_pct?: number | null }
         Returns: Json
       }
+      ensure_landlord_wallet_atomic: { Args: { p_landlord_user_id: string; p_currency?: string | null }; Returns: Json }
+      record_landlord_wallet_transaction_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_type: string; p_reference_type?: string | null; p_reference_id?: string | null; p_description?: string | null }; Returns: Json }
       create_dispute_atomic: {
         Args: { p_tenant_id: string; p_invoice_id?: string | null; p_reason: string; p_evidence_urls?: string[] }
         Returns: Json
