@@ -5,6 +5,9 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { Layout } from "@/shared/components/layout/Layout";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
+import { StatCard } from "@/features/dashboard/components/StatCard";
+import { DollarSign, Home, AlertTriangle } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
@@ -560,6 +563,9 @@ const Tenants = () => {
   const activeTenants = tenants.filter(t => t.status === "active");
   const pendingTenants = tenants.filter(t => t.status === "pending");
   const inactiveTenants = tenants.filter(t => t.status === "inactive");
+  const activeRentTotal = activeTenants.reduce((sum, t) => sum + Number(t.monthly_rent ?? leaseByTenantId.get(t.id)?.monthly_rent ?? 0), 0);
+  const outstandingTotal = Object.values(tenantBalances).reduce((sum, value) => sum + Number(value || 0), 0);
+  const occupiedUnits = activeTenants.filter(t => t.unit_id || t.unit).length;
 
   return (
     <Layout
@@ -574,6 +580,15 @@ const Tenants = () => {
         </div>
       }
     >
+      <DashboardSectionHeader eyebrow="People / Occupancy" title="Tenant portfolio" description="See who is occupying each unit, what is due, and where action is needed." action={<InviteTenantDialog trigger={<Button size="sm" className="min-h-11 gap-1.5"><UserPlus className="h-3.5 w-3.5" />Add tenant</Button>} />} />
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-6">
+        <StatCard compact title="Current tenants" value={String(activeTenants.length)} change={`${occupiedUnits} assigned units`} changeType="neutral" icon={Users} iconColor="primary" />
+        <StatCard compact title="Monthly rent" value={activeRentTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })} change="Active leases" changeType="neutral" icon={DollarSign} iconColor="primary" />
+        <StatCard compact title="Outstanding" value={outstandingTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })} changeType={outstandingTotal > 0 ? "negative" : "neutral"} icon={AlertTriangle} iconColor={outstandingTotal > 0 ? "destructive" : "neutral"} />
+        <StatCard compact title="Onboarding" value={String(pendingTenants.length)} change="Pending tenants" changeType="neutral" icon={Clock} iconColor="warning" />
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>
@@ -609,6 +624,8 @@ const Tenants = () => {
           />
         </div>
       )}
+
+      <div className="mb-3"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Filter & locate</p></div>
 
       {/* Per-property quick-add sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">

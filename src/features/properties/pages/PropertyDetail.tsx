@@ -33,6 +33,7 @@ import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { statusBadgeClass } from "@/shared/lib/statusBadge";
 import { StatCard } from "@/features/dashboard/components/StatCard";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { UnitManagement } from "@/features/units/components/UnitManagement";
 import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
 import { PropertyHistory } from "@/features/properties/components/PropertyHistory";
@@ -409,6 +410,8 @@ const PropertyDetail = () => {
         </div>
       </section>
 
+      <DashboardSectionHeader eyebrow="Property workspace" title="Manage this property" description="Move from units to tenants, leases and billing without losing context." />
+
       {/* Tabs for Property Details */}
       <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
         <span className="font-semibold text-foreground mr-1">Path</span>
@@ -431,7 +434,7 @@ const PropertyDetail = () => {
         ))}
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-2 flex-wrap h-auto gap-1">
+        <TabsList className="mb-2 flex-wrap h-auto gap-1 bg-muted/40 p-1">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Overview
@@ -461,6 +464,7 @@ const PropertyDetail = () => {
             Documents
           </TabsTrigger>
         </TabsList>
+        <div className="mb-2 mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Operations & records</div>
         <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-transparent p-0">
           <TabsTrigger value="vacation" className="flex items-center gap-2 h-8 text-xs">
             <CalendarX className="h-3.5 w-3.5" />
