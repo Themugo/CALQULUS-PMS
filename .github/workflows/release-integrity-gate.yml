@@ -22,6 +22,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit:dependency-provenance
+      - run: npm run generate:sbom
+      - run: npm run audit:sbom
+      - run: npm run audit:secret-supply-chain
+      - run: npm run audit:vulnerability-governance
+      - run: npm audit --audit-level=high
       - run: npm run audit:release-manifest
 
   release-gate:
@@ -36,5 +41,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit:dependency-provenance
+      - run: npm run generate:sbom
+      - run: npm run audit:sbom
+      - run: npm run audit:secret-supply-chain
+      - run: npm run audit:vulnerability-governance
+      - run: npm audit --audit-level=high
       - run: npm run audit:release-manifest
       - run: npm run audit:ci-release-gate

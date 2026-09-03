@@ -1,12 +1,16 @@
 {
-  "generatedAt": "2026-09-03T14:37:01.752Z",
+  "generatedAt": "2026-09-03T14:46:00.901Z",
   "status": "PASS",
   "checks": {
     "dependencyProvenance": "PASS",
+    "sbomIntegrity": "PASS",
+    "secretSupplyChain": "PASS",
+    "vulnerabilityGovernance": "PASS",
+    "vulnerabilityScan": "EXTERNAL_REQUIRED",
     "releaseManifest": "EXTERNAL_REQUIRED",
     "workflowPresent": true
   },
   "missingFiles": [],
   "externalReleaseEvidenceRequired": true,
-  "rule": "CI may certify repository integrity, but production promotion still requires the external release authorization, deployment, migration and rollback evidence gates."
+  "rule": "Repository CI may certify dependency, SBOM, secret and manifest integrity. Production promotion still requires external deployment, migration, rollback and authorization evidence; npm audit --audit-level=high is authoritative for vulnerability blocking in CI."
 }

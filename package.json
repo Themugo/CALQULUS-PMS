@@ -82,7 +82,11 @@
     "capture:deployment-attestation": "node scripts/capture-deployment-attestation.mjs",
     "audit:deployment-attestation": "node scripts/audit-deployment-attestation.mjs",
     "audit:dependency-provenance": "node scripts/audit-dependency-provenance.mjs",
-    "audit:ci-release-gate": "node scripts/audit-ci-release-gate.mjs"
+    "audit:ci-release-gate": "node scripts/audit-ci-release-gate.mjs",
+    "generate:sbom": "node scripts/generate-sbom.mjs",
+    "audit:sbom": "node scripts/audit-sbom.mjs",
+    "audit:secret-supply-chain": "node scripts/scan-secret-supply-chain.mjs",
+    "audit:vulnerability-governance": "node scripts/audit-vulnerability-governance.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
