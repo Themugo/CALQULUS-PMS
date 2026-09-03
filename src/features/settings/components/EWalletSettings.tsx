@@ -106,21 +106,11 @@ export const EWalletSettings = ({ propertyId, propertyName }: Props = {}) => {
         instructions: settings.instructions || null,
       };
 
-      if (settings.id) {
-        const { error } = await supabase
-          .from("manager_ewallet_settings")
-          .update(payload)
-          .eq("id", settings.id);
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from("manager_ewallet_settings")
-          .insert(payload)
-          .select()
-          .single();
-        if (error) throw error;
-        setSettings((prev) => ({ ...prev, id: data.id }));
-      }
+      const { data, error } = await supabase.rpc('save_manager_ewallet_settings_atomic', {
+        p_payload: { ...payload, id: settings.id || null },
+      });
+      if (error) throw error;
+      if (!settings.id) setSettings((prev) => ({ ...prev, id: data }));
 
       toast({
         title: "Settings Saved",
