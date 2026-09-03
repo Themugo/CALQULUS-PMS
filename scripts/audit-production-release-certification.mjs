@@ -18,7 +18,9 @@ const checks = [
   ['releasePromotionLock','RELEASE_PROMOTION_LOCK.json'],
   ['productionChangeTrace','PRODUCTION_CHANGE_TRACE_AUDIT.json'],
   ['signedReleaseManifest','SIGNED_RELEASE_MANIFEST_AUDIT.json'],
-  ['securityRegressionDiff','SECURITY_REGRESSION_DIFF.json']
+  ['securityRegressionDiff','SECURITY_REGRESSION_DIFF.json'],
+  ['productionEvidenceIngestion','PRODUCTION_EVIDENCE_INGESTION.json'],
+  ['independentReleaseAttestation','INDEPENDENT_RELEASE_ATTESTATION.json']
 ];
 const commandChecks = [
   ['securityBoundary','scripts/security-boundary-audit.mjs'],

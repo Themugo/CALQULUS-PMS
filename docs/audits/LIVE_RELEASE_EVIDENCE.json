@@ -25,7 +25,7 @@
     "decision": ""
   },
   "automatedEvidence": {
-    "capturedAt": "2026-09-03T14:29:06.576Z",
+    "capturedAt": "2026-09-03T15:46:34.750Z",
     "migrationReconciliation": {
       "status": "EXTERNAL_REQUIRED",
       "generatedAt": "2026-09-03T13:59:59.284Z"
@@ -56,31 +56,39 @@
     },
     "artifactProvenance": {
       "status": "PASS",
-      "generatedAt": "2026-09-03T14:24:30.353Z"
+      "generatedAt": "2026-09-03T15:32:28.012Z"
     },
     "deploymentDrift": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:24:30.391Z"
+      "generatedAt": "2026-09-03T15:32:28.049Z"
     },
     "rollbackReadiness": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:24:30.419Z"
+      "generatedAt": "2026-09-03T14:45:32.357Z"
     },
     "releasePromotionLock": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:24:30.539Z"
+      "generatedAt": "2026-09-03T14:45:32.394Z"
     },
     "productionChangeTrace": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:24:30.500Z"
+      "generatedAt": "2026-09-03T14:45:32.432Z"
     },
     "signedReleaseManifest": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:29:06.485Z"
+      "generatedAt": "2026-09-03T15:32:28.090Z"
     },
     "deploymentAttestation": {
       "status": "EXTERNAL_REQUIRED",
-      "generatedAt": "2026-09-03T14:29:06.543Z"
+      "generatedAt": "2026-09-03T15:09:05.457Z"
+    },
+    "productionEvidenceIngestion": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T15:46:21.579Z"
+    },
+    "independentReleaseAttestation": {
+      "status": "EXTERNAL_REQUIRED",
+      "generatedAt": "2026-09-03T15:45:52.020Z"
     }
   }
 }

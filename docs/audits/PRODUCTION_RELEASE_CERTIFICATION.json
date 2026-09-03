@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T15:39:00.176Z",
+  "generatedAt": "2026-09-03T15:47:16.887Z",
   "status": "EXTERNAL_REQUIRED",
   "decision": "PRODUCTION_RELEASE_BLOCKED_EXTERNAL_EVIDENCE_REQUIRED",
   "checks": {
@@ -15,6 +15,8 @@
     "productionChangeTrace": "EXTERNAL_REQUIRED",
     "signedReleaseManifest": "EXTERNAL_REQUIRED",
     "securityRegressionDiff": "EXTERNAL_REQUIRED",
+    "productionEvidenceIngestion": "EXTERNAL_REQUIRED",
+    "independentReleaseAttestation": "EXTERNAL_REQUIRED",
     "securityBoundary": "PASS",
     "crossRole": "PASS",
     "finalSecurity": "PASS",
@@ -32,7 +34,9 @@
     "releasePromotionLock",
     "productionChangeTrace",
     "signedReleaseManifest",
-    "securityRegressionDiff"
+    "securityRegressionDiff",
+    "productionEvidenceIngestion",
+    "independentReleaseAttestation"
   ],
   "rule": "Production certification is fail-closed. PASS is allowed only when every repository and external release control is PASS. EXTERNAL_REQUIRED is not a certification."
 }

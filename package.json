@@ -97,7 +97,11 @@
     "audit:release-security-gate": "node scripts/audit-release-security-gate.mjs",
     "capture:external-evidence-binding": "node scripts/capture-external-evidence-binding.mjs",
     "audit:external-evidence-binding": "node scripts/audit-external-evidence-binding.mjs",
-    "audit:production-release-certification": "node scripts/audit-production-release-certification.mjs"
+    "audit:production-release-certification": "node scripts/audit-production-release-certification.mjs",
+    "ingest:production-evidence": "node scripts/ingest-production-evidence.mjs",
+    "audit:production-evidence-ingestion": "node scripts/audit-production-evidence-ingestion.mjs",
+    "capture:independent-attestation": "node scripts/capture-independent-release-attestation.mjs",
+    "audit:independent-attestation": "node scripts/audit-independent-release-attestation.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

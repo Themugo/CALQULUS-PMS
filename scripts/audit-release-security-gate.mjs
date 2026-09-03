@@ -19,7 +19,10 @@ const names = [
   ['securityRegressionMatrix','SECURITY_REGRESSION_MATRIX.json'],
   ['securityRegressionDiff','SECURITY_REGRESSION_DIFF.json'],
   ['releaseEvidenceIntegrity','RELEASE_EVIDENCE_INTEGRITY_AUDIT.json'],
-  ['externalEvidenceBinding','EXTERNAL_EVIDENCE_BINDING_AUDIT.json']
+  ['externalEvidenceBinding','EXTERNAL_EVIDENCE_BINDING_AUDIT.json'],
+  ['productionEvidenceIngestion','PRODUCTION_EVIDENCE_INGESTION.json'],
+  ['independentReleaseAttestation','INDEPENDENT_RELEASE_ATTESTATION.json'],
+  ['productionReleaseCertification','PRODUCTION_RELEASE_CERTIFICATION.json']
 ];
 const read = f => { try { return JSON.parse(fs.readFileSync(path.join(audits, f), 'utf8')); } catch { return null; } };
 const commandChecks = [
