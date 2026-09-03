@@ -100,7 +100,7 @@ export default function TenantHome({
       {/* Greeting + context hero */}
       <header>
         <p className="text-sm text-muted-foreground">{greeting}, <span className="capitalize">{firstName}</span></p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Your home at a glance</h1>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Home, bills and requests in one place</h1>
       </header>
 
       {/* ===== Rent status — the strongest operational element ===== */}
@@ -136,6 +136,8 @@ export default function TenantHome({
           {hasBalance ? "PAY RENT" : "All paid"}
         </Button>
       </section>
+
+      <p className="max-w-lg text-sm text-muted-foreground">Pay what is due, check your home, and stay on top of requests without digging through menus.</p>
 
       {/* ===== Property identity card ===== */}
       <section className="overflow-hidden rounded-xl border border-border bg-card">

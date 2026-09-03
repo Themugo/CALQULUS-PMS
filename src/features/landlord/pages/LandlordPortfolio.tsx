@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Building2, Users } from "lucide-react";
 import LandlordLayout from "@/features/landlord/components/LandlordLayout";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { LandlordPayoutDialog } from "@/features/landlord/components/LandlordPayoutDialog";
 import { useLandlordPortfolio } from "@/features/landlord/hooks/useLandlordPortfolio";
 import { formatKes, occupancyBarClass } from "@/features/landlord/lib/formatKes";
@@ -40,12 +41,13 @@ export default function LandlordPortfolio() {
       {isError ? <ErrorState title="Couldn't load portfolio" onRetry={() => void refetch()} className="mb-6" /> : null}
 
       {isLoading ? null : properties.length === 0 ? null : (
-        <section aria-label="Portfolio totals" className="mb-6 overflow-hidden rounded-xl border border-border bg-card">
-          <dl className="grid grid-cols-2 divide-x divide-border sm:grid-cols-3 lg:grid-cols-6">
+        <section aria-label="Portfolio totals" className="mb-6">
+          <DashboardSectionHeader eyebrow="Portfolio health" title="The numbers that matter" description="A live view of occupancy, collections and owner returns." />
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {summary.map((stat) => (
-              <div key={stat.label} className="px-4 py-3">
-                <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{stat.label}</dt>
-                <dd className={`mt-0.5 font-heading text-lg font-semibold tabular-nums ${stat.className ?? ""}`}>
+              <div key={stat.label} className="rounded-xl border border-border bg-card px-4 py-3">
+                <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</dt>
+                <dd className={`mt-1 font-heading text-xl font-semibold tabular-nums ${stat.className ?? ""}`}>
                   {stat.value}
                 </dd>
               </div>
@@ -63,7 +65,9 @@ export default function LandlordPortfolio() {
           description={`Ask your manager to link buildings to ${portfolio.totalProperties === 0 ? "this account" : "you"}.`}
         />
       ) : (
-        <div className="space-y-4">
+        <section aria-label="Properties">
+          <DashboardSectionHeader eyebrow="Buildings" title="Your properties" description="Open a property for its detailed performance and records." />
+          <div className="space-y-4">
           {properties.map((prop) => {
             const occ = prop.units > 0 ? Math.round((prop.occupied / prop.units) * 100) : 0;
             return (
@@ -129,7 +133,8 @@ export default function LandlordPortfolio() {
               </Card>
             );
           })}
-        </div>
+          </div>
+        </section>
       )}
     </LandlordLayout>
   );
