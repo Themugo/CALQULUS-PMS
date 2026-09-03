@@ -27,6 +27,7 @@ import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { useLeaseExpiryReminders } from "@/shared/hooks/useLeaseExpiryReminders";
 import { useManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { fetchManagerDashboardStats } from "@/features/dashboard/lib/dashboardStats";
 import { buildAttentionItems } from "@/features/dashboard/lib/attentionItems";
 import { queryKeys, STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
@@ -165,14 +166,14 @@ const Dashboard = () => {
       {/* Greeting / context hero — compact, with restrained property imagery */}
       <section
         aria-label="Portfolio overview"
-        className="relative mb-6 overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_0_rgb(13_39_68/0.06)]"
+        className="relative mb-6 overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_8px_28px_-22px_rgb(13_39_68/0.28)]"
       >
-        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div className="min-w-0">
             <p className="meta-text mb-1 uppercase tracking-wider text-muted-foreground">
               Portfolio overview
             </p>
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+            <h1 className="font-heading text-2xl font-semibold tracking-[-0.025em] text-foreground sm:text-[2rem]">
               {getGreeting()}, <span className="capitalize">{userName}</span>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -241,10 +242,11 @@ const Dashboard = () => {
 
           {/* Executive KPI row — one unified metric system */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-kpi">
-            <div className="mb-3">
-              <h2 id="dashboard-kpi" className="section-title">Portfolio</h2>
-              <p className="supporting-text hidden sm:block">Properties, units, occupancy, and collections from live records</p>
-            </div>
+            <DashboardSectionHeader
+              eyebrow="At a glance"
+              title="Portfolio"
+              description="Properties, units, occupancy, and collections from live records"
+            />
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
               {loading || !stats
                 ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[5.5rem] rounded-xl" />)
@@ -293,10 +295,11 @@ const Dashboard = () => {
 
           <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <section className="min-w-0 lg:col-span-2" aria-labelledby="dashboard-collections">
-              <div className="mb-3">
-                <h2 id="dashboard-collections" className="section-title">Collections performance</h2>
-                <p className="supporting-text hidden sm:block">Collected versus expected rent, and outstanding balances by property</p>
-              </div>
+              <DashboardSectionHeader
+                eyebrow="Cash flow"
+                title="Collections performance"
+                description="Collected versus expected rent, and outstanding balances by property"
+              />
               <div className="grid gap-4">
                 {stats && (
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 rounded-xl border border-border bg-card px-4 py-3 card-shadow">
@@ -332,10 +335,11 @@ const Dashboard = () => {
 
             <div className="flex min-w-0 flex-col gap-4">
               <section aria-labelledby="dashboard-occupancy">
-                <div className="mb-3">
-                  <h2 id="dashboard-occupancy" className="section-title">Occupancy</h2>
-                  <p className="supporting-text hidden sm:block">Occupied versus vacant units, by property</p>
-                </div>
+                <DashboardSectionHeader
+                  eyebrow="Portfolio health"
+                  title="Occupancy"
+                  description="Occupied versus vacant units, by property"
+                />
                 <ErrorBoundary compact label="Occupancy chart">
                   <Suspense fallback={<ChartFallback />}>
                     <OccupancyChart />
@@ -344,14 +348,13 @@ const Dashboard = () => {
               </section>
 
               <section aria-labelledby="dashboard-maintenance">
-                <div className="mb-3">
-                  <h2 id="dashboard-maintenance" className="section-title">Maintenance</h2>
-                  <p className="supporting-text hidden sm:block">
-                    {stats
-                      ? `${stats.openMaintenanceCount} open · ${stats.urgentMaintenanceCount} urgent`
-                      : "Open work orders from live requests"}
-                  </p>
-                </div>
+                <DashboardSectionHeader
+                  eyebrow="Operations"
+                  title="Maintenance"
+                  description={stats
+                    ? `${stats.openMaintenanceCount} open · ${stats.urgentMaintenanceCount} urgent`
+                    : "Open work orders from live requests"}
+                />
                 <OpenMaintenancePreview />
               </section>
             </div>
@@ -359,28 +362,31 @@ const Dashboard = () => {
 
           {/* Needs attention — operational priorities, above the lower modules */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-attention">
-            <div className="mb-3">
-              <h2 id="dashboard-attention" className="section-title">Needs attention</h2>
-              <p className="supporting-text hidden sm:block">Live issues only — overdue collections, open maintenance, expiring leases, and pending actions</p>
-            </div>
+            <DashboardSectionHeader
+              eyebrow="Action queue"
+              title="Needs attention"
+              description="Live issues only — overdue collections, open maintenance, expiring leases, and pending actions"
+            />
             <AttentionStrip items={attentionItems} loading={loading} />
           </section>
 
           {/* Properties — compact portfolio table surfaced high */}
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-properties">
-            <div className="mb-3">
-              <h2 id="dashboard-properties" className="section-title">Property performance</h2>
-              <p className="supporting-text hidden sm:block">Occupancy per property from live records</p>
-            </div>
+            <DashboardSectionHeader
+              eyebrow="Portfolio detail"
+              title="Property performance"
+              description="Occupancy per property from live records"
+            />
             <PropertiesOverview showHeader={false} />
           </section>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <section className="min-w-0" aria-labelledby="dashboard-activity">
-              <div className="mb-3">
-                <h2 id="dashboard-activity" className="section-title">Recent activity</h2>
-                <p className="supporting-text hidden sm:block">Latest tenant, lease, and payment events</p>
-              </div>
+              <DashboardSectionHeader
+                eyebrow="Timeline"
+                title="Recent activity"
+                description="Latest tenant, lease, and payment events"
+              />
               <ErrorBoundary compact label="Recent activity">
                 <Suspense fallback={<ActivityFallback />}>
                   <RecentActivity showHeader={false} />
@@ -389,10 +395,11 @@ const Dashboard = () => {
             </section>
 
             <section className="min-w-0" aria-labelledby="dashboard-upcoming">
-              <div className="mb-3">
-                <h2 id="dashboard-upcoming" className="section-title">Upcoming actions</h2>
-                <p className="supporting-text hidden sm:block">Pending and overdue invoices from live billing</p>
-              </div>
+              <DashboardSectionHeader
+                eyebrow="Next up"
+                title="Upcoming actions"
+                description="Pending and overdue invoices from live billing"
+              />
               <UpcomingPayments showHeader={false} />
             </section>
           </div>

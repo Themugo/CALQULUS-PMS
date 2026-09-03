@@ -1,3 +1,9 @@
+## 140–141 — Product UI foundation + Manager dashboard refinement
+
+- Established a shared dashboard section-header hierarchy and restrained dashboard chrome.
+- Refined the manager dashboard hero, section rhythm, typography, and information hierarchy without inventing metrics or changing data behavior.
+- Added regression coverage for the shared dashboard section header.
+
 ## Phases 136–137
 - Added production evidence ingestion and independent release attestation controls.
 

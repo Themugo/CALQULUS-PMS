@@ -1039,3 +1039,19 @@
 .text-warning {
   color: var(--warning-text);
 }
+
+/* Dashboard chrome: hierarchy comes from spacing and type, not decoration. */
+@utility dashboard-surface {
+  background-color: var(--card);
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: 1rem;
+  box-shadow: 0 8px 28px -24px rgb(13 39 68 / 0.28);
+}
+
+@utility dashboard-kpi-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.45rem;
+  line-height: 1.1;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
