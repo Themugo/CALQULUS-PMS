@@ -86,7 +86,9 @@
     "generate:sbom": "node scripts/generate-sbom.mjs",
     "audit:sbom": "node scripts/audit-sbom.mjs",
     "audit:secret-supply-chain": "node scripts/scan-secret-supply-chain.mjs",
-    "audit:vulnerability-governance": "node scripts/audit-vulnerability-governance.mjs"
+    "audit:vulnerability-governance": "node scripts/audit-vulnerability-governance.mjs",
+    "audit:runtime-dependency-governance": "node scripts/audit-runtime-dependency-governance.mjs",
+    "audit:security-regression-matrix": "node scripts/audit-security-regression-matrix.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

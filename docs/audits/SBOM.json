@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:d1112be0-9b4b-48c9-95ff-5e84a2f9d825",
+  "serialNumber": "urn:uuid:e1140bc4-a6c0-4659-8adf-ea467ae28530",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-03T14:46:00.548Z",
+    "timestamp": "2026-09-03T15:09:04.099Z",
     "component": {
       "type": "application",
       "name": "calqulus-pms",

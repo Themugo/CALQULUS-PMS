@@ -187,3 +187,10 @@ These were identified during the audit but not yet addressed:
 - Converged physical invoice/receipt capture and receipt-to-payment linking onto atomic RPCs.
 - Hardened tenant payment-detail snapshot writes behind a scoped manager/submanager RPC.
 - Revoked authenticated direct DML on physical receivables and tenant payment details.
+
+## Phases 128–129 — Runtime Dependency Governance + Security Regression Matrix
+- Added runtime dependency governance for lockfile/direct-dependency reconciliation, non-registry dependency review, lifecycle-script detection, and controlled registry-backed outdated checks.
+- Added `docs/security/RUNTIME_DEPENDENCY_POLICY.md` and `docs/audits/RUNTIME_DEPENDENCY_GOVERNANCE.json`.
+- Added consolidated `audit:security-regression-matrix` covering security boundary, cross-role isolation, final security, migration, operations, deployment, supply-chain and release gates.
+- Matrix fails closed on repository `FAIL`/unknown statuses and preserves `EXTERNAL_REQUIRED` for live infrastructure evidence.
+- CI release workflow now runs the runtime dependency governance check with registry-backed outdated checks enabled.
