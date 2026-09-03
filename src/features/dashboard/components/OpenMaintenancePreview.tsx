@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AlertTriangle, ArrowRight, CheckCircle2, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { useDashboardProperties } from "@/features/dashboard/hooks/useDashboardData";
 import { logError } from "@/shared/lib/errorLogger";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
@@ -34,6 +35,7 @@ export function OpenMaintenancePreview() {
   const navigate = useNavigate();
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const assignedKey = assignedPropertyIds.join(",");
+  const { data: dashboardProperties = [], isPending: propertiesLoading } = useDashboardProperties();
 
   const { data: tickets = [], isPending, isError, refetch } = useQuery({
     queryKey: ["dashboard-open-maintenance", managerId, assignedKey],
@@ -41,16 +43,10 @@ export function OpenMaintenancePreview() {
       if (!managerId) return [];
       if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return [];
 
-      let names: string[] | null = null;
-      if (restrictToAssignedProperties) {
-        const { data: properties } = await supabase
-          .from("properties")
-          .select("name")
-          .eq("manager_id", managerId)
-          .in("id", assignedPropertyIds);
-        names = (properties ?? []).map((p) => p.name).filter(Boolean);
-        if (!names.length) return [];
-      }
+      const names = restrictToAssignedProperties
+        ? dashboardProperties.map((property) => property.name).filter(Boolean)
+        : null;
+      if (restrictToAssignedProperties && !names?.length) return [];
 
       let query = supabase
         .from("maintenance_requests")
@@ -74,7 +70,7 @@ export function OpenMaintenancePreview() {
         (a, b) => (PRIORITY_RANK[b.priority] ?? 0) - (PRIORITY_RANK[a.priority] ?? 0),
       );
     },
-    enabled: !!managerId,
+    enabled: !!managerId && !propertiesLoading,
     staleTime: 30 * 1000,
   });
 

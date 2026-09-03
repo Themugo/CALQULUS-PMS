@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { useDashboardTenantIds } from "@/features/dashboard/hooks/useDashboardData";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { logError } from "@/shared/lib/errorLogger";
 import { cn } from "@/shared/lib/utils";
@@ -74,23 +75,13 @@ export function ArrearsHeatMap() {
   const assignedKey = assignedPropertyIds.join(",");
   const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
+  const { data: scopedTenantIds = [], isPending: tenantIdsLoading } = useDashboardTenantIds();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["arrears-heatmap", managerId, assignedKey],
     queryFn: async (): Promise<PropertyArrears[]> => {
       if (!managerId) return [];
-      if (restrictToAssignedProperties && assignedPropertyIds.length === 0) return [];
-
-      let scopedTenantIds: string[] | null = null;
-      if (restrictToAssignedProperties) {
-        const { data: scopedTenants } = await supabase
-          .from("tenants")
-          .select("id")
-          .eq("manager_id", managerId)
-          .in("property_id", assignedPropertyIds);
-        scopedTenantIds = (scopedTenants ?? []).map((t) => t.id);
-        if (scopedTenantIds.length === 0) return [];
-      }
+      if (restrictToAssignedProperties && scopedTenantIds.length === 0) return [];
 
       let query = supabase
         .from("invoices")
@@ -98,7 +89,7 @@ export function ArrearsHeatMap() {
         .eq("manager_id", managerId)
         .eq("status", "overdue");
 
-      if (scopedTenantIds) {
+      if (restrictToAssignedProperties) {
         query = query.in("tenant_id", scopedTenantIds);
       }
 
@@ -132,7 +123,7 @@ export function ArrearsHeatMap() {
         (a, b) => b.totalArrears - a.totalArrears
       );
     },
-    enabled: !!managerId,
+    enabled: !!managerId && !tenantIdsLoading,
     staleTime: 5 * 60 * 1000,
     throwOnError: (err) => {
       logError("ArrearsHeatMap", err);

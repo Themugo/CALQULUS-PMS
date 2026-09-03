@@ -1,4 +1,5 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Link } from "react-router-dom";
 import { CALQULUS_COLOR } from "@/shared/theme/tokens";
 import { useDashboardProperties } from "@/features/dashboard/hooks/useDashboardData";
 import {
@@ -13,7 +14,9 @@ import {
 } from "recharts";
 
 interface PropertyOccupancy {
+  id: string;
   name: string;
+  displayName: string;
   occupied: number;
   vacant: number;
   total: number;
@@ -54,7 +57,9 @@ function OccupancyCustomTooltip({ active, payload }: OccupancyTooltipProps) {
 export function OccupancyChart() {
   const { data: properties = [], isPending: loading } = useDashboardProperties();
   const data: PropertyOccupancy[] = properties.map((p) => ({
-    name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
+    id: p.id,
+    name: p.name,
+    displayName: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
     occupied: p.occupied,
     vacant: Math.max(0, p.units - p.occupied),
     total: p.units,
@@ -143,6 +148,24 @@ export function OccupancyChart() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      <div className="mt-3 border-t border-border pt-3 space-y-1.5">
+        {data
+          .slice()
+          .sort((a, b) => a.rate - b.rate)
+          .slice(0, 3)
+          .map((property) => (
+            <div key={property.id} className="flex items-center justify-between gap-3 text-xs">
+              <span className="truncate text-muted-foreground">{property.displayName}</span>
+              <Link
+                to={`/properties/${property.id}`}
+                className="shrink-0 font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+              >
+                {property.occupied}/{property.total} occupied
+              </Link>
+            </div>
+          ))}
       </div>
 
       <div className="flex justify-center gap-3 sm:gap-6 mt-3 sm:mt-4 text-[10px] sm:text-xs">

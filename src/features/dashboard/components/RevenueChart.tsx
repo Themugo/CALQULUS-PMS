@@ -66,26 +66,62 @@ export function RevenueChart() {
     queryKey: ["dashboard", "revenue", managerId ?? "", assignedKey],
     queryFn: async (): Promise<MonthlyRevenue[]> => {
       if (!managerId || (restrictToAssignedProperties && scopedTenantIds.length === 0)) return [];
+
       const now = new Date();
-      const months: MonthlyRevenue[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const monthDate = subMonths(now, i);
-        const monthStart = startOfMonth(monthDate).toISOString().split("T")[0];
-        const monthEnd = endOfMonth(monthDate).toISOString().split("T")[0];
-        let paidQuery = supabase.from("invoices").select("amount").eq("manager_id", managerId).eq("status", "paid").gte("paid_date", monthStart).lte("paid_date", monthEnd);
-        let pendingQuery = supabase.from("invoices").select("amount").eq("manager_id", managerId).in("status", ["pending", "overdue"]).gte("due_date", monthStart).lte("due_date", monthEnd);
-        if (restrictToAssignedProperties) {
-          paidQuery = paidQuery.in("tenant_id", scopedTenantIds);
-          pendingQuery = pendingQuery.in("tenant_id", scopedTenantIds);
-        }
-        const [paidResult, pendingResult] = await Promise.all([paidQuery, pendingQuery]);
-        if (paidResult.error) throw paidResult.error;
-        if (pendingResult.error) throw pendingResult.error;
-        const paid = paidResult.data?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
-        const pending = pendingResult.data?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
-        months.push({ month: format(monthDate, "MMM"), revenue: paid + pending, paid, pending });
+      const firstMonth = startOfMonth(subMonths(now, 5)).toISOString().split("T")[0];
+      const lastMonth = endOfMonth(now).toISOString().split("T")[0];
+
+      let paidQuery = supabase
+        .from("invoices")
+        .select("amount, status, paid_date, due_date, tenant_id")
+        .eq("manager_id", managerId)
+        .eq("status", "paid")
+        .gte("paid_date", firstMonth)
+        .lte("paid_date", lastMonth);
+      let pendingQuery = supabase
+        .from("invoices")
+        .select("amount, status, paid_date, due_date, tenant_id")
+        .eq("manager_id", managerId)
+        .in("status", ["pending", "overdue"])
+        .gte("due_date", firstMonth)
+        .lte("due_date", lastMonth);
+
+      if (restrictToAssignedProperties) {
+        paidQuery = paidQuery.in("tenant_id", scopedTenantIds);
+        pendingQuery = pendingQuery.in("tenant_id", scopedTenantIds);
       }
-      return months;
+
+      const [paidResult, pendingResult] = await Promise.all([paidQuery, pendingQuery]);
+      if (paidResult.error) throw paidResult.error;
+      if (pendingResult.error) throw pendingResult.error;
+
+      const months = Array.from({ length: 6 }, (_, index) => {
+        const monthDate = subMonths(now, 5 - index);
+        return {
+          key: format(monthDate, "yyyy-MM"),
+          month: format(monthDate, "MMM"),
+          revenue: 0,
+          paid: 0,
+          pending: 0,
+        };
+      });
+      const byMonth = new Map(months.map((month) => [month.key, month]));
+
+      for (const invoice of paidResult.data ?? []) {
+        if (!invoice.paid_date) continue;
+        const month = byMonth.get(format(new Date(invoice.paid_date), "yyyy-MM"));
+        if (month) month.paid += Number(invoice.amount || 0);
+      }
+      for (const invoice of pendingResult.data ?? []) {
+        if (!invoice.due_date) continue;
+        const month = byMonth.get(format(new Date(invoice.due_date), "yyyy-MM"));
+        if (month) month.pending += Number(invoice.amount || 0);
+      }
+
+      return months.map(({ key: _key, ...month }) => ({
+        ...month,
+        revenue: month.paid + month.pending,
+      }));
     },
     enabled: !!managerId && !tenantIdsLoading,
     staleTime: 60 * 1000,

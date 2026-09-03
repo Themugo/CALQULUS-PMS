@@ -313,3 +313,11 @@ These were identified during the audit but not yet addressed:
 - Removed component-level realtime subscriptions from shared dashboard property/payment/revenue views; the dashboard cache is now the realtime invalidation boundary.
 - Preserved manager/submanager scope boundaries and existing RPC-first dashboard statistics.
 - Improved maintenance preview drill-down affordance and added regression coverage for shared query/invalidation boundaries.
+
+## Dashboard Command Center Initiative — Performance & Drill-down Continuation
+- Reduced six-month revenue history loading from twelve month-by-month invoice requests to two bounded invoice requests with client-side aggregation.
+- Preserved assigned-property tenant scoping for revenue history.
+- Added compact occupancy exception drill-down links to the lowest-occupancy properties using existing property routes and shared property data.
+- Added regression coverage for bounded revenue requests, drill-down routes, and the single dashboard realtime subscription boundary.
+
+- Dashboard Command Center: consolidated arrears and maintenance scope lookups onto shared dashboard datasets, removing duplicate property/tenant fetches.
