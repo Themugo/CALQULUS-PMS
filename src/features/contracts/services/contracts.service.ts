@@ -70,21 +70,25 @@ export async function createContract(payload: {
   valid_from?: string;
   valid_until?: string;
 }) {
-  const { data, error } = await supabase
-    .from("contracts")
-    .insert({
-      ...payload,
-      status: "draft",
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc("create_contract_atomic", {
+    p_lease_id: payload.lease_id,
+    p_tenant_id: payload.tenant_id ?? null,
+    p_property_id: payload.property_id ?? null,
+    p_unit_id: payload.unit_id ?? null,
+    p_template_id: payload.template_id ?? null,
+    p_title: payload.title,
+    p_content: payload.content,
+    p_valid_from: payload.valid_from ?? null,
+    p_valid_until: payload.valid_until ?? null,
+    p_status: "draft",
+  });
+  if (error) { logError("createContract", error); throw error; }
+  const id = (data as { contract_id?: string } | null)?.contract_id;
+  if (!id) throw new Error("Contract creation did not return an id");
+  const { data: created, error: fetchError } = await supabase.from("contracts").select("*").eq("id", id).single();
+  if (fetchError) { logError("createContract.fetch", fetchError); throw fetchError; }
+  return created;
 
-  if (error) {
-    logError("createContract", error);
-    throw error;
-  }
-
-  return data;
 }
 
 /**
@@ -94,78 +98,48 @@ export async function updateContractStatus(
   contractId: string,
   updates: Partial<ContractRow>
 ) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq("id", contractId);
-
-  if (error) {
-    logError("updateContractStatus", error);
-    throw error;
-  }
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId,
+    p_action: "status",
+    p_target_status: updates.status ?? null,
+    p_reason: updates.rejection_reason ?? updates.deletion_reason ?? null,
+    p_signature: null,
+    p_document_url: updates.uploaded_contract_url ?? null,
+  });
+  if (error) { logError("updateContractStatus", error); throw error; }
 }
+
 
 /**
  * Add manager signature
  */
 export async function addManagerSignature(contractId: string, signature: string) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      manager_signature: signature,
-      manager_signed_at: new Date().toISOString(),
-    })
-    .eq("id", contractId);
-
-  if (error) {
-    logError("addManagerSignature", error);
-    throw error;
-  }
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId, p_action: "manager_sign", p_target_status: null, p_reason: null, p_signature: signature, p_document_url: null,
+  });
+  if (error) { logError("addManagerSignature", error); throw error; }
 }
+
 
 /**
  * Soft delete a contract
  */
-export async function softDeleteContract(
-  contractId: string,
-  userId: string,
-  reason: string
-) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      deleted_at: new Date().toISOString(),
-      deleted_by: userId,
-      deletion_reason: reason,
-    })
-    .eq("id", contractId);
-
-  if (error) {
-    logError("softDeleteContract", error);
-    throw error;
-  }
+export async function softDeleteContract(contractId: string, _userId: string, reason: string) {
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId, p_action: "delete", p_target_status: "terminated", p_reason: reason, p_signature: null, p_document_url: null,
+  });
+  if (error) { logError("softDeleteContract", error); throw error; }
 }
 
 /**
  * Bulk soft delete contracts
  */
-export async function bulkDeleteContracts(
-  contractIds: string[],
-  userId: string,
-  reason: string
-) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      deleted_at: new Date().toISOString(),
-      deleted_by: userId,
-      deletion_reason: reason,
-    })
-    .in("id", contractIds);
-
-  if (error) {
-    logError("bulkDeleteContracts", error);
-    throw error;
+export async function bulkDeleteContracts(contractIds: string[], _userId: string, reason: string) {
+  for (const contractId of contractIds) {
+    const { error } = await supabase.rpc("transition_contract_atomic", {
+      p_contract_id: contractId, p_action: "delete", p_target_status: "terminated", p_reason: reason, p_signature: null, p_document_url: null,
+    });
+    if (error) { logError("bulkDeleteContracts", error); throw error; }
   }
 }
 
@@ -173,19 +147,12 @@ export async function bulkDeleteContracts(
  * Submit contract for approval
  */
 export async function submitForApproval(contractId: string) {
-  const { error } = await supabase
-    .from("contracts")
-    .update({
-      pending_approval: true,
-      rejection_reason: null,
-    })
-    .eq("id", contractId);
-
-  if (error) {
-    logError("submitForApproval", error);
-    throw error;
-  }
+  const { error } = await supabase.rpc("transition_contract_atomic", {
+    p_contract_id: contractId, p_action: "submit_approval", p_target_status: "pending_approval", p_reason: null, p_signature: null, p_document_url: null,
+  });
+  if (error) { logError("submitForApproval", error); throw error; }
 }
+
 
 /**
  * Send contract for signature (notify tenant)

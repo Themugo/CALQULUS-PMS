@@ -185,21 +185,14 @@ const TenantWaterPortal: React.FC = () => {
       const rate = Number(wc?.rate_per_unit ?? 60);
       const total = consumption * rate;
 
-      const { error } = await supabase.from('water_meter_readings').insert({
-        unit_id: tenantInfo!.tenant.unit_id,
-        property_id: tenantInfo!.tenant.property_id,
-        manager_id: tenantInfo!.tenant.manager_id,
-        previous_reading: prev,
-        current_reading: curr,
-        rate_per_unit: rate,
-        total_amount: total,
-        reading_date: new Date().toISOString().slice(0, 10),
-        submitted_by_tenant: true,
-        tenant_user_id: user!.id,
-        tenant_photo_url: photoUrl,
-        manager_verified: false,
-        status: 'pending',
-        notes: 'Self-reported by tenant',
+      const { error } = await supabase.rpc('submit_tenant_water_reading_atomic', {
+        p_unit_id: tenantInfo!.tenant.unit_id,
+        p_previous_reading: prev,
+        p_current_reading: curr,
+        p_rate_per_unit: rate,
+        p_reading_date: new Date().toISOString().slice(0, 10),
+        p_tenant_photo_url: photoUrl,
+        p_notes: 'Self-reported by tenant',
       });
       if (error) throw error;
 
@@ -230,10 +223,9 @@ const TenantWaterPortal: React.FC = () => {
   // Dispute a reading
   const disputeReading = useMutation({
     mutationFn: async (readingId: string) => {
-      const { error } = await supabase
-        .from('water_meter_readings')
-        .update({ disputed: true, dispute_reason: disputeReason })
-        .eq('id', readingId);
+      const { error } = await supabase.rpc('dispute_water_reading_atomic', {
+        p_reading_id: readingId, p_reason: disputeReason,
+      });
       if (error) throw error;
     },
     onSuccess: () => {

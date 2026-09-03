@@ -198,10 +198,9 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
         }
 
         // Update the lease with the new tenant
-        const { error: leaseError } = await supabase
-          .from("leases")
-          .update({ tenant_id: createdTenant.id })
-          .eq("id", lease.id);
+        const { error: leaseError } = await supabase.rpc("assign_lease_tenant_atomic", {
+          p_lease_id: lease.id, p_tenant_id: createdTenant.id,
+        });
 
         if (leaseError) throw leaseError;
 
@@ -219,22 +218,17 @@ export function QuickCreateContract({ leases, templates, onContractCreated }: Pr
 
       const populatedContent = await populateTemplate(defaultTemplate.content, lease);
 
-      const { data, error } = await supabase.from("contracts").insert({
-        lease_id: lease.id,
-        template_id: defaultTemplate.id,
-        tenant_id: tenantId,
-        property_id: lease.property_id || null,
-        unit_id: lease.unit_id || null,
-        title: `Lease Agreement - ${lease.property} Unit ${lease.unit}`,
-        content: populatedContent,
-        valid_from: lease.start_date,
-        valid_until: lease.end_date,
-        status: "pending_signature",
-      }).select().single();
+      const { data: rpcData, error } = await supabase.rpc("create_contract_atomic", {
+        p_lease_id: lease.id, p_tenant_id: tenantId, p_property_id: lease.property_id || null,
+        p_unit_id: lease.unit_id || null, p_template_id: defaultTemplate.id,
+        p_title: `Lease Agreement - ${lease.property} Unit ${lease.unit}`, p_content: populatedContent,
+        p_valid_from: lease.start_date, p_valid_until: lease.end_date, p_status: "pending_signature",
+      });
+      const data = rpcData as { contract_id?: string } | null;
 
       if (error) throw error;
 
-      setCreatedContractId(data.id);
+      setCreatedContractId(data?.contract_id || "");
 
       // Send notification to tenant
       if (tenantEmail) {

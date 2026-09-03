@@ -153,10 +153,11 @@ export function useUpdateContractStatus() {
       status: ContractStatus;
       extra?: Partial<ContractRow>;
     }) => {
-      const { error } = await supabase
-        .from("contracts")
-        .update({ status, ...extra, updated_at: new Date().toISOString() })
-        .eq("id", contractId);
+      const { error } = await supabase.rpc("transition_contract_atomic", {
+        p_contract_id: contractId, p_action: "status", p_target_status: status,
+        p_reason: (extra as any).rejection_reason ?? (extra as any).deletion_reason ?? null,
+        p_signature: null, p_document_url: (extra as any).uploaded_contract_url ?? null,
+      });
 
       if (error) throw error;
     },
@@ -177,14 +178,18 @@ export function useCreateContract() {
         "title" | "content" | "lease_id" | "tenant_id" | "manager_id" | "status"
       >,
     ) => {
-      const { data, error } = await supabase
-        .from("contracts")
-        .insert(payload)
-        .select()
-        .single();
-
+      const { data, error } = await supabase.rpc("create_contract_atomic", {
+        p_lease_id: payload.lease_id, p_tenant_id: payload.tenant_id ?? null,
+        p_property_id: null, p_unit_id: null, p_template_id: null,
+        p_title: payload.title, p_content: payload.content, p_valid_from: null, p_valid_until: null,
+        p_status: payload.status ?? "draft",
+      });
       if (error) throw error;
-      return data as ContractRow;
+      const id = (data as any)?.contract_id;
+      if (!id) throw new Error("Contract creation did not return an id");
+      const { data: created, error: fetchError } = await supabase.from("contracts").select("*").eq("id", id).single();
+      if (fetchError) throw fetchError;
+      return created as ContractRow;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: contractKeys.all });
@@ -204,15 +209,10 @@ export function useDeleteContract() {
       contractId: string;
       reason: string;
     }) => {
-      const { error } = await supabase
-        .from("contracts")
-        .update({
-          status: "terminated",
-          deletion_reason: reason,
-          deleted_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", contractId);
+      const { error } = await supabase.rpc("transition_contract_atomic", {
+        p_contract_id: contractId, p_action: "delete", p_target_status: "terminated", p_reason: reason,
+        p_signature: null, p_document_url: null,
+      });
 
       if (error) throw error;
     },

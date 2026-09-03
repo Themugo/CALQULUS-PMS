@@ -493,10 +493,7 @@ const Leases = () => {
   };
 
   const updateLeaseStatus = async (id: string, status: LeaseStatus) => {
-    const { error } = await supabase
-      .from("leases")
-      .update({ status })
-      .eq("id", id);
+    const { error } = await supabase.rpc("transition_lease_atomic", { p_lease_id: id, p_target_status: status });
 
     if (error) {
       toast({
@@ -566,10 +563,7 @@ const Leases = () => {
       // Store the file path - signed URLs will be generated when viewing
       const storagePath = `signed-contracts/${filePath}`;
 
-      const { error: updateError } = await supabase
-        .from('leases')
-        .update({ document_url: storagePath })
-        .eq('id', leaseId);
+      const { error: updateError } = await supabase.rpc("attach_lease_document_atomic", { p_lease_id: leaseId, p_document_url: storagePath });
 
       if (updateError) {
         toast({
@@ -626,7 +620,7 @@ const Leases = () => {
   };
 
   const _handleDeleteLease = async (leaseId: string) => {
-    const { error } = await supabase.from("leases").update({ status: 'terminated' as unknown as string }).eq("id", leaseId);
+    const { error } = await supabase.rpc("transition_lease_atomic", { p_lease_id: leaseId, p_target_status: "terminated" });
     if (error) {
       toast({ title: "Error", description: "Failed to deactivate lease", variant: "destructive" });
     } else {
@@ -639,7 +633,8 @@ const Leases = () => {
     if (selectedLeases.size === 0) return;
     setIsDeleting(true);
     const leaseIds = Array.from(selectedLeases);
-    const { error } = await supabase.from("leases").update({ status: 'terminated' as unknown as string }).in("id", leaseIds);
+    const results = await Promise.all(leaseIds.map((leaseId) => supabase.rpc("transition_lease_atomic", { p_lease_id: leaseId, p_target_status: "terminated" })));
+    const error = results.find((result) => result.error)?.error ?? null;
     if (error) {
       toast({ title: "Error", description: "Failed to deactivate leases", variant: "destructive" });
     } else {

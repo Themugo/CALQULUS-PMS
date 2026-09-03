@@ -217,12 +217,11 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
       is_active: isActive,
     };
 
-    let error;
-    if (config?.id) {
-      ({ error } = await supabase.from('water_billing_config').update(configData).eq("id", config.id));
-    } else {
-      ({ error } = await supabase.from('water_billing_config').insert(configData));
-    }
+    const { error } = await supabase.rpc("save_water_billing_config_atomic", {
+      p_property_id: propertyId, p_billing_method: billingMethod, p_rate_per_unit: ratePerUnit ? parseFloat(ratePerUnit) : null,
+      p_flat_rate_amount: flatRate ? parseFloat(flatRate) : null, p_invoice_mode: invoiceMode,
+      p_billing_cycle_day: parseInt(billingCycleDay) || 1, p_meter_number: meterNumber || null, p_water_provider: providerValue || null, p_is_active: isActive,
+    });
 
     if (error) {
       toast({ title: "Error", description: "Failed to save water billing settings", variant: "destructive" });
@@ -276,7 +275,13 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
       readingData.rate_per_unit = 1;
     }
 
-    const { data: readingResult, error } = await supabase.from('water_meter_readings').insert(readingData).select().single();
+    const { data: rpcReading, error } = await supabase.rpc("record_water_meter_reading_atomic", {
+      p_property_id: propertyId, p_unit_id: selectedUnitId, p_previous_reading: Number(readingData.previous_reading),
+      p_current_reading: Number(readingData.current_reading), p_rate_per_unit: Number(readingData.rate_per_unit),
+      p_reading_date: readingData.reading_date, p_total_amount: readingData.total_amount, p_notes: readingData.notes || null,
+      p_billing_period_start: readingData.billing_period_start, p_billing_period_end: readingData.billing_period_end,
+    });
+    const readingResult = rpcReading ? { ...(readingData as any), id: (rpcReading as any).reading_id } : null;
 
     if (error) {
       toast({ title: "Error", description: "Failed to add reading", variant: "destructive" });
@@ -319,9 +324,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
           if (!invError && created?.success) {
             const invoice = { id: created.id };
             // Link reading to invoice
-            await supabase.from('water_meter_readings')
-              .update({ invoice_id: invoice.id, status: "invoiced" })
-              .eq("id", reading.id);
+            await supabase.rpc("link_water_reading_invoice_atomic", { p_reading_id: reading.id, p_invoice_id: invoice.id });
 
             toast({ 
               title: "Water Invoice Generated", 
