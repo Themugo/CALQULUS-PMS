@@ -87,10 +87,10 @@ const InstalmentPlanDialog: React.FC<Props> = ({
         notes,
       };
 
-      const { error } = await (supabase
-        .from('invoices')
-        .update({ installment_plan: plan } as unknown)
-        .eq('id', invoiceId));
+      const { error } = await supabase.rpc('set_invoice_installment_plan_atomic', {
+        p_invoice_id: invoiceId,
+        p_plan: plan,
+      });
 
       if (error) throw error;
 

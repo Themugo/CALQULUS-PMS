@@ -6731,6 +6731,22 @@ export type Database = {
         Args: { p_generation_key: string; p_lease_id?: string | null; p_tenant_id: string; p_property_id?: string | null; p_unit_id?: string | null; p_manager_id: string; p_amount: number; p_description: string; p_due_date: string; p_invoice_type?: string; p_line_items?: Json }
         Returns: Json
       }
+      cancel_invoice_atomic: {
+        Args: { p_invoice_id: string }
+        Returns: Json
+      }
+      update_invoice_atomic: {
+        Args: { p_invoice_id: string; p_amount: number; p_due_date: string; p_description?: string | null }
+        Returns: Json
+      }
+      set_invoice_installment_plan_atomic: {
+        Args: { p_invoice_id: string; p_plan: Json }
+        Returns: Json
+      }
+      verify_payment_receipt_atomic: {
+        Args: { p_receipt_id: string; p_verified_by: string }
+        Returns: Json
+      }
       create_platform_payment_atomic: {
         Args: { p_manager_invoice_id: string; p_manager_user_id: string; p_amount: number; p_reference: string; p_provider_session_id?: string | null; p_provider_payment_intent_id?: string | null; p_currency?: string; p_metadata?: Json }
         Returns: Json

@@ -216,9 +216,6 @@ verify_jwt = true
 [functions.log-audit]
 verify_jwt = true
 
-[functions.process-commission]
-verify_jwt = true
-
 [functions.process-payment]
 verify_jwt = true
 

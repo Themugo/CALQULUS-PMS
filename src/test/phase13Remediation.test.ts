@@ -82,11 +82,10 @@ describe("Phase 13 remediations", () => {
   it("scopes JWT report callers to themselves instead of body managerId", () => {
     const cashflow = readFileSync("supabase/functions/generate-cashflow/index.ts", "utf8");
     const receipt = readFileSync("supabase/functions/auto-send-receipt/index.ts", "utf8");
-    const commission = readFileSync("supabase/functions/process-commission/index.ts", "utf8");
     expect(cashflow).toContain("scopedActorId(gate.userId, body.managerId)");
     expect(receipt).toContain("scopedActorId(gate.userId, body.managerId)");
     expect(receipt).toContain('.eq("manager_id", managerId)');
-    expect(commission).toContain("payment.manager_id !== gate.userId");
+    expect(() => readFileSync("supabase/functions/process-commission/index.ts", "utf8")).toThrow();
   });
 
   it("keeps public-by-design functions without a user JWT gate", () => {

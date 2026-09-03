@@ -359,10 +359,12 @@ export function useUpdateInvoice() {
       due_date: string;
       description: string | null;
     }) => {
-      const { error } = await supabase
-        .from("invoices")
-        .update({ amount, due_date, description, updated_at: new Date().toISOString() })
-        .eq("id", id);
+      const { error } = await supabase.rpc("update_invoice_atomic", {
+        p_invoice_id: id,
+        p_amount: amount,
+        p_due_date: due_date,
+        p_description: description,
+      });
 
       if (error) throw error;
     },

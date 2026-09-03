@@ -169,28 +169,11 @@ export const ReceiptVerification = () => {
     setProcessing(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      
-      const { error } = await supabase
-        .from('payment_receipts')
-        .update({
-          status: 'verified',
-          verified_by: userData.user?.id,
-          verified_at: new Date().toISOString(),
-        })
-        .eq('id', receipt.id);
-
+      const { error } = await supabase.rpc('verify_payment_receipt_atomic', {
+        p_receipt_id: receipt.id,
+        p_verified_by: userData.user?.id ?? user.id,
+      });
       if (error) throw error;
-
-      // If linked to an invoice, update the invoice status
-      if (receipt.invoice_id) {
-        await supabase
-          .from('invoices')
-          .update({
-            status: 'paid',
-            paid_date: receipt.payment_date,
-          })
-          .eq('id', receipt.invoice_id);
-      }
 
       // Get manager_id from tenant's property for payment notification
       let managerId: string | null = null;

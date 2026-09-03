@@ -352,12 +352,20 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
       });
       return;
     }
-    const { error } = await supabase.from("invoices").update({ status: "cancelled" as InvoiceStatus }).eq("id", invoiceId);
-    if (!error) {
+    try {
+      const { error } = await supabase.rpc("cancel_invoice_atomic", { p_invoice_id: invoiceId });
+      if (error) throw error;
       toast({ title: "Invoice voided", description: "Invoice status set to cancelled. History is preserved." });
       fetchInvoices();
+    } catch (error) {
+      toast({
+        title: "Unable to void invoice",
+        description: error instanceof Error ? error.message : "The invoice could not be cancelled.",
+        variant: "destructive",
+      });
+    } finally {
+      setVoidConfirmId(null);
     }
-    setVoidConfirmId(null);
   };
 
   const handleSendReceipt = async (invoice: Invoice) => {
