@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-03T15:26:22.369Z",
+  "generatedAt": "2026-09-03T15:32:30.100Z",
   "status": "PASS",
   "policyPresent": true,
   "packageJsonPresent": true,
   "lockfilePresent": true,
   "lockfileVersion": 3,
-  "packageJsonSha256": "af737a41f81e42a25465b36896460d41768d0389afc3aadd47cb431490cf2393",
+  "packageJsonSha256": "f249abfe1965c326d6e493043b480d1e6f30daba71fa3bba3444c3751c4d029f",
   "lockfileSha256": "16764a542eb0efc6431ba30c25da33a9052207e35d0b1dda8fa82f581a79510e",
   "directDependencyCount": 64,
   "missingLockedDependencies": [],
