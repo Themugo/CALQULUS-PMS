@@ -790,6 +790,7 @@ export type Database = {
       }
       maintenance_requests: {
         Row: {
+          assigned_provider_id: string | null
           assigned_to: string | null
           budget: number | null
           category: string | null
@@ -800,11 +801,20 @@ export type Database = {
           deposit_deducted_at: string | null
           deposit_deduction_amount: number | null
           description: string
+          expenditure_amount: number | null
+          expenditure_recorded_at: string | null
           expected_completion_date: string | null
           id: string
           manager_id: string | null
           priority: Database["public"]["Enums"]["request_priority"]
           property_name: string
+          provider_completed_at: string | null
+          provider_notes: string | null
+          provider_started_at: string | null
+          quoted_amount: number | null
+          agreed_amount: number | null
+          manager_rating: number | null
+          tenant_rating: number | null
           requested_date: string
           status: Database["public"]["Enums"]["request_status"]
           tenant_email: string
@@ -815,6 +825,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_provider_id?: string | null
           assigned_to?: string | null
           budget?: number | null
           category?: string | null
@@ -825,11 +836,20 @@ export type Database = {
           deposit_deducted_at?: string | null
           deposit_deduction_amount?: number | null
           description: string
+          expenditure_amount?: number | null
+          expenditure_recorded_at?: string | null
           expected_completion_date?: string | null
           id?: string
           manager_id?: string | null
           priority?: Database["public"]["Enums"]["request_priority"]
           property_name: string
+          provider_completed_at?: string | null
+          provider_notes?: string | null
+          provider_started_at?: string | null
+          quoted_amount?: number | null
+          agreed_amount?: number | null
+          manager_rating?: number | null
+          tenant_rating?: number | null
           requested_date?: string
           status?: Database["public"]["Enums"]["request_status"]
           tenant_email: string
@@ -840,6 +860,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_provider_id?: string | null
           assigned_to?: string | null
           budget?: number | null
           category?: string | null
@@ -850,11 +871,20 @@ export type Database = {
           deposit_deducted_at?: string | null
           deposit_deduction_amount?: number | null
           description?: string
+          expenditure_amount?: number | null
+          expenditure_recorded_at?: string | null
           expected_completion_date?: string | null
           id?: string
           manager_id?: string | null
           priority?: Database["public"]["Enums"]["request_priority"]
           property_name?: string
+          provider_completed_at?: string | null
+          provider_notes?: string | null
+          provider_started_at?: string | null
+          quoted_amount?: number | null
+          agreed_amount?: number | null
+          manager_rating?: number | null
+          tenant_rating?: number | null
           requested_date?: string
           status?: Database["public"]["Enums"]["request_status"]
           tenant_email?: string
@@ -6731,6 +6761,10 @@ export type Database = {
       transition_maintenance_request_atomic: { Args: { p_request_id: string; p_target_status: string }; Returns: Json }
       assign_maintenance_request_atomic: { Args: { p_request_id: string; p_assigned_to: string; p_provider_id?: string | null }; Returns: Json }
       save_expenditure_atomic: { Args: { p_manager_id: string; p_category: string; p_amount: number; p_month: string; p_description?: string | null }; Returns: Json }
+      save_property_expenditure_atomic: { Args: { p_property_id: string; p_category: string; p_amount: number; p_month: string; p_description?: string | null }; Returns: Json }
+      save_maintenance_financials_atomic: { Args: { p_request_id: string; p_quoted_amount?: number | null; p_agreed_amount?: number | null; p_provider_notes?: string | null }; Returns: Json }
+      record_maintenance_expenditure_atomic: { Args: { p_request_id: string; p_amount?: number | null; p_month?: string | null; p_description?: string | null }; Returns: Json }
+      create_provider_review_atomic: { Args: { p_provider_id: string; p_rating: number; p_title?: string | null; p_comment?: string | null }; Returns: Json }
       create_landlord_invoice_atomic: { Args: { p_landlord_user_id: string; p_amount: number; p_invoice_type?: string; p_description?: string | null; p_due_date?: string | null; p_manager_user_id?: string | null; p_property_id?: string | null; p_period_start?: string | null; p_period_end?: string | null }; Returns: Json }
       transition_landlord_invoice_atomic: { Args: { p_invoice_id: string; p_target_status: string; p_payment_method?: string | null; p_payment_reference?: string | null }; Returns: Json }
       record_orphan_payment_atomic: { Args: { p_user_id: string; p_record_id?: string | null; p_payment_date: string; p_amount: number; p_payment_method?: string | null; p_reference?: string | null; p_description?: string | null }; Returns: Json }

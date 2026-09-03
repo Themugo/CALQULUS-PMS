@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
-import { useRBAC } from '@/shared/hooks/useRBAC';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
@@ -46,7 +45,6 @@ function StarRow({ value, onChange, size = 'h-5 w-5' }: { value: number; onChang
 
 export function ProviderReviewsSection({ providerId }: { providerId: string | null }) {
   const { user } = useAuth();
-  const { whoAmI } = useRBAC();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -77,14 +75,11 @@ export function ProviderReviewsSection({ providerId }: { providerId: string | nu
       if (!user) throw new Error('You must be signed in to leave a review');
       if (!providerId) throw new Error('Missing provider');
       if (rating < 1) throw new Error('Pick a star rating first');
-      const reviewerRole = whoAmI.role === 'tenant' ? 'tenant' : 'manager';
-      const { error } = await (supabase.from('provider_reviews') as any).insert({
-        provider_id: providerId,
-        reviewer_id: user.id,
-        reviewer_role: reviewerRole,
-        rating,
-        title: title.trim() || null,
-        comment: comment.trim() || null,
+      const { error } = await supabase.rpc('create_provider_review_atomic', {
+        p_provider_id: providerId,
+        p_rating: rating,
+        p_title: title.trim() || null,
+        p_comment: comment.trim() || null,
       });
       if (error) throw error;
     },
