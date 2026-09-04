@@ -8,7 +8,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import { FileText, Download, Clock } from 'lucide-react';
+import { FileText, Download, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { LANDLORD_DOCUMENT_TYPE } from '@/features/landlord/lib/documentTypes';
 
@@ -25,7 +25,14 @@ const LandlordDocuments: React.FC = () => {
         .eq('is_visible', true)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Array<{ id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; document_url?: string; created_at: string }>;
+      const rows = data || [];
+      return await Promise.all(rows.map(async (doc: any) => {
+        if (doc.storage_bucket && doc.storage_path && doc.verification_status !== 'revoked') {
+          const { data: signed } = await supabase.storage.from(doc.storage_bucket).createSignedUrl(doc.storage_path, 300);
+          return { ...doc, signed_url: signed?.signedUrl ?? null };
+        }
+        return { ...doc, signed_url: null };
+      }));
     },
     enabled: !!user?.id,
   });
@@ -49,9 +56,9 @@ const LandlordDocuments: React.FC = () => {
     </div>
   );
 
-  const DocRow = ({ doc }: { doc: { id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; document_url?: string; created_at: string } }) => {
+  const DocRow = ({ doc }: { doc: { id: string; document_type: string; title: string; properties?: { name: string }; period_start?: string; period_end?: string; file_url?: string; document_url?: string; signed_url?: string | null; created_at: string; verification_status?: string; expires_at?: string } }) => {
     const cfg = LANDLORD_DOCUMENT_TYPE[doc.document_type] ?? LANDLORD_DOCUMENT_TYPE.custom;
-    const href = doc.file_url ?? doc.document_url;
+    const href = doc.signed_url ?? doc.file_url ?? doc.document_url;
     const Icon = cfg.icon;
     return (
       <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
@@ -76,8 +83,14 @@ const LandlordDocuments: React.FC = () => {
             {doc.description && <p className="text-xs text-muted-foreground mt-0.5">{doc.description}</p>}
           </div>
         </div>
+        {(doc.verification_status || doc.expires_at) && (
+          <div className="hidden sm:flex items-center gap-1.5 mr-2">
+            {doc.verification_status === 'verified' && <ShieldCheck className="h-4 w-4 text-emerald-600" aria-label="Verified document" />}
+            {doc.expires_at && new Date(doc.expires_at).getTime() < Date.now() + 30 * 86400000 && <AlertTriangle className="h-4 w-4 text-amber-600" aria-label="Document expires soon" />}
+          </div>
+        )}
         {href && (
-          <a href={href} target="_blank" rel="noopener noreferrer" className="shrink-0 ml-3">
+          <a href={href} target="_blank" rel="noopener noreferrer" className="shrink-0 ml-3" onClick={() => void supabase.rpc('record_landlord_document_access' as any, { p_document_id: doc.id, p_action: 'download' })}>
             <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
               <Download className="h-3.5 w-3.5" />
               Download

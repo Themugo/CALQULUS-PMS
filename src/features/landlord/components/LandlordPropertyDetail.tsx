@@ -85,11 +85,13 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
         .eq('is_visible', true)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Array<{
-        id: string; document_type: string; title: string; description?: string;
-        period_start?: string; period_end?: string; file_url?: string; document_url?: string;
-        created_at: string;
-      }>;
+      return await Promise.all((data || []).map(async (doc: any) => {
+        if (doc.storage_bucket && doc.storage_path && doc.verification_status !== 'revoked') {
+          const { data: signed } = await supabase.storage.from(doc.storage_bucket).createSignedUrl(doc.storage_path, 300);
+          return { ...doc, signed_url: signed?.signedUrl ?? null };
+        }
+        return { ...doc, signed_url: null };
+      }));
     },
   });
 
@@ -408,7 +410,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
                 <div className="space-y-2">
                   {documents.map(doc => {
                     const cfg = LANDLORD_DOCUMENT_TYPE[doc.document_type] ?? LANDLORD_DOCUMENT_TYPE.custom;
-                    const href = doc.file_url ?? doc.document_url;
+                    const href = doc.signed_url ?? doc.file_url ?? doc.document_url;
                     return (
                       <div key={doc.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
