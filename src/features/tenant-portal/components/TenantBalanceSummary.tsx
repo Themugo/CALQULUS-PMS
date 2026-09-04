@@ -18,8 +18,8 @@ interface TenantBalanceSummaryProps {
 }
 
 interface BalanceResult {
-  credit_balance: number;
-  balance_due: number;
+  total_credited: number;
+  outstanding: number;
   total_paid: number;
 }
 
@@ -46,7 +46,7 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
   const { data: balance, isLoading: balLoading } = useQuery({
     queryKey: ['tenant-balance', userId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_tenant_balance', { p_tenant_id: userId });
+      const { data, error } = await supabase.rpc('get_tenant_financial_position', { p_tenant_id: tenantId });
       if (error) throw error;
       return (data?.[0] as BalanceResult) ?? null;
     },
@@ -85,8 +85,8 @@ const TenantBalanceSummary: React.FC<TenantBalanceSummaryProps> = ({ tenantId, u
     enabled: !!userId,
   });
 
-  const creditBalance = Number(balance?.credit_balance ?? 0);
-  const balanceDue = Number(balance?.balance_due ?? 0);
+  const creditBalance = Number(balance?.total_credited ?? 0);
+  const balanceDue = Number(balance?.outstanding ?? 0);
   const isFullyPaid = balanceDue === 0 && creditBalance >= 0;
 
   return (

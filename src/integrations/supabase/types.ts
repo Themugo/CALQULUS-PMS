@@ -7162,6 +7162,10 @@ export type Database = {
       get_landlord_property_revenue_summary: { Args: { p_property_id?: string }; Returns: string }
       get_manager_recent_activity: { Args: { p_manager_id?: string; p_limit?: number }; Returns: string }
       get_tenant_balance: { Args: { p_tenant_id?: string }; Returns: string }
+      get_tenant_financial_position: { Args: { p_tenant_id: string }; Returns: { tenant_id: string; total_invoiced: number; total_paid: number; total_credited: number; outstanding: number; overdue: number; invoice_count: number; open_invoice_count: number }[] }
+      get_manager_financial_position: { Args: { p_manager_id: string; p_period_start?: string; p_period_end?: string }; Returns: { manager_id: string; expected: number; collected: number; outstanding: number; overdue: number; credits: number; expenditures: number; net_income: number; collection_rate: number }[] }
+      get_landlord_financial_position: { Args: { p_landlord_user_id: string; p_period_start?: string; p_period_end?: string }; Returns: { landlord_user_id: string; expected: number; collected: number; outstanding: number; expenditures: number; gross_income: number; net_to_landlord: number; owner_share_pct: number }[] }
+      audit_financial_integrity: { Args: never; Returns: Json }
       get_tenants_with_properties: { Args: { p_manager_id?: string }; Returns: string }
       lock_invoices_for_update: { Args: { p_invoice_ids?: string[] }; Returns: string }
       process_invoice_payment: { Args: { p_invoice_id?: string; p_transaction_id?: string; p_amount?: number }; Returns: number }

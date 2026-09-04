@@ -1,3 +1,10 @@
+
+## 2026-09-04 — Financial & Billing Operations Ecosystem
+
+- Added canonical financial ledger and role-scoped financial position RPCs.
+- Added idempotent, prorated rent invoice generation and overdue projection controls.
+- Rewired tenant balance summary to the canonical financial position service.
+- Added financial integrity audit and regression coverage.
 ## 2026-09-04 — Property & Tenancy Operations Ecosystem
 - Added an authoritative transactional lifecycle across property, unit, tenant, lease, and tenancy history state.
 - Hardened lease activation/termination so tenant occupancy, unit status, tenancy history, and property occupancy/revenue are reconciled in one transaction.
