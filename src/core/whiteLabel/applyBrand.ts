@@ -12,7 +12,7 @@ let originalFavicon: string | null = null;
 /**
  * Apply organization brand without spraying the design-system palette.
  * Sets derived `--brand-primary*` tokens only after contrast validation.
- * Never writes `--primary`, `--ring`, or sidebar tokens.
+ * White-label mode may promote the approved organization primary into the interactive theme; otherwise the active portal identity owns `--primary`.
  */
 export function applyBrandConfig(config: BrandConfig): void {
   if (typeof document === "undefined") return;
@@ -35,6 +35,13 @@ export function applyBrandConfig(config: BrandConfig): void {
     root.style.setProperty(BRAND_PRIMARY_VARS.surface, palette.surface);
     root.style.setProperty(BRAND_PRIMARY_VARS.focus, palette.focus);
     root.style.setProperty(BRAND_PRIMARY_VARS.foreground, palette.onColor);
+    if (config.source === "organization") {
+      root.style.setProperty("--primary", palette.hex);
+      root.style.setProperty("--primary-hover", palette.hover);
+      root.style.setProperty("--primary-active", palette.active);
+      root.style.setProperty("--ring", palette.focus);
+      root.style.setProperty("--primary-foreground", palette.onColor);
+    }
   }
 
   if (config.typography.heading === "system-ui") {
@@ -65,6 +72,12 @@ export function applyResolvedBrand(brand: ResolvedBrand): void {
 export function clearBrandOverrides(): void {
   if (typeof document === "undefined") return;
   clearBrandColorVars();
+  const root = document.documentElement;
+  root.style.removeProperty("--primary");
+  root.style.removeProperty("--primary-hover");
+  root.style.removeProperty("--primary-active");
+  root.style.removeProperty("--ring");
+  root.style.removeProperty("--primary-foreground");
   document.documentElement.style.removeProperty(FONT_HEADING_VAR);
   restoreFavicon();
 }

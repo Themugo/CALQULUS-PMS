@@ -12,6 +12,8 @@ import {
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { PROPERTY_IMAGES, PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
+import { PortalIdentityBackdrop } from "@/features/auth/components/PortalIdentityBackdrop";
+import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { portalSurfaceProps } from "@/core/design";
 
 /**
@@ -180,24 +182,16 @@ interface TenantPortalShellProps {
 }
 
 export function TenantPortalShell({ children }: TenantPortalShellProps) {
+  const { identity } = usePortalIdentity();
   return (
     <div className="relative min-h-screen bg-navy-deep" {...portalSurfaceProps("tenant")}>
       {/* Residential imagery behind a deep-navy veil — home context, not poster. */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <img
-          src={PROPERTY_IMAGES.residential}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover opacity-[0.2]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/85 via-navy-deep/80 to-navy-deep/92" />
-      </div>
+      <PortalIdentityBackdrop portal="tenant" fallbackImage={PROPERTY_IMAGES.residential} />
 
       <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col px-4 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between py-5">
           <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
-            <BrandMark size="nav" showWordmark subtitle="Tenant" inverse forcePlatform />
+            <BrandMark size="nav" showWordmark subtitle={identity.shortName} inverse forcePlatform />
           </Link>
           <Link to={PUBLIC_ROUTES.home} className="text-xs font-medium text-white/60 transition-colors hover:text-white">
             Back to CALQULUS

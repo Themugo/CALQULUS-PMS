@@ -10,6 +10,7 @@ import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authF
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
 import { PortalAccentBar, portalSurfaceProps } from '@/core/design';
+import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 
 const isRecommendedWebhostHost = () => {
   const host = window.location.hostname;
@@ -24,6 +25,7 @@ const features = [
 ];
 
 const WebhostAuth = () => {
+  const { identity } = usePortalIdentity();
   const navigate = useNavigate();
   const { user, signIn, loading, userRole } = useAuth();
   const { toast } = useToast();
@@ -76,7 +78,7 @@ const WebhostAuth = () => {
             <BrandMark size="hero" forcePlatform />
             <div>
               <p className="font-heading font-bold text-xl text-foreground leading-none">CALQULUS</p>
-              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">Platform Administration</p>
+              <p className="text-[11px] text-primary font-semibold tracking-[0.25em] uppercase mt-1">{identity.name}</p>
             </div>
           </div>
 
@@ -87,7 +89,7 @@ const WebhostAuth = () => {
             </div>
 
             <h1 className="page-title mb-6">
-              <span className="text-foreground">Control the entire platform.</span>
+              <span className="text-foreground">{identity.tagline}</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-md mb-12">
               Super-admin access for platform-wide management, billing enforcement, security, and compliance.
@@ -122,7 +124,7 @@ const WebhostAuth = () => {
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
                 <Globe className="h-3 w-3 text-primary" />
-                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">Webhost Portal</span>
+                <span className="text-[11px] text-primary font-semibold tracking-wider uppercase">{identity.shortName} Portal</span>
               </div>
               <h2 className="font-heading text-2xl font-bold text-foreground mb-1">Administrator login</h2>
               <p className="text-muted-foreground text-sm">Authorized access only</p>

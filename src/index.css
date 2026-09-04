@@ -573,6 +573,55 @@
   [data-portal="tenant"] { --portal-accent: var(--calqulus-sky); }
   [data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep); }
 
+  /* Portal identity becomes the default interactive theme. White-label
+     organization branding can override --primary at runtime. */
+  [data-active-portal="manager"] {
+    --primary: var(--portal-primary, var(--calqulus-primary));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-primary-hover));
+    --primary-active: var(--portal-primary-active, var(--calqulus-primary-active));
+    --primary-text: var(--portal-primary-active, var(--calqulus-primary-active));
+    --ring: var(--portal-primary-focus, var(--calqulus-primary));
+    --accent: var(--primary);
+  }
+  [data-active-portal="landlord"] {
+    --primary: var(--portal-primary, var(--calqulus-emerald));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-emerald));
+    --primary-active: var(--portal-primary-active, var(--calqulus-emerald));
+    --primary-text: var(--portal-primary-active, var(--calqulus-emerald));
+    --ring: var(--portal-primary-focus, var(--calqulus-emerald));
+    --accent: var(--primary);
+  }
+  [data-active-portal="agency"] {
+    --primary: var(--portal-primary, var(--calqulus-cyan));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-cyan));
+    --primary-active: var(--portal-primary-active, var(--calqulus-cyan));
+    --primary-text: var(--portal-primary-active, var(--calqulus-cyan));
+    --ring: var(--portal-primary-focus, var(--calqulus-cyan));
+    --accent: var(--primary);
+  }
+  [data-active-portal="tenant"] {
+    --primary: var(--portal-primary, var(--calqulus-sky));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-sky));
+    --primary-active: var(--portal-primary-active, var(--calqulus-sky));
+    --primary-text: var(--portal-primary-active, var(--calqulus-sky));
+    --ring: var(--portal-primary-focus, var(--calqulus-sky));
+    --accent: var(--primary);
+  }
+  [data-active-portal="platform_admin"] {
+    --primary: var(--portal-primary, var(--calqulus-teal-deep));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-teal-deep));
+    --primary-active: var(--portal-primary-active, var(--calqulus-teal-deep));
+    --primary-text: var(--portal-primary-active, var(--calqulus-teal-deep));
+    --ring: var(--portal-primary-focus, var(--calqulus-teal-deep));
+    --accent: var(--primary);
+  }
+
+  .portal-identity-background {
+    background-image: var(--portal-background-image);
+    background-size: cover;
+    background-position: center;
+  }
+
   /* Dark theme is CLASSIFIED DORMANT. `.dark` mirrors the light tokens so
      leftover `dark:` utilities cannot reintroduce a heavy dashboard.
      Production experience is always light. */

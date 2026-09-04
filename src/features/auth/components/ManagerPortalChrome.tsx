@@ -7,6 +7,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { PROPERTY_IMAGES, PROPERTY_THUMBS } from "@/features/marketing/propertyImages";
+import { PortalIdentityBackdrop } from "@/features/auth/components/PortalIdentityBackdrop";
+import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { portalSurfaceProps } from "@/core/design";
 import {
   PortalBadge,
@@ -160,27 +162,19 @@ interface ManagerPortalShellProps {
 }
 
 export function ManagerPortalShell({ formTitle, children }: ManagerPortalShellProps) {
+  const { identity } = usePortalIdentity();
   return (
     <div className="relative min-h-screen bg-navy-deep" {...portalSurfaceProps("manager")}>
       {/* Property imagery behind a deep-navy veil — context, not poster. */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <img
-          src={PROPERTY_IMAGES.residential}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full scale-105 object-cover opacity-30 blur-[3px]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/90 via-navy-deep/80 to-navy-deep/92" />
-      </div>
+      <PortalIdentityBackdrop portal="manager" fallbackImage={PROPERTY_IMAGES.residential} />
 
       <div className="relative mx-auto flex min-h-screen max-w-[1140px] flex-col px-4 sm:px-6 lg:px-8">
-        <PortalHeader subtitle="Manager" />
+        <PortalHeader subtitle={identity.shortName} />
 
         <main className="grid flex-1 gap-7 pb-6 pt-2 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
           {/* Identity — first on mobile and desktop col 1 */}
           <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1">
-            <PortalBadge icon={Building2} label="Manager portal" />
+            <PortalBadge icon={Building2} label={`${identity.shortName} portal`} />
             <h1 className="font-heading mt-4 max-w-md text-[2rem] font-bold leading-[1.12] tracking-tight text-white sm:text-[2.4rem]">
               <span className="block">Run your properties</span>{" "}
               <span className="block">from one desk.</span>
@@ -204,7 +198,7 @@ export function ManagerPortalShell({ formTitle, children }: ManagerPortalShellPr
               <div className="mb-4">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-soft-blue px-2.5 py-1">
                   <Building2 className="h-3 w-3 text-primary" aria-hidden />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">Manager</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">{identity.shortName}</span>
                 </span>
                 <h2 className="font-heading mt-3 text-2xl font-bold tracking-tight text-foreground">{formTitle}</h2>
               </div>

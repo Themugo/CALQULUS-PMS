@@ -3,6 +3,7 @@ import { Palette, Image as ImageIcon, Globe, ShieldCheck } from "lucide-react";
 import WebhostLayout from "@/features/webhost/components/WebhostLayout";
 import { ThemeStudioEditor, type BrandThemeConfig } from "@/shared/components/branding/ThemeStudioEditor";
 import { BrandAssetManager } from "@/shared/components/branding/BrandAssetManager";
+import PortalIdentityStudio from "@/features/webhost/components/PortalIdentityStudio";
 import { CustomDomainConfig } from "@/shared/components/branding/CustomDomainConfig";
 import { BrandLivePreview } from "@/features/settings/components/BrandLivePreview";
 import {
@@ -54,12 +55,12 @@ export default function AdminBrandStudio() {
   return (
     <WebhostLayout
       title="Brand Studio"
-      description="CALQULUS platform identity. Customer white-label is done on Settings → Company."
+      description="Platform identity, portal themes and editable login imagery. Customer white-label remains in Settings → Company."
     >
       <div className="space-y-5">
         <div className="flex items-start gap-2 rounded-xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--portal-accent)]" />
-          Preview only. Customer-side Organization Brand Studio may only be saved by the account that owns
+          Platform defaults are administrator-controlled. Customer-side Organization Brand Studio may only be saved by the account that owns
           company_settings (manager / agency). CALQULUS tokens stay as designed.
         </div>
 
@@ -85,7 +86,7 @@ export default function AdminBrandStudio() {
             </div>
 
             <div className="mt-4">
-              {tab === "identity" ? <BrandAssetManager /> : null}
+              {tab === "identity" ? <div className="space-y-4"><PortalIdentityStudio /><BrandAssetManager /></div> : null}
               {tab === "colours" ? <ThemeStudioEditor config={theme} onChange={setTheme} /> : null}
               {tab === "domains" ? <CustomDomainConfig /> : null}
             </div>

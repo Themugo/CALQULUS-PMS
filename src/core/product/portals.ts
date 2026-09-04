@@ -80,3 +80,5 @@ export function portalFromAppRole(role: string | null | undefined): PortalId | n
   }
   return null;
 }
+
+export { DEFAULT_PORTAL_IDENTITIES, type PortalIdentity } from "./portalIdentity";
