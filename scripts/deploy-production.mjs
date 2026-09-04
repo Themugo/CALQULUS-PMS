@@ -97,7 +97,7 @@ function runChecks() {
   }
   try {
     execSync('npx vitest run', { stdio: 'pipe', cwd: ROOT });
-    log('Tests', '125/125 passed');
+    log('Tests', 'passed');
   } catch {
     log('Tests', 'some failed', false);
     return false;
@@ -105,10 +105,30 @@ function runChecks() {
   return true;
 }
 
+function getProjectRef() {
+  const config = readFileSync(resolve(ROOT, 'supabase', 'config.toml'), 'utf-8');
+  const match = config.match(/^project_id\s*=\s*\"([^\"]+)\"/m);
+  if (!match) throw new Error('supabase/config.toml is missing project_id');
+  return match[1];
+}
+
+function runDeploymentGates() {
+  console.log('\n🛡️  Running production deployment gates...');
+  for (const script of ['gate:environment', 'gate:reconciliation']) {
+    try {
+      execSync(`npm run ${script}`, { stdio: 'inherit', cwd: ROOT });
+    } catch {
+      log(script, 'FAILED — deployment blocked', false);
+      return false;
+    }
+  }
+  return true;
+}
+
 function deployEdgeFunctions() {
   console.log('\n⚡ Deploying Supabase Edge Functions...');
   try {
-    execSync('npx supabase functions deploy --project-ref aelzsqxllkypbzslxyju', {
+    execSync(`npx supabase functions deploy --project-ref ${getProjectRef()}`, {
       stdio: 'inherit',
       cwd: ROOT,
       timeout: 120000,
@@ -164,7 +184,8 @@ async function main() {
   }
 
   const checksOk = runChecks();
-  if (!checksOk) {
+  const gatesOk = checksOk && runDeploymentGates();
+  if (!gatesOk) {
     console.log('\n❌ Pre-deploy checks failed. Fix before deploying.\n');
     process.exit(1);
   }

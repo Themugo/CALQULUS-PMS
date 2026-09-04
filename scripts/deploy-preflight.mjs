@@ -5,8 +5,9 @@ import path from 'node:path';
 const root=process.cwd();
 const dryRun=process.argv.includes('--dry-run');
 const steps=[
-  ['environment','npm',['run','audit:production-environment']],
+  ['environment-gate','npm',['run','gate:environment']],
   ['deployment-controls','npm',['run','audit:deployment-controls']],
+  ['migration-reconciliation-gate','npm',['run','gate:reconciliation']],
   ['release-readiness','npm',['run','audit:release-readiness']],
   ['observability','npm',['run','audit:observability']],
   ['operations','npm',['run','audit:operations-readiness']],

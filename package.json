@@ -108,7 +108,11 @@
     "audit:property-tenancy-operations": "node scripts/audit-property-tenancy-operations.mjs",
     "audit:financial-billing-operations": "node scripts/audit-financial-billing-operations.mjs",
     "audit:billing-due-payment-routing": "node scripts/audit-billing-due-payment-routing.mjs",
-    "audit:unit-first-multi-payer": "node scripts/audit-unit-first-multi-payer.mjs"
+    "audit:unit-first-multi-payer": "node scripts/audit-unit-first-multi-payer.mjs",
+    "gate:environment": "node scripts/production-environment-gate.mjs",
+    "gate:reconciliation": "node scripts/deployment-reconciliation-gate.mjs",
+    "gate:smoke": "node scripts/production-smoke-gate.mjs",
+    "gate:production": "npm run gate:environment && npm run gate:reconciliation"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
