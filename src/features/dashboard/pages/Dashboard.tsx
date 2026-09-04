@@ -5,6 +5,7 @@ import { PortfolioOperationsControlCenter } from "@/features/dashboard/component
 import { OperationWorkQueue } from "@/features/dashboard/components/OperationWorkQueue";
 import { ManagementAnalyticsPanel } from "@/features/dashboard/components/ManagementAnalyticsPanel";
 import { ExecutivePortfolioIntelligence } from "@/features/dashboard/components/ExecutivePortfolioIntelligence";
+import { PortfolioFinancialIntelligence } from "@/features/dashboard/components/PortfolioFinancialIntelligence";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
@@ -344,6 +345,7 @@ const Dashboard = () => {
             <PortfolioOperationsControlCenter stats={stats} loading={loading} />
             <ManagementAnalyticsPanel />
             <ExecutivePortfolioIntelligence />
+            <PortfolioFinancialIntelligence />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
