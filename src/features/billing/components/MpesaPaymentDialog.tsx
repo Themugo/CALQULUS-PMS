@@ -23,7 +23,6 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import {
   Loader2,
   Smartphone,
@@ -58,14 +57,15 @@ interface Invoice {
   } | null;
 }
 
-interface MpesaSettings {
-  paybill_enabled: boolean;
-  paybill_shortcode: string | null;
-  paybill_account_reference: string | null;
-  till_enabled: boolean;
-  till_shortcode: string | null;
-  use_unit_as_account_ref?: boolean;
+interface MpesaRoute {
+  account_id: string;
+  account_label: string | null;
+  payment_method: string;
+  paybill_number: string | null;
+  till_number: string | null;
+  payment_instructions: string | null;
 }
+
 
 interface MpesaPaymentDialogProps {
   invoice: Invoice | null;
@@ -88,128 +88,58 @@ export function MpesaPaymentDialog({
   const [paymentStatus, setPaymentStatus] = useState<
     "idle" | "pending" | "verifying" | "success" | "failed"
   >("idle");
-  const [paymentType, setPaymentType] = useState<"paybill" | "till">("paybill");
-  const [mpesaSettings, setMpesaSettings] = useState<MpesaSettings | null>(null);
+  const [paymentType, setPaymentType] = useState<"paybill" | "till" | null>(null);
+  const [paymentRoute, setPaymentRoute] = useState<MpesaRoute | null>(null);
   const [settingsError, setSettingsError] = useState<string | null>(null);
   const [unitNumber, setUnitNumber] = useState<string>("N/A");
   const [accountReference, setAccountReference] = useState<string>("");
 
-  // ── Load M-Pesa settings when dialog opens ──────────────────────────────
+  // ── Load the canonical payment route when dialog opens ───────────────────
   useEffect(() => {
-    if (!open || !invoice?.lease_id) return;
+    if (!open || !invoice?.id) return;
 
     setSettingsError(null);
-    setMpesaSettings(null);
+    setPaymentRoute(null);
+    setPaymentType(null);
 
-    const loadSettings = async () => {
-      // Derive unit number from the lease
+    const loadRoute = async () => {
       const unitNum = invoice.leases?.unit ?? "N/A";
       setUnitNumber(unitNum);
 
-      // Resolve manager from lease → property chain
-      const { data: leaseData, error: leaseError } = await supabase
-        .from("leases")
-        .select("property_id, unit_id, units(unit_number), properties(manager_id)")
-        .eq("id", invoice.lease_id!)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc(
+        "get_invoice_payment_instructions" as any,
+        { p_invoice_id: invoice.id },
+      );
+      const route = (Array.isArray(data) ? data[0] : data) as MpesaRoute | null;
 
-      if (leaseError || !leaseData) {
-        setSettingsError("Could not load lease information. Please try again.");
-        return;
-      }
-
-      // Use unit_number from units table if available (more authoritative)
-      // leases.unit_id is a forward FK (lease -> unit), so PostgREST embeds
-      // it as a single object at runtime; the generated types conservatively
-      // type it as an array, so cast through unknown rather than `any`.
-      const resolvedUnit =
-        (leaseData.units as unknown as { unit_number: string } | null)?.unit_number ??
-        unitNum;
-      setUnitNumber(resolvedUnit);
-
-      // Same forward-FK single-object case as leaseData.units above.
-      const managerId = (
-        leaseData.properties as unknown as { manager_id: string | null } | null
-      )?.manager_id;
-
-      if (!managerId) {
+      if (error || !route?.account_id) {
         setSettingsError(
-          "This property doesn't have an assigned manager with M-Pesa configured."
+          "No payment destination is configured for this bill. Please contact your property manager.",
         );
         return;
       }
 
-      const propertyId = leaseData.property_id;
-      let paymentReceiverType: "manager" | "landlord" = "manager";
-      let landlordId: string | null = null;
+      const resolvedType =
+        route.payment_method === "mpesa_paybill" ? "paybill" :
+        route.payment_method === "mpesa_till" ? "till" : null;
 
-      if (propertyId) {
-        const { data: pl } = await supabase
-          .from("property_landlords")
-          .select("landlord_user_id, payment_destination")
-          .eq("property_id", propertyId)
-          .maybeSingle();
-        if (pl?.payment_destination === "landlord" && pl?.landlord_user_id) {
-          paymentReceiverType = "landlord";
-          landlordId = pl.landlord_user_id;
-        }
-      }
-
-      // Load the correct M-Pesa settings based on payment destination
-      let settings: MpesaSettings | null;
-
-      if (paymentReceiverType === "landlord" && landlordId) {
-        const { data: s } = await supabase
-          .from("landlord_mpesa_settings")
-          .select(
-            "paybill_enabled, paybill_shortcode, paybill_account_reference, till_enabled, till_shortcode, use_unit_as_account_ref"
-          )
-          .eq("landlord_user_id", landlordId)
-          .maybeSingle();
-        settings = s;
-      } else {
-        const { data: s } = await supabase
-          .from("manager_mpesa_settings")
-          .select(
-            "paybill_enabled, paybill_shortcode, paybill_account_reference, till_enabled, till_shortcode, use_unit_as_account_ref"
-          )
-          .eq("manager_user_id", managerId)
-          .maybeSingle();
-        settings = s;
-      }
-
-      if (!settings) {
+      if (!resolvedType) {
         setSettingsError(
-          "No M-Pesa payment method configured for this property. " +
-            "Please contact your property manager."
+          "This bill is configured for bank or cash payment. Please use the payment instructions shown in your portal.",
         );
         return;
       }
 
-      if (!settings.paybill_enabled && !settings.till_enabled) {
-        setSettingsError(
-          "No M-Pesa payment methods are enabled for this property."
-        );
-        return;
-      }
-
-      setMpesaSettings(settings);
-
-      // Determine the AccountReference shown to tenant
-      const useUnitRef = settings.use_unit_as_account_ref !== false;
+      setPaymentRoute(route);
+      setPaymentType(resolvedType);
       setAccountReference(
-        useUnitRef
-          ? resolvedUnit.slice(0, 12)
-          : settings.paybill_account_reference?.slice(0, 12) ?? resolvedUnit.slice(0, 12)
+        (route.account_label || route.paybill_number || route.till_number || unitNum).slice(0, 12),
       );
 
-      // Pre-fill from tenant profile
-      if (invoice.tenants?.phone) {
-        setPhoneNumber(invoice.tenants.phone);
-      }
+      if (invoice.tenants?.phone) setPhoneNumber(invoice.tenants.phone);
     };
 
-    loadSettings();
+    void loadRoute();
   }, [open, invoice]);
 
   // ── Poll for payment result ──────────────────────────────────────────────
@@ -270,7 +200,7 @@ export function MpesaPaymentDialog({
 
   // ── Initiate STK push ────────────────────────────────────────────────────
   const handleSTKPush = useCallback(async () => {
-    if (!invoice || !phoneNumber || !mpesaSettings) return;
+    if (!invoice || !phoneNumber || !paymentRoute || !paymentType) return;
 
     setIsProcessing(true);
     setPaymentStatus("pending");
@@ -314,13 +244,13 @@ export function MpesaPaymentDialog({
     } finally {
       setIsProcessing(false);
     }
-  }, [invoice, phoneNumber, mpesaSettings, paymentType, formatCurrency, toast, pollPaymentStatus]);
+  }, [invoice, phoneNumber, paymentRoute, paymentType, formatCurrency, toast, pollPaymentStatus]);
 
   const canPay =
     !!phoneNumber &&
     !isProcessing &&
     paymentStatus === "idle" &&
-    !!mpesaSettings;
+    !!paymentRoute && !!paymentType;
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
@@ -368,32 +298,20 @@ export function MpesaPaymentDialog({
               </Alert>
             )}
 
-            {/* Payment type selector */}
-            {mpesaSettings && (
+            {/* Canonical payment route — selected server-side from the invoice scope. */}
+            {paymentRoute && paymentType && (
               <div className="space-y-3">
-                {mpesaSettings.paybill_enabled && mpesaSettings.till_enabled && (
-                  <div>
-                    <Label className="text-sm font-medium">Payment method</Label>
-                    <RadioGroup
-                      value={paymentType}
-                      onValueChange={(v) => setPaymentType(v as "paybill" | "till")}
-                      className="flex gap-4 mt-1"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="paybill" id="paybill" />
-                        <Label htmlFor="paybill">
-                          Paybill {mpesaSettings.paybill_shortcode && `(${mpesaSettings.paybill_shortcode})`}
-                        </Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="till" id="till" />
-                        <Label htmlFor="till">
-                          Till {mpesaSettings.till_shortcode && `(${mpesaSettings.till_shortcode})`}
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
+                <div className="rounded-md border p-3">
+                  <Label className="text-sm font-medium">Payment method</Label>
+                  <p className="mt-1 text-sm font-semibold">
+                    {paymentType === "paybill"
+                      ? `M-Pesa Paybill${paymentRoute.paybill_number ? ` (${paymentRoute.paybill_number})` : ""}`
+                      : `M-Pesa Till${paymentRoute.till_number ? ` (${paymentRoute.till_number})` : ""}`}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    This destination is selected automatically for this bill.
+                  </p>
+                </div>
 
                 {/* Phone number */}
                 <div>
