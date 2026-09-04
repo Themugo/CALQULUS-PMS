@@ -22,3 +22,13 @@ describe("portal theme preference", () => {
     expect(key("user-a", "manager")).not.toBe(key("user-a", "tenant"));
   });
 });
+
+describe("portal identity catalog", () => {
+  it("keeps every customer portal linked to its canonical login route", async () => {
+    const { CALQULUS_PORTALS } = await import("@/core/product/portals");
+    expect(CALQULUS_PORTALS.manager.login).toBe("/auth");
+    expect(CALQULUS_PORTALS.landlord.login).toBe("/landlord/login");
+    expect(CALQULUS_PORTALS.agency.login).toBe("/agency/login");
+    expect(CALQULUS_PORTALS.tenant.login).toBe("/tenant/login");
+  });
+});

@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
-import { PORTALS } from "@/features/auth/lib/portals";
+import { CALQULUS_PORTALS, type PortalId } from "@/core/product/portals";
+import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 
 /**
  * Shared portal entry chrome — the shell every CALQULUS portal starts from.
@@ -52,11 +53,15 @@ interface PortalSwitcherProps {
 
 /** Cross-portal switcher; the active portal is marked with aria-current. */
 export function PortalSwitcher({ currentId }: PortalSwitcherProps) {
+  const { identities } = usePortalIdentity();
+  const portalIds = Object.keys(CALQULUS_PORTALS) as PortalId[];
   return (
     <nav aria-label="Other CALQULUS portals" className="mt-5">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">Sign in as</p>
       <div className="mt-2 flex flex-wrap gap-2">
-        {PORTALS.map((portal) => {
+        {portalIds.filter((id) => id !== "platform_admin").map((id) => {
+          const portal = CALQULUS_PORTALS[id];
+          const identity = identities[id];
           if (portal.id === currentId) {
             return (
               <span
@@ -64,19 +69,19 @@ export function PortalSwitcher({ currentId }: PortalSwitcherProps) {
                 aria-current="true"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/25 bg-white/10 px-3 py-2 text-xs font-semibold text-white"
               >
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: portal.accent }} aria-hidden />
-                {portal.label}
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: identity.primaryHex }} aria-hidden />
+                {identity.shortName}
               </span>
             );
           }
           return (
             <Link
               key={portal.id}
-              to={portal.href}
+              to={portal.login}
               className="group inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: portal.accent }} aria-hidden />
-              {portal.label}
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: identity.primaryHex }} aria-hidden />
+              {identity.shortName}
               <ChevronRight className="h-3 w-3 text-white/30 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </Link>
           );

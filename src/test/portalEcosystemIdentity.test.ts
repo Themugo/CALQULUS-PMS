@@ -25,3 +25,15 @@ describe("portal ecosystem identity", () => {
     expect(identity.backgroundImageUrl).toBe(fallback.backgroundImageUrl);
   });
 });
+
+import { portalFromPath } from "@/core/product/PortalIdentityProvider";
+
+describe("portal route identity", () => {
+  it("uses the selected portal route even when another role is available", () => {
+    expect(portalFromPath("/landlord/dashboard")).toBe("landlord");
+    expect(portalFromPath("/agency/clients")).toBe("agency");
+    expect(portalFromPath("/portal/payments")).toBe("tenant");
+    expect(portalFromPath("/webhost")).toBe("platform_admin");
+    expect(portalFromPath("/")).toBe("manager");
+  });
+});
