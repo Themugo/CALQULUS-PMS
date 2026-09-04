@@ -134,7 +134,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
       const body: Record<string, unknown> = {
         phoneNumber: normalizedPhone,
         amount: amountDue,
-        paymentType: 'paybill',
+        
       };
       if (isCombined) {
         body.invoiceIds = invoices.map((i) => i.id);

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:54:33.435Z",
+  "generatedAt": "2026-09-04T06:31:03.736Z",
   "checks": [
     {
       "name": "prod",
@@ -19,7 +19,8 @@
     },
     {
       "name": "migration",
-      "status": "PASS"
+      "status": "FAIL",
+      "detail": "\n> calqulus-pms@1.0.0 audit:migration-chain\n> node scripts/audit-migration-chain.mjs\n\nmigration-chain-audit: 169 SQL migrations inspected\n- Known historical duplicate versions: 10\n- Unexpected duplicate versions: 1\n- Known historical malformed filenames: 3\n- Ordering warnings: 0\n"
     },
     {
       "name": "staging",

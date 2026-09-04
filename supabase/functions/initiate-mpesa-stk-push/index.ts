@@ -35,7 +35,7 @@ interface STKPushRequest {
   invoiceIds?: string[];
   amount: number;
   phoneNumber: string;
-  paymentType: "paybill" | "till";
+  paymentType?: "paybill" | "till";
   payerPartyId?: string;
 }
 
@@ -64,11 +64,10 @@ serve(
         typeof amount !== "number" ||
         !isFinite(amount) ||
         amount <= 0 ||
-        !phoneNumber ||
-        !paymentType
+        !phoneNumber
       ) {
         throw errorResponse(
-          "Missing or invalid required fields: invoiceId or invoiceIds, positive amount, phoneNumber, paymentType",
+          "Missing or invalid required fields: invoiceId or invoiceIds, positive amount, phoneNumber",
           400
         );
       }
@@ -179,10 +178,25 @@ serve(
         );
       }
 
-      // Resolve the canonical payment destination. Unit/property/agency/landlord/manager
-      // routing is the source of truth; legacy M-Pesa settings are used only for API credentials.
-      const { data: route, error: routeError } = await ctx.supabase.rpc("get_effective_payment_collection_account", { p_invoice_id: primaryInvoiceId });
-      if (routeError || !route) {
+      // Resolve the canonical payment destination for every selected invoice. A single
+      // STK transaction may span many units, but only when all invoices converge on the
+      // same configured collection account. This prevents money being sent to one route
+      // while the allocation belongs to another route.
+      const resolvedRoutes: Record<string, any>[] = [];
+      for (const selectedInvoice of invoiceRows) {
+        const { data: selectedRoute, error: selectedRouteError } = await ctx.supabase.rpc("get_effective_payment_collection_account", { p_invoice_id: selectedInvoice.id });
+        if (selectedRouteError || !selectedRoute?.id) {
+          throw errorResponse("No payment destination has been configured for one of the selected units. Please contact the property manager.", 500);
+        }
+        resolvedRoutes.push(selectedRoute as Record<string, any>);
+      }
+      const route = resolvedRoutes[0];
+      const routeKey = (r: Record<string, any>) => [r.id, r.payment_method, r.paybill_number ?? "", r.till_number ?? ""].join("|");
+      if (resolvedRoutes.some((r) => routeKey(r) !== routeKey(route))) {
+        throw errorResponse("The selected bills use different payment destinations. Please pay them separately so each unit is credited to the correct account.", 409);
+      }
+
+      if (!route) {
         throw errorResponse("No payment destination has been configured for this unit/property. Please contact the property manager.", 500);
       }
 
@@ -191,7 +205,7 @@ serve(
       if (!resolvedPaymentType) {
         throw errorResponse("This bill is configured for a non-M-Pesa payment method. Use the payment instructions shown in the portal.", 400);
       }
-      if (paymentType !== resolvedPaymentType) {
+      if (paymentType && paymentType !== resolvedPaymentType) {
         throw errorResponse(`This bill is configured for M-Pesa ${resolvedPaymentType}.`, 409);
       }
 

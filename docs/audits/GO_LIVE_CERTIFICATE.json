@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T13:54:34.450Z",
+  "generatedAt": "2026-09-04T06:31:04.616Z",
   "status": "BLOCKED",
   "checks": [
     {
@@ -10,12 +10,12 @@
     {
       "name": "deployment",
       "status": "PASS",
-      "output": "\n> calqulus-pms@1.0.0 audit:deployment-controls\n> node scripts/audit-deployment-controls.mjs\n\ndeployment-controls: PASS\n- migrations: 158\n- destructive migration candidates: 58\n- verify_jwt=false functions: 36\n- git: not available in packaged workspace (external clean-commit gate required)\n"
+      "output": "\n> calqulus-pms@1.0.0 audit:deployment-controls\n> node scripts/audit-deployment-controls.mjs\n\ndeployment-controls: PASS\n- migrations: 169\n- destructive migration candidates: 65\n- verify_jwt=false functions: 36\n- git: not available in packaged workspace (external clean-commit gate required)\n"
     },
     {
       "name": "release",
       "status": "FAIL",
-      "output": "\n> calqulus-pms@1.0.0 audit:release-readiness\n> node scripts/audit-release-readiness.mjs\n\nrelease-readiness: BLOCKED\nPASS prod\nPASS security\nPASS cross-role\nPASS final-security\nPASS migration\nPASS staging\nPASS recovery\nPASS observability\nPASS edge-reliability\nPASS operations\nFAIL release-evidence\n"
+      "output": "\n> calqulus-pms@1.0.0 audit:release-readiness\n> node scripts/audit-release-readiness.mjs\n\nrelease-readiness: BLOCKED\nPASS prod\nPASS security\nPASS cross-role\nPASS final-security\nFAIL migration\nPASS staging\nPASS recovery\nPASS observability\nPASS edge-reliability\nPASS operations\nFAIL release-evidence\n"
     },
     {
       "name": "live-migrations",

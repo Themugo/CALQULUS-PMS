@@ -1,10 +1,22 @@
 {
-  "generatedAt": "2026-09-03T14:29:22.772Z",
+  "generatedAt": "2026-09-04T06:34:42.960Z",
   "status": "EXTERNAL_REQUIRED",
-  "migrationCount": 158,
+  "migrationCount": 169,
   "changedSinceManifest": [],
   "removedSinceManifest": [],
-  "newSinceManifest": [],
+  "newSinceManifest": [
+    "20260904000001_portal_identity_theme_system.sql",
+    "20260904000001_property_tenancy_operations_ecosystem.sql",
+    "20260904000002_financial_billing_operations_ecosystem.sql",
+    "20260904000003_billing_due_payment_routing.sql",
+    "20260904000004_unit_first_multi_payer_bulk_payments.sql",
+    "20260904000005_payment_receipt_delivery_and_stk_completion.sql",
+    "20260904000006_unit_payment_reconciliation_portal.sql",
+    "20260904000007_third_party_payer_portal.sql",
+    "20260904000008_tenant_share_payment_links.sql",
+    "20260904000009_payment_configuration_privacy_device_security.sql",
+    "20260904000010_payment_authority_convergence.sql"
+  ],
   "live": null,
   "note": "The committed migration manifest records immutable file hashes. Generate/update it only when the migration content is intentionally versioned."
 }

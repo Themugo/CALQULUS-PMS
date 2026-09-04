@@ -78,7 +78,7 @@ BEGIN
   END IF;
 
   IF v_property IS NOT NULL AND v_agency IS NOT NULL
-     AND NOT EXISTS (SELECT 1 FROM public.properties p WHERE p.id=v_property AND p.agency_id=v_agency) THEN
+     AND NOT EXISTS (SELECT 1 FROM public.properties p JOIN public.manager_profiles mp ON mp.manager_user_id=p.manager_id WHERE p.id=v_property AND mp.agency_id=v_agency) THEN
     RAISE EXCEPTION 'Agency is not assigned to this property' USING ERRCODE='42501';
   END IF;
 
@@ -242,7 +242,7 @@ BEGIN
         WHEN a.lease_id=l.id THEN 2
         WHEN a.unit_id=COALESCE(l.unit_id,t.unit_id) THEN 3
         WHEN a.property_id=l.property_id THEN 4
-        WHEN a.agency_id=p.agency_id AND a.property_id IS NULL THEN 5
+        WHEN a.agency_id=(SELECT mp.agency_id FROM public.manager_profiles mp WHERE mp.manager_user_id=p.manager_id LIMIT 1) AND a.property_id IS NULL THEN 5
         WHEN a.landlord_user_id=COALESCE(l.billing_landlord_user_id,(SELECT pl.landlord_user_id FROM public.property_landlords pl WHERE pl.property_id=l.property_id ORDER BY pl.revenue_share_pct DESC NULLS LAST LIMIT 1)) THEN 6
         WHEN a.manager_id=p.manager_id THEN 7
         ELSE 99
@@ -254,7 +254,7 @@ BEGIN
         OR a.lease_id=l.id
         OR a.unit_id=COALESCE(l.unit_id,t.unit_id)
         OR a.property_id=l.property_id
-        OR (a.agency_id=p.agency_id AND a.property_id IS NULL)
+        OR (a.agency_id=(SELECT mp.agency_id FROM public.manager_profiles mp WHERE mp.manager_user_id=p.manager_id LIMIT 1) AND a.property_id IS NULL)
         OR a.landlord_user_id=COALESCE(l.billing_landlord_user_id,(SELECT pl.landlord_user_id FROM public.property_landlords pl WHERE pl.property_id=l.property_id ORDER BY pl.revenue_share_pct DESC NULLS LAST LIMIT 1))
         OR (a.manager_id=p.manager_id AND a.property_id IS NULL AND a.unit_id IS NULL AND a.lease_id IS NULL AND a.tenant_id IS NULL)
       )

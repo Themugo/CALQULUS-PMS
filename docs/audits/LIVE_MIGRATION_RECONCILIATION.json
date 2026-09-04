@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-03T13:59:59.284Z",
+  "generatedAt": "2026-09-04T06:31:03.862Z",
   "status": "EXTERNAL_REQUIRED",
-  "expectedMigrationCount": 158,
+  "expectedMigrationCount": 169,
   "appliedMigrationCount": null,
   "missingMigrations": null,
   "unexpectedAppliedMigrations": null,

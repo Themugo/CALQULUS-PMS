@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T14:45:32.357Z",
+  "generatedAt": "2026-09-04T06:25:08.528Z",
   "status": "EXTERNAL_REQUIRED",
   "checks": {
     "rollbackRunbook": true,

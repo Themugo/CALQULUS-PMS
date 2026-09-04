@@ -27,6 +27,7 @@ import { DevPortalSwitcher } from "@/shared/components/DevPortalSwitcher";
 import { STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
 import { WhiteLabelProvider } from "@/core/whiteLabel/WhiteLabelProvider";
 import { PortalIdentityProvider } from "@/core/product/PortalIdentityProvider";
+import PortalDeviceGate from "@/shared/components/PortalDeviceGate";
 
 // Optimized QueryClient with better caching
 const queryClient = new QueryClient({
@@ -301,7 +302,7 @@ const App = () => (
               </ErrorBoundary>
               <RoutePrefetcher />
               <ErrorBoundary>
-                <AppRoutes />
+                <PortalDeviceGate><AppRoutes /></PortalDeviceGate>
               </ErrorBoundary>
               <DevPortalSwitcher />
               </WhiteLabelProvider>

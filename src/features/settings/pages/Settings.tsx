@@ -29,6 +29,7 @@ import { DateSettings } from "@/features/settings/components/DateSettings";
 import { CacheManagementSettings } from "@/features/settings/components/CacheManagementSettings";
 import { PushNotificationSettings } from "@/features/settings/components/PushNotificationSettings";
 import { cn } from "@/shared/lib/utils";
+import PortalDeviceSecuritySettings from "@/shared/components/PortalDeviceSecuritySettings";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
 import DashboardSectionHeader from "@/features/dashboard/components/DashboardSectionHeader";
@@ -39,6 +40,8 @@ import {
 } from "@/features/settings/lib/settingsGroups";
 
 const Settings = () => {
+  // One-device portal control with explicit second-device authorization.
+
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -314,6 +317,7 @@ const Settings = () => {
           title="Settings, kept in order"
           description="Manage your profile, organization, payments, notifications and access from one place."
         />
+        <PortalDeviceSecuritySettings />
         <div className="flex flex-col lg:flex-row gap-6">
         {/* Mobile: Dropdown selector */}
         <div className="lg:hidden">

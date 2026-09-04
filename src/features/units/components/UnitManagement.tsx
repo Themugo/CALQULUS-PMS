@@ -60,6 +60,7 @@ import {
 } from "lucide-react";
 import UnitHistoryPanel from "@/features/units/components/UnitHistoryPanel";
 import UnitBillingConfig from "@/features/units/components/UnitBillingConfig";
+import { PaymentCollectionRoutingPanel } from "@/features/billing/components/PaymentCollectionRoutingPanel";
 import UnitPhotoGallery from "@/features/units/components/UnitPhotoGallery";
 import UnitAmenitiesManager from "@/features/units/components/UnitAmenitiesManager";
 import UnitUtilityMeters from "@/features/units/components/UnitUtilityMeters";
@@ -610,12 +611,15 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   {expandedBillingUnitId === unit.id && (
                     <TableRow>
                       <TableCell colSpan={7} className="p-3 bg-muted/20">
-                        <UnitBillingConfig
-                          unitId={unit.id}
-                          unitLabel={unit.unit_number}
-                          propertyId={propertyId}
-                          monthlyRent={unit.monthly_rent ?? undefined}
-                        />
+                        <div className="space-y-3">
+                          <PaymentCollectionRoutingPanel unitId={unit.id} propertyId={propertyId} title={`Payment destination — ${unit.unit_number}`} />
+                          <UnitBillingConfig
+                            unitId={unit.id}
+                            unitLabel={unit.unit_number}
+                            propertyId={propertyId}
+                            monthlyRent={unit.monthly_rent ?? undefined}
+                          />
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}

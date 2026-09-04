@@ -252,7 +252,7 @@ BEGIN
   END IF;
   IF COALESCE(p_payload->>'payment_method','') NOT IN ('mpesa_paybill','mpesa_till','bank_transfer','cash') THEN RAISE EXCEPTION 'Invalid payment method' USING ERRCODE='22023'; END IF;
   IF NULLIF(p_payload->>'landlord_user_id','') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.property_landlords pl WHERE pl.property_id=p.id AND pl.landlord_user_id=(p_payload->>'landlord_user_id')::uuid) THEN RAISE EXCEPTION 'Payment owner is not linked to this property' USING ERRCODE='42501'; END IF;
-  IF NULLIF(p_payload->>'agency_id','') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.properties px WHERE px.id=p.id AND px.agency_id=(p_payload->>'agency_id')::uuid) THEN RAISE EXCEPTION 'Payment agency is not assigned to this property' USING ERRCODE='42501'; END IF;
+  IF NULLIF(p_payload->>'agency_id','') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.manager_profiles mp WHERE mp.manager_user_id=p.manager_id AND mp.agency_id=(p_payload->>'agency_id')::uuid) THEN RAISE EXCEPTION 'Payment agency is not assigned to this property manager' USING ERRCODE='42501'; END IF;
   IF v_id IS NULL THEN v_id:=gen_random_uuid(); END IF;
   INSERT INTO public.payment_collection_accounts(
     id,agency_id,manager_id,landlord_user_id,property_id,unit_id,lease_id,tenant_id,account_label,payment_method,

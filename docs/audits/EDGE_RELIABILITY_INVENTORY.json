@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-03T15:47:18.448Z",
-  "functionCount": 90,
+  "generatedAt": "2026-09-04T06:31:03.464Z",
+  "functionCount": 91,
   "critical": [
     "mpesa-callback",
     "stripe-webhook",
@@ -280,6 +280,13 @@
       "function": "initiate-paystack-payment",
       "webhook": false,
       "retrySignals": false,
+      "idempotencySignals": false,
+      "authGate": true
+    },
+    {
+      "function": "initiate-shared-payment",
+      "webhook": false,
+      "retrySignals": true,
       "idempotencySignals": false,
       "authGate": true
     },

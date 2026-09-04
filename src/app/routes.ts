@@ -17,6 +17,7 @@ const TenantAuth = lazy(() => import("@/features/auth/pages/TenantAuth"));
 const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
 const PayerPortalAuth = lazy(() => import("@/features/auth/pages/PayerPortalAuth"));
 const PayerPortal = lazy(() => import("@/features/payments/pages/PayerPortal"));
+const PublicPaymentShare = lazy(() => import("@/features/payments/pages/PublicPaymentShare"));
 const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRegister"));
 
 const RegisterExperience = lazy(() => import("@/features/auth/pages/RegisterExperience"));
@@ -208,6 +209,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landlord/invitation", element: LandlordInvitationAccept },
   { path: "/tenant/login", element: TenantLogin },
   { path: "/payer/login", element: PayerPortalAuth },
+  { path: "/pay/:token", element: PublicPaymentShare },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/webhost/login", element: WebhostAuth },

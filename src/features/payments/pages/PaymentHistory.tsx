@@ -12,6 +12,7 @@ import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/share
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
+import TenantPaymentShareButton from '@/features/tenant-portal/components/TenantPaymentShareButton';
 
 interface Payment {
   id: string;
@@ -108,7 +109,8 @@ const PaymentHistory = () => {
         )}
 
         {userRole?.tenant_id ? (
-          <div className="mb-6">
+          <div className="mb-6 space-y-3">
+            <div className="flex justify-end"><TenantPaymentShareButton /></div>
             <TenantBillsHub
               tenantId={userRole.tenant_id}
               onPay={(invoices) => {

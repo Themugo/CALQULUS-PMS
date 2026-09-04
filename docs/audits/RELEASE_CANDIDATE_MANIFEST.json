@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T06:25:44.963Z",
+  "generatedAt": "2026-09-04T07:01:06.014Z",
   "status": "EXTERNAL_GIT_ID_REQUIRED",
   "releaseCommit": null,
   "gitBranch": null,
@@ -68,13 +68,6 @@
       "files": [
         "20260903000029_phase58_wallet_ledger_atomic.sql",
         "20260903000029_phase70_71_platform_admin_tier_atomic.sql"
-      ]
-    },
-    {
-      "version": "20260904000001",
-      "files": [
-        "20260904000001_portal_identity_theme_system.sql",
-        "20260904000001_property_tenancy_operations_ecosystem.sql"
       ]
     }
   ],
@@ -1837,8 +1830,8 @@
     },
     {
       "path": "src/features/payments/pages/PayerPortal.tsx",
-      "bytes": 6305,
-      "sha256": "b3a37add9d15775957b8b05819d88ef8365a301091132ec87d896a953afc6d9d"
+      "bytes": 6136,
+      "sha256": "7d1ea34133ffa3c73b8565f40c2cfaa24b4586d52cecc1b8755383bc47657426"
     },
     {
       "path": "src/features/payments/pages/PaymentHistory.tsx",
@@ -2192,8 +2185,8 @@
     },
     {
       "path": "src/features/tenant-portal/components/TenantPayNowDialog.tsx",
-      "bytes": 13339,
-      "sha256": "113b8136ce07722471540a2c2a0dda6f6a71725879beeb87fea3434cce071b15"
+      "bytes": 13316,
+      "sha256": "90fbed9ef6ef460859ddd4108cd23184f9cd7b21a744cabd60cc0e528cd2d246"
     },
     {
       "path": "src/features/tenant-portal/components/TenantPaymentDetails.tsx",
@@ -5058,7 +5051,7 @@
     {
       "path": "supabase/config.toml",
       "bytes": 4764,
-      "sha256": "3afd384240c5fd10851e11d809a89dd880717f2fc54d3324460c79f18aacf6d2"
+      "sha256": "9a45659c1d1999e8d515b2bb6f5d649ce7e7ccdf36a0aa5e1adb7df407008afa"
     },
     {
       "path": "supabase/functions/AUDIT_REPORT.md",
@@ -5427,8 +5420,8 @@
     },
     {
       "path": "supabase/functions/initiate-mpesa-stk-push/index.ts",
-      "bytes": 13714,
-      "sha256": "0f334157d734781be687b9842d0ad3808ac8038b58b65b75ee88f8d952bbf214"
+      "bytes": 14651,
+      "sha256": "ad5375eb9ee1b9b4140ad035ca29f4cbeba8ca12f477f07b34d546f10baa1f82"
     },
     {
       "path": "supabase/functions/initiate-paystack-payment/index.ts",
@@ -6491,7 +6484,7 @@
       "sha256": "99a67694382a20286d3ed5b8765c0bedeb7e637725e2dda16bd25bfbf9bf6c64"
     },
     {
-      "path": "supabase/migrations/20260904000001_portal_identity_theme_system.sql",
+      "path": "supabase/migrations/20260904000000_portal_identity_theme_system.sql",
       "bytes": 4387,
       "sha256": "39fe899275dc383b6134db04611ca33fc95cc4f842db8187fa8decfc4057bb0c"
     },
@@ -6507,8 +6500,8 @@
     },
     {
       "path": "supabase/migrations/20260904000003_billing_due_payment_routing.sql",
-      "bytes": 31840,
-      "sha256": "ebd57dc474ca1eb68b24a8f8c2cfe22d690b547cb5e04d5622b78d839cdae3c7"
+      "bytes": 31875,
+      "sha256": "b3070af4994fcc5d3e56c3ad65a984d284f6d6e1e0b8edcf6c944ba91d15b8fe"
     },
     {
       "path": "supabase/migrations/20260904000004_unit_first_multi_payer_bulk_payments.sql",
@@ -6537,13 +6530,13 @@
     },
     {
       "path": "supabase/migrations/20260904000009_payment_configuration_privacy_device_security.sql",
-      "bytes": 28642,
-      "sha256": "0cb0e797bb93aa33668575f7af9593c1d77884203809701b092fdaa4c03a0e52"
+      "bytes": 28967,
+      "sha256": "20af5294a98e70b029e323b846ddbe732d8c6121b99adacfe97cf34043204964"
     },
     {
       "path": "supabase/migrations/20260904000010_payment_authority_convergence.sql",
-      "bytes": 11300,
-      "sha256": "60d2117fb8ef6724319c7e189017d056f54f0bbf15c77ca7d6d3da7251fa9ef6"
+      "bytes": 11544,
+      "sha256": "0e03ca326c3984e632bcf0206d88930e0ee5f8d4b54f900c8f19ce8747c71133"
     },
     {
       "path": "supabase/migrations/rollback/ROLLBACK_GUIDE.md",
