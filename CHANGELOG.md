@@ -1,4 +1,10 @@
 
+## 2026-09-04 — Management & Compliance Assurance
+- Added `management_assurance_reviews` for explicit period/control review and approval.
+- Added fail-closed assurance RPCs with an 80/100 approval threshold.
+- Reused financial close, reconciliation, evidence, work queue and existing activity audit data.
+- Added `ManagementComplianceAssuranceCenter` to the manager dashboard.
+
 ## 2026-09-04 — Notification Retry Control
 
 - Added guarded retry for failed payment notifications with manager/submanager authorization.
