@@ -54,6 +54,7 @@ import autoTable from "jspdf-autotable";
 import PaymentAnalytics from "@/features/payments/components/PaymentAnalytics";
 import BankReconciliationPanel from "@/features/payments/components/BankReconciliationPanel";
 import NotificationFailuresPanel from "@/features/payments/components/NotificationFailuresPanel";
+import PaymentExceptionControlCenter from "@/features/payments/components/PaymentExceptionControlCenter";
 import RecordPaymentDialog from "@/features/payments/components/RecordPaymentDialog";
 import {
   invoiceStatusTone,
@@ -752,6 +753,10 @@ const ManagerPaymentHistory = () => {
               <Bell className="h-4 w-4" />
               Notifications
             </TabsTrigger>
+            <TabsTrigger value="operations" className="gap-1.5">
+              <AlertTriangle className="h-4 w-4" />
+              Operations
+            </TabsTrigger>
           </TabsList>
 
           <Button
@@ -1243,6 +1248,10 @@ const ManagerPaymentHistory = () => {
       {/* ── Notifications Tab ── */}
       <TabsContent value="notifications">
         <NotificationFailuresPanel />
+      </TabsContent>
+
+      <TabsContent value="operations">
+        <PaymentExceptionControlCenter />
       </TabsContent>
 
       </Tabs>
