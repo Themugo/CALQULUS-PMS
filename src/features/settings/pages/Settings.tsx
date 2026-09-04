@@ -392,6 +392,7 @@ const Settings = () => {
         <div className="flex-1 max-w-2xl">
           {renderContent()}
         </div>
+        </div>
       </div>
     </Layout>
   );

@@ -16,6 +16,7 @@ import { PROPERTY_IMAGES, PROPERTY_THUMBS } from "@/features/marketing/propertyI
 import { PortalIdentityBackdrop } from "@/features/auth/components/PortalIdentityBackdrop";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { portalSurfaceProps } from "@/core/design";
+import { PortalSwitcher } from "@/features/auth/components/PortalChrome";
 
 /**
  * Landlord portal entry chrome — owner performance desk, not operator.
@@ -31,12 +32,6 @@ const CAPABILITIES: { icon: ComponentType<{ className?: string; style?: CSSPrope
   { icon: Wallet, label: "Your share" },
   { icon: FileText, label: "Statements" },
   { icon: Shield, label: "Privacy protected" },
-];
-
-const OTHER_PORTALS: { label: string; href: string; accent: string }[] = [
-  { label: "Manager", href: PUBLIC_ROUTES.managerSignIn, accent: "#2F6FED" },
-  { label: "Agency", href: PUBLIC_ROUTES.agencyLogin, accent: "#0F766E" },
-  { label: "Tenant", href: PUBLIC_ROUTES.tenantLogin, accent: "#0284C7" },
 ];
 
 const PERFORMANCE_STATS: { icon: ComponentType<{ className?: string; style?: CSSProperties }>; label: string; value: string; strong: boolean }[] = [
@@ -170,27 +165,6 @@ export function LandlordPerformancePreview() {
   );
 }
 
-function PortalSwitcher() {
-  return (
-    <nav aria-label="Other CALQULUS portals" className="mt-6">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">Sign in as</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {OTHER_PORTALS.map((portal) => (
-          <Link
-            key={portal.href}
-            to={portal.href}
-            className="group inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: portal.accent }} aria-hidden />
-            {portal.label}
-            <ChevronRight className="h-3 w-3 text-white/30 transition-transform group-hover:translate-x-0.5" aria-hidden />
-          </Link>
-        ))}
-      </div>
-    </nav>
-  );
-}
-
 function CompactPortalFooter() {
   return (
     <div className="mt-4 flex items-center gap-3 text-[11px] text-white/40">
@@ -226,7 +200,7 @@ export function LandlordPortalShell({ children }: LandlordPortalShellProps) {
           <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1">
             <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5">
               <Wallet className="h-3.5 w-3.5" style={{ color: LANDLORD_ACCENT }} aria-hidden />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/90">Landlord portal</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/90">{identity.shortName} portal</span>
             </div>
             <h1 className="font-heading mt-5 max-w-md text-[1.9rem] font-bold leading-tight tracking-tight text-white sm:text-4xl">
               See how your properties are performing.
@@ -262,7 +236,7 @@ export function LandlordPortalShell({ children }: LandlordPortalShellProps) {
 
           <div className="lg:col-start-1 lg:row-start-2 lg:row-end-4">
             <LandlordPerformancePreview />
-            <PortalSwitcher />
+            <PortalSwitcher currentId="landlord" />
           </div>
         </main>
 

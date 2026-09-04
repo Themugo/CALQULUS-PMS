@@ -15,6 +15,7 @@ import { PROPERTY_IMAGES, PROPERTY_THUMBS } from "@/features/marketing/propertyI
 import { PortalIdentityBackdrop } from "@/features/auth/components/PortalIdentityBackdrop";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { portalSurfaceProps } from "@/core/design";
+import { PortalSwitcher as SharedPortalSwitcher } from "@/features/auth/components/PortalChrome";
 
 /**
  * Tenant portal entry chrome — residential home service, not an operations
@@ -34,15 +35,7 @@ const CAPABILITIES: { icon: ComponentType<{ className?: string; style?: CSSPrope
   { icon: Home, label: "Property services" },
 ];
 
-const PORTALS: { label: string; href: string; accent: string; current?: boolean }[] = [
-  { label: "Manager", href: PUBLIC_ROUTES.managerSignIn, accent: "#2F6FED" },
-  { label: "Landlord", href: PUBLIC_ROUTES.landlordLogin, accent: "#0F8A6A" },
-  { label: "Agency", href: PUBLIC_ROUTES.agencyLogin, accent: "#0F766E" },
-  { label: "Tenant", href: PUBLIC_ROUTES.tenantLogin, accent: TENANT_ACCENT, current: true },
-];
-
-/** One home, one rent obligation, one repair, one lease — illustrative, not live records. */
-export function TenantHomePreview() {
+function TenantHomePreview() {
   return (
     <figure className="rounded-[14px] border border-white/10 bg-card shadow-xl shadow-navy-deep/20">
       <div className="flex items-center justify-between gap-2 border-b border-border px-3.5 py-2.5">
@@ -133,39 +126,6 @@ export function TenantHomePreview() {
   );
 }
 
-function PortalSwitcher() {
-  return (
-    <nav aria-label="CALQULUS portals" className="mt-6">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">CALQULUS portals</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {PORTALS.map((portal) =>
-          portal.current ? (
-            <span
-              key={portal.href}
-              aria-current="page"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-white"
-              style={{ border: "1px solid rgba(2,132,199,0.55)", backgroundColor: "rgba(2,132,199,0.18)" }}
-            >
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: portal.accent }} aria-hidden />
-              {portal.label}
-            </span>
-          ) : (
-            <Link
-              key={portal.href}
-              to={portal.href}
-              className="group inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: portal.accent }} aria-hidden />
-              {portal.label}
-              <ChevronRight className="h-3 w-3 text-white/30 transition-transform group-hover:translate-x-0.5" aria-hidden />
-            </Link>
-          ),
-        )}
-      </div>
-    </nav>
-  );
-}
-
 function CompactPortalFooter() {
   return (
     <div className="mt-4 flex items-center gap-3 text-[11px] text-white/40">
@@ -244,7 +204,7 @@ export function TenantPortalShell({ children }: TenantPortalShellProps) {
           {/* Preview — third on mobile, under identity on desktop */}
           <div className="lg:col-start-1 lg:row-start-2 lg:row-end-4">
             <TenantHomePreview />
-            <PortalSwitcher />
+            <SharedPortalSwitcher currentId="tenant" />
           </div>
         </main>
 
