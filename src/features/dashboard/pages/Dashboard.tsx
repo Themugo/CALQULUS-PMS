@@ -3,6 +3,7 @@ import { StatCard } from "@/features/dashboard/components/StatCard";
 import { AttentionStrip } from "@/features/dashboard/components/AttentionStrip";
 import { PortfolioOperationsControlCenter } from "@/features/dashboard/components/PortfolioOperationsControlCenter";
 import { OperationWorkQueue } from "@/features/dashboard/components/OperationWorkQueue";
+import { ManagementAnalyticsPanel } from "@/features/dashboard/components/ManagementAnalyticsPanel";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
@@ -340,6 +341,7 @@ const Dashboard = () => {
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-operations-control">
             <div id="dashboard-operations-control" className="sr-only">Portfolio operations control</div>
             <PortfolioOperationsControlCenter stats={stats} loading={loading} />
+            <ManagementAnalyticsPanel />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
