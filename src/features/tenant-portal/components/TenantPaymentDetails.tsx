@@ -117,33 +117,32 @@ const TenantPaymentDetails: React.FC = () => {
   const { data: tenantInfo } = useQuery({
     queryKey: ['tenant-info-for-payment', userRole?.tenant_id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('tenants')
-        .select('manager_id, property, unit, unit_id')
+        .select('property, unit')
         .eq('id', userRole!.tenant_id!)
         .maybeSingle();
-      return data as { manager_id: string; property: string; unit: string; unit_id: string };
+      if (error) throw error;
+      return data as { property: string; unit: string };
     },
     enabled: !!userRole?.tenant_id,
   });
 
-  const { data: mpesaSettings } = useQuery({
-    queryKey: ['manager-mpesa-for-tenant', tenantInfo?.manager_id],
+  const { data: paymentRoutes = [], isLoading: routesLoading } = useQuery({
+    queryKey: ['tenant-canonical-payment-routes', userRole?.tenant_id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('manager_mpesa_settings')
-        .select('paybill_shortcode, paybill_enabled, till_shortcode, till_enabled, paybill_account_reference')
-        .eq('manager_id', tenantInfo!.manager_id)
-        .maybeSingle();
-      return data as {
-        paybill_shortcode: string;
-        paybill_enabled: boolean;
-        till_shortcode: string;
-        till_enabled: boolean;
-        paybill_account_reference: string;
-      };
+      const { data, error } = await supabase.rpc('get_tenant_payment_routes' as any);
+      if (error) throw error;
+      return (data ?? []) as Array<{
+        lease_id: string; unit_id: string | null; unit_number: string | null;
+        property_id: string; property_name: string; payment_account_id: string | null;
+        account_label: string | null; account_reference: string | null; payment_method: string | null;
+        paybill_number: string | null; till_number: string | null; bank_name: string | null;
+        bank_account_name: string | null; bank_account_number: string | null; bank_branch: string | null;
+        payment_instructions: string | null;
+      }>;
     },
-    enabled: !!tenantInfo?.manager_id,
+    enabled: !!user?.id && !!userRole?.tenant_id,
   });
 
   const copyAccountRef = (ref: string) => {
@@ -152,12 +151,9 @@ const TenantPaymentDetails: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (isLoading) return <Skeleton className="h-48 w-full" />;
-  if (!details && !mpesaSettings) return null;
+  if (isLoading || routesLoading) return <Skeleton className="h-48 w-full" />;
+  if (!details && paymentRoutes.length === 0) return null;
 
-  const paybill = details?.paybill_number || (mpesaSettings?.paybill_enabled ? mpesaSettings?.paybill_shortcode : null);
-  const till = mpesaSettings?.till_enabled ? mpesaSettings?.till_shortcode : null;
-  const accRef = details?.account_reference || mpesaSettings?.paybill_account_reference || tenantInfo?.unit || '';
   const depositPaid =
     Number(details?.house_deposit ?? 0) - Number(details?.deposit_balance ?? details?.house_deposit ?? 0);
   const depositTotal = Number(details?.house_deposit ?? 0) + Number(details?.water_deposit ?? 0);
@@ -238,79 +234,62 @@ const TenantPaymentDetails: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* M-Pesa payment instructions */}
-      {(paybill || till) && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Smartphone className="h-4 w-4 text-success" />
-              Pay via M-Pesa
-            </CardTitle>
-            <CardDescription>Use these details to pay rent via M-Pesa</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {paybill && (
-              <div className="rounded-xl bg-success/20 border border-success/30 p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs font-semibold text-success uppercase tracking-wide">Paybill</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="text-center">
-                    <p className="text-xs text-success mb-0.5">Paybill Number</p>
-                    <p className="text-2xl font-bold font-mono text-success">{paybill}</p>
-                  </div>
-                  {accRef && (
-                    <div className="text-center">
-                      <p className="text-xs text-success mb-0.5">Account Number</p>
-                      <p className="text-xl font-bold font-mono text-success">{accRef}</p>
+      {/* Canonical payment destinations — resolved from the same records used by invoices, prompts and STK. */}
+      {paymentRoutes.length > 0 && (
+        <div className="space-y-3">
+          {paymentRoutes.map((route) => {
+            const isPaybill = route.payment_method === 'mpesa_paybill';
+            const isTill = route.payment_method === 'mpesa_till';
+            const destination = isPaybill ? route.paybill_number : isTill ? route.till_number : null;
+            const accRef = route.account_reference || route.unit_number || '';
+            return (
+              <Card key={route.lease_id}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Smartphone className="h-4 w-4 text-success" />
+                    Payment destination — {route.unit_number || 'Unit'}
+                  </CardTitle>
+                  <CardDescription>{route.property_name}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {destination && (
+                    <div className="rounded-xl bg-success/20 border border-success/30 p-4">
+                      <p className="text-xs font-semibold text-success uppercase tracking-wide">{isPaybill ? 'M-Pesa Paybill' : 'M-Pesa Till'}</p>
+                      <p className="text-2xl font-bold font-mono text-success">{destination}</p>
+                      {isPaybill && accRef && (
+                        <div className="mt-2 flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-xs text-success">Account / reference</p>
+                            <p className="font-semibold font-mono text-success">{accRef}</p>
+                          </div>
+                          <Button variant="outline" size="sm" className="gap-2 border-success/40 text-success" onClick={() => copyAccountRef(accRef)}>
+                            {copied ? <CheckCircle className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                            {copied ? 'Copied!' : 'Copy'}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
-                {accRef && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2 border-success/40 text-success"
-                    onClick={() => copyAccountRef(accRef)}
-                  >
-                    {copied ? <CheckCircle className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                    {copied ? 'Copied!' : 'Copy account number'}
-                  </Button>
-                )}
-
-                {/* Step-by-step instructions */}
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-success">How to pay:</p>
-                  {[
-                    'Go to M-Pesa on your phone',
-                    'Select Lipa na M-Pesa → Paybill',
-                    `Enter Business No: ${paybill}`,
-                    `Enter Account No: ${accRef || 'your unit number'}`,
-                    `Enter Amount: ${fmt(details?.monthly_rent)}`,
-                    'Enter your M-Pesa PIN and confirm',
-                  ].map((step, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-success">
-                      <span className="h-4 w-4 rounded-full bg-success/30 text-success font-bold flex items-center justify-center shrink-0 text-xs">
-                        {i + 1}
-                      </span>
-                      <span>{step}</span>
+                  {route.payment_method === 'bank_transfer' && (
+                    <div className="rounded-xl border border-border p-4 text-sm space-y-1">
+                      <p className="font-semibold">Bank transfer</p>
+                      <p>{route.bank_name || 'Bank'}{route.bank_branch ? ` · ${route.bank_branch}` : ''}</p>
+                      {route.bank_account_name && <p>Account name: {route.bank_account_name}</p>}
+                      {route.bank_account_number && <p className="font-mono">Account: {route.bank_account_number}</p>}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {till && (
-              <div className="rounded-xl bg-success/20 border border-success/30 p-4">
-                <p className="text-xs font-semibold text-success uppercase tracking-wide mb-2">Buy Goods (Till)</p>
-                <div className="text-center">
-                  <p className="text-xs text-success">Till Number</p>
-                  <p className="text-2xl font-bold font-mono text-success">{till}</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  )}
+                  {route.payment_instructions && (
+                    <div className="rounded-lg bg-muted/30 p-3 text-xs">
+                      <p className="font-medium mb-1">Payment instructions</p>
+                      <p className="whitespace-pre-line text-muted-foreground">{route.payment_instructions}</p>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">This destination is configured for this unit and is the same route used by your payment prompts and bills.</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       )}
     </div>
   );

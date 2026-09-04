@@ -179,113 +179,45 @@ serve(
         );
       }
 
-      // Resolve payment destination
-      let paymentReceiverType: "manager" | "landlord" = "manager";
-      let landlordId: string | null = null;
-
-      if (propertyId) {
-        const { data: pl } = await ctx.supabase
-          .from("property_landlords")
-          .select("landlord_user_id, payment_destination")
-          .eq("property_id", propertyId)
-          .maybeSingle();
-
-        if (pl?.payment_destination === "landlord" && pl?.landlord_user_id) {
-          paymentReceiverType = "landlord";
-          landlordId = pl.landlord_user_id;
-        }
+      // Resolve the canonical payment destination. Unit/property/agency/landlord/manager
+      // routing is the source of truth; legacy M-Pesa settings are used only for API credentials.
+      const { data: route, error: routeError } = await ctx.supabase.rpc("get_effective_payment_collection_account", { p_invoice_id: primaryInvoiceId });
+      if (routeError || !route) {
+        throw errorResponse("No payment destination has been configured for this unit/property. Please contact the property manager.", 500);
       }
 
-      // Load M-Pesa settings
-      let mpesaSettings: Record<string, unknown>;
+      const routeMethod = String(route.payment_method || "");
+      const resolvedPaymentType = routeMethod === "mpesa_till" ? "till" : routeMethod === "mpesa_paybill" ? "paybill" : null;
+      if (!resolvedPaymentType) {
+        throw errorResponse("This bill is configured for a non-M-Pesa payment method. Use the payment instructions shown in the portal.", 400);
+      }
+      if (paymentType !== resolvedPaymentType) {
+        throw errorResponse(`This bill is configured for M-Pesa ${resolvedPaymentType}.`, 409);
+      }
 
+      const paymentReceiverType: "manager" | "landlord" = route.landlord_user_id ? "landlord" : "manager";
+      const landlordId: string | null = route.landlord_user_id ?? null;
+
+      let mpesaSettings: Record<string, unknown> | null = null;
       if (paymentReceiverType === "landlord" && landlordId) {
-        const { data: propSettings } = await ctx.supabase
-          .from("landlord_mpesa_settings")
-          .select("*")
-          .eq("landlord_user_id", landlordId)
-          .eq("property_id", propertyId)
-          .maybeSingle();
-
-        const { data: globalSettings } = propSettings
-          ? { data: propSettings }
-          : await ctx.supabase
-              .from("landlord_mpesa_settings")
-              .select("*")
-              .eq("landlord_user_id", landlordId)
-              .is("property_id", null)
-              .maybeSingle();
-
-        const settings = propSettings ?? globalSettings;
-        if (!settings) {
-          throw errorResponse(
-            "The landlord hasn't configured M-Pesa payments yet. Please contact your property manager.",
-            500
-          );
-        }
-        mpesaSettings = settings as Record<string, unknown>;
+        const { data } = await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).eq("property_id", propertyId).maybeSingle();
+        const { data: globalData } = data ? { data } : await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).is("property_id", null).maybeSingle();
+        mpesaSettings = (data ?? globalData) as Record<string, unknown> | null;
       } else {
-        const { data: propSettings } = await ctx.supabase
-          .from("manager_mpesa_settings")
-          .select("*")
-          .eq("manager_user_id", managerId)
-          .eq("property_id", propertyId)
-          .maybeSingle();
-
-        const { data: globalSettings } = propSettings
-          ? { data: propSettings }
-          : await ctx.supabase
-              .from("manager_mpesa_settings")
-              .select("*")
-              .eq("manager_user_id", managerId)
-              .is("property_id", null)
-              .maybeSingle();
-
-        const settings = propSettings ?? globalSettings;
-        if (!settings) {
-          throw errorResponse(
-            "The property manager hasn't configured M-Pesa payments yet. Please contact your property manager.",
-            500
-          );
-        }
-        mpesaSettings = settings as Record<string, unknown>;
+        const { data } = await ctx.supabase.from("manager_mpesa_settings").select("*").eq("manager_user_id", managerId).eq("property_id", propertyId).maybeSingle();
+        const { data: globalData } = data ? { data } : await ctx.supabase.from("manager_mpesa_settings").select("*").eq("manager_user_id", managerId).is("property_id", null).maybeSingle();
+        mpesaSettings = (data ?? globalData) as Record<string, unknown> | null;
       }
-
-      // Validate payment type is enabled
-      if (paymentType === "paybill" && !mpesaSettings.paybill_enabled) {
-        throw errorResponse("Paybill is not enabled for this property manager", 400);
-      }
-      if (paymentType === "till" && !mpesaSettings.till_enabled) {
-        throw errorResponse("Till/Buy Goods is not enabled for this property manager", 400);
-      }
+      if (!mpesaSettings) throw errorResponse("M-Pesa API credentials are not configured for the configured payment destination.", 500);
+      // Credentials come from the responsible manager/landlord account; the
+      // shortcode/passkey always come from the canonical collection record.
       if (!mpesaSettings.consumer_key || !mpesaSettings.consumer_secret) {
         throw errorResponse("M-Pesa API credentials not configured", 500);
       }
+      const shortcode = resolvedPaymentType === "paybill" ? route.paybill_number : route.till_number;
+      const passkey = resolvedPaymentType === "paybill" ? (mpesaSettings.paybill_passkey ?? mpesaSettings.passkey) : (mpesaSettings.till_passkey ?? mpesaSettings.passkey);
+      if (!shortcode || !passkey) throw errorResponse("The configured M-Pesa route is incomplete. Please contact the property manager.", 500);
 
-      const shortcode =
-        paymentType === "paybill"
-          ? mpesaSettings.paybill_shortcode
-          : mpesaSettings.till_shortcode;
-      const passkey =
-        paymentType === "paybill"
-          ? mpesaSettings.paybill_passkey
-          : mpesaSettings.till_passkey;
-
-      if (!shortcode || !passkey) {
-        throw errorResponse(
-          `${paymentType === "paybill" ? "Paybill" : "Till"} shortcode or passkey not configured`,
-          500
-        );
-      }
-
-      // Use unit_number as AccountReference for reconciliation
-      const useUnitRef = mpesaSettings.use_unit_as_account_ref !== false;
-      const accountReference = useUnitRef
-        ? unitNumber.slice(0, 12)
-        : (mpesaSettings.paybill_account_reference as string)?.slice(0, 12) ??
-          unitNumber.slice(0, 12);
-
-      // Format phone number
       let formattedPhone = phoneNumber.replace(/\s+/g, "").replace(/^(\+?254|0)/, "254");
       if (!formattedPhone.startsWith("254")) {
         formattedPhone = "254" + formattedPhone;
@@ -318,12 +250,14 @@ serve(
       const password = btoa(`${shortcode}${passkey}${timestamp}`);
       const callbackSecret = crypto.randomUUID();
 
+      const accountReference = String(route.account_reference || unitNumber || route.account_label || 'RENT').slice(0, 12);
+
       const stkPushPayload = {
         BusinessShortCode: shortcode,
         Password: password,
         Timestamp: timestamp,
         TransactionType:
-          paymentType === "paybill" ? "CustomerPayBillOnline" : "CustomerBuyGoodsOnline",
+          resolvedPaymentType === "paybill" ? "CustomerPayBillOnline" : "CustomerBuyGoodsOnline",
         Amount: Math.round(amount),
         PartyA: formattedPhone,
         PartyB: shortcode,
@@ -367,13 +301,14 @@ serve(
             unit_number: unitNumber,
             amount,
             phone_number: formattedPhone,
-            payment_type: paymentType,
+            payment_type: resolvedPaymentType,
             checkout_request_id: CheckoutRequestID,
             merchant_request_id: MerchantRequestID,
             status: "pending",
             initiated_at: new Date().toISOString(),
             callback_secret: callbackSecret,
             notes: allocationNote,
+            payer_party_id: payerParty?.id ?? null,
           })
           .select()
           .single();
