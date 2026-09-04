@@ -19,6 +19,7 @@ import { DocumentEvidenceControlCenter } from "@/features/dashboard/components/D
 import { FinancialOperationalReconciliationCenter } from "@/features/dashboard/components/FinancialOperationalReconciliationCenter";
 import { FinancialAuditPackCenter } from "@/features/dashboard/components/FinancialAuditPackCenter";
 import { ManagementComplianceAssuranceCenter } from "@/features/dashboard/components/ManagementComplianceAssuranceCenter";
+import ControlledManagementReportingCenter from "@/features/dashboard/components/ControlledManagementReportingCenter";
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
@@ -373,6 +374,7 @@ const Dashboard = () => {
             <FinancialOperationalReconciliationCenter />
             <FinancialAuditPackCenter />
             <ManagementComplianceAssuranceCenter />
+            <ControlledManagementReportingCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
