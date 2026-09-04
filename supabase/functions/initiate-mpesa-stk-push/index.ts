@@ -36,6 +36,7 @@ interface STKPushRequest {
   amount: number;
   phoneNumber: string;
   paymentType: "paybill" | "till";
+  payerPartyId?: string;
 }
 
 serve(
@@ -46,7 +47,7 @@ serve(
       rateLimit: { maxPerHour: 5, failClosed: true }, // Fail-closed for money operations
     },
     async (req, ctx) => {
-      const { invoiceId, invoiceIds, amount, phoneNumber, paymentType }: STKPushRequest =
+      const { invoiceId, invoiceIds, amount, phoneNumber, paymentType, payerPartyId }: STKPushRequest =
         await req.json();
 
       // Validate required fields
@@ -76,18 +77,22 @@ serve(
         throw errorResponse("Too many invoices in one payment (max 20)", 400);
       }
 
-      // Verify user is a tenant
+      // A payment may be initiated by the tenant or by an explicitly linked third-party payer.
       const { data: roleRow } = await ctx.supabase
         .from("user_roles")
         .select("tenant_id")
         .eq("user_id", ctx.user!.id)
         .eq("role", "tenant")
         .maybeSingle();
-
-      if (!roleRow?.tenant_id) {
-        throw new AuthorizationError("Tenant account is not linked to a rental profile");
+      const callerTenantId = roleRow?.tenant_id ?? null;
+      let payerParty: { id: string; user_id: string | null } | null = null;
+      if (payerPartyId) {
+        const { data: pp } = await ctx.supabase.from("payment_parties").select("id,user_id").eq("id", payerPartyId).maybeSingle();
+        if (!pp || pp.user_id !== ctx.user!.id) throw new AuthorizationError("Payer account is not linked to this user");
+        payerParty = pp;
+      } else if (!callerTenantId) {
+        throw new AuthorizationError("Tenant or linked payer account is required");
       }
-      const callerTenantId = roleRow.tenant_id;
 
       // Fetch invoices
       const invoiceSelect = `
@@ -123,11 +128,13 @@ serve(
         throw errorResponse("Some selected bills are no longer payable", 400);
       }
 
-      // Verify caller owns all invoices
+      // Verify every selected invoice belongs to the tenant, or to a unit explicitly linked to the payer.
       for (const row of invoiceRows) {
-        if (row.tenant_id !== callerTenantId) {
-          throw new AuthorizationError("Only the tenant can initiate payment for their own bills");
-        }
+        if (callerTenantId && row.tenant_id === callerTenantId && !payerPartyId) continue;
+        if (!payerPartyId) throw new AuthorizationError("Only the tenant can initiate payment for their own bills");
+        const unitIdForInvoice = row.unit_id ?? (row.leases as { unit_id?: string | null } | null)?.unit_id ?? null;
+        const { data: link } = await ctx.supabase.from("payer_unit_links").select("id").eq("payer_party_id", payerPartyId).eq("unit_id", unitIdForInvoice).eq("is_active", true).maybeSingle();
+        if (!link) throw new AuthorizationError("Payer is not linked to every selected unit");
       }
 
       // Verify amount matches

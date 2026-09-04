@@ -28,6 +28,7 @@ const ROLE_HOME: Record<AppRole, string> = {
   manager:    '/',
   landlord:   '/landlord/dashboard',
   agency:     '/agency',
+  payer:      '/payer',
 };
 
 const LOGIN_PATH: Record<AppRole, string> = {
@@ -37,6 +38,7 @@ const LOGIN_PATH: Record<AppRole, string> = {
   manager:    '/auth',
   landlord:   '/landlord/login',
   agency:     '/agency/login',
+  payer:      '/payer/login',
 };
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({

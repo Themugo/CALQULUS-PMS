@@ -15,7 +15,7 @@ import {
   evaluateHasWebhostPermission,
 } from '@/features/auth/lib/permissions';
 
-export type AppRole = 'manager' | 'tenant' | 'webhost' | 'submanager' | 'landlord' | 'agency';
+export type AppRole = 'manager' | 'tenant' | 'webhost' | 'submanager' | 'landlord' | 'agency' | 'payer';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
 export type AdminLevel = 'super_admin' | 'admin' | 'limited_admin';
 export type PlatformAdminType = 'owner' | 'business' | 'admin';

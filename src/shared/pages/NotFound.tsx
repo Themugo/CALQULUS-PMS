@@ -23,6 +23,7 @@ const NotFound = () => {
       case 'webhost':    return '/webhost';
       case 'submanager': return '/';
       case 'agency':     return '/agency';
+      case 'payer':      return '/payer';
       default:           return '/';
     }
   };

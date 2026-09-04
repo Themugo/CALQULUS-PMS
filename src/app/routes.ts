@@ -15,6 +15,8 @@ const Auth = lazy(() => import("@/features/auth/pages/Auth"));
 const WebhostAuth = lazy(() => import("@/features/auth/pages/WebhostAuth"));
 const TenantAuth = lazy(() => import("@/features/auth/pages/TenantAuth"));
 const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
+const PayerPortalAuth = lazy(() => import("@/features/auth/pages/PayerPortalAuth"));
+const PayerPortal = lazy(() => import("@/features/payments/pages/PayerPortal"));
 const TenantSelfRegister = lazy(() => import("@/features/auth/pages/TenantSelfRegister"));
 
 const RegisterExperience = lazy(() => import("@/features/auth/pages/RegisterExperience"));
@@ -205,6 +207,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landlord/login", element: LandlordPortalAuth },
   { path: "/landlord/invitation", element: LandlordInvitationAccept },
   { path: "/tenant/login", element: TenantLogin },
+  { path: "/payer/login", element: PayerPortalAuth },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/webhost/login", element: WebhostAuth },
@@ -379,6 +382,15 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     ],
   },
   {
+    role: "payer",
+    fallback: "/payer",
+    routes: [
+      { path: "/payer/login", element: PayerPortalAuth },
+      { path: "/payer", element: PayerPortal, protected: true },
+      { path: "*", redirect: "/payer" },
+    ],
+  },
+  {
     role: "agency",
     fallback: "/agency",
     routes: [
@@ -476,6 +488,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/agency/login", element: AgencyAuth },
   { path: "/agency", element: PageLoaderStub },
   { path: "/tenant/login", element: TenantLogin },
+  { path: "/payer/login", element: PayerPortalAuth },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/activate", element: ActivateAccount },
@@ -494,6 +507,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "/agency/login", element: AgencyAuth },
   { path: "/tenant/login", element: TenantLogin },
+  { path: "/payer/login", element: PayerPortalAuth },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
   { path: "/activate", element: ActivateAccount },

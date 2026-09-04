@@ -37,6 +37,7 @@ const ROLE_PRIORITY: AppRole[] = [
   "agency",
   "landlord",
   "tenant",
+  "payer",
 ];
 
 function synthetic(
@@ -78,6 +79,9 @@ export function pickRoleForPath(
     }
     if (pathname.startsWith("/agency") && byRole.has("agency")) {
       return byRole.get("agency")!;
+    }
+    if (pathname.startsWith("/payer") && byRole.has("payer")) {
+      return byRole.get("payer")!;
     }
     if (
       (pathname.startsWith("/portal") || pathname.startsWith("/tenant")) &&

@@ -328,6 +328,12 @@ serve(async (req) => {
     }
 
     txId = atomic.transactionId ?? null;
+
+    // Preserve the payer attribution on every allocation when a third-party payer
+    // initiated the transaction. This keeps bulk and individual reconciliation unit-first.
+    if (txId) {
+      await supabase.rpc("backfill_payment_allocation_payer_atomic", { p_transaction_id: txId });
+    }
     remaining = roundMoney(Number(atomic.advanceCredit ?? 0));
     creditBalance = roundMoney(Number(atomic.creditBalance ?? 0));
     for (const alloc of atomic.allocations ?? []) {

@@ -8,6 +8,7 @@ const ROLE_LOGIN: Record<AppRole, string> = {
   landlord: "/landlord/login",
   webhost: "/webhost/login",
   agency: "/agency/login",
+  payer: "/payer/login",
 };
 
 export const portalLoginPath = (portal?: string | null): string => {
@@ -20,6 +21,8 @@ export const portalLoginPath = (portal?: string | null): string => {
       return ROLE_LOGIN.webhost;
     case "agency":
       return ROLE_LOGIN.agency;
+    case "payer":
+      return ROLE_LOGIN.payer;
     case "manager":
     default:
       return ROLE_LOGIN.manager;
@@ -31,6 +34,7 @@ export const signupRedirectPath = (role: AppRole): string => {
   if (role === "landlord") return ROLE_LOGIN.landlord;
   if (role === "webhost") return ROLE_LOGIN.webhost;
   if (role === "agency") return ROLE_LOGIN.agency;
+  if (role === "payer") return ROLE_LOGIN.payer;
   return ROLE_LOGIN.manager;
 };
 
