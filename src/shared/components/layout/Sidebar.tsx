@@ -1,35 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
   Settings,
   LogOut,
   ChevronRight,
   ChevronLeft,
   X,
   Globe,
-  Shield,
-  Users,
-  FileText,
-  Wrench,
-  Calendar,
-  CreditCard,
-  BarChart3,
-  Droplets,
-  Mail,
-  Handshake,
-  FileSpreadsheet,
-  UserX,
-  Building2,
-  Layers,
-  FileCheck,
-  Receipt,
-  Wallet,
-  MessageSquare,
-  User,
-  Home,
   Star,
-  LucideIcon,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -41,6 +20,14 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PortalAccentBar, sidebarNavClass } from "@/core/design";
+import {
+  MANAGER_NAV_GROUPS,
+  WEBHOST_NAV_GROUPS,
+  AGENCY_NAV_GROUPS,
+  LANDLORD_NAV_GROUPS,
+  TENANT_NAV_GROUPS,
+} from "@/shared/navigation/portalNavigation";
+
 
 interface NavItem {
   name: string;
@@ -55,143 +42,22 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const managerNavGroups: NavGroup[] = [
-  {
-    title: "OVERVIEW",
-    items: [
-      { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    ],
-  },
-  {
-    title: "PORTFOLIO",
-    items: [
-      { name: "Properties", href: "/properties", icon: Building2, permission: "view_properties" },
-      { name: "Units", href: "/units", icon: Layers, permission: "view_properties" },
-      { name: "Landlords", href: "/landlords", icon: Handshake, permission: "view_properties" },
-    ],
-  },
-  {
-    title: "OCCUPANCY",
-    items: [
-      { name: "Leases", href: "/leases", icon: FileText, permission: "view_leases" },
-      { name: "Tenants", href: "/tenants", icon: Users, permission: "view_tenants" },
-      { name: "Invites", href: "/invites", icon: Mail, permission: "view_tenants" },
-      { name: "Vacation Notices", href: "/vacation-notices", icon: Calendar, permission: "view_tenants" },
-      { name: "Tenant Screening", href: "/tenant-screening", icon: UserX, permission: "view_tenants" },
-    ],
-  },
-  {
-    title: "COLLECTIONS",
-    items: [
-      { name: "Billing", href: "/billing", icon: CreditCard, permission: "view_invoices" },
-      { name: "Water Billing", href: "/water-billing", icon: Droplets, permission: "view_invoices" },
-      { name: "Statements", href: "/statements", icon: FileSpreadsheet, permission: "view_invoices" },
-      { name: "Payment History", href: "/payments", icon: Wallet, permission: "view_invoices" },
-    ],
-  },
-  {
-    title: "OPERATIONS",
-    items: [
-      { name: "Maintenance", href: "/maintenance", icon: Wrench, permission: "view_maintenance" },
-      { name: "Contracts", href: "/contracts", icon: FileCheck, permission: "view_contracts" },
-      { name: "Reports", href: "/reports", icon: BarChart3 },
-    ],
-  },
-  {
-    title: "ACCOUNT",
-    items: [
-      { name: "Platform Billing", href: "/platform-billing", icon: Receipt },
-      { name: "Settings", href: "/settings", icon: Settings },
-    ],
-  },
-];
+const toSidebarGroups = (groups: typeof MANAGER_NAV_GROUPS): NavGroup[] =>
+  groups.map((group) => ({
+    title: group.label.toUpperCase(),
+    items: group.items.map((item) => ({
+      name: item.label,
+      href: item.href,
+      icon: item.icon as LucideIcon,
+      permission: item.permission as PermissionKey | undefined,
+    })),
+  }));
 
-const webhostNavGroups: NavGroup[] = [
-  {
-    title: "PLATFORM OVERSIGHT",
-    items: [
-      { name: "Dashboard", href: "/webhost", icon: Shield },
-      { name: "Organizations", href: "/webhost/organizations", icon: Building2 },
-      { name: "Users", href: "/webhost/users", icon: Users },
-      { name: "Properties", href: "/webhost/properties", icon: Building2 },
-      { name: "Landlords", href: "/webhost/landlords", icon: Handshake },
-      { name: "Subscriptions", href: "/webhost/subscriptions", icon: CreditCard },
-      { name: "Tiers", href: "/webhost/tiers", icon: FileCheck },
-      { name: "Contracts", href: "/webhost/contracts", icon: FileText },
-      { name: "Audit Log", href: "/webhost/audit", icon: FileSpreadsheet },
-      { name: "Security", href: "/webhost/security", icon: Shield },
-      { name: "Issues", href: "/webhost/issues", icon: Wrench },
-      { name: "Settings", href: "/webhost/settings", icon: Settings },
-      { name: "Brand Studio", href: "/webhost/brand", icon: Globe },
-    ],
-  },
-];
-
-const agencyNavGroups: NavGroup[] = [
-  {
-    title: "AGENCY BOOK",
-    items: [
-      { name: "Dashboard", href: "/agency", icon: LayoutDashboard },
-      { name: "Clients", href: "/agency/clients", icon: Handshake },
-      { name: "Portfolio", href: "/agency/portfolio", icon: Building2 },
-    ],
-  },
-  {
-    title: "OPERATIONS",
-    items: [
-      { name: "Tenants", href: "/agency/tenants", icon: Users },
-      { name: "Leases", href: "/agency/leases", icon: FileText },
-      { name: "Billing", href: "/agency/billing", icon: CreditCard },
-      { name: "Water Billing", href: "/agency/water-billing", icon: Droplets },
-      { name: "Statements", href: "/agency/statements", icon: FileSpreadsheet },
-      { name: "Invites", href: "/agency/invites", icon: Mail },
-      { name: "Vacation Notices", href: "/agency/vacation-notices", icon: Calendar },
-      { name: "Maintenance", href: "/agency/maintenance", icon: Wrench },
-      { name: "Reports", href: "/agency/reports", icon: BarChart3 },
-      { name: "Settings", href: "/agency/settings", icon: Settings },
-    ],
-  },
-];
-
-const landlordNavGroups: NavGroup[] = [
-  {
-    title: "PORTFOLIO",
-    items: [
-      { name: "Dashboard", href: "/landlord/dashboard", icon: LayoutDashboard },
-      { name: "Portfolio", href: "/landlord/portfolio", icon: Building2 },
-    ],
-  },
-  {
-    title: "FINANCE",
-    items: [
-      { name: "Financials", href: "/landlord/financials", icon: BarChart3 },
-      { name: "Statements", href: "/landlord/statements", icon: FileSpreadsheet },
-    ],
-  },
-  {
-    title: "PROPERTY",
-    items: [
-      { name: "Maintenance", href: "/landlord/maintenance", icon: Wrench },
-      { name: "Documents", href: "/landlord/documents", icon: FileText },
-      { name: "Settings", href: "/landlord/settings", icon: Settings },
-    ],
-  },
-];
-
-const tenantNavGroups: NavGroup[] = [
-  {
-    title: "HOME",
-    items: [
-      { name: "Dashboard", href: "/portal", icon: Home },
-      { name: "Payments", href: "/portal/payments", icon: CreditCard },
-      { name: "Lease", href: "/portal/contracts", icon: FileText },
-      { name: "Maintenance", href: "/portal/maintenance", icon: Wrench },
-      { name: "Receipts", href: "/portal/receipts", icon: Receipt },
-      { name: "Documents", href: "/portal/documents", icon: FileText },
-      { name: "Profile", href: "/portal/profile", icon: User },
-    ],
-  },
-];
+const managerNavGroups = toSidebarGroups(MANAGER_NAV_GROUPS);
+const webhostNavGroups = toSidebarGroups(WEBHOST_NAV_GROUPS);
+const agencyNavGroups = toSidebarGroups(AGENCY_NAV_GROUPS);
+const landlordNavGroups = toSidebarGroups(LANDLORD_NAV_GROUPS);
+const tenantNavGroups = toSidebarGroups(TENANT_NAV_GROUPS);
 
 interface SidebarProps {
   isOpen?: boolean;

@@ -1,4 +1,13 @@
 
+## Portal Navigation & Access Integrity — Phases 185–186
+- Consolidated Manager, Agency, Landlord, Tenant and WebHost navigation onto the canonical portal navigation model.
+- Removed duplicated role navigation definitions from the legacy shared sidebar.
+- Added centralized permission filtering to the shared portal shell.
+- Added explicit authenticated cross-portal boundaries and wrong-portal redirects.
+- Bound permission-bearing WebHost navigation items to matching route-level permission guards.
+- Added structural regression coverage for navigation ownership, permission drift, duplicate targets and portal boundaries.
+- Automated Vitest/typecheck/lint execution could not be completed because the packaged environment lacked the required binaries and dependency installation timed out; this is explicitly recorded in the initiative audit.
+
 ## 2026-09-03 — Phases 178–179: Dashboard performance & query efficiency
 - Removed the dashboard refresh double-request path by relying on TanStack Query invalidation for active stats.
 - Coalesced bursts of realtime tenant/lease/invoice/property/maintenance/refund events into a single dashboard stats invalidation window.

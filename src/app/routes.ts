@@ -122,6 +122,13 @@ export interface RouteDef {
     | "view_invoices"
     | "view_maintenance"
     | "view_contracts";
+  /** Webhost permission required to open this URL. Super admins bypass it. */
+  requirePermission?:
+    | "can_manage_managers"
+    | "can_manage_properties"
+    | "can_manage_system_landlords"
+    | "can_manage_billing"
+    | "can_view_activity_logs";
 }
 
 export interface RoleRouteConfig {
@@ -224,12 +231,53 @@ export const adminDomainRoutes: RouteDef[] = [
   { path: "*", redirect: "/webhost/login" },
 ];
 
+// Cross-portal boundaries: a signed-in user who enters another desk's URL
+// is returned to their own home instead of landing on a generic 404.
+const CROSS_PORTAL_REDIRECTS: Record<string, RouteDef[]> = {
+  webhost: [
+    { path: "/", redirect: "/webhost" },
+    { path: "/agency/*", redirect: "/webhost" },
+    { path: "/landlord/*", redirect: "/webhost" },
+    { path: "/portal/*", redirect: "/webhost" },
+  ],
+  submanager: [
+    { path: "/agency/*", redirect: "/" },
+    { path: "/landlord/*", redirect: "/" },
+    { path: "/portal/*", redirect: "/" },
+    { path: "/webhost/*", redirect: "/" },
+  ],
+  manager: [
+    { path: "/agency/*", redirect: "/" },
+    { path: "/landlord/*", redirect: "/" },
+    { path: "/webhost/*", redirect: "/" },
+  ],
+  landlord: [
+    { path: "/", redirect: "/landlord/dashboard" },
+    { path: "/agency/*", redirect: "/landlord/dashboard" },
+    { path: "/portal/*", redirect: "/landlord/dashboard" },
+    { path: "/webhost/*", redirect: "/landlord/dashboard" },
+  ],
+  tenant: [
+    { path: "/", redirect: "/portal" },
+    { path: "/agency/*", redirect: "/portal" },
+    { path: "/landlord/*", redirect: "/portal" },
+    { path: "/webhost/*", redirect: "/portal" },
+  ],
+  agency: [
+    { path: "/", redirect: "/agency" },
+    { path: "/landlord/*", redirect: "/agency" },
+    { path: "/portal/*", redirect: "/agency" },
+    { path: "/webhost/*", redirect: "/agency" },
+  ],
+};
+
 // ── Role-based route configs ────────────────────────────────────────
 export const roleRouteConfigs: RoleRouteConfig[] = [
   {
     role: "webhost",
     fallback: "/webhost",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.webhost,
       { path: "/webhost/login", redirect: "/webhost" },
       { path: "/webhost/invite", element: AdminInviteAccept },
       { path: "/webhost", element: WebhostDashboard, protected: true },
@@ -237,22 +285,22 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/webhost/applications/:appId", element: AdminApplicationDetail, protected: true },
       { path: "/webhost/deployments", element: AdminDeployments, protected: true },
       { path: "/webhost/operations", element: AdminOperations, protected: true },
-      { path: "/webhost/organizations", element: AdminOrganizations, protected: true },
+      { path: "/webhost/organizations", element: AdminOrganizations, protected: true, requirePermission: "can_manage_managers" },
       { path: "/webhost/organizations/:userId", element: AdminOrganizationDetail, protected: true },
       { path: "/webhost/users", element: AdminUsers, protected: true },
-      { path: "/webhost/subscriptions", element: AdminSubscriptions, protected: true },
-      { path: "/webhost/audit", element: AdminAuditLog, protected: true },
-      { path: "/webhost/security", element: AdminSecurity, protected: true },
+      { path: "/webhost/subscriptions", element: AdminSubscriptions, protected: true, requirePermission: "can_manage_billing" },
+      { path: "/webhost/audit", element: AdminAuditLog, protected: true, requirePermission: "can_view_activity_logs" },
+      { path: "/webhost/security", element: AdminSecurity, protected: true, requirePermission: "can_view_activity_logs" },
       { path: "/webhost/settings", element: AdminSettings, protected: true },
       { path: "/webhost/brand", element: AdminBrandStudio, protected: true },
       { path: "/webhost/unattached-tenants", element: AdminUnattachedTenants, protected: true },
-      { path: "/webhost/properties", element: AdminProperties, protected: true },
-      { path: "/webhost/landlords", element: AdminLandlords, protected: true },
-      { path: "/webhost/tiers", element: AdminTiers, protected: true },
+      { path: "/webhost/properties", element: AdminProperties, protected: true, requirePermission: "can_manage_properties" },
+      { path: "/webhost/landlords", element: AdminLandlords, protected: true, requirePermission: "can_manage_system_landlords" },
+      { path: "/webhost/tiers", element: AdminTiers, protected: true, requirePermission: "can_manage_billing" },
       { path: "/webhost/billing-rules", element: AdminBillingRules, protected: true },
       { path: "/webhost/custom-pricing", element: AdminCustomPricing, protected: true },
-      { path: "/webhost/contracts", element: AdminContracts, protected: true },
-      { path: "/webhost/issues", element: AdminIssues, protected: true },
+      { path: "/webhost/contracts", element: AdminContracts, protected: true, requirePermission: "can_manage_managers" },
+      { path: "/webhost/issues", element: AdminIssues, protected: true, requirePermission: "can_view_activity_logs" },
       { path: "*", redirect: "/webhost" },
     ],
   },
@@ -261,6 +309,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     fallback: "/",
     wrapper: "viewOnly",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.submanager,
       { path: "/auth", redirect: "/" },
       { path: "/landlord", redirect: "/" },
       { path: "/", element: Dashboard, protected: true },
@@ -293,6 +342,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     role: "landlord",
     fallback: "/landlord/dashboard",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.landlord,
       { path: "/landlord/login", redirect: "/landlord/dashboard" },
       { path: "/landlord/invitation", element: LandlordInvitationAccept },
       { path: "/landlord/dashboard", element: LandlordDashboard, protected: true },
@@ -312,6 +362,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     role: "tenant",
     fallback: "/portal",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.tenant,
       { path: "/auth", redirect: "/portal" },
       { path: "/portal", element: TenantPortal, protected: true },
       { path: "/portal/payments", element: PaymentHistory, protected: true },
@@ -331,6 +382,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     role: "agency",
     fallback: "/agency",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.agency,
       { path: "/agency/login", redirect: "/agency" },
       { path: "/auth", redirect: "/agency" },
       { path: "/landlord", redirect: "/agency" },
@@ -369,6 +421,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
     role: "manager",
     fallback: "/",
     routes: [
+      ...CROSS_PORTAL_REDIRECTS.manager,
       { path: "/install", element: InstallApp },
       { path: "/auth", redirect: "/" },
       { path: "/landlord", redirect: "/" },

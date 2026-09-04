@@ -7,6 +7,7 @@ import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { PortalAccentBar, deskNavClass } from "@/core/design";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { cn } from "@/shared/lib/utils";
+import { useRBAC, type PermissionKey } from "@/shared/hooks/useRBAC";
 
 export interface PortalDeskNavItem {
   label: string;
@@ -87,7 +88,16 @@ export function PortalDeskShell({
 }: PortalDeskShellProps) {
   const location = useLocation();
   const { identity, themeMode, setThemeMode } = usePortalIdentity();
+  const { can } = useRBAC();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const visibleNavGroups = navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.permission || can(item.permission as PermissionKey)),
+    }))
+    .filter((group) => group.items.length > 0);
+  const visibleMobileNav = mobileNav?.filter((item) => !item.permission || can(item.permission as PermissionKey));
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -146,7 +156,7 @@ export function PortalDeskShell({
         </div>
 
         <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label={navLabel}>
-          {navGroups.map((group) => {
+          {visibleNavGroups.map((group) => {
             if (group.items.length === 0) return null;
             const groupId = `nav-group-${group.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
             return (
@@ -237,10 +247,10 @@ export function PortalDeskShell({
         <Footer variant="compact" className={mobileNav ? "hidden md:block" : undefined} />
       </div>
 
-      {mobileNav ? (
+      {visibleMobileNav ? (
         <nav aria-label={`${navLabel} mobile`} className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden safe-area-bottom">
           <div className="flex h-16 items-stretch justify-around">
-            {mobileNav.map((item) => {
+            {visibleMobileNav.map((item) => {
               const active = isActive(item.href, location.pathname);
               const Icon = item.icon;
               return (

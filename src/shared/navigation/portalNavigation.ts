@@ -32,6 +32,55 @@ import { LANDLORD_ROUTES } from "@/features/landlord/lib/landlordPaths";
 import { TENANT_ROUTES } from "@/features/tenant-portal/lib/tenantPaths";
 import { WEBHOST_OPS_ROUTES, WEBHOST_ROUTES } from "@/features/webhost/lib/webhostPaths";
 
+export const MANAGER_NAV_GROUPS: PortalDeskNavGroup[] = [
+  {
+    label: "Overview",
+    items: [{ label: "Dashboard", href: "/", icon: LayoutDashboard }],
+  },
+  {
+    label: "Portfolio",
+    items: [
+      { label: "Properties", href: "/properties", icon: Building2, permission: "view_properties" },
+      { label: "Units", href: "/units", icon: Layers, permission: "view_properties" },
+      { label: "Landlords", href: "/landlords", icon: Handshake, permission: "view_properties" },
+    ],
+  },
+  {
+    label: "Occupancy",
+    items: [
+      { label: "Leases", href: "/leases", icon: FileText, permission: "view_leases" },
+      { label: "Tenants", href: "/tenants", icon: Users, permission: "view_tenants" },
+      { label: "Invites", href: "/invites", icon: Mail, permission: "view_tenants" },
+      { label: "Vacation Notices", href: "/vacation-notices", icon: Calendar, permission: "view_tenants" },
+      { label: "Tenant Screening", href: "/tenant-screening", icon: ShieldQuestion, permission: "view_tenants" },
+    ],
+  },
+  {
+    label: "Collections",
+    items: [
+      { label: "Billing", href: "/billing", icon: CreditCard, permission: "view_invoices" },
+      { label: "Water Billing", href: "/water-billing", icon: Droplets, permission: "view_invoices" },
+      { label: "Statements", href: "/statements", icon: FileSpreadsheet, permission: "view_invoices" },
+      { label: "Payment History", href: "/payments", icon: Receipt, permission: "view_invoices" },
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      { label: "Maintenance", href: "/maintenance", icon: Wrench, permission: "view_maintenance" },
+      { label: "Contracts", href: "/contracts", icon: FileCheck, permission: "view_contracts" },
+      { label: "Reports", href: "/reports", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { label: "Platform Billing", href: "/platform-billing", icon: Receipt },
+      { label: "Settings", href: "/settings", icon: Settings },
+    ],
+  },
+];
+
 export const AGENCY_NAV_GROUPS: PortalDeskNavGroup[] = [
   {
     label: "Agency book",
@@ -154,4 +203,36 @@ export function isTenantNavActive(href: string, pathname: string): boolean {
   if (href === TENANT_ROUTES.dashboard) return pathname === href;
   if (href === TENANT_ROUTES.lease) return pathname === href || pathname.startsWith("/portal/lease");
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export type PortalNavRole = "manager" | "submanager" | "agency" | "landlord" | "tenant" | "webhost";
+
+export const PORTAL_HOME_BY_ROLE: Record<PortalNavRole, string> = {
+  manager: "/",
+  submanager: "/",
+  agency: "/agency",
+  landlord: "/landlord/dashboard",
+  tenant: "/portal",
+  webhost: "/webhost",
+};
+
+const PORTAL_PREFIXES: Array<[PortalNavRole, string]> = [
+  ["webhost", "/webhost"],
+  ["agency", "/agency"],
+  ["landlord", "/landlord"],
+  ["tenant", "/portal"],
+];
+
+export function portalOwnerForPath(pathname: string): PortalNavRole | null {
+  if (pathname === "/" || !pathname.startsWith("/")) return "manager";
+  for (const [role, prefix] of PORTAL_PREFIXES) {
+    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return role;
+  }
+  return null;
+}
+
+export function isPortalPathOwnedByRole(pathname: string, role: PortalNavRole): boolean {
+  const owner = portalOwnerForPath(pathname);
+  if (owner === null) return true;
+  return owner === role || (role === "submanager" && owner === "manager");
 }

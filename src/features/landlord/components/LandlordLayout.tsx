@@ -24,6 +24,11 @@ export default function LandlordLayout({ children, title, description, actions }
       userEmail={user?.email}
       onSignOut={() => void signOut()}
       settingsHref={LANDLORD_ROUTES.settings}
+      isActive={(href, pathname) => {
+        if (href === LANDLORD_ROUTES.dashboard) return pathname === href;
+        if (href === LANDLORD_ROUTES.portfolio) return pathname === href || pathname.startsWith("/landlord/properties/");
+        return pathname === href || pathname.startsWith(`${href}/`);
+      }}
       contentMaxWidth="max-w-6xl"
       {...portalSurfaceProps("landlord")}
     >
