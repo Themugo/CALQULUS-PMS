@@ -30,7 +30,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import {
   Plus, FileText, CheckCircle2, ClipboardCheck,
-  Receipt, Save, Loader2, Search,
+  Receipt, Save, Loader2, Search, Wallet,
 } from "lucide-react";
 import { MpesaPaymentDialog } from "@/features/billing/components/MpesaPaymentDialog";
 import TenantInvoiceForm from "@/features/billing/components/TenantInvoiceForm";
@@ -38,6 +38,7 @@ import { ReceiptVerification } from "@/features/payments/components/ReceiptVerif
 import { BillingStatsBar } from "@/features/billing/components/BillingStatsBar";
 import { InvoiceTable } from "@/features/billing/components/InvoiceTable";
 import { ExpendituresTab } from "@/features/billing/components/ExpendituresTab";
+import UnitPaymentReconciliation from "@/features/billing/components/UnitPaymentReconciliation";
 import { ReceiptsTab } from "@/features/billing/components/ReceiptsTab";
 import { useToast } from "@/shared/hooks/use-toast";
 import { toUserFacingError, logError } from "@/shared/lib/errorLogger";
@@ -53,7 +54,7 @@ import type { BillingInvoice } from "@/features/billing/hooks/useBillingData";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type MainTab = "invoices" | "receipts" | "expenditures" | "verify";
+type MainTab = "invoices" | "reconciliation" | "receipts" | "expenditures" | "verify";
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -96,7 +97,7 @@ const Billing = () => {
     const filter = searchParams.get("filter");
     if (filter) setActiveTab(filter);
     const tab = searchParams.get("tab");
-    if (tab === "receipts" || tab === "invoices" || tab === "expenditures" || tab === "verify") {
+    if (tab === "receipts" || tab === "invoices" || tab === "reconciliation" || tab === "expenditures" || tab === "verify") {
       setMainTab(tab);
     }
   }, [searchParams]);
@@ -325,6 +326,7 @@ const Billing = () => {
       >
         <TabsList className="bg-card border border-border w-full sm:w-auto">
           <TabsTrigger value="invoices"     className="gap-2 text-sm"><FileText className="h-4 w-4" />Invoices</TabsTrigger>
+          <TabsTrigger value="reconciliation" className="gap-2 text-sm"><Wallet className="h-4 w-4" />Unit Collections</TabsTrigger>
           <TabsTrigger value="receipts"     className="gap-2 text-sm"><CheckCircle2 className="h-4 w-4" />Receipts</TabsTrigger>
           <TabsTrigger value="verify"       className="gap-2 text-sm"><ClipboardCheck className="h-4 w-4" />Verify Payments</TabsTrigger>
           <TabsTrigger value="expenditures" className="gap-2 text-sm"><Receipt className="h-4 w-4" />Expenditures</TabsTrigger>
@@ -446,6 +448,11 @@ const Billing = () => {
               </div>
             </TabsContent>
           </Tabs>
+        </TabsContent>
+
+        {/* ── Unit reconciliation tab ───────────────────────────────────── */}
+        <TabsContent value="reconciliation" className="space-y-4 sm:space-y-6">
+          <UnitPaymentReconciliation title="Portfolio unit collections" />
         </TabsContent>
 
         {/* ── Receipts tab ─────────────────────────────────────────────── */}

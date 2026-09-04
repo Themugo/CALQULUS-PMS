@@ -14,6 +14,7 @@ import {
 import { occupancyRateColor, maintenancePriorityTone, maintenanceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 import { LANDLORD_PROPERTY_TABS, LANDLORD_TREND_COLORS, netShare } from '@/features/landlord/lib/portfolioMetrics';
 import { LANDLORD_DOCUMENT_TYPE } from '@/features/landlord/lib/documentTypes';
+import UnitPaymentReconciliation from '@/features/billing/components/UnitPaymentReconciliation';
 import { format, differenceInDays } from 'date-fns';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
@@ -122,6 +123,7 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
           <TabsTrigger value="performance" className="text-xs gap-1.5">
             <BarChart3 className="h-3.5 w-3.5" />Performance
           </TabsTrigger>
+          <TabsTrigger value="collections" className="text-xs gap-1.5"><DollarSign className="h-3.5 w-3.5" />Collections</TabsTrigger>
           <TabsTrigger value="units" className="text-xs gap-1.5">
             <Home className="h-3.5 w-3.5" />Units ({totalUnits})
           </TabsTrigger>
@@ -227,6 +229,11 @@ const LandlordPropertyDetail: React.FC<Props> = ({ propertyId, propertyName, rev
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ── Collections tab ── */}
+        <TabsContent value="collections" className="mt-4">
+          <UnitPaymentReconciliation propertyId={propertyId} landlordView title="Unit collections — payment reconciliation" />
         </TabsContent>
 
         {/* ── Units tab ── */}

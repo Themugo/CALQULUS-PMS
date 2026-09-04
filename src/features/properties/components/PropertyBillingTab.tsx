@@ -42,6 +42,7 @@ import { MpesaPaymentDialog } from "@/features/billing/components/MpesaPaymentDi
 import TenantInvoiceForm from "@/features/billing/components/TenantInvoiceForm";
 import { ReceiptVerification } from "@/features/payments/components/ReceiptVerification";
 import { useMarkInvoicePaid } from "@/features/billing/hooks/useBillingData";
+import UnitPaymentReconciliation from "@/features/billing/components/UnitPaymentReconciliation";
 
 type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled";
 
@@ -129,7 +130,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [mainTab, setMainTab] = useState<"invoices" | "receipts" | "expenditures" | "verify">("invoices");
+  const [mainTab, setMainTab] = useState<"invoices" | "reconciliation" | "receipts" | "expenditures" | "verify">("invoices");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSendingNotifications, setIsSendingNotifications] = useState(false);
@@ -448,10 +449,11 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
         </Card>
       </div>
 
-      <Tabs value={mainTab} onValueChange={(v) => setMainTab(v as "invoices" | "receipts" | "expenditures" | "verify")}>
+      <Tabs value={mainTab} onValueChange={(v) => setMainTab(v as "invoices" | "reconciliation" | "receipts" | "expenditures" | "verify")}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <TabsList>
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
+            <TabsTrigger value="reconciliation">Unit Collections</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
             <TabsTrigger value="expenditures">Expenditures</TabsTrigger>
             <TabsTrigger value="verify">Verify Receipts</TabsTrigger>
@@ -472,6 +474,8 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
             </div>
           )}
         </div>
+
+        <TabsContent value="reconciliation" className="mt-4"><UnitPaymentReconciliation propertyId={propertyId} /></TabsContent>
 
         <TabsContent value="invoices" className="mt-4">
           <Card>
