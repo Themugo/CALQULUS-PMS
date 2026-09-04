@@ -1,4 +1,11 @@
 
+## 2026-09-04 — Notification Retry Control
+
+- Added guarded retry for failed payment notifications with manager/submanager authorization.
+- Added three-attempt cap and 60-second retry cooldown.
+- Added `retry-notification-failure` Edge Function and manager-facing Retry now action.
+- Kept manual resolution as a fallback when provider delivery remains unavailable.
+
 ## 2026-09-04 — Financial & Billing Operations Ecosystem
 
 - Added canonical financial ledger and role-scoped financial position RPCs.

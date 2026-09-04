@@ -105,6 +105,24 @@ export default function NotificationFailuresPanel() {
     if (r.channel in counts) counts[r.channel]++;
   }
 
+  const retryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.functions.invoke("retry-notification-failure", { body: { failureId: id } });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error ?? "Retry failed");
+      return data;
+    },
+    onSuccess: () => {
+      toast({ title: "Notification resent", description: "The provider accepted the retry." });
+      queryClient.invalidateQueries({ queryKey: ["notification-failures"] });
+      setViewingRow(null);
+    },
+    onError: (err: { message?: string }) => {
+      toast({ title: "Retry failed", description: err?.message ?? "Try again later.", variant: "destructive" });
+      queryClient.invalidateQueries({ queryKey: ["notification-failures"] });
+    },
+  });
+
   const resolveMutation = useMutation({
     mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
       const { error } = await supabase.rpc("transition_notification_failure_atomic", {
@@ -305,13 +323,23 @@ export default function NotificationFailuresPanel() {
           <DialogFooter className="gap-2">
             <Button variant="ghost" onClick={() => setViewingRow(null)}>Close</Button>
             {viewingRow && (
-              <Button
-                onClick={() => resolveMutation.mutate({ id: viewingRow.id, notes: resolveNotes })}
-                disabled={resolveMutation.isPending}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-1" />
-                Mark resolved
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => retryMutation.mutate(viewingRow.id)}
+                  disabled={retryMutation.isPending || resolveMutation.isPending || viewingRow.attempts >= 3}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-1 ${retryMutation.isPending ? "animate-spin" : ""}`} />
+                  {retryMutation.isPending ? "Retrying…" : "Retry now"}
+                </Button>
+                <Button
+                  onClick={() => resolveMutation.mutate({ id: viewingRow.id, notes: resolveNotes })}
+                  disabled={resolveMutation.isPending || retryMutation.isPending}
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
+                  Mark resolved
+                </Button>
+              </>
             )}
           </DialogFooter>
         </DialogContent>
