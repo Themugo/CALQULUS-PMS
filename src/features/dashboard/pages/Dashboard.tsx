@@ -8,6 +8,7 @@ import { ExecutivePortfolioIntelligence } from "@/features/dashboard/components/
 import { PortfolioFinancialIntelligence } from "@/features/dashboard/components/PortfolioFinancialIntelligence";
 import { RevenueLeakageIntelligence } from "@/features/dashboard/components/RevenueLeakageIntelligence";
 import { CollectionsRecoveryAutomation } from "@/features/dashboard/components/CollectionsRecoveryAutomation";
+import { CollectionsCommunicationsMonitoring } from "@/features/dashboard/components/CollectionsCommunicationsMonitoring";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
@@ -350,6 +351,7 @@ const Dashboard = () => {
             <PortfolioFinancialIntelligence />
             <RevenueLeakageIntelligence />
             <CollectionsRecoveryAutomation />
+      <CollectionsCommunicationsMonitoring />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
