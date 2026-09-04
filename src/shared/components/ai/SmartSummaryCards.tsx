@@ -86,40 +86,36 @@ export function SmartSummaryGrid({ className }: { className?: string }) {
     <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", className)}>
       <SmartSummaryCard
         type="dashboard"
-        title="Executive Portfolio AI Summary"
-        badgeLabel="Monthly Overview"
-        summaryText="Occupancy rate stands at 94.2% across 142 total units with zero critical lease defaults detected this week."
+        title="Portfolio health intelligence"
+        badgeLabel="Live data"
+        summaryText="Portfolio health is calculated from the live management analytics and executive intelligence layers rather than hard-coded sample metrics."
         keyInsights={[
-          "M-Pesa STK push conversion increased by 14% month-over-month",
-          "Kilimani Heights Block A generated KES 1.2M gross revenue",
+          "Use the executive portfolio intelligence panel for explainable health and risk drivers",
+          "Use portfolio financial intelligence for current cash, collection and arrears measures",
         ]}
-        recommendedAction="Send automated landlord revenue payout report"
       />
 
       <SmartSummaryCard
         type="anomaly"
-        title="Utility Anomaly & Leak Detection"
-        badgeLabel="High Priority Risk"
-        riskLevel="high"
-        summaryText="Unit 12B water consumption spiked by 340% compared to 6-month historical baseline."
+        title="Tenant retention signals"
+        badgeLabel="Explainable"
+        riskLevel="medium"
+        summaryText="Tenant retention monitoring uses observable operational signals and does not claim a predictive renewal probability."
         keyInsights={[
-          "Meter reading registered 42 m³ in 48 hours",
-          "Potential hidden plumbing leakage or stuck valve",
+          "Payment stress, service experience and renewal-window signals are surfaced separately",
+          "Recommended actions are grounded in the current tenant record and workflow state",
         ]}
-        recommendedAction="Dispatch emergency maintenance ticket to plumber"
       />
 
       <SmartSummaryCard
-        type="prediction"
-        title="Future-Ready Lease Renewal Prediction"
-        badgeLabel="30-Day Outlook"
-        riskLevel="medium"
-        summaryText="AI predictive model identifies 3 tenant leases maturing next month with 88% probability of automatic renewal."
+        type="maintenance"
+        title="Service recovery loop"
+        badgeLabel="Actionable"
+        summaryText="Material tenant-experience issues can be converted into accountable recovery cases, tracked through resolution and linked follow-up communications."
         keyInsights={[
-          "Average tenant tenure is 2.4 years across portfolio",
-          "Market rental yield projection supports 5% escalation",
+          "Service-quality issues can become owned recovery work",
+          "Follow-up communications remain auditable and channel-aware",
         ]}
-        recommendedAction="Generate digital lease renewal agreements"
       />
     </div>
   );

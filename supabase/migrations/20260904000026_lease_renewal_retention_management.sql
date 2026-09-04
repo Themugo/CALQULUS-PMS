@@ -44,7 +44,7 @@ CREATE OR REPLACE FUNCTION public.create_lease_renewal_case_atomic(
   p_follow_up_at timestamptz,
   p_manager_notes text
 ) RETURNS public.lease_renewal_cases
-LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE v public.lease_renewal_cases%ROWTYPE; l public.leases%ROWTYPE; t public.tenants%ROWTYPE; n public.tenant_notices%ROWTYPE; uid uuid:=auth.uid();
 BEGIN
   IF uid IS NULL OR auth.role() <> 'authenticated' THEN RAISE EXCEPTION 'Authentication required' USING ERRCODE='42501'; END IF;
@@ -71,7 +71,7 @@ END $$;
 
 CREATE OR REPLACE FUNCTION public.send_lease_renewal_case_atomic(p_case_id uuid)
 RETURNS public.lease_renewal_cases
-LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE v public.lease_renewal_cases%ROWTYPE; n public.tenant_notices%ROWTYPE; uid uuid:=auth.uid();
 BEGIN
   SELECT * INTO v FROM public.lease_renewal_cases WHERE id=p_case_id FOR UPDATE;
@@ -85,7 +85,7 @@ END $$;
 
 CREATE OR REPLACE FUNCTION public.update_lease_renewal_case_atomic(p_case_id uuid,p_status text,p_follow_up_at timestamptz,p_manager_notes text)
 RETURNS public.lease_renewal_cases
-LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE v public.lease_renewal_cases%ROWTYPE; uid uuid:=auth.uid();
 BEGIN
   IF p_status NOT IN ('draft','sent','negotiating','accepted','declined','notice_to_vacate','withdrawn') THEN RAISE EXCEPTION 'Invalid renewal status' USING ERRCODE='22023'; END IF;
@@ -96,7 +96,7 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION public.get_manager_lease_renewal_pipeline()
-RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE uid uuid:=auth.uid();
 BEGIN
   IF uid IS NULL OR auth.role()<>'authenticated' THEN RAISE EXCEPTION 'Authentication required' USING ERRCODE='42501'; END IF;
@@ -110,7 +110,7 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION public.mark_missed_lease_renewal_followups_atomic()
-RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 DECLARE n integer;
 BEGIN
   IF auth.role()<>'service_role' THEN RAISE EXCEPTION 'Service role required' USING ERRCODE='42501'; END IF;
@@ -119,7 +119,7 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION public.sync_renewal_case_from_tenant_response()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 BEGIN
   UPDATE public.lease_renewal_cases SET tenant_decision=NEW.decision,tenant_decision_at=COALESCE(NEW.signed_at,now()),status=CASE WHEN NEW.decision='accept' THEN 'accepted' WHEN NEW.decision='decline' THEN 'declined' ELSE 'negotiating' END,updated_at=now() WHERE notice_id=NEW.notice_id;
   RETURN NEW;
@@ -133,3 +133,15 @@ GRANT EXECUTE ON FUNCTION public.update_lease_renewal_case_atomic(uuid,text,time
 GRANT EXECUTE ON FUNCTION public.get_manager_lease_renewal_pipeline() TO authenticated,service_role;
 GRANT EXECUTE ON FUNCTION public.mark_missed_lease_renewal_followups_atomic() TO service_role;
 GRANT EXECUTE ON FUNCTION public.sync_renewal_case_from_tenant_response() TO service_role;
+
+REVOKE EXECUTE ON FUNCTION public.create_lease_renewal_case_atomic(uuid,numeric,date,timestamptz,text) FROM PUBLIC, anon;
+
+REVOKE EXECUTE ON FUNCTION public.send_lease_renewal_case_atomic(uuid) FROM PUBLIC, anon;
+
+REVOKE EXECUTE ON FUNCTION public.update_lease_renewal_case_atomic(uuid,text,timestamptz,text) FROM PUBLIC, anon;
+
+REVOKE EXECUTE ON FUNCTION public.get_manager_lease_renewal_pipeline() FROM PUBLIC, anon;
+
+REVOKE EXECUTE ON FUNCTION public.mark_missed_lease_renewal_followups_atomic() FROM PUBLIC, anon;
+
+REVOKE EXECUTE ON FUNCTION public.sync_renewal_case_from_tenant_response() FROM PUBLIC, anon;

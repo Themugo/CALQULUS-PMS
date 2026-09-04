@@ -135,7 +135,7 @@ BEGIN
   IF v_uid IS NULL THEN RAISE EXCEPTION 'Authentication required' USING ERRCODE='42501'; END IF;
   SELECT v_manager=v_uid OR EXISTS (SELECT 1 FROM public.manager_submanagers ms WHERE ms.manager_id=v_manager AND ms.submanager_user_id=v_uid) INTO v_ok;
   IF NOT COALESCE(v_ok,false) THEN RAISE EXCEPTION 'Operation work queue scope unauthorized' USING ERRCODE='42501'; END IF;
-  SELECT COALESCE(jsonb_agg(jsonb_build_object('id',w.id,'source_type',w.source_type,'source_id',w.source_id,'title',w.title,'description',w.description,'href',w.href,'priority',w.priority,'status',w.status,'assigned_to',w.assigned_to,'assignee_name',COALESCE(p.full_name,''),'due_at',w.due_at,'created_at',w.created_at,'updated_at',w.updated_at) ORDER BY CASE w.priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,w.due_at NULLS LAST,w.created_at DESC),'[]'::jsonb)
+  SELECT COALESCE(jsonb_agg(jsonb_build_object('id',w.id,'source_type',w.source_type,'source_id',w.source_id,'title',w.title,'description',w.description,'href',w.href,'priority',w.priority,'status',w.status,'assigned_to',w.assigned_to,'assignee_id',w.assigned_to,'assignee_name',COALESCE(p.full_name,''),'due_at',w.due_at,'sla_due_at',w.sla_due_at,'created_at',w.created_at,'updated_at',w.updated_at) ORDER BY CASE w.priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,w.due_at NULLS LAST,w.created_at DESC),'[]'::jsonb)
   INTO v_result
   FROM public.operation_work_items w LEFT JOIN public.profiles p ON p.id=w.assigned_to
   WHERE w.manager_id=v_manager AND (p_status='all' OR (p_status='active' AND w.status IN ('open','in_progress')) OR w.status=p_status);

@@ -49,7 +49,7 @@ const QUICK_TEMPLATES: Record<string, string> = {
   maintenance_update: `Dear [Tenant Name],\n\nWe wish to inform you that maintenance work is scheduled for [Date] at [Property Name].\n\nWork to be done: [Description]\n\nThis may cause temporary inconvenience. We apologise for any disruption and appreciate your patience.\n\n[Manager Name]`,
   announcement: `Dear Residents,\n\nWe would like to bring to your attention the following:\n\n[Your announcement here]\n\nPlease do not hesitate to contact us if you have any questions.\n\nThank you.\n\n[Manager Name]`,
   emergency: `URGENT NOTICE\n\nDear Tenants,\n\n[Emergency details here]\n\nPlease take immediate action as directed. Contact [Phone Number] for assistance.\n\n[Manager Name]`,
-  rent_increase: `Dear [Tenant Name],\n\nPlease be advised that effective [Effective Date], your monthly rent will increase from KES [Current Amount] to KES [New Amount].\n\nThis represents a [Percentage]% increase in line with current market rates and property maintenance costs.\n\nYour new lease reflecting this change will be sent to you shortly.\n\nKindly confirm receipt of this notice.\n\n[Manager Name]`,
+  rent_increase: `Dear [Tenant Name],\n\nPlease be advised that effective [Effective Date], your monthly rent will increase from KES [Current Amount] to KES [New Amount].\n\nThis represents a [Percentage]% increase based on the approved rent adjustment and applicable property costs.\n\nYour new lease reflecting this change will be sent to you shortly.\n\nKindly confirm receipt of this notice.\n\n[Manager Name]`,
 };
 
 interface Property { id: string; name: string; }
