@@ -16,6 +16,7 @@ import { TenantRetentionChurnIntelligence } from "@/features/dashboard/component
 import { TenantExperienceServiceQualityIntelligence } from "@/features/dashboard/components/TenantExperienceServiceQualityIntelligence";
 import { TenantServiceRecoveryCenter } from "@/features/dashboard/components/TenantServiceRecoveryCenter";
 import { DocumentEvidenceControlCenter } from "@/features/dashboard/components/DocumentEvidenceControlCenter";
+import { FinancialOperationalReconciliationCenter } from "@/features/dashboard/components/FinancialOperationalReconciliationCenter";
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
@@ -367,6 +368,7 @@ const Dashboard = () => {
             <TenantExperienceServiceQualityIntelligence />
             <TenantServiceRecoveryCenter />
             <DocumentEvidenceControlCenter />
+            <FinancialOperationalReconciliationCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
