@@ -2,6 +2,7 @@ import { Layout } from "@/shared/components/layout/Layout";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import { AttentionStrip } from "@/features/dashboard/components/AttentionStrip";
 import { PortfolioOperationsControlCenter } from "@/features/dashboard/components/PortfolioOperationsControlCenter";
+import { OperationWorkQueue } from "@/features/dashboard/components/OperationWorkQueue";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
@@ -339,6 +340,11 @@ const Dashboard = () => {
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-operations-control">
             <div id="dashboard-operations-control" className="sr-only">Portfolio operations control</div>
             <PortfolioOperationsControlCenter stats={stats} loading={loading} />
+          </section>
+
+          <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
+            <div id="dashboard-work-queue" className="sr-only">Operational work queue</div>
+            <OperationWorkQueue />
           </section>
 
           {/* Priority queue — surface live exceptions before deeper analysis. */}
