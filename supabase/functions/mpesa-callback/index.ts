@@ -72,6 +72,16 @@ serve(async (req) => {
       .eq("checkout_request_id", checkoutRequestId)
       .maybeSingle();
 
+    if (!transaction && urlSecret) {
+      const fallback = await supabase
+        .from("payment_transactions")
+        .select(`*, invoices(id, invoice_number, amount, due_date, tenants(id, name, email, phone), leases(property, unit))`)
+        .eq("callback_secret", urlSecret)
+        .maybeSingle();
+      transaction = fallback.data;
+      txErr = fallback.error;
+    }
+
     if (txErr || !transaction) {
       log("Transaction not found", { checkoutRequestId });
       return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Transaction not found" }),

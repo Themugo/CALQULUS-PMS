@@ -145,7 +145,18 @@ serve(async (req) => {
                 paymentMethod: transaction.payment_type === 'till' ? 'mpesa_till' : 'mpesa_stk',
                 paymentDate:   new Date().toISOString().slice(0, 10),
                 reference:     mpesaReceiptNumber,
-                invoiceId:     transaction.invoice_id,
+                invoiceId:     (() => {
+                  try {
+                    const parsed = typeof transaction.notes === "string" && transaction.notes.startsWith("{") ? JSON.parse(transaction.notes) as { invoice_ids?: string[] } : null;
+                    return parsed?.invoice_ids?.length === 1 ? parsed.invoice_ids[0] : transaction.invoice_id;
+                  } catch { return transaction.invoice_id; }
+                })(),
+                invoiceIds:    (() => {
+                  try {
+                    const parsed = typeof transaction.notes === "string" && transaction.notes.startsWith("{") ? JSON.parse(transaction.notes) as { invoice_ids?: string[] } : null;
+                    return parsed?.invoice_ids?.length ? parsed.invoice_ids : undefined;
+                  } catch { return undefined; }
+                })(),
                 unitId:        transaction.unit_id,
                 propertyId:    transaction.property_id,
                 unitNumber:    transaction.unit_number ?? 'N/A',

@@ -41,6 +41,7 @@ interface Invoice {
   id: string;
   invoice_number: string;
   amount: number;
+  balance_due?: number | null;
   description: string | null;
   lease_id: string | null;
   tenants: {
@@ -174,7 +175,7 @@ export function MpesaPaymentDialog({
             setPaymentStatus("success");
             toast({
               title: "Payment successful! 🎉",
-              description: `KES ${invoice!.amount.toLocaleString()} received for Unit ${unitNumber}.`,
+              description: `KES ${paymentAmount.toLocaleString()} received for Unit ${unitNumber}.`,
             });
             setTimeout(() => {
               onPaymentComplete();
@@ -202,6 +203,9 @@ export function MpesaPaymentDialog({
   const handleSTKPush = useCallback(async () => {
     if (!invoice || !phoneNumber || !paymentRoute || !paymentType) return;
 
+    const paymentAmount = Math.max(0, Number(invoice.balance_due ?? invoice.amount));
+    if (!paymentAmount) return;
+
     setIsProcessing(true);
     setPaymentStatus("pending");
 
@@ -211,7 +215,7 @@ export function MpesaPaymentDialog({
         {
           body: {
             invoiceId: invoice.id,
-            amount: invoice.amount,
+            amount: paymentAmount,
             phoneNumber,
             paymentType,
             // ⚠️ NO managerId here — the edge function resolves it server-side
@@ -228,7 +232,7 @@ export function MpesaPaymentDialog({
 
       toast({
         title: "Check your phone",
-        description: `A payment prompt of ${formatCurrency(invoice.amount)} has been sent to ${phoneNumber}.`,
+        description: `A payment prompt of ${formatCurrency(paymentAmount)} has been sent to ${phoneNumber}.`,
       });
 
       // Start polling for completion

@@ -259,12 +259,30 @@ serve(
 
       const { access_token: accessToken } = await tokenResponse.json();
 
-      // Initiate STK Push
+      // Create the pending transaction BEFORE contacting Safaricom. Money must never be
+      // requested unless our system already has a durable reconciliation record.
       const timestamp = new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
       const password = btoa(`${shortcode}${passkey}${timestamp}`);
       const callbackSecret = crypto.randomUUID();
 
       const accountReference = String(route.account_reference || unitNumber || route.account_label || 'RENT').slice(0, 12);
+
+      const { data: pendingTransaction, error: pendingTransactionError } = await ctx.supabase
+        .from("payment_transactions")
+        .insert({
+          invoice_id: primaryInvoiceId, tenant_id: invoice.tenant_id ?? null, manager_id: managerId,
+          landlord_id: landlordId, payment_receiver_type: paymentReceiverType, unit_id: unitId,
+          property_id: propertyId, unit_number: unitNumber, amount: Math.round(amount),
+          phone_number: formattedPhone, payment_type: resolvedPaymentType, status: "pending",
+          initiated_at: new Date().toISOString(), callback_secret: callbackSecret,
+          notes: allocationNote, payer_party_id: payerParty?.id ?? null,
+        })
+        .select("id")
+        .single();
+
+      if (pendingTransactionError || !pendingTransaction?.id) {
+        throw errorResponse("Could not create the payment reconciliation record. Please try again.", 500);
+      }
 
       const stkPushPayload = {
         BusinessShortCode: shortcode,
@@ -300,49 +318,25 @@ serve(
 
       if (stkResult.ResponseCode === "0") {
         const { CheckoutRequestID, MerchantRequestID } = stkResult;
-
-        // Save transaction with full context
-        const { data: transaction } = await ctx.supabase
+        const { error: transactionUpdateError } = await ctx.supabase
           .from("payment_transactions")
-          .insert({
-            invoice_id: primaryInvoiceId,
-            tenant_id: invoice.tenant_id ?? null,
-            manager_id: managerId,
-            landlord_id: landlordId,
-            payment_receiver_type: paymentReceiverType,
-            unit_id: unitId,
-            property_id: propertyId,
-            unit_number: unitNumber,
-            amount,
-            phone_number: formattedPhone,
-            payment_type: resolvedPaymentType,
-            checkout_request_id: CheckoutRequestID,
-            merchant_request_id: MerchantRequestID,
-            status: "pending",
-            initiated_at: new Date().toISOString(),
-            callback_secret: callbackSecret,
-            notes: allocationNote,
-            payer_party_id: payerParty?.id ?? null,
-          })
-          .select()
-          .single();
-
+          .update({ checkout_request_id: CheckoutRequestID, merchant_request_id: MerchantRequestID, updated_at: new Date().toISOString() })
+          .eq("id", pendingTransaction.id);
+        if (transactionUpdateError) {
+          console.error("[initiate-mpesa-stk-push] failed to attach Safaricom IDs", { transactionId: pendingTransaction.id, error: transactionUpdateError.message });
+        }
         return {
-          success: true,
-          message: "M-Pesa payment prompt sent to your phone",
-          checkoutRequestId: CheckoutRequestID,
-          merchantRequestId: MerchantRequestID,
-          transactionId: transaction?.id,
-          invoiceId: primaryInvoiceId,
-          invoiceIds: targetIds.length > 1 ? targetIds : undefined,
-          unitNumber,
-          accountReference,
+          success: true, message: "M-Pesa payment prompt sent to your phone",
+          checkoutRequestId: CheckoutRequestID, merchantRequestId: MerchantRequestID,
+          transactionId: pendingTransaction.id, invoiceId: primaryInvoiceId,
+          invoiceIds: targetIds.length > 1 ? targetIds : undefined, unitNumber, accountReference,
         };
       } else {
-        throw errorResponse(
-          stkResult.errorMessage || stkResult.ResponseDescription || "STK Push failed",
-          400
-        );
+        await ctx.supabase.rpc("mark_payment_transaction_failed_atomic", {
+          p_transaction_id: pendingTransaction.id,
+          p_failure_reason: stkResult.errorMessage || stkResult.ResponseDescription || "STK Push failed",
+        });
+        throw errorResponse(stkResult.errorMessage || stkResult.ResponseDescription || "STK Push failed", 400);
       }
     }
   )
