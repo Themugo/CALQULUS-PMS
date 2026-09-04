@@ -1,4 +1,4 @@
-﻿-- CALQULUS PMS: Property Revenue & Lease Optimization
+-- CALQULUS PMS: Property Revenue & Lease Optimization
 -- Uses existing unit rent and active lease data as the explainable benchmark.
 CREATE OR REPLACE FUNCTION public.get_manager_property_revenue_lease_optimization(p_manager_id uuid)
 RETURNS jsonb
@@ -58,7 +58,7 @@ BEGIN
           l.id lease_id,l.end_date,COALESCE(l.monthly_rent,0) lease_rent,
           CASE WHEN l.id IS NULL OR lower(coalesce(l.status,'')) NOT IN ('active','current') THEN COALESCE(u.monthly_rent,0)
                ELSE GREATEST(COALESCE(u.monthly_rent,0)-COALESCE(l.monthly_rent,0),0) END opportunity,
-          CASE WHEN lower(coalesce(u.status,''))='vacant' THEN 'Vacancy'
+          CASE WHEN lower(coalesce(u.status,''))='vacant' THEN 'Vacancy' 
                WHEN l.id IS NOT NULL AND l.end_date BETWEEN current_date AND current_date + 90 THEN 'Renewal due'
                WHEN l.id IS NOT NULL AND COALESCE(u.monthly_rent,0)>COALESCE(l.monthly_rent,0) THEN 'Rent alignment'
                ELSE 'Monitor' END opportunity_type

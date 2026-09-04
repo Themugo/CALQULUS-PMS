@@ -1,182 +1,120 @@
-// @ts-nocheck — Phase 12: remaining local types until live supabase gen types
-import React, { useState } from "react";
-import {
-  TrendingUp, TrendingDown, DollarSign, Building2, Users, AlertTriangle,
-  ArrowUpRight, ArrowDownRight, Calendar, Sparkles, Filter, ShieldCheck, Download
-} from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { BarChart3, CheckCircle2, Clock3, Home, TrendingUp, Wrench } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import {
-  AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend
-} from "recharts";
-import { cn } from "@/shared/lib/utils";
-import { CALQULUS_COLOR } from "@/shared/theme/tokens";
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
+import { useCurrency } from "@/shared/hooks/useCurrency";
 
-const MOM_DATA = [
-  { period: "Jan", Current: 480000, Previous: 420000, Forecast: 500000 },
-  { period: "Feb", Current: 510000, Previous: 430000, Forecast: 530000 },
-  { period: "Mar", Current: 550000, Previous: 460000, Forecast: 570000 },
-  { period: "Apr", Current: 590000, Previous: 490000, Forecast: 610000 },
-  { period: "May", Current: 640000, Previous: 520000, Forecast: 660000 },
-  { period: "Jun", Current: 680000, Previous: 560000, Forecast: 700000 },
-];
+interface ManagementAnalytics {
+  period_months?: number;
+  portfolio?: { properties?: number; units?: number; occupied_units?: number; vacant_units?: number };
+  collections?: { billed?: number; collected?: number; overdue_balance?: number };
+  operations?: { maintenance_open?: number; maintenance_urgent?: number; leases_expiring_30d?: number; work_active?: number; work_sla_breached?: number; work_completed_30d?: number };
+  monthly_collections?: Array<{ month: string; billed: number; collected: number; collection_rate: number }>;
+  work_performance?: Array<{ id: string; name: string; role: string; active: number; breached: number; completed_30d: number; avg_completion_days: number | null }>;
+}
 
-const OCCUPANCY_FORECAST = [
-  { month: "Jul", Occupancy: 92, Target: 95 },
-  { month: "Aug", Occupancy: 94, Target: 95 },
-  { month: "Sep", Occupancy: 93, Target: 95 },
-  { month: "Oct (FC)", Occupancy: 96, Target: 95 },
-  { month: "Nov (FC)", Occupancy: 97, Target: 95 },
-  { month: "Dec (FC)", Occupancy: 98, Target: 95 },
-];
+const number = (value: unknown) => Number.isFinite(Number(value)) ? Number(value) : 0;
 
 export function ExecutiveAnalyticsWorkspace() {
-  const [comparisonMode, setComparisonMode] = useState("MoM");
+  const { managerId } = useManagerScope();
+  const { formatCurrency } = useCurrency();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["manager-executive-analytics", managerId],
+    enabled: !!managerId,
+    queryFn: async () => {
+      const { data: result, error: rpcError } = await supabase.rpc("get_manager_management_analytics" as any, {
+        p_manager_id: managerId,
+        p_months: 6,
+      });
+      if (rpcError) throw rpcError;
+      return (result ?? {}) as ManagementAnalytics;
+    },
+    staleTime: 60_000,
+  });
+
+  if (isLoading) return <div className="h-72 rounded-xl border border-border bg-card animate-pulse" aria-busy="true" />;
+  if (error) return <Card><CardContent className="p-6 text-sm text-muted-foreground">Executive analytics could not be loaded.</CardContent></Card>;
+  if (!data) return null;
+
+  const portfolio = data.portfolio ?? {};
+  const collections = data.collections ?? {};
+  const operations = data.operations ?? {};
+  const monthly = Array.isArray(data.monthly_collections) ? data.monthly_collections : [];
+  const performance = Array.isArray(data.work_performance) ? data.work_performance : [];
+  const billed = number(collections.billed);
+  const collected = number(collections.collected);
+  const collectionRate = billed > 0 ? Math.min(100, (collected * 100) / billed) : 0;
+  const units = number(portfolio.units);
+  const occupied = number(portfolio.occupied_units);
+  const occupancy = units > 0 ? Math.min(100, (occupied * 100) / units) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Scorecards Header */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border-border/80 bg-card shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Gross Operating Revenue</span>
-            <div className="h-8 w-8 rounded-lg bg-success/10 text-success flex items-center justify-center">
-              <DollarSign className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-xl font-bold text-foreground">KES 6,850,000</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
-              <ArrowUpRight className="h-3 w-3" /> +14.2% {comparisonMode}
-            </Badge>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">Vs KES 5,998,000 previous period</p>
-        </Card>
-
-        <Card className="p-4 border-border/80 bg-card shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Portfolio Occupancy Rate</span>
-            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <Building2 className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-xl font-bold text-foreground">94.8%</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
-              <ArrowUpRight className="h-3 w-3" /> +2.1% {comparisonMode}
-            </Badge>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">218 of 230 total units occupied</p>
-        </Card>
-
-        <Card className="p-4 border-border/80 bg-card shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Rent Collection Efficiency</span>
-            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <Users className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-xl font-bold text-foreground">96.2%</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
-              <ArrowUpRight className="h-3 w-3" /> +1.8% {comparisonMode}
-            </Badge>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">Target threshold: 95.0%</p>
-        </Card>
-
-        <Card className="p-4 border-border/80 bg-card shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Net Operating Arrears</span>
-            <div className="h-8 w-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center">
-              <AlertTriangle className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-xl font-bold text-red-600">KES 245,000</span>
-            <Badge variant="outline" className="text-[10px] font-bold bg-success/10 text-success border-success/20 gap-0.5">
-              <ArrowDownRight className="h-3 w-3" /> -8.4% {comparisonMode}
-            </Badge>
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">Down KES 22,500 from last month</p>
-        </Card>
-      </div>
-
-      {/* Main Multi-Period Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-border/80 bg-card shadow-sm">
-          <CardHeader className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <Card className="border-border/80 shadow-[0_8px_28px_-22px_rgb(13_39_68/0.28)]">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-sm font-bold text-foreground">Comparative Revenue & Forecast Engine</CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
-                Historical trajectory compared against previous period and projected AI forecast.
-              </CardDescription>
+              <CardTitle className="text-base flex items-center gap-2"><BarChart3 className="h-4 w-4" />Executive portfolio analytics</CardTitle>
+              <p className="mt-1 text-xs text-muted-foreground">Live portfolio, collections and operational measures from authoritative records. No fabricated forecasts or probabilities.</p>
+            </div>
+            <Badge variant="outline">{number(data.period_months) || 6} months</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-6">
+            {[
+              ["Properties", number(portfolio.properties), Home],
+              ["Occupancy", `${occupancy.toFixed(1)}%`, Home],
+              ["Collected", formatCurrency(collected), TrendingUp],
+              ["Collection", `${collectionRate.toFixed(1)}%`, CheckCircle2],
+              ["Open work", number(operations.work_active), Clock3],
+              ["SLA breached", number(operations.work_sla_breached), Wrench],
+            ].map(([label, value, Icon]) => {
+              const MetricIcon = Icon as typeof Home;
+              return (
+                <div key={String(label)} className="rounded-lg border border-border px-3 py-2">
+                  <div className="flex items-center gap-2 text-muted-foreground"><MetricIcon className="h-3.5 w-3.5" /><span className="text-[10px] uppercase tracking-wide">{String(label)}</span></div>
+                  <p className="mt-1 text-lg font-semibold">{String(value)}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-lg border border-border p-3">
+              <div className="mb-3 flex items-center justify-between"><p className="text-sm font-semibold">Collections trend</p><p className="text-[11px] text-muted-foreground">Billed vs collected</p></div>
+              {monthly.length === 0 ? <p className="text-xs text-muted-foreground">No collection history is available for this period.</p> : (
+                <div className="space-y-3">
+                  {monthly.map((item) => (
+                    <div key={item.month} className="space-y-1">
+                      <div className="flex justify-between text-[11px]"><span>{new Date(item.month).toLocaleDateString(undefined, { month: "short", year: "2-digit" })}</span><span className="font-medium">{number(item.collection_rate).toFixed(1)}%</span></div>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-foreground/70" style={{ width: `${Math.min(100, Math.max(0, number(item.collection_rate)))}%` }} /></div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <Select value={comparisonMode} onValueChange={setComparisonMode}>
-              <SelectTrigger className="h-8 text-xs w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="MoM" className="text-xs">Month vs Month</SelectItem>
-                <SelectItem value="QoQ" className="text-xs">Quarter vs Quarter</SelectItem>
-                <SelectItem value="YoY" className="text-xs">Year vs Year</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardHeader>
-
-          <CardContent className="p-4">
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={MOM_DATA} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                <defs>
-                  <linearGradient id="colorCurrent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.3} />
-                    <stop offset="95%" stopColor={CALQULUS_COLOR.primary} stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="period" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${v / 1000}K`} />
-                <Tooltip formatter={(v: number) => `KES ${v.toLocaleString()}`} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Area type="monotone" dataKey="Current" stroke={CALQULUS_COLOR.primary} fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
-                <Line type="monotone" dataKey="Previous" stroke={CALQULUS_COLOR.textSecondary} strokeDasharray="5 5" strokeWidth={1.5} />
-                <Line type="monotone" dataKey="Forecast" stroke={CALQULUS_COLOR.success} strokeDasharray="3 3" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Occupancy Target & Predictive Forecast */}
-        <Card className="lg:col-span-1 border-border/80 bg-card shadow-sm">
-          <CardHeader className="p-4 border-b bg-muted/20">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-success" />
-              <CardTitle className="text-sm font-bold text-foreground">Occupancy Forecast & Benchmark</CardTitle>
+            <div className="rounded-lg border border-border p-3">
+              <div className="mb-3 flex items-center justify-between"><p className="text-sm font-semibold">Operational position</p><p className="text-[11px] text-muted-foreground">Current records</p></div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  ["Open maintenance", number(operations.maintenance_open)],
+                  ["Urgent maintenance", number(operations.maintenance_urgent)],
+                  ["Leases expiring 30d", number(operations.leases_expiring_30d)],
+                  ["Completed work 30d", number(operations.work_completed_30d)],
+                  ["Vacant units", number(portfolio.vacant_units)],
+                  ["Overdue balance", formatCurrency(number(collections.overdue_balance))],
+                ].map(([label, value]) => <div key={String(label)} className="rounded-md bg-muted/40 px-3 py-2"><span className="text-[10px] uppercase tracking-wide text-muted-foreground">{String(label)}</span><p className="mt-1 font-semibold">{String(value)}</p></div>)}
+              </div>
             </div>
-            <CardDescription className="text-xs text-muted-foreground">
-              Predictive occupancy rates vs 95% target threshold.
-            </CardDescription>
-          </CardHeader>
+          </div>
 
-          <CardContent className="p-4">
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={OCCUPANCY_FORECAST} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                <YAxis domain={[80, 100]} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="Occupancy" fill={CALQULUS_COLOR.success} radius={[4, 4, 0, 0]} />
-                <Line type="monotone" dataKey="Target" stroke={CALQULUS_COLOR.danger} strokeWidth={2} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+          {performance.length > 0 && <div className="rounded-lg border border-border p-3"><p className="mb-2 text-sm font-semibold">Team performance</p><div className="grid gap-2 md:grid-cols-3">{performance.map((member) => <div key={member.id} className="rounded-md bg-muted/40 px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="truncate text-xs font-medium">{member.name}</span><Badge variant="outline">{number(member.completed_30d)} done</Badge></div><p className="mt-1 text-[11px] text-muted-foreground">{number(member.active)} active · {number(member.breached)} breached · {member.avg_completion_days == null ? "No completed timing data" : `${number(member.avg_completion_days).toFixed(1)}d avg completion`}</p></div>)}</div></div>}
+        </CardContent>
+      </Card>
     </div>
   );
 }
