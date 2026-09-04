@@ -21,6 +21,8 @@ import { FinancialAuditPackCenter } from "@/features/dashboard/components/Financ
 import { ManagementComplianceAssuranceCenter } from "@/features/dashboard/components/ManagementComplianceAssuranceCenter";
 import ControlledManagementReportingCenter from "@/features/dashboard/components/ControlledManagementReportingCenter";
 import DoubleEntryLedgerIntegrityCenter from "@/features/dashboard/components/DoubleEntryLedgerIntegrityCenter";
+import LedgerAdjustmentsReversalsGovernance from "@/features/dashboard/components/LedgerAdjustmentsReversalsGovernance";
+
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
@@ -377,6 +379,7 @@ const Dashboard = () => {
             <ManagementComplianceAssuranceCenter />
             <ControlledManagementReportingCenter />
               <DoubleEntryLedgerIntegrityCenter />
+          <LedgerAdjustmentsReversalsGovernance />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
