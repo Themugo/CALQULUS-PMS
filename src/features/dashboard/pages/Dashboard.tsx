@@ -22,6 +22,7 @@ import { ManagementComplianceAssuranceCenter } from "@/features/dashboard/compon
 import ControlledManagementReportingCenter from "@/features/dashboard/components/ControlledManagementReportingCenter";
 import DoubleEntryLedgerIntegrityCenter from "@/features/dashboard/components/DoubleEntryLedgerIntegrityCenter";
 import LedgerAdjustmentsReversalsGovernance from "@/features/dashboard/components/LedgerAdjustmentsReversalsGovernance";
+import TrialBalanceFinancialStatementsCenter from "@/features/dashboard/components/TrialBalanceFinancialStatementsCenter";
 
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
@@ -380,6 +381,7 @@ const Dashboard = () => {
             <ControlledManagementReportingCenter />
               <DoubleEntryLedgerIntegrityCenter />
           <LedgerAdjustmentsReversalsGovernance />
+            <TrialBalanceFinancialStatementsCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
