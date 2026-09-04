@@ -30,6 +30,7 @@ import VendorProcurementContractControlCenter from "@/features/dashboard/compone
 import MaintenanceProcurementCostControlCenter from "@/features/dashboard/components/MaintenanceProcurementCostControlCenter";
 import MaintenanceSlaVendorDispatchAssuranceCenter from "@/features/dashboard/components/MaintenanceSlaVendorDispatchAssuranceCenter";
 import PreventiveMaintenanceLifecycleCenter from "@/features/dashboard/components/PreventiveMaintenanceLifecycleCenter";
+import MaintenanceAssetLifecycleCenter from "@/features/dashboard/components/MaintenanceAssetLifecycleCenter";
 
 
 
@@ -397,6 +398,7 @@ const Dashboard = () => {
             <MaintenanceProcurementCostControlCenter />
             <MaintenanceSlaVendorDispatchAssuranceCenter />
             <PreventiveMaintenanceLifecycleCenter />
+            <MaintenanceAssetLifecycleCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
