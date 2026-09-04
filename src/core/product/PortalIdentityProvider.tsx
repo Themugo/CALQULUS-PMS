@@ -60,6 +60,11 @@ export function PortalIdentityProvider({ children }: { children: ReactNode }) {
     root.dataset.activePortal = portalId;
     if (palette.approved) {
       root.style.setProperty("--portal-primary", palette.hex);
+      root.style.setProperty("--portal-accent", palette.hex);
+      root.style.setProperty("--portal-accent-muted", palette.muted);
+      root.style.setProperty("--portal-accent-border", palette.border);
+      root.style.setProperty("--portal-accent-surface", palette.surface);
+      root.style.setProperty("--portal-accent-foreground", palette.onColor);
       root.style.setProperty("--portal-primary-hover", palette.hover);
       root.style.setProperty("--portal-primary-active", palette.active);
       root.style.setProperty("--portal-primary-muted", palette.muted);
@@ -70,7 +75,7 @@ export function PortalIdentityProvider({ children }: { children: ReactNode }) {
     }
     return () => {
       root.removeAttribute("data-active-portal");
-      ["--portal-primary", "--portal-primary-hover", "--portal-primary-active", "--portal-primary-muted", "--portal-primary-border", "--portal-primary-surface", "--portal-primary-focus", "--portal-primary-foreground"].forEach((name) => root.style.removeProperty(name));
+      ["--portal-primary", "--portal-primary-hover", "--portal-primary-active", "--portal-primary-muted", "--portal-primary-border", "--portal-primary-surface", "--portal-primary-focus", "--portal-primary-foreground", "--portal-accent", "--portal-accent-muted", "--portal-accent-border", "--portal-accent-surface", "--portal-accent-foreground"].forEach((name) => root.style.removeProperty(name));
     };
   }, [palette, portalId]);
 

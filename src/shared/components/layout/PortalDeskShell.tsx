@@ -5,6 +5,7 @@ import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { PortalAccentBar, deskNavClass } from "@/core/design";
+import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { cn } from "@/shared/lib/utils";
 
 export interface PortalDeskNavItem {
@@ -45,9 +46,17 @@ interface PortalDeskShellProps {
 }
 
 export function PortalDeskLoading({ className }: { className?: string }) {
+  const { identity } = usePortalIdentity();
   return (
-    <div className={cn("flex min-h-screen items-center justify-center bg-background", className)}>
-      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" aria-label="Loading" />
+    <div
+      className={cn("relative flex min-h-screen items-center justify-center overflow-hidden bg-background", className)}
+      style={{ "--portal-loading-image": `url("${identity.backgroundImageUrl}")` } as CSSProperties}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[image:var(--portal-loading-image)] bg-cover bg-center opacity-[0.04]" aria-hidden />
+      <div className="relative z-10 flex flex-col items-center gap-3 text-center">
+        <BrandMark size="hero" showWordmark subtitle={identity.shortName} forcePlatform />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" aria-label="Loading" />
+      </div>
     </div>
   );
 }
@@ -77,12 +86,22 @@ export function PortalDeskShell({
   mobileContentPadding = "pb-8",
 }: PortalDeskShellProps) {
   const location = useLocation();
+  const { identity } = usePortalIdentity();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const closeSidebar = () => setSidebarOpen(false);
 
+  const shellStyle: CSSProperties = {
+    ...(style ?? {}),
+    "--portal-shell-image": `url("${identity.backgroundImageUrl}")`,
+  } as CSSProperties;
+
   return (
-    <div className={cn("min-h-screen bg-background text-foreground", className)} style={style}>
+    <div className={cn("relative min-h-screen bg-background text-foreground", className)} style={shellStyle}>
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+        <div className="absolute inset-0 bg-[image:var(--portal-shell-image)] bg-cover bg-center opacity-[0.045]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/[0.035]" />
+      </div>
       <PortalAccentBar className="fixed left-0 right-0 top-0 z-[60]" />
       <a
         href="#main-content"
@@ -108,7 +127,9 @@ export function PortalDeskShell({
         )}
       >
         <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-border px-4">
-          <BrandMark size="md" showWordmark subtitle={brandSubtitle ?? portalLabel} forcePlatform={forcePlatformBrand} />
+          <div className="min-w-0">
+            <BrandMark size="md" showWordmark subtitle={brandSubtitle ?? identity.shortName} forcePlatform={forcePlatformBrand} />
+          </div>
           <button
             type="button"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden"
@@ -117,6 +138,11 @@ export function PortalDeskShell({
           >
             <X className="h-4 w-4" />
           </button>
+        </div>
+
+        <div className="mx-3 mt-3 rounded-xl border border-primary/15 bg-primary/[0.045] px-3 py-2.5">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary">{identity.name}</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{identity.tagline}</p>
         </div>
 
         <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label={navLabel}>
@@ -155,7 +181,7 @@ export function PortalDeskShell({
         <div className="flex-shrink-0 border-t border-border p-3">
           {userEmail ? (
             <div className="mb-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
-              <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{portalLabel}</p>
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-primary">{identity.shortName}</p>
               <p className="truncate text-xs font-medium text-foreground">{userEmail}</p>
             </div>
           ) : null}
@@ -170,7 +196,7 @@ export function PortalDeskShell({
         </div>
       </aside>
 
-      <div className={cn("flex min-h-screen min-w-0 flex-col", sidebarOffsetClass)}>
+      <div className={cn("relative z-10 flex min-h-screen min-w-0 flex-col", sidebarOffsetClass)}>
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -182,7 +208,7 @@ export function PortalDeskShell({
               <Menu className="h-5 w-5" />
             </button>
             <div className="min-w-0 items-center gap-2 text-sm text-muted-foreground flex">
-              <span className="hidden xs:inline font-medium text-foreground">{portalLabel}</span>
+              <span className="hidden xs:inline font-semibold text-foreground">{identity.name}</span>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden />
               <span className="truncate max-w-[42vw] sm:max-w-none">{title}</span>
             </div>
