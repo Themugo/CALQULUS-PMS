@@ -376,3 +376,7 @@ These were identified during the audit but not yet addressed:
 - Effective billing hierarchy now supports tenancy, property+landlord, property, landlord and manager precedence.
 - Existing uploaded proof receipts remain separate from issued payment receipts to avoid schema collisions.
 - Tenant receipts portal now exposes successful issued receipts and allocation breakdowns.
+
+## Executive Portfolio Intelligence
+- Added explainable portfolio health/risk scoring and prioritized management actions.
+- Added live executive dashboard panel backed by scoped database intelligence.
