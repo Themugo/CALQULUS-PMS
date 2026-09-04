@@ -3,15 +3,14 @@ import { Banknote, FileSpreadsheet } from "lucide-react";
 import LandlordLayout from "@/features/landlord/components/LandlordLayout";
 import LandlordFinancialStatement from "@/features/landlord/components/LandlordFinancialStatement";
 import { LandlordPayoutDialog } from "@/features/landlord/components/LandlordPayoutDialog";
+import LandlordSettlementTransparency from "@/features/landlord/components/LandlordSettlementTransparency";
 import { useLandlordPortfolio } from "@/features/landlord/hooks/useLandlordPortfolio";
 import { useLandlordPayouts } from "@/features/landlord/hooks/useLandlordPayouts";
-import { formatKes } from "@/features/landlord/lib/formatKes";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
-import { payoutStatusTone, statusBadgeClass } from "@/shared/lib/statusBadge";
 
 export default function LandlordStatements() {
   const { properties, isLoading, isError, refetch } = useLandlordPortfolio();
@@ -32,6 +31,10 @@ export default function LandlordStatements() {
       ) : (
         <LandlordFinancialStatement properties={properties} mode="statement" />
       )}
+
+      <section className="mt-8">
+        <LandlordSettlementTransparency />
+      </section>
 
       <section className="mt-8">
         <h2 className="section-title mb-3">Payout requests</h2>
