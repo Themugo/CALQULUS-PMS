@@ -112,6 +112,23 @@ serve(withMiddleware({
   const password = btoa(`${shortcode}${passkey}${timestamp}`);
   const unitNumber = primary.unit_number || "HOSTEL";
   const accountReference = String(route.account_label || primary.unit_number || "HOSTEL").slice(0,12);
+  // Create the reconciliation record BEFORE contacting Safaricom. If the STK call
+  // succeeds but a database write fails, we must never end up with money in flight
+  // and no local transaction to reconcile.
+  const { data: party, error: partyError } = await ctx.supabase.from('payment_parties').insert({
+    party_type: 'family_member', display_name: payerName.slice(0,160), phone: formattedPhone, manager_id: managerId
+  }).select('id').single();
+  if (partyError || !party) throw errorResponse('Could not create payer record', 500);
+
+  const { data: tx, error: txError } = await ctx.supabase.from('payment_transactions').insert({
+    invoice_id: primary.invoice_id, tenant_id: invoice.tenant_id, manager_id: managerId, landlord_id: landlordId,
+    payment_receiver_type: receiverType, unit_id: invoice.unit_id, property_id: invoice.property_id,
+    unit_number: unitNumber, amount: amount, phone_number: formattedPhone, payment_type: resolvedPaymentType,
+    status: 'initiating', initiated_at: new Date().toISOString(), callback_secret: callbackSecret, payer_party_id: party.id,
+    notes: JSON.stringify({ shared_payment: true, invoice_ids: invoiceIds, payer_name: payerName.slice(0,160) })
+  }).select('id').single();
+  if (txError || !tx) throw errorResponse('Could not record payment transaction', 500);
+
   const stk = await fetch(`${apiBase}/mpesa/stkpush/v1/processrequest`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${access_token}`, 'Content-Type': 'application/json' },
@@ -125,22 +142,22 @@ serve(withMiddleware({
     })
   });
   const result = await stk.json();
-  if (result.ResponseCode !== '0') throw errorResponse(result.errorMessage || result.ResponseDescription || 'STK Push failed', 400);
+  if (result.ResponseCode !== '0') {
+    await ctx.supabase.rpc('mark_payment_transaction_failed_atomic', {
+      p_transaction_id: tx.id,
+      p_failure_reason: result.errorMessage || result.ResponseDescription || 'STK Push failed',
+    });
+    throw errorResponse(result.errorMessage || result.ResponseDescription || 'STK Push failed', 400);
+  }
 
-  const { data: party, error: partyError } = await ctx.supabase.from('payment_parties').insert({
-    party_type: 'family_member', display_name: payerName.slice(0,160), phone: formattedPhone, manager_id: managerId
-  }).select('id').single();
-  if (partyError || !party) throw errorResponse('Could not create payer record', 500);
-
-  const { data: tx, error: txError } = await ctx.supabase.from('payment_transactions').insert({
-    invoice_id: primary.invoice_id, tenant_id: invoice.tenant_id, manager_id: managerId, landlord_id: landlordId,
-    payment_receiver_type: receiverType, unit_id: invoice.unit_id, property_id: invoice.property_id,
-    unit_number: unitNumber, amount: amount, phone_number: formattedPhone, payment_type: resolvedPaymentType,
-    checkout_request_id: result.CheckoutRequestID, merchant_request_id: result.MerchantRequestID, status: 'pending',
-    initiated_at: new Date().toISOString(), callback_secret: callbackSecret, payer_party_id: party.id,
-    notes: JSON.stringify({ shared_payment: true, invoice_ids: invoiceIds, payer_name: payerName.slice(0,160) })
-  }).select('id').single();
-  if (txError || !tx) throw errorResponse('Could not record payment transaction', 500);
+  const { error: txUpdateError } = await ctx.supabase.from('payment_transactions').update({
+    checkout_request_id: result.CheckoutRequestID, merchant_request_id: result.MerchantRequestID, status: 'pending', updated_at: new Date().toISOString()
+  }).eq('id', tx.id);
+  if (txUpdateError) {
+    // Safaricom accepted the prompt. Leave the initiating row intact so the callback
+    // can still reconcile it by callback secret; do not create a second transaction.
+    console.error('[initiate-shared-payment] failed to attach Safaricom IDs', { transactionId: tx.id, error: txUpdateError.message });
+  }
   const { error: consumeError } = await ctx.supabase.rpc('consume_shared_payment_link_atomic', { p_token: token, p_grant: accessGrant });
   if (consumeError) throw errorResponse(consumeError.message || 'Payment link could not be consumed', 409);
 

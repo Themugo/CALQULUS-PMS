@@ -1,12 +1,13 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { FileCheck, Layers, Loader2 } from 'lucide-react';
+import { Download, FileCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
+import { fetchIssuedPaymentReceipt, generateIssuedPaymentReceiptPDF } from '@/features/billing/lib/issuedPaymentReceiptPdf';
 
 export const IssuedPaymentReceiptHistory: React.FC = () => {
   const { toast } = useToast();
@@ -23,28 +24,14 @@ export const IssuedPaymentReceiptHistory: React.FC = () => {
     },
   });
 
-  const openReceipt = async (id: string) => {
-    const { data, error } = await supabase.rpc('get_payment_receipt' as any, { p_receipt_id: id });
-    if (error) {
-      toast({ title: 'Could not open receipt', description: error.message, variant: 'destructive' });
-      return;
+  const downloadReceipt = async (id: string, receiptNumber: string) => {
+    try {
+      const payload = await fetchIssuedPaymentReceipt(id);
+      const doc = await generateIssuedPaymentReceiptPDF(payload);
+      doc.save(`${receiptNumber || id}.pdf`);
+    } catch (error: any) {
+      toast({ title: 'Could not generate receipt', description: error?.message || 'Please try again.', variant: 'destructive' });
     }
-    const receipt = data as any;
-    const allocations = Array.isArray(receipt?.allocations) ? receipt.allocations : [];
-    const lines = [
-      `CALQULUS PMS PAYMENT RECEIPT`,
-      `Receipt: ${receipt?.receipt?.receipt_number ?? id}`,
-      `Payer: ${receipt?.payer?.display_name ?? 'Payment party'}`,
-      `Amount: KES ${Number(receipt?.receipt?.total_amount ?? 0).toLocaleString()}`,
-      `Date: ${receipt?.receipt?.issued_at ? format(new Date(receipt.receipt.issued_at), 'dd MMM yyyy HH:mm') : '—'}`,
-      '',
-      'UNIT ALLOCATIONS',
-      ...allocations.map((a: any) => `Unit ${a.unit_number ?? '—'} · ${a.property_name ?? 'Property'} · ${a.invoice_number ?? 'Invoice'} · KES ${Number(a.amount ?? 0).toLocaleString()}`),
-    ];
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank', 'noopener,noreferrer');
-    setTimeout(() => URL.revokeObjectURL(url), 10_000);
   };
 
   if (isLoading) return <Card><CardContent className="py-8 flex justify-center"><Loader2 className="h-5 w-5 animate-spin" /></CardContent></Card>;
@@ -63,7 +50,7 @@ export const IssuedPaymentReceiptHistory: React.FC = () => {
               <div className="flex flex-wrap items-center gap-2"><span className="font-mono text-sm">{receipt.receipt_number}</span><Badge variant="outline" className="text-success border-success/30">Paid</Badge></div>
               <p className="text-xs text-muted-foreground mt-1">{format(new Date(receipt.issued_at), 'dd MMM yyyy')} · KES {Number(receipt.total_amount).toLocaleString()}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => openReceipt(receipt.id)} className="gap-1 shrink-0"><Layers className="h-3.5 w-3.5" />View allocation</Button>
+            <Button variant="outline" size="sm" onClick={() => downloadReceipt(receipt.id, receipt.receipt_number)} className="gap-1 shrink-0"><Download className="h-3.5 w-3.5" />PDF receipt</Button>
           </div>
         ))}
       </CardContent>

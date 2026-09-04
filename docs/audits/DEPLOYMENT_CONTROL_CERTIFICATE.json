@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T07:20:12.787Z",
+  "generatedAt": "2026-09-04T07:25:30.703Z",
   "status": "PASS",
   "requiredArtifacts": [
     "supabase/config.toml",
@@ -11,7 +11,7 @@
     "scripts/audit-release-readiness.mjs",
     "scripts/smoke-deploy.mjs"
   ],
-  "migrationCount": 169,
+  "migrationCount": 170,
   "destructiveMigrationCount": 65,
   "verifyJwtFalseFunctions": [
     "backfill-tenant-accounts",
