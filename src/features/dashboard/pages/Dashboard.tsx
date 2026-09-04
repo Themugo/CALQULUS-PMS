@@ -6,6 +6,7 @@ import { OperationWorkQueue } from "@/features/dashboard/components/OperationWor
 import { ManagementAnalyticsPanel } from "@/features/dashboard/components/ManagementAnalyticsPanel";
 import { ExecutivePortfolioIntelligence } from "@/features/dashboard/components/ExecutivePortfolioIntelligence";
 import { PortfolioFinancialIntelligence } from "@/features/dashboard/components/PortfolioFinancialIntelligence";
+import { RevenueLeakageIntelligence } from "@/features/dashboard/components/RevenueLeakageIntelligence";
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
 import { ManagerActivationEmpty } from "@/features/dashboard/components/ManagerActivationEmpty";
 import ManagerSubscriptionBanner from "@/features/payments/components/ManagerSubscriptionBanner";
@@ -346,6 +347,7 @@ const Dashboard = () => {
             <ManagementAnalyticsPanel />
             <ExecutivePortfolioIntelligence />
             <PortfolioFinancialIntelligence />
+            <RevenueLeakageIntelligence />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
