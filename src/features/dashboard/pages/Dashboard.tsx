@@ -27,6 +27,7 @@ import BudgetForecastVarianceCenter from "@/features/dashboard/components/Budget
 import CashFlowTreasuryLiquidityCenter from "@/features/dashboard/components/CashFlowTreasuryLiquidityCenter";
 import ExpenseCommitmentPayablesCenter from "@/features/dashboard/components/ExpenseCommitmentPayablesCenter";
 import VendorProcurementContractControlCenter from "@/features/dashboard/components/VendorProcurementContractControlCenter";
+import MaintenanceProcurementCostControlCenter from "@/features/dashboard/components/MaintenanceProcurementCostControlCenter";
 
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
@@ -390,6 +391,7 @@ const Dashboard = () => {
             <CashFlowTreasuryLiquidityCenter />
             <ExpenseCommitmentPayablesCenter />
             <VendorProcurementContractControlCenter />
+            <MaintenanceProcurementCostControlCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
