@@ -66,3 +66,9 @@ export async function generateIssuedPaymentReceiptPDF(payload: IssuedPaymentRece
   doc.setFontSize(9); doc.setTextColor(100,100,100); doc.text(documentFooter(brand, "receipts"), 14, Math.min(finalY + 16, 280));
   return doc;
 }
+
+export async function downloadIssuedPaymentReceiptPDF(id: string): Promise<void> {
+  const payload = await fetchIssuedPaymentReceipt(id);
+  const doc = await generateIssuedPaymentReceiptPDF(payload);
+  doc.save(`${payload.receipt.receipt_number}.pdf`);
+}

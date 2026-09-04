@@ -115,10 +115,14 @@ serve(withMiddleware({
   // Create the reconciliation record BEFORE contacting Safaricom. If the STK call
   // succeeds but a database write fails, we must never end up with money in flight
   // and no local transaction to reconcile.
-  const { data: party, error: partyError } = await ctx.supabase.from('payment_parties').insert({
-    party_type: 'family_member', display_name: payerName.slice(0,160), phone: formattedPhone, manager_id: managerId
-  }).select('id').single();
-  if (partyError || !party) throw errorResponse('Could not create payer record', 500);
+  const { data: party, error: partyError } = await ctx.supabase.rpc('get_or_create_payment_party_atomic', {
+    p_manager_id: managerId,
+    p_party_type: 'family_member',
+    p_display_name: payerName.slice(0,160),
+    p_phone: formattedPhone,
+    p_email: null,
+  });
+  if (partyError || !party?.id) throw errorResponse('Could not create payer record', 500);
 
   const { data: tx, error: txError } = await ctx.supabase.from('payment_transactions').insert({
     invoice_id: primary.invoice_id, tenant_id: invoice.tenant_id, manager_id: managerId, landlord_id: landlordId,

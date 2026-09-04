@@ -4,7 +4,7 @@ import { LoadingState } from "@/shared/components/ui/loading-state";
  * Full receipts functionality: table, bulk email, bulk SMS, WhatsApp, per-row actions.
  */
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -17,7 +17,7 @@ import { Download, Mail, MessageSquare, MessageCircle, Search, Loader2, CheckCir
 import { useToast } from "@/shared/hooks/use-toast";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { supabase } from "@/integrations/supabase/client";
-import { downloadReceiptPDF } from "@/features/billing/lib/receiptPdfExport";
+import { downloadIssuedPaymentReceiptPDF } from "@/features/billing/lib/issuedPaymentReceiptPdf";
 import type { BillingInvoice } from "@/features/billing/hooks/useBillingData";
 
 interface Props { invoices: BillingInvoice[]; isLoading: boolean; }
@@ -37,13 +37,34 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
   const [bulkSmsOpen, setBulkSmsOpen] = useState(false);
   const [smsMessage, setSmsMessage] = useState("");
   const [isSendingSms, setIsSendingSms] = useState(false);
+  const [issuedReceipts, setIssuedReceipts] = useState<any[]>([]);
+  const [reconciliationSummary, setReconciliationSummary] = useState<any | null>(null);
+  const [isLoadingIssued, setIsLoadingIssued] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setIsLoadingIssued(true);
+      const [{ data: receipts }, { data: summary }] = await Promise.all([
+        supabase.rpc("get_manager_issued_payment_receipts" as any),
+        supabase.rpc("get_payment_reconciliation_summary" as any),
+      ]);
+      if (!cancelled) {
+        setIssuedReceipts(receipts ?? []);
+        setReconciliationSummary(summary ?? null);
+        setIsLoadingIssued(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const paidInvoices = invoices.filter(inv => inv.status === "paid");
-  const filteredReceipts = paidInvoices.filter(inv =>
+  const filteredReceipts = issuedReceipts.filter((receipt) =>
     !searchQuery ||
-    inv.tenants?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    inv.invoice_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    inv.leases?.property?.toLowerCase().includes(searchQuery.toLowerCase()),
+    String(receipt.payer_name ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(receipt.receipt_number ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(receipt.property_name ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(receipt.unit_number ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
   const receiptsForBulkEmail = paidInvoices.filter(inv => {
     if (!inv.paid_date || !inv.tenants?.email) return false;
@@ -51,7 +72,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
     if (dateTo && inv.paid_date > dateTo) return false;
     return true;
   });
-  const totalCollected = paidInvoices.reduce((s, i) => s + i.amount, 0);
+  const totalCollected = issuedReceipts.reduce((s, i) => s + Number(i.total_amount ?? 0), 0);
 
   async function getCompanySettings() {
     const { data } = await supabase.from("company_settings").select("company_name, logo_url").limit(1).maybeSingle();
@@ -127,11 +148,12 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
 
   return (
     <div className="space-y-6">
+      {reconciliationSummary && (reconciliationSummary.stale_pending_count > 0 || reconciliationSummary.allocation_mismatch_count > 0) && <div className="rounded-xl border border-warning/30 bg-warning/5 p-4 text-sm"><strong>Reconciliation attention:</strong> {reconciliationSummary.stale_pending_count ?? 0} stale pending payment(s), {reconciliationSummary.allocation_mismatch_count ?? 0} allocation mismatch(es).</div>}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { label: "Total Receipts", value: paidInvoices.length.toString(), color: "text-foreground" },
+          { label: "Total Receipts", value: issuedReceipts.length.toString(), color: "text-foreground" },
           { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-[hsl(214_73%_48%)]" },
-          { label: "With Contact Info", value: paidInvoices.filter(i => i.tenants?.email || i.tenants?.phone).length.toString(), color: "text-muted-foreground" },
+          { label: "Allocation Mismatches", value: String(reconciliationSummary?.allocation_mismatch_count ?? 0),, color: "text-muted-foreground" },
         ].map(({ label, value, color }, i) => (
           <div key={label} className="rounded-xl border border-border bg-card p-4 card-shadow animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
             <p className="text-sm text-muted-foreground">{label}</p>
@@ -208,6 +230,8 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
       <div className="rounded-xl border border-border bg-card card-shadow overflow-hidden animate-fade-in">
         {isLoading ? (
           <LoadingState label="Loading receipts…" variant="inline" />
+        ) : isLoadingIssued ? (
+          <LoadingState />
         ) : filteredReceipts.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground"><CheckCircle2 className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>{paidInvoices.length === 0 ? "No receipts yet." : "No receipts match your search."}</p></div>
         ) : (
@@ -215,7 +239,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
             <TableHeader>
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="font-heading font-semibold">Receipt #</TableHead>
-                <TableHead className="font-heading font-semibold">Tenant</TableHead>
+                <TableHead className="font-heading font-semibold">Payer</TableHead>
                 <TableHead className="font-heading font-semibold">Property</TableHead>
                 <TableHead className="font-heading font-semibold">Amount</TableHead>
                 <TableHead className="font-heading font-semibold">Paid Date</TableHead>
@@ -223,29 +247,18 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredReceipts.map((inv, i) => (
-                <TableRow key={inv.id} className="hover:bg-muted/30 border-border animate-slide-in" style={{ animationDelay: `${i * 30}ms` }}>
-                  <TableCell className="font-medium font-mono text-foreground">{inv.invoice_number}</TableCell>
+              {filteredReceipts.map((receipt, i) => (
+                <TableRow key={receipt.receipt_id} className="hover:bg-muted/30 border-border animate-slide-in" style={{ animationDelay: `${i * 30}ms` }}>
+                  <TableCell className="font-medium font-mono text-foreground">{receipt.receipt_number}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={inv.tenants?.photo_url ?? undefined} />
-                        <AvatarFallback className="bg-[hsl(214_73%_48%/0.1)] text-[hsl(214_73%_48%)] text-xs">{inv.tenants?.name?.split(" ").map(n => n[0]).join("") ?? "?"}</AvatarFallback>
-                      </Avatar>
-                      <div><p className="text-foreground">{inv.tenants?.name ?? "No Tenant"}</p><p className="text-xs text-muted-foreground">{inv.tenants?.email}</p></div>
-                    </div>
+                    <div><p className="text-foreground">{receipt.payer_name ?? "Unknown payer"}</p><p className="text-xs text-muted-foreground">{receipt.payer_type ?? "payer"}</p></div>
                   </TableCell>
-                  <TableCell>{inv.leases ? <div className="flex items-center gap-2 text-muted-foreground"><Building className="h-4 w-4" /><span>{inv.leases.property} — {inv.leases.unit}</span></div> : <span className="text-muted-foreground">—</span>}</TableCell>
-                  <TableCell className="font-semibold text-[hsl(214_73%_48%)]">{formatCurrency(inv.amount)}</TableCell>
-                  <TableCell className="text-muted-foreground">{inv.paid_date ? format(new Date(inv.paid_date), 'dd/MM/yy') : "—"}</TableCell>
+                  <TableCell>{receipt.property_name ? <div className="flex items-center gap-2 text-muted-foreground"><Building className="h-4 w-4" /><span>{receipt.property_name}{receipt.unit_number ? ` — ${receipt.unit_number}` : ""}</span></div> : <span className="text-muted-foreground">—</span>}</TableCell>
+                  <TableCell className="font-semibold text-[hsl(214_73%_48%)]">{formatCurrency(Number(receipt.total_amount ?? 0))}</TableCell>
+                  <TableCell className="text-muted-foreground">{receipt.issued_at ? format(new Date(receipt.issued_at), 'dd/MM/yy') : "—"}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="h-8 px-2" title="Download PDF" onClick={() => downloadReceiptPDF({ invoice_number: inv.invoice_number, amount: inv.amount, due_date: inv.due_date, paid_date: inv.paid_date, description: inv.description, tenant: inv.tenants ? { name: inv.tenants.name, email: inv.tenants.email, phone: inv.tenants.phone } : null, lease: inv.leases ? { property: inv.leases.property, unit: inv.leases.unit } : null }, user?.id)}><Download className="h-4 w-4" /></Button>
-                      {inv.tenants?.email && <Button variant="ghost" size="sm" className="h-8 px-2" title="Email Receipt" onClick={() => handleSendReceiptEmail(inv)} disabled={sendingReceiptId === inv.id}>{sendingReceiptId === inv.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}</Button>}
-                      {inv.tenants?.phone && <>
-                        <Button variant="ghost" size="sm" className="h-8 px-2" title="SMS" onClick={() => handleSingleSms(inv)}><MessageSquare className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="sm" className="h-8 px-2" title="WhatsApp" onClick={() => handleWhatsApp(inv)}><MessageCircle className="h-4 w-4" /></Button>
-                      </>}
+                      <Button variant="ghost" size="sm" className="h-8 px-2" title="Download canonical PDF receipt" onClick={() => downloadIssuedPaymentReceiptPDF(receipt.receipt_id)}><Download className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>

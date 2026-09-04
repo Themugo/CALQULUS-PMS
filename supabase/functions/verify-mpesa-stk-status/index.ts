@@ -126,7 +126,23 @@ serve(async (req) => {
     if (elapsedSeconds > 30 && transaction.manager_id) {
       logStep('DB still pending after 30s — querying Safaricom directly', { reference, elapsedSeconds });
       try {
-        const queryResult = await querySafaricomSTK(supabase, reference, transaction.manager_id);
+        const invoiceIds = (() => {
+          try {
+            const parsed = typeof transaction.notes === 'string' && transaction.notes.startsWith('{') ? JSON.parse(transaction.notes) as { invoice_ids?: string[] } : null;
+            return parsed?.invoice_ids?.length ? parsed.invoice_ids : (transaction.invoice_id ? [transaction.invoice_id] : []);
+          } catch { return transaction.invoice_id ? [transaction.invoice_id] : []; }
+        })();
+        let canonicalAccount: Record<string, unknown> | null = null;
+        if (invoiceIds.length) {
+          const { data: invoiceRows } = await supabase.from('invoices').select('payment_account_id').in('id', invoiceIds);
+          const accountIds = [...new Set((invoiceRows ?? []).map((row: any) => row.payment_account_id).filter(Boolean))];
+          if (accountIds.length > 1) throw new Error('Selected invoices use different payment routes');
+          if (accountIds[0]) {
+            const { data: account } = await supabase.from('payment_collection_accounts').select('id,landlord_user_id,payment_method,paybill_number,till_number,account_reference').eq('id', accountIds[0]).maybeSingle();
+            canonicalAccount = account;
+          }
+        }
+        const queryResult = await querySafaricomSTK(supabase, reference, transaction.manager_id, canonicalAccount);
         if (queryResult) {
           logStep('Safaricom query result', queryResult);
 
@@ -249,17 +265,27 @@ serve(async (req) => {
 async function querySafaricomSTK(
   supabase: any,
   checkoutRequestId: string,
-  managerId: string
+  managerId: string,
+  canonicalAccount?: Record<string, unknown> | null
 ): Promise<{ ResultCode: number | string | null; ResultDesc: string | null; MpesaReceiptNumber?: string } | null> {
   // Get manager's M-Pesa credentials
-  const { data: settings } = await supabase
-    .from('manager_mpesa_settings')
-    .select('consumer_key, consumer_secret, paybill_shortcode, paybill_passkey, till_shortcode, till_passkey, is_live')
-    .eq('manager_user_id', managerId)
-    .maybeSingle();
+  let settings: any = null;
+  const accountId = canonicalAccount?.id as string | undefined;
+  const landlordId = canonicalAccount?.landlord_user_id as string | undefined;
+  if (landlordId) {
+    const { data } = await supabase.from('landlord_mpesa_settings')
+      .select('consumer_key,consumer_secret,paybill_shortcode,paybill_passkey,till_shortcode,till_passkey,is_live')
+      .eq('landlord_user_id',landlordId).maybeSingle();
+    settings = data;
+  } else {
+    const { data: propertySettings } = await supabase.from('manager_mpesa_settings')
+      .select('consumer_key,consumer_secret,paybill_shortcode,paybill_passkey,till_shortcode,till_passkey,is_live')
+      .eq('manager_user_id',managerId).maybeSingle();
+    settings = propertySettings;
+  }
 
   if (!settings?.consumer_key || !settings?.consumer_secret) {
-    throw new Error('M-Pesa credentials not configured for this manager');
+    throw new Error(`M-Pesa credentials not configured for payment account ${accountId ?? 'unknown'}`);
   }
 
   const apiBase = settings.is_live
@@ -276,8 +302,9 @@ async function querySafaricomSTK(
   if (!accessToken) throw new Error('Failed to get Safaricom OAuth token');
 
   // Build password (same as STK push)
-  const shortcode = settings.paybill_shortcode || settings.till_shortcode;
-  const passkey   = settings.paybill_passkey   || settings.till_passkey;
+  const isTill = canonicalAccount?.payment_method === 'mpesa_till';
+  const shortcode = (isTill ? canonicalAccount?.till_number : canonicalAccount?.paybill_number) as string | undefined || settings.paybill_shortcode || settings.till_shortcode;
+  const passkey   = isTill ? (settings.till_passkey ?? settings.passkey) : (settings.paybill_passkey ?? settings.passkey);
   if (!shortcode || !passkey) throw new Error('M-Pesa shortcode/passkey not configured');
 
   const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
