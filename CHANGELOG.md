@@ -380,3 +380,8 @@ These were identified during the audit but not yet addressed:
 ## Executive Portfolio Intelligence
 - Added explainable portfolio health/risk scoring and prioritized management actions.
 - Added live executive dashboard panel backed by scoped database intelligence.
+
+## 2026-09-04 — Tenant Service Recovery & Communication Loop
+- Added tenant service recovery cases with scoped lifecycle and deduplication.
+- Added auditable tenant follow-up communication queue.
+- Added manager dashboard recovery control centre.

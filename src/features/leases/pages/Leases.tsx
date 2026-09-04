@@ -65,6 +65,7 @@ import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
 import { BillingDueConfigPanel } from '@/features/billing/components/BillingDueConfigPanel';
 import { PaymentCollectionRoutingPanel } from '@/features/billing/components/PaymentCollectionRoutingPanel';
 import { LeaseStatements } from "@/features/leases/components/LeaseStatements";
+import { LeaseRenewalPipeline } from "@/features/leases/components/LeaseRenewalPipeline";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useQueryClient } from "@tanstack/react-query";
@@ -748,11 +749,15 @@ const Leases = () => {
         />
       </div>
       <Tabs defaultValue="agreements" className="w-full">
-        <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-2 sm:flex">
+        <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-3 sm:flex">
           <TabsTrigger value="agreements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Agreements</span>
             <span className="xs:hidden">Leases</span>
+          </TabsTrigger>
+          <TabsTrigger value="renewals" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            Renewals
           </TabsTrigger>
           <TabsTrigger value="statements" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
             <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -1598,6 +1603,10 @@ const Leases = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+        </TabsContent>
+
+        <TabsContent value="renewals" className="space-y-4 sm:space-y-6">
+          <LeaseRenewalPipeline />
         </TabsContent>
 
         <TabsContent value="statements">
