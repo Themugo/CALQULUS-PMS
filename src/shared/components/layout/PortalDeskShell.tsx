@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronRight, LogOut, Menu, Settings, X } from "lucide-react";
+import { ChevronRight, LogOut, Menu, Settings, X, Palette } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
@@ -46,7 +46,7 @@ interface PortalDeskShellProps {
 }
 
 export function PortalDeskLoading({ className }: { className?: string }) {
-  const { identity } = usePortalIdentity();
+  const { identity, themeMode, setThemeMode } = usePortalIdentity();
   return (
     <div
       className={cn("relative flex min-h-screen items-center justify-center overflow-hidden bg-background", className)}
@@ -86,7 +86,7 @@ export function PortalDeskShell({
   mobileContentPadding = "pb-8",
 }: PortalDeskShellProps) {
   const location = useLocation();
-  const { identity } = usePortalIdentity();
+  const { identity, themeMode, setThemeMode } = usePortalIdentity();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const closeSidebar = () => setSidebarOpen(false);
@@ -213,7 +213,19 @@ export function PortalDeskShell({
               <span className="truncate max-w-[42vw] sm:max-w-none">{title}</span>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">{headerRight}{settingsHref ? <Link to={settingsHref} aria-label={`${portalLabel} settings`} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><Settings className="h-4 w-4" /></Link> : null}</div>
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            {headerRight}
+            <button
+              type="button"
+              onClick={() => setThemeMode(themeMode === "white" ? "portal" : "white")}
+              aria-label={themeMode === "white" ? `Use ${identity.shortName} theme` : "Use CALQULUS White theme"}
+              title={themeMode === "white" ? `Use ${identity.shortName} theme` : "Use CALQULUS White theme"}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            >
+              <Palette className="h-4 w-4" />
+            </button>
+            {settingsHref ? <Link to={settingsHref} aria-label={`${portalLabel} settings`} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><Settings className="h-4 w-4" /></Link> : null}
+          </div>
         </header>
 
         {!hideHeader ? <PageHeader title={title} description={description} actions={actions} className="border-0 px-4 py-4 sm:px-6 lg:px-8" /> : null}

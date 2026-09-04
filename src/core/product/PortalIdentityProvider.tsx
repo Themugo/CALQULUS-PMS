@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,12 +11,16 @@ interface PortalIdentityContextValue {
   portalId: PortalId;
   identity: PortalIdentity;
   isLoading: boolean;
+  themeMode: "portal" | "white";
+  setThemeMode: (mode: "portal" | "white") => void;
 }
 
 const PortalIdentityContext = createContext<PortalIdentityContextValue>({
   portalId: "manager",
   identity: DEFAULT_PORTAL_IDENTITIES.manager,
   isLoading: false,
+  themeMode: "portal",
+  setThemeMode: () => {},
 });
 
 function portalFromPath(pathname: string): PortalId {
@@ -33,9 +37,26 @@ export function usePortalIdentity() {
 
 export function PortalIdentityProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const { userRole } = useAuth();
+  const { user, userRole } = useAuth();
   const portalId = portalFromAppRole(userRole?.role) ?? portalFromPath(location.pathname);
   const fallback = DEFAULT_PORTAL_IDENTITIES[portalId];
+  const themeStorageKey = user?.id ? `calqulus-portal-theme:${user.id}:${portalId}` : `calqulus-portal-theme:guest:${portalId}`;
+  const [themeMode, setThemeModeState] = React.useState<"portal" | "white">(() => {
+    try {
+      return localStorage.getItem(themeStorageKey) === "white" ? "white" : "portal";
+    } catch { return "portal"; }
+  });
+
+  React.useEffect(() => {
+    try {
+      setThemeModeState(localStorage.getItem(themeStorageKey) === "white" ? "white" : "portal");
+    } catch { setThemeModeState("portal"); }
+  }, [themeStorageKey]);
+
+  const setThemeMode = React.useCallback((mode: "portal" | "white") => {
+    setThemeModeState(mode);
+    try { localStorage.setItem(themeStorageKey, mode); } catch {}
+  }, [themeStorageKey]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["portal-identity", portalId],
@@ -53,7 +74,7 @@ export function PortalIdentityProvider({ children }: { children: ReactNode }) {
   });
 
   const identity = data ?? fallback;
-  const palette = deriveBrandPalette(identity.primaryHex);
+  const palette = deriveBrandPalette(themeMode === "white" ? "#16324F" : identity.primaryHex);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -79,6 +100,6 @@ export function PortalIdentityProvider({ children }: { children: ReactNode }) {
     };
   }, [palette, portalId]);
 
-  const value = useMemo(() => ({ portalId, identity, isLoading }), [portalId, identity, isLoading]);
+  const value = useMemo(() => ({ portalId, identity, isLoading, themeMode, setThemeMode }), [portalId, identity, isLoading, themeMode, setThemeMode]);
   return <PortalIdentityContext.Provider value={value}>{children}</PortalIdentityContext.Provider>;
 }
