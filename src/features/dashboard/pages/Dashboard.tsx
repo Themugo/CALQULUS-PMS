@@ -6,6 +6,7 @@ import { OperationWorkQueue } from "@/features/dashboard/components/OperationWor
 import { ManagementAnalyticsPanel } from "@/features/dashboard/components/ManagementAnalyticsPanel";
 import { ExecutivePortfolioIntelligence } from "@/features/dashboard/components/ExecutivePortfolioIntelligence";
 import { PortfolioFinancialIntelligence } from "@/features/dashboard/components/PortfolioFinancialIntelligence";
+import { FinancialCloseControlCenter } from "@/features/dashboard/components/FinancialCloseControlCenter";
 import { PropertyRevenueLeaseOptimization } from "@/features/dashboard/components/PropertyRevenueLeaseOptimization";
 import { RevenueLeakageIntelligence } from "@/features/dashboard/components/RevenueLeakageIntelligence";
 import { CollectionsRecoveryAutomation } from "@/features/dashboard/components/CollectionsRecoveryAutomation";
@@ -354,6 +355,7 @@ const Dashboard = () => {
             <ManagementAnalyticsPanel />
             <ExecutivePortfolioIntelligence />
             <PortfolioFinancialIntelligence />
+            <FinancialCloseControlCenter />
             <PropertyRevenueLeaseOptimization />
             <RevenueLeakageIntelligence />
             <CollectionsRecoveryAutomation />
