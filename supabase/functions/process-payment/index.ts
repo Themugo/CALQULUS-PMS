@@ -342,6 +342,21 @@ serve(async (req) => {
       throw new Error("Atomic payment processing returned no transaction id");
     }
 
+    // Every completed payment gets one canonical issued receipt, regardless of
+    // whether it was a single invoice, a multi-unit bulk payment, STK, bank,
+    // or a manager-recorded payment. The receipt RPC is idempotent.
+    const { data: issuedReceipt, error: issuedReceiptError } = await supabase.rpc(
+      "issue_payment_receipt_atomic",
+      { p_transaction_id: txId },
+    );
+    if (issuedReceiptError) {
+      log("Issued receipt creation failed", { transactionId: txId, error: issuedReceiptError.message });
+      // Do not roll back a successful payment because receipt delivery is a
+      // secondary artifact; the receipt RPC can be replayed safely.
+    } else {
+      log("Issued payment receipt ready", { transactionId: txId, receipt: issuedReceipt });
+    }
+
     if (atomic.idempotent) {
       log("Idempotent replay via process_payment_atomic", { reference, txId });
       return withApiVersion(new Response(JSON.stringify({

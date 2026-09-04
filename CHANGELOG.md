@@ -361,3 +361,11 @@ These were identified during the audit but not yet addressed:
 - Added invoice payment-account snapshots and tenant payment reminders.
 - Removed the single-landlord-per-property limitation and enforced shared-owner revenue shares <= 100%.
 - Added tenant-facing payment destination badges and due-date indicators.
+
+## 2026-09-04 — Payment receipt, STK and reconciliation completion
+- Completed the unit-first billing payment lifecycle with one canonical issued receipt per successful transaction.
+- Digital receipts now carry unit-by-unit allocation detail and are delivered to payer, affected tenant auth accounts, managers and landlords.
+- Tenant prompts resolve the real tenant auth user through `user_roles` rather than assuming tenant-row IDs are auth IDs.
+- Effective billing hierarchy now supports tenancy, property+landlord, property, landlord and manager precedence.
+- Existing uploaded proof receipts remain separate from issued payment receipts to avoid schema collisions.
+- Tenant receipts portal now exposes successful issued receipts and allocation breakdowns.

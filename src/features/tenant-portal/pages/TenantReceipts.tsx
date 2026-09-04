@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import TenantLayout from "@/features/tenant-portal/components/TenantLayout";
 import { ReceiptUpload } from "@/features/tenant-portal/components/ReceiptUpload";
 import { ReceiptHistory } from "@/features/tenant-portal/components/ReceiptHistory";
+import { IssuedPaymentReceiptHistory } from "@/features/tenant-portal/components/IssuedPaymentReceiptHistory";
 import { TENANT_INVOICE_COLUMNS } from "@/features/tenant-portal/lib/tenantInvoiceSelect";
 
 export default function TenantReceipts() {
@@ -55,6 +56,7 @@ export default function TenantReceipts() {
             onUploadComplete={() => setRefresh((n) => n + 1)}
           />
           <ReceiptHistory tenantId={tenant.id} refreshTrigger={refresh} />
+          <IssuedPaymentReceiptHistory />
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">Sign in as a tenant to see receipts.</p>
