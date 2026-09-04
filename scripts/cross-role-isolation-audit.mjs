@@ -13,7 +13,10 @@ for(const f of walk(fnRoot).filter(x=>x.endsWith('index.ts'))){
  const s=fs.readFileSync(f,'utf8');
  if(f.includes(`${path.sep}_shared${path.sep}`)) continue;
  if(/from\(["']user_roles["']\)[\s\S]{0,500}\.single\(\)/.test(s) && /roleData\?\.role|roleRow\?\.role/.test(s) && !/auth\.getUser|withMiddleware\([\s\S]{0,500}(?:requireAuth\s*:\s*true|allowedRoles\s*:\s*\[)/.test(s)) failures.push(`role lookup without explicit auth gate: ${path.relative(root,f)}`);
- if(/\.from\(["'](payment_transactions|payout_requests|disputes|user_roles|platform_admins|admin_permissions)["']\)[\s\S]{0,800}\.update\(|\.from\(["'](payment_transactions|payout_requests|disputes|user_roles|platform_admins|admin_permissions)["']\)[\s\S]{0,800}\.insert\(/.test(s) && !/SERVICE_ROLE_KEY|withMiddleware\([\s\S]{0,500}(?:requireAuth\s*:\s*true|allowedRoles\s*:\s*\[)|auth\.getUser|authenticateUser/.test(s)) failures.push(`protected mutation lacks visible auth/service gate: ${path.relative(root,f)}`);
+ const hasProtectedMutation = /\.from\(["'](payment_transactions|payout_requests|disputes|user_roles|platform_admins|admin_permissions|payment_parties)["']\)[\s\S]{0,1000}\.(?:update|insert)\(/.test(s);
+ const hasAuthOrServiceGate = /SERVICE_ROLE_KEY|SUPABASE_SERVICE_ROLE_KEY|withMiddleware\([\s\S]{0,800}(?:requireAuth\s*:\s*true|allowedRoles\s*:\s*\[)|auth\.getUser|authenticateUser/.test(s);
+ const isExplicitlyPublicShareFlow = f.endsWith(`${path.sep}initiate-shared-payment${path.sep}index.ts`) && /get_public_payment_share/.test(s) && /check_shared_payment_attempt_atomic/.test(s) && /consume_shared_payment_link_atomic/.test(s);
+ if(hasProtectedMutation && !hasAuthOrServiceGate && !isExplicitlyPublicShareFlow) failures.push(`protected mutation lacks visible auth/service gate: ${path.relative(root,f)}`);
 }
 for(const f of walk(migRoot).filter(x=>x.endsWith('.sql'))){
  const s=fs.readFileSync(f,'utf8');
