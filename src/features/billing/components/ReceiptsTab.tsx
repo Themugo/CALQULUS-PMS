@@ -153,7 +153,7 @@ export function ReceiptsTab({ invoices, isLoading }: Props) {
         {[
           { label: "Total Receipts", value: issuedReceipts.length.toString(), color: "text-foreground" },
           { label: "Total Collected", value: formatCurrency(totalCollected), color: "text-[hsl(214_73%_48%)]" },
-          { label: "Allocation Mismatches", value: String(reconciliationSummary?.allocation_mismatch_count ?? 0),, color: "text-muted-foreground" },
+          { label: "Allocation Mismatches", value: String(reconciliationSummary?.allocation_mismatch_count ?? 0), color: "text-muted-foreground" },
         ].map(({ label, value, color }, i) => (
           <div key={label} className="rounded-xl border border-border bg-card p-4 card-shadow animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
             <p className="text-sm text-muted-foreground">{label}</p>
