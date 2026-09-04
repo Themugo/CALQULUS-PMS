@@ -1,3 +1,11 @@
+## 2026-09-04 — Property Inspections, Compliance & Condition Assurance
+
+- Added scheduled property inspection programmes and runs.
+- Added checklist findings with evidence and optional canonical maintenance work-order escalation.
+- Added property compliance obligations with governed document evidence linkage.
+- Connected inspection intelligence to existing maintenance assets and lifecycle risk.
+- Added `PropertyInspectionComplianceAssuranceCenter` to the manager dashboard.
+
 
 ## 2026-09-04 — Management & Compliance Assurance
 - Added `management_assurance_reviews` for explicit period/control review and approval.
