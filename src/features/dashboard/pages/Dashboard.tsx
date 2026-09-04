@@ -28,6 +28,7 @@ import CashFlowTreasuryLiquidityCenter from "@/features/dashboard/components/Cas
 import ExpenseCommitmentPayablesCenter from "@/features/dashboard/components/ExpenseCommitmentPayablesCenter";
 import VendorProcurementContractControlCenter from "@/features/dashboard/components/VendorProcurementContractControlCenter";
 import MaintenanceProcurementCostControlCenter from "@/features/dashboard/components/MaintenanceProcurementCostControlCenter";
+import MaintenanceSlaVendorDispatchAssuranceCenter from "@/features/dashboard/components/MaintenanceSlaVendorDispatchAssuranceCenter";
 
 
 import { ManagerQuickActions } from "@/features/dashboard/components/ManagerQuickActions";
@@ -392,6 +393,7 @@ const Dashboard = () => {
             <ExpenseCommitmentPayablesCenter />
             <VendorProcurementContractControlCenter />
             <MaintenanceProcurementCostControlCenter />
+            <MaintenanceSlaVendorDispatchAssuranceCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
