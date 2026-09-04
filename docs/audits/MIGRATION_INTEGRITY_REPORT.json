@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-04T06:34:42.960Z",
+  "generatedAt": "2026-09-04T10:41:18.070Z",
   "status": "EXTERNAL_REQUIRED",
-  "migrationCount": 169,
+  "migrationCount": 182,
   "changedSinceManifest": [],
   "removedSinceManifest": [],
   "newSinceManifest": [
-    "20260904000001_portal_identity_theme_system.sql",
+    "20260904000000_portal_identity_theme_system.sql",
     "20260904000001_property_tenancy_operations_ecosystem.sql",
     "20260904000002_financial_billing_operations_ecosystem.sql",
     "20260904000003_billing_due_payment_routing.sql",
@@ -15,7 +15,20 @@
     "20260904000007_third_party_payer_portal.sql",
     "20260904000008_tenant_share_payment_links.sql",
     "20260904000009_payment_configuration_privacy_device_security.sql",
-    "20260904000010_payment_authority_convergence.sql"
+    "20260904000010_payment_authority_convergence.sql",
+    "20260904000011_payment_closeout_integrity.sql",
+    "20260904000012_payment_reconciliation_visibility.sql",
+    "20260904000013_payment_recovery_idempotency.sql",
+    "20260904000014_notification_retry_control.sql",
+    "20260904000015_payment_exception_control_center.sql",
+    "20260904000016_operation_work_queue.sql",
+    "20260904000017_work_queue_sla_control.sql",
+    "20260904000018_work_queue_assignment_performance.sql",
+    "20260904000019_management_analytics_reporting.sql",
+    "20260904000020_executive_portfolio_intelligence.sql",
+    "20260904000021_portfolio_financial_intelligence.sql",
+    "20260904000022_revenue_leakage_receivables_intelligence.sql",
+    "20260904000023_collections_recovery_automation.sql"
   ],
   "live": null,
   "note": "The committed migration manifest records immutable file hashes. Generate/update it only when the migration content is intentionally versioned."
