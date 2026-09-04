@@ -346,6 +346,15 @@ These were identified during the audit but not yet addressed:
 
 - Dashboard Command Center: consolidated arrears and maintenance scope lookups onto shared dashboard datasets, removing duplicate property/tenant fetches.
 
+## 2026-09-04 — Unit-first multi-payer & bulk payment completion
+- Made unit/lease obligations the authoritative allocation target while allowing one tenant to hold multiple units.
+- Added reusable payer parties for tenants, employers, institutions, sponsors, well-wishers and other third parties.
+- Added explicit payer-to-unit links and one-payment/multi-invoice allocation with partial allocation support.
+- Added payer receipts with allocation breakdowns and recipient copies for tenants, landlords and managers.
+- Added portal unit discovery so linked units can be reviewed and combined into one payment transaction.
+- Added manager/landlord unit-level billing summary so bulk and individual payments resolve to the same unit status.
+- Added secure authorization checks around third-party payer allocations and receipt visibility.
+
 ## 2026-09-04 — Billing due-date, overdue routing & shared ownership
 - Added hierarchical manager/property/landlord/tenancy due-date and overdue policies.
 - Added tenant-specific payment routing with agency, manager and landlord destinations.

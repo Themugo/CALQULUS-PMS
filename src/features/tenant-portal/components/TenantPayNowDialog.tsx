@@ -20,6 +20,10 @@ export interface PayableInvoice {
   due_date: string;
   status: string;
   description?: string | null;
+  unit_id?: string | null;
+  unit_number?: string | null;
+  property_id?: string | null;
+  property_name?: string | null;
 }
 
 interface TenantPayNowDialogProps {

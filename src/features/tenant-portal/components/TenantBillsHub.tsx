@@ -10,7 +10,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { chargeMeta } from '@/shared/constants/chargeTypes';
-import { Receipt, Smartphone, Layers, CheckCircle2, CalendarClock, CreditCard } from 'lucide-react';
+import { Receipt, Smartphone, Layers, CheckCircle2, CalendarClock, CreditCard, Home } from 'lucide-react';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 import { invoiceDisplayBadge } from '@/shared/lib/invoiceStatusDisplay';
 import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
@@ -42,17 +42,17 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
       if (!invoices) {
         const { data, error } = await supabase
           .from('invoices')
-          .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description')
+          .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description, lease_id, leases(unit_id, unit, property_id, properties(name))')
           .eq('tenant_id', tenantId)
           .order('due_date', { ascending: true });
         if (error) throw error;
         invoices = (data ?? []) as PayableInvoice[];
       }
 
-      const payableSeed = invoices.filter((i) => i.status === 'pending' || i.status === 'overdue' || i.status === 'partially_paid');
-      if (!payableSeed.length) return [];
+      const allInvoices = invoices ?? [];
+      if (!allInvoices.length) return [];
 
-      const ids = payableSeed.map((i) => i.id);
+      const ids = allInvoices.map((i) => i.id);
       const { data: lines } = await supabase
         .from('invoice_line_items')
         .select('invoice_id, charge_type, charge_label, amount')
@@ -65,10 +65,12 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         linesByInv.set(line.invoice_id, list);
       }
 
-      const enriched = await Promise.all(payableSeed.map(async (inv) => {
-        const { data: paymentAccount } = await supabase.rpc('get_invoice_payment_instructions' as any, { p_invoice_id: inv.id });
+      const enriched = await Promise.all(allInvoices.map(async (inv) => {
+        const { data: paymentAccount } = (inv.status === 'paid') ? { data: null } : await supabase.rpc('get_invoice_payment_instructions' as any, { p_invoice_id: inv.id });
         const route = Array.isArray(paymentAccount) ? paymentAccount[0] : paymentAccount;
-        return { ...inv, status: inv.status as PayableInvoice['status'], lineItems: (linesByInv.get(inv.id) ?? []).map((l) => ({ charge_type: l.charge_type, charge_label: l.charge_label, amount: Number(l.amount) })), paymentAccount: route };
+        const lease = Array.isArray((inv as any).leases) ? (inv as any).leases[0] : (inv as any).leases;
+        const property = Array.isArray(lease?.properties) ? lease.properties[0] : lease?.properties;
+        return { ...inv, unit_id: lease?.unit_id ?? null, unit_number: lease?.unit ?? null, property_id: lease?.property_id ?? inv.property_id ?? null, property_name: property?.name ?? null, status: inv.status as PayableInvoice['status'], lineItems: (linesByInv.get(inv.id) ?? []).map((l) => ({ charge_type: l.charge_type, charge_label: l.charge_label, amount: Number(l.amount) })), paymentAccount: route };
       }));
       return enriched;
     },
@@ -85,6 +87,17 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
     [payable, selected],
   );
   const selectedTotal = selectedBills.reduce((s, b) => s + balanceOf(b), 0);
+  const unitGroups = useMemo(() => {
+    const groups = new Map<string, { label: string; bills: InvoiceRow[] }>();
+    for (const bill of payable) {
+      const key = bill.unit_id ?? bill.lease_id ?? bill.id;
+      const label = bill.unit_number ? `Unit ${bill.unit_number}` : (bill.property_name ?? 'Unit');
+      const current = groups.get(key) ?? { label, bills: [] };
+      current.bills.push(bill);
+      groups.set(key, current);
+    }
+    return [...groups.values()];
+  }, [payable]);
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -150,7 +163,14 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         </div>
 
         <div className="space-y-3">
-          {payable.map((bill) => {
+          {unitGroups.map((group) => (
+            <div key={group.label} className="space-y-2">
+              <div className="flex items-center gap-2 px-1 pt-1">
+                <Home className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-semibold">{group.label}</span>
+                <span className="text-xs text-muted-foreground">{group.bills.length} bill{group.bills.length === 1 ? '' : 's'}</span>
+              </div>
+              {group.bills.map((bill) => {
             const meta = bill.lineItems.length
               ? chargeMeta(bill.lineItems[0].charge_type)
               : chargeMeta(
@@ -190,7 +210,7 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                       {(() => { const display = invoiceDisplayBadge(bill.status, bill.due_date); return <span className={display.className}>{display.label}</span>; })()}
                       <span className="text-xs text-muted-foreground">Due {format(new Date(bill.due_date), 'dd MMM')}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground font-mono mt-0.5">{bill.invoice_number}</p>
+                    <p className="text-xs text-muted-foreground font-mono mt-0.5">{bill.invoice_number}{bill.unit_number ? ` · Unit ${bill.unit_number}` : ''}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                       {(() => { const display = invoiceDisplayBadge(bill.status, bill.due_date); return <span className={`inline-flex items-center gap-1 ${display.iconTone}`}><CalendarClock className="h-3.5 w-3.5" />Due {format(new Date(bill.due_date), 'dd MMM yyyy')}</span>; })()}
                       {bill.status !== 'paid' && bill.paymentAccount && <span className="inline-flex items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-2 py-1 text-primary"><CreditCard className="h-3.5 w-3.5" />{bill.paymentAccount.payment_method === 'mpesa_till' ? `Till ${bill.paymentAccount.till_number}` : bill.paymentAccount.payment_method === 'mpesa_paybill' ? `Paybill ${bill.paymentAccount.paybill_number}` : bill.paymentAccount.payment_method === 'bank_transfer' ? `${bill.paymentAccount.bank_name} • ${bill.paymentAccount.bank_account_number}` : 'Office / cash'}</span>}
@@ -220,7 +240,9 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                 </div>
               </div>
             );
-          })}
+              })}
+            </div>
+          ))}
         </div>
 
         <div className="rounded-xl bg-muted/50 border p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
