@@ -62,6 +62,8 @@ import { useActivityLog } from "@/shared/hooks/useActivityLog";
 import { useViewOnly } from "@/shared/contexts/ViewOnlyContext";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { logError, toUserFacingError } from "@/shared/lib/errorLogger";
+import { BillingDueConfigPanel } from '@/features/billing/components/BillingDueConfigPanel';
+import { PaymentCollectionRoutingPanel } from '@/features/billing/components/PaymentCollectionRoutingPanel';
 import { LeaseStatements } from "@/features/leases/components/LeaseStatements";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
@@ -1360,6 +1362,13 @@ const Leases = () => {
                   </p>
                 </div>
               </div>
+
+              {selectedLease.tenant_id && selectedLease.property_id && (
+                <div className="space-y-3 mt-4">
+                  <BillingDueConfigPanel scope="tenancy" scopeId={selectedLease.id} propertyId={selectedLease.property_id} title="Tenancy-specific due & overdue policy" compact />
+                  <PaymentCollectionRoutingPanel propertyId={selectedLease.property_id} tenantId={selectedLease.tenant_id} leaseId={selectedLease.id} />
+                </div>
+              )}
 
               {selectedLease.terms && (
                 <div>

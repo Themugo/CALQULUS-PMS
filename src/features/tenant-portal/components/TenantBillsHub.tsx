@@ -10,8 +10,9 @@ import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { chargeMeta } from '@/shared/constants/chargeTypes';
-import { Receipt, Smartphone, Layers, CheckCircle2 } from 'lucide-react';
+import { Receipt, Smartphone, Layers, CheckCircle2, CalendarClock, CreditCard } from 'lucide-react';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
+import { invoiceDisplayBadge } from '@/shared/lib/invoiceStatusDisplay';
 import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 
 interface TenantBillsHubProps {
@@ -23,6 +24,7 @@ interface TenantBillsHubProps {
 
 interface InvoiceRow extends PayableInvoice {
   lineItems: { charge_type: string; charge_label: string; amount: number }[];
+  paymentAccount?: any;
 }
 
 const fmt = (n: number) =>
@@ -42,7 +44,6 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
           .from('invoices')
           .select('id, invoice_number, amount, balance_due, paid_amount, due_date, status, description')
           .eq('tenant_id', tenantId)
-          .in('status', ['pending', 'overdue', 'partially_paid'])
           .order('due_date', { ascending: true });
         if (error) throw error;
         invoices = (data ?? []) as PayableInvoice[];
@@ -64,20 +65,18 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         linesByInv.set(line.invoice_id, list);
       }
 
-      return payableSeed.map((inv) => ({
-        ...inv,
-        status: inv.status as PayableInvoice['status'],
-        lineItems: (linesByInv.get(inv.id) ?? []).map((l) => ({
-          charge_type: l.charge_type,
-          charge_label: l.charge_label,
-          amount: Number(l.amount),
-        })),
+      const enriched = await Promise.all(payableSeed.map(async (inv) => {
+        const { data: paymentAccount } = await supabase.rpc('get_invoice_payment_instructions' as any, { p_invoice_id: inv.id });
+        const route = Array.isArray(paymentAccount) ? paymentAccount[0] : paymentAccount;
+        return { ...inv, status: inv.status as PayableInvoice['status'], lineItems: (linesByInv.get(inv.id) ?? []).map((l) => ({ charge_type: l.charge_type, charge_label: l.charge_label, amount: Number(l.amount) })), paymentAccount: route };
       }));
+      return enriched;
     },
     enabled: !!tenantId,
   });
 
-  const payable = bills.filter((b) => balanceOf(b) > 0);
+  const payable = bills.filter((b) => b.status !== 'paid' && balanceOf(b) > 0);
+  const paidBills = bills.filter((b) => b.status === 'paid');
   const totalDue = payable.reduce((s, b) => s + balanceOf(b), 0);
 
   const selectedBills = useMemo(
@@ -113,15 +112,9 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
     );
   }
 
-  if (payable.length === 0) {
+  if (payable.length === 0 && paidBills.length === 0) {
     return (
-      <Card className="border-success/30 bg-success/10">
-        <CardContent className="py-10 text-center">
-          <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
-          <p className="font-semibold text-success">All caught up</p>
-          <p className="text-sm text-success mt-1">No outstanding rent, water, or amenity bills.</p>
-        </CardContent>
-      </Card>
+      <Card className="border-success/30 bg-success/10"><CardContent className="py-10 text-center"><CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" /><p className="font-semibold text-success">All caught up</p><p className="text-sm text-success mt-1">No outstanding rent, water, or amenity bills.</p></CardContent></Card>
     );
   }
 
@@ -194,12 +187,14 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                           ? bill.lineItems.map((l) => l.charge_label).join(' · ')
                           : bill.description || meta.label}
                       </p>
-                      <span className={statusBadgeClass(invoiceStatusTone(bill.status))}>
-                        {invoiceStatusLabel(bill.status)}
-                      </span>
+                      {(() => { const display = invoiceDisplayBadge(bill.status, bill.due_date); return <span className={display.className}>{display.label}</span>; })()}
                       <span className="text-xs text-muted-foreground">Due {format(new Date(bill.due_date), 'dd MMM')}</span>
                     </div>
                     <p className="text-xs text-muted-foreground font-mono mt-0.5">{bill.invoice_number}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                      {(() => { const display = invoiceDisplayBadge(bill.status, bill.due_date); return <span className={`inline-flex items-center gap-1 ${display.iconTone}`}><CalendarClock className="h-3.5 w-3.5" />Due {format(new Date(bill.due_date), 'dd MMM yyyy')}</span>; })()}
+                      {bill.status !== 'paid' && bill.paymentAccount && <span className="inline-flex items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-2 py-1 text-primary"><CreditCard className="h-3.5 w-3.5" />{bill.paymentAccount.payment_method === 'mpesa_till' ? `Till ${bill.paymentAccount.till_number}` : bill.paymentAccount.payment_method === 'mpesa_paybill' ? `Paybill ${bill.paymentAccount.paybill_number}` : bill.paymentAccount.payment_method === 'bank_transfer' ? `${bill.paymentAccount.bank_name} • ${bill.paymentAccount.bank_account_number}` : 'Office / cash'}</span>}
+                    </div>
                     {bill.lineItems.length > 1 && (
                       <ul className="mt-2 space-y-0.5">
                         {bill.lineItems.map((l, i) => (
@@ -258,6 +253,12 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
         <p className="text-xs text-center text-muted-foreground">
           Instant receipt by email & SMS after M-Pesa confirms.
         </p>
+        {paidBills.length > 0 && (
+          <div className="pt-3 border-t space-y-2">
+            <div className="flex items-center gap-2 text-sm font-semibold text-success"><CheckCircle2 className="h-4 w-4" />Paid invoices</div>
+            {paidBills.slice(0, 6).map((bill) => <div key={bill.id} className="flex items-center justify-between rounded-lg border border-success/20 bg-success/5 px-3 py-2"><div><p className="text-sm font-medium">{bill.description || bill.invoice_number}</p><p className="text-xs text-muted-foreground font-mono">{bill.invoice_number}</p></div><div className="text-right"><span className={statusBadgeClass('success')}>Paid</span><p className="text-xs text-muted-foreground mt-1">{format(new Date(bill.due_date), 'dd MMM yyyy')}</p></div></div>)}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

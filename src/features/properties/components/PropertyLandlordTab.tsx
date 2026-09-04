@@ -16,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { UserPlus, Trash2, CheckCircle, Clock, XCircle, Banknote, Mail, User } from 'lucide-react';
 import PropertyAuthorityPanel from '@/features/properties/components/PropertyAuthorityPanel';
+import { BillingDueConfigPanel } from '@/features/billing/components/BillingDueConfigPanel';
 
 interface PropertyLandlordTabProps {
   propertyId: string;
@@ -86,28 +87,16 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
   const [unlinkTarget, setUnlinkTarget] = useState<string | null>(null);
 
   // ── Fetch current landlord for this property ─────────────────────
-  const { data: landlordLink, isLoading } = useQuery({
-    queryKey: ['property-landlord', propertyId],
+  const { data: landlordLinks = [], isLoading } = useQuery({
+    queryKey: ['property-landlords', propertyId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('property_landlords')
-        .select(
-          'id, landlord_user_id, revenue_share_pct, assigned_at, operating_model, payment_destination, management_fee_pct, allows_delegated_manager, delegated_manager_id',
-        )
-        .eq('property_id', propertyId)
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') throw error;
-      if (!data) return null;
-
-      const link = data as LandlordLinkData;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, email, phone')
-        .eq('id', link.landlord_user_id)
-        .maybeSingle();
-
-      return { ...link, profile: profile as LandlordProfile | null };
+      const { data, error } = await supabase.from('property_landlords').select('id, landlord_user_id, revenue_share_pct, assigned_at, operating_model, payment_destination, management_fee_pct, allows_delegated_manager, delegated_manager_id').eq('property_id', propertyId).order('assigned_at');
+      if (error) throw error;
+      const rows = data ?? [];
+      return Promise.all(rows.map(async (link: any) => {
+        const { data: profile } = await supabase.from('profiles').select('full_name, email, phone').eq('id', link.landlord_user_id).maybeSingle();
+        return { ...link, profile: profile as LandlordProfile | null };
+      }));
     },
   });
 
@@ -165,7 +154,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
       return { type: 'invited' };
     },
     onSuccess: ({ type }) => {
-      queryClient.invalidateQueries({ queryKey: ['property-landlord', propertyId] });
+      queryClient.invalidateQueries({ queryKey: ['property-landlords', propertyId] });
       toast({
         title: type === 'linked' ? 'Landlord linked' : 'Invitation sent',
         description: type === 'linked'
@@ -186,7 +175,7 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['property-landlord', propertyId] });
+      queryClient.invalidateQueries({ queryKey: ['property-landlords', propertyId] });
       toast({ title: 'Landlord unlinked' });
       setUnlinkTarget(null);
     },
@@ -225,127 +214,26 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
 
   return (
     <div className="space-y-6">
-      {/* ── Linked Landlord ── */}
+      {/* ── Linked Landlords ── */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <div>
-            <CardTitle className="text-base">Property Landlord</CardTitle>
-            <CardDescription>The owner of this property and their revenue share</CardDescription>
-          </div>
-          {!landlordLink && (
-            <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Link Landlord
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Link a Landlord</DialogTitle>
-                  <DialogDescription>
-                    Enter the landlord's email. If they already have an account they'll be linked immediately.
-                    Otherwise an invitation will be sent.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Landlord email</Label>
-                    <Input
-                      type="email"
-                      placeholder="owner@example.com"
-                      value={inviteEmail}
-                      onChange={e => setInviteEmail(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label>Revenue share % (landlord's cut)</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.5"
-                      placeholder="100"
-                      value={revenueShare}
-                      onChange={e => setRevenueShare(e.target.value)}
-                      className="mt-1"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Percentage of property revenue that goes to the landlord. Default: 100%
-                    </p>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setInviteDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={() => inviteLandlord.mutate()} disabled={inviteLandlord.isPending}>
-                    {inviteLandlord.isPending ? 'Linking...' : 'Link Landlord'}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
+          <div><CardTitle className="text-base">Property Landlords</CardTitle><CardDescription>Shared ownership is supported. Each owner can have a separate revenue share and billing policy.</CardDescription></div>
+          <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+            <DialogTrigger asChild><Button size="sm" variant="outline"><UserPlus className="h-4 w-4 mr-2" />Link Landlord</Button></DialogTrigger>
+            <DialogContent><DialogHeader><DialogTitle>Link a Landlord</DialogTitle><DialogDescription>Add another owner without replacing existing owners.</DialogDescription></DialogHeader>
+              <div className="space-y-4"><div><Label>Landlord email</Label><Input type="email" placeholder="owner@example.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} /></div><div><Label>Revenue share %</Label><Input type="number" min="0" max="100" step="0.5" value={revenueShare} onChange={e => setRevenueShare(e.target.value)} /><p className="text-xs text-muted-foreground mt-1">All property owner shares together must not exceed 100%.</p></div></div>
+              <DialogFooter><Button variant="outline" onClick={() => setInviteDialogOpen(false)}>Cancel</Button><Button onClick={() => inviteLandlord.mutate()} disabled={inviteLandlord.isPending}>{inviteLandlord.isPending ? 'Linking...' : 'Link Landlord'}</Button></DialogFooter>
+            </DialogContent>
+          </Dialog>
         </CardHeader>
-        <CardContent>
-          {!landlordLink ? (
-            <div className="py-10 text-center text-muted-foreground">
-              <User className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No landlord linked to this property yet</p>
-              <p className="text-xs mt-1 opacity-70">Click "Link Landlord" to associate a property owner</p>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-4 p-3 bg-muted/30 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-warning font-semibold text-sm">
-                    {(landlordLink.profile?.full_name || landlordLink.profile?.email || 'L')[0].toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-medium text-sm">{landlordLink.profile?.full_name || 'Landlord'}</p>
-                  <p className="text-xs text-muted-foreground">{landlordLink.profile?.email}</p>
-                  {landlordLink.profile?.phone && (
-                    <p className="text-xs text-muted-foreground">{landlordLink.profile.phone}</p>
-                  )}
-                </div>
-              </div>
-              <div className="text-right">
-                <Badge variant="outline" className="mb-2 border-amber-300 text-warning bg-amber-50">
-                  {landlordLink.revenue_share_pct}% revenue share
-                </Badge>
-                <div className="text-xs text-muted-foreground">
-                  Since {format(new Date(landlordLink.assigned_at), 'dd/MM/yy')}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-1 text-destructive hover:text-destructive hover:bg-destructive/10 h-7 text-xs"
-                  onClick={() => setUnlinkTarget(landlordLink.id)}
-                >
-                  <Trash2 className="h-3 w-3 mr-1" />
-                  Unlink
-                </Button>
-              </div>
-            </div>
-          )}
+        <CardContent className="space-y-4">
+          {landlordLinks.length === 0 ? <div className="py-10 text-center text-muted-foreground"><User className="h-10 w-10 mx-auto mb-3 opacity-30" /><p className="text-sm">No landlord linked to this property yet</p></div> : landlordLinks.map((link: any) => <div key={link.id} className="space-y-3">
+            <div className="flex items-center justify-between gap-4 p-3 bg-muted/30 rounded-lg"><div className="flex items-center gap-3"><div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center"><span className="text-warning font-semibold text-sm">{(link.profile?.full_name || link.profile?.email || 'L')[0].toUpperCase()}</span></div><div><p className="font-medium text-sm">{link.profile?.full_name || 'Landlord'}</p><p className="text-xs text-muted-foreground">{link.profile?.email}</p>{link.profile?.phone && <p className="text-xs text-muted-foreground">{link.profile.phone}</p>}</div></div><div className="text-right"><Badge variant="outline" className="mb-2 border-amber-300 text-warning bg-amber-50">{link.revenue_share_pct}% revenue share</Badge><div className="text-xs text-muted-foreground">Since {format(new Date(link.assigned_at), 'dd/MM/yy')}</div><Button variant="ghost" size="sm" className="mt-1 text-destructive hover:text-destructive hover:bg-destructive/10 h-7 text-xs" onClick={() => setUnlinkTarget(link.id)}><Trash2 className="h-3 w-3 mr-1" />Unlink</Button></div></div>
+            <BillingDueConfigPanel scope="landlord" scopeId={link.landlord_user_id} propertyId={propertyId} title={`Billing policy for ${link.profile?.full_name || 'this landlord'}`} compact />
+            {landlordLinks.length === 1 && <PropertyAuthorityPanel propertyId={propertyId} link={{ id: link.id, landlord_user_id: link.landlord_user_id, operating_model: link.operating_model, payment_destination: link.payment_destination, revenue_share_pct: link.revenue_share_pct, management_fee_pct: link.management_fee_pct, allows_delegated_manager: link.allows_delegated_manager, delegated_manager_id: link.delegated_manager_id }} />}
+          </div>)}
         </CardContent>
       </Card>
-
-      {landlordLink && (
-        <PropertyAuthorityPanel
-          propertyId={propertyId}
-          link={{
-            id: landlordLink.id,
-            landlord_user_id: landlordLink.landlord_user_id,
-            operating_model: landlordLink.operating_model,
-            payment_destination: landlordLink.payment_destination,
-            revenue_share_pct: landlordLink.revenue_share_pct,
-            management_fee_pct: landlordLink.management_fee_pct,
-            allows_delegated_manager: landlordLink.allows_delegated_manager,
-            delegated_manager_id: landlordLink.delegated_manager_id,
-          }}
-        />
-      )}
 
       {/* ── Payout Requests ── */}
       <Card>

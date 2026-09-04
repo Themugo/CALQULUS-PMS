@@ -345,3 +345,10 @@ These were identified during the audit but not yet addressed:
 - Added regression coverage for bounded revenue requests, drill-down routes, and the single dashboard realtime subscription boundary.
 
 - Dashboard Command Center: consolidated arrears and maintenance scope lookups onto shared dashboard datasets, removing duplicate property/tenant fetches.
+
+## 2026-09-04 — Billing due-date, overdue routing & shared ownership
+- Added hierarchical manager/property/landlord/tenancy due-date and overdue policies.
+- Added tenant-specific payment routing with agency, manager and landlord destinations.
+- Added invoice payment-account snapshots and tenant payment reminders.
+- Removed the single-landlord-per-property limitation and enforced shared-owner revenue shares <= 100%.
+- Added tenant-facing payment destination badges and due-date indicators.

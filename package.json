@@ -105,7 +105,8 @@
     "audit:attestation-signature": "node scripts/audit-attestation-signature.mjs",
     "audit:final-production-decision": "node scripts/audit-final-production-decision.mjs",
     "audit:property-tenancy-operations": "node scripts/audit-property-tenancy-operations.mjs",
-    "audit:financial-billing-operations": "node scripts/audit-financial-billing-operations.mjs"
+    "audit:financial-billing-operations": "node scripts/audit-financial-billing-operations.mjs",
+    "audit:billing-due-payment-routing": "node scripts/audit-billing-due-payment-routing.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

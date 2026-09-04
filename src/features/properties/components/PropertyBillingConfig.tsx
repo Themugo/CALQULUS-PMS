@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { BillingDueConfigPanel } from '@/features/billing/components/BillingDueConfigPanel';
+import { PaymentCollectionRoutingPanel } from '@/features/billing/components/PaymentCollectionRoutingPanel';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -211,6 +213,10 @@ const PropertyBillingConfig: React.FC<Props> = ({ propertyId, propertyName }) =>
           </div>
         </CardContent>
       </Card>
+
+      <BillingDueConfigPanel scope="manager" scopeId={user!.id} propertyId={propertyId} title="Manager due & overdue policy" />
+
+      <PaymentCollectionRoutingPanel propertyId={propertyId} title="Property default payment destination" />
 
       {/* Late penalty */}
       <Card>
