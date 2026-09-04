@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -58,6 +59,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
 }) => {
   const { user } = useAuth();
   const { can } = useRBAC();
+  const { managerId } = useManagerScope();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -77,7 +79,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
       const { data, error } = await supabase.rpc('complete_unit_moveout' as any, {
         p_unit_id:           tenant.unit_id,
         p_tenant_id:         tenant.id,
-        p_manager_id:        user!.id,
+        p_manager_id:        managerId ?? user!.id,
         p_move_out_date:     moveOutDate,
         p_reason:            reason,
         p_notes:             notes || null,

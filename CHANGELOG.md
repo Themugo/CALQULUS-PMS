@@ -1,3 +1,11 @@
+## 2026-09-04 — Property & Tenancy Operations Ecosystem
+- Added an authoritative transactional lifecycle across property, unit, tenant, lease, and tenancy history state.
+- Hardened lease activation/termination so tenant occupancy, unit status, tenancy history, and property occupancy/revenue are reconciled in one transaction.
+- Made pre-lease tenant/unit assignment non-occupying; occupancy is now lease-driven.
+- Hardened move-out for manager/submanager scope and preserved historical tenancy records.
+- Added data-safe uniqueness guards for active unit/lease/tenancy relationships; legacy duplicate data does not block migration and is reported for reconciliation.
+- Added regression coverage for lifecycle RPC presence, occupancy semantics, uniqueness protections, counter reconciliation, history preservation, and move-out scope wiring.
+
 
 ## Portal Navigation & Access Integrity — Phases 185–186
 - Consolidated Manager, Agency, Landlord, Tenant and WebHost navigation onto the canonical portal navigation model.
