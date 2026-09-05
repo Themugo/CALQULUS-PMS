@@ -32,23 +32,23 @@ describe("PublicLandingPage", () => {
 
   it("keeps working portal routes on the hero and final CTA", () => {
     renderAt("/");
-    expect(screen.getByRole("link", { name: /^start managing$/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,
     );
-    expect(screen.getByRole("link", { name: /see what is inside/i })).toHaveAttribute(
-      "href",
-      "#platform",
-    );
+    expect(screen.getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
   });
 
-  it("uses the approved primary navigation in Platform / Solutions / Pricing order", () => {
+  it("uses only working primary navigation in a compact order", () => {
     renderAt("/");
     const primary = screen.getByRole("navigation", { name: "Primary" });
     const labels = within(primary)
       .getAllByRole("link")
       .map((link) => link.textContent);
-    expect(labels).toEqual(["Platform", "Solutions", "Pricing"]);
+    expect(labels).toEqual(["Home", "Properties", "Portals", "Insights", "Pricing"]);
+    expect(primary).not.toHaveTextContent("Platform");
+    expect(primary).not.toHaveTextContent("Solutions");
+    expect(primary).not.toHaveTextContent("Resources");
     expect(primary).not.toHaveTextContent("Contact");
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: "Sign in" })).toHaveAttribute(

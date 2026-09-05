@@ -31,12 +31,12 @@ describe("public marketing config", () => {
   it("builds in-page hashes on the homepage and rooted hashes elsewhere", () => {
     expect(homeSectionHref("platform", "/")).toBe("#platform");
     expect(homeSectionHref("platform", "/pricing")).toBe("/#platform");
-    expect(homeSectionHref("cta", "/legal")).toBe("/#cta");
+    expect(homeSectionHref("contact", "/legal")).toBe("/#contact");
   });
 
-  it("exposes the live platform navigation targets", () => {
-    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Properties", "Portals", "Insights"]);
-    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "property-types", "portals", "insights"]);
+  it("exposes the approved primary navigation hashes", () => {
+    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Solutions"]);
+    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "solutions"]);
     expect(PUBLIC_ROUTES.legalCookies).toBe("/legal?tab=privacy");
   });
 });

@@ -32,7 +32,7 @@ export const CALQULUS_COLOR = {
   navyDeep: "#31577E",
   navyPrimary: "#173650",
   navySecondary: "#31577E",
-  /** Navy 600 step used for platform-admin & agency accents. */
+  /** Navy 600 step used for platform chrome and supporting identity surfaces. */
   navy600: "#426B94",
 
   white: "#FFFFFF",
@@ -43,7 +43,7 @@ export const CALQULUS_COLOR = {
   info: "#3E6FAE",
 
   /** Atmosphere on navy chrome only. */
-  glow: "#2E63D8",
+  glow: "#123FB7",
   /** Reserved spark — not used as chrome. */
   spark: "#FFF4DF",
 
@@ -56,7 +56,7 @@ export const CALQULUS_COLOR = {
   textMuted: "#5F7185",
 
   border: "#DCE5EF",
-  focus: "#356FE5",
+  focus: "#123FB7",
 } as const;
 
 /**
@@ -79,17 +79,15 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   agency: {
     id: "agency",
-    label: "Sharp Navy",
-    /** Distinct agency identity — sharp navy keeps it separate from the landlord emerald
-        and from the manager slate while remaining inside the CALQULUS family. */
+    label: "CALQULUS Blue",
+    /** Agency is the primary business gateway and follows the sharp CALQULUS blue. */
     hex: "#123FB7",
   },
   tenant: {
     id: "tenant",
-    label: "Sky",
-    /** Sky/cool blue family — matches the tenant portal chrome + marketing role
-       accent. Status colours stay semantic; the sky is only identity. */
-    hex: "#0284C7",
+    label: "Violet",
+    /** Tenant uses a warm violet identity for a clear residential/persona distinction. */
+    hex: "#7C5FD3",
   },
   platform_admin: {
     id: "platform_admin",

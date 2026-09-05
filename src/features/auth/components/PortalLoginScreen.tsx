@@ -8,6 +8,8 @@ import { Checkbox } from "@/shared/components/ui/checkbox";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { portalSurfaceProps } from "@/core/design";
+import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
 import ForgotPasswordDialog from "@/features/auth/components/ForgotPasswordDialog";
 
 /**
@@ -38,9 +40,13 @@ interface PortalLoginLayoutProps {
   accentHex: string;
   backgroundImage: string;
   badgeIcon: ComponentType<{ className?: string }>;
-  /** e.g. "Manager" — first, white line of the headline. */
+  /** e.g. "Manager" — primary portal heading. */
   portalName: string;
+  /** Marketable portal slogan shown prominently under the portal name. */
+  slogan?: string;
   description: string;
+  features?: Array<{ icon: ComponentType<{ className?: string }>; label: string; text: string }>;
+  trustLabel?: string;
   children: ReactNode;
 }
 
@@ -50,62 +56,47 @@ export function PortalLoginLayout({
   backgroundImage,
   badgeIcon: BadgeIcon,
   portalName,
+  slogan,
   description,
+  features = [],
+  trustLabel = "Secure workspace · Connected property operations",
   children,
 }: PortalLoginLayoutProps) {
+  const { data = DEFAULT_PUBLIC_SITE_CONFIG } = usePublicSiteConfig();
+  const brand = data.brand;
   return (
-    <div className="min-h-screen w-full bg-background lg:grid lg:grid-cols-2" {...portalSurfaceProps(portalId)}>
-      {/* Identity panel — hidden on small screens, full-height on desktop */}
-      <div className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-10">
-        <div className="absolute inset-0" aria-hidden>
-          <img
-            src={backgroundImage}
-            alt=""
-            loading="eager"
-            decoding="async"
-            className="h-full w-full object-cover"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(180deg, ${accentHex}E6 0%, ${accentHex}CC 45%, ${accentHex}F2 100%)`,
-            }}
-          />
-        </div>
-
-        <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home" className="relative z-[1]">
-          <BrandMark size="nav" showWordmark subtitle="PMS" inverse forcePlatform />
-        </Link>
-
-        <div className="relative z-[1] max-w-sm">
-          <h1 className="font-heading text-[2.4rem] font-bold leading-[1.05] tracking-tight text-white">
-            <span className="block">{portalName}</span>
-            <span className="block" style={{ color: "#FFFFFF" }}>
-              <span className="opacity-90">Portal</span>
-            </span>
-          </h1>
-          <div
-            className="mt-6 flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur-sm"
-            aria-hidden
-          >
-            <BadgeIcon className="h-6 w-6 text-white" />
+    <div className="relative min-h-screen w-full overflow-hidden text-white" {...portalSurfaceProps(portalId)}>
+      <div className="absolute inset-0" aria-hidden>
+        <img src={backgroundImage} alt="" loading="eager" decoding="async" className="h-full w-full object-cover object-center" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(105deg, ${accentHex}F2 0%, ${accentHex}D8 36%, ${accentHex}8A 64%, #07152FBD 100%)` }} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_16%,rgba(255,255,255,0.16),transparent_26%),radial-gradient(circle_at_10%_88%,rgba(255,255,255,0.09),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(3,18,38,0.42),transparent_30%,rgba(3,18,38,0.16))]" />
+      </div>
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="flex items-center justify-between gap-4 px-5 py-5 sm:px-8 lg:px-10 xl:px-14">
+          <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home"><BrandMark size="nav" showWordmark subtitleOverride={brand.descriptor} wordmarkOverride={brand.name} logoUrl={brand.logoUrl} inverse forcePlatform /></Link>
+          <Link to={PUBLIC_ROUTES.home} className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-white/90 backdrop-blur-md transition hover:bg-white/15">Back to CALQULUS</Link>
+        </header>
+        <main className="flex flex-1 items-center px-4 pb-7 sm:px-7 lg:px-10 xl:px-14">
+          <div className="mx-auto grid w-full max-w-[1500px] items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(390px,470px)] xl:gap-14">
+            <section className="flex min-h-[560px] flex-col justify-center px-2 py-8 sm:px-4 lg:min-h-[calc(100vh-122px)] lg:py-10">
+              <div className="max-w-3xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 text-[11px] font-bold tracking-[0.24em] text-white/95 backdrop-blur-md"><BadgeIcon className="h-4 w-4" aria-hidden />{portalName.toUpperCase()} PORTAL</div>
+                <h1 className="mt-6 max-w-3xl font-heading text-[clamp(2.8rem,6vw,5.8rem)] font-semibold leading-[0.93] tracking-[-0.055em] text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.24)]">{portalName}</h1>
+                <p className="mt-4 max-w-3xl font-heading text-[clamp(1.4rem,2.5vw,2.25rem)] font-medium leading-[1.08] tracking-[-0.03em] text-white/95">{slogan || description}</p>
+                <p className="mt-5 max-w-2xl text-base leading-7 text-white/82 sm:text-lg sm:leading-8">{description}</p>
+                <div className="mt-7 flex flex-wrap gap-2.5">{features.map(({ icon: Icon, label }) => <span key={label} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-semibold text-white/88 backdrop-blur-md"><Icon className="h-3.5 w-3.5" aria-hidden />{label}</span>)}</div>
+                {trustLabel ? <div className="mt-6 flex w-fit items-center gap-2.5 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-semibold text-white/88 backdrop-blur-md"><span className="h-2 w-2 rounded-full bg-white/80" aria-hidden />{trustLabel}</div> : null}
+                {features.length ? <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">{features.map(({ icon: Icon, label, text }) => <div key={label} className="min-w-0 rounded-2xl border border-white/12 bg-black/10 p-4 shadow-lg backdrop-blur-md"><div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10"><Icon className="h-5 w-5" aria-hidden /></div><p className="mt-3 text-sm font-bold text-white">{label}</p><p className="mt-1 text-[11px] leading-4.5 text-white/65">{text}</p></div>)}</div> : null}
+              </div>
+            </section>
+            <aside className="relative flex items-center justify-center lg:py-8" aria-label={`${portalName} sign in`}>
+              <div className="absolute inset-x-6 inset-y-8 rounded-[38px] bg-white/8 blur-3xl" aria-hidden />
+              <div className="relative w-full max-w-md rounded-[28px] border border-white/20 bg-white/96 p-1 shadow-[0_28px_90px_rgba(2,15,28,0.42)] backdrop-blur-xl"><div className="rounded-[24px] border border-slate-200/80 bg-white p-2 sm:p-3">{children}</div></div>
+            </aside>
           </div>
-          <p className="mt-5 text-[15px] leading-relaxed text-white/85">{description}</p>
-        </div>
-
-        <div className="relative z-[1] text-[11px] text-white/50">© 2026 CALQULUS Limited</div>
-      </div>
-
-      {/* Mobile-only compact identity bar */}
-      <div className="flex items-center justify-between px-4 py-4 lg:hidden">
-        <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
-          <BrandMark size="nav" showWordmark subtitle={`${portalName} Portal`} />
-        </Link>
-      </div>
-
-      {/* Auth card panel */}
-      <div className="flex flex-1 items-center justify-center px-4 pb-10 sm:px-8 lg:p-10">
-        <div className="w-full max-w-sm">{children}</div>
+        </main>
+        <footer className="flex items-center justify-between gap-4 border-t border-white/10 px-5 py-4 text-[10px] text-white/55 sm:px-8 lg:px-10 xl:px-14"><span>© 2026 CALQULUS Limited</span><span>{portalName} workspace</span></footer>
       </div>
     </div>
   );

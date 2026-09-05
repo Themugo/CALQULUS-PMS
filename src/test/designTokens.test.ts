@@ -11,9 +11,9 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("uses interactive blue as primary, not gold or cyan", () => {
-    expect(CALQULUS_COLOR.primary).toBe("#356FE5");
-    expect(CALQULUS_COLOR.primaryHover).toBe("#285FCC");
-    expect(CALQULUS_COLOR.primaryActive).toBe("#214FAE");
+    expect(CALQULUS_COLOR.primary).toBe("#123FB7");
+    expect(CALQULUS_COLOR.primaryHover).toBe("#0F35A0");
+    expect(CALQULUS_COLOR.primaryActive).toBe("#0B2B7A");
     expect(CALQULUS_COLOR.accent).toBe(CALQULUS_COLOR.primary);
     expect(CALQULUS_COLOR.primary).not.toBe("#C9A84C");
     expect(CALQULUS_COLOR.primary).not.toBe("#1AD4E4");
@@ -45,7 +45,7 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_COLOR.textPrimary).toBe("#102A43");
     expect(CALQULUS_COLOR.textMuted).toBe("#5F7185");
     expect(CALQULUS_COLOR.focus).toBe(CALQULUS_COLOR.primary);
-    expect(CALQULUS_COLOR.glow).toBe("#356FE5");
+    expect(CALQULUS_COLOR.glow).toBe("#123FB7");
     expect(CALQULUS_COLOR.spark).toBe("#FFF4DF");
   });
 
@@ -69,14 +69,14 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("exposes portal accents without replacing the desk system", () => {
-    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.primary);
+    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe("#356FE5");
     expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("Blue");
     expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe("#2F9B74");
     expect(CALQULUS_PORTAL_ACCENT.landlord.label).toBe("Emerald");
-    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#102A43");
-    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("Sharp Navy");
-    expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#0284C7");
-    expect(CALQULUS_PORTAL_ACCENT.tenant.label).toBe("Sky");
+    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#123FB7");
+    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("CALQULUS Blue");
+    expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#7C5FD3");
+    expect(CALQULUS_PORTAL_ACCENT.tenant.label).toBe("Violet");
     expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
     expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Teal");
   });
@@ -144,10 +144,10 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain("--foreground: var(--calqulus-text)");
     expect(css).toContain("--muted-foreground: var(--calqulus-text-muted)");
     expect(css).toContain("--ring: var(--calqulus-primary)");
-    expect(css).toContain(`[data-portal="manager"] { --portal-accent: var(--calqulus-primary)`);
+    expect(css).toContain(`[data-portal="manager"] { --portal-accent: var(--calqulus-manager)`);
     expect(css).toContain(`[data-portal="landlord"] { --portal-accent: var(--calqulus-emerald)`);
-    expect(css).toContain(`[data-portal="agency"] { --portal-accent: var(--calqulus-cyan)`);
-    expect(css).toContain(`[data-portal="tenant"] { --portal-accent: var(--calqulus-sky)`);
+    expect(css).toContain(`[data-portal="agency"] { --portal-accent: var(--calqulus-primary)`);
+    expect(css).toContain(`[data-portal="tenant"] { --portal-accent: var(--calqulus-violet)`);
     expect(css).toContain(`[data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep)`);
   });
 });

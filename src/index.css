@@ -400,8 +400,10 @@
     --calqulus-primary: #123FB7;
     --calqulus-primary-hover: #0F35A0;
     --calqulus-primary-active: #0B2B7A;
-    --calqulus-primary-soft: #E8EEFF;
-    --calqulus-primary-light: #7D9FF5;
+    --calqulus-primary-soft: #EAF0FF;
+    --calqulus-primary-light: #8AAFFF;
+    --calqulus-manager: #356FE5;
+    --calqulus-agency: #123FB7;
 
     /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
     --calqulus-teal: #3BB7A6;
@@ -567,10 +569,10 @@
 
   /* Portal identity stripes — secondary accents only. Brand stays
      CALQULUS NAVY + BLUE; status colors are never brand accents. */
-  [data-portal="manager"] { --portal-accent: var(--calqulus-primary); }
+  [data-portal="manager"] { --portal-accent: var(--calqulus-manager); }
   [data-portal="landlord"] { --portal-accent: var(--calqulus-emerald); }
-  [data-portal="agency"] { --portal-accent: var(--calqulus-cyan); }
-  [data-portal="tenant"] { --portal-accent: var(--calqulus-sky); }
+  [data-portal="agency"] { --portal-accent: var(--calqulus-agency); }
+  [data-portal="tenant"] { --portal-accent: var(--calqulus-violet); }
   [data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep); }
 
   /* Portal identity becomes the default interactive theme. White-label
@@ -703,10 +705,12 @@
   color: var(--foreground);
 }
 
-/* Public website — same light workspace as desks. Navy is footer chrome only; header is white. */
+/* Public website — same light workspace as desks. CALQULUS blue anchors header/footer chrome. */
 @utility public-canvas {
   background-color: var(--background);
+  background-image: radial-gradient(70% 36% at 50% 0%, color-mix(in srgb, var(--primary) 5%, transparent) 0%, transparent 72%), linear-gradient(180deg, #F8FAFD 0%, var(--background) 48%, #F7FAFC 100%);
   color: var(--foreground);
+  font-family: "Outfit", sans-serif;
 }
 
 /* Premium dark hero (public homepage). Navy chrome + soft blue atmosphere. */

@@ -3,10 +3,14 @@ import { readFileSync } from "node:fs";
 import { DEFAULT_PUBLIC_SITE_CONFIG, mergePublicSiteConfig } from "@/features/marketing/publicSiteConfig";
 
 const migration = "supabase/migrations/20260905000003_public_site_configuration.sql";
+const brandMigration = "supabase/migrations/20260905000004_public_site_brand_svg.sql";
 
 it("public site defaults contain the approved four property categories and four portals", () => {
   expect(DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes.map((item) => item.title)).toEqual(["Residentials", "Estates", "Offices", "Institutions"]);
-  expect(DEFAULT_PUBLIC_SITE_CONFIG.portals.map((item) => item.id)).toEqual(["manager", "landlord", "agency", "tenant"]);
+  expect(DEFAULT_PUBLIC_SITE_CONFIG.portals.map((item) => item.id)).toEqual(["agency", "manager", "landlord", "tenant"]);
+  expect(DEFAULT_PUBLIC_SITE_CONFIG.brand.descriptor).toBe("PROPERTY MANAGEMENT SYSTEMS");
+  expect(DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs).toBe(30000);
+  expect(DEFAULT_PUBLIC_SITE_CONFIG.shell.header.nav.map((item) => item.id)).toEqual(["home", "properties", "portals", "insights", "pricing"]);
 });
 
 describe("public site configuration contract", () => {
@@ -14,6 +18,8 @@ describe("public site configuration contract", () => {
     expect(mergePublicSiteConfig(null)).toEqual(DEFAULT_PUBLIC_SITE_CONFIG);
     expect(mergePublicSiteConfig({})).toEqual(DEFAULT_PUBLIC_SITE_CONFIG);
     expect(mergePublicSiteConfig({ hero: { slides: [] } }).hero.slides).toHaveLength(2);
+    expect(mergePublicSiteConfig({ hero: { intervalMs: 7000 } }).hero.intervalMs).toBe(30000);
+    expect(mergePublicSiteConfig({ shell: { header: { nav: [{ id: "solutions", label: "Old", href: "#platform", enabled: true }] } } }).shell.header.nav.map((item) => item.id)).toEqual(["home", "properties", "portals", "insights", "pricing"]);
   });
 
   it("preserves editable shell, sections and content while retaining defaults for missing collections", () => {
@@ -31,6 +37,14 @@ describe("public site configuration contract", () => {
     expect(DEFAULT_PUBLIC_SITE_CONFIG.insights).toHaveLength(3);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos).toHaveLength(8);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.rail.sections.map((x) => x.id)).toEqual(["search", "highlights", "insights"]);
+  });
+});
+
+describe("public brand media contract", () => {
+  it("allows SVG brand marks in the public-site media bucket", () => {
+    const sql = readFileSync(brandMigration, "utf8");
+    expect(sql).toContain("image/svg+xml");
+    expect(sql).toContain("public-site-media");
   });
 });
 

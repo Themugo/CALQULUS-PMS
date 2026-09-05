@@ -30,9 +30,7 @@ export const PUBLIC_ROUTES = {
 
 export const PUBLIC_NAV = [
   { label: "Platform", hash: "platform" },
-  { label: "Properties", hash: "property-types" },
-  { label: "Portals", hash: "portals" },
-  { label: "Insights", hash: "insights" },
+  { label: "Solutions", hash: "solutions" },
 ] as const;
 
 /** Homepage hero copy — single source of truth. Approved message hierarchy. */

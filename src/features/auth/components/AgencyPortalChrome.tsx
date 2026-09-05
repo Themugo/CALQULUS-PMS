@@ -12,8 +12,9 @@ import { Link } from "react-router-dom";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
-import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
+import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
 import { PortalLoginCard } from "@/features/auth/components/PortalLoginScreen";
 
 /**
@@ -22,7 +23,7 @@ import { PortalLoginCard } from "@/features/auth/components/PortalLoginScreen";
  * runs edge-to-edge behind the entire desktop experience; the auth card floats
  * above it as the focal interaction surface.
  */
-export const AGENCY_ACCENT = CALQULUS_PORTAL_ACCENT.agency.hex;
+export const AGENCY_ACCENT = "#0B2742";
 
 interface AgencyPortalShellProps {
   children: ReactNode;
@@ -38,11 +39,13 @@ const TRUST_POINTS = ["Client portfolios", "Property operations", "Collections v
 
 export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
   const { identities } = usePortalIdentity();
+  const { data: publicConfig = DEFAULT_PUBLIC_SITE_CONFIG } = usePublicSiteConfig();
   const identity = identities.agency;
+  const brand = publicConfig.brand;
   const backgroundImage = identity.backgroundImageUrl || PROPERTY_IMAGES.office;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#07185E] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#061A2A] text-white">
       {/* Full-bleed photographic background */}
       <div className="absolute inset-0" aria-hidden>
         <img
@@ -52,7 +55,7 @@ export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
           decoding="async"
           className="h-full w-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#07185EEF_0%,#123FB7D9_38%,#123FB7B8_64%,#07185EE8_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#061A2AF2_0%,#0B2742D9_38%,#0B2742B8_64%,#061A2AE8_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_14%,rgba(88,196,255,0.18),transparent_26%),radial-gradient(circle_at_15%_84%,rgba(35,156,255,0.14),transparent_30%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(6,26,42,0.40),transparent_30%,rgba(6,26,42,0.24))]" />
       </div>
@@ -61,7 +64,7 @@ export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
         {/* Shared premium header */}
         <header className="flex items-center justify-between gap-4 px-5 py-5 sm:px-8 lg:px-10 xl:px-14">
           <Link to={PUBLIC_ROUTES.home} aria-label="CALQULUS home">
-            <BrandMark size="nav" showWordmark subtitle="PMS" inverse forcePlatform />
+            <BrandMark size="nav" showWordmark subtitleOverride={brand.descriptor} wordmarkOverride={brand.name} logoUrl={brand.logoUrl} inverse forcePlatform />
           </Link>
           <Link
             to={PUBLIC_ROUTES.home}
@@ -82,7 +85,7 @@ export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
                 </div>
 
                 <h1 className="mt-6 max-w-3xl font-heading text-[clamp(2.8rem,6vw,5.8rem)] font-semibold leading-[0.93] tracking-[-0.055em] text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.24)]">
-                  Run your client portfolio with confidence.
+                  {identity.tagline || "Grow your agency. Manage every portfolio with confidence."}
                 </h1>
 
                 <p className="mt-6 max-w-2xl text-base leading-7 text-white/82 sm:text-lg sm:leading-8">
@@ -131,7 +134,7 @@ export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
                   {children}
                 </div>
                 <div className="px-5 pb-4 pt-3 text-center text-[10px] leading-4 text-slate-500">
-                  <span className="font-semibold text-[#123FB7]">Agency workspace</span>
+                  <span className="font-semibold text-[#0B2742]">Agency workspace</span>
                   {" · "}portfolio operations, client service and collections in one place.
                 </div>
               </div>

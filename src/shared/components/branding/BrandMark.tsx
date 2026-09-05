@@ -1,5 +1,4 @@
-import calqulusLogo from "@/assets/calqulus-logo.webp";
-import calqulusLogo2x from "@/assets/calqulus-logo@2x.webp";
+import calqulusPropertyMark from "@/assets/branding/calqulus-property-mark.svg";
 import { cn } from "@/shared/lib/utils";
 import { PLATFORM_BRAND } from "@/core/brand/resolve";
 import { useWhiteLabel } from "@/core/whiteLabel/WhiteLabelProvider";
@@ -24,6 +23,12 @@ interface BrandMarkProps {
   inverse?: boolean;
   /** Marketing, login, and platform admin always show CALQULUS. */
   forcePlatform?: boolean;
+  /** Optional public-site override for the mark. */
+  logoUrl?: string | null;
+  /** Optional public-site override for the wordmark text. */
+  wordmarkOverride?: string;
+  /** Optional public-site override for the descriptor below the wordmark. */
+  subtitleOverride?: string;
 }
 
 /** Shared mark for login, header, sidebar, footer, and mobile chrome. */
@@ -36,6 +41,9 @@ export function BrandMark({
   fetchPriority,
   inverse = false,
   forcePlatform = false,
+  logoUrl,
+  wordmarkOverride,
+  subtitleOverride,
 }: BrandMarkProps) {
   const { brand, config } = useWhiteLabel();
   const resolved = forcePlatform ? PLATFORM_BRAND : brand;
@@ -43,26 +51,24 @@ export function BrandMark({
     !forcePlatform && resolved.source === "organization"
       ? (inverse && config.identity.logoDark) || resolved.logoUrl
       : null;
-  const logoSrc = orgLogo || calqulusLogo;
-  const wordmark = resolved.name;
+  const logoSrc = logoUrl || orgLogo || calqulusPropertyMark;
+  const wordmark = wordmarkOverride?.trim() || resolved.name;
+  const resolvedSubtitle = subtitleOverride !== undefined ? subtitleOverride : subtitle;
   const square = size !== "hero";
   const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");
   return (
     <div className={cn("flex items-center gap-2.5 min-w-0", className)}>
       <img
         src={logoSrc}
-        srcSet={orgLogo ? undefined : `${calqulusLogo} 112w, ${calqulusLogo2x} 224w`}
-        sizes="56px"
-        alt={resolved.product}
+        alt={`${wordmark}${resolvedSubtitle ? ` ${resolvedSubtitle}` : ""}`}
         width={56}
         height={56}
         decoding="async"
         fetchPriority={priority}
         className={cn(
           MARK_SIZE[size],
-          "object-cover flex-shrink-0",
-          square && "rounded-lg ring-1 ring-border",
-          !square && "object-contain",
+          "object-contain flex-shrink-0",
+          square && "rounded-lg",
           imgClassName,
         )}
       />
@@ -74,14 +80,14 @@ export function BrandMark({
           )}>
             {wordmark}
           </p>
-          {subtitle ? (
+          {resolvedSubtitle ? (
             <p className={cn(
               "text-[10px] font-medium tracking-wider uppercase mt-1 truncate",
               inverse ? "text-white/60" : "text-muted-foreground",
             )}>
-              {resolved.source === "platform" && resolved.workspaceName && subtitle === "PMS"
+              {resolved.source === "platform" && resolved.workspaceName && resolvedSubtitle === "PMS"
                 ? resolved.workspaceName
-                : subtitle}
+                : resolvedSubtitle}
             </p>
           ) : null}
         </div>

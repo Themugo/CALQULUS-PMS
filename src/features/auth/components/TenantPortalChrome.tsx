@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Home } from "lucide-react";
+import { Home, Wallet, Wrench, BellRing } from "lucide-react";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen";
@@ -29,7 +29,14 @@ export function TenantPortalShell({ children }: TenantPortalShellProps) {
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
       badgeIcon={Home}
       portalName="Tenant"
+      slogan={identity.tagline}
       description="Your home, connected — rent, payments, maintenance and lease information in one secure place."
+      features={[
+        { icon: Wallet, label: "Payments", text: "View rent, invoices and payment activity." },
+        { icon: Wrench, label: "Requests", text: "Report and follow maintenance from one place." },
+        { icon: BellRing, label: "Updates", text: "Stay informed about your tenancy and home." },
+      ]}
+      trustLabel="Secure tenant access · Easy service · Timely updates"
     >
       {children}
     </PortalLoginLayout>

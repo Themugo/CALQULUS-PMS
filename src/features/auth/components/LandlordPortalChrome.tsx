@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Wallet } from "lucide-react";
+import { Wallet, Home, BarChart3 } from "lucide-react";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen";
@@ -29,7 +29,14 @@ export function LandlordPortalShell({ children }: LandlordPortalShellProps) {
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.commercial}
       badgeIcon={Wallet}
       portalName="Landlord"
+      slogan={identity.tagline}
       description="See how your properties are performing — occupancy, collections and your share, at a glance."
+      features={[
+        { icon: Wallet, label: "Earnings", text: "See collections, balances and owner share clearly." },
+        { icon: Home, label: "Properties", text: "Keep your property portfolio visible and organized." },
+        { icon: BarChart3, label: "Insights", text: "Follow performance and make better decisions." },
+      ]}
+      trustLabel="Owner visibility · Financial clarity · Portfolio performance"
     >
       {children}
     </PortalLoginLayout>

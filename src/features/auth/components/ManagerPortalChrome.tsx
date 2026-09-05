@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Building2 } from "lucide-react";
+import { Building2, UsersRound, FileChartColumn, Wrench } from "lucide-react";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
@@ -31,7 +31,14 @@ export function ManagerPortalShell({ children }: ManagerPortalShellProps) {
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
       badgeIcon={Building2}
       portalName="Manager"
-      description="Run properties, tenants, leases, billing, payments and maintenance from one connected desk."
+      slogan={identity.tagline}
+      description="Run property operations, tenants, leases, billing, payments and maintenance from one connected desk."
+      features={[
+        { icon: Building2, label: "Properties", text: "Keep buildings, units and occupancy under control." },
+        { icon: UsersRound, label: "Tenants", text: "Coordinate tenant records, leases and service." },
+        { icon: Wrench, label: "Maintenance", text: "Assign, track and close operational requests." },
+      ]}
+      trustLabel="Operations control · Tenant service · Real-time visibility"
     >
       {children}
     </PortalLoginLayout>
