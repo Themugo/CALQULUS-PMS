@@ -33,6 +33,7 @@ import PreventiveMaintenanceLifecycleCenter from "@/features/dashboard/component
 import MaintenanceAssetLifecycleCenter from "@/features/dashboard/components/MaintenanceAssetLifecycleCenter";
 import PropertySafetyRegulatoryRiskCenter from "@/features/dashboard/components/PropertySafetyRegulatoryRiskCenter";
 import PropertyInspectionComplianceAssuranceCenter from "@/features/dashboard/components/PropertyInspectionComplianceAssuranceCenter";
+import OperationalResilienceRecoveryAssuranceCenter from "@/features/dashboard/components/OperationalResilienceRecoveryAssuranceCenter";
 
 
 
@@ -403,6 +404,7 @@ const Dashboard = () => {
             <MaintenanceAssetLifecycleCenter />
             <PropertySafetyRegulatoryRiskCenter />
             <PropertyInspectionComplianceAssuranceCenter />
+            <OperationalResilienceRecoveryAssuranceCenter />
           </section>
 
           <section className="mb-6 min-w-0" aria-labelledby="dashboard-work-queue">
