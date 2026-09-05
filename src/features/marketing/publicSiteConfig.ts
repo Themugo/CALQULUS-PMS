@@ -178,57 +178,195 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   ],
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function nonEmptyString(value: unknown, fallback: string): string {
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function booleanValue(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function sanitizeHeroSlides(value: unknown): PublicSiteHeroSlide[] {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
+  const result = value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    return {
+      id: nonEmptyString(item.id, fallback.id),
+      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
+      title: nonEmptyString(item.title, fallback.title),
+      copy: nonEmptyString(item.copy, fallback.copy),
+      primaryLabel: nonEmptyString(item.primaryLabel, fallback.primaryLabel),
+      primaryHref: nonEmptyString(item.primaryHref, fallback.primaryHref),
+      secondaryLabel: nonEmptyString(item.secondaryLabel, fallback.secondaryLabel),
+      secondaryHref: nonEmptyString(item.secondaryHref, fallback.secondaryHref),
+      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
+      mobileImage: typeof item.mobileImage === "string" && item.mobileImage ? item.mobileImage : fallback.mobileImage,
+      enabled: booleanValue(item.enabled, fallback.enabled),
+    };
+  });
+  return result.length ? result : defaults;
+}
+
+function sanitizePropertyTypes(value: unknown): PublicSitePropertyType[] {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
+  const result = value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    const icon = item.icon === "home" || item.icon === "building" || item.icon === "office" || item.icon === "landmark" ? item.icon : fallback.icon;
+    return {
+      id: nonEmptyString(item.id, fallback.id),
+      title: nonEmptyString(item.title, fallback.title),
+      description: nonEmptyString(item.description, fallback.description),
+      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
+      icon,
+      href: nonEmptyString(item.href, fallback.href),
+      enabled: booleanValue(item.enabled, fallback.enabled),
+    };
+  });
+  return result.length ? result : defaults;
+}
+
+function sanitizePortals(value: unknown): PublicSitePortal[] {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.portals;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.portals;
+  const result = value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    const id = item.id === "manager" || item.id === "landlord" || item.id === "agency" || item.id === "tenant" ? item.id : fallback.id;
+    return {
+      id,
+      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
+      title: nonEmptyString(item.title, fallback.title),
+      description: nonEmptyString(item.description, fallback.description),
+      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
+      href: nonEmptyString(item.href, fallback.href),
+      enabled: booleanValue(item.enabled, fallback.enabled),
+    };
+  });
+  return result.length ? result : defaults;
+}
+
+function sanitizeFeatured(value: unknown): PublicSiteFeaturedCard[] {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.featured;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.featured;
+  return value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    return {
+      id: nonEmptyString(item.id, fallback.id),
+      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
+      title: nonEmptyString(item.title, fallback.title),
+      location: nonEmptyString(item.location, fallback.location),
+      detail: nonEmptyString(item.detail, fallback.detail),
+      price: nonEmptyString(item.price, fallback.price),
+      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
+      href: nonEmptyString(item.href, fallback.href),
+      enabled: booleanValue(item.enabled, fallback.enabled),
+    };
+  });
+}
+
+function sanitizePromotions(value: unknown): PublicSitePromotion[] {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.promotions;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.promotions;
+  return value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    return {
+      id: nonEmptyString(item.id, fallback.id),
+      label: nonEmptyString(item.label, fallback.label),
+      title: nonEmptyString(item.title, fallback.title),
+      copy: nonEmptyString(item.copy, fallback.copy),
+      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
+      href: nonEmptyString(item.href, fallback.href),
+      enabled: booleanValue(item.enabled, fallback.enabled),
+    };
+  });
+}
+
+function sanitizePlatformCards(value: unknown) {
+  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards;
+  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards;
+  const result = value.filter(isRecord).map((item, index) => {
+    const fallback = defaults[index % defaults.length];
+    const icon = item.icon === "property" || item.icon === "money" || item.icon === "operations" ? item.icon : fallback.icon;
+    return {
+      id: nonEmptyString(item.id, fallback.id),
+      title: nonEmptyString(item.title, fallback.title),
+      copy: nonEmptyString(item.copy, fallback.copy),
+      icon,
+    };
+  });
+  return result.length ? result : defaults;
+}
+
 export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
-  if (!input || typeof input !== "object") return DEFAULT_PUBLIC_SITE_CONFIG;
-  const source = input as Partial<PublicSiteConfig>;
-  const sourceShell = source.shell && typeof source.shell === "object" ? source.shell : {};
-  const sourceHeader = sourceShell.header && typeof sourceShell.header === "object" ? sourceShell.header : {};
-  const sourceFooter = sourceShell.footer && typeof sourceShell.footer === "object" ? sourceShell.footer : {};
-  const sourcePlatform = source.platformValue && typeof source.platformValue === "object" ? source.platformValue : {};
-  const sourceCta = source.cta && typeof source.cta === "object" ? source.cta : {};
-  const sourceHero = source.hero && typeof source.hero === "object" ? source.hero : {};
+  if (!isRecord(input)) return DEFAULT_PUBLIC_SITE_CONFIG;
+  const source = input;
+  const sourceShell = isRecord(source.shell) ? source.shell : {};
+  const sourceHeader = isRecord(sourceShell.header) ? sourceShell.header : {};
+  const sourceFooter = isRecord(sourceShell.footer) ? sourceShell.footer : {};
+  const sourcePlatform = isRecord(source.platformValue) ? source.platformValue : {};
+  const sourceCta = isRecord(source.cta) ? source.cta : {};
+  const sourceHero = isRecord(source.hero) ? source.hero : {};
 
-  const heroSlides = Array.isArray(sourceHero.slides) ? sourceHero.slides.filter(Boolean) : [];
-  const platformCards = Array.isArray(sourcePlatform.cards) ? sourcePlatform.cards.filter(Boolean) : [];
-  const sections = Array.isArray(source.sections) ? source.sections.filter(Boolean) : [];
-  const propertyTypes = Array.isArray(source.propertyTypes) ? source.propertyTypes.filter(Boolean) : [];
-  const featured = Array.isArray(source.featured) ? source.featured.filter(Boolean) : [];
-  const portals = Array.isArray(source.portals) ? source.portals.filter(Boolean) : [];
-  const promotions = Array.isArray(source.promotions) ? source.promotions.filter(Boolean) : [];
+  const sections = Array.isArray(source.sections)
+    ? source.sections.filter(isRecord).map((item, index) => {
+        const fallback = DEFAULT_PUBLIC_SITE_CONFIG.sections[index % DEFAULT_PUBLIC_SITE_CONFIG.sections.length];
+        const id = DEFAULT_PUBLIC_SITE_CONFIG.sections.some((section) => section.id === item.id) ? item.id as PublicSiteSectionId : fallback.id;
+        const variant = item.variant === "compact" || item.variant === "wide" ? item.variant : "default";
+        const order = typeof item.order === "number" && Number.isFinite(item.order) ? item.order : fallback.order;
+        return { id, visible: booleanValue(item.visible, fallback.visible), order, variant };
+      })
+    : DEFAULT_PUBLIC_SITE_CONFIG.sections;
 
-  return {
+  const result: PublicSiteConfig = {
     ...DEFAULT_PUBLIC_SITE_CONFIG,
-    ...source,
     version: 1,
     shell: {
-      ...DEFAULT_PUBLIC_SITE_CONFIG.shell,
-      ...sourceShell,
-      header: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.header, ...sourceHeader },
-      footer: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.footer, ...sourceFooter },
+      header: {
+        pricingLabel: nonEmptyString(sourceHeader.pricingLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.pricingLabel),
+        signInLabel: nonEmptyString(sourceHeader.signInLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.signInLabel),
+        getStartedLabel: nonEmptyString(sourceHeader.getStartedLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.getStartedLabel),
+      },
+      footer: {
+        tagline: nonEmptyString(sourceFooter.tagline, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.tagline),
+        showPlatform: booleanValue(sourceFooter.showPlatform, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showPlatform),
+        showPortals: booleanValue(sourceFooter.showPortals, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showPortals),
+        showCompany: booleanValue(sourceFooter.showCompany, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showCompany),
+      },
     },
     platformValue: {
-      ...DEFAULT_PUBLIC_SITE_CONFIG.platformValue,
-      ...sourcePlatform,
-      cards: platformCards.length ? platformCards : DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards,
+      eyebrow: nonEmptyString(sourcePlatform.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.eyebrow),
+      title: nonEmptyString(sourcePlatform.title, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.title),
+      copy: nonEmptyString(sourcePlatform.copy, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.copy),
+      cards: sanitizePlatformCards(sourcePlatform.cards),
     },
-    cta: { ...DEFAULT_PUBLIC_SITE_CONFIG.cta, ...sourceCta },
+    cta: {
+      eyebrow: nonEmptyString(sourceCta.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.cta.eyebrow),
+      title: nonEmptyString(sourceCta.title, DEFAULT_PUBLIC_SITE_CONFIG.cta.title),
+      copy: nonEmptyString(sourceCta.copy, DEFAULT_PUBLIC_SITE_CONFIG.cta.copy),
+      primaryLabel: nonEmptyString(sourceCta.primaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryLabel),
+      primaryHref: nonEmptyString(sourceCta.primaryHref, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryHref),
+      secondaryLabel: nonEmptyString(sourceCta.secondaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryLabel),
+      secondaryHref: nonEmptyString(sourceCta.secondaryHref, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryHref),
+    },
     hero: {
-      ...DEFAULT_PUBLIC_SITE_CONFIG.hero,
-      ...sourceHero,
       fitMode: sourceHero.fitMode === "screen" ? "screen" : "window",
+      autoplay: booleanValue(sourceHero.autoplay, DEFAULT_PUBLIC_SITE_CONFIG.hero.autoplay),
+      intervalMs: typeof sourceHero.intervalMs === "number" && Number.isFinite(sourceHero.intervalMs) && sourceHero.intervalMs >= 1000 ? sourceHero.intervalMs : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
       overlay: sourceHero.overlay === "medium" || sourceHero.overlay === "strong" ? sourceHero.overlay : "soft",
-      autoplay: typeof sourceHero.autoplay === "boolean" ? sourceHero.autoplay : DEFAULT_PUBLIC_SITE_CONFIG.hero.autoplay,
-      intervalMs: typeof sourceHero.intervalMs === "number" && Number.isFinite(sourceHero.intervalMs) && sourceHero.intervalMs >= 1000
-        ? sourceHero.intervalMs
-        : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
-      slides: heroSlides.length ? heroSlides : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides,
+      slides: sanitizeHeroSlides(sourceHero.slides),
     },
-    propertyTypes: propertyTypes.length ? propertyTypes : DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes,
-    featured: Array.isArray(source.featured) ? featured : DEFAULT_PUBLIC_SITE_CONFIG.featured,
-    portals: portals.length ? portals : DEFAULT_PUBLIC_SITE_CONFIG.portals,
-    promotions: Array.isArray(source.promotions) ? promotions : DEFAULT_PUBLIC_SITE_CONFIG.promotions,
+    propertyTypes: sanitizePropertyTypes(source.propertyTypes),
+    featured: sanitizeFeatured(source.featured),
+    portals: sanitizePortals(source.portals),
+    promotions: sanitizePromotions(source.promotions),
     sections: sections.length ? sections : DEFAULT_PUBLIC_SITE_CONFIG.sections,
-  } as PublicSiteConfig;
+  };
+  return result;
 }
 
 export const PUBLIC_SITE_SECTION_LABELS: Record<PublicSiteSectionId, string> = {
