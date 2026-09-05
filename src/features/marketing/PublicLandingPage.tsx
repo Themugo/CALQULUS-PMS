@@ -13,6 +13,12 @@ import { DEFAULT_PUBLIC_SITE_CONFIG, type PublicSiteConfig, type PublicSiteSecti
 const CONTAINER = "mx-auto w-full max-w-[1480px] px-3 sm:px-4 lg:px-6";
 const PROPERTY_ICONS = { home: Home, building: Building2, office: Building2, landmark: Landmark } as const;
 const PORTAL_ICONS = { manager: LayoutDashboard, landlord: TrendingUp, agency: Users, tenant: Home } as const;
+const PORTAL_GRADIENTS = {
+  manager: "from-[#31577E] via-[#31577E]/90 to-transparent",
+  landlord: "from-[#0F8A6A] via-[#0F8A6A]/80 to-transparent",
+  agency: "from-[#0F766E] via-[#0F766E]/85 to-transparent",
+  tenant: "from-[#8B4DE8] via-[#8B4DE8]/80 to-transparent",
+} as const;
 const WHY_ICONS = { stack: FileStack, gear: Settings2, chart: BarChart3, leaf: Leaf } as const;
 const HERO_PILL_ICONS = { portals: Users, secure: ShieldCheck, insights: TrendingUp, reliable: Cloud } as const;
 const HIGHLIGHT_ICONS = { property: Building2, users: Users, uptime: Clock3, support: ShieldCheck } as const;
@@ -32,50 +38,182 @@ function Hero({ config }: { config: PublicSiteConfig }) {
   const promos = enabledPromos.length ? enabledPromos : DEFAULT_PUBLIC_SITE_CONFIG.hero.floatingCards;
   const pills = config.hero.pills.filter((pill) => pill?.enabled);
   const [active, setActive] = useState(0);
+
   useEffect(() => {
     if (!config.hero.autoplay || slides.length < 2) return;
-    const timer = window.setInterval(() => setActive((value) => (value + 1) % slides.length), config.hero.intervalMs);
+    const timer = window.setInterval(
+      () => setActive((value) => (value + 1) % slides.length),
+      config.hero.intervalMs,
+    );
     return () => window.clearInterval(timer);
   }, [config.hero.autoplay, config.hero.intervalMs, slides.length]);
-  useEffect(() => setActive((value) => Math.min(value, slides.length - 1)), [slides.length]);
-  const slide = slides[Math.min(active, slides.length - 1)] ?? DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[0];
+
+  useEffect(() => {
+    setActive((value) => Math.min(value, Math.max(slides.length - 1, 0)));
+  }, [slides.length]);
+
   const previous = () => setActive((value) => (value - 1 + slides.length) % slides.length);
   const next = () => setActive((value) => (value + 1) % slides.length);
-  const image = img(slide.image, PROPERTY_IMAGES.residential);
+
   return (
-    <section className={`relative overflow-hidden py-2 sm:py-3 ${config.hero.fitMode === "screen" ? "min-h-[calc(100svh-72px)]" : ""}`}>
+    <section
+      className={`relative overflow-hidden py-2 sm:py-3 ${
+        config.hero.fitMode === "screen" ? "min-h-[calc(100svh-72px)]" : ""
+      }`}
+    >
       <div className={`${CONTAINER} ${config.hero.fitMode === "screen" ? "h-full" : ""}`}>
         <div className="relative overflow-hidden rounded-[20px] border border-border bg-card shadow-[0_18px_55px_rgba(10,32,54,0.12)]">
-          <div className="grid min-h-[370px] lg:grid-cols-[1.04fr_1.25fr] xl:min-h-[405px]">
-            <div className="relative z-10 flex flex-col justify-center bg-[linear-gradient(135deg,#ffffff_0%,#f5faf8_72%,#edf7f3_100%)] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 xl:px-12">
-              <div className="max-w-[560px]">
-                <p className="text-[10px] font-semibold tracking-[0.28em] text-primary sm:text-[11px]">{slide.eyebrow}</p>
-                <div className="mt-4 flex items-start gap-3">
-                  <h1 className="font-heading text-[clamp(2.35rem,4.8vw,4.7rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-navy-deep">{slide.title}</h1>
-                  <div className="hidden shrink-0 pt-3 text-right sm:block">
-                    {slide.signature.slice(0, 3).map((line) => <div key={line} className="font-serif text-[20px] italic leading-[0.95] text-primary/75">{line}</div>)}
-                    <div className="mt-1 h-1.5 w-14 rounded-full bg-success/75" />
+          {/* Fixed slide frame: every hero page occupies exactly the same footprint. */}
+          <div className="relative h-[350px] sm:h-[370px] xl:h-[390px]">
+            {slides.map((slide, index) => {
+              const activeSlide = index === active;
+              const image = img(slide.image, PROPERTY_IMAGES.residential);
+              const secondaryHref = slide.secondaryHref;
+              return (
+                <article
+                  key={slide.id}
+                  aria-hidden={!activeSlide}
+                  className={`absolute inset-0 grid lg:grid-cols-[1.04fr_1.25fr] transition-all duration-700 ease-out ${
+                    activeSlide
+                      ? "z-10 translate-x-0 opacity-100"
+                      : "pointer-events-none z-0 translate-x-2 opacity-0"
+                  }`}
+                >
+                  <div className="relative z-10 flex min-w-0 flex-col justify-center overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#f5faf8_72%,#edf7f3_100%)] px-5 py-7 sm:px-8 sm:py-8 lg:px-10 xl:px-12">
+                    <div className="max-w-[560px]">
+                      <p className="text-[10px] font-semibold tracking-[0.28em] text-primary sm:text-[11px]">
+                        {slide.eyebrow}
+                      </p>
+                      <div className="mt-4 flex items-start gap-3">
+                        <h1 className="font-heading text-[clamp(2.2rem,4.3vw,4.1rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-navy-deep">
+                          {slide.title}
+                        </h1>
+                        <div className="hidden shrink-0 pt-3 text-right sm:block" aria-hidden>
+                          {slide.signature.slice(0, 3).map((line) => (
+                            <div key={line} className="font-serif text-[20px] italic leading-[0.95] text-primary/75">
+                              {line}
+                            </div>
+                          ))}
+                          <div className="mt-1 h-1.5 w-14 rounded-full bg-success/75" />
+                        </div>
+                      </div>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+                        {slide.copy}
+                      </p>
+                      <div className="mt-5 flex flex-wrap gap-2.5">
+                        <Button
+                          asChild
+                          tabIndex={activeSlide ? 0 : -1}
+                          className="btn-brand h-10 rounded-xl px-5 text-sm font-semibold"
+                        >
+                          <Link to={slide.primaryHref}>
+                            {slide.primaryLabel}
+                            <ArrowRight className="ml-1 h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          asChild
+                          tabIndex={activeSlide ? 0 : -1}
+                          variant="outline"
+                          className="h-10 rounded-xl border-primary/20 bg-white px-5 text-sm font-semibold text-navy-deep hover:bg-muted"
+                        >
+                          <NavLink href={secondaryHref}>
+                            {slide.secondaryLabel}
+                            <ArrowRight className="ml-1 h-4 w-4" />
+                          </NavLink>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{slide.copy}</p>
-                <div className="mt-5 flex flex-wrap gap-2.5">
-                  <Button asChild className="btn-brand h-10 rounded-xl px-5 text-sm font-semibold"><Link to={slide.primaryHref}>{slide.primaryLabel}<ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
-                  <Button asChild variant="outline" className="h-10 rounded-xl border-primary/20 bg-white px-5 text-sm font-semibold text-navy-deep hover:bg-muted"><NavLink href={slide.secondaryHref}>{slide.secondaryLabel}<ArrowRight className="ml-1 h-4 w-4" /></NavLink></Button>
-                </div>
+                  <div className="relative min-h-0 overflow-hidden">
+                    <img
+                      src={image}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                    <div
+                      className={`absolute inset-0 ${
+                        config.hero.overlay === "strong"
+                          ? "bg-navy-deep/40"
+                          : config.hero.overlay === "medium"
+                            ? "bg-navy-deep/20"
+                            : "bg-navy-deep/10"
+                      }`}
+                    />
+                  </div>
+                </article>
+              );
+            })}
+
+            {promos.length ? (
+              <div className="absolute inset-y-3 right-3 z-20 hidden w-[24%] min-w-[245px] max-w-[325px] flex-col gap-2.5 lg:flex xl:right-4">
+                {promos.map((promo) => (
+                  <NavLink
+                    key={promo.id}
+                    href={promo.href}
+                    className="group relative min-h-[74px] overflow-hidden rounded-xl border border-white/50 bg-white/92 shadow-lg backdrop-blur-sm"
+                  >
+                    <img
+                      src={img(promo.image, PROPERTY_IMAGES.office)}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-30 transition group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/35" />
+                    <div className="relative flex h-full items-center gap-3 px-3.5 py-2.5">
+                      <div className="min-w-0 flex-1">
+                        <span className="inline-flex rounded-md bg-success px-2 py-0.5 text-[8px] font-bold tracking-[0.16em] text-navy-deep">
+                          {promo.label}
+                        </span>
+                        <p className="mt-1 truncate text-[12px] font-semibold text-navy-deep">{promo.title}</p>
+                        <p className="truncate text-[10px] text-muted-foreground">{promo.copy}</p>
+                      </div>
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success text-navy-deep">
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </NavLink>
+                ))}
               </div>
-            </div>
-            <div className="relative min-h-[235px] lg:min-h-0">
-              <img src={image} alt="CALQULUS property" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
-              <div className={`absolute inset-0 ${config.hero.overlay === "strong" ? "bg-navy-deep/40" : config.hero.overlay === "medium" ? "bg-navy-deep/20" : "bg-navy-deep/10"}`} />
-              {slides.length > 1 ? <div className="absolute bottom-4 right-4 flex items-center gap-1.5"><button aria-label="Previous hero" onClick={previous} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-navy-deep/30 text-white backdrop-blur"><ChevronLeft className="h-4 w-4" /></button><span className="rounded-full bg-navy-deep/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur">{active + 1}/{slides.length}</span><button aria-label="Next hero" onClick={next} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-navy-deep/30 text-white backdrop-blur"><ChevronRight className="h-4 w-4" /></button></div> : null}
-            </div>
+            ) : null}
+
+            {slides.length > 1 ? (
+              <div className="absolute bottom-12 right-4 z-30 flex items-center gap-1.5 sm:right-6">
+                <button
+                  aria-label="Previous hero slide"
+                  onClick={previous}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-navy-deep/35 text-white backdrop-blur transition hover:bg-navy-deep/55"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <span aria-live="polite" className="rounded-full bg-navy-deep/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur">
+                  {active + 1}/{slides.length}
+                </span>
+                <button
+                  aria-label="Next hero slide"
+                  onClick={next}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-navy-deep/35 text-white backdrop-blur transition hover:bg-navy-deep/55"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
           </div>
-          <div className="absolute inset-y-3 right-3 z-20 hidden w-[24%] min-w-[245px] max-w-[325px] flex-col gap-2.5 lg:flex xl:right-4">
-            {promos.map((promo) => <NavLink key={promo.id} href={promo.href} className="group relative min-h-[74px] overflow-hidden rounded-xl border border-white/50 bg-white/92 shadow-lg backdrop-blur-sm"><img src={img(promo.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30 transition group-hover:scale-105"/><div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/35"/><div className="relative flex h-full items-center gap-3 px-3.5 py-2.5"><div className="min-w-0 flex-1"><span className="inline-flex rounded-md bg-success px-2 py-0.5 text-[8px] font-bold tracking-[0.16em] text-navy-deep">{promo.label}</span><p className="mt-1 truncate text-[12px] font-semibold text-navy-deep">{promo.title}</p><p className="truncate text-[10px] text-muted-foreground">{promo.copy}</p></div><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success text-navy-deep"><ArrowRight className="h-3.5 w-3.5" /></span></div></NavLink>)}
-          </div>
-          <div className="relative z-10 border-t border-border/70 bg-white/95 px-4 py-2.5 backdrop-blur sm:px-6 lg:pr-[27%]">
+
+          <div className="relative z-20 border-t border-border/70 bg-white/95 px-4 py-2.5 backdrop-blur sm:px-6 lg:pr-[27%]">
             <div className="flex flex-wrap items-center gap-2.5">
-              {(pills.length ? pills : DEFAULT_PUBLIC_SITE_CONFIG.hero.pills).map((pill) => { const Icon = HERO_PILL_ICONS[pill.icon]; return <span key={pill.id} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"><Icon className="h-3.5 w-3.5 text-primary" />{pill.label}</span>; })}
+              {(pills.length ? pills : DEFAULT_PUBLIC_SITE_CONFIG.hero.pills).map((pill) => {
+                const Icon = HERO_PILL_ICONS[pill.icon];
+                return (
+                  <span
+                    key={pill.id}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"
+                  >
+                    <Icon className="h-3.5 w-3.5 text-primary" />
+                    {pill.label}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -95,7 +233,7 @@ function PropertyTypes({ items }: { items: PublicSiteConfig["propertyTypes"] }) 
 
 function Portals({ items }: { items: PublicSiteConfig["portals"] }) {
   const visible = items.filter((item) => item?.enabled);
-  return <section id="portals" className="bg-background py-3 sm:py-4"><div className={CONTAINER}><SectionHeading eyebrow="ACCESS YOUR PORTAL" title="Choose your portal to get started." /><div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">{visible.map((item) => { const Icon = PORTAL_ICONS[item.id]; const accent = item.id === "landlord" ? "from-[#0F8A6A] via-[#0f8a6a]/80 to-transparent" : item.id === "tenant" ? "from-[#8b4de8] via-[#8b4de8]/80 to-transparent" : "from-[#0e6ce9] via-[#0e6ce9]/85 to-transparent"; return <NavLink key={item.id} href={item.href} className="group relative min-h-[150px] overflow-hidden rounded-xl border border-border bg-navy-deep text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"><img src={img(item.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-65 transition duration-500 group-hover:scale-105"/><div className={`absolute inset-0 bg-gradient-to-r ${accent}`}/><div className="relative flex h-full flex-col justify-between p-3.5"><div className="flex items-start gap-2.5"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10"><Icon className="h-4.5 w-4.5" /></span><div><p className="text-[8px] font-bold tracking-[0.16em] text-white/75">{item.eyebrow}</p><h3 className="mt-0.5 font-heading text-base font-semibold">{item.title.replace(" Portal", "")}</h3></div></div><div><p className="max-w-[235px] text-[10px] leading-4 text-white/75">{item.description}</p><span className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-2.5 py-1.5 text-[10px] font-semibold backdrop-blur group-hover:bg-white/25">Access Portal <ArrowRight className="h-3 w-3"/></span></div></div></NavLink>; })}</div></div></section>;
+  return <section id="portals" className="bg-background py-3 sm:py-4"><div className={CONTAINER}><SectionHeading eyebrow="ACCESS YOUR PORTAL" title="Choose your portal to get started." /><div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">{visible.map((item) => { const Icon = PORTAL_ICONS[item.id]; const accent = PORTAL_GRADIENTS[item.id]; return <NavLink key={item.id} href={item.href} className="group relative min-h-[150px] overflow-hidden rounded-xl border border-border bg-navy-deep text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"><img src={img(item.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-65 transition duration-500 group-hover:scale-105"/><div className={`absolute inset-0 bg-gradient-to-r ${accent}`}/><div className="relative flex h-full flex-col justify-between p-3.5"><div className="flex items-start gap-2.5"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10"><Icon className="h-4.5 w-4.5" /></span><div><p className="text-[8px] font-bold tracking-[0.16em] text-white/75">{item.eyebrow}</p><h3 className="mt-0.5 font-heading text-base font-semibold">{item.title.replace(" Portal", "")}</h3></div></div><div><p className="max-w-[235px] text-[10px] leading-4 text-white/75">{item.description}</p><span className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-2.5 py-1.5 text-[10px] font-semibold backdrop-blur group-hover:bg-white/25">Access Portal <ArrowRight className="h-3 w-3"/></span></div></div></NavLink>; })}</div></div></section>;
 }
 
 function WhyChoose({ config }: { config: PublicSiteConfig["why"] }) {

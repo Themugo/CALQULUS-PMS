@@ -67,8 +67,8 @@ export const CALQULUS_COLOR = {
 export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
-    label: "Professional Blue",
-    hex: CALQULUS_COLOR.primary,
+    label: "Deep Navy",
+    hex: CALQULUS_COLOR.navySecondary,
   },
   landlord: {
     id: "landlord",

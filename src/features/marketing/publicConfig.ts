@@ -3,6 +3,8 @@
  * Do not invent portal paths here.
  */
 
+import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
+
 export const CONTACT_EMAIL = "enterprise@calqulusrms.com";
 
 export const PUBLIC_ROUTES = {
@@ -46,7 +48,7 @@ export const HERO_CONTENT = {
  * navy + white carry the page, these are small markers only.
  */
 export const HOMEPAGE_ROLE_ACCENTS = {
-  manager: "#2F6FED",
+  manager: CALQULUS_PORTAL_ACCENT.manager.hex,
   landlord: "#0F8A6A",
   agency: "#0F766E",
   tenant: "#0284C7",

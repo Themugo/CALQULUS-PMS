@@ -25,12 +25,12 @@ describe("Manager portal entry chrome", () => {
     expect(headline.querySelectorAll("span.block").length).toBe(2);
   });
 
-  it("uses the manager blue accent and property-photo background", () => {
+  it("uses the manager deep-navy accent and property-photo background", () => {
     const { container } = renderShell();
     const bgImage = container.querySelector('img[alt=""]');
     expect(bgImage).not.toBeNull();
     expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
-    expect(MANAGER_ACCENT).toBe("#356FE5");
+    expect(MANAGER_ACCENT).toBe("#31577E");
   });
 
   it("carries the CALQULUS brand mark and portal description", () => {
