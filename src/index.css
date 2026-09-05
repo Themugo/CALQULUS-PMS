@@ -805,7 +805,7 @@
 }
 
 @utility btn-tenant {
-  background-color: #0284c7;
+  background-color: #7c5fd3;
   color: #ffffff;
   font-weight: 600;
   box-shadow: var(--calqulus-shadow-sm);
@@ -832,7 +832,7 @@
   }
 
   .btn-tenant:hover {
-    background-color: #0369a1;
+    background-color: #6a4fc0;
   }
 
   .safe-area-bottom {

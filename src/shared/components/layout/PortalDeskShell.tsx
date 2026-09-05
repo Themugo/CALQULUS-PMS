@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronRight, LogOut, Menu, Settings, X, Palette } from "lucide-react";
+import { ChevronRight, LogOut, Menu, Settings, User, X, Palette } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
@@ -32,6 +32,7 @@ interface PortalDeskShellProps {
   userEmail?: string | null;
   onSignOut: () => void;
   settingsHref?: string;
+  profileHref?: string;
   brandSubtitle?: string;
   forcePlatformBrand?: boolean;
   isActive?: (href: string, pathname: string) => boolean;
@@ -73,6 +74,7 @@ export function PortalDeskShell({
   userEmail,
   onSignOut,
   settingsHref,
+  profileHref,
   brandSubtitle,
   forcePlatformBrand = false,
   isActive = defaultIsActive,
@@ -234,6 +236,7 @@ export function PortalDeskShell({
             >
               <Palette className="h-4 w-4" />
             </button>
+            {profileHref ? <Link to={profileHref} aria-label="Profile" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><User className="h-4 w-4" /></Link> : null}
             {settingsHref ? <Link to={settingsHref} aria-label={`${portalLabel} settings`} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"><Settings className="h-4 w-4" /></Link> : null}
           </div>
         </header>

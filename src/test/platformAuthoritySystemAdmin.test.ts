@@ -115,7 +115,10 @@ describe("System Admin frontend surface", () => {
   });
 
   it("nav item is present and gated by the recovery permission", () => {
-    expect(layoutSource).toContain('label: "Unattached tenants"');
+    // The nav label lives in the shared navigation module; the gating logic
+    // (which decides whether that item is shown) stays in the layout.
+    const navSource = readFileSync(resolve(root, "shared/navigation/portalNavigation.ts"), "utf8");
+    expect(navSource).toContain('label: "Unattached tenants"');
     expect(layoutSource).toContain("can_read_unattached_tenants");
     expect(layoutSource).toContain("isSuperAdmin");
   });

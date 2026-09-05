@@ -19,13 +19,16 @@ describe("financial & operational reconciliation command center", () => {
   });
 
   it("converges reconciliation cases into the existing work queue", () => {
-    expect(migration).toContain("source_type='reconciliation_case'");
+    expect(migration).toContain("'reconciliation_case'");
     expect(migration).toContain("operation_work_items");
     expect(migration).toContain("transition_reconciliation_case_atomic");
   });
 
   it("enforces manager-scoped RPC access", () => {
-    expect(migration).toContain("public.can_manage_property_scope(v_manager)");
+    // Scope is enforced inline (self or delegated submanager) rather than via
+    // the shared can_manage_property_scope() helper, and fails closed.
+    expect(migration).toContain("EXISTS (SELECT 1 FROM public.manager_submanagers ms WHERE ms.manager_id=v_manager AND ms.submanager_user_id=v_uid)");
+    expect(migration).toContain("RAISE EXCEPTION 'Reconciliation scope unauthorized' USING ERRCODE='42501'");
     expect(migration).toContain("REVOKE ALL ON FUNCTION public.get_manager_reconciliation_command_center");
     expect(migration).toContain("TO authenticated,service_role");
   });

@@ -19,7 +19,7 @@ describe("Phases 162–163 accessibility and keyboard interaction structure", ()
   it("gives the password visibility control an accessible name and touch target", () => {
     const source = read("src/features/landlord/pages/LandlordInvitationAccept.tsx");
     const css = read("src/index.css");
-    expect(source).toContain("aria-label={showPassword ? "Hide password" : "Show password"}");
+    expect(source).toContain('aria-label={showPassword ? "Hide password" : "Show password"}');
     expect(source).toContain("touch-target");
     expect(css).toContain(".touch-target");
   });

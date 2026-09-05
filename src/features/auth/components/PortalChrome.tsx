@@ -66,7 +66,7 @@ export function PortalSwitcher({ currentId }: PortalSwitcherProps) {
             return (
               <span
                 key={portal.id}
-                aria-current="true"
+                aria-current="page"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/25 bg-white/10 px-3 py-2 text-xs font-semibold text-white"
               >
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: identity.primaryHex }} aria-hidden />

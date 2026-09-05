@@ -5,7 +5,7 @@ import TenantNotificationBell from "@/features/tenant-portal/components/TenantNo
 import { isDevAccessEnabled } from "@/features/auth/lib/devAccess";
 import { PortalDeskLoading, PortalDeskShell } from "@/shared/components/layout/PortalDeskShell";
 import { portalSurfaceProps } from "@/core/design";
-import { TENANT_LOGIN } from "@/features/tenant-portal/lib/tenantPaths";
+import { TENANT_LOGIN, TENANT_ROUTES } from "@/features/tenant-portal/lib/tenantPaths";
 import { isTenantNavActive, TENANT_MOBILE_NAV, TENANT_NAV_GROUPS } from "@/shared/navigation/portalNavigation";
 interface TenantLayoutProps { children: ReactNode; title: string; description?: string; actions?: ReactNode; hideHeader?: boolean; }
 
@@ -25,6 +25,7 @@ export default function TenantLayout({ children, title, description, actions, hi
       mobileNav={TENANT_MOBILE_NAV}
       userEmail={user?.email}
       onSignOut={() => void signOut()}
+      profileHref={TENANT_ROUTES.profile}
       hideHeader={hideHeader}
       sidebarWidthClass="w-56"
       sidebarOffsetClass="md:ml-56"

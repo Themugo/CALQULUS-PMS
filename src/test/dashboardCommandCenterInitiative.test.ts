@@ -36,13 +36,13 @@ describe("dashboard command center initiative", () => {
 
 describe("dashboard shared data boundaries", () => {
   it("reuses shared tenant scope for arrears instead of fetching tenant ids locally", () => {
-    expect(read("src/features/dashboard/components/ArrearsHeatMap.tsx")).toContain("useDashboardTenantIds");
-    expect(read("src/features/dashboard/components/ArrearsHeatMap.tsx")).not.toContain('.from("tenants")');
+    expect(read("features/dashboard/components/ArrearsHeatMap.tsx")).toContain("useDashboardTenantIds");
+    expect(read("features/dashboard/components/ArrearsHeatMap.tsx")).not.toContain('.from("tenants")');
   });
 
   it("reuses shared property data for maintenance scope instead of fetching property names locally", () => {
-    expect(read("src/features/dashboard/components/OpenMaintenancePreview.tsx")).toContain("useDashboardProperties");
-    expect(read("src/features/dashboard/components/OpenMaintenancePreview.tsx")).not.toContain('.from("properties")');
+    expect(read("features/dashboard/components/OpenMaintenancePreview.tsx")).toContain("useDashboardProperties");
+    expect(read("features/dashboard/components/OpenMaintenancePreview.tsx")).not.toContain('.from("properties")');
   });
 });
 

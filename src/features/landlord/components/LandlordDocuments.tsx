@@ -85,7 +85,7 @@ const LandlordDocuments: React.FC = () => {
         </div>
         {(doc.verification_status || doc.expires_at) && (
           <div className="hidden sm:flex items-center gap-1.5 mr-2">
-            {doc.verification_status === 'verified' && <ShieldCheck className="h-4 w-4 text-emerald-600" aria-label="Verified document" />}
+            {doc.verification_status === 'verified' && <ShieldCheck className="h-4 w-4 text-success" aria-label="Verified document" />}
             {doc.expires_at && new Date(doc.expires_at).getTime() < Date.now() + 30 * 86400000 && <AlertTriangle className="h-4 w-4 text-amber-600" aria-label="Document expires soon" />}
           </div>
         )}

@@ -11,33 +11,40 @@ function source(rel: string): string {
 }
 
 describe("tenant service-portal nav (secondary only)", () => {
-  const layout = source("features/tenant-portal/components/TenantLayout.tsx");
+  // Nav labels for every portal (including the tenant's) now live in the
+  // shared navigation module; TenantLayout wires the shared shell to them.
+  const nav = source("shared/navigation/portalNavigation.ts");
 
   it("keeps the desk nav to the six service sections — no enterprise extras", () => {
     for (const label of ["Dashboard", "Payments", "Lease", "Maintenance", "Receipts", "Documents", "Profile"]) {
-      expect(layout).toContain(`label: "${label}"`);
+      expect(nav).toContain(`label: "${label}"`);
     }
-    expect(layout).not.toContain("Reports");
-    expect(layout).not.toContain("Analytics");
-    expect(layout).not.toContain("Insights");
-    expect(layout).not.toContain("Charts");
+    const tenantSection = nav.split("TENANT_NAV_GROUPS")[1]?.split("TENANT_MOBILE_NAV")[0] ?? "";
+    expect(tenantSection).not.toContain("Reports");
+    expect(tenantSection).not.toContain("Analytics");
+    expect(tenantSection).not.toContain("Insights");
+    expect(tenantSection).not.toContain("Charts");
   });
 
   it("mobile bottom nav is service-first (Home/Bills/Fix/Docs/Me)", () => {
     for (const label of ['"Home"', '"Bills"', '"Fix"', '"Docs"', '"Me"']) {
-      expect(layout).toContain(`label: ${label}`);
+      expect(nav).toContain(`label: ${label}`);
     }
   });
 });
 
 describe("tenant header", () => {
   const layout = source("features/tenant-portal/components/TenantLayout.tsx");
+  const shell = source("shared/components/layout/PortalDeskShell.tsx");
 
   it("shows CALQULUS wordmark, notifications bell, and a profile shortcut", () => {
-    expect(layout).toContain("BrandMark");
+    // The wordmark and the profile-shortcut link render inside the shared
+    // desk shell; TenantLayout wires the notification bell and the profile
+    // route into it.
+    expect(shell).toContain("BrandMark");
     expect(layout).toContain("TenantNotificationBell");
-    expect(layout).toContain(`to={TENANT_ROUTES.profile}`);
-    expect(layout).toContain('aria-label="Profile"');
+    expect(layout).toContain(`profileHref={TENANT_ROUTES.profile}`);
+    expect(shell).toContain('aria-label="Profile"');
   });
 });
 

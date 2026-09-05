@@ -18,7 +18,9 @@ describe("post-intelligence integration hardening",()=>{
     const ui=read("src/features/dashboard/components/OperationWorkQueue.tsx");
     expect(sql).toContain("'assignee_id',w.assigned_to");
     expect(sql).toContain("'sla_due_at',w.sla_due_at");
-    expect(ui).toContain("item.assignee_id ?? \"unassigned\"");
+    // The UI renders the resolved assignee display name (joined from
+    // profiles), not the raw id, falling back to "Unassigned" when unset.
+    expect(ui).toContain('item.assignee_name || "Unassigned"');
   });
 
   it("converges tenant experience into one canonical recovery/work loop",()=>{

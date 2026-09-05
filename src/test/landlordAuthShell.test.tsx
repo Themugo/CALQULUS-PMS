@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { LandlordPortalShell, LandlordPerformancePreview } from "@/features/auth/components/LandlordPortalChrome";
-import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { LandlordPortalShell, LANDLORD_ACCENT } from "@/features/auth/components/LandlordPortalChrome";
 
 function renderShell() {
   return render(
@@ -17,69 +16,30 @@ function renderShell() {
 }
 
 describe("Landlord portal entry chrome", () => {
-  it("renders the landlord identity hierarchy: eyebrow, owner headline, value line", () => {
+  it("renders the two-line Landlord / Portal headline", () => {
     renderShell();
-    expect(screen.getAllByText(/^landlord portal$/i).length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "See how your properties are performing.",
-    );
-    for (const value of ["Properties", "Occupancy", "Your share", "Statements", "Privacy protected"]) {
-      expect(screen.getAllByText(value).length).toBeGreaterThan(0);
-    }
-    // removed operator-feature copy stays gone
-    expect(screen.queryByText(/how are my properties performing\?/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/guarded view/i)).not.toBeInTheDocument();
+    const headline = screen.getByRole("heading", { level: 1 });
+    expect(headline).toHaveTextContent(/landlord/i);
+    expect(headline).toHaveTextContent(/portal/i);
+    expect(headline.querySelectorAll("span.block").length).toBe(2);
   });
 
-  it("ranks Net to you above Collected/Occupancy/Properties", () => {
-    render(
-      <MemoryRouter>
-        <LandlordPerformancePreview />
-      </MemoryRouter>,
-    );
-    const netRows = screen.getAllByText(/^net to you$/i);
-    const netRow = netRows.find((el) => el.closest("div")?.textContent?.includes("KES 784K"));
-    expect(netRow?.closest("div")?.textContent).toContain("KES 784K");
-    for (const metric of ["Collected", "Occupancy", "Properties"]) {
-      expect(screen.getAllByText(new RegExp(`^${metric}$`, "i")).length).toBeGreaterThan(0);
-    }
-    expect(screen.getAllByText(/illustrative landlord view/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/privacy protected/i)).toBeInTheDocument();
+  it("uses the landlord emerald accent and property-photo background", () => {
+    const { container } = renderShell();
+    const bgImage = container.querySelector('img[alt=""]');
+    expect(bgImage).not.toBeNull();
+    expect(bgImage?.getAttribute("src")).toMatch(/property-commercial/);
+    expect(LANDLORD_ACCENT).toBe("#0F8A6A");
   });
 
-  it("keeps the portfolio rows compact and real-photo where available", () => {
-    render(
-      <MemoryRouter>
-        <LandlordPerformancePreview />
-      </MemoryRouter>,
-    );
-    expect(screen.getByRole("img", { name: /kilimani court/i })).toBeInTheDocument();
-    expect(screen.getByText(/westlands house/i)).toBeInTheDocument();
-    expect(screen.getByText(/92% occupied · 80% share/i)).toBeInTheDocument();
-    expect(screen.getByText(/75% occupied · 80% share/i)).toBeInTheDocument();
-  });
-
-  it("renders the net-vs-collected trend as simple dual bars", () => {
-    render(
-      <MemoryRouter>
-        <LandlordPerformancePreview />
-      </MemoryRouter>,
-    );
-    expect(screen.getByRole("img", { name: /collected vs net trend/i })).toBeInTheDocument();
-    expect(screen.getByText(/navy collected · emerald net/i)).toBeInTheDocument();
-  });
-
-  it("keeps other portals below the preview with working links", () => {
+  it("carries the CALQULUS brand mark and portal description", () => {
     renderShell();
-    expect(screen.getByRole("link", { name: /manager/i })).toHaveAttribute("href", PUBLIC_ROUTES.managerSignIn);
-    expect(screen.getByRole("link", { name: /agency/i })).toHaveAttribute("href", PUBLIC_ROUTES.agencyLogin);
-    expect(screen.getByRole("link", { name: /tenant/i })).toHaveAttribute("href", PUBLIC_ROUTES.tenantLogin);
+    expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/see how your properties are performing/i)).toBeInTheDocument();
   });
 
-  it("keeps the footer compact", () => {
+  it("renders the child sign-in form passed to it", () => {
     renderShell();
-    expect(screen.getByRole("link", { name: /privacy/i })).toHaveAttribute("href", PUBLIC_ROUTES.legalPrivacy);
-    expect(screen.getByRole("link", { name: /terms/i })).toHaveAttribute("href", PUBLIC_ROUTES.legalTerms);
-    expect(screen.getByText(/© 2026 calqulus limited/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
   });
 });
