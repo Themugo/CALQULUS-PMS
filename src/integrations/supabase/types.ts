@@ -5965,6 +5965,30 @@ export type Database = {
         }
         Relationships: []
       },
+      platform_public_site_config: {
+        Row: {
+          id: boolean
+          config: Json
+          published: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: boolean
+          config?: Json
+          published?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: boolean
+          config?: Json
+          published?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      },
       platform_billing_rules: {
         Row: {
           id: string | null
@@ -6808,6 +6832,8 @@ export type Database = {
       provision_manager_account_atomic: { Args: { p_manager_user_id: string; p_full_name?: string | null }; Returns: Json }
       transition_manager_admin_atomic: { Args: { p_manager_user_id: string; p_action: string; p_reason?: string | null; p_subscription_tier?: string | null }; Returns: Json }
       transition_webhook_dead_letter_atomic: { Args: { p_id: string; p_status: string; p_notes?: string | null }; Returns: Database["public"]["Tables"]["webhook_dead_letter"]["Row"] }
+      get_public_site_config: { Args: Record<string, never>; Returns: Json }
+      save_public_site_config: { Args: { p_config: Json; p_published?: boolean }; Returns: Json }
       provision_platform_admin_atomic: { Args: { p_user_id: string; p_email: string; p_display_name: string; p_admin_type: string }; Returns: string }
       transition_platform_admin_atomic: { Args: { p_admin_id: string; p_suspend: boolean; p_reason?: string | null }; Returns: undefined }
       remove_platform_admin_atomic: { Args: { p_admin_id: string }; Returns: undefined }

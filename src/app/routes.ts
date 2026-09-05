@@ -40,6 +40,7 @@ const AdminAuditLog = lazy(() => import("@/features/webhost/pages/AdminAuditLog"
 const AdminSecurity = lazy(() => import("@/features/webhost/pages/AdminSecurity"));
 const AdminSettings = lazy(() => import("@/features/webhost/pages/AdminSettings"));
 const AdminBrandStudio = lazy(() => import("@/features/webhost/pages/AdminBrandStudio"));
+const AdminPublicSiteStudio = lazy(() => import("@/features/webhost/pages/AdminPublicSiteStudio"));
 const AdminUnattachedTenants = lazy(() => import("@/features/webhost/pages/AdminUnattachedTenants"));
 const AdminProperties = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminProperties })));
 const AdminLandlords = lazy(() => import("@/features/webhost/pages/AdminOpsPages").then((m) => ({ default: m.AdminLandlords })));
@@ -102,6 +103,7 @@ const AgencyInvites = lazy(() => import("@/features/agency/pages/AgencyInvites")
 const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatements"));
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
+const PublicPropertyDiscoveryPage = lazy(() => import("@/features/marketing/PublicPropertyDiscoveryPage"));
 const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
 const ShellPreviewPage = lazy(() => import("@/features/design-preview/pages/ShellPreviewPage"));
@@ -201,6 +203,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landing", redirect: "/" },
   { path: "/welcome", redirect: "/" },
   { path: "/pricing", element: PublicLandingPage },
+  { path: "/discover/:category", element: PublicPropertyDiscoveryPage },
   { path: "/register", element: RegisterExperience },
   { path: "/health", element: HealthPage },
   { path: "/install", element: InstallApp },
@@ -301,6 +304,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/webhost/security", element: AdminSecurity, protected: true, requirePermission: "can_view_activity_logs" },
       { path: "/webhost/settings", element: AdminSettings, protected: true, minAdminLevel: "admin", requirePermission: "can_manage_billing" },
       { path: "/webhost/brand", element: AdminBrandStudio, protected: true, minAdminLevel: "admin" },
+      { path: "/webhost/public-site", element: AdminPublicSiteStudio, protected: true, minAdminLevel: "admin", requirePermission: "can_manage_platform_settings" },
       { path: "/webhost/unattached-tenants", element: AdminUnattachedTenants, protected: true, requirePermission: "can_manage_managers" },
       { path: "/webhost/properties", element: AdminProperties, protected: true, requirePermission: "can_manage_properties" },
       { path: "/webhost/landlords", element: AdminLandlords, protected: true, requirePermission: "can_manage_system_landlords" },

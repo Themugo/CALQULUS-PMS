@@ -13,6 +13,7 @@ import {
   Layers,
   Layers2,
   LayoutDashboard,
+  LayoutPanelTop,
   Mail,
   Palette,
   Receipt,
@@ -187,6 +188,7 @@ export const WEBHOST_NAV_GROUPS: PortalDeskNavGroup[] = [
     label: "Account",
     items: [
       { label: "Settings", href: WEBHOST_ROUTES.settings, icon: Settings },
+      { label: "Public Site", href: WEBHOST_ROUTES.publicSite, icon: LayoutPanelTop },
       { label: "Brand Studio", href: WEBHOST_ROUTES.brand, icon: Palette },
     ],
   },

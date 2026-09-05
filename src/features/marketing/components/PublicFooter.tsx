@@ -1,22 +1,10 @@
 import { Link } from "react-router-dom";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
 
 export function PublicFooter() {
   const year = new Date().getFullYear();
-  return (
-    <footer className="border-t border-white/10 bg-navy-deep text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4"><BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform /><span className="hidden text-xs text-white/50 sm:inline">Property operations, connected.</span></div>
-        <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-white/65">
-          <a href="/#platform" className="hover:text-white">Platform</a>
-          <Link to={PUBLIC_ROUTES.pricing} className="hover:text-white">Pricing</Link>
-          <Link to={PUBLIC_ROUTES.legalPrivacy} className="hover:text-white">Privacy</Link>
-          <Link to={PUBLIC_ROUTES.legalTerms} className="hover:text-white">Terms</Link>
-          <Link to={PUBLIC_ROUTES.managerSignIn} className="hover:text-white">Sign in</Link>
-        </nav>
-      </div>
-      <div className="border-t border-white/10"><div className="mx-auto max-w-6xl px-4 py-3 text-[11px] text-white/45 sm:px-6 lg:px-8">© {year} CALQULUS Limited. All rights reserved.</div></div>
-    </footer>
-  );
+  const { data: config } = usePublicSiteConfig();
+  return <footer className="border-t border-white/10 bg-navy-deep text-white"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]"><div><BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform/><p className="mt-4 max-w-xs text-sm leading-6 text-white/55">{config.shell.footer.tagline}</p></div>{config.shell.footer.showPlatform ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">PLATFORM</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><a href="/#platform" className="hover:text-white">Platform</a><Link to={PUBLIC_ROUTES.pricing} className="hover:text-white">Pricing</Link><a href="/#property-types" className="hover:text-white">Properties</a></div></div> : null}{config.shell.footer.showPortals ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">PORTALS</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><Link to={PUBLIC_ROUTES.managerSignIn} className="hover:text-white">Managers</Link><Link to={PUBLIC_ROUTES.landlordLogin} className="hover:text-white">Landlords</Link><Link to={PUBLIC_ROUTES.agencyLogin} className="hover:text-white">Agencies</Link><Link to={PUBLIC_ROUTES.tenantLogin} className="hover:text-white">Tenants</Link></div></div> : null}{config.shell.footer.showCompany ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">COMPANY</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><Link to={PUBLIC_ROUTES.legalPrivacy} className="hover:text-white">Privacy</Link><Link to={PUBLIC_ROUTES.legalTerms} className="hover:text-white">Terms</Link><Link to={PUBLIC_ROUTES.managerSignUp} className="hover:text-white">Get started</Link></div></div> : null}</div></div><div className="border-t border-white/10"><div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 text-[11px] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><span>© {year} CALQULUS Limited. All rights reserved.</span><span>Property operations, connected.</span></div></div></footer>;
 }
