@@ -755,7 +755,7 @@ const PredictiveMaintenanceDashboard = () => {
                         </div>
                       )}
                       <div>
-                        <div className="text-2xl font-bold text-green-400">KES {forecast.savings.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-foreground">KES {forecast.savings.toLocaleString()}</div>
                         <div className="text-xs text-warning/70">Savings</div>
                       </div>
                     </div>

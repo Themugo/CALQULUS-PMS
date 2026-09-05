@@ -44,7 +44,7 @@ import { ReceiptVerification } from "@/features/payments/components/ReceiptVerif
 import { useMarkInvoicePaid } from "@/features/billing/hooks/useBillingData";
 import UnitPaymentReconciliation from "@/features/billing/components/UnitPaymentReconciliation";
 
-type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled";
+type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid";
 
 interface Invoice {
   id: string;
@@ -52,6 +52,7 @@ interface Invoice {
   lease_id: string | null;
   tenant_id: string | null;
   amount: number;
+  balance_due: number | null;
   description: string | null;
   due_date: string;
   paid_date: string | null;
@@ -106,7 +107,8 @@ const EXPENDITURE_CATEGORIES = [
 const statusConfig: Record<InvoiceStatus, { styles: string; icon: React.ComponentType<{ className?: string }> }> = {
   paid: { styles: "bg-success/10 text-success border-success/20", icon: CheckCircle },
   pending: { styles: "bg-warning/10 text-warning border-warning/20", icon: Clock },
-  overdue: { styles: "bg-red-500/10 text-red-400 border-red-500/20", icon: AlertCircle },
+  partially_paid: { styles: "bg-warning/10 text-warning border-warning/20", icon: Clock },
+  overdue: { styles: "bg-destructive/10 text-destructive border-destructive/20", icon: AlertCircle },
   cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20", icon: XCircle },
 };
 
@@ -399,7 +401,13 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
     return filtered;
   };
 
-  const totalPending = invoices.filter(i => i.status === "pending").reduce((s, i) => s + i.amount, 0);
+  // "partially_paid" invoices still carry a real balance_due — folded into
+  // Pending (still awaiting full payment) rather than dropped from every
+  // total, matching the same partially_paid fix applied to the manager and
+  // agency dashboards.
+  const totalPending = invoices
+    .filter(i => i.status === "pending" || i.status === "partially_paid")
+    .reduce((s, i) => s + Number(i.balance_due ?? i.amount ?? 0), 0);
   const totalPaid = invoices.filter(i => i.status === "paid").reduce((s, i) => s + i.amount, 0);
   const totalOverdue = invoices.filter(i => i.status === "overdue").reduce((s, i) => s + i.amount, 0);
   const totalExpenditures = expenditures.reduce((s, e) => s + e.amount, 0);
@@ -438,7 +446,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Overdue</p>
-            <p className="text-lg font-bold text-red-600">{formatCurrency(totalOverdue)}</p>
+            <p className="text-lg font-bold text-destructive">{formatCurrency(totalOverdue)}</p>
           </CardContent>
         </Card>
         <Card>

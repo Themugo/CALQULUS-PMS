@@ -1,6 +1,8 @@
 // @ts-nocheck — Phase 12: remaining local types until live supabase gen types
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useRBAC } from "@/shared/hooks/useRBAC";
 import { useActivityLog } from "@/shared/hooks/useActivityLog";
@@ -167,6 +169,7 @@ export default function Maintenance() {
   const { managerId, restrictToAssignedProperties, assignedPropertyIds } = useManagerScope();
   const { can } = useRBAC();
   const { logActivity } = useActivityLog();
+  const queryClient = useQueryClient();
 
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const { formatCurrency } = useCurrency();
@@ -349,6 +352,7 @@ export default function Maintenance() {
         title: "Success",
         description: "Maintenance request submitted successfully",
       });
+      invalidateDashboardQueries(queryClient);
       setFormData({
         title: "",
         description: "",
@@ -393,6 +397,7 @@ export default function Maintenance() {
       });
 
       toast({ title: "Success", description: "Request status updated" });
+      invalidateDashboardQueries(queryClient);
       fetchRequests();
     }
   };

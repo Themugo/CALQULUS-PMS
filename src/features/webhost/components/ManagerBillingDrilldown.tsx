@@ -133,7 +133,7 @@ const ManagerBillingDrilldown: React.FC = () => {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'Total billed (all time)', value: fmt(managers.reduce((s, m) => s + m.total_billed, 0)), color: 'text-warning' },
-          { label: 'Total collected',         value: fmt(managers.reduce((s, m) => s + m.total_paid,   0)), color: 'text-green-400' },
+          { label: 'Total collected',         value: fmt(managers.reduce((s, m) => s + m.total_paid,   0)), color: 'text-foreground' },
           { label: 'Outstanding',             value: fmt(managers.reduce((s, m) => s + m.outstanding,  0)), color: 'text-warning' },
         ].map(k => (
           <div key={k.label} className="rounded-xl border border-warning/12 bg-secondary-background p-3">
@@ -185,11 +185,11 @@ const ManagerBillingDrilldown: React.FC = () => {
                   </div>
                   <div className="text-center hidden sm:block">
                     <p className="text-muted-foreground">Outstanding</p>
-                    <p className={`font-semibold ${m.outstanding > 0 ? 'text-warning' : 'text-green-400'}`}>{fmt(m.outstanding)}</p>
+                    <p className={`font-semibold ${m.outstanding > 0 ? 'text-warning' : 'text-foreground'}`}>{fmt(m.outstanding)}</p>
                   </div>
                   <div className="text-center hidden md:block">
                     <p className="text-muted-foreground">Collected</p>
-                    <p className="font-medium text-green-400">{fmt(m.total_paid)}</p>
+                    <p className="font-medium text-foreground">{fmt(m.total_paid)}</p>
                   </div>
                   <Button size="sm" variant="ghost" className="h-7 text-xs text-warning/70 gap-1"
                     onClick={e => { e.stopPropagation(); setNewInvoiceFor(m); setNewAmount(''); setNewDesc(''); }}>

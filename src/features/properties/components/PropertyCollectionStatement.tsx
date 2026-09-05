@@ -410,12 +410,12 @@ const PropertyCollectionStatement: React.FC<Props> = ({ propertyId, propertyName
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Rent payable', value: totals.rent_payable, color: 'text-foreground' },
-            { label: 'Rent collected', value: totals.rent_paid, color: 'text-green-700' },
+            { label: 'Rent collected', value: totals.rent_paid, color: 'text-foreground' },
             { label: 'Water collected', value: totals.water_paid, color: 'text-[hsl(195_60%_32%)]' },
             {
               label: 'Total outstanding',
               value: totals.bal,
-              color: totals.bal > 0 ? 'text-red-700' : 'text-green-700',
+              color: totals.bal > 0 ? 'text-destructive' : 'text-foreground',
               icon: totals.bal > 0 ? AlertTriangle : undefined,
             },
           ].map(stat => (

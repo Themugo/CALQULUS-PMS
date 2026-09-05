@@ -418,7 +418,7 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
                     <div><span className="text-muted-foreground text-xs">Phone</span><p className="font-medium">{g.phone}</p></div>
                     <div><span className="text-muted-foreground text-xs">Relationship</span><p>{g.relationship || '—'}</p></div>
                     <div><span className="text-muted-foreground text-xs">Type</span><p className="capitalize">{g.guarantee_type}</p></div>
-                    {g.guarantee_amount && <div className="col-span-2"><span className="text-muted-foreground text-xs">Guarantee covers up to</span><p className="font-semibold text-green-700">KES {Number(g.guarantee_amount).toLocaleString()}</p></div>}
+                    {g.guarantee_amount && <div className="col-span-2"><span className="text-muted-foreground text-xs">Guarantee covers up to</span><p className="font-semibold text-foreground">KES {Number(g.guarantee_amount).toLocaleString()}</p></div>}
                   </CardContent>
                 </Card>
               ))}

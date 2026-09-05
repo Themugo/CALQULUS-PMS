@@ -21,6 +21,7 @@ import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { logError } from "@/shared/lib/errorLogger";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { roundMoney } from "@/shared/lib/money";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -337,6 +338,7 @@ export function useMarkInvoicePaid() {
       if (!user?.id) return;
       trackTimeToFirst("payment", { managerId: managerId ?? user.id, signupAt: user.created_at });
       invalidateManagerActivation(queryClient);
+      invalidateDashboardQueries(queryClient);
       queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId ?? user.id) });
     },
   });

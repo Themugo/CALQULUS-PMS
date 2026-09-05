@@ -53,6 +53,11 @@ export function useAgencyPortfolio() {
       const now = new Date();
       const mtdStart = startOfMonth(now).toISOString().slice(0, 10);
       const seriesStart = startOfMonth(subMonths(now, 5)).toISOString().slice(0, 10);
+      // Matches the Manager dashboard's definition (dashboardStats.ts) — no lease
+      // status is ever literally set to "expiring" (see 20260904000001's
+      // transition_lease_atomic), so an active lease due within 30 days is what
+      // "expiring" means everywhere else in the app.
+      const expiringCutoff = new Date(now.getTime() + 30 * 86400000).toISOString().slice(0, 10);
 
       const [
         propertiesRes,
@@ -77,7 +82,8 @@ export function useAgencyPortfolio() {
           .from("leases")
           .select("id", { count: "exact", head: true })
           .eq("manager_id", user.id)
-          .eq("status", "expiring"),
+          .eq("status", "active")
+          .lte("end_date", expiringCutoff),
       ]);
 
       if (propertiesRes.error) throw propertiesRes.error;
@@ -133,11 +139,20 @@ export function useAgencyPortfolio() {
         }
         if (invoice.status === "overdue") {
           overdueInvoices += 1;
-          outstanding += owed || amount;
+        }
+        // Outstanding must include partially_paid invoices too — a partial
+        // payment moves status away from "overdue" while balance_due stays
+        // > 0, so counting "overdue" alone silently drops real arrears the
+        // moment any partial payment lands (agencyPortfolio.ts's own
+        // agencyClientStatus() reads this figure to flag a client as
+        // "attention", so this also fixes client status chips).
+        if (invoice.status === "overdue" || invoice.status === "partially_paid") {
+          const due = owed || amount;
+          outstanding += due;
           if (invoice.property_id) {
             outstandingByProperty.set(
               invoice.property_id,
-              (outstandingByProperty.get(invoice.property_id) ?? 0) + (owed || amount),
+              (outstandingByProperty.get(invoice.property_id) ?? 0) + due,
             );
           }
         }

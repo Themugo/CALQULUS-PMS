@@ -81,7 +81,11 @@ export default function AgencyDashboard() {
         .from("maintenance_requests")
         .select("id", { count: "exact", head: true })
         .eq("manager_id", user!.id)
-        .in("status", ["pending", "in_progress"]);
+        // Matches the Manager dashboard's definition (dashboardStats.ts) —
+        // new requests are created with status "open" (never "pending" per
+        // the maintenance lifecycle RPC), so omitting it undercounted the
+        // real open-maintenance backlog.
+        .in("status", ["open", "pending", "in_progress"]);
       if (error) throw error;
       return count ?? 0;
     },

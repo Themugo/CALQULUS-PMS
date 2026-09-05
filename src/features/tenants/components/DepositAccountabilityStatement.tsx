@@ -272,21 +272,21 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Total deducted</p>
-          <p className="text-lg font-semibold text-red-700">{fmt(totalDeducted)}</p>
+          <p className="text-lg font-semibold text-destructive">{fmt(totalDeducted)}</p>
         </div>
-        <div className={`rounded-lg border p-3 ${balance >= 0 ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'}`}>
+        <div className={`rounded-lg border p-3 ${balance >= 0 ? 'border-border bg-muted/20' : 'border-destructive/30 bg-destructive/5'}`}>
           <p className="text-xs text-muted-foreground mb-1">Refund due</p>
-          <p className={`text-lg font-semibold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>{fmt(Math.abs(balance))}</p>
+          <p className={`text-lg font-semibold ${balance >= 0 ? 'text-foreground' : 'text-destructive'}`}>{fmt(Math.abs(balance))}</p>
         </div>
       </div>
 
       {/* Refund status */}
       {refund && (
-        <Card className={`border ${refund.status === 'completed' ? 'border-green-300 bg-green-50/50' : 'border-amber-300 bg-amber-50/50'}`}>
+        <Card className={`border ${refund.status === 'completed' ? 'border-success/30 bg-success/5' : 'border-warning/30 bg-warning/5'}`}>
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {refund.status === 'completed'
-                ? <CheckCircle className="h-4 w-4 text-green-600" />
+                ? <CheckCircle className="h-4 w-4 text-success" />
                 : <Clock className="h-4 w-4 text-warning" />
               }
               <span className="text-sm font-medium">
@@ -360,7 +360,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                             </a>
                           )}
                           {d.verified_by && (
-                            <span className="flex items-center gap-1 text-green-600">
+                            <span className="flex items-center gap-1 text-success">
                               <CheckCircle className="h-3 w-3" />
                               Verified
                             </span>
@@ -368,7 +368,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm font-bold text-red-700">{fmt(Number(d.amount))}</span>
+                        <span className="text-sm font-bold text-destructive">{fmt(Number(d.amount))}</span>
                         <Button
                           variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
                           aria-label="Remove deduction"
@@ -385,11 +385,11 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
               {/* Total */}
               <div className="rounded-lg border border-border p-3 bg-muted/30 flex justify-between font-medium">
                 <span>Total deductions</span>
-                <span className="text-red-700">{fmt(totalDeducted)}</span>
+                <span className="text-destructive">{fmt(totalDeducted)}</span>
               </div>
-              <div className={`rounded-lg border p-3 flex justify-between font-semibold ${balance >= 0 ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'}`}>
+              <div className={`rounded-lg border p-3 flex justify-between font-semibold ${balance >= 0 ? 'border-border bg-muted/20' : 'border-destructive/30 bg-destructive/5'}`}>
                 <span>{balance >= 0 ? 'Refund due to tenant' : 'Tenant owes (deficit)'}</span>
-                <span className={balance >= 0 ? 'text-green-700' : 'text-red-700'}>{fmt(Math.abs(balance))}</span>
+                <span className={balance >= 0 ? 'text-foreground' : 'text-destructive'}>{fmt(Math.abs(balance))}</span>
               </div>
             </div>
           )}
@@ -412,7 +412,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                       className={
                         entry.entry_type === 'received' ? 'border-success/20 text-success bg-success/10' :
                         entry.entry_type === 'refund' ? 'border-[hsl(214_73%_48%/0.3)] text-[hsl(214_73%_40%)] bg-[hsl(214_73%_48%/0.06)]' :
-                        'border-red-300 text-red-700 bg-red-50'
+                        'border-destructive/20 text-destructive bg-destructive/10'
                       }
                     >
                       {entry.entry_type}
@@ -422,7 +422,7 @@ const DepositAccountabilityStatement: React.FC<DepositAccountabilityStatementPro
                   {entry.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{entry.description}</p>}
                 </div>
                 <div className="text-right shrink-0 pl-3">
-                  <p className={entry.entry_type === 'deduction' ? 'text-red-600 font-medium' : 'text-success font-medium'}>
+                  <p className={entry.entry_type === 'deduction' ? 'text-destructive font-medium' : 'text-success font-medium'}>
                     {entry.entry_type === 'deduction' ? '−' : '+'}{fmt(Number(entry.amount))}
                   </p>
                   <p className="text-xs text-muted-foreground">Bal: {fmt(Number(entry.balance_after))}</p>

@@ -71,12 +71,16 @@ export async function fetchPortfolioUnits(
   if (tenantIds.length > 0) {
     const { data: invoices } = await supabase
       .from("invoices")
-      .select("tenant_id, amount, status")
+      .select("tenant_id, amount, balance_due, status")
       .in("tenant_id", tenantIds)
-      .in("status", ["pending", "overdue"]);
+      // "partially_paid" carries a real remaining balance_due too — omitting
+      // it understates a tenant's balance the moment any partial payment
+      // lands (see dashboardStats.ts / useAgencyPortfolio.ts for the same fix).
+      .in("status", ["pending", "overdue", "partially_paid"]);
     for (const row of invoices ?? []) {
       if (!row.tenant_id) continue;
-      balances[row.tenant_id] = (balances[row.tenant_id] ?? 0) + Number(row.amount ?? 0);
+      const due = Number(row.balance_due ?? row.amount ?? 0);
+      balances[row.tenant_id] = (balances[row.tenant_id] ?? 0) + due;
     }
   }
 

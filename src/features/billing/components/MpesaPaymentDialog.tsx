@@ -283,7 +283,7 @@ export function MpesaPaymentDialog({
                   <Hash className="h-3 w-3" />
                   Unit {unitNumber}
                 </Badge>
-                <span className="text-lg font-bold text-green-700">
+                <span className="text-lg font-bold text-foreground">
                   {formatCurrency(invoice.amount)}
                 </span>
               </div>

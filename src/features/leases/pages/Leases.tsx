@@ -70,6 +70,7 @@ import { DashboardSectionHeader } from "@/features/dashboard/components/Dashboar
 import { useManagerScope } from "@/shared/hooks/useManagerScope";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { LeaseCard } from "@/features/leases/components/LeaseCard";
 import {
   Table,
@@ -480,6 +481,7 @@ const Leases = () => {
       description: `Lease ${createdLeaseId ? "created" : "saved"} for ${selectedTenant?.name || "tenant"}.`,
     });
     invalidateManagerActivation(queryClient);
+    invalidateDashboardQueries(queryClient);
 
     setNewLease({
       tenant_id: "",
@@ -513,6 +515,7 @@ const Leases = () => {
         title: "Success",
         description: "Lease status updated. History recorded for tenant.",
       });
+      invalidateDashboardQueries(queryClient);
       fetchLeases();
       setIsViewDialogOpen(false);
     }
@@ -635,6 +638,7 @@ const Leases = () => {
       toast({ title: "Error", description: "Failed to deactivate lease", variant: "destructive" });
     } else {
       toast({ title: "Deactivated", description: "Lease has been deactivated and moved to history." });
+      invalidateDashboardQueries(queryClient);
       fetchLeases();
     }
   };
@@ -651,6 +655,7 @@ const Leases = () => {
       toast({ title: "Error", description: "Failed to deactivate leases", variant: "destructive" });
     } else {
       toast({ title: "Deactivated", description: `${leaseIds.length} lease(s) have been deactivated.` });
+      invalidateDashboardQueries(queryClient);
       setSelectedLeases(new Set());
       fetchLeases();
     }

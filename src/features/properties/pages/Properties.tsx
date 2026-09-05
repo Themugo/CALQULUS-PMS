@@ -75,6 +75,7 @@ import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 import { loadFormDraft, saveFormDraft, clearFormDraft } from "@/shared/lib/formDraft";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { MetricCard } from "@/shared/components/ui/metric-card";
 import { SearchFilterBar } from "@/shared/components/ui/search-filter-bar";
@@ -288,6 +289,7 @@ const Properties = () => {
       });
       trackTimeToFirst("property", { managerId, signupAt: user?.created_at });
       invalidateManagerActivation(queryClient);
+      invalidateDashboardQueries(queryClient);
       clearFormDraft("new-property");
       setNewProperty(EMPTY_PROPERTY_FORM);
       setIsDialogOpen(false);
@@ -349,6 +351,7 @@ const Properties = () => {
         entityId: editProperty.id,
         details: { name: validationResult.data.name }
       });
+      invalidateDashboardQueries(queryClient);
       setIsEditDialogOpen(false);
       setEditProperty(null);
       fetchData();

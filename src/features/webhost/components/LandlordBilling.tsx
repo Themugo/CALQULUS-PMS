@@ -139,7 +139,7 @@ const LandlordBilling: React.FC = () => {
         {[
           { label: 'Total landlords', value: String(landlords.length), icon: User, color: 'text-warning' },
           { label: 'Outstanding', value: fmt(totalPending), icon: AlertTriangle, color: 'text-warning' },
-          { label: 'Collected', value: fmt(totalPaid), icon: CheckCircle, color: 'text-green-400' },
+          { label: 'Collected', value: fmt(totalPaid), icon: CheckCircle, color: 'text-foreground' },
         ].map(k => (
           <div key={k.label} className="rounded-xl border border-warning/12 bg-secondary-background p-3">
             <div className="flex items-center justify-between mb-1">

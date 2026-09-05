@@ -301,12 +301,24 @@ async function countScopedMaintenance(
 
 type CountResult = { count: number | null };
 type AmountRow = { amount: number };
+type ArrearsRow = { amount: number; balance_due: number | null };
 
 const EMPTY_COUNT: CountResult = { count: 0 };
 const EMPTY_AMOUNT_ROWS: { data: AmountRow[] } = { data: [] };
+const EMPTY_ARREARS_ROWS: { data: ArrearsRow[] } = { data: [] };
 
 function sumAmounts(rows: AmountRow[] | null | undefined): number {
   return (rows ?? []).reduce((s, i) => s + Number(i.amount || 0), 0);
+}
+
+/**
+ * Arrears total must include invoices a tenant has partially paid — a
+ * partial payment moves status to 'partially_paid' while balance_due stays
+ * > 0 (see the payment RPC), so summing 'overdue' alone silently drops real
+ * outstanding money the moment any partial payment lands.
+ */
+function sumArrears(rows: ArrearsRow[] | null | undefined): number {
+  return (rows ?? []).reduce((s, i) => s + Number(i.balance_due ?? i.amount ?? 0), 0);
 }
 
 /** Full 16-query path used when the RPC is missing, errors, or must be property-scoped. */
@@ -342,7 +354,7 @@ export async function fetchDashboardStatsFallback(
   let prevPaidQuery = supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'paid').gte('paid_date', firstOfPrevMonth).lte('paid_date', endOfPrevMonth);
   let pendingQuery = supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'pending');
   let overdueQuery = supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).eq('status', 'overdue');
-  let overdueAmountQuery = supabase.from('invoices').select('amount').eq('manager_id', managerId).eq('status', 'overdue');
+  let overdueAmountQuery = supabase.from('invoices').select('amount, balance_due').eq('manager_id', managerId).in('status', ['overdue', 'partially_paid']);
 
   if (tenantIds && tenantIds.length > 0) {
     paidQuery = paidQuery.in('tenant_id', tenantIds);
@@ -384,7 +396,7 @@ export async function fetchDashboardStatsFallback(
     invoiceScopeEmpty ? Promise.resolve(EMPTY_AMOUNT_ROWS) : prevPaidQuery,
     invoiceScopeEmpty ? Promise.resolve(EMPTY_COUNT) : pendingQuery,
     invoiceScopeEmpty ? Promise.resolve(EMPTY_COUNT) : overdueQuery,
-    invoiceScopeEmpty ? Promise.resolve(EMPTY_AMOUNT_ROWS) : overdueAmountQuery,
+    invoiceScopeEmpty ? Promise.resolve(EMPTY_ARREARS_ROWS) : overdueAmountQuery,
     propertiesQuery,
     scoped ? countScopedMaintenance(managerId, propertyIds!) : supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).then((r) => r.count || 0),
     scoped ? countScopedMaintenance(managerId, propertyIds!, ['high', 'urgent']) : supabase.from('maintenance_requests').select('id', { count: 'exact', head: true }).eq('manager_id', managerId).in('status', ['open', 'pending', 'in_progress']).in('priority', ['high', 'urgent']).then((r) => r.count || 0),
@@ -405,7 +417,7 @@ export async function fetchDashboardStatsFallback(
   const totalUnits = allProps.reduce((s, p) => s + (Number(p.units) || 0), 0);
   const occupiedUnits = allProps.reduce((s, p) => s + (Number(p.occupied) || 0), 0);
   const occupancy = deriveOccupancy(totalUnits, occupiedUnits);
-  const arrearsTotal = sumAmounts(overdueAmountResult.data as AmountRow[] | null);
+  const arrearsTotal = sumArrears(overdueAmountResult.data as ArrearsRow[] | null);
 
   return {
     totalTenants: tenantsResult.count || 0,

@@ -32,8 +32,14 @@ serve(async (req) => {
     }
 
     const { data: roleRow } = await supabase.from("user_roles")
-      .select("role").eq("user_id", caller.id).maybeSingle();
+      .select("role, tenant_id").eq("user_id", caller.id).maybeSingle();
     const callerRole = (roleRow as any)?.role;
+    // tenants.id is its own gen_random_uuid(), never equal to the auth user
+    // id — the auth<->tenant link lives in user_roles.tenant_id (same
+    // pattern as get-payment-history / initiate-mpesa-stk-push). Comparing
+    // tenantId to caller.id directly always failed, so a real tenant could
+    // never pull their own statement through this path.
+    const callerTenantId = (roleRow as any)?.tenant_id;
 
     let effectiveManagerId = caller.id;
     if (callerRole === "submanager") {
@@ -50,8 +56,9 @@ serve(async (req) => {
     });
 
     if (callerRole === "tenant") {
-      // Tenants may only pull their own statement.
-      if (type !== "statement" || tenantId !== caller.id) return forbidden();
+      // Tenants may only pull their own statement, identified via
+      // user_roles.tenant_id (never the auth user id — see above).
+      if (type !== "statement" || !callerTenantId || tenantId !== callerTenantId) return forbidden();
     } else if (["manager", "submanager"].includes(callerRole)) {
       if (type === "statement" || type === "receipt" || type === "invoice") {
         if (tenantId) {

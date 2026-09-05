@@ -71,6 +71,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { toUserFacingError } from "@/shared/lib/errorLogger";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
@@ -364,6 +365,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           title: "Unit Updated",
           description: `Unit ${unitNumber} has been updated.`,
         });
+        invalidateDashboardQueries(queryClient);
         setIsDialogOpen(false);
         resetForm();
         fetchUnits();
@@ -398,6 +400,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
           description: `Unit ${unitNumber} has been added to ${propertyName}.`,
         });
         invalidateManagerActivation(queryClient);
+        invalidateDashboardQueries(queryClient);
         setIsDialogOpen(false);
         resetForm();
         fetchUnits();
@@ -903,6 +906,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
                   if (error) throw error;
                   toast({ title: `${data} units created`, description: `${bulkPrefix}${bulkStart} to ${bulkPrefix}${parseInt(bulkStart) + parseInt(bulkCount) - 1}` });
                   invalidateManagerActivation(queryClient);
+                  invalidateDashboardQueries(queryClient);
                   setBulkOpen(false);
                   fetchUnits();
                   onUnitsChange?.();

@@ -441,7 +441,7 @@ const ExecutiveIntelligenceDashboard = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         {getStatusBadge(kpi.status)}
-                        <span className={`text-sm ${kpi.changeType === 'increase' ? 'text-green-400' : 'text-destructive'}`}>
+                        <span className={`text-sm ${kpi.changeType !== 'increase' ? 'text-destructive' : kpi.category === 'financial' ? 'text-foreground' : 'text-success'}`}>
                           {kpi.changeType === 'increase' ? <TrendingUp className="h-4 w-4 inline mr-1" /> : <TrendingDown className="h-4 w-4 inline mr-1" />}
                           {kpi.change}%
                         </span>

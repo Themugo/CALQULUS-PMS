@@ -227,7 +227,7 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <p className="text-xs text-muted-foreground mb-1">Open maintenance</p>
-          <p className={`text-sm font-semibold ${openMaintenance > 0 ? 'text-warning' : 'text-green-700'}`}>
+          <p className={`text-sm font-semibold ${openMaintenance > 0 ? 'text-warning' : 'text-success'}`}>
             {openMaintenance}
           </p>
         </div>
@@ -314,13 +314,13 @@ const UnitHistoryPanel: React.FC<UnitHistoryPanelProps> = ({ unitId, unitLabel, 
                         {t.total_paid > 0 && (
                           <div>
                             <p className="text-xs text-muted-foreground">Total paid</p>
-                            <p className="text-sm font-medium text-green-700">{fmt(t.total_paid)}</p>
+                            <p className="text-sm font-medium text-foreground">{fmt(t.total_paid)}</p>
                           </div>
                         )}
                         {t.arrears_at_moveout > 0 && (
                           <div>
                             <p className="text-xs text-muted-foreground">Arrears at exit</p>
-                            <p className="text-sm font-medium text-red-700">{fmt(t.arrears_at_moveout)}</p>
+                            <p className="text-sm font-medium text-destructive">{fmt(t.arrears_at_moveout)}</p>
                           </div>
                         )}
                       </div>
