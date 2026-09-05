@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, BarChart3, Building2, ChevronLeft, ChevronRight, Clock3, Cloud, FileStack, Home, Landmark, LayoutDashboard, Search, ShieldCheck, Sparkles, TrendingUp, Users, Wrench, Leaf, Settings2 } from "lucide-react";
+import { ArrowRight, BarChart3, Building2, ChevronLeft, ChevronRight, Clock3, Cloud, FileStack, Home, Landmark, Search, ShieldCheck, Sparkles, TrendingUp, Users, Wrench, Leaf, Settings2 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/shared/components/ui/button";
 import { PublicPricing } from "@/features/marketing/components/PublicPricing";
@@ -12,9 +12,9 @@ import { DEFAULT_PUBLIC_SITE_CONFIG, type PublicSiteConfig, type PublicSiteSecti
 
 const CONTAINER = "mx-auto w-full max-w-[1480px] px-3 sm:px-4 lg:px-6";
 const PROPERTY_ICONS = { home: Home, building: Building2, office: Building2, landmark: Landmark } as const;
-const PORTAL_ICONS = { manager: LayoutDashboard, landlord: TrendingUp, agency: Users, tenant: Home } as const;
+const PORTAL_ICONS = { agency: Building2, manager: Settings2, landlord: TrendingUp, tenant: Home } as const;
 const PORTAL_GRADIENTS = {
-  manager: "from-[#31577E] via-[#31577E]/90 to-transparent",
+  manager: "from-[#34495E] via-[#4F6475]/90 to-transparent",
   landlord: "from-[#0F8A6A] via-[#0F8A6A]/80 to-transparent",
   agency: "from-[#0F766E] via-[#0F766E]/85 to-transparent",
   tenant: "from-[#8B4DE8] via-[#8B4DE8]/80 to-transparent",
