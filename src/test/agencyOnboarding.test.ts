@@ -109,8 +109,8 @@ describe("deriveAgencyCompletedSteps", () => {
 
 describe("agency onboarding design", () => {
   it("keeps the restrained cyan accent locked to the agency identity", () => {
-    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("Cyan");
-    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#0F766E");
-    expect(portalAccentHex("agency")).toBe("#0F766E");
+    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("Sharp Navy");
+    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#102A43");
+    expect(portalAccentHex("agency")).toBe("#102A43");
   });
 });

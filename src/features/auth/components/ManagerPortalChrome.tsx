@@ -7,7 +7,7 @@ import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen"
 
 /**
  * Manager portal entry chrome — a clean, single-purpose sign-in screen that
- * carries the manager portal's own identity (deep navy/blue, property
+ * carries the manager portal's own identity (blue, property
  * imagery, "Manager Portal" headline) using the shared PortalLoginLayout so
  * all four portals stay visually and structurally consistent.
  */

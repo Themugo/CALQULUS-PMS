@@ -60,15 +60,15 @@ export const CALQULUS_COLOR = {
 } as const;
 
 /**
- * Portal identity accents — thin chrome only.
- * Not a second design system. Desks stay white + navy + shared interactive blue.
+ * Portal identity accents — thin identity chrome only.
+ * Not a second design system. Public and authenticated desks stay light; portal accents distinguish each role.
  * Status colour (success / warning / danger) is never replaced by these.
  */
 export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
-    label: "Slate",
-    hex: "#34495E",
+    label: "Blue",
+    hex: "#356FE5",
   },
   landlord: {
     id: "landlord",

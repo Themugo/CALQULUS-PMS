@@ -69,12 +69,12 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("exposes portal accents without replacing the desk system", () => {
-    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.navySecondary);
-    expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("Deep Navy");
+    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe(CALQULUS_COLOR.primary);
+    expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("Blue");
     expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe("#2F9B74");
     expect(CALQULUS_PORTAL_ACCENT.landlord.label).toBe("Emerald");
-    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#0F766E");
-    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("Cyan");
+    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#102A43");
+    expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("Sharp Navy");
     expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#0284C7");
     expect(CALQULUS_PORTAL_ACCENT.tenant.label).toBe("Sky");
     expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
