@@ -79,10 +79,9 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   agency: {
     id: "agency",
-    label: "Sharp Navy",
-    /** Distinct agency identity — sharp navy keeps it separate from the landlord emerald
-        and from the manager slate while remaining inside the CALQULUS family. */
-    hex: "#102A43",
+    label: "Blue",
+    /** Agency portal uses the original bright CALQULUS blue identity from the approved login design. */
+    hex: "#0867E8",
   },
   tenant: {
     id: "tenant",
