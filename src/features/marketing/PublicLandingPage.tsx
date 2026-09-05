@@ -8,7 +8,7 @@ import { usePublicTiers } from "@/features/marketing/hooks/usePublicTiers";
 import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
-import type { PublicSiteConfig, PublicSiteSectionId } from "@/features/marketing/publicSiteConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG, type PublicSiteConfig, type PublicSiteSectionId } from "@/features/marketing/publicSiteConfig";
 
 const CONTAINER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 const ICONS = { home: Home, building: Building2, office: Building2, landmark: Landmark } as const;
@@ -16,16 +16,16 @@ const ICONS = { home: Home, building: Building2, office: Building2, landmark: La
 function imageOrFallback(url: string | null, fallback: string) { return url || fallback; }
 
 function Hero({ config }: { config: PublicSiteConfig }) {
-  const slides = config.hero.slides.filter((slide) => slide.enabled);
+  const slides = Array.isArray(config.hero.slides) ? config.hero.slides.filter((slide) => slide.enabled) : [];
   const [active, setActive] = useState(0);
-  const slide = slides[Math.min(active, Math.max(slides.length - 1, 0))] || config.hero.slides[0];
-  if (!slide) return null;
-  const overlay = config.hero.overlay === "strong" ? "bg-navy-deep/70" : config.hero.overlay === "medium" ? "bg-navy-deep/52" : "bg-navy-deep/35";
   useEffect(() => {
     if (!config.hero.autoplay || slides.length < 2) return;
     const timer = window.setInterval(() => setActive((value) => (value + 1) % slides.length), config.hero.intervalMs);
     return () => window.clearInterval(timer);
   }, [config.hero.autoplay, config.hero.intervalMs, slides.length]);
+  const slide = slides[Math.min(active, Math.max(slides.length - 1, 0))] || config.hero.slides?.[0];
+  if (!slide) return null;
+  const overlay = config.hero.overlay === "strong" ? "bg-navy-deep/70" : config.hero.overlay === "medium" ? "bg-navy-deep/52" : "bg-navy-deep/35";
   const next = () => setActive((value) => (value + 1) % Math.max(slides.length, 1));
   const previous = () => setActive((value) => (value - 1 + Math.max(slides.length, 1)) % Math.max(slides.length, 1));
   const href = slide.secondaryHref.startsWith("#") ? slide.secondaryHref : slide.secondaryHref;
@@ -88,7 +88,8 @@ function PlatformValue({ config }: { config: PublicSiteConfig["platformValue"] }
 function CTA({ config }: { config: PublicSiteConfig["cta"] }) { return <section id="cta" className="border-t border-white/10 bg-navy-deep py-12 text-white sm:py-14"><div className={CONTAINER}><div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between"><div className="max-w-2xl"><p className="text-[11px] font-semibold tracking-[.2em] text-success">{config.eyebrow}</p><h2 className="mt-2 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">{config.title}</h2><p className="mt-2 text-sm leading-6 text-white/65 sm:text-base">{config.copy}</p></div><div className="flex flex-col gap-2 sm:flex-row"><Button asChild size="lg" className="btn-brand min-h-12"><Link to={config.primaryHref}>{config.primaryLabel}<ArrowRight className="h-4 w-4"/></Link></Button><Button asChild size="lg" variant="outline" className="min-h-12 border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"><Link to={config.secondaryHref}>{config.secondaryLabel}</Link></Button></div></div></div></section>; }
 
 function HomeView() {
-  const { data: config } = usePublicSiteConfig();
+  const { data } = usePublicSiteConfig();
+  const config = data ?? DEFAULT_PUBLIC_SITE_CONFIG;
   const ordered = useMemo(() => [...config.sections].filter((section) => section.visible).sort((a,b) => a.order-b.order), [config.sections]);
   const render = (id: PublicSiteSectionId) => { switch (id) { case "hero": return <Hero key={id} config={config}/>; case "property-types": return <PropertyTypes key={id} items={config.propertyTypes}/>; case "featured": return <Featured key={id} items={config.featured}/>; case "portals": return <Portals key={id} items={config.portals}/>; case "promotions": return <Promotions key={id} items={config.promotions}/>; case "platform": return <PlatformValue key={id} config={config.platformValue}/>; case "cta": return <CTA key={id} config={config.cta}/>; default: return null; } };
   return <>{ordered.map((section) => render(section.id))}</>;

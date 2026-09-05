@@ -181,25 +181,53 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
 export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   if (!input || typeof input !== "object") return DEFAULT_PUBLIC_SITE_CONFIG;
   const source = input as Partial<PublicSiteConfig>;
-  const hero = source.hero && typeof source.hero === "object" ? source.hero : {};
+  const sourceShell = source.shell && typeof source.shell === "object" ? source.shell : {};
+  const sourceHeader = sourceShell.header && typeof sourceShell.header === "object" ? sourceShell.header : {};
+  const sourceFooter = sourceShell.footer && typeof sourceShell.footer === "object" ? sourceShell.footer : {};
+  const sourcePlatform = source.platformValue && typeof source.platformValue === "object" ? source.platformValue : {};
+  const sourceCta = source.cta && typeof source.cta === "object" ? source.cta : {};
+  const sourceHero = source.hero && typeof source.hero === "object" ? source.hero : {};
+
+  const heroSlides = Array.isArray(sourceHero.slides) ? sourceHero.slides.filter(Boolean) : [];
+  const platformCards = Array.isArray(sourcePlatform.cards) ? sourcePlatform.cards.filter(Boolean) : [];
+  const sections = Array.isArray(source.sections) ? source.sections.filter(Boolean) : [];
+  const propertyTypes = Array.isArray(source.propertyTypes) ? source.propertyTypes.filter(Boolean) : [];
+  const featured = Array.isArray(source.featured) ? source.featured.filter(Boolean) : [];
+  const portals = Array.isArray(source.portals) ? source.portals.filter(Boolean) : [];
+  const promotions = Array.isArray(source.promotions) ? source.promotions.filter(Boolean) : [];
+
   return {
     ...DEFAULT_PUBLIC_SITE_CONFIG,
     ...source,
-    shell: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell, ...(source.shell || {}), header: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.header, ...(source.shell?.header || {}) }, footer: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.footer, ...(source.shell?.footer || {}) } },
-    platformValue: { ...DEFAULT_PUBLIC_SITE_CONFIG.platformValue, ...(source.platformValue || {}) },
-    cta: { ...DEFAULT_PUBLIC_SITE_CONFIG.cta, ...(source.cta || {}) },
+    version: 1,
+    shell: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.shell,
+      ...sourceShell,
+      header: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.header, ...sourceHeader },
+      footer: { ...DEFAULT_PUBLIC_SITE_CONFIG.shell.footer, ...sourceFooter },
+    },
+    platformValue: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.platformValue,
+      ...sourcePlatform,
+      cards: platformCards.length ? platformCards : DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards,
+    },
+    cta: { ...DEFAULT_PUBLIC_SITE_CONFIG.cta, ...sourceCta },
     hero: {
       ...DEFAULT_PUBLIC_SITE_CONFIG.hero,
-      ...hero,
-      slides: Array.isArray((hero as PublicSiteConfig["hero"]).slides) && (hero as PublicSiteConfig["hero"]).slides.length
-        ? (hero as PublicSiteConfig["hero"]).slides
-        : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides,
+      ...sourceHero,
+      fitMode: sourceHero.fitMode === "screen" ? "screen" : "window",
+      overlay: sourceHero.overlay === "medium" || sourceHero.overlay === "strong" ? sourceHero.overlay : "soft",
+      autoplay: typeof sourceHero.autoplay === "boolean" ? sourceHero.autoplay : DEFAULT_PUBLIC_SITE_CONFIG.hero.autoplay,
+      intervalMs: typeof sourceHero.intervalMs === "number" && Number.isFinite(sourceHero.intervalMs) && sourceHero.intervalMs >= 1000
+        ? sourceHero.intervalMs
+        : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
+      slides: heroSlides.length ? heroSlides : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides,
     },
-    propertyTypes: Array.isArray(source.propertyTypes) && source.propertyTypes.length ? source.propertyTypes : DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes,
-    featured: Array.isArray(source.featured) ? source.featured : DEFAULT_PUBLIC_SITE_CONFIG.featured,
-    portals: Array.isArray(source.portals) && source.portals.length ? source.portals : DEFAULT_PUBLIC_SITE_CONFIG.portals,
-    promotions: Array.isArray(source.promotions) ? source.promotions : DEFAULT_PUBLIC_SITE_CONFIG.promotions,
-    sections: Array.isArray(source.sections) && source.sections.length ? source.sections : DEFAULT_PUBLIC_SITE_CONFIG.sections,
+    propertyTypes: propertyTypes.length ? propertyTypes : DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes,
+    featured: Array.isArray(source.featured) ? featured : DEFAULT_PUBLIC_SITE_CONFIG.featured,
+    portals: portals.length ? portals : DEFAULT_PUBLIC_SITE_CONFIG.portals,
+    promotions: Array.isArray(source.promotions) ? promotions : DEFAULT_PUBLIC_SITE_CONFIG.promotions,
+    sections: sections.length ? sections : DEFAULT_PUBLIC_SITE_CONFIG.sections,
   } as PublicSiteConfig;
 }
 

@@ -7,13 +7,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { cn } from "@/shared/lib/utils";
 import { PUBLIC_NAV, PUBLIC_ROUTES, homeSectionHref } from "@/features/marketing/publicConfig";
 import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
 
 const navLink = "inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-[14px] font-medium text-white/70 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success";
 
 export function PublicHeader() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const { data: config } = usePublicSiteConfig();
+  const { data } = usePublicSiteConfig();
+  const config = data ?? DEFAULT_PUBLIC_SITE_CONFIG;
   const onPricing = pathname === PUBLIC_ROUTES.pricing;
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-navy-deep/95 text-white backdrop-blur-md">
