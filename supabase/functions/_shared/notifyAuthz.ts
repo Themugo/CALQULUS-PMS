@@ -87,6 +87,51 @@ export async function callerManagesTenantUser(
   return !!subRel;
 }
 
+/**
+ * Resolves the set of manager_ids a caller may act on behalf of:
+ *   - a plain manager: just themselves
+ *   - a submanager: their parent manager
+ *   - an agency account: every client manager under that agency
+ * Mirrors the scoping already established in backfill-tenant-accounts. Use
+ * this before trusting a client-supplied propertyId/tenantId/managerId in
+ * any function callable by more than one of these role tiers.
+ */
+export async function resolveEffectiveManagerIds(
+  supabaseAdmin: SupabaseClient,
+  callerUserId: string,
+  callerRole: string
+): Promise<Set<string>> {
+  const ids = new Set<string>([callerUserId]);
+
+  if (callerRole === "submanager") {
+    const { data: rel } = await supabaseAdmin
+      .from("manager_submanagers")
+      .select("manager_id")
+      .eq("submanager_user_id", callerUserId)
+      .maybeSingle();
+    if (rel?.manager_id) ids.add(rel.manager_id);
+  }
+
+  if (callerRole === "agency") {
+    const { data: agencyRow } = await supabaseAdmin
+      .from("agencies")
+      .select("id")
+      .eq("manager_id", callerUserId)
+      .maybeSingle();
+    if (agencyRow?.id) {
+      const { data: clientManagers } = await supabaseAdmin
+        .from("manager_profiles")
+        .select("manager_user_id")
+        .eq("agency_id", agencyRow.id);
+      for (const row of clientManagers ?? []) {
+        if (row.manager_user_id) ids.add(row.manager_user_id);
+      }
+    }
+  }
+
+  return ids;
+}
+
 /** True if callerUserId is a webhost/platform_admin. */
 export async function callerIsWebhost(
   supabaseAdmin: SupabaseClient,

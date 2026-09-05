@@ -68,6 +68,17 @@ serve(async (req) => {
       { status: 404, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }
 
+  // ── Authorization: a manager may only run fraud analysis on their own
+  // portfolio's payments, not any payment platform-wide. ─────────────
+  if (callerUserId) {
+    const { data: callerRoleRow } = await supabase.from("user_roles")
+      .select("role").eq("user_id", callerUserId).maybeSingle();
+    if ((callerRoleRow as { role?: string } | null)?.role !== "webhost" && payment.manager_id !== callerUserId) {
+      return new Response(JSON.stringify({ error: "Forbidden: this payment is not in your managed portfolio" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+  }
+
   // ── Fraud rules ────────────────────────────────────────────────────
   let risk = 0;
   const reasons: string[] = [];

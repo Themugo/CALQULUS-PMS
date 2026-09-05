@@ -57,7 +57,7 @@ const PaymentHistory = () => {
     isFromCache,
     error,
     refetch,
-  } = useOfflineData('payment_history', fetchPayments);
+  } = useOfflineData(`payment_history_${user?.id || 'anon'}`, fetchPayments, { enabled: !!user?.id });
 
   const safePayments = payments || [];
 

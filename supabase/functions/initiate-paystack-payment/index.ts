@@ -53,7 +53,7 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
-    if (!await checkRateLimit(supabaseClient, user.id, "initiate-paystack-payment", RATE_LIMITS["initiate-paystack-payment"] ?? RATE_LIMITS["initiate-mpesa-payment"])) {
+    if (!await checkRateLimit(supabaseClient, user.id, "initiate-paystack-payment", RATE_LIMITS["initiate-paystack-payment"])) {
       return rateLimitResponse(req);
     }
 

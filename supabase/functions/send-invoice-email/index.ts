@@ -2,6 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface SendInvoiceEmailRequest {
@@ -70,14 +71,18 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .eq("user_id", user.id)
       .single();
 
-    if (roleData?.role !== "manager" && roleData?.role !== "webhost") {
+    if (roleData?.role !== "manager" && roleData?.role !== "webhost" && roleData?.role !== "submanager") {
       console.error("User does not have required permissions");
       return new Response(
         JSON.stringify({ error: "Insufficient permissions" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
-    
+
+    const supabaseAdmin = createClient(getEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const rateOk = await checkRateLimit(supabaseAdmin, user.id, "send-invoice-email", 60, { failClosed: true });
+    if (!rateOk) return rateLimitResponse(req);
+
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY is not configured");
       throw new Error("Email service is not configured");

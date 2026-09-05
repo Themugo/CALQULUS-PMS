@@ -4,6 +4,7 @@ import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { callerRelatesToManager } from "../_shared/notifyAuthz.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface MaintenanceNotificationRequest {
@@ -144,6 +145,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
           { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
         );
       }
+      const rateOk = await checkRateLimit(supabaseAdmin, gate.userId, "send-maintenance-notification", 60, { failClosed: true });
+      if (!rateOk) return rateLimitResponse(req);
     }
 
     // Get manager info if manager_id exists

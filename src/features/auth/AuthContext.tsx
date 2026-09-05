@@ -442,6 +442,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
     // Clear ALL cached queries so next user never sees previous user's data
     queryClient.clear();
+    // Clear useOfflineData's localStorage cache too (payment history, invoices,
+    // lease info, etc.) so a subsequent sign-in on the same device never reads
+    // back the previous account's cached offline data.
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k?.startsWith('calqulusrms_offline_')) localStorage.removeItem(k);
+      }
+    } catch {
+      // localStorage unavailable (private mode, etc.) — nothing to clear
+    }
     setUser(null); setSession(null); setUserRole(null);
     setWebhostPermissions(null); setSubmanagerPermissions(null); setPlatformAdminInfo(null); setLandlordPropertyIds([]);
     if (devAccessEnabled) {

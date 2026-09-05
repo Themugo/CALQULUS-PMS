@@ -21,9 +21,6 @@ verify_jwt = true
 [functions.get-payment-history]
 verify_jwt = true
 
-[functions.initiate-mpesa-payment]
-verify_jwt = true
-
 [functions.initiate-paystack-payment]
 verify_jwt = true
 
@@ -48,9 +45,6 @@ verify_jwt = false
 [functions.create-manager-invoice-checkout]
 verify_jwt = true
 
-[functions.initiate-manager-mpesa-payment]
-verify_jwt = true
-
 [functions.generate-manager-invoices]
 verify_jwt = false
 
@@ -58,9 +52,6 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.check-manager-subscription]
-verify_jwt = true
-
-[functions.initiate-subscription-mpesa]
 verify_jwt = true
 
 [functions.initiate-mpesa-stk-push]

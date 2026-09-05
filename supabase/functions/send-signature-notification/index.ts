@@ -2,6 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface SendSignatureNotificationRequest {
@@ -75,16 +76,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
-    
+
+    const supabaseAdmin = createClient(getEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const rateOk = await checkRateLimit(supabaseAdmin, user.id, "send-signature-notification", 60, { failClosed: true });
+    if (!rateOk) return rateLimitResponse(req);
+
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY is not configured");
       throw new Error("Email service is not configured");
     }
 
-    const { 
-      managerEmail, 
-      tenantName, 
-      contractTitle, 
+    const {
+      managerEmail,
+      tenantName,
+      contractTitle,
       propertyInfo,
       signedAt,
       companyName,
@@ -97,6 +102,27 @@ Deno.serve(async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Invalid email address format" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
+    }
+
+    // For the real usage (a tenant notifying their own manager that they
+    // just signed), verify managerEmail is actually that tenant's manager —
+    // otherwise any tenant could send a fabricated "contract signed" email
+    // to any address.
+    if (roleData?.role === "tenant") {
+      const { data: tenantRoleRow } = await supabaseAdmin
+        .from("user_roles").select("tenant_id").eq("user_id", user.id).maybeSingle();
+      const { data: tenantRow } = tenantRoleRow?.tenant_id
+        ? await supabaseAdmin.from("tenants").select("manager_id").eq("id", tenantRoleRow.tenant_id).maybeSingle()
+        : { data: null };
+      const { data: managerProfile } = tenantRow?.manager_id
+        ? await supabaseAdmin.from("profiles").select("email").eq("id", tenantRow.manager_id).maybeSingle()
+        : { data: null };
+      if (!managerProfile?.email || managerProfile.email.toLowerCase() !== managerEmail.toLowerCase()) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: managerEmail does not match your own manager" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
     }
 
     // Escape all user-supplied values for HTML

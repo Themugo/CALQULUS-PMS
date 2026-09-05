@@ -2,6 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface WelcomeEmailRequest {
@@ -48,6 +49,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
+
+    const rateOk = await checkRateLimit(supabaseClient, user.id, "send-welcome-email", 10, { failClosed: true });
+    if (!rateOk) return rateLimitResponse(req);
 
     const isManager = userType === "manager";
     const portalUrl = isManager ? "/dashboard" : "/portal";

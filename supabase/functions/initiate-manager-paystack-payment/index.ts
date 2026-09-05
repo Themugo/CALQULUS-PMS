@@ -23,6 +23,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getEnv } from "../_shared/env.ts";
 import { chargePaystackMpesa } from "../_shared/paystackMobileMoney.ts";
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rateLimit.ts";
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[initiate-manager-paystack-payment] ${step}`, details ?? "");
@@ -51,6 +52,14 @@ serve(async (req) => {
       throw new Error("User not authenticated or email not available");
     }
     const user = userData.user;
+
+    // This function is explicitly listed as SENSITIVE_FUNCTIONS in
+    // _shared/rateLimit.ts (real Paystack STK-push cost per call), but had
+    // no checkRateLimit call at all — the declared intent and the code had
+    // drifted apart.
+    if (!await checkRateLimit(supabaseClient, user.id, "initiate-manager-paystack-payment", RATE_LIMITS["initiate-manager-paystack-payment"])) {
+      return rateLimitResponse(req);
+    }
 
     const { invoiceId, amount, phoneNumber, description }: PaymentRequest = await req.json();
     if (!invoiceId || typeof amount !== "number" || !isFinite(amount) || amount <= 0 || !phoneNumber) {

@@ -3,6 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -50,12 +51,19 @@ serve(async (req) => {
     }
 
     // ── Authorization: callers can only export data for their own manager ──
+    // (user_roles has no manager_id column — comparing against it always
+    // compared undefined to managerId and silently denied every manager,
+    // not just unauthorized ones. Resolve the caller's effective manager
+    // portfolio instead, same helper used elsewhere for this exact check.)
     if (!isServiceCall && callerUserId) {
       const { data: callerRole } = await supabase.from("user_roles")
         .select("role").eq("user_id", callerUserId).maybeSingle();
-      if ((callerRole as any)?.role !== "webhost" && (callerRole as any)?.manager_id !== managerId) {
-        return new Response(JSON.stringify({ error: "Forbidden: you can only export data for your own organization" }),
-          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      if ((callerRole as any)?.role !== "webhost") {
+        const effectiveManagerIds = await resolveEffectiveManagerIds(supabase, callerUserId, (callerRole as any)?.role ?? "manager");
+        if (!effectiveManagerIds.has(managerId)) {
+          return new Response(JSON.stringify({ error: "Forbidden: you can only export data for your own organization" }),
+            { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+        }
       }
     }
 

@@ -9,6 +9,7 @@ import { serve } from "std/http/server.ts";
 import { getEnv } from "../_shared/env.ts";
 import { formatPhoneNumber, sendSms } from "../_shared/sms.ts";
 import { withMiddleware, validateUUID, validateRequired, errorResponse, successResponse } from "../_shared/middleware.ts";
+import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
 
 // Optional vendor keys
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
@@ -96,6 +97,35 @@ serve(
       const uuidValidation = validateUUID(propertyId);
       if (!uuidValidation.valid) {
         throw errorResponse(uuidValidation.error || "Invalid propertyId", 400);
+      }
+
+      // Verify the caller actually owns/manages this property before an
+      // invitation binds a tenant (and eventually a unit/lease) to it.
+      // Without this, one manager could invite a tenant into a completely
+      // different manager's property, corrupting that manager's unit/rent
+      // records once the invitation is accepted.
+      const { data: propertyRow } = await ctx.supabase
+        .from("properties")
+        .select("manager_id")
+        .eq("id", propertyId)
+        .maybeSingle();
+
+      if (!propertyRow) {
+        throw errorResponse("Property not found", 404);
+      }
+
+      const { data: callerRoleRow } = await ctx.supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", ctx.user!.id)
+        .in("role", ["manager", "agency", "submanager"])
+        .limit(1)
+        .maybeSingle();
+      const effectiveManagerIds = await resolveEffectiveManagerIds(
+        ctx.supabase, ctx.user!.id, callerRoleRow?.role ?? "manager"
+      );
+      if (!propertyRow.manager_id || !effectiveManagerIds.has(propertyRow.manager_id)) {
+        throw errorResponse("Forbidden: this property is not in your managed portfolio", 403);
       }
 
       // Check if invitation already exists (by email OR phone)

@@ -273,21 +273,18 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
       }
 
       const tenantsWithEmail = tenants.filter((t) => t.email);
-      if (tenantsWithEmail.length > 0) {
+      if (tenantsWithEmail.length > 0 && account.id) {
+        // Note: the edge function re-fetches the bank details by accountId and
+        // re-verifies every recipient is actually one of the caller's own
+        // tenants server-side — it does not trust tenantEmails/bankDetails
+        // content from this call, they're just a convenience hint.
         supabase.functions.invoke('send-bank-details-notification', {
           body: {
+            accountId: account.id,
             tenantEmails: tenantsWithEmail.map((t) => ({ email: t.email, name: t.name })),
             managerName: profile?.full_name || '',
             accountLabel,
             isNew,
-            bankDetails: {
-              bank_name: account.bank_name,
-              account_name: account.account_name,
-              account_number: account.account_number,
-              branch_name: account.branch_name,
-              paybill_number: account.paybill_number,
-              till_number: account.till_number,
-            },
           },
         }).catch((err) => logError('BankDetailsSettings.emailSend', err));
       }
@@ -331,13 +328,14 @@ export const BankDetailsSettings = ({ propertyId, defaultScopeOnly }: BankDetail
         p_payload: payload,
       });
       if (error) throw error;
+      const savedAccount = { ...account, id: account.id || data };
       if (!account.id) {
-        setBankAccounts((prev) => [...prev, { ...account, id: data }]);
+        setBankAccounts((prev) => [...prev, savedAccount]);
         setDialogOpen(false);
         setNewAccount(emptyBankDetails);
       }
 
-      sendNotifications(account, isNew);
+      sendNotifications(savedAccount, isNew);
       toast({ title: 'Bank Details Saved', description: 'Bank details updated and tenants notified via SMS & email.' });
       invalidateManagerActivation(queryClient);
       if (!isNew) fetchData();

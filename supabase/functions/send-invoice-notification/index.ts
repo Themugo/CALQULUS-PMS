@@ -2,6 +2,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface SendInvoiceNotificationRequest {
@@ -101,7 +103,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
-    
+
+    const supabaseAdmin = createClient(getEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const rateOk = await checkRateLimit(supabaseAdmin, user.id, "send-invoice-notification", 120, { failClosed: true });
+    if (!rateOk) return rateLimitResponse(req);
+
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY is not configured");
       // Return a structured partial-success rather than throwing.
@@ -141,6 +147,25 @@ Deno.serve(async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Invalid email address format" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
+    }
+
+    // Verify tenantEmail is actually one of the caller's own tenants —
+    // otherwise this becomes a "spoofed official invoice" phishing vector
+    // sendable to any address via the platform's trusted email domain.
+    if (roleData?.role !== "webhost") {
+      const effectiveManagerIds = await resolveEffectiveManagerIds(supabaseAdmin, user.id, roleData?.role ?? "manager");
+      const { data: ownedTenant } = await supabaseAdmin
+        .from("tenants")
+        .select("id")
+        .eq("email", tenantEmail)
+        .in("manager_id", Array.from(effectiveManagerIds))
+        .maybeSingle();
+      if (!ownedTenant) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: tenantEmail is not in your managed portfolio" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
     }
 
     // Escape all user-supplied values for HTML

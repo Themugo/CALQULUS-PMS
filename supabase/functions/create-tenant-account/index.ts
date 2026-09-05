@@ -2,6 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface CreateTenantRequest {
@@ -315,6 +316,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
       callerId = caller.id;
 
+      // Account-creation is otherwise unlimited — a compromised manager
+      // session could mass-create tenant accounts (each firing an
+      // activation email/SMS) with no throttle at all.
+      const rateOk = await checkRateLimit(supabaseClient, caller.id, "create-tenant-account", 30, { failClosed: true });
+      if (!rateOk) return rateLimitResponse(req);
+
       // A submanager operates under the manager that granted their
       // permissions. Resolve that owner server-side instead of trusting the
       // manager_id in the request body. Managers/agencies own their own
@@ -449,6 +456,28 @@ Deno.serve(async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Unable to resolve the owning manager" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
+    }
+
+    // Defense in depth: even when an invitation row is present, re-verify
+    // at claim time that whoever created it (invitation.invited_by) actually
+    // owned the property it names. send-tenant-invitation now checks this
+    // before creating the row, but this check protects against any other
+    // path that could insert a tenant_invitations row (or a row created
+    // before that fix existed) from silently corrupting another manager's
+    // property/unit/rent records when claimed.
+    if (invitation && effPropertyId) {
+      const { data: invitedProperty } = await supabaseAdmin
+        .from("properties")
+        .select("id, manager_id")
+        .eq("id", effPropertyId)
+        .maybeSingle();
+
+      if (!invitedProperty || invitedProperty.manager_id !== resolvedManagerId) {
+        return new Response(
+          JSON.stringify({ error: "This invitation's property is no longer valid", code: "invalid_invitation_property" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
     }
 
     // For manager/submanager/agency callers, prove that the target property

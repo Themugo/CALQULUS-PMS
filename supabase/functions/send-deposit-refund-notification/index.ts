@@ -3,7 +3,9 @@ import { serve } from "std/http/server.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface DepositRefundEmailRequest {
@@ -55,6 +57,12 @@ const handler = async (req: Request): Promise<Response> => {
         status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
+  }
+
+  if (gate.userId) {
+    const rlSupabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const rateOk = await checkRateLimit(rlSupabase, gate.userId, "send-deposit-refund-notification", 60, { failClosed: true });
+    if (!rateOk) return rateLimitResponse(req);
   }
 
   try {

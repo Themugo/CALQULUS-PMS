@@ -14,10 +14,17 @@ type RequestBody = {
   accessGrant?: string;
 };
 
+// Note: withMiddleware's own `rateLimit` option only ever applies when
+// `ctx.user` is set (see middleware.ts), and this endpoint intentionally
+// runs with requireAuth: false (it's reached via an unauthenticated public
+// payment-share link, not a logged-in session) — so a `rateLimit` entry
+// here would silently never fire. The real per-request throttle is
+// `check_shared_payment_attempt_atomic` below, keyed by the share token at
+// the database level (5 attempts/hour per token), which is what actually
+// protects this endpoint from abuse.
 serve(withMiddleware({
   functionName: "initiate-shared-payment",
   requireAuth: false,
-  rateLimit: { maxPerHour: 10, failClosed: true },
 }, async (req, ctx) => {
   const body = await req.json() as RequestBody;
   const token = String(body.token || '').trim();

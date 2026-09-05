@@ -5,6 +5,7 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
 };
@@ -49,6 +50,8 @@ serve(async (req) => {
           status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
+      const rateOk = await checkRateLimit(supabaseAdmin, gate.userId, "send-manager-receipt-email", 60, { failClosed: true });
+      if (!rateOk) return rateLimitResponse(req);
     }
 
     logStep("Sending receipt email", { email, receiptNumber });

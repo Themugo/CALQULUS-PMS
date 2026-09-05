@@ -124,7 +124,7 @@ export const RATE_LIMITS = {
   "send-tenant-invitation":      10,
   "initiate-mpesa-stk-push":     5,
   "initiate-paystack-payment":   5,
-  "initiate-mpesa-payment":      5,
+  "initiate-manager-paystack-payment": 5,
   "send-overdue-notifications":  5,
   "create-dispute":              5,
   "generate-monthly-invoices":   3,
