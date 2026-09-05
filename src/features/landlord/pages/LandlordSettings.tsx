@@ -4,7 +4,7 @@ import LandlordNotificationPreferences from "@/features/landlord/components/Land
 import LandlordTeamSettings from "@/features/landlord/components/LandlordTeamSettings";
 import LandlordMessages from "@/features/landlord/components/LandlordMessages";
 import { useLandlordPortfolio } from "@/features/landlord/hooks/useLandlordPortfolio";
-import DashboardSectionHeader from "@/features/dashboard/components/DashboardSectionHeader";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 
 export default function LandlordSettings() {
   const { properties } = useLandlordPortfolio();

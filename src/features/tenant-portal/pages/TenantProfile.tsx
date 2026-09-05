@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
-import DashboardSectionHeader from '@/features/dashboard/components/DashboardSectionHeader';
+import { DashboardSectionHeader } from '@/features/dashboard/components/DashboardSectionHeader';
 import { useAuth } from '@/features/auth/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';

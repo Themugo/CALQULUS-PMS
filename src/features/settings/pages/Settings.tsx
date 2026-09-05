@@ -32,7 +32,7 @@ import { cn } from "@/shared/lib/utils";
 import PortalDeviceSecuritySettings from "@/shared/components/PortalDeviceSecuritySettings";
 import { imageExtension, publicStoragePath } from "@/features/settings/lib/storagePaths";
 import { useSignedStorageUrl } from "@/shared/hooks/useSignedStorageUrl";
-import DashboardSectionHeader from "@/features/dashboard/components/DashboardSectionHeader";
+import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import {
   SETTINGS_GROUPS,
   findSettingsItem,
