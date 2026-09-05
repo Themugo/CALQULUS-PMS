@@ -1,7 +1,0 @@
-{
-  "releaseCommit": "",
-  "stagingMigrationRun": {"timestamp":"","target":"","operator":"","outcome":""},
-  "stagingSmokeRun": {"timestamp":"","target":"","operator":"","outcome":""},
-  "stagingRestoreRun": {"timestamp":"","recoveryPoint":"","restoreTarget":"","operator":"","outcome":""},
-  "productionApproval": {"timestamp":"","approver":"","decision":""}
-}
