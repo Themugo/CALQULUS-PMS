@@ -40,9 +40,15 @@ serve(async (req) => {
       { status: 401, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }
   const { data: roleRow } = await supabase.from("user_roles")
-    .select("role").eq("user_id", caller.id).maybeSingle();
+    .select("role, tenant_id").eq("user_id", caller.id).maybeSingle();
   const callerUserId: string = caller.id;
   const callerRole: string = (roleRow as any)?.role ?? null;
+  // tenants.id (and payment_transactions.tenant_id, which references it) is
+  // its own gen_random_uuid(), never equal to the auth user id — the link
+  // lives in user_roles.tenant_id (same pattern as export-pdf). Comparing
+  // transaction.tenant_id to caller.id directly always failed, so a real
+  // tenant could never poll the status of their own M-Pesa payment.
+  const callerTenantId: string | null = (roleRow as any)?.tenant_id ?? null;
 
   if (!["webhost", "manager", "submanager", "tenant"].includes(callerRole)) {
     return new Response(JSON.stringify({ error: "Forbidden" }),
@@ -172,7 +178,7 @@ serve(async (req) => {
   }
 
   // ── Authorization: tenants can only see their own transactions ─────
-  if (callerRole === "tenant" && transaction.tenant_id !== callerUserId) {
+  if (callerRole === "tenant" && (!callerTenantId || transaction.tenant_id !== callerTenantId)) {
     return new Response(JSON.stringify({ error: "Forbidden: you can only view your own transactions" }),
       { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }

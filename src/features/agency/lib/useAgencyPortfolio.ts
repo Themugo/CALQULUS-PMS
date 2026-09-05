@@ -39,6 +39,21 @@ function inMonth(date: string | null, start: string, end?: string): boolean {
   return Boolean(date && date >= start && (!end || date <= end));
 }
 
+type DueAmountInvoice = { amount: number | string | null; balance_due: number | string | null };
+
+/**
+ * balance_due is nullable and can legitimately be 0 (fully paid down but not
+ * yet marked "paid"), so `owed || amount` would wrongly fall back to the
+ * full amount whenever balance_due is exactly 0. Only fall back to amount
+ * when balance_due itself is null/undefined.
+ */
+function dueAmount(invoice: DueAmountInvoice): number {
+  const amount = Number(invoice.amount ?? 0);
+  return invoice.balance_due === null || invoice.balance_due === undefined
+    ? amount
+    : Number(invoice.balance_due);
+}
+
 export function useAgencyPortfolio() {
   const { user } = useAuth();
 
@@ -130,7 +145,6 @@ export function useAgencyPortfolio() {
       for (const invoice of invoices) {
         const amount = Number(invoice.amount ?? 0);
         const paid = Number(invoice.paid_amount ?? (invoice.status === "paid" ? amount : 0));
-        const owed = Number(invoice.balance_due ?? 0);
         if (invoice.status === "paid" && inMonth(invoice.paid_date, mtdStart)) {
           collectedMtd += paid;
           if (invoice.property_id) {
@@ -147,7 +161,7 @@ export function useAgencyPortfolio() {
         // agencyClientStatus() reads this figure to flag a client as
         // "attention", so this also fixes client status chips).
         if (invoice.status === "overdue" || invoice.status === "partially_paid") {
-          const due = owed || amount;
+          const due = dueAmount(invoice);
           outstanding += due;
           if (invoice.property_id) {
             outstandingByProperty.set(
@@ -218,9 +232,18 @@ export function useAgencyPortfolio() {
         const paid = invoices
           .filter((invoice) => invoice.status === "paid" && inMonth(invoice.paid_date, start, end))
           .reduce((sum, invoice) => sum + Number(invoice.paid_amount ?? invoice.amount ?? 0), 0);
+        // Include partially_paid so this chart's "pending" series matches the
+        // same outstanding figure shown in the KPI cards above — otherwise
+        // the page would show two different "Outstanding" totals.
         const pending = invoices
-          .filter((invoice) => (invoice.status === "pending" || invoice.status === "overdue") && inMonth(invoice.due_date, start, end))
-          .reduce((sum, invoice) => sum + Number(invoice.amount ?? 0), 0);
+          .filter(
+            (invoice) =>
+              (invoice.status === "pending" ||
+                invoice.status === "overdue" ||
+                invoice.status === "partially_paid") &&
+              inMonth(invoice.due_date, start, end),
+          )
+          .reduce((sum, invoice) => sum + dueAmount(invoice), 0);
         series.push({ month: format(monthDate, "MMM"), paid, pending });
       }
 

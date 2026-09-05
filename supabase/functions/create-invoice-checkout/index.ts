@@ -39,11 +39,17 @@ serve(async (req) => {
   }
 
   const { data: roleRow } = await supabase.from("user_roles")
-    .select("role").eq("user_id", caller.id).maybeSingle();
+    .select("role, tenant_id").eq("user_id", caller.id).maybeSingle();
   if (!["webhost", "manager", "submanager", "tenant"].includes((roleRow as any)?.role)) {
     return new Response(JSON.stringify({ error: "Forbidden" }),
       { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }
+  // tenants.id (and invoices.tenant_id) is its own gen_random_uuid(), never
+  // equal to the auth user id — the link lives in user_roles.tenant_id (same
+  // pattern as export-pdf / verify-mpesa-payment). Comparing invoice.tenant_id
+  // to caller.id directly always failed, so a real tenant could never open
+  // Stripe checkout for their own invoice.
+  const callerTenantId: string | null = (roleRow as any)?.tenant_id ?? null;
 
   const allowed = await checkRateLimit(
     supabase, caller.id, "create-invoice-checkout", 10,
@@ -88,7 +94,7 @@ serve(async (req) => {
 
   // Tenants can only pay their own invoices; managers can pay any in their org
   const callerRole = (roleRow as any)?.role;
-  if (callerRole === "tenant" && invoice.tenant_id !== caller.id) {
+  if (callerRole === "tenant" && (!callerTenantId || invoice.tenant_id !== callerTenantId)) {
     return new Response(JSON.stringify({ error: "Forbidden: you can only pay your own invoices" }),
       { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }

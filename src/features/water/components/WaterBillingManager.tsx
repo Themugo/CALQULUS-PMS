@@ -39,6 +39,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { trackTimeToFirst } from "@/features/dashboard/lib/activationMetrics";
 import { invalidateManagerActivation } from "@/features/dashboard/hooks/useManagerActivation";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { cn } from "@/shared/lib/utils";
 
 interface WaterCompanyRow {
@@ -355,6 +356,7 @@ export function WaterBillingManager({ propertyId, propertyName }: WaterBillingMa
             });
             trackTimeToFirst("invoice", { managerId: user.id, signupAt: user.created_at });
             invalidateManagerActivation(queryClient);
+            invalidateDashboardQueries(queryClient);
           }
         } else if (tenant && invoiceMode === "bundled") {
           toast({ 

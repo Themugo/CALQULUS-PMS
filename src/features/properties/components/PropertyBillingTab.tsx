@@ -409,7 +409,12 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
     .filter(i => i.status === "pending" || i.status === "partially_paid")
     .reduce((s, i) => s + Number(i.balance_due ?? i.amount ?? 0), 0);
   const totalPaid = invoices.filter(i => i.status === "paid").reduce((s, i) => s + i.amount, 0);
-  const totalOverdue = invoices.filter(i => i.status === "overdue").reduce((s, i) => s + i.amount, 0);
+  // Same balance_due fallback as totalPending above: an "overdue" invoice
+  // that was later partially paid (then re-flagged overdue once its due
+  // date passed) still carries a reduced balance_due, not the full amount.
+  const totalOverdue = invoices
+    .filter(i => i.status === "overdue")
+    .reduce((s, i) => s + Number(i.balance_due ?? i.amount ?? 0), 0);
   const totalExpenditures = expenditures.reduce((s, e) => s + e.amount, 0);
 
   const getMonthlyPaidInvoices = () => {

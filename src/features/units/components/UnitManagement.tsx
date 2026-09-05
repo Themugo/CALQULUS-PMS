@@ -429,6 +429,7 @@ export function UnitManagement({ propertyId, propertyName, houseLabelPrefix, onU
       });
       setIsDeleteDialogOpen(false);
       setSelectedUnit(null);
+      invalidateDashboardQueries(queryClient);
       fetchUnits();
       onUnitsChange?.();
     }

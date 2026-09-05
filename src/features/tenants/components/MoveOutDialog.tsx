@@ -6,6 +6,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { useRBAC } from '@/shared/hooks/useRBAC';
 import { useToast } from '@/shared/hooks/use-toast';
 import { errorToast } from '@/shared/lib/errorToast';
+import { invalidateDashboardQueries } from '@/shared/lib/invalidateDashboards';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -98,6 +99,7 @@ const MoveOutDialog: React.FC<MoveOutDialogProps> = ({
       queryClient.invalidateQueries({ queryKey: ['unit-activity-log', tenant.unit_id] });
       queryClient.invalidateQueries({ queryKey: ['manager-tenants'] });
       queryClient.invalidateQueries({ queryKey: ['tenant-invoices'] });
+      invalidateDashboardQueries(queryClient);
     },
     onError: (err: Error) => {
       errorToast('Move-out failed', err);

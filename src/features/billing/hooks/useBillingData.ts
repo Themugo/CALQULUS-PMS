@@ -373,6 +373,7 @@ export function useUpdateInvoice() {
     onSuccess: () => {
       if (!managerId) return;
       queryClient.invalidateQueries({ queryKey: billingKeys.invoices(managerId) });
+      invalidateDashboardQueries(queryClient);
     },
   });
 }

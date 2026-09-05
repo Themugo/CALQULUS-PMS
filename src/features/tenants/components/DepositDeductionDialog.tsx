@@ -1,5 +1,6 @@
 import { useState, useEffect, forwardRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { invalidateDashboardQueries } from "@/shared/lib/invalidateDashboards";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -100,6 +101,7 @@ const EMPTY_DEDUCTION_HISTORY: DepositDeduction[] = [];
 
 export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeductionDialogProps>(
   function DepositDeductionDialog({ tenant, onDeductionComplete, trigger }, ref) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -316,7 +318,6 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const totalDeductions = deductionHistory.reduce((sum, d) => sum + d.amount, 0);
-      const refundAmountValue = currentBalance;
 
       const { data: refundResult, error: refundError } = await supabase.rpc("create_deposit_refund_atomic", {
         p_tenant_id: tenant.id, p_refund_method: refundMethod, p_move_out_date: moveOutDate,
@@ -338,6 +339,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
       refetchRefund();
       onDeductionComplete?.();
       setActiveTab("overview");
+      invalidateDashboardQueries(queryClient);
 
     } catch (err: unknown) {
       toast({ title: "Failed to initiate refund", description: err instanceof Error ? err.message : "An unexpected error occurred", variant: "destructive" });
@@ -366,6 +368,7 @@ export const DepositDeductionDialog = forwardRef<HTMLButtonElement, DepositDeduc
       
       refetchRefund();
       onDeductionComplete?.();
+      invalidateDashboardQueries(queryClient);
     } catch (err: unknown) {
       toast({ title: "Failed to update status", description: err instanceof Error ? err.message : "An unexpected error occurred", variant: "destructive" });
     } finally {

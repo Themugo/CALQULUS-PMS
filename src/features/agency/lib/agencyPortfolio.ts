@@ -8,9 +8,16 @@ import type { AgencyClientRow } from "@/features/agency/lib/useAgencyPortfolio";
 
 export type AgencyClientStatus = "active" | "pending" | "attention";
 
+/**
+ * Balances below this are floating-point / partial-payment rounding dust,
+ * not real arrears — without a floor a client with a fractional leftover
+ * balance would be permanently flagged "Attention".
+ */
+const ATTENTION_THRESHOLD = 1;
+
 export function agencyClientStatus(client: Pick<AgencyClientRow, "pending" | "outstanding">): AgencyClientStatus {
   if (client.pending) return "pending";
-  if (client.outstanding > 0) return "attention";
+  if (client.outstanding >= ATTENTION_THRESHOLD) return "attention";
   return "active";
 }
 
@@ -71,7 +78,10 @@ export function buildAgencyAttentionItems(input: AgencyAttentionInput): AgencyAt
     items.push({
       label: "Arrears",
       value: input.formatAmount(input.outstanding),
-      detail: `${input.overdueInvoices} overdue invoice${input.overdueInvoices === 1 ? "" : "s"}`,
+      detail:
+        input.overdueInvoices > 0
+          ? `${input.overdueInvoices} overdue invoice${input.overdueInvoices === 1 ? "" : "s"}`
+          : "Across partially paid invoices",
       href: input.hrefs.billing,
     });
   }

@@ -356,7 +356,13 @@ const Dashboard = () => {
                 <div className="rounded-xl border border-border bg-card p-4 card-shadow">
                   <p className="text-xs font-medium text-muted-foreground">Outstanding</p>
                   <p className="mt-1 text-lg font-semibold text-foreground">{formatCurrency(stats.outstandingRent)}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{stats.overdueInvoices} overdue invoice{stats.overdueInvoices === 1 ? "" : "s"}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {stats.overdueInvoices > 0
+                      ? `${stats.overdueInvoices} overdue invoice${stats.overdueInvoices === 1 ? "" : "s"}`
+                      : stats.outstandingRent > 0
+                        ? "Across partially paid invoices"
+                        : "No invoices overdue"}
+                  </p>
                 </div>
                 <div className="rounded-xl border border-border bg-card p-4 card-shadow">
                   <p className="text-xs font-medium text-muted-foreground">Collection rate</p>

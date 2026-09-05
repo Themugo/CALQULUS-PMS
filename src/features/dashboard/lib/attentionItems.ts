@@ -28,11 +28,18 @@ export function buildAttentionItems(
 ): AttentionItem[] {
   const items: AttentionItem[] = [];
 
-  if (stats.overdueInvoices > 0) {
+  // arrearsTotal can be > 0 even when overdueInvoices is 0 — a partially
+  // paid invoice keeps a real balance_due while its status moves off
+  // "overdue", so the card must still surface pure-partial-payment arrears.
+  if (stats.overdueInvoices > 0 || stats.arrearsTotal > 0) {
+    const invoiceCountLabel =
+      stats.overdueInvoices > 0
+        ? `${stats.overdueInvoices} invoice${stats.overdueInvoices === 1 ? "" : "s"} · `
+        : "";
     items.push({
       id: "overdue",
       label: "Overdue invoices",
-      detail: `${stats.overdueInvoices} invoice${stats.overdueInvoices === 1 ? "" : "s"} · ${formatCurrency(stats.arrearsTotal)} outstanding`,
+      detail: `${invoiceCountLabel}${formatCurrency(stats.arrearsTotal)} outstanding`,
       href: "/billing?filter=overdue",
       cta: "Collect",
       tone: "danger",

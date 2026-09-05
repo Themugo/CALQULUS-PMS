@@ -29,12 +29,18 @@ serve(async (req) => {
     }
 
     const { data: roleRow } = await supabase.from("user_roles")
-      .select("role").eq("user_id", caller.id).maybeSingle();
+      .select("role, tenant_id").eq("user_id", caller.id).maybeSingle();
     const callerRole = (roleRow as any)?.role;
     if (!["tenant", "manager", "submanager", "webhost"].includes(callerRole)) {
       return new Response(JSON.stringify({ error: "Forbidden" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
+    // tenants.id is its own gen_random_uuid(), never equal to the auth user
+    // id — the link lives in user_roles.tenant_id (same pattern as
+    // export-pdf / verify-mpesa-payment / create-invoice-checkout).
+    // Comparing tenantId to caller.id directly always failed, so a real
+    // tenant could never trigger their own score recalculation.
+    const callerTenantId: string | null = (roleRow as any)?.tenant_id ?? null;
 
     const allowed = await checkRateLimit(supabase, caller.id, "calculate-tenant-score", 30, { failClosed: true });
     if (!allowed) return rateLimitResponse(req);
@@ -48,7 +54,7 @@ serve(async (req) => {
       });
     }
 
-    if (callerRole === "tenant" && tenantId !== caller.id) {
+    if (callerRole === "tenant" && (!callerTenantId || tenantId !== callerTenantId)) {
       return new Response(JSON.stringify({ error: "Forbidden: you can only view your own score" }), {
         status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });

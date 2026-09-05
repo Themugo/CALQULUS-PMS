@@ -381,6 +381,7 @@ const Properties = () => {
         details: { name: deleteProperty.name }
       });
       if (managerId) supabase.rpc('refresh_manager_stats', { p_manager_id: managerId }).catch(() => {});
+      invalidateDashboardQueries(queryClient);
       fetchData();
     }
     setIsDeleting(false);
