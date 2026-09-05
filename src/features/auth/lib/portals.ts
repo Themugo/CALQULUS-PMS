@@ -12,8 +12,8 @@ export interface PortalSwitcherItem {
 
 /** The four customer-facing portals, in master-identity order. */
 export const PORTALS: PortalSwitcherItem[] = [
+  { id: "agency", label: "Agency", href: PUBLIC_ROUTES.agencyLogin, accent: CALQULUS_PORTAL_ACCENT.agency.hex },
   { id: "manager", label: "Manager", href: PUBLIC_ROUTES.managerSignIn, accent: CALQULUS_PORTAL_ACCENT.manager.hex },
-  { id: "landlord", label: "Landlord", href: PUBLIC_ROUTES.landlordLogin, accent: "#0F8A6A" },
-  { id: "agency", label: "Agency", href: PUBLIC_ROUTES.agencyLogin, accent: "#0F766E" },
-  { id: "tenant", label: "Tenant", href: PUBLIC_ROUTES.tenantLogin, accent: "#0284C7" },
+  { id: "landlord", label: "Landlord", href: PUBLIC_ROUTES.landlordLogin, accent: CALQULUS_PORTAL_ACCENT.landlord.hex },
+  { id: "tenant", label: "Tenant", href: PUBLIC_ROUTES.tenantLogin, accent: CALQULUS_PORTAL_ACCENT.tenant.hex },
 ];

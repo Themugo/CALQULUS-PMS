@@ -67,8 +67,8 @@ export const CALQULUS_COLOR = {
 export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
-    label: "Deep Navy",
-    hex: CALQULUS_COLOR.navySecondary,
+    label: "Slate",
+    hex: "#34495E",
   },
   landlord: {
     id: "landlord",
@@ -79,11 +79,10 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   agency: {
     id: "agency",
-    label: "Cyan",
-    /** Indigo/cyan family — matches the agency portal chrome + marketing role
-        accent so the token is the single source of truth. Status colours stay
-        semantic; the cyan is only identity. */
-    hex: "#0F766E",
+    label: "Sharp Navy",
+    /** Distinct agency identity — sharp navy keeps it separate from the landlord emerald
+        and from the manager slate while remaining inside the CALQULUS family. */
+    hex: "#102A43",
   },
   tenant: {
     id: "tenant",

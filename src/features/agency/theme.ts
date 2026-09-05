@@ -3,7 +3,7 @@
  *
  * Centralises the visual language for the Agency command centre so the
  * surface can be white-labelled later without editing individual
- * components. Defaults stay CALQULUS cyan/teal (`--calqulus-cyan`).
+ * components. Defaults inherit the Agency portal identity token (`--portal-accent`).
  *
  * Values are written as CSS var references (NOT hard-coded hex) so the
  * runtime brand layer (`--brand-primary`, data-portal accent) keeps
@@ -13,7 +13,7 @@
 
 /** Recharts + inline colour palette — resolved from CSS vars at render. */
 export const AGENCY_ACCENT = {
-  /** Agency identity accent (cyan #0F766E). */
+  /** Agency identity accent — sharp navy via the shared portal token. */
   accent: "hsl(var(--portal-accent))",
   /** Soft tinted surface for accent-chips / markers. */
   accentMuted: "hsl(var(--portal-accent-muted))",

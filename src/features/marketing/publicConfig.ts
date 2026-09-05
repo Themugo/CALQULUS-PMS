@@ -48,10 +48,10 @@ export const HERO_CONTENT = {
  * navy + white carry the page, these are small markers only.
  */
 export const HOMEPAGE_ROLE_ACCENTS = {
+  agency: CALQULUS_PORTAL_ACCENT.agency.hex,
   manager: CALQULUS_PORTAL_ACCENT.manager.hex,
-  landlord: "#0F8A6A",
-  agency: "#0F766E",
-  tenant: "#0284C7",
+  landlord: CALQULUS_PORTAL_ACCENT.landlord.hex,
+  tenant: "#8B4DE8",
 } as const;
 
 /** Platform overview — capability tiles (verified features, see src/features/*). */

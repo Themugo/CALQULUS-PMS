@@ -10,7 +10,7 @@ import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen"
  * "Agency Portal" headline) via the shared PortalLoginLayout.
  */
 
-export const AGENCY_ACCENT = "#4658C9";
+export const AGENCY_ACCENT = "#102A43";
 
 interface AgencyPortalShellProps {
   children: ReactNode;

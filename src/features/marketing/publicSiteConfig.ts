@@ -274,10 +274,10 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     { id: "institutions", title: "Institutions", description: "Schools, Hospitals, Organizations", image: PROPERTY_IMAGES.residential, icon: "landmark", href: "/discover/institutions", enabled: true },
   ],
   portals: [
+    { id: "agency", eyebrow: "AGENCY", title: "Agency Portal", description: "Manage multiple clients, properties and portfolios with confidence.", image: PROPERTY_IMAGES.commercial, href: PUBLIC_ROUTES.agencyLogin, enabled: true },
     { id: "manager", eyebrow: "PROPERTY MANAGER", title: "Property Manager Portal", description: "Manage properties, tenants, leases and maintenance efficiently.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignIn, enabled: true },
     { id: "landlord", eyebrow: "LANDLORD", title: "Landlord Portal", description: "Monitor your properties, track performance and earnings in real-time.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.landlordLogin, enabled: true },
     { id: "tenant", eyebrow: "TENANT", title: "Tenant Portal", description: "Pay rent, submit maintenance requests and stay updated anytime, anywhere.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.tenantLogin, enabled: true },
-    { id: "agency", eyebrow: "AGENCY", title: "Agency Portal", description: "Manage multiple clients, properties and portfolios with confidence.", image: PROPERTY_IMAGES.commercial, href: PUBLIC_ROUTES.agencyLogin, enabled: true },
   ],
   why: {
     eyebrow: "WHY CHOOSE CALQULUS?",
@@ -413,7 +413,14 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   const heroSlides = normalizedSlides.length ? normalizedSlides : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
 
   const mergedPropertyTypes = sourcePropertyTypes.length ? sourcePropertyTypes.map((item, i) => ({ id: safeText(item.id, `property-${i}`), title: safeText(item.title, "Property type"), description: safeText(item.description, "Discover more"), image: typeof item.image === "string" ? item.image : null, icon: validIcon(item.icon, ["home", "building", "office", "landmark"], "building") as PublicSitePropertyType["icon"], href: safeUrl(item.href, `/discover/${safeText(item.id, "residential")}`), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
-  const mergedPortals = sourcePortals.length ? sourcePortals.map((item, i) => ({ id: validIcon(item.id, ["manager", "landlord", "agency", "tenant"], DEFAULT_PUBLIC_SITE_CONFIG.portals[i % 4].id) as PublicSitePortal["id"], eyebrow: safeText(item.eyebrow, "PORTAL"), title: safeText(item.title, "Portal"), description: safeText(item.description, "A connected property workspace."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, PUBLIC_ROUTES.managerSignIn), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.portals;
+  const normalizedPortals = sourcePortals.length ? sourcePortals.map((item, i) => ({ id: validIcon(item.id, ["manager", "landlord", "agency", "tenant"], DEFAULT_PUBLIC_SITE_CONFIG.portals[i % 4].id) as PublicSitePortal["id"], eyebrow: safeText(item.eyebrow, "PORTAL"), title: safeText(item.title, "Portal"), description: safeText(item.description, "A connected property workspace."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, PUBLIC_ROUTES.managerSignIn), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.portals;
+  const dedupedPortals = normalizedPortals.filter((portal, index, array) => array.findIndex((item) => item.id === portal.id) === index);
+  const legacyPortalOrder: PublicSitePortal["id"][] = ["manager", "landlord", "tenant", "agency"];
+  const requestedPortalOrder: PublicSitePortal["id"][] = ["agency", "manager", "landlord", "tenant"];
+  const currentPortalIds = dedupedPortals.map((portal) => portal.id);
+  const mergedPortals = currentPortalIds.join("|") === legacyPortalOrder.join("|")
+    ? requestedPortalOrder.map((id) => dedupedPortals.find((portal) => portal.id === id)).filter((portal): portal is PublicSitePortal => Boolean(portal))
+    : dedupedPortals;
 
   return {
     ...DEFAULT_PUBLIC_SITE_CONFIG,
