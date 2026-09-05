@@ -1,12 +1,30 @@
 import { Link } from "react-router-dom";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
-import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteConfig";
 import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
+
+function FooterLink({ href, label }: { href: string; label: string }) {
+  if (href.startsWith("#")) return <a href={href} className="transition hover:text-white">{label}</a>;
+  if (/^https?:\/\//i.test(href)) return <a href={href} target="_blank" rel="noreferrer" className="transition hover:text-white">{label}</a>;
+  return <Link to={href} className="transition hover:text-white">{label}</Link>;
+}
 
 export function PublicFooter() {
   const year = new Date().getFullYear();
   const { data } = usePublicSiteConfig();
   const config = data ?? DEFAULT_PUBLIC_SITE_CONFIG;
-  return <footer className="border-t border-white/10 bg-navy-deep text-white"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]"><div><BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform/><p className="mt-4 max-w-xs text-sm leading-6 text-white/55">{config.shell.footer.tagline}</p></div>{config.shell.footer.showPlatform ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">PLATFORM</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><a href="/#platform" className="hover:text-white">Platform</a><Link to={PUBLIC_ROUTES.pricing} className="hover:text-white">Pricing</Link><a href="/#property-types" className="hover:text-white">Properties</a></div></div> : null}{config.shell.footer.showPortals ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">PORTALS</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><Link to={PUBLIC_ROUTES.managerSignIn} className="hover:text-white">Managers</Link><Link to={PUBLIC_ROUTES.landlordLogin} className="hover:text-white">Landlords</Link><Link to={PUBLIC_ROUTES.agencyLogin} className="hover:text-white">Agencies</Link><Link to={PUBLIC_ROUTES.tenantLogin} className="hover:text-white">Tenants</Link></div></div> : null}{config.shell.footer.showCompany ? <div><p className="text-xs font-semibold tracking-[.16em] text-success">COMPANY</p><div className="mt-4 flex flex-col gap-2.5 text-sm text-white/60"><Link to={PUBLIC_ROUTES.legalPrivacy} className="hover:text-white">Privacy</Link><Link to={PUBLIC_ROUTES.legalTerms} className="hover:text-white">Terms</Link><Link to={PUBLIC_ROUTES.managerSignUp} className="hover:text-white">Get started</Link></div></div> : null}</div></div><div className="border-t border-white/10"><div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 text-[11px] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><span>© {year} CALQULUS Limited. All rights reserved.</span><span>Property operations, connected.</span></div></div></footer>;
+  return (
+    <footer className="border-t border-emerald-900/60 bg-[#003f35] text-white">
+      <div className="mx-auto max-w-[1480px] px-3 py-7 sm:px-4 lg:px-6">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_2fr_1.25fr] lg:items-start">
+          <div><BrandMark size="sm" showWordmark subtitle="" inverse fetchPriority="low" forcePlatform/><p className="mt-3 max-w-xs text-[10px] leading-4.5 text-white/60">{config.shell.footer.tagline}</p></div>
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {config.shell.footer.columns.map((column) => <div key={column.id}><p className="text-[9px] font-bold tracking-[0.2em] text-success">{column.title}</p><div className="mt-2.5 flex flex-col gap-1.5 text-[10px] text-white/60">{column.items.map((item) => <FooterLink key={item.id} href={item.href} label={item.label}/>)}</div></div>)}
+          </div>
+          {config.shell.footer.showNewsletter ? <div><p className="text-[9px] font-bold tracking-[0.2em] text-success">{config.shell.footer.newsletterTitle}</p><div className="mt-2 flex overflow-hidden rounded-lg border border-white/10 bg-white"><input aria-label={config.shell.footer.newsletterTitle} placeholder={config.shell.footer.newsletterPlaceholder} className="min-w-0 flex-1 bg-transparent px-3 py-2 text-[10px] text-navy-deep outline-none placeholder:text-slate-400"/><button type="button" className="bg-success px-3 text-[10px] font-bold text-navy-deep">→</button></div><div className="mt-3 flex gap-1.5">{config.shell.footer.socials.filter((social) => social.enabled).map((social) => <FooterLink key={social.id} href={social.href} label={social.label}/>)}</div></div> : null}
+        </div>
+      </div>
+      <div className="border-t border-white/10"><div className="mx-auto flex max-w-[1480px] flex-col gap-1.5 px-3 py-3 text-[9px] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-4 lg:px-6"><span>{config.shell.footer.copyright.replace("{year}", String(year))}</span><span>{config.shell.footer.endTagline}</span></div></div>
+    </footer>
+  );
 }

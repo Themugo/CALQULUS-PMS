@@ -21,7 +21,16 @@ describe("public site configuration contract", () => {
     expect(result.sections).toHaveLength(1);
     expect(result.sections[0].variant).toBe("wide");
     expect(result.propertyTypes).toHaveLength(DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes.length);
-    expect(result.shell.header.getStartedLabel).toBe("Get started");
+    expect(result.shell.header.getStartedLabel).toBe("Get Started");
+  });
+
+  it("supports the compact screenshot composition and configurable proof content", () => {
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.hero.floatingCards).toHaveLength(3);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.hero.pills).toHaveLength(4);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.highlights).toHaveLength(4);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.insights).toHaveLength(3);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos).toHaveLength(8);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.rail.sections.map((x) => x.id)).toEqual(["search", "highlights", "insights"]);
   });
 });
 

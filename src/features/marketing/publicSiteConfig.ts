@@ -1,7 +1,8 @@
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 
-export type PublicSiteSectionId = "hero" | "property-types" | "featured" | "portals" | "promotions" | "platform" | "cta";
+export type PublicSiteSectionId = "hero" | "property-types" | "portals" | "why" | "featured" | "trust" | "cta";
+export type PublicSiteRailId = "search" | "highlights" | "insights";
 export type HeroFitMode = "screen" | "window";
 
 export interface PublicSiteHeroSlide {
@@ -9,12 +10,30 @@ export interface PublicSiteHeroSlide {
   eyebrow: string;
   title: string;
   copy: string;
+  signature: string[];
   primaryLabel: string;
   primaryHref: string;
   secondaryLabel: string;
   secondaryHref: string;
   image: string | null;
   mobileImage: string | null;
+  enabled: boolean;
+}
+
+export interface PublicSiteHeroPromo {
+  id: string;
+  label: string;
+  title: string;
+  copy: string;
+  image: string | null;
+  href: string;
+  enabled: boolean;
+}
+
+export interface PublicSiteHeroPill {
+  id: string;
+  label: string;
+  icon: "portals" | "secure" | "insights" | "reliable";
   enabled: boolean;
 }
 
@@ -38,6 +57,14 @@ export interface PublicSitePortal {
   enabled: boolean;
 }
 
+export interface PublicSiteWhyCard {
+  id: string;
+  title: string;
+  copy: string;
+  icon: "stack" | "gear" | "chart" | "leaf";
+  enabled: boolean;
+}
+
 export interface PublicSiteFeaturedCard {
   id: string;
   eyebrow: string;
@@ -50,82 +77,164 @@ export interface PublicSiteFeaturedCard {
   enabled: boolean;
 }
 
-export interface PublicSitePromotion {
+export interface PublicSiteInsight {
   id: string;
-  label: string;
+  category: string;
   title: string;
-  copy: string;
+  meta: string;
   image: string | null;
   href: string;
   enabled: boolean;
 }
 
+export interface PublicSiteHighlight {
+  id: string;
+  value: string;
+  label: string;
+  icon: "property" | "users" | "uptime" | "support";
+  enabled: boolean;
+}
+
+export interface PublicSiteTrustLogo {
+  id: string;
+  name: string;
+  image: string | null;
+  href: string;
+  enabled: boolean;
+}
+
+export interface PublicSiteTrust {
+  eyebrow: string;
+  title: string;
+  copy: string;
+  logos: PublicSiteTrustLogo[];
+  quote: string;
+  person: string;
+  role: string;
+  avatar: string | null;
+}
+
 export interface PublicSiteConfig {
   version: 1;
   shell: {
-    header: { pricingLabel: string; signInLabel: string; getStartedLabel: string };
-    footer: { tagline: string; showPlatform: boolean; showPortals: boolean; showCompany: boolean };
+    header: {
+      nav: Array<{ id: string; label: string; href: string; enabled: boolean }>;
+      searchLabel: string;
+      signInLabel: string;
+      getStartedLabel: string;
+      utilityWords: string[];
+    };
+    footer: {
+      tagline: string;
+      copyright: string;
+      endTagline: string;
+      columns: Array<{ id: string; title: string; items: Array<{ id: string; label: string; href: string }> }>;
+      socials: Array<{ id: string; label: string; href: string; enabled: boolean }>;
+      newsletterTitle: string;
+      newsletterPlaceholder: string;
+      showNewsletter: boolean;
+    };
   };
-  platformValue: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    cards: Array<{ id: string; title: string; copy: string; icon: "property" | "money" | "operations" }>;
-  };
-  cta: { eyebrow: string; title: string; copy: string; primaryLabel: string; primaryHref: string; secondaryLabel: string; secondaryHref: string };
   hero: {
     fitMode: HeroFitMode;
     autoplay: boolean;
     intervalMs: number;
     overlay: "soft" | "medium" | "strong";
     slides: PublicSiteHeroSlide[];
+    floatingCards: PublicSiteHeroPromo[];
+    pills: PublicSiteHeroPill[];
   };
   propertyTypes: PublicSitePropertyType[];
-  featured: PublicSiteFeaturedCard[];
   portals: PublicSitePortal[];
-  promotions: PublicSitePromotion[];
+  why: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    cards: PublicSiteWhyCard[];
+  };
+  featured: PublicSiteFeaturedCard[];
+  highlights: PublicSiteHighlight[];
+  insights: PublicSiteInsight[];
+  trust: PublicSiteTrust;
+  search: {
+    title: string;
+    copy: string;
+    tabs: Array<{ id: string; label: string; enabled: boolean }>;
+    placeholder: string;
+    chips: Array<{ id: string; label: string; href: string; icon: "home" | "building" | "office" | "landmark"; enabled: boolean }>;
+  };
+  cta: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    primaryLabel: string;
+    primaryHref: string;
+    secondaryLabel: string;
+    secondaryHref: string;
+  };
   sections: Array<{ id: PublicSiteSectionId; visible: boolean; order: number; variant: "default" | "compact" | "wide" }>;
+  rail: {
+    visible: boolean;
+    width: "narrow" | "standard";
+    sections: Array<{ id: PublicSiteRailId; visible: boolean; order: number }>;
+  };
 }
 
 export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   version: 1,
   shell: {
-    header: { pricingLabel: "Pricing", signInLabel: "Sign in", getStartedLabel: "Get started" },
-    footer: { tagline: "Property operations, connected — from the portfolio to the people who use it.", showPlatform: true, showPortals: true, showCompany: true },
-  },
-  platformValue: {
-    eyebrow: "THE CALQULUS DIFFERENCE",
-    title: "One connected view of the property lifecycle.",
-    copy: "Built around the work property teams actually do — not a pile of disconnected tools.",
-    cards: [
-      { id: "property", title: "Property control", copy: "Buildings, units, occupancy and portfolio context in one place.", icon: "property" },
-      { id: "money", title: "Financial clarity", copy: "Billing, collections, payments and reconciliation with a clear trail.", icon: "money" },
-      { id: "operations", title: "Operational follow-through", copy: "Maintenance and daily work move from request to resolution.", icon: "operations" },
-    ],
-  },
-  cta: {
-    eyebrow: "READY WHEN YOU ARE",
-    title: "Bring your property operation into focus.",
-    copy: "Start with the essentials and grow the platform around your operation.",
-    primaryLabel: "Get started",
-    primaryHref: PUBLIC_ROUTES.managerSignUp,
-    secondaryLabel: "Sign in",
-    secondaryHref: PUBLIC_ROUTES.managerSignIn,
+    header: {
+      nav: [
+        { id: "home", label: "Home", href: "/", enabled: true },
+        { id: "solutions", label: "Solutions", href: "#platform", enabled: true },
+        { id: "properties", label: "Properties", href: "#property-types", enabled: true },
+        { id: "pricing", label: "Pricing", href: PUBLIC_ROUTES.pricing, enabled: true },
+        { id: "resources", label: "Resources", href: "#insights", enabled: true },
+        { id: "about", label: "About Us", href: "#trust", enabled: true },
+        { id: "contact", label: "Contact", href: "#cta", enabled: true },
+      ],
+      searchLabel: "Search",
+      signInLabel: "Login",
+      getStartedLabel: "Get Started",
+      utilityWords: ["MANAGE", "GROW", "THRIVE"],
+    },
+    footer: {
+      tagline: "The complete property management solution for modern real estate professionals.",
+      copyright: "© {year} CALQULUS PMS. All rights reserved.",
+      endTagline: "Manage · Grow · Thrive",
+      columns: [
+        { id: "solutions", title: "Solutions", items: [{ id: "s1", label: "Property Management", href: "#platform" }, { id: "s2", label: "Tenant Management", href: "#portals" }, { id: "s3", label: "Lease Management", href: "#platform" }, { id: "s4", label: "Financial Management", href: "#platform" }, { id: "s5", label: "Maintenance Management", href: "#platform" }] },
+        { id: "properties", title: "Properties", items: [{ id: "p1", label: "Residentials", href: "/discover/residential" }, { id: "p2", label: "Estates", href: "/discover/estates" }, { id: "p3", label: "Offices", href: "/discover/offices" }, { id: "p4", label: "Institutions", href: "/discover/institutions" }] },
+        { id: "resources", title: "Resources", items: [{ id: "r1", label: "Blog", href: "#insights" }, { id: "r2", label: "Guides", href: "#insights" }, { id: "r3", label: "Help Center", href: "#cta" }, { id: "r4", label: "API", href: "#platform" }, { id: "r5", label: "Documentation", href: "#platform" }] },
+        { id: "company", title: "Company", items: [{ id: "c1", label: "About Us", href: "#trust" }, { id: "c2", label: "Careers", href: "#cta" }, { id: "c3", label: "Contact", href: "#cta" }, { id: "c4", label: "Privacy Policy", href: PUBLIC_ROUTES.legalPrivacy }, { id: "c5", label: "Terms of Service", href: PUBLIC_ROUTES.legalTerms }] },
+      ],
+      socials: [
+        { id: "linkedin", label: "in", href: "#", enabled: true },
+        { id: "x", label: "X", href: "#", enabled: true },
+        { id: "facebook", label: "f", href: "#", enabled: true },
+        { id: "instagram", label: "◎", href: "#", enabled: true },
+        { id: "youtube", label: "▶", href: "#", enabled: true },
+      ],
+      newsletterTitle: "Subscribe to our newsletter",
+      newsletterPlaceholder: "Your email address",
+      showNewsletter: true,
+    },
   },
   hero: {
     fitMode: "window",
-    autoplay: false,
-    intervalMs: 6000,
+    autoplay: true,
+    intervalMs: 7000,
     overlay: "soft",
     slides: [
       {
         id: "hero-1",
-        eyebrow: "PROPERTY OPERATIONS, CONNECTED",
-        title: "Property management, without the clutter.",
-        copy: "CALQULUS brings properties, tenants, leases, billing, payments and maintenance into one focused workspace.",
-        primaryLabel: "Start managing",
+        eyebrow: "REAL ESTATE. SIMPLIFIED.",
+        title: "One Platform. Every Property. A Better Tomorrow.",
+        copy: "Manage, automate and grow your real estate portfolio with CALQULUS PMS. Built for every type of property.",
+        signature: ["People", "Properties", "Progress"],
+        primaryLabel: "Get Started",
         primaryHref: PUBLIC_ROUTES.managerSignUp,
-        secondaryLabel: "Explore the platform",
+        secondaryLabel: "Watch Video",
         secondaryHref: "#platform",
         image: PROPERTY_IMAGES.residential,
         mobileImage: PROPERTY_IMAGES.residential,
@@ -134,247 +243,278 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
       {
         id: "hero-2",
         eyebrow: "ONE CONNECTED PROPERTY EXPERIENCE",
-        title: "From portfolio to people, one system.",
+        title: "From Portfolio To People, One System.",
         copy: "Give managers, landlords, agencies and tenants a clear place to work, communicate and stay on top of the property lifecycle.",
-        primaryLabel: "Explore portals",
+        signature: ["Manage", "Grow", "Thrive"],
+        primaryLabel: "Explore Portals",
         primaryHref: "#portals",
-        secondaryLabel: "See the platform",
-        secondaryHref: "#platform",
+        secondaryLabel: "View Properties",
+        secondaryHref: "#property-types",
         image: PROPERTY_IMAGES.commercial,
         mobileImage: PROPERTY_IMAGES.commercial,
         enabled: true,
       },
     ],
+    floatingCards: [
+      { id: "hero-promo-1", label: "NEW", title: "Smart Portfolio Insights", copy: "Make better property decisions with CALQULUS.", image: PROPERTY_IMAGES.commercial, href: "#platform", enabled: true },
+      { id: "hero-promo-2", label: "LIST YOUR PROPERTY", title: "Showcase your available spaces", copy: "Put your property in front of the right audience.", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
+      { id: "hero-promo-3", label: "FOR PROPERTY PROFESSIONALS", title: "Modern real estate management", copy: "A complete connected workspace for property teams.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignUp, enabled: true },
+    ],
+    pills: [
+      { id: "portals", label: "4 Powerful Portals", icon: "portals", enabled: true },
+      { id: "secure", label: "100% Secure", icon: "secure", enabled: true },
+      { id: "insights", label: "Real-time Insights", icon: "insights", enabled: true },
+      { id: "reliable", label: "Scalable & Reliable", icon: "reliable", enabled: true },
+    ],
   },
   propertyTypes: [
-    { id: "residential", title: "Residentials", description: "Homes, apartments and rental communities.", image: PROPERTY_IMAGES.residential, icon: "home", href: "/discover/residential", enabled: true },
-    { id: "estates", title: "Estates", description: "Managed estates and multi-unit communities.", image: PROPERTY_IMAGES.commercial, icon: "building", href: "/discover/estates", enabled: true },
-    { id: "offices", title: "Offices", description: "Professional spaces and managed work environments.", image: PROPERTY_IMAGES.office, icon: "office", href: "/discover/offices", enabled: true },
-    { id: "institutions", title: "Institutions", description: "Purpose-built property portfolios and facilities.", image: PROPERTY_IMAGES.commercial, icon: "landmark", href: "/discover/institutions", enabled: true },
-  ],
-  featured: [
-    { id: "featured-1", eyebrow: "FEATURED", title: "Featured property showcase", location: "Add location from Admin", detail: "Add bedrooms, units or key attributes", price: "Add price or rent", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: false },
-    { id: "featured-2", eyebrow: "FEATURED", title: "Your next listing", location: "Add location from Admin", detail: "Add property highlights", price: "Add price or rent", image: PROPERTY_IMAGES.office, href: "/discover/offices", enabled: false },
-    { id: "featured-3", eyebrow: "FEATURED", title: "Promote a property", location: "Add location from Admin", detail: "Add key property details", price: "Add price or rent", image: PROPERTY_IMAGES.commercial, href: "/discover/estates", enabled: false },
+    { id: "residential", title: "Residentials", description: "Houses, Apartments, Condos", image: PROPERTY_IMAGES.residential, icon: "home", href: "/discover/residential", enabled: true },
+    { id: "estates", title: "Estates", description: "Gated Communities, Developments", image: PROPERTY_IMAGES.commercial, icon: "building", href: "/discover/estates", enabled: true },
+    { id: "offices", title: "Offices", description: "Office Buildings, Workspaces", image: PROPERTY_IMAGES.office, icon: "office", href: "/discover/offices", enabled: true },
+    { id: "institutions", title: "Institutions", description: "Schools, Hospitals, Organizations", image: PROPERTY_IMAGES.residential, icon: "landmark", href: "/discover/institutions", enabled: true },
   ],
   portals: [
-    { id: "manager", eyebrow: "OPERATIONS", title: "Manager", description: "Run properties, people, billing and maintenance from one desk.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignIn, enabled: true },
-    { id: "landlord", eyebrow: "OWNERSHIP", title: "Landlord", description: "See your portfolio, financials, statements and property performance.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.landlordLogin, enabled: true },
-    { id: "agency", eyebrow: "CLIENT PORTFOLIOS", title: "Agency", description: "Manage client portfolios with a connected operational view.", image: PROPERTY_IMAGES.commercial, href: PUBLIC_ROUTES.agencyLogin, enabled: true },
-    { id: "tenant", eyebrow: "YOUR HOME", title: "Tenant", description: "Keep rent, documents, maintenance and communication together.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.tenantLogin, enabled: true },
+    { id: "manager", eyebrow: "PROPERTY MANAGER", title: "Property Manager Portal", description: "Manage properties, tenants, leases and maintenance efficiently.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignIn, enabled: true },
+    { id: "landlord", eyebrow: "LANDLORD", title: "Landlord Portal", description: "Monitor your properties, track performance and earnings in real-time.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.landlordLogin, enabled: true },
+    { id: "tenant", eyebrow: "TENANT", title: "Tenant Portal", description: "Pay rent, submit maintenance requests and stay updated anytime, anywhere.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.tenantLogin, enabled: true },
+    { id: "agency", eyebrow: "AGENCY", title: "Agency Portal", description: "Manage multiple clients, properties and portfolios with confidence.", image: PROPERTY_IMAGES.commercial, href: PUBLIC_ROUTES.agencyLogin, enabled: true },
   ],
-  promotions: [
-    { id: "promo-1", label: "PROMOTED", title: "Your next featured property can live here.", copy: "Replace this placeholder with an active listing, campaign or platform message from Admin.", image: PROPERTY_IMAGES.commercial, href: "/discover/estates", enabled: true },
-    { id: "promo-2", label: "CALQULUS", title: "A clearer way to run property operations.", copy: "Keep the platform message fresh without changing the page structure.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignUp, enabled: true },
+  why: {
+    eyebrow: "WHY CHOOSE CALQULUS?",
+    title: "More than software. A smarter way to manage property.",
+    copy: "",
+    cards: [
+      { id: "w1", title: "Manage Everything", copy: "Properties, tenants, leases, finances and maintenance — all in one place.", icon: "stack", enabled: true },
+      { id: "w2", title: "Automate Operations", copy: "Reduce manual work and increase efficiency.", icon: "gear", enabled: true },
+      { id: "w3", title: "Real-time Insights", copy: "Better information for better decisions.", icon: "chart", enabled: true },
+      { id: "w4", title: "Grow with Confidence", copy: "Built to scale from one property to thousands.", icon: "leaf", enabled: true },
+    ],
+  },
+  featured: [
+    { id: "f1", eyebrow: "RESIDENTIAL", title: "Sunset Apartments", location: "Westlands, Nairobi", detail: "2 – 3 Bedrooms · Modern Amenities", price: "KES 45,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
+    { id: "f2", eyebrow: "ESTATE", title: "Greenfield Estate", location: "Ruiru, Kiambu", detail: "Gated Community · 24/7 Security", price: "KES 35,000/mo", image: PROPERTY_IMAGES.commercial, href: "/discover/estates", enabled: true },
+    { id: "f3", eyebrow: "OFFICE", title: "Executive Towers", location: "Upper Hill, Nairobi", detail: "Premium Offices · Excellent Location", price: "KES 120,000/mo", image: PROPERTY_IMAGES.office, href: "/discover/offices", enabled: true },
+    { id: "f4", eyebrow: "RESIDENTIAL", title: "Parkview Villas", location: "Karen, Nairobi", detail: "4 Bedrooms · Private Garden", price: "KES 250,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
   ],
+  highlights: [
+    { id: "h1", value: "10K+", label: "Properties Managed", icon: "property", enabled: true },
+    { id: "h2", value: "2.5K+", label: "Happy Users", icon: "users", enabled: true },
+    { id: "h3", value: "98%", label: "System Uptime", icon: "uptime", enabled: true },
+    { id: "h4", value: "24/7", label: "Expert Support", icon: "support", enabled: true },
+  ],
+  insights: [
+    { id: "i1", category: "Market Insights", title: "5 Trends Shaping Real Estate in 2024", meta: "5 min read", image: PROPERTY_IMAGES.residential, href: "#insights", enabled: true },
+    { id: "i2", category: "Landlord tips", title: "How to Maximize Rental Income", meta: "4 min read", image: PROPERTY_IMAGES.office, href: "#insights", enabled: true },
+    { id: "i3", category: "Technology", title: "The Future of Smart Buildings", meta: "6 min read", image: PROPERTY_IMAGES.commercial, href: "#insights", enabled: true },
+  ],
+  trust: {
+    eyebrow: "TRUST & PARTNERSHIPS",
+    title: "Trusted by forward-thinking organizations",
+    copy: "Join property teams building clearer, more connected real estate operations with CALQULUS.",
+    logos: [
+      { id: "t1", name: "KenGen", image: null, href: "#", enabled: true },
+      { id: "t2", name: "Safaricom", image: null, href: "#", enabled: true },
+      { id: "t3", name: "Britam", image: null, href: "#", enabled: true },
+      { id: "t4", name: "KCB", image: null, href: "#", enabled: true },
+      { id: "t5", name: "Red Cross", image: null, href: "#", enabled: true },
+      { id: "t6", name: "eabl", image: null, href: "#", enabled: true },
+      { id: "t7", name: "NSSF", image: null, href: "#", enabled: true },
+      { id: "t8", name: "Equity", image: null, href: "#", enabled: true },
+    ],
+    quote: "“CALQULUS has transformed how we manage our properties. The platform is intuitive and powerful.”",
+    person: "James Mwangi",
+    role: "Property Portfolio Manager",
+    avatar: null,
+  },
+  search: {
+    title: "Quick Search",
+    copy: "Find a property or space for your next move.",
+    tabs: [{ id: "buy", label: "Buy", enabled: true }, { id: "rent", label: "Rent", enabled: true }, { id: "all", label: "All", enabled: true }],
+    placeholder: "Search location, property type...",
+    chips: [
+      { id: "c1", label: "Residential", href: "/discover/residential", icon: "home", enabled: true },
+      { id: "c2", label: "Office", href: "/discover/offices", icon: "office", enabled: true },
+      { id: "c3", label: "Estate", href: "/discover/estates", icon: "building", enabled: true },
+      { id: "c4", label: "Institution", href: "/discover/institutions", icon: "landmark", enabled: true },
+    ],
+  },
+  cta: {
+    eyebrow: "READY TO TRANSFORM YOUR REAL ESTATE MANAGEMENT?",
+    title: "Join thousands of property professionals already growing with CALQULUS.",
+    copy: "Bring property operations, people and performance into one connected experience.",
+    primaryLabel: "Get Started",
+    primaryHref: PUBLIC_ROUTES.managerSignUp,
+    secondaryLabel: "Contact Sales",
+    secondaryHref: "#cta",
+  },
   sections: [
     { id: "hero", visible: true, order: 10, variant: "default" },
     { id: "property-types", visible: true, order: 20, variant: "default" },
-    { id: "featured", visible: true, order: 30, variant: "default" },
-    { id: "portals", visible: true, order: 40, variant: "default" },
-    { id: "promotions", visible: true, order: 50, variant: "wide" },
-    { id: "platform", visible: true, order: 60, variant: "default" },
+    { id: "portals", visible: true, order: 30, variant: "default" },
+    { id: "why", visible: true, order: 40, variant: "compact" },
+    { id: "featured", visible: true, order: 50, variant: "default" },
+    { id: "trust", visible: true, order: 60, variant: "default" },
     { id: "cta", visible: true, order: 70, variant: "compact" },
   ],
+  rail: {
+    visible: true,
+    width: "standard",
+    sections: [
+      { id: "search", visible: true, order: 10 },
+      { id: "highlights", visible: true, order: 20 },
+      { id: "insights", visible: true, order: 30 },
+    ],
+  },
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function nonEmptyString(value: unknown, fallback: string): string {
-  return typeof value === "string" && value.trim() ? value : fallback;
-}
-
-function booleanValue(value: unknown, fallback: boolean): boolean {
-  return typeof value === "boolean" ? value : fallback;
-}
-
-function sanitizeHeroSlides(value: unknown): PublicSiteHeroSlide[] {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
-  const result = value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    return {
-      id: nonEmptyString(item.id, fallback.id),
-      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
-      title: nonEmptyString(item.title, fallback.title),
-      copy: nonEmptyString(item.copy, fallback.copy),
-      primaryLabel: nonEmptyString(item.primaryLabel, fallback.primaryLabel),
-      primaryHref: nonEmptyString(item.primaryHref, fallback.primaryHref),
-      secondaryLabel: nonEmptyString(item.secondaryLabel, fallback.secondaryLabel),
-      secondaryHref: nonEmptyString(item.secondaryHref, fallback.secondaryHref),
-      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
-      mobileImage: typeof item.mobileImage === "string" && item.mobileImage ? item.mobileImage : fallback.mobileImage,
-      enabled: booleanValue(item.enabled, fallback.enabled),
-    };
-  });
-  return result.length ? result : defaults;
-}
-
-function sanitizePropertyTypes(value: unknown): PublicSitePropertyType[] {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
-  const result = value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    const icon = item.icon === "home" || item.icon === "building" || item.icon === "office" || item.icon === "landmark" ? item.icon : fallback.icon;
-    return {
-      id: nonEmptyString(item.id, fallback.id),
-      title: nonEmptyString(item.title, fallback.title),
-      description: nonEmptyString(item.description, fallback.description),
-      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
-      icon,
-      href: nonEmptyString(item.href, fallback.href),
-      enabled: booleanValue(item.enabled, fallback.enabled),
-    };
-  });
-  return result.length ? result : defaults;
-}
-
-function sanitizePortals(value: unknown): PublicSitePortal[] {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.portals;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.portals;
-  const result = value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    const id = item.id === "manager" || item.id === "landlord" || item.id === "agency" || item.id === "tenant" ? item.id : fallback.id;
-    return {
-      id,
-      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
-      title: nonEmptyString(item.title, fallback.title),
-      description: nonEmptyString(item.description, fallback.description),
-      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
-      href: nonEmptyString(item.href, fallback.href),
-      enabled: booleanValue(item.enabled, fallback.enabled),
-    };
-  });
-  return result.length ? result : defaults;
-}
-
-function sanitizeFeatured(value: unknown): PublicSiteFeaturedCard[] {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.featured;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.featured;
-  return value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    return {
-      id: nonEmptyString(item.id, fallback.id),
-      eyebrow: nonEmptyString(item.eyebrow, fallback.eyebrow),
-      title: nonEmptyString(item.title, fallback.title),
-      location: nonEmptyString(item.location, fallback.location),
-      detail: nonEmptyString(item.detail, fallback.detail),
-      price: nonEmptyString(item.price, fallback.price),
-      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
-      href: nonEmptyString(item.href, fallback.href),
-      enabled: booleanValue(item.enabled, fallback.enabled),
-    };
-  });
-}
-
-function sanitizePromotions(value: unknown): PublicSitePromotion[] {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.promotions;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.promotions;
-  return value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    return {
-      id: nonEmptyString(item.id, fallback.id),
-      label: nonEmptyString(item.label, fallback.label),
-      title: nonEmptyString(item.title, fallback.title),
-      copy: nonEmptyString(item.copy, fallback.copy),
-      image: typeof item.image === "string" && item.image ? item.image : fallback.image,
-      href: nonEmptyString(item.href, fallback.href),
-      enabled: booleanValue(item.enabled, fallback.enabled),
-    };
-  });
-}
-
-function sanitizePlatformCards(value: unknown) {
-  if (!Array.isArray(value)) return DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards;
-  const defaults = DEFAULT_PUBLIC_SITE_CONFIG.platformValue.cards;
-  const result = value.filter(isRecord).map((item, index) => {
-    const fallback = defaults[index % defaults.length];
-    const icon = item.icon === "property" || item.icon === "money" || item.icon === "operations" ? item.icon : fallback.icon;
-    return {
-      id: nonEmptyString(item.id, fallback.id),
-      title: nonEmptyString(item.title, fallback.title),
-      copy: nonEmptyString(item.copy, fallback.copy),
-      icon,
-    };
-  });
-  return result.length ? result : defaults;
-}
+function isRecord(value: unknown): value is Record<string, unknown> { return Boolean(value && typeof value === "object" && !Array.isArray(value)); }
+function asArray<T>(value: unknown): T[] { return Array.isArray(value) ? value.filter(Boolean) as T[] : []; }
+function validIcon(value: unknown, allowed: readonly string[], fallback: string): string { return typeof value === "string" && allowed.includes(value) ? value : fallback; }
+function safeBool(value: unknown, fallback: boolean): boolean { return typeof value === "boolean" ? value : fallback; }
+function safeText(value: unknown, fallback: string): string { return typeof value === "string" ? value : fallback; }
+function safeUrl(value: unknown, fallback: string): string { return typeof value === "string" && value.trim() ? value : fallback; }
 
 export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   if (!isRecord(input)) return DEFAULT_PUBLIC_SITE_CONFIG;
-  const source = input;
-  const sourceShell = isRecord(source.shell) ? source.shell : {};
-  const sourceHeader = isRecord(sourceShell.header) ? sourceShell.header : {};
-  const sourceFooter = isRecord(sourceShell.footer) ? sourceShell.footer : {};
-  const sourcePlatform = isRecord(source.platformValue) ? source.platformValue : {};
-  const sourceCta = isRecord(source.cta) ? source.cta : {};
-  const sourceHero = isRecord(source.hero) ? source.hero : {};
+  const s = input as Record<string, unknown>;
+  const shell = isRecord(s.shell) ? s.shell : {};
+  const header = isRecord(shell.header) ? shell.header : {};
+  const footer = isRecord(shell.footer) ? shell.footer : {};
+  const hero = isRecord(s.hero) ? s.hero : {};
+  const why = isRecord(s.why) ? s.why : {};
+  const trust = isRecord(s.trust) ? s.trust : {};
+  const search = isRecord(s.search) ? s.search : {};
+  const cta = isRecord(s.cta) ? s.cta : {};
+  const sourceNav = asArray<Record<string, unknown>>(header.nav);
+  const sourceColumns = asArray<Record<string, unknown>>(footer.columns);
+  const sourceSocials = asArray<Record<string, unknown>>(footer.socials);
+  const sourceSlides = asArray<Record<string, unknown>>(hero.slides);
+  const sourcePromos = asArray<Record<string, unknown>>(hero.floatingCards);
+  const sourcePills = asArray<Record<string, unknown>>(hero.pills);
+  const sourcePropertyTypes = asArray<Record<string, unknown>>(s.propertyTypes);
+  const sourcePortals = asArray<Record<string, unknown>>(s.portals);
+  const sourceWhyCards = asArray<Record<string, unknown>>(why.cards);
+  const sourceFeatured = asArray<Record<string, unknown>>(s.featured);
+  const sourceHighlights = asArray<Record<string, unknown>>(s.highlights);
+  const sourceInsights = asArray<Record<string, unknown>>(s.insights);
+  const sourceTrustLogos = asArray<Record<string, unknown>>(trust.logos);
+  const sourceSearchTabs = asArray<Record<string, unknown>>(search.tabs);
+  const sourceSearchChips = asArray<Record<string, unknown>>(search.chips);
+  const sourceSections = asArray<Record<string, unknown>>(s.sections);
+  const sourceRail = isRecord(s.rail) ? s.rail : {};
+  const sourceRailSections = asArray<Record<string, unknown>>(sourceRail.sections);
 
-  const sections = Array.isArray(source.sections)
-    ? source.sections.filter(isRecord).map((item, index) => {
-        const fallback = DEFAULT_PUBLIC_SITE_CONFIG.sections[index % DEFAULT_PUBLIC_SITE_CONFIG.sections.length];
-        const id = DEFAULT_PUBLIC_SITE_CONFIG.sections.some((section) => section.id === item.id) ? item.id as PublicSiteSectionId : fallback.id;
-        const variant = item.variant === "compact" || item.variant === "wide" ? item.variant : "default";
-        const order = typeof item.order === "number" && Number.isFinite(item.order) ? item.order : fallback.order;
-        return { id, visible: booleanValue(item.visible, fallback.visible), order, variant };
-      })
-    : DEFAULT_PUBLIC_SITE_CONFIG.sections;
+  const nav = sourceNav.length ? sourceNav.map((item, i) => ({ id: safeText(item.id, `nav-${i}`), label: safeText(item.label, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.nav[i]?.label ?? "Link"), href: safeUrl(item.href, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.nav[i]?.href ?? "/"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.shell.header.nav;
+  const columns = sourceColumns.length ? sourceColumns.map((column, i) => ({ id: safeText(column.id, `column-${i}`), title: safeText(column.title, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.columns[i]?.title ?? ""), items: asArray<Record<string, unknown>>(column.items).map((item, j) => ({ id: safeText(item.id, `item-${i}-${j}`), label: safeText(item.label, "Link"), href: safeUrl(item.href, "#") })) })) : DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.columns;
 
-  const result: PublicSiteConfig = {
+  const normalizedSlides = sourceSlides.length ? sourceSlides.map((slide, i) => ({
+    id: safeText(slide.id, `slide-${i}`), eyebrow: safeText(slide.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].eyebrow), title: safeText(slide.title, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].title), copy: safeText(slide.copy, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].copy), signature: asArray<string>(slide.signature).filter((v) => typeof v === "string"), primaryLabel: safeText(slide.primaryLabel, "Get Started"), primaryHref: safeUrl(slide.primaryHref, PUBLIC_ROUTES.managerSignUp), secondaryLabel: safeText(slide.secondaryLabel, "Explore"), secondaryHref: safeUrl(slide.secondaryHref, "#platform"), image: typeof slide.image === "string" ? slide.image : null, mobileImage: typeof slide.mobileImage === "string" ? slide.mobileImage : null, enabled: safeBool(slide.enabled, true),
+  })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
+  const heroSlides = normalizedSlides.length ? normalizedSlides : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
+
+  const mergedPropertyTypes = sourcePropertyTypes.length ? sourcePropertyTypes.map((item, i) => ({ id: safeText(item.id, `property-${i}`), title: safeText(item.title, "Property type"), description: safeText(item.description, "Discover more"), image: typeof item.image === "string" ? item.image : null, icon: validIcon(item.icon, ["home", "building", "office", "landmark"], "building") as PublicSitePropertyType["icon"], href: safeUrl(item.href, `/discover/${safeText(item.id, "residential")}`), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes;
+  const mergedPortals = sourcePortals.length ? sourcePortals.map((item, i) => ({ id: validIcon(item.id, ["manager", "landlord", "agency", "tenant"], DEFAULT_PUBLIC_SITE_CONFIG.portals[i % 4].id) as PublicSitePortal["id"], eyebrow: safeText(item.eyebrow, "PORTAL"), title: safeText(item.title, "Portal"), description: safeText(item.description, "A connected property workspace."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, PUBLIC_ROUTES.managerSignIn), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.portals;
+
+  return {
     ...DEFAULT_PUBLIC_SITE_CONFIG,
+    ...s,
     version: 1,
     shell: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.shell,
+      ...shell,
       header: {
-        pricingLabel: nonEmptyString(sourceHeader.pricingLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.pricingLabel),
-        signInLabel: nonEmptyString(sourceHeader.signInLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.signInLabel),
-        getStartedLabel: nonEmptyString(sourceHeader.getStartedLabel, DEFAULT_PUBLIC_SITE_CONFIG.shell.header.getStartedLabel),
+        ...DEFAULT_PUBLIC_SITE_CONFIG.shell.header,
+        ...header,
+        nav,
+        utilityWords: asArray<string>(header.utilityWords).length ? asArray<string>(header.utilityWords).filter((v) => typeof v === "string") : DEFAULT_PUBLIC_SITE_CONFIG.shell.header.utilityWords,
       },
       footer: {
-        tagline: nonEmptyString(sourceFooter.tagline, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.tagline),
-        showPlatform: booleanValue(sourceFooter.showPlatform, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showPlatform),
-        showPortals: booleanValue(sourceFooter.showPortals, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showPortals),
-        showCompany: booleanValue(sourceFooter.showCompany, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showCompany),
+        ...DEFAULT_PUBLIC_SITE_CONFIG.shell.footer,
+        ...footer,
+        columns,
+        socials: sourceSocials.length ? sourceSocials.map((item, i) => ({ id: safeText(item.id, `social-${i}`), label: safeText(item.label, "•"), href: safeUrl(item.href, "#"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.socials,
+        newsletterTitle: safeText(footer.newsletterTitle, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.newsletterTitle),
+        newsletterPlaceholder: safeText(footer.newsletterPlaceholder, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.newsletterPlaceholder),
+        showNewsletter: safeBool(footer.showNewsletter, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.showNewsletter),
       },
     },
-    platformValue: {
-      eyebrow: nonEmptyString(sourcePlatform.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.eyebrow),
-      title: nonEmptyString(sourcePlatform.title, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.title),
-      copy: nonEmptyString(sourcePlatform.copy, DEFAULT_PUBLIC_SITE_CONFIG.platformValue.copy),
-      cards: sanitizePlatformCards(sourcePlatform.cards),
+    hero: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.hero,
+      ...hero,
+      fitMode: hero.fitMode === "screen" ? "screen" : "window",
+      overlay: hero.overlay === "medium" || hero.overlay === "strong" ? hero.overlay : "soft",
+      autoplay: safeBool(hero.autoplay, true),
+      intervalMs: typeof hero.intervalMs === "number" && Number.isFinite(hero.intervalMs) && hero.intervalMs >= 1000 ? hero.intervalMs : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
+      slides: heroSlides,
+      floatingCards: sourcePromos.length ? sourcePromos.map((item, i) => ({ id: safeText(item.id, `promo-${i}`), label: safeText(item.label, "FEATURED"), title: safeText(item.title, "Discover CALQULUS"), copy: safeText(item.copy, "Explore the connected property experience."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#platform"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.floatingCards,
+      pills: sourcePills.length ? sourcePills.map((item, i) => ({ id: safeText(item.id, `pill-${i}`), label: safeText(item.label, "CALQULUS"), icon: validIcon(item.icon, ["portals", "secure", "insights", "reliable"], "insights") as PublicSiteHeroPill["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.pills,
+    },
+    propertyTypes: mergedPropertyTypes,
+    portals: mergedPortals,
+    why: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.why,
+      ...why,
+      eyebrow: safeText(why.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.why.eyebrow),
+      title: safeText(why.title, DEFAULT_PUBLIC_SITE_CONFIG.why.title),
+      copy: safeText(why.copy, DEFAULT_PUBLIC_SITE_CONFIG.why.copy),
+      cards: sourceWhyCards.length ? sourceWhyCards.map((item, i) => ({ id: safeText(item.id, `why-${i}`), title: safeText(item.title, "Manage Everything"), copy: safeText(item.copy, "Connected property operations."), icon: validIcon(item.icon, ["stack", "gear", "chart", "leaf"], "stack") as PublicSiteWhyCard["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.why.cards,
+    },
+    featured: sourceFeatured.length ? sourceFeatured.map((item, i) => ({ id: safeText(item.id, `featured-${i}`), eyebrow: safeText(item.eyebrow, "FEATURED"), title: safeText(item.title, "Featured Property"), location: safeText(item.location, "Add location"), detail: safeText(item.detail, "Add property details"), price: safeText(item.price, "Add price or rent"), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "/discover/residential"), enabled: safeBool(item.enabled, false) })) : DEFAULT_PUBLIC_SITE_CONFIG.featured,
+    highlights: sourceHighlights.length ? sourceHighlights.map((item, i) => ({ id: safeText(item.id, `highlight-${i}`), value: safeText(item.value, "—"), label: safeText(item.label, "Configured metric"), icon: validIcon(item.icon, ["property", "users", "uptime", "support"], "property") as PublicSiteHighlight["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.highlights,
+    insights: sourceInsights.length ? sourceInsights.map((item, i) => ({ id: safeText(item.id, `insight-${i}`), category: safeText(item.category, "Insights"), title: safeText(item.title, "Latest insight"), meta: safeText(item.meta, "Read now"), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#insights"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.insights,
+    trust: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.trust,
+      ...trust,
+      eyebrow: safeText(trust.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.trust.eyebrow),
+      title: safeText(trust.title, DEFAULT_PUBLIC_SITE_CONFIG.trust.title),
+      copy: safeText(trust.copy, DEFAULT_PUBLIC_SITE_CONFIG.trust.copy),
+      quote: safeText(trust.quote, DEFAULT_PUBLIC_SITE_CONFIG.trust.quote),
+      person: safeText(trust.person, DEFAULT_PUBLIC_SITE_CONFIG.trust.person),
+      role: safeText(trust.role, DEFAULT_PUBLIC_SITE_CONFIG.trust.role),
+      avatar: typeof trust.avatar === "string" ? trust.avatar : null,
+      logos: sourceTrustLogos.length ? sourceTrustLogos.map((item, i) => ({ id: safeText(item.id, `logo-${i}`), name: safeText(item.name, "Organization"), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.trust.logos,
+    },
+    search: {
+      ...DEFAULT_PUBLIC_SITE_CONFIG.search,
+      ...search,
+      title: safeText(search.title, DEFAULT_PUBLIC_SITE_CONFIG.search.title),
+      copy: safeText(search.copy, DEFAULT_PUBLIC_SITE_CONFIG.search.copy),
+      placeholder: safeText(search.placeholder, DEFAULT_PUBLIC_SITE_CONFIG.search.placeholder),
+      tabs: sourceSearchTabs.length ? sourceSearchTabs.map((item, i) => ({ id: safeText(item.id, `tab-${i}`), label: safeText(item.label, "All"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.search.tabs,
+      chips: sourceSearchChips.length ? sourceSearchChips.map((item, i) => ({ id: safeText(item.id, `chip-${i}`), label: safeText(item.label, "Property"), href: safeUrl(item.href, "/discover/residential"), icon: validIcon(item.icon, ["home", "building", "office", "landmark"], "building") as PublicSiteConfig["search"]["chips"][number]["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.search.chips,
     },
     cta: {
-      eyebrow: nonEmptyString(sourceCta.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.cta.eyebrow),
-      title: nonEmptyString(sourceCta.title, DEFAULT_PUBLIC_SITE_CONFIG.cta.title),
-      copy: nonEmptyString(sourceCta.copy, DEFAULT_PUBLIC_SITE_CONFIG.cta.copy),
-      primaryLabel: nonEmptyString(sourceCta.primaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryLabel),
-      primaryHref: nonEmptyString(sourceCta.primaryHref, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryHref),
-      secondaryLabel: nonEmptyString(sourceCta.secondaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryLabel),
-      secondaryHref: nonEmptyString(sourceCta.secondaryHref, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryHref),
+      ...DEFAULT_PUBLIC_SITE_CONFIG.cta,
+      ...cta,
+      eyebrow: safeText(cta.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.cta.eyebrow),
+      title: safeText(cta.title, DEFAULT_PUBLIC_SITE_CONFIG.cta.title),
+      copy: safeText(cta.copy, DEFAULT_PUBLIC_SITE_CONFIG.cta.copy),
+      primaryLabel: safeText(cta.primaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryLabel),
+      primaryHref: safeUrl(cta.primaryHref, PUBLIC_ROUTES.managerSignUp),
+      secondaryLabel: safeText(cta.secondaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryLabel),
+      secondaryHref: safeUrl(cta.secondaryHref, "#cta"),
     },
-    hero: {
-      fitMode: sourceHero.fitMode === "screen" ? "screen" : "window",
-      autoplay: booleanValue(sourceHero.autoplay, DEFAULT_PUBLIC_SITE_CONFIG.hero.autoplay),
-      intervalMs: typeof sourceHero.intervalMs === "number" && Number.isFinite(sourceHero.intervalMs) && sourceHero.intervalMs >= 1000 ? sourceHero.intervalMs : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
-      overlay: sourceHero.overlay === "medium" || sourceHero.overlay === "strong" ? sourceHero.overlay : "soft",
-      slides: sanitizeHeroSlides(sourceHero.slides),
+    sections: sourceSections.length ? sourceSections.map((item, i) => ({ id: validIcon(item.id, ["hero", "property-types", "portals", "why", "featured", "trust", "cta"], DEFAULT_PUBLIC_SITE_CONFIG.sections[i % DEFAULT_PUBLIC_SITE_CONFIG.sections.length].id) as PublicSiteSectionId, visible: safeBool(item.visible, true), order: typeof item.order === "number" ? item.order : (i + 1) * 10, variant: item.variant === "compact" || item.variant === "wide" ? item.variant : "default" })) : DEFAULT_PUBLIC_SITE_CONFIG.sections,
+    rail: {
+      visible: safeBool(sourceRail.visible, true),
+      width: sourceRail.width === "narrow" ? "narrow" : "standard",
+      sections: sourceRailSections.length ? sourceRailSections.map((item, i) => ({ id: validIcon(item.id, ["search", "highlights", "insights"], DEFAULT_PUBLIC_SITE_CONFIG.rail.sections[i % 3].id) as PublicSiteRailId, visible: safeBool(item.visible, true), order: typeof item.order === "number" ? item.order : (i + 1) * 10 })) : DEFAULT_PUBLIC_SITE_CONFIG.rail.sections,
     },
-    propertyTypes: sanitizePropertyTypes(source.propertyTypes),
-    featured: sanitizeFeatured(source.featured),
-    portals: sanitizePortals(source.portals),
-    promotions: sanitizePromotions(source.promotions),
-    sections: sections.length ? sections : DEFAULT_PUBLIC_SITE_CONFIG.sections,
   };
-  return result;
 }
 
 export const PUBLIC_SITE_SECTION_LABELS: Record<PublicSiteSectionId, string> = {
   hero: "Hero",
   "property-types": "Property types",
-  featured: "Featured properties",
   portals: "Portals",
-  promotions: "Promotions / adverts",
-  platform: "Platform value",
+  why: "Why CALQULUS",
+  featured: "Featured properties",
+  trust: "Trust & testimonial",
   cta: "Conversion CTA",
+};
+
+export const PUBLIC_SITE_RAIL_LABELS: Record<PublicSiteRailId, string> = {
+  search: "Quick search",
+  highlights: "Platform highlights",
+  insights: "Latest insights",
 };
