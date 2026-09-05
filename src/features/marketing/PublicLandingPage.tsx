@@ -117,14 +117,14 @@ function Hero({ config }: { config: PublicSiteConfig }) {
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
       onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsPaused(false); }}
-      className={`relative overflow-hidden py-2 sm:py-3 ${
+      className={`relative isolate overflow-hidden py-2 sm:py-3 ${
         config.hero.fitMode === "screen" ? "min-h-[calc(100svh-72px)]" : ""
       }`}
     >
       <div className={`${CONTAINER} ${config.hero.fitMode === "screen" ? "h-full" : ""}`}>
         <div className="relative overflow-hidden rounded-[20px] border border-border bg-card shadow-[0_18px_55px_rgba(10,32,54,0.12)]">
           {/* Fixed slide frame: every hero page occupies exactly the same footprint. */}
-          <div className="relative h-[350px] sm:h-[370px] xl:h-[390px]">
+          <div className="relative h-[350px] min-h-0 sm:h-[370px] xl:h-[390px]">
             {slides.map((slide, index) => {
               const activeSlide = index === active;
               const image = img(slide.image, PROPERTY_IMAGES.residential);
@@ -143,16 +143,16 @@ function Hero({ config }: { config: PublicSiteConfig }) {
                   }`}
                   style={{ transitionDuration: `${prefersReducedMotion ? 0 : config.hero.transitionMs}ms` }}
                 >
-                  <div className="relative z-10 flex min-w-0 flex-col justify-center overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#f7fbff_58%,#edf5fb_100%)] px-5 py-7 sm:px-8 sm:py-8 lg:px-10 xl:px-12">
+                  <div className="relative z-10 flex min-h-0 min-w-0 flex-col justify-center overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#f7fbff_58%,#edf5fb_100%)] px-5 py-7 sm:px-8 sm:py-8 lg:px-10 xl:px-12">
                     <div className="min-w-0 max-w-[540px]">
                       <p className="font-heading text-xs font-semibold tracking-[0.26em] text-primary sm:text-sm">
                         {slide.eyebrow}
                       </p>
                       <div className="mt-4 flex items-start gap-3">
-                        <h1 className="min-w-0 flex-1 font-heading text-[clamp(2rem,4vw,3.85rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-navy-deep">
+                        <h1 className="min-w-0 max-w-[640px] flex-1 line-clamp-3 font-heading text-[clamp(1.95rem,3.7vw,3.55rem)] font-semibold leading-[0.97] tracking-[-0.05em] text-navy-deep">
                           {slide.title}
                         </h1>
-                        <div className="hidden shrink-0 pt-3 text-right sm:block" aria-hidden>
+                        <div className="hidden w-[82px] shrink-0 pt-3 text-right sm:block" aria-hidden>
                           {slide.signature.slice(0, 3).map((line) => (
                             <div key={line} className="font-serif text-[21px] italic leading-[0.95] text-primary/70 drop-shadow-sm">
                               {line}
@@ -164,7 +164,7 @@ function Hero({ config }: { config: PublicSiteConfig }) {
                       <p className="mt-4 max-w-xl text-[15px] leading-6.5 text-muted-foreground sm:text-base">
                         {slide.copy}
                       </p>
-                      <div className="mt-5 flex flex-wrap gap-2.5">
+                      <div className="mt-4 flex flex-wrap gap-2.5">
                         <Button
                           asChild
                           tabIndex={activeSlide ? 0 : -1}
@@ -312,23 +312,20 @@ function Portals({ items, ads = [] }: { items: PublicSiteConfig["portals"]; ads?
     const Icon = PORTAL_ICONS[item.id] ?? Building2;
     const accent = identities[item.id]?.primaryHex || PORTAL_COLORS[item.id];
     const replacement = replacementAd(ads, item.id);
-    if (replacement) return <AdCard key={item.id} ad={replacement} className="min-h-[188px] sm:min-h-[196px]" />;
-    return <NavLink key={item.id} href={item.href} className="group relative min-h-[188px] min-w-0 overflow-hidden rounded-2xl border border-white/90 bg-navy-deep text-white shadow-[0_10px_26px_rgba(16,42,67,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(16,42,67,0.17)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:min-h-[196px]">
-      <img src={img(item.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"/>
-      <div className="absolute inset-y-0 left-0 z-10 w-1.5" style={{ backgroundColor: accent }} aria-hidden />
-      <div className="absolute inset-y-0 left-0 z-10 w-[24%] opacity-80" style={{ background: `linear-gradient(90deg, ${accent} 0%, ${accent}B3 48%, transparent 100%)` }} aria-hidden />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/18"/>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"/>
-      <div className="relative flex h-full min-w-0 flex-col justify-between p-4">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/45 bg-white/12 shadow-sm backdrop-blur-sm"><Icon className="h-5 w-5" /></span>
-          <div className="min-w-0 pt-0.5"><p className="line-clamp-1 text-[11px] font-bold tracking-[0.16em] text-white/92 drop-shadow-sm">{item.eyebrow}</p><h3 className="mt-0.5 line-clamp-1 font-heading text-[clamp(1.2rem,1.8vw,1.45rem)] font-semibold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.28)]">{item.title.replace(" Portal", "")}</h3></div>
+    if (replacement) return <AdCard key={item.id} ad={replacement} className="min-h-[180px] sm:min-h-[188px]" />;
+    return <NavLink key={item.id} href={item.href} className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-white/90 bg-white shadow-[0_10px_26px_rgba(16,42,67,0.10)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(16,42,67,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
+      <div className="relative h-[118px] overflow-hidden sm:h-[126px]">
+        <img src={img(item.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/28 via-transparent to-transparent"/>
+        <div className="absolute inset-x-0 bottom-0 h-1.5" style={{ backgroundColor: accent }} aria-hidden />
+        <span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/90 shadow-sm backdrop-blur-sm" style={{ color: accent }}><Icon className="h-4 w-4" /></span>
+      </div>
+      <div className="flex min-h-[76px] min-w-0 items-center gap-2.5 px-3.5 py-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[10px] font-bold tracking-[0.17em]" style={{ color: accent }}>{item.eyebrow}</p>
+          <h3 className="truncate font-heading text-[15px] font-semibold text-navy-deep sm:text-base">{item.title.replace(" Portal", "")}</h3>
         </div>
-        <div className="min-w-0">
-          <p className="max-w-[270px] overflow-hidden text-[15px] leading-6 text-white/92 drop-shadow-[0_1px_3px_rgba(0,0,0,0.22)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{item.description}</p>
-          <div className="mt-2.5 flex flex-wrap gap-1.5">{portalFeatures[item.id].map((feature) => <span key={feature} className="rounded-full border border-white/25 bg-black/18 px-2 py-1 text-xs font-semibold text-white/90 backdrop-blur-sm">{feature}</span>)}</div>
-          <span className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/16 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/15 backdrop-blur-md transition group-hover:bg-white/24">Access Portal <ArrowRight className="h-3.5 w-3.5"/></span>
-        </div>
+        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition group-hover:border-primary/25 group-hover:text-primary"><ArrowRight className="h-3.5 w-3.5"/></span>
       </div>
     </NavLink>;
   })}</div></div></section>;
