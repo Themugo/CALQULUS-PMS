@@ -1,12 +1,19 @@
 /**
  * verify-mpesa-payment/index.ts
  *
- * Queries the local payment_transactions table to check the status of an
- * M-Pesa payment. Does NOT call external APIs — the actual M-Pesa callback
- * flow is handled by mpesa-callback → process-payment.
+ * Queries the local payment_transactions / platform_payment_transactions
+ * tables to check the status of an M-Pesa or Paystack-mobile-money payment.
+ * Does NOT call external APIs — the actual confirmation flow is handled by
+ * mpesa-callback / paystack-webhook (or reconcile-paystack) → process-payment
+ * / update_platform_payment_atomic.
  *
- * This is a read-only status check that managers/tenants can use to verify
- * whether a payment they initiated has been recorded.
+ * This is a read-only status check that managers/tenants can poll to verify
+ * whether a payment they initiated has been recorded. When the request body
+ * sets `isManagerInvoice: true` (the manager platform-billing flow), this
+ * looks up platform_payment_transactions by `reference` instead of the
+ * tenant-invoice payment_transactions table — the two flows use different
+ * tables with different status vocabularies, normalized below to a single
+ * top-level `status` of "success" | "failed" | "pending".
  */
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
@@ -51,10 +58,12 @@ serve(async (req) => {
   // ── Request parsing ────────────────────────────────────────────────
   let reference: string | undefined;
   let checkoutRequestId: string | undefined;
+  let isManagerInvoice = false;
   try {
     const body = await req.json();
     reference = body.reference;
     checkoutRequestId = body.checkoutRequestId;
+    isManagerInvoice = Boolean(body.isManagerInvoice);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }),
       { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
@@ -65,7 +74,78 @@ serve(async (req) => {
       { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }
 
-  // ── Query payment_transactions ─────────────────────────────────────
+  // ── Manager platform-fee flow: different table, different status
+  // vocabulary ('pending'/'success'/'failed'/'refunded') ──────────────
+  if (isManagerInvoice) {
+    if (callerRole !== "webhost" && callerRole !== "manager" && callerRole !== "submanager") {
+      return new Response(JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const lookupRef = reference ?? checkoutRequestId!;
+    const { data: platformTx, error: platformErr } = await supabase
+      .from("platform_payment_transactions")
+      .select("*")
+      .eq("reference", lookupRef)
+      .maybeSingle();
+
+    if (platformErr) {
+      return new Response(JSON.stringify({ error: "Database error", details: platformErr.message }),
+        { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    if (!platformTx) {
+      return new Response(JSON.stringify({
+        found: false,
+        status: "pending",
+        message: "No payment transaction found with this reference. It may still be processing.",
+      }), {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
+    if (callerRole !== "webhost" && platformTx.manager_user_id !== callerUserId) {
+      return new Response(JSON.stringify({ error: "Forbidden: you can only view your own transactions" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    // platform_payment_transactions.status is already 'pending' | 'success' |
+    // 'failed' | 'refunded' — pass through as-is, treating 'refunded' as a
+    // terminal non-success state for polling purposes.
+    const normalizedStatus = platformTx.status === "success" ? "success"
+      : platformTx.status === "pending" ? "pending"
+      : "failed";
+
+    let invoiceInfo: { invoice_number: string | null; amount: number | null; status: string | null } | null = null;
+    if (platformTx.manager_invoice_id) {
+      const { data: inv } = await supabase
+        .from("manager_invoices")
+        .select("invoice_number, amount, status")
+        .eq("id", platformTx.manager_invoice_id)
+        .maybeSingle();
+      invoiceInfo = inv;
+    }
+
+    return new Response(JSON.stringify({
+      found: true,
+      status: normalizedStatus,
+      message: normalizedStatus === "failed" ? (platformTx.failure_reason || "The payment was not completed.") : undefined,
+      transaction: {
+        id: platformTx.id,
+        status: platformTx.status,
+        amount: platformTx.amount,
+        payment_method: platformTx.payment_method,
+        provider: platformTx.provider,
+        initiated_at: platformTx.initiated_at,
+        completed_at: platformTx.completed_at,
+      },
+      invoice: invoiceInfo,
+    }), {
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
+  }
+
+  // ── Tenant invoice flow: query payment_transactions ─────────────────
   let query = supabase.from("payment_transactions").select("*");
 
   if (checkoutRequestId) {
@@ -84,6 +164,7 @@ serve(async (req) => {
   if (!transaction) {
     return new Response(JSON.stringify({
       found: false,
+      status: "pending",
       message: "No payment transaction found with this reference. It may still be processing.",
     }), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -107,8 +188,17 @@ serve(async (req) => {
     invoiceInfo = inv;
   }
 
+  // payment_transactions.status is 'pending' | 'completed' | 'failed' —
+  // normalize to the same 'success' | 'failed' | 'pending' vocabulary the
+  // frontend pollers check at the top level.
+  const normalizedStatus = transaction.status === "completed" ? "success"
+    : transaction.status === "pending" ? "pending"
+    : "failed";
+
   return new Response(JSON.stringify({
     found: true,
+    status: normalizedStatus,
+    message: normalizedStatus === "failed" ? (transaction.failure_reason || "The payment was not completed.") : undefined,
     transaction: {
       id: transaction.id,
       status: transaction.status,

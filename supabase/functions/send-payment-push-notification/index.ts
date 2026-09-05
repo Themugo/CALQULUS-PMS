@@ -3,7 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
 const logStep = (step: string, details?: Record<string, unknown>) => {
 };
 
@@ -28,7 +28,12 @@ function formatCurrency(amount: number): string {
 
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
-  const denied = await rejectUnlessUserServiceOrCron(req);
+  // No frontend code calls this directly — only process-due-invoice-notifications
+  // (service-side). Previously any authenticated user could push a fabricated
+  // "Payment Received" notification (and forge an activity-log row) against
+  // any manager; lock to service-role/cron since no legitimate user-JWT
+  // caller exists.
+  const denied = rejectUnlessServiceOrCron(req);
   if (denied) return denied;
 
 

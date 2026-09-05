@@ -48,6 +48,21 @@ serve(async (req) => {
       .lte("paid_at", end + "T23:59:59");
 
     if (propertyId) {
+      // Verify the supplied propertyId actually belongs to landlordId before
+      // scoping to it — otherwise a caller authorized for their own
+      // landlordId could pass any property UUID and pull another
+      // landlord's income statement (name/unit/payment data leak).
+      const { data: ownedProp } = await supabase
+        .from("properties")
+        .select("id")
+        .eq("id", propertyId)
+        .eq("landlord_id", landlordId)
+        .maybeSingle();
+      if (!ownedProp) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
       paymentsQuery = paymentsQuery.eq("property_id", propertyId);
     } else {
       // Get all property IDs for this landlord

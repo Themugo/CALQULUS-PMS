@@ -8,12 +8,12 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { requireEnv, getEnv } from '../_shared/env.ts';
 import { startTelemetry, finishTelemetry, failTelemetry, withRequestId } from '../_shared/observability.ts';
+import { getCorsHeaders } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-};
+// Use the shared, allowlisted CORS helper (reflects a known origin +
+// Allow-Credentials) instead of a hand-rolled wildcard, for consistency
+// with every other function. This endpoint's own data is low-sensitivity,
+// but a wildcard here was the one outlier across the whole codebase.
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -47,7 +47,7 @@ serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     finishTelemetry(telemetry, 204);
-    return new Response(null, { headers: withRequestId(corsHeaders, telemetry.requestId), status: 204 });
+    return new Response(null, { headers: withRequestId(getCorsHeaders(req), telemetry.requestId), status: 204 });
   }
 
   const url = new URL(req.url);
@@ -201,7 +201,7 @@ serve(async (req: Request) => {
     }),
     {
       headers: withRequestId({
-        ...corsHeaders,
+        ...getCorsHeaders(req),
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'X-Health-Status': health.status,

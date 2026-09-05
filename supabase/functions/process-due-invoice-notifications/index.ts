@@ -3,14 +3,19 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
 const logStep = (step: string, details?: Record<string, unknown>) => {
 };
 
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
+  // No frontend code calls this directly — only the scheduled cron job.
+  // Previously any authenticated user could trigger this platform-wide
+  // invoice-notification sweep (which itself calls send-payment-push-notification
+  // / send-invoice-due-push-notification for every due/overdue invoice);
+  // lock to service-role/cron since no legitimate user-JWT caller exists.
+  const denied = rejectUnlessServiceOrCron(req);
   if (denied) return denied;
 
 

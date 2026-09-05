@@ -2,7 +2,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 function escapeHtml(unsafe: string): string {
@@ -65,7 +65,12 @@ async function sendEmail(
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
+  // No frontend code calls this directly — only the scheduled cron job
+  // (supabase/migrations/20260506000015_scheduled_jobs.sql). Previously any
+  // authenticated user could trigger platform-wide maintenance-overdue
+  // emails to every property's contacts; lock to service-role/cron since no
+  // legitimate user-JWT caller exists.
+  const denied = rejectUnlessServiceOrCron(req);
   if (denied) return denied;
 
 

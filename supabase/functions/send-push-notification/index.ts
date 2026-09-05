@@ -3,6 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { callerManagesTenantUser } from "../_shared/notifyAuthz.ts";
 const logStep = (step: string, details?: Record<string, unknown>) => {
 };
 
@@ -37,6 +38,7 @@ serve(async (req: Request): Promise<Response> => {
     // Check if called with service role key (internal server-to-server call)
     const token = authHeader.replace("Bearer ", "");
     const isServiceRole = token === supabaseServiceKey;
+    let callerUserId: string | null = null;
 
     if (!isServiceRole) {
       // Validate as user JWT
@@ -53,6 +55,7 @@ serve(async (req: Request): Promise<Response> => {
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
+      callerUserId = user.id;
     }
 
     const requestData: PushNotificationRequest = await req.json();
@@ -67,9 +70,26 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    logStep("Fetching push subscriptions", { userId });
-
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Previously any authenticated user could push-notify an arbitrary
+    // userId with fully attacker-controlled title/body (phishing/spam
+    // vector). Require the caller to be notifying themselves, or to be the
+    // manager/submanager who actually manages the target tenant (mirrors
+    // BroadcastCenter.tsx, the real caller, which only ever targets tenants
+    // already scoped to the calling manager's own audience).
+    if (callerUserId && callerUserId !== userId) {
+      const authorized = await callerManagesTenantUser(supabaseAdmin, callerUserId, userId);
+      if (!authorized) {
+        logStep("Forbidden: caller does not manage target user", { callerUserId, userId });
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    logStep("Fetching push subscriptions", { userId });
 
     // Get user's push subscriptions
     const { data: subscriptions, error: subError } = await supabaseAdmin

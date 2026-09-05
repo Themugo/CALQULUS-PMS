@@ -409,7 +409,7 @@ export { errorResponse, successResponse, handleError };
 
 export { createLogger, logger } from "./logger.ts";
 export { getCorsHeaders, preflightResponse } from "./cors.ts";
-export { checkRateLimit, rateLimitResponse, isSensitive, RATE_LIMITS } from "./rateLimit.ts";
+export { checkRateLimit, rateLimitResponse } from "./rateLimit.ts";
 export { checkIdempotency, recordIdempotency, getIdempotencyKey } from "./idempotency.ts";
-export { withSecurityHeaders, SecurityError } from "./security.ts";
+export { withSecurityHeaders } from "./security.ts";
 export { checkRoleAccess } from "./authorization.ts";

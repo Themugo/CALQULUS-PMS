@@ -78,6 +78,14 @@ serve(async (req) => {
           .select("*, invoices(invoice_number, due_date, amount, tenants(name, email, phone, unit, property))")
           .eq("id", id)
           .single();
+        // The `id` here is an unrelated document id supplied by the client —
+        // the earlier ownership check only validated tenantId/managerId, so
+        // without this the caller could pass their own tenant/manager and an
+        // arbitrary payment id belonging to a different org. Re-check here.
+        if (!payment) return forbidden();
+        if (callerRole !== "webhost" && (payment as any).manager_id !== effectiveManagerId) {
+          return forbidden();
+        }
         const { data: settings } = await supabase
           .from("company_settings")
           .select("company_name, address, phone, email, logo_url")
@@ -92,6 +100,13 @@ serve(async (req) => {
           .select("*, tenants(name, email, phone, unit, property), other_charges(*)")
           .eq("id", id)
           .single();
+        // Same IDOR guard as "receipt" above: verify the fetched invoice
+        // actually belongs to the caller's (effective) manager before
+        // returning it, since `id` is not otherwise scoped.
+        if (!invoice) return forbidden();
+        if (callerRole !== "webhost" && (invoice as any).manager_id !== effectiveManagerId) {
+          return forbidden();
+        }
         const { data: settings } = await supabase
           .from("company_settings")
           .select("company_name, address, phone, email, logo_url")

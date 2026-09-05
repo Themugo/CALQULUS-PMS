@@ -3,7 +3,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { callerRelatesToManager } from "../_shared/notifyAuthz.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
@@ -30,8 +31,8 @@ interface NotificationRequest {
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -53,6 +54,19 @@ serve(async (req: Request): Promise<Response> => {
     logStep("Fetching manager details", { managerId });
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Previously any authenticated user could notify an arbitrary manager
+    // with fully fabricated tenant-signup details. Require the caller to
+    // actually be that manager, one of their submanagers, or (the real
+    // flow, from TenantAuth.tsx) the tenant this signup notification is
+    // about.
+    if (gate.userId && !(await callerRelatesToManager(supabaseAdmin, gate.userId, managerId))) {
+      logStep("Forbidden: caller has no relationship to managerId", { callerUserId: gate.userId, managerId });
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
     // Get manager's email and name
     const { data: managerProfile, error: profileError } = await supabaseAdmin

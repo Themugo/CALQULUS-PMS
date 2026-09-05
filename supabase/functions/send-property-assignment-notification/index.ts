@@ -1,6 +1,7 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface PropertyAssignmentRequest {
@@ -16,9 +17,24 @@ Deno.serve(async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
+  // No entity id is passed here (just a raw submanagerEmail string), so we
+  // can't verify the caller actually manages that specific submanager —
+  // but we can at least require the caller be an approved manager, which
+  // is who this notification is legitimately sent on behalf of
+  // (SubmanagerManagement.tsx). This closes the "any authenticated user of
+  // any role" hole; a full fix would pass a submanagerId and re-derive the
+  // email/name server-side.
+  if (gate.userId) {
+    const access = await checkRoleAccess(gate.userId, ["manager"]);
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+  }
 
   try {
     const { 

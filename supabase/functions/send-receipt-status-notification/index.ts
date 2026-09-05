@@ -2,7 +2,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface ReceiptStatusNotificationRequest {
@@ -37,9 +38,21 @@ const sendEmail = async (to: string, subject: string, html: string) => {
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
+  // No tenant/receipt id is passed here (raw tenantEmail/tenantPhone), so we
+  // can't verify the specific tenant relationship — but require the caller
+  // be an approved manager/submanager/webhost (the real caller,
+  // ReceiptVerification.tsx), closing the "any authenticated user" hole.
+  if (gate.userId) {
+    const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+  }
 
   try {
     const {

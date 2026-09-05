@@ -206,10 +206,36 @@ Deno.serve(async (req: Request): Promise<Response> => {
       getEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
 
-    // Find tenants without linked user roles
-    const { data: allTenants } = await supabaseAdmin.from("tenants").select("*");
+    // Scope to the caller's own portfolio. Without this, any authenticated
+    // manager or agency could backfill (create auth users + activation
+    // emails for) tenants belonging to a completely different organization —
+    // there was previously no manager_id/agency filter at all here.
+    const callerRoleRow = roleRows?.find((row) => allowedCaller.has(row.role));
+    const scopedManagerIds = new Set<string>([caller.id]);
+    if (callerRoleRow?.role === "agency") {
+      const { data: agencyRow } = await supabaseAdmin
+        .from("agencies")
+        .select("id")
+        .eq("manager_id", caller.id)
+        .maybeSingle();
+      if (agencyRow?.id) {
+        const { data: clientManagers } = await supabaseAdmin
+          .from("manager_profiles")
+          .select("manager_user_id")
+          .eq("agency_id", agencyRow.id);
+        for (const row of clientManagers || []) {
+          if (row.manager_user_id) scopedManagerIds.add(row.manager_user_id);
+        }
+      }
+    }
+
+    // Find tenants without linked user roles, restricted to the caller's portfolio
+    const { data: allTenants } = await supabaseAdmin
+      .from("tenants")
+      .select("*")
+      .in("manager_id", Array.from(scopedManagerIds));
     const { data: allRoles } = await supabaseAdmin.from("user_roles").select("tenant_id").not("tenant_id", "is", null);
-    
+
     const linkedTenantIds = new Set(allRoles?.map(r => r.tenant_id) || []);
     const tenantsToBackfill = allTenants?.filter(t => !linkedTenantIds.has(t.id)) || [];
 

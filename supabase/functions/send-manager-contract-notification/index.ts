@@ -2,7 +2,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface ContractNotificationRequest {
@@ -17,9 +18,22 @@ interface ContractNotificationRequest {
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
+  // The real caller (WebhostContracts.tsx) only ever fires this from the
+  // webhost admin contract-management UI, sending arbitrary
+  // uploaded/approved/rejected content to a raw managerEmail with no id to
+  // verify. Previously any authenticated user (any role) could invoke this
+  // directly. Require webhost.
+  if (gate.userId) {
+    const access = await checkRoleAccess(gate.userId, ["webhost"]);
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+  }
 
   try {
     if (!RESEND_API_KEY) {

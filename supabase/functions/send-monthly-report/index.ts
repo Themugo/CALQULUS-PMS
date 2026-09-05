@@ -3,7 +3,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface MonthlyReportData {
@@ -20,7 +20,12 @@ const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
+  // No frontend code calls this directly — only the scheduled monthly cron
+  // job. Previously any authenticated user could trigger a platform-wide
+  // revenue/top-tenant report email (aggregating ALL managers' paid
+  // invoices) to be sent out; lock to service-role/cron since no legitimate
+  // user-JWT caller exists.
+  const denied = rejectUnlessServiceOrCron(req);
   if (denied) return denied;
 
 

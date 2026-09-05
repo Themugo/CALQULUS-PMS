@@ -295,9 +295,39 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    logStep("Fetching manager details", { managerId });
-
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Only the manager themselves, one of their submanagers, or one of
+    // their own tenants (the real ReceiptUpload.tsx flow this function is
+    // built for) may trigger a notification to this managerId — otherwise
+    // any authenticated user of any role could spam/phish an arbitrary
+    // manager with fully attacker-controlled content and trigger a fake
+    // push notification against their account.
+    if (user.id !== managerId) {
+      const [{ data: subRel }, { data: tenantRel }] = await Promise.all([
+        supabaseAdmin
+          .from("manager_submanagers")
+          .select("manager_id")
+          .eq("submanager_user_id", user.id)
+          .eq("manager_id", managerId)
+          .maybeSingle(),
+        supabaseAdmin
+          .from("user_roles")
+          .select("tenant_id, tenants!inner(manager_id)")
+          .eq("user_id", user.id)
+          .eq("tenants.manager_id", managerId)
+          .limit(1),
+      ]);
+      if (!subRel && !tenantRel?.length) {
+        logStep("Forbidden: caller has no relationship to managerId", { callerUserId: user.id, managerId });
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    logStep("Fetching manager details", { managerId });
 
     // Get manager's contact details
     const { data: managerProfile, error: profileError } = await supabaseAdmin

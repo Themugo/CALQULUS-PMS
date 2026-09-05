@@ -2,7 +2,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { callerRelatesToManager } from "../_shared/notifyAuthz.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface MaintenanceNotificationRequest {
@@ -83,8 +84,8 @@ async function sendEmail(
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -115,6 +116,34 @@ Deno.serve(async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Maintenance request not found" }),
         { status: 404, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
+    }
+
+    // Previously any authenticated user could supply an arbitrary requestId
+    // (belonging to someone else entirely) with a chosen `type`/`assignedTo`
+    // to phish that request's real tenant/manager. Require the caller be
+    // the tenant this request belongs to (by email — the table has no
+    // tenant_id column) or relate to its manager.
+    if (gate.userId) {
+      let authorized = false;
+      const { data: callerProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("email")
+        .eq("id", gate.userId)
+        .maybeSingle();
+      if (callerProfile?.email && request.tenant_email &&
+          callerProfile.email.toLowerCase() === String(request.tenant_email).toLowerCase()) {
+        authorized = true;
+      }
+      if (!authorized && request.manager_id) {
+        authorized = await callerRelatesToManager(supabaseAdmin, gate.userId, request.manager_id);
+      }
+      if (!authorized) {
+        console.error("Forbidden: caller has no relationship to maintenance request", { callerUserId: gate.userId, requestId });
+        return new Response(
+          JSON.stringify({ error: "Forbidden" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
     }
 
     // Get manager info if manager_id exists

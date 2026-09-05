@@ -1,4 +1,5 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from "react";
+import type { AdminLevel } from "@/features/auth/AuthContext";
 
 // ── Lazy-loaded page components ─────────────────────────────────────
 const Dashboard = lazy(() => import("@/features/dashboard/pages/Dashboard"));
@@ -132,6 +133,8 @@ export interface RouteDef {
     | "can_manage_system_landlords"
     | "can_manage_billing"
     | "can_view_activity_logs";
+  /** Minimum webhost admin tier required to open this URL. */
+  minAdminLevel?: AdminLevel;
 }
 
 export interface RoleRouteConfig {
@@ -286,19 +289,19 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/webhost/login", redirect: "/webhost" },
       { path: "/webhost/invite", element: AdminInviteAccept },
       { path: "/webhost", element: WebhostDashboard, protected: true },
-      { path: "/webhost/applications", element: AdminApplications, protected: true },
-      { path: "/webhost/applications/:appId", element: AdminApplicationDetail, protected: true },
-      { path: "/webhost/deployments", element: AdminDeployments, protected: true },
-      { path: "/webhost/operations", element: AdminOperations, protected: true },
+      { path: "/webhost/applications", element: AdminApplications, protected: true, minAdminLevel: "admin" },
+      { path: "/webhost/applications/:appId", element: AdminApplicationDetail, protected: true, minAdminLevel: "admin" },
+      { path: "/webhost/deployments", element: AdminDeployments, protected: true, minAdminLevel: "admin" },
+      { path: "/webhost/operations", element: AdminOperations, protected: true, minAdminLevel: "admin" },
       { path: "/webhost/organizations", element: AdminOrganizations, protected: true, requirePermission: "can_manage_managers" },
       { path: "/webhost/organizations/:userId", element: AdminOrganizationDetail, protected: true },
-      { path: "/webhost/users", element: AdminUsers, protected: true },
+      { path: "/webhost/users", element: AdminUsers, protected: true, minAdminLevel: "admin" },
       { path: "/webhost/subscriptions", element: AdminSubscriptions, protected: true, requirePermission: "can_manage_billing" },
       { path: "/webhost/audit", element: AdminAuditLog, protected: true, requirePermission: "can_view_activity_logs" },
       { path: "/webhost/security", element: AdminSecurity, protected: true, requirePermission: "can_view_activity_logs" },
-      { path: "/webhost/settings", element: AdminSettings, protected: true },
-      { path: "/webhost/brand", element: AdminBrandStudio, protected: true },
-      { path: "/webhost/unattached-tenants", element: AdminUnattachedTenants, protected: true },
+      { path: "/webhost/settings", element: AdminSettings, protected: true, minAdminLevel: "admin", requirePermission: "can_manage_billing" },
+      { path: "/webhost/brand", element: AdminBrandStudio, protected: true, minAdminLevel: "admin" },
+      { path: "/webhost/unattached-tenants", element: AdminUnattachedTenants, protected: true, requirePermission: "can_manage_managers" },
       { path: "/webhost/properties", element: AdminProperties, protected: true, requirePermission: "can_manage_properties" },
       { path: "/webhost/landlords", element: AdminLandlords, protected: true, requirePermission: "can_manage_system_landlords" },
       { path: "/webhost/tiers", element: AdminTiers, protected: true, requirePermission: "can_manage_billing" },
@@ -335,7 +338,7 @@ export const roleRouteConfigs: RoleRouteConfig[] = [
       { path: "/leases", element: Leases, protected: true, permission: "view_leases" },
       { path: "/landlords", element: ManagerLandlords, protected: true, permission: "view_properties" },
       { path: "/vacation-notices", element: VacationNotices, protected: true, permission: "view_tenants" },
-      { path: "/reports", element: Reports, protected: true },
+      { path: "/reports", element: Reports, protected: true, permission: "view_invoices" },
       { path: "/invites", element: Invites, protected: true, permission: "view_tenants" },
       { path: "/water-billing", element: WaterBilling, protected: true, permission: "view_invoices" },
       { path: "/statements", element: Statements, protected: true, permission: "view_invoices" },

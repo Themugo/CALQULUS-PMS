@@ -4,7 +4,8 @@ import { Resend } from "resend/resend@2.0.0";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
 const resend = new Resend(getEnv("RESEND_API_KEY"));
 
 interface ApprovalRequest {
@@ -21,8 +22,8 @@ interface ApprovalRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -45,11 +46,24 @@ const handler = async (req: Request): Promise<Response> => {
       { auth: { persistSession: false } }
     );
 
-    // Resolve email and name — try supplied values first, then DB lookup
-    let email  = body.managerEmail;
-    let name   = body.managerName || "Property Manager";
+    // Only a webhost (account approval/rejection/suspension is a platform
+    // admin action) may trigger this — previously any authenticated user
+    // could call it. Enforce before doing anything else.
+    if (gate.userId && !(await callerIsWebhost(supabaseClient, gate.userId))) {
+      console.warn(`[MANAGER-NOTIFICATION] Forbidden: caller ${gate.userId} is not a webhost`);
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
 
-    if (!email) {
+    // Always resolve email/name from the database — a client-supplied
+    // managerEmail/managerName previously overrode the DB lookup entirely,
+    // letting a caller redirect this notification to an arbitrary address
+    // while it still reads as an official "account approved/rejected/
+    // suspended" message about a real userId.
+    let email: string | undefined;
+    let name = body.managerName || "Property Manager";
+    {
       const { data: profile } = await supabaseClient
         .from("profiles")
         .select("email, full_name")

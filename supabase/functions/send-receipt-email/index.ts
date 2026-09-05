@@ -4,7 +4,8 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
  * Branded HTML receipt email — shows due date, amount paid, method, balance
  */
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 import { serve } from "std/http/server.ts";
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0 }).format(n);
@@ -13,8 +14,25 @@ const esc = (s: string) => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
+
+  // No tenant/invoice id is passed here (raw tenantEmail string), so we
+  // can't verify the specific tenant relationship — but require the caller
+  // be an approved manager/submanager/webhost (the real callers: ReceiptsTab,
+  // PropertyBillingTab, PhysicalDocumentEntry), closing the "any
+  // authenticated user can email arbitrary receipt content to any address"
+  // hole. Service-role/cron callers (process-payment, auto-send-receipt,
+  // reconcile-bank) are unaffected.
+  if (gate.userId) {
+    const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
     const RESEND_API_KEY = getEnv("RESEND_API_KEY");
     const FROM = getEnv("RESEND_FROM_EMAIL", "onboarding@resend.dev");

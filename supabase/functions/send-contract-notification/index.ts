@@ -88,7 +88,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .eq("user_id", user.id)
       .single();
 
-    if (roleData?.role !== "manager" && roleData?.role !== "host") {
+    if (roleData?.role !== "manager" && roleData?.role !== "webhost" && roleData?.role !== "submanager") {
       console.error("User does not have required permissions");
       return new Response(
         JSON.stringify({ error: "Insufficient permissions" }),

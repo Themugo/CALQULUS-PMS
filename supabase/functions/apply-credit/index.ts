@@ -34,6 +34,28 @@ serve(async (req) => {
       const { data: tenant, error } = await admin.from("tenants").select("manager_id").eq("id", tenantId).maybeSingle();
       if (error || !tenant?.manager_id) return new Response(JSON.stringify({ error: "Tenant not found" }), { status: 404, headers });
       managerId = tenant.manager_id;
+
+      // checkRoleAccess above only confirms the caller HAS a manager/submanager
+      // role somewhere on the platform — it does not confirm they own THIS
+      // tenant's manager relationship. Because the RPC below runs on the
+      // service-role client (auth.role() = 'service_role'), its own internal
+      // ownership check is skipped, so this is the only place ownership is
+      // actually enforced. Without it, any manager/submanager could apply
+      // credit against another organization's tenant.
+      const isOwningManager = caller.user.id === managerId;
+      let isAuthorizedSubmanager = false;
+      if (!isOwningManager) {
+        const { data: rel } = await admin
+          .from("manager_submanagers")
+          .select("manager_id")
+          .eq("submanager_user_id", caller.user.id)
+          .eq("manager_id", managerId)
+          .maybeSingle();
+        isAuthorizedSubmanager = !!rel;
+      }
+      if (!isOwningManager && !isAuthorizedSubmanager) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers });
+      }
     }
 
     const { data, error } = await admin.rpc("apply_tenant_credit_atomic", {

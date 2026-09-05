@@ -14,11 +14,28 @@ serve(async (req) => {
   const callerUserId = auth.user.id === "service-role" ? null : auth.user.id;
 
   // ── Authorization ──────────────────────────────────────────────────
+  // Only a webhost (or the cron/service-role caller) may sweep overdue
+  // invoices platform-wide. A "manager" caller is scoped to their own
+  // portfolio below — checkRoleAccess only confirms the caller HAS a
+  // manager/webhost role somewhere, it doesn't scope the query, so
+  // without that scoping any manager could previously trigger penalty
+  // invoices against every OTHER manager's overdue tenants too.
+  let scopeToManagerId: string | null = null;
   if (callerUserId) {
     const roleCheck = await checkRoleAccess(callerUserId, ["webhost", "manager"]);
     if (!roleCheck.allowed) {
       return new Response(JSON.stringify({ error: roleCheck.error ?? "Forbidden" }),
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const { data: webhostRole } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", callerUserId)
+      .eq("role", "webhost")
+      .maybeSingle();
+    if (!webhostRole) {
+      scopeToManagerId = callerUserId;
     }
 
     const allowed = await checkRateLimit(
@@ -31,11 +48,15 @@ serve(async (req) => {
   try {
     const today = new Date().toISOString().slice(0, 10);
 
-    const { data: overdueInvoices, error } = await supabase
+    let overdueQuery = supabase
       .from("invoices")
       .select("id, amount, tenant_id, invoice_number, manager_id, property_id, due_date")
       .eq("status", "overdue")
       .lt("due_date", today);
+    if (scopeToManagerId) {
+      overdueQuery = overdueQuery.eq("manager_id", scopeToManagerId);
+    }
+    const { data: overdueInvoices, error } = await overdueQuery;
 
     if (error) throw error;
 

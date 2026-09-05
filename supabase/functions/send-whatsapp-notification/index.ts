@@ -30,6 +30,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rateLimit.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 
 const log = (step: string, details?: Record<string, unknown>) => console.log(`[whatsapp] ${step}`, details ?? "");
 
@@ -269,6 +270,22 @@ serve(async (req) => {
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
+
+      // Previously ANY authenticated user (any role, including tenant) could
+      // send an arbitrary WhatsApp/SMS message to any phone number with
+      // fully attacker-controlled content via the `message` override — a
+      // spam/phishing vector. No entity ID is available to verify a precise
+      // relationship (raw phoneNumber), so require the caller be a
+      // manager/submanager/webhost — the roles that legitimately trigger
+      // this from the UI — as the minimum viable fix.
+      const access = await checkRoleAccess(user.id, ["manager", "submanager", "webhost"]);
+      if (!access.allowed) {
+        return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+
       // Rate limit: 10 WhatsApp messages per user per hour
       const allowed = await checkRateLimit(supabase, user.id, "send-whatsapp-notification", RATE_LIMITS["send-whatsapp-notification"]);
       if (!allowed) return rateLimitResponse(req);

@@ -8,6 +8,7 @@ import WebhostPermissionGate from "@/features/webhost/components/WebhostPermissi
 import { WEBHOST_ROUTES, webhostOrganizationPath } from "@/features/webhost/lib/webhostPaths";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useAuth } from "@/features/auth/AuthContext";
 
 type OrgDetail = {
   userId: string;
@@ -24,10 +25,18 @@ type OrgDetail = {
 
 export default function AdminOrganizationDetail() {
   const { userId = "" } = useParams();
+  const { hasWebhostPermission, isSuperAdmin, loading: authLoading } = useAuth();
+  // WebhostPermissionGate below only hides the rendered DOM — it doesn't
+  // stop this query from firing on mount. Without gating `enabled` here
+  // too, a webhost admin lacking can_manage_managers could still pull this
+  // org's email/subscription/usage data over the network (visible in the
+  // query cache / network tab) even though the page renders nothing for
+  // them.
+  const canView = isSuperAdmin || hasWebhostPermission("can_manage_managers");
 
   const { data, isLoading, error } = useQuery<OrgDetail | null>({
     queryKey: ["platform-admin-org", userId],
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && !authLoading && canView,
     queryFn: async () => {
       const { data: role, error: roleError } = await supabase
         .from("user_roles")

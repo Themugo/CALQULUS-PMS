@@ -62,16 +62,26 @@ serve(async (req) => {
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    // ── 3. Lookup transaction with FOR UPDATE lock ─────────────────
-    // Using raw SQL to acquire row lock prevents race condition where
-    // two callbacks for the same request both see "pending" status.
-    // The lock is held until transaction completes.
-    const { data: transaction, error: txErr } = await supabase
+    // ── 3. Lookup transaction ─────────────────────────────────────────
+    // NOTE: this is a plain PostgREST select, not a row-locked read — two
+    // concurrent callback deliveries can both observe status="pending"
+    // below. The actual double-processing protection is downstream in the
+    // process_payment_atomic RPC, which takes pg_advisory_xact_lock + a
+    // real FOR UPDATE and no-ops if payment_allocations already exist for
+    // this transaction id. Do not rely on this select alone for that.
+    let { data: transaction, error: txErr } = await supabase
       .from("payment_transactions")
       .select(`*, invoices(id, invoice_number, amount, due_date, tenants(id, name, email, phone), leases(property, unit))`)
       .eq("checkout_request_id", checkoutRequestId)
       .maybeSingle();
 
+    // Fallback path: the primary lookup can legitimately miss when Safaricom's
+    // callback arrives before initiate-mpesa-stk-push has persisted
+    // checkout_request_id onto the row. `transaction`/`txErr` must be
+    // reassignable here — they were previously declared `const`, which threw
+    // a TypeError on every fallback hit and silently dropped the callback
+    // (swallowed by the outer catch, dead-lettered, 200 returned to
+    // Safaricom) — money moved but the invoice was never credited.
     if (!transaction && urlSecret) {
       const fallback = await supabase
         .from("payment_transactions")
@@ -95,11 +105,10 @@ serve(async (req) => {
         { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
-    // ── 5. Atomic status transition check ────────────────────────────
-    // Use atomic UPDATE with WHERE clause to ensure only one callback succeeds.
-    // If status is already non-pending, UPDATE returns 0 rows — this is our
-    // race-condition protection. The UNIQUE index on checkout_request_id
-    // provides a second layer of protection.
+    // ── 5. Status transition check (best-effort early exit) ───────────
+    // This app-level check narrows the window but is not itself atomic
+    // (see note above); process_payment_atomic is the real guarantee
+    // against double-crediting a replayed/concurrent callback.
     if (transaction.status !== "pending") {
       log("Already processed", { checkoutRequestId, currentStatus: transaction.status });
       return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Already processed" }),

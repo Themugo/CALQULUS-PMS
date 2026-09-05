@@ -3,7 +3,8 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { callerRelatesToManager, callerIsWebhost } from "../_shared/notifyAuthz.ts";
 // Resend email client
 const sendEmail = async (apiKey: string, to: string[], subject: string, html: string) => {
   const response = await fetch("https://api.resend.com/emails", {
@@ -46,8 +47,8 @@ const getSiteUrl = () => (getEnv("SITE_URL", "https://www.calqulus.site")).repla
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -70,6 +71,7 @@ serve(async (req) => {
 
     let managerEmail: string | null = null;
     let managerName: string | null = null;
+    let resolvedManagerUserId: string | null = null;
     let invoiceNumber: string | null = null;
     let invoiceAmount: number = amount || 0;
     let invoiceDueDate: string = dueDate || '';
@@ -105,6 +107,7 @@ serve(async (req) => {
         managerEmail = profile.email;
         managerName = profile.full_name;
       }
+      resolvedManagerUserId = invoice.manager_user_id;
 
       logStep("Invoice details fetched", { invoiceNumber, managerEmail });
     } else if (managerUserId) {
@@ -119,10 +122,35 @@ serve(async (req) => {
         managerEmail = profile.email;
         managerName = profile.full_name;
       }
+      resolvedManagerUserId = managerUserId;
     }
 
     if (!managerEmail) {
       throw new Error("Manager email not found");
+    }
+
+    // Previously any authenticated user could trigger a fabricated
+    // "new_invoice"/"payment_reminder"/"payment_confirmed" email to any
+    // manager. Only the manager themselves or a webhost (the two real
+    // callers: ManagerPlatformBilling.tsx and ManagerInvoices.tsx) may
+    // trigger this.
+    if (gate.userId && resolvedManagerUserId) {
+      const isSelf = gate.userId === resolvedManagerUserId;
+      const isWebhost = !isSelf && (await callerIsWebhost(supabaseClient, gate.userId));
+      if (!isSelf && !isWebhost) {
+        logStep("Forbidden: caller is neither the manager nor a webhost", { callerUserId: gate.userId, resolvedManagerUserId });
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    } else if (gate.userId && !resolvedManagerUserId) {
+      // Neither invoiceId nor managerUserId resolved to a real manager —
+      // reject rather than silently proceeding with untrusted body fields.
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
 
     // Build email content based on notification type

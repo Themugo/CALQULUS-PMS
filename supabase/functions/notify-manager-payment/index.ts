@@ -2,6 +2,7 @@ import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { isServiceRoleRequest } from "../_shared/assertCaller.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -322,19 +323,32 @@ serve(async (req: Request): Promise<Response> => {
 
     const supabaseUrl = SUPABASE_URL;
     const supabaseServiceKey = SERVICE_KEY;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    const supabaseClient = createClient(
-      supabaseUrl,
-      SUPABASE_ANON_KEY,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      });
+    // process-payment (the internal payment pipeline) calls this with the
+    // service-role key — trust that unconditionally. Any other caller must
+    // be a real user JWT, verified below and then checked against the
+    // target managerId's actual portfolio (see the ownership check further
+    // down) — previously ANY authenticated user of ANY role could notify
+    // ANY manager with fully attacker-controlled name/amount/invoice
+    // fields (phishing/spam vector) and write a fabricated activity-log
+    // entry against that manager's account.
+    const isServiceCall = isServiceRoleRequest(req);
+    let callerUserId: string | null = null;
+    if (!isServiceCall) {
+      const supabaseClient = createClient(
+        supabaseUrl,
+        SUPABASE_ANON_KEY,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+      if (authError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+      callerUserId = user.id;
     }
 
     const requestData: PaymentNotificationRequest = await req.json();
@@ -362,9 +376,35 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    logStep("Fetching manager details", { managerId });
+    if (!isServiceCall && callerUserId !== managerId) {
+      // Caller isn't notifying about themselves and isn't the trusted
+      // service pipeline — only allow a submanager acting for this
+      // specific manager, or the tenant this notification is actually
+      // about (their own manager). Anyone else gets 403.
+      const [{ data: subRel }, { data: tenantRel }] = await Promise.all([
+        supabaseAdmin
+          .from("manager_submanagers")
+          .select("manager_id")
+          .eq("submanager_user_id", callerUserId)
+          .eq("manager_id", managerId)
+          .maybeSingle(),
+        supabaseAdmin
+          .from("user_roles")
+          .select("tenant_id, tenants!inner(manager_id)")
+          .eq("user_id", callerUserId)
+          .eq("tenants.manager_id", managerId)
+          .limit(1),
+      ]);
+      if (!subRel && !tenantRel?.length) {
+        logStep("Forbidden: caller has no relationship to managerId", { callerUserId, managerId });
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
 
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    logStep("Fetching manager details", { managerId });
 
     // Get manager's contact details
     const { data: managerProfile, error: profileError } = await supabaseAdmin

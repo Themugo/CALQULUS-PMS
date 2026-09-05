@@ -1,7 +1,9 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
+import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
 
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -24,8 +26,8 @@ interface OverdueInvoice {
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -37,6 +39,32 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Create Supabase client with service role for full access
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Previously ANY authenticated user could trigger this platform-wide job,
+    // which queried ALL overdue invoices with no manager scoping — meaning a
+    // single manager clicking "Send Overdue Notifications" would email/SMS
+    // every overdue tenant across every OTHER manager's portfolio too. Require
+    // an approved manager/submanager/webhost role, and — unless the caller is
+    // a webhost (platform-wide is expected there) or cron — scope the run to
+    // just the calling manager's own tenants.
+    let scopeManagerId: string | null = null;
+    if (gate.userId) {
+      const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
+      if (!access.allowed) {
+        return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+      const isWebhost = await callerIsWebhost(supabase, gate.userId);
+      if (!isWebhost) {
+        const { data: subRel } = await supabase
+          .from("manager_submanagers")
+          .select("manager_id")
+          .eq("submanager_user_id", gate.userId)
+          .maybeSingle();
+        scopeManagerId = subRel?.manager_id ?? gate.userId;
+      }
+    }
 
     // Get company settings for email branding
     const { data: companySettings } = await supabase
@@ -85,10 +113,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // Get tenant details
     const tenantIds = [...new Set(invoices.map((inv) => inv.tenant_id).filter(Boolean))];
     
-    const { data: tenants } = await supabase
+    let tenantsQuery = supabase
       .from("tenants")
       .select("id, name, email, phone, property, unit")
       .in("id", tenantIds);
+    if (scopeManagerId) {
+      tenantsQuery = tenantsQuery.eq("manager_id", scopeManagerId);
+    }
+    const { data: tenants } = await tenantsQuery;
 
     const tenantMap = new Map(tenants?.map((t) => [t.id, t]) || []);
 

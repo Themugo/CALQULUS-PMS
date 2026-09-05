@@ -50,7 +50,7 @@ export function getWebhookSecret(req: Request, headerName: string, queryKey = "s
  *
  * Expects a `webhook_dead_letter` table with at least:
  *   id uuid primary key default gen_random_uuid(),
- *   source text not null,            -- 'mpesa' | 'bank' | 'stripe'
+ *   source text not null,            -- 'mpesa' | 'bank' | 'stripe' | 'paystack'
  *   external_ref text,               -- provider transaction id
  *   payload jsonb,                   -- raw request body
  *   error text,                      -- error message
@@ -60,7 +60,7 @@ export function getWebhookSecret(req: Request, headerName: string, queryKey = "s
  */
 export async function recordWebhookFailure(
   supabase: any,
-  source: "mpesa" | "bank" | "stripe",
+  source: "mpesa" | "bank" | "stripe" | "paystack",
   externalRef: string | null,
   payload: unknown,
   error: unknown,

@@ -151,6 +151,7 @@ const renderRoute = (route: RouteDef, allowedRoles?: AppRole[]) => {
             allowedRoles={allowedRoles}
             permission={route.permission}
             requirePermission={route.requirePermission}
+            minAdminLevel={route.minAdminLevel}
           >
             {element}
           </ProtectedRoute>

@@ -11,7 +11,8 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
  */
 
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
 import { serve } from "std/http/server.ts";
 
 const log = (step: string, details?: unknown) =>
@@ -48,22 +49,24 @@ interface ConfirmRequest {
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
-
-  try {
-    // Accept service-role OR user JWT
-    const authHeader = req.headers.get("Authorization");
-    const serviceRoleKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+  // No tenant/invoice id is passed here (raw tenantEmail string), so we
+  // can't verify the specific tenant relationship — but require the caller
+  // be an approved manager/submanager/webhost, closing the "any
+  // authenticated user can email/SMS/WhatsApp arbitrary payment-confirmation
+  // content to any address" hole. Service-role/cron callers are unaffected.
+  if (gate.userId) {
+    const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+        status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
       });
     }
-    // (user JWT validation omitted for brevity – add if calling from browser)
+  }
 
+  try {
     const RESEND_API_KEY = getEnv("RESEND_API_KEY");
     if (!RESEND_API_KEY) {
       log("RESEND_API_KEY not configured");

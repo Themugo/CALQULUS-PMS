@@ -3,7 +3,9 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { checkRoleAccess } from "../_shared/authorization.ts";
+import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
@@ -67,8 +69,8 @@ const sendEmail = async (to: string, subject: string, html: string) => {
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
@@ -78,6 +80,47 @@ serve(async (req) => {
       getEnv("SUPABASE_URL"),
       getEnv("SUPABASE_SERVICE_ROLE_KEY")
     );
+
+    // Previously ANY authenticated user could trigger this platform-wide job,
+    // which queried ALL pending/overdue invoices with no manager scoping —
+    // meaning a single manager clicking "Send Reminders Now" would email/SMS/
+    // WhatsApp every tenant across every OTHER manager's portfolio too.
+    // Require an approved manager/submanager/webhost role, and — unless the
+    // caller is a webhost (platform-wide is expected there) or cron — scope
+    // the run to just the calling manager's own tenants.
+    let scopeManagerId: string | null = null;
+    if (gate.userId) {
+      const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
+      if (!access.allowed) {
+        return new Response(JSON.stringify({ error: access.error ?? "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+      const isWebhost = await callerIsWebhost(supabaseClient, gate.userId);
+      if (!isWebhost) {
+        const { data: subRel } = await supabaseClient
+          .from("manager_submanagers")
+          .select("manager_id")
+          .eq("submanager_user_id", gate.userId)
+          .maybeSingle();
+        scopeManagerId = subRel?.manager_id ?? gate.userId;
+      }
+    }
+
+    let scopedTenantIds: string[] | null = null;
+    if (scopeManagerId) {
+      const { data: scopedTenants } = await supabaseClient
+        .from("tenants")
+        .select("id")
+        .eq("manager_id", scopeManagerId);
+      scopedTenantIds = (scopedTenants ?? []).map((t) => t.id);
+      if (scopedTenantIds.length === 0) {
+        return new Response(
+          JSON.stringify({ success: true, message: "No reminders to send", sent: 0 }),
+          { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+    }
 
     const today = new Date();
     
@@ -105,7 +148,7 @@ serve(async (req) => {
     logStep("Date ranges", { todayStr, oneDayStr, threeDaysStr, fiveDaysStr, oneDayAgoStr });
 
     // Fetch pending/overdue invoices with tenant info
-    const { data: invoices, error: invoicesError } = await supabaseClient
+    let invoicesQuery = supabaseClient
       .from('invoices')
       .select(`
         id,
@@ -114,6 +157,7 @@ serve(async (req) => {
         due_date,
         description,
         status,
+        tenant_id,
         tenants (
           id,
           name,
@@ -123,7 +167,11 @@ serve(async (req) => {
         )
       `)
       .in('status', ['pending', 'overdue'])
-      .lte('due_date', fiveDaysStr) // Start reminders 5 days before due
+      .lte('due_date', fiveDaysStr); // Start reminders 5 days before due
+    if (scopedTenantIds) {
+      invoicesQuery = invoicesQuery.in('tenant_id', scopedTenantIds);
+    }
+    const { data: invoices, error: invoicesError } = await invoicesQuery
       .order('due_date', { ascending: true });
 
     if (invoicesError) {

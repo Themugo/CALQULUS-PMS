@@ -2,7 +2,9 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
-import { rejectUnlessUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { createClient } from "supabase/supabase-js@2";
+import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
+import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
 const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
 };
@@ -20,15 +22,35 @@ interface ReceiptEmailRequest {
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
-  const denied = await rejectUnlessUserServiceOrCron(req);
-  if (denied) return denied;
+  const gate = await identifyUserServiceOrCron(req);
+  if (!gate.ok) return gate.response;
 
 
   try {
     logStep("Function started");
 
     const { email, managerName, receiptNumber, invoiceNumber, amount, description, paidDate }: ReceiptEmailRequest = await req.json();
-    
+
+    // The real caller (ManagerPlatformBilling.tsx) always sends this to the
+    // manager's OWN profile email. Previously any authenticated user could
+    // pass an arbitrary `email` here to send a fabricated platform-billing
+    // receipt to any address — require self-send or webhost.
+    if (gate.userId) {
+      const supabaseAdmin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      const { data: callerProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("email")
+        .eq("id", gate.userId)
+        .maybeSingle();
+      const isSelf = !!callerProfile?.email && callerProfile.email.toLowerCase() === String(email).toLowerCase();
+      if (!isSelf && !(await callerIsWebhost(supabaseAdmin, gate.userId))) {
+        logStep("Forbidden: caller is not sending to own email and is not webhost", { callerUserId: gate.userId, email });
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
+
     logStep("Sending receipt email", { email, receiptNumber });
 
     const RESEND_API_KEY = getEnv("RESEND_API_KEY");
