@@ -24,6 +24,7 @@ import { useSearchParams } from 'react-router-dom';
 import type { SupportedCurrency } from '@/shared/types/payment';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import TenantHome from '@/features/tenant-portal/components/TenantHome';
+import TenantManagementStatusCard from '@/features/tenant-portal/components/TenantManagementStatusCard';
 import { useOfflineData } from '@/shared/hooks/useOfflineData';
 import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-indicator';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
@@ -47,6 +48,8 @@ interface TenantInfo {
   property: string | null;
   unit: string | null;
   manager_id: string | null;
+  managing_landlord_id?: string | null;
+  management_mode?: 'agency' | 'manager' | 'landlord' | 'independent' | null;
   property_id: string | null;
   unit_id: string | null;
   statement_history_months: number | null;
@@ -96,6 +99,7 @@ const TenantPortal = () => {
     openCount: number;
     latestTitle: string | null;
   }>({ openCount: 0, latestTitle: null });
+  const [managementContext, setManagementContext] = useState<{ management_mode: 'agency' | 'manager' | 'landlord' | 'independent'; manager_name: string | null; agency_name: string | null; landlord_name: string | null; has_active_lease: boolean; } | null>(null);
 
   // Fetch tenant info with offline support
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -103,7 +107,7 @@ const TenantPortal = () => {
     if (!userRole?.tenant_id) return null;
     const { data, error } = await supabase
       .from('tenants')
-      .select('id, name, email, property, unit, property_id, unit_id, manager_id, statement_history_months')
+      .select('id, name, email, property, unit, property_id, unit_id, manager_id, managing_landlord_id, management_mode, statement_history_months')
       .eq('id', userRole.tenant_id)
       .single();
     if (error) throw error;
@@ -141,8 +145,24 @@ const TenantPortal = () => {
       manager_id: managerId,
       property_id: data.property_id || null,
       unit_id: data.unit_id || null,
+      managing_landlord_id: data.managing_landlord_id ?? null,
+      management_mode: data.management_mode ?? (data.manager_id ? 'manager' : data.property_id ? 'landlord' : 'independent'),
       statement_history_months: data.statement_history_months,
     };
+  }, [userRole?.tenant_id]);
+
+  useEffect(() => {
+    if (!userRole?.tenant_id) { setManagementContext(null); return; }
+    void supabase.rpc('get_my_tenant_management_context' as any).then(({ data }) => {
+      const row = Array.isArray(data) ? data[0] : data;
+      setManagementContext(row ? {
+        management_mode: row.management_mode ?? 'independent',
+        manager_name: row.manager_name ?? null,
+        agency_name: row.agency_name ?? null,
+        landlord_name: row.landlord_name ?? null,
+        has_active_lease: Boolean(row.has_active_lease),
+      } : null);
+    });
   }, [userRole?.tenant_id]);
 
   // Fetch invoices with offline support
@@ -525,6 +545,8 @@ const TenantPortal = () => {
     );
   }
 
+  const independentTenant = tenantInfo?.management_mode === 'independent' || (!tenantInfo?.management_mode && !tenantInfo?.manager_id && !tenantInfo?.property_id);
+
   return (
     <TenantLayout title="Home" hideHeader>
       {(isOffline || isFromCache) && (
@@ -552,11 +574,23 @@ const TenantPortal = () => {
         <p className="mb-4 text-sm text-muted-foreground">Demo mode — sample data</p>
       )}
 
-      {(!userRole?.tenant_id || (!tenantLoading && !tenantInfo?.manager_id)) && !tenantLoading && (
+      {tenantInfo && !tenantLoading ? (
+        <TenantManagementStatusCard
+          tenantId={tenantInfo.id}
+          mode={independentTenant ? 'independent' : (managementContext?.management_mode ?? tenantInfo.management_mode ?? (tenantInfo.manager_id ? 'manager' : 'landlord'))}
+          managerName={managementContext?.manager_name}
+          agencyName={managementContext?.agency_name}
+          landlordName={managementContext?.landlord_name}
+          propertyName={tenantInfo.property}
+          hasActiveLease={Boolean(managementContext?.has_active_lease || lease)}
+        />
+      ) : null}
+
+      {independentTenant && !tenantLoading && (
         <OrphanTenantHome />
       )}
 
-      {userRole?.tenant_id && tenantInfo?.manager_id && (
+      {userRole?.tenant_id && !independentTenant && tenantInfo && (
         <TenantHome
           greeting={getGreeting()}
           firstName={tenantInfo.name?.split(" ")[0] || "there"}

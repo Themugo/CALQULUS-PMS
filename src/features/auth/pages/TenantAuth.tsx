@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -21,6 +21,7 @@ import {
   type InvitationState,
 } from '@/features/auth/lib/tenantInvitation';
 import { formatCurrency } from '@/shared/lib/formatCurrency';
+import { TenantPortalShell } from '@/features/auth/components/TenantPortalChrome';
 
 interface Invitation {
   id: string;
@@ -142,24 +143,17 @@ const TenantAuth = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate input with schema
     const validationResult = signupSchema.safeParse({
       email: signupEmail,
       password: signupPassword,
       fullName: signupFullName,
     });
-
     if (!validationResult.success) {
-      toast({
-        title: 'Validation Error',
-        description: formatValidationErrors(validationResult.error),
-        variant: 'destructive',
-      });
+      toast({ title: 'Validation Error', description: formatValidationErrors(validationResult.error), variant: 'destructive' });
       setIsSubmitting(false);
       return;
     }
 
-    // Validate phone if provided
     if (signupPhone && !validatePhone(signupPhone)) {
       toast({
         title: 'Invalid Phone Number',
@@ -171,137 +165,78 @@ const TenantAuth = () => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal`;
-
-      // Sign up with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: signupFullName,
-          },
-        },
-      });
-
-      if (authError) {
-        toast({
-          title: 'Signup failed',
-          description: authError.message.includes('already registered')
-            ? 'This email is already registered. Please login instead.'
-            : sanitizeAuthError(authError.message),
-          variant: 'destructive',
-        });
+      if (!invitationToken || !invitation) {
+        toast({ title: 'Invitation required', description: 'Open the tenant invitation link sent by your property manager, landlord or agency.', variant: 'destructive' });
         setIsSubmitting(false);
         return;
       }
 
-      if (authData.user) {
-        // Route through create-tenant-account edge function
-        // For invited tenants: property/unit info from invitation
-        // For self-registration (orphaned): no property/unit, accounting mode
+      let authUser = user;
+      let hasSession = false;
+      const redirectUrl = `${window.location.origin}/portal`;
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: { emailRedirectTo: redirectUrl, data: { full_name: signupFullName, phone: signupPhone || null } },
+      });
 
-        // Invited tenants claim with the invitation TOKEN — the server
-        // resolves property/unit/manager/rent from the invitation row and
-        // never trusts client-supplied IDs. Self-registration (accounting
-        // mode) has no property linkage.
-        const { data: createResult, error: createError } = await supabase.functions.invoke(
-          'create-tenant-account',
-          {
-            body: invitation && !isSelfRegistration
-              ? {
-                  userId:          authData.user.id,
-                  name:            signupFullName,
-                  email:           invitation.email,
-                  phone:           signupPhone || null,
-                  invitationToken: invitationToken,
-                  sendSms:      false,
-                  sendWhatsapp: false,
-                }
-              : {
-                  userId:       authData.user.id,
-                  name:         signupFullName,
-                  email:        signupEmail,
-                  phone:        signupPhone || null,
-                  property:     null,
-                  property_id:  null,
-                  unit:         null,
-                  manager_id:   null,
-                  monthlyRent:  null,
-                  depositAmount: null,
-                  sendSms:      false,
-                  sendWhatsapp: false,
-                  isExistingUser: true, // user already created via supabase.auth.signUp
-                  isSelfRegistration: true, // flag for orphaned tenant accounting mode
-                },
-          }
-        );
-
-        if (createError || createResult?.error) {
-          const msg = createResult?.error || createError?.message || 'Failed to create tenant profile';
-          logError('TenantAuth.handleSignup.createTenant', msg);
-          toast({
-            title: 'Signup failed',
-            description: 'Failed to create tenant profile. Please try again.',
-            variant: 'destructive',
-          });
+      if (authError) {
+        if (!authError.message.toLowerCase().includes('already registered')) {
+          toast({ title: 'Signup failed', description: sanitizeAuthError(authError.message), variant: 'destructive' });
           setIsSubmitting(false);
           return;
         }
-
-        // Notify manager that tenant has signed up (if from invitation)
-        if (invitation?.invited_by && !isSelfRegistration) {
-          supabase.functions.invoke('notify-manager-tenant-signup', {
-            body: {
-              managerId: invitation.invited_by,
-              tenantName: signupFullName,
-              tenantEmail: signupEmail,
-              propertyName: invitation.property_name,
-              unit: invitation.unit || undefined,
-            },
-          }).catch((err) => logError('TenantAuth.notifyManager', err));
-        }
-
-        // Set registered email for verification screen
-        setRegisteredEmail(signupEmail);
-
-        if (invitation && !isSelfRegistration) {
-          // Confirmation screen shows the server-resolved summary. When the
-          // project requires email confirmation there is no session yet —
-          // send the tenant through verification first.
-          if (authData.session) {
-            setClaimedSummary(createResult?.summary ?? {
-              property: invitation.property_name,
-              unit: invitation.unit,
-              monthlyRent: invitation.monthly_rent ?? null,
-              depositAmount: invitation.house_deposit != null
-                ? invitation.house_deposit + (invitation.water_deposit || 0)
-                : null,
-            });
-          } else {
-            setShowVerificationMessage(true);
-          }
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email: signupEmail, password: signupPassword });
+        if (signInError || !signInData.user) {
+          toast({ title: 'Account already exists', description: 'Sign in with the existing tenant account, then open this invitation again.', variant: 'destructive' });
           setIsSubmitting(false);
           return;
         }
-
-        // Success! Show toast - navigation will be handled by useEffect watching userRole
-        toast({
-          title: 'Account Created for Accounting',
-          description: 'Your account has been created. You can manage your rental records for accounting purposes.',
-        });
-
-        // Force a session refresh to trigger role fetch
-        await supabase.auth.refreshSession();
+        authUser = signInData.user;
+        hasSession = Boolean(signInData.session);
+      } else if (authData.user) {
+        authUser = authData.user;
+        hasSession = Boolean(authData.session);
       }
+
+      if (!authUser) throw new Error('Tenant account could not be resolved');
+
+      const { data: claimResult, error: claimError } = await supabase.rpc('claim_tenant_invitation_atomic' as any, {
+        p_token: invitationToken,
+      });
+      if (claimError) {
+        logError('TenantAuth.handleSignup.claimInvitation', claimError.message);
+        toast({ title: 'Invitation could not be linked', description: claimError.message, variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      setRegisteredEmail(signupEmail);
+      if (hasSession) {
+        setClaimedSummary({
+          property: claimResult?.property ?? invitation.property_name,
+          unit: claimResult?.unit ?? invitation.unit,
+          monthlyRent: claimResult?.monthly_rent ?? invitation.monthly_rent ?? null,
+          depositAmount: claimResult?.deposit_amount ?? (invitation.house_deposit != null ? invitation.house_deposit + (invitation.water_deposit || 0) : null),
+        });
+      } else {
+        setShowVerificationMessage(true);
+      }
+
+      supabase.functions.invoke('notify-manager-tenant-signup', {
+        body: {
+          managerId: invitation.invited_by,
+          tenantName: signupFullName,
+          tenantEmail: signupEmail,
+          propertyName: invitation.property_name,
+          unit: invitation.unit || undefined,
+        },
+      }).catch((err) => logError('TenantAuth.notifyManager', err));
+
+      await supabase.auth.refreshSession();
     } catch (error) {
       logError('TenantAuth.handleSignup', error);
-      toast({
-        title: 'Signup failed',
-        description: 'An unexpected error occurred. Please try again.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Signup failed', description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.', variant: 'destructive' });
     }
 
     setIsSubmitting(false);
@@ -449,60 +384,9 @@ const TenantAuth = () => {
     );
   }
 
-  // If no invitation token, show registration options
+  // The invitation route requires a real invitation token; independent tenants use /tenant/signup.
   if (!invitationToken && !isLoadingInvitation && !isSelfRegistration) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-md border-primary/20 bg-card/95 backdrop-blur-sm shadow-sm">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="h-16 w-16 rounded-md bg-warning flex items-center justify-center">
-                <Mail className="h-8 w-8 text-primary-foreground" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Tenant Registration</CardTitle>
-            <CardDescription className="text-muted-foreground mt-2">
-              Choose your registration type
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg border border-border bg-muted/50">
-                <h3 className="font-semibold text-foreground mb-2">Invited by Property Manager</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  If you have an invitation link from your property manager or landlord, use it to register with your property and unit details.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Contact your property manager to request an invitation link.
-                </p>
-              </div>
-              
-              <div className="p-4 rounded-lg border border-border bg-muted/50">
-                <h3 className="font-semibold text-foreground mb-2">Self-Registration (Accounting Mode)</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Register independently to manage your rental records for accounting and budgeting purposes. No property manager approval required.
-                </p>
-                <Button 
-                  onClick={() => setIsSelfRegistration(true)}
-                  className="w-full"
-                >
-                  Register for Accounting
-                </Button>
-              </div>
-            </div>
-            <div className="pt-4 border-t border-border">
-              <p className="text-muted-foreground text-sm mb-3">Already have an account?</p>
-              <Link to="/tenant/login">
-                <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/10">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <Navigate to="/tenant/signup" replace />;
   }
 
   // If self-registration mode, show self-registration form
@@ -743,6 +627,7 @@ const TenantAuth = () => {
         </CardFooter>
       </Card>
     </div>
+    </TenantPortalShell>
   );
 };
 

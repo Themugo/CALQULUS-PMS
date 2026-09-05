@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Home, Wallet, Wrench, BellRing } from "lucide-react";
+import { Home, Wallet, Wrench, BellRing, FileText, ShieldCheck } from "lucide-react";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen";
@@ -29,14 +29,14 @@ export function TenantPortalShell({ children }: TenantPortalShellProps) {
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
       badgeIcon={Home}
       portalName={identity.shortName}
-      slogan={identity.tagline}
-      description="Your home, connected — rent, payments, maintenance and lease information in one secure place."
+      slogan={identity.tagline || "Your rental record should travel with you."}
+      description="One secure home for rent, contracts, repairs, payments and your property record — whether you are managed or independent."
       features={[
-        { icon: Wallet, label: "Payments", text: "View rent, invoices and payment activity." },
-        { icon: Wrench, label: "Requests", text: "Report and follow maintenance from one place." },
-        { icon: BellRing, label: "Updates", text: "Stay informed about your tenancy and home." },
+        { icon: Wallet, label: "Payments", text: "Know what you paid, when you paid it and what remains due." },
+        { icon: FileText, label: "Rental Record", text: "Keep contracts, receipts and property documents together." },
+        { icon: Wrench, label: "Condition & Repairs", text: "Document maintenance and property condition with confidence." },
       ]}
-      trustLabel="Secure tenant access · Easy service · Timely updates"
+      trustLabel="Portable record · Secure access · Your history stays with you"
     >
       {children}
     </PortalLoginLayout>

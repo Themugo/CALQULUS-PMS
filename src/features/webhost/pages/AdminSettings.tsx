@@ -1,6 +1,7 @@
 import WebhostLayout from "@/features/webhost/components/WebhostLayout";
 import WebhostPaymentSettings from "@/features/webhost/components/WebhostPaymentSettings";
 import PlatformAdminManagement from "@/features/webhost/components/PlatformAdminManagement";
+import IndependentTenantSettings from "@/features/webhost/components/IndependentTenantSettings";
 
 export default function AdminSettings() {
   return (
@@ -10,6 +11,7 @@ export default function AdminSettings() {
     >
       <div className="space-y-8">
         <PlatformAdminManagement />
+        <IndependentTenantSettings />
         <WebhostPaymentSettings />
       </div>
     </WebhostLayout>

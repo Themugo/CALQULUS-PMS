@@ -73,9 +73,13 @@ const OrphanTenantHome: React.FC = () => {
   const queryClient = useQueryClient();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const receiptInputRef = useRef<HTMLInputElement>(null);
+  const documentInputRef = useRef<HTMLInputElement>(null);
+  const repairPhotoInputRef = useRef<HTMLInputElement>(null);
 
   const [payDialog, setPayDialog] = useState(false);
   const [photoDialog, setPhotoDialog] = useState(false);
+  const [documentDialog, setDocumentDialog] = useState(false);
+  const [repairDialog, setRepairDialog] = useState(false);
   const [payForm, setPayForm] = useState({
     payment_date: new Date().toISOString().slice(0, 10),
     amount: '',
@@ -94,6 +98,10 @@ const OrphanTenantHome: React.FC = () => {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [repairPhotoFile, setRepairPhotoFile] = useState<File | null>(null);
+  const [documentForm, setDocumentForm] = useState({ document_type: 'contract', title: '', start_date: '', end_date: '', notes: '' });
+  const [repairForm, setRepairForm] = useState({ title: '', description: '', notes: '' });
 
   // Fetch orphan record
   const { data: record } = useQuery({
@@ -130,6 +138,18 @@ const OrphanTenantHome: React.FC = () => {
         .order('taken_at', { ascending: false });
       return (data ?? []) as MoveConditionPhoto[];
     },
+    enabled: !!user?.id,
+  });
+
+  const { data: documents = [] } = useQuery({
+    queryKey: ['tenant-personal-documents', user?.id],
+    queryFn: async () => { const { data } = await supabase.from('tenant_personal_documents' as any).select('*').eq('user_id', user!.id).order('created_at', { ascending: false }); return data ?? []; },
+    enabled: !!user?.id,
+  });
+
+  const { data: repairLogs = [] } = useQuery({
+    queryKey: ['tenant-personal-maintenance', user?.id],
+    queryFn: async () => { const { data } = await supabase.from('tenant_personal_maintenance_logs' as any).select('*').eq('user_id', user!.id).order('reported_at', { ascending: false }); return data ?? []; },
     enabled: !!user?.id,
   });
 
@@ -197,6 +217,72 @@ const OrphanTenantHome: React.FC = () => {
     }
   };
 
+  const addDocument = useMutation({
+    mutationFn: async () => {
+      if (!documentFile) throw new Error('Select the document file');
+      if (!documentForm.title.trim()) throw new Error('Enter a document title');
+      const safeName = documentFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${user!.id}/documents/${Date.now()}-${safeName}`;
+      const { error: uploadError } = await supabase.storage.from('tenant-personal-documents').upload(path, documentFile, { upsert: false, contentType: documentFile.type || undefined });
+      if (uploadError) throw uploadError;
+      const { error } = await supabase.rpc('add_tenant_personal_document_atomic' as any, {
+        p_document_type: documentForm.document_type,
+        p_title: documentForm.title.trim(),
+        p_file_url: path,
+        p_start_date: documentForm.start_date || null,
+        p_end_date: documentForm.end_date || null,
+        p_notes: documentForm.notes.trim() || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: 'Document saved', description: 'Your rental evidence is now part of your portable record.' });
+      queryClient.invalidateQueries({ queryKey: ['tenant-personal-documents'] });
+      setDocumentDialog(false);
+      setDocumentFile(null);
+      setDocumentForm({ document_type: 'contract', title: '', start_date: '', end_date: '', notes: '' });
+    },
+    onError: (e: Error) => errorToast('Could not save document', e),
+  });
+
+  const addRepair = useMutation({
+    mutationFn: async () => {
+      if (!repairForm.title.trim()) throw new Error('Enter a repair title');
+      const photoUrls: string[] = [];
+      if (repairPhotoFile) {
+        const safeName = repairPhotoFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `${user!.id}/repairs/${Date.now()}-${safeName}`;
+        const { error: uploadError } = await supabase.storage.from('tenant-personal-documents').upload(path, repairPhotoFile, { upsert: false, contentType: repairPhotoFile.type || undefined });
+        if (uploadError) throw uploadError;
+        photoUrls.push(path);
+      }
+      const { error } = await supabase.rpc('add_tenant_personal_maintenance_atomic' as any, {
+        p_title: repairForm.title.trim(),
+        p_description: repairForm.description.trim() || null,
+        p_notes: repairForm.notes.trim() || null,
+        p_photo_urls: photoUrls,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: 'Repair diary entry saved' });
+      queryClient.invalidateQueries({ queryKey: ['tenant-personal-maintenance'] });
+      setRepairDialog(false);
+      setRepairPhotoFile(null);
+      setRepairForm({ title: '', description: '', notes: '' });
+    },
+    onError: (e: Error) => errorToast('Could not save repair', e),
+  });
+
+  const openPrivateFile = async (path: string) => {
+    const { data, error } = await supabase.storage.from('tenant-personal-documents').createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) {
+      toast({ title: 'File unavailable', description: error?.message || 'Could not open the private file.', variant: 'destructive' });
+      return;
+    }
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  };
+
   // Add condition photo
   const addConditionPhoto = useMutation({
     mutationFn: async () => {
@@ -233,10 +319,9 @@ const OrphanTenantHome: React.FC = () => {
         <div className="flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-semibold text-warning">Independent account — not linked to a manager</p>
+            <p className="text-sm font-semibold text-warning">Independent rental record — portable by design</p>
             <p className="text-xs text-warning mt-0.5">
-              You're managing your own records. If your manager invites you to their system, your payment history will
-              merge with their official records.
+              You control this record. When you later join an agency, manager or landlord-managed property, CALQULUS can link this history instead of replacing it.
             </p>
           </div>
           <Link to="/tenant/invitation">
@@ -258,6 +343,8 @@ const OrphanTenantHome: React.FC = () => {
           { label: 'Total recorded', value: fmt(totalPaid) },
           { label: 'Payments logged', value: String(payments.length) },
           { label: 'Condition photos', value: String(photos.length) },
+          { label: 'Rental documents', value: String(documents.length) },
+          { label: 'Repair diary', value: String(repairLogs.length) },
         ].map((k) => (
           <div key={k.label} className="rounded-xl border border-border/50 bg-card p-3 text-center">
             <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
@@ -276,6 +363,14 @@ const OrphanTenantHome: React.FC = () => {
           <TabsTrigger value="photos" className="flex-1 gap-1.5">
             <Camera className="h-3.5 w-3.5" />
             Condition photos
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="flex-1 gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            Documents
+          </TabsTrigger>
+          <TabsTrigger value="repairs" className="flex-1 gap-1.5">
+            <Wrench className="h-3.5 w-3.5" />
+            Repairs
           </TabsTrigger>
           <TabsTrigger value="rental" className="flex-1 gap-1.5">
             <Home className="h-3.5 w-3.5" />
@@ -420,6 +515,22 @@ const OrphanTenantHome: React.FC = () => {
           )}
         </TabsContent>
 
+        <TabsContent value="documents" className="mt-4 space-y-3">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/15 bg-primary/5 p-4">
+            <div><p className="text-sm font-semibold">Your rental documents</p><p className="mt-1 text-xs leading-5 text-muted-foreground">Keep leases, notices, receipts and other rental evidence privately with your CALQULUS identity.</p></div>
+            <Button size="sm" className="shrink-0 gap-1.5" onClick={() => setDocumentDialog(true)}><Plus className="h-3.5 w-3.5"/>Add document</Button>
+          </div>
+          {documents.length === 0 ? <div className="py-8 text-center text-muted-foreground"><FileText className="mx-auto mb-2 h-9 w-9 opacity-30"/><p className="text-sm">No rental documents yet</p><p className="mt-1 text-xs">Upload your lease or important rental evidence.</p></div> : documents.map((doc: any) => <button type="button" key={doc.id} onClick={() => openPrivateFile(doc.file_url)} className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition hover:border-primary/30"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><FileText className="h-4 w-4"/></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-foreground">{doc.title}</span><span className="block text-xs capitalize text-muted-foreground">{String(doc.document_type).replace('_',' ')} · {format(new Date(doc.created_at), 'dd/MM/yy')}</span></span><Eye className="h-4 w-4 shrink-0 text-muted-foreground"/></button>)}
+        </TabsContent>
+
+        <TabsContent value="repairs" className="mt-4 space-y-3">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/15 bg-primary/5 p-4">
+            <div><p className="text-sm font-semibold">Repair diary</p><p className="mt-1 text-xs leading-5 text-muted-foreground">Record problems, actions and evidence so your maintenance history stays with you.</p></div>
+            <Button size="sm" className="shrink-0 gap-1.5" onClick={() => setRepairDialog(true)}><Plus className="h-3.5 w-3.5"/>Log repair</Button>
+          </div>
+          {repairLogs.length === 0 ? <div className="py-8 text-center text-muted-foreground"><Wrench className="mx-auto mb-2 h-9 w-9 opacity-30"/><p className="text-sm">No repair entries yet</p><p className="mt-1 text-xs">Start your first maintenance timeline entry.</p></div> : repairLogs.map((log: any) => <div key={log.id} className="rounded-xl border border-border bg-card p-3"><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-semibold">{log.title}</p><p className="mt-1 text-xs text-muted-foreground">{format(new Date(log.reported_at), 'dd/MM/yyyy')} · {String(log.status).replace('_',' ')}</p></div><Wrench className="h-4 w-4 text-primary"/></div>{log.description ? <p className="mt-2 text-xs leading-5 text-muted-foreground">{log.description}</p> : null}{Array.isArray(log.photo_urls) && log.photo_urls.length ? <div className="mt-2 flex flex-wrap gap-2">{log.photo_urls.map((path: string) => <Button key={path} type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => openPrivateFile(path)}><Eye className="mr-1.5 h-3 w-3"/>Evidence photo</Button>)}</div> : null}</div>)}
+        </TabsContent>
+
         {/* My rental tab */}
         <TabsContent value="rental" className="mt-4">
           {!record ? (
@@ -461,6 +572,30 @@ const OrphanTenantHome: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Add personal document dialog */}
+      <Dialog open={documentDialog} onOpenChange={(open) => { setDocumentDialog(open); if (!open) { setDocumentFile(null); setDocumentForm({ document_type: 'contract', title: '', start_date: '', end_date: '', notes: '' }); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Add rental document</DialogTitle><DialogDescription>Keep a private copy of a lease, notice, receipt or other rental evidence.</DialogDescription></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div><Label>Document type</Label><Select value={documentForm.document_type} onValueChange={(v) => setDocumentForm((f) => ({ ...f, document_type: v }))}><SelectTrigger className="mt-1"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="contract">Lease / contract</SelectItem><SelectItem value="notice">Notice</SelectItem><SelectItem value="receipt">Receipt</SelectItem><SelectItem value="inspection">Inspection</SelectItem><SelectItem value="other">Other</SelectItem></SelectContent></Select></div>
+            <div><Label>Title</Label><Input className="mt-1" value={documentForm.title} onChange={(e) => setDocumentForm((f) => ({ ...f, title: e.target.value }))} placeholder="Tenancy agreement 2026"/></div>
+            <div><Label>File</Label><input ref={documentInputRef} type="file" className="mt-1 block w-full text-sm" onChange={(e) => setDocumentFile(e.target.files?.[0] ?? null)} accept="application/pdf,image/*,.doc,.docx"/></div>
+            <div className="grid gap-3 sm:grid-cols-2"><div><Label>Start date</Label><Input className="mt-1" type="date" value={documentForm.start_date} onChange={(e) => setDocumentForm((f) => ({ ...f, start_date: e.target.value }))}/></div><div><Label>End date</Label><Input className="mt-1" type="date" value={documentForm.end_date} onChange={(e) => setDocumentForm((f) => ({ ...f, end_date: e.target.value }))}/></div></div>
+            <div><Label>Notes</Label><Textarea className="mt-1" value={documentForm.notes} onChange={(e) => setDocumentForm((f) => ({ ...f, notes: e.target.value }))} placeholder="Optional context" rows={3}/></div>
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setDocumentDialog(false)}>Cancel</Button><Button onClick={() => addDocument.mutate()} disabled={!documentFile || !documentForm.title.trim() || addDocument.isPending}>{addDocument.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Upload className="mr-2 h-4 w-4"/>}Save document</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add personal repair dialog */}
+      <Dialog open={repairDialog} onOpenChange={(open) => { setRepairDialog(open); if (!open) { setRepairPhotoFile(null); setRepairForm({ title: '', description: '', notes: '' }); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Log a repair issue</DialogTitle><DialogDescription>Create a timestamped personal maintenance entry you can carry between homes and management teams.</DialogDescription></DialogHeader>
+          <div className="space-y-3 py-2"><div><Label>Issue</Label><Input className="mt-1" value={repairForm.title} onChange={(e) => setRepairForm((f) => ({ ...f, title: e.target.value }))} placeholder="Leaking kitchen tap"/></div><div><Label>What happened?</Label><Textarea className="mt-1" value={repairForm.description} onChange={(e) => setRepairForm((f) => ({ ...f, description: e.target.value }))} placeholder="Describe the issue and what you reported." rows={4}/></div><div><Label>Evidence photo (optional)</Label><input ref={repairPhotoInputRef} type="file" className="mt-1 block w-full text-sm" onChange={(e) => setRepairPhotoFile(e.target.files?.[0] ?? null)} accept="image/*"/></div><div><Label>Notes (optional)</Label><Textarea className="mt-1" value={repairForm.notes} onChange={(e) => setRepairForm((f) => ({ ...f, notes: e.target.value }))} rows={2}/></div></div>
+          <DialogFooter><Button variant="outline" onClick={() => setRepairDialog(false)}>Cancel</Button><Button onClick={() => addRepair.mutate()} disabled={!repairForm.title.trim() || addRepair.isPending}>{addRepair.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}Save repair</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add payment dialog */}
       <Dialog open={payDialog} onOpenChange={setPayDialog}>

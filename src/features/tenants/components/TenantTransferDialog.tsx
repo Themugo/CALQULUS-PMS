@@ -217,7 +217,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
             Transfer Tenant
           </DialogTitle>
           <DialogDescription>
-            Transfer {tenant.name} to another property or manager.
+            Move the tenant record to another managed property or manager without creating a new tenant identity.
           </DialogDescription>
         </DialogHeader>
 
@@ -314,7 +314,7 @@ export const TenantTransferDialog: React.FC<TenantTransferDialogProps> = ({
             <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
               <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
               <p className="text-xs text-warning dark:text-warning">
-                This will update the tenant's property assignment. Their lease and payment history will remain intact.
+                The tenant keeps the same CALQULUS identity, history, payment evidence and personal record. Complete or terminate any active lease before transferring management.
               </p>
             </div>
           </div>
