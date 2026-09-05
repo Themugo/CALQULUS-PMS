@@ -1,13 +1,48 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ManagerPortalShell } from "@/features/auth/components/ManagerPortalChrome";
+import { ManagerPortalShell, MANAGER_ACCENT } from "@/features/auth/components/ManagerPortalChrome";
 
-describe("Manager portal login shell", () => {
-  it("uses the shared reference design without replacing auth children", () => {
-    render(<MemoryRouter><ManagerPortalShell formTitle="Welcome back"><form><button>Login</button></form></ManagerPortalShell></MemoryRouter>);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Property Manager");
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Welcome Back!");
-    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+function renderShell() {
+  return render(
+    <MemoryRouter>
+      <ManagerPortalShell>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input type="email" aria-label="Email address" />
+          <button type="submit">Sign in</button>
+        </form>
+      </ManagerPortalShell>
+    </MemoryRouter>,
+  );
+}
+
+describe("Manager portal entry chrome", () => {
+  it("renders the two-line Manager / Portal headline", () => {
+    renderShell();
+    const headline = screen.getByRole("heading", { level: 1 });
+    expect(headline).toHaveTextContent(/manager/i);
+    expect(headline).toHaveTextContent(/portal/i);
+    expect(headline.querySelectorAll("span.block").length).toBe(2);
+  });
+
+  it("uses the manager blue accent and property-photo background", () => {
+    const { container } = renderShell();
+    const bgImage = container.querySelector('img[alt=""]');
+    expect(bgImage).not.toBeNull();
+    expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
+    expect(MANAGER_ACCENT).toBe("#356FE5");
+  });
+
+  it("carries the CALQULUS brand mark and portal description", () => {
+    renderShell();
+    expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/run properties, tenants, leases, billing, payments and maintenance/i),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the child sign-in form passed to it", () => {
+    renderShell();
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
   });
 });

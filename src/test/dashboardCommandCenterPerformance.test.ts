@@ -15,7 +15,7 @@ describe("dashboard command center performance", () => {
 
   it("keeps occupancy drill-down inside existing property routes", () => {
     const source = read("src/features/dashboard/components/OccupancyChart.tsx");
-    expect(source).toContain("/properties/${source.id}");
+    expect(source).toContain("/properties/${property.id}");
     expect(source).toContain("useDashboardProperties");
   });
 

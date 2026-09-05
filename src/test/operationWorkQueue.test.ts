@@ -18,6 +18,7 @@ describe("operation work queue",()=>{
     const component=read("src/features/dashboard/components/OperationWorkQueue.tsx");
     expect(component).toContain("sync_operation_work_queue_atomic");
     expect(component).toContain("transition_operation_work_item_atomic");
+    const sql=read("supabase/migrations/20260904000016_operation_work_queue.sql");
     expect(sql).toContain("\'assignee_id\'");
     expect(sql).toContain("\'sla_due_at\'");
   });

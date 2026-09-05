@@ -16,7 +16,7 @@ describe("landlord and tenant portal UI structure", () => {
     const source = read("src/features/tenant-portal/components/TenantHome.tsx");
     expect(source).toContain("Home, bills and requests in one place");
     expect(source).toContain('>View all</Link>');
-    expect(source).toContain('>Inbox</Link>');
+    expect(source).toContain('TENANT_OPS_ROUTES.inbox');
     expect(source).toContain('aria-label="Common tasks"');
   });
 });

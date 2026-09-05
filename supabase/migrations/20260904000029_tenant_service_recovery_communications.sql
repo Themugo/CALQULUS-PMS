@@ -1,6 +1,6 @@
 -- CALQULUS PMS — Tenant Service Recovery & Communication Loop
 -- Converts material tenant-experience issues into trackable recovery cases and
--- auditable follow-up communications. No predictive/probabilistic claims.
+-- auditable follow-up communications. No forecasting or likelihood-scoring language.
 
 CREATE TABLE IF NOT EXISTS public.tenant_service_recovery_cases (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -114,7 +114,11 @@ export function DevPortalSwitcher() {
   };
 
   // Development-only tool: never expose to normal users / production.
-  if (!devEnabled) return null;
+  // The literal `import.meta.env.PROD` check (redundant with `devEnabled`
+  // above) is statically replaced by Vite at build time, so bundlers can
+  // dead-code-eliminate this whole component body — and the preset
+  // credentials it renders — out of production bundles.
+  if (import.meta.env.PROD || !devEnabled) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 font-sans">

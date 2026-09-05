@@ -214,7 +214,10 @@ export default function TenantHome({
 
       {/* ===== Notices ===== */}
       <section>
-        <h2 className="section-title mb-3">Important notices</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="section-title">Important notices</h2>
+          <Link to={TENANT_OPS_ROUTES.inbox} className="text-sm font-medium text-primary hover:underline">View all</Link>
+        </div>
         {recentNotices.length === 0 ? (
           <p className="text-sm text-muted-foreground">No new notices.</p>
         ) : (
