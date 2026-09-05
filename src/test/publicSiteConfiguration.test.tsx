@@ -36,7 +36,13 @@ describe("public site configuration contract", () => {
     expect(DEFAULT_PUBLIC_SITE_CONFIG.highlights).toHaveLength(4);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.insights).toHaveLength(3);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos).toHaveLength(8);
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.marketingAds).toHaveLength(1);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.rail.sections.map((x) => x.id)).toEqual(["search", "highlights", "insights"]);
+    const ad = mergePublicSiteConfig({ marketingAds: [{ id: "a1", title: "Campaign", placement: "portals", mode: "replace", targetId: "agency", position: "bottom-right", size: "wide", enabled: true }] }).marketingAds[0];
+    expect(ad.placement).toBe("portals");
+    expect(ad.mode).toBe("replace");
+    expect(ad.targetId).toBe("agency");
+    expect(ad.size).toBe("wide");
   });
 });
 

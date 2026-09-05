@@ -114,6 +114,27 @@ export interface PublicSiteTrust {
   avatar: string | null;
 }
 
+
+export type PublicSiteAdPlacement = "hero" | "property-types" | "portals" | "why" | "featured" | "trust" | "cta";
+export type PublicSiteAdMode = "overlay" | "replace";
+export type PublicSiteAdPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+export type PublicSiteAdSize = "compact" | "standard" | "wide";
+
+export interface PublicSiteMarketingAd {
+  id: string;
+  label: string;
+  title: string;
+  copy: string;
+  image: string | null;
+  href: string;
+  enabled: boolean;
+  placement: PublicSiteAdPlacement;
+  mode: PublicSiteAdMode;
+  targetId: string | null;
+  position: PublicSiteAdPosition;
+  size: PublicSiteAdSize;
+}
+
 export interface PublicSiteBrand {
   name: string;
   descriptor: string;
@@ -163,6 +184,7 @@ export interface PublicSiteConfig {
   highlights: PublicSiteHighlight[];
   insights: PublicSiteInsight[];
   trust: PublicSiteTrust;
+  marketingAds: PublicSiteMarketingAd[];
   search: {
     title: string;
     copy: string;
@@ -332,6 +354,9 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     role: "Property Portfolio Manager",
     avatar: null,
   },
+    marketingAds: [
+    { id: "ad-demo-1", label: "FEATURED", title: "Your campaign could appear here", copy: "A flexible promotional slot for approved public-site marketing.", image: PROPERTY_IMAGES.commercial, href: "#", enabled: false, placement: "hero", mode: "overlay", targetId: null, position: "top-right", size: "compact" },
+  ],
   search: {
     title: "Quick Search",
     copy: "Find a property or space for your next move.",
@@ -404,6 +429,7 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   const sourceHighlights = asArray<Record<string, unknown>>(s.highlights);
   const sourceInsights = asArray<Record<string, unknown>>(s.insights);
   const sourceTrustLogos = asArray<Record<string, unknown>>(trust.logos);
+  const sourceMarketingAds = asArray<Record<string, unknown>>(s.marketingAds);
   const sourceSearchTabs = asArray<Record<string, unknown>>(search.tabs);
   const sourceSearchChips = asArray<Record<string, unknown>>(search.chips);
   const sourceSections = asArray<Record<string, unknown>>(s.sections);
@@ -501,6 +527,20 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
       avatar: typeof trust.avatar === "string" ? trust.avatar : null,
       logos: sourceTrustLogos.length ? sourceTrustLogos.map((item, i) => ({ id: safeText(item.id, `logo-${i}`), name: safeText(item.name, "Organization"), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.trust.logos,
     },
+    marketingAds: sourceMarketingAds.length ? sourceMarketingAds.map((item, i) => ({
+      id: safeText(item.id, `ad-${i}`),
+      label: safeText(item.label, "FEATURED"),
+      title: safeText(item.title, "Public promotion"),
+      copy: safeText(item.copy, "Promote a message across the public experience."),
+      image: typeof item.image === "string" ? item.image : null,
+      href: safeUrl(item.href, "#"),
+      enabled: safeBool(item.enabled, false),
+      placement: validIcon(item.placement, ["hero", "property-types", "portals", "why", "featured", "trust", "cta"], "hero") as PublicSiteAdPlacement,
+      mode: validIcon(item.mode, ["overlay", "replace"], "overlay") as PublicSiteAdMode,
+      targetId: typeof item.targetId === "string" && item.targetId.trim() ? item.targetId : null,
+      position: validIcon(item.position, ["top-left", "top-right", "bottom-left", "bottom-right"], "top-right") as PublicSiteAdPosition,
+      size: validIcon(item.size, ["compact", "standard", "wide"], "compact") as PublicSiteAdSize,
+    })) : DEFAULT_PUBLIC_SITE_CONFIG.marketingAds,
     search: {
       ...DEFAULT_PUBLIC_SITE_CONFIG.search,
       ...search,
