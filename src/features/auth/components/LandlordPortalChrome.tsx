@@ -1,31 +1,35 @@
 import type { ReactNode } from "react";
-import { BarChart3, Home, WalletCards } from "lucide-react";
-import landlordLivingRoom from "@/assets/marketing/landlord-living-room.svg";
+import { Wallet } from "lucide-react";
+import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen";
 
-export const LANDLORD_ACCENT = "#109C94";
+/**
+ * Landlord portal entry chrome — a clean, single-purpose sign-in screen
+ * carrying the landlord portal's own identity (emerald/teal, property
+ * imagery, "Landlord Portal" headline) via the shared PortalLoginLayout.
+ */
 
-interface LandlordPortalShellProps { children: ReactNode; }
+export const LANDLORD_ACCENT = "#0F8A6A";
+
+interface LandlordPortalShellProps {
+  children: ReactNode;
+}
 
 export function LandlordPortalShell({ children }: LandlordPortalShellProps) {
+  // This shell always represents the landlord portal, regardless of the
+  // ambient path-derived identity — look it up explicitly rather than via
+  // the (route-dependent) current-portal identity.
   const { identities } = usePortalIdentity();
   const identity = identities.landlord;
   return (
     <PortalLoginLayout
       portalId="landlord"
       accentHex={LANDLORD_ACCENT}
-      backgroundImage={identity.backgroundImageUrl || landlordLivingRoom}
-      badgeIcon={BarChart3}
+      backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.commercial}
+      badgeIcon={Wallet}
       portalName="Landlord"
-      eyebrow="LANDLORD PORTAL"
-      description={identity.tagline || "Know your property, track performance and grow your return with a clear view of occupancy, earnings and portfolio health."}
-      features={[
-        { icon: WalletCards, label: "Earnings" },
-        { icon: Home, label: "Properties" },
-        { icon: BarChart3, label: "Insights" },
-      ]}
-      trustLabel="Secure owner workspace · Financial visibility · Property performance"
+      description="See how your properties are performing — occupancy, collections and your share, at a glance."
     >
       {children}
     </PortalLoginLayout>

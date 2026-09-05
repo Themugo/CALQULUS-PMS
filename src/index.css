@@ -397,11 +397,11 @@
     --calqulus-navy-900: #173650;
     --calqulus-navy-950: #0B2239;
 
-    --calqulus-primary: #356FE5;
-    --calqulus-primary-hover: #285FCC;
-    --calqulus-primary-active: #214FAE;
-    --calqulus-primary-soft: #EAF1FF;
-    --calqulus-primary-light: #8FB8FF;
+    --calqulus-primary: #123FB7;
+    --calqulus-primary-hover: #0F35A0;
+    --calqulus-primary-active: #0B2B7A;
+    --calqulus-primary-soft: #E8EEFF;
+    --calqulus-primary-light: #7D9FF5;
 
     /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
     --calqulus-teal: #3BB7A6;

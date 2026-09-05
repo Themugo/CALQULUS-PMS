@@ -186,12 +186,11 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     header: {
       nav: [
         { id: "home", label: "Home", href: "/", enabled: true },
-        { id: "solutions", label: "Solutions", href: "#platform", enabled: true },
+        { id: "platform", label: "Platform", href: "#platform", enabled: true },
         { id: "properties", label: "Properties", href: "#property-types", enabled: true },
+        { id: "portals", label: "Portals", href: "#portals", enabled: true },
+        { id: "insights", label: "Insights", href: "#insights", enabled: true },
         { id: "pricing", label: "Pricing", href: PUBLIC_ROUTES.pricing, enabled: true },
-        { id: "resources", label: "Resources", href: "#insights", enabled: true },
-        { id: "about", label: "About Us", href: "#trust", enabled: true },
-        { id: "contact", label: "Contact", href: "#cta", enabled: true },
       ],
       searchLabel: "Search",
       signInLabel: "Login",

@@ -21,10 +21,10 @@ export const CALQULUS_BRAND = {
 
 export const CALQULUS_COLOR = {
   /** Interactive blue — buttons, links, focus, selected controls. */
-  primary: "#356FE5",
-  primaryHover: "#285FCC",
-  primaryActive: "#214FAE",
-  accent: "#356FE5",
+  primary: "#123FB7",
+  primaryHover: "#0F35A0",
+  primaryActive: "#0B2B7A",
+  accent: "#123FB7",
 
   /** Navy identity — chrome only, never a page fill. `navyDeep` is
       remapped to the mid step with navySecondary; the 950 hex stays
@@ -43,7 +43,7 @@ export const CALQULUS_COLOR = {
   info: "#3E6FAE",
 
   /** Atmosphere on navy chrome only. */
-  glow: "#356FE5",
+  glow: "#2E63D8",
   /** Reserved spark — not used as chrome. */
   spark: "#FFF4DF",
 
@@ -79,9 +79,10 @@ export const CALQULUS_PORTAL_ACCENT = {
   },
   agency: {
     id: "agency",
-    label: "Blue",
-    /** Agency portal uses the original bright CALQULUS blue identity from the approved login design. */
-    hex: "#0867E8",
+    label: "Sharp Navy",
+    /** Distinct agency identity — sharp navy keeps it separate from the landlord emerald
+        and from the manager slate while remaining inside the CALQULUS family. */
+    hex: "#123FB7",
   },
   tenant: {
     id: "tenant",
