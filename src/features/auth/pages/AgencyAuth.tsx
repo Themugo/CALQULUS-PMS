@@ -63,6 +63,7 @@ const AgencyAuth = () => {
     <AgencyPortalShell>
       <PortalLoginCard
         accentHex={AGENCY_ACCENT}
+        accentTextHex={AGENCY_ACCENT}
         portalLabel="agency"
         emailPlaceholder="agent@agency.com"
         email={email}

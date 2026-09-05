@@ -16,26 +16,25 @@ function renderShell() {
 }
 
 describe("Agency portal entry chrome", () => {
-  it("renders the two-line Agency / Portal headline", () => {
+  it("renders the single-page Agency identity and workspace headline", () => {
     renderShell();
     const headline = screen.getByRole("heading", { level: 1 });
-    expect(headline).toHaveTextContent(/agency/i);
-    expect(headline).toHaveTextContent(/portal/i);
-    expect(headline.querySelectorAll("span.block").length).toBe(2);
+    expect(headline).toHaveTextContent(/your agency, connected/i);
+    expect(screen.getByText(/AGENCY PORTAL/i)).toBeInTheDocument();
   });
 
-  it("uses the agency blue accent and property-photo background", () => {
+  it("uses the sharp-navy agency accent and commercial property-photo background", () => {
     const { container } = renderShell();
     const bgImage = container.querySelector('img[alt=""]');
     expect(bgImage).not.toBeNull();
     expect(bgImage?.getAttribute("src")).toMatch(/property-office/);
-    expect(AGENCY_ACCENT).toBe("#4658C9");
+    expect(AGENCY_ACCENT).toBe("#0B2742");
   });
 
   it("carries the CALQULUS brand mark and portal description", () => {
     renderShell();
     expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/run your client portfolio/i)).toBeInTheDocument();
+    expect(screen.getByText(/run your client portfolio|run your client portfolio/i)).toBeInTheDocument();
   });
 
   it("renders the child sign-in form passed to it", () => {
