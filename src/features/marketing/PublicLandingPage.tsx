@@ -287,17 +287,21 @@ function Portals({ items, ads = [] }: { items: PublicSiteConfig["portals"]; ads?
     if (replacement) return <AdCard key={item.id} ad={replacement} className="min-h-[188px] sm:min-h-[196px]" />;
     return <NavLink key={item.id} href={item.href} className="group relative min-h-[188px] min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-navy-deep text-white shadow-[0_10px_26px_rgba(16,42,67,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(16,42,67,0.17)] sm:min-h-[196px]">
       <img src={img(item.image, PROPERTY_IMAGES.office)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"/>
-      <div className={`absolute inset-0 bg-gradient-to-r ${accent}`}/>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/42 via-transparent to-transparent"/>
-      <div className="relative flex h-full min-w-0 flex-col justify-between p-4">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/45 bg-white/12 shadow-sm backdrop-blur-sm"><Icon className="h-5.5 w-5.5" /></span>
-          <div className="min-w-0 pt-0.5"><p className="truncate text-[11px] font-bold tracking-[0.18em] text-white/90 drop-shadow-sm">{item.eyebrow}</p><h3 className="mt-0.5 truncate font-heading text-[20px] font-semibold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.28)]">{item.title.replace(" Portal", "")}</h3></div>
+      <div className={`absolute inset-y-0 left-0 w-[30%] min-w-[92px] bg-gradient-to-r ${accent} opacity-95`} />
+      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-navy-deep/88 via-navy-deep/45 to-transparent"/>
+      <div className="absolute inset-y-0 left-0 w-[5px] bg-white/25"/>
+      <div className="relative flex h-full min-w-0 flex-col justify-between p-3.5 sm:p-4">
+        <div className="flex min-w-0 items-start gap-2.5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/55 bg-white/18 shadow-sm backdrop-blur-sm"><Icon className="h-5 w-5" /></span>
+          <div className="min-w-0 pt-0.5">
+            <p className="truncate text-[10px] font-bold tracking-[0.16em] text-white/92 drop-shadow-sm sm:text-[10.5px]">{item.eyebrow}</p>
+            <h3 className="mt-0.5 line-clamp-1 font-heading text-[clamp(1rem,1.8vw,1.2rem)] font-semibold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.28)]">{item.title.replace(" Portal", "")}</h3>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="max-w-[255px] overflow-hidden text-[13px] leading-5 text-white/92 drop-shadow-[0_1px_3px_rgba(0,0,0,0.22)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{item.description}</p>
-          <div className="mt-3 flex flex-wrap gap-1.5">{portalFeatures[item.id].map((feature) => <span key={feature} className="rounded-full border border-white/20 bg-black/12 px-2 py-1 text-[9px] font-semibold text-white/85 backdrop-blur-sm">{feature}</span>)}</div>
-          <span className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/16 px-3 py-1.5 text-[12px] font-semibold text-white shadow-sm ring-1 ring-inset ring-white/15 backdrop-blur-md transition group-hover:bg-white/24">Access Portal <ArrowRight className="h-3.5 w-3.5"/></span>
+        <div className="relative min-w-0 rounded-lg border border-white/10 bg-black/14 px-3 py-2 backdrop-blur-[2px]">
+          <p className="max-w-[265px] overflow-hidden text-[clamp(0.7rem,1vw,0.8rem)] leading-[1.35] text-white/92 drop-shadow-[0_1px_3px_rgba(0,0,0,0.22)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{item.description}</p>
+          <div className="mt-2 flex min-w-0 flex-wrap gap-1">{portalFeatures[item.id].map((feature) => <span key={feature} className="rounded-full border border-white/20 bg-white/12 px-1.5 py-0.5 text-[8px] font-semibold text-white/88 backdrop-blur-sm">{feature}</span>)}</div>
+          <span className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-white/16 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm ring-1 ring-inset ring-white/15 backdrop-blur-md transition group-hover:bg-white/24">Access Portal <ArrowRight className="h-3 w-3"/></span>
         </div>
       </div>
     </NavLink>;
