@@ -20,6 +20,9 @@ export const PUBLIC_ROUTES = {
   managerPropertiesPreview: "/design-preview/manager-properties",
   managerTenantsPreview: "/design-preview/manager-tenants",
   agencyDashboardPreview: "/design-preview/agency-dashboard",
+  portalAccess: "/portal-access",
+  portalAccessSignIn: "/portal-access?mode=signin",
+  portalAccessSignUp: "/portal-access?mode=signup",
   managerSignIn: "/auth",
   managerSignUp: "/auth?tab=signup",
   landlordLogin: "/landlord/login",
@@ -28,10 +31,6 @@ export const PUBLIC_ROUTES = {
   webhostLogin: "/webhost/login",
 } as const;
 
-export const PUBLIC_NAV = [
-  { label: "Platform", hash: "platform" },
-  { label: "Solutions", hash: "solutions" },
-] as const;
 
 /** Homepage hero copy — single source of truth. Approved message hierarchy. */
 export const HERO_CONTENT = {

@@ -708,7 +708,7 @@
 /* Public website — same light workspace as desks. CALQULUS blue anchors header/footer chrome. */
 @utility public-canvas {
   background-color: var(--background);
-  background-image: radial-gradient(70% 36% at 50% 0%, color-mix(in srgb, var(--primary) 5%, transparent) 0%, transparent 72%), linear-gradient(180deg, #F8FAFD 0%, var(--background) 48%, #F7FAFC 100%);
+  background-image: radial-gradient(70% 36% at 50% 0%, color-mix(in srgb, var(--calqulus-primary) 5%, transparent) 0%, transparent 72%), linear-gradient(180deg, #F8FAFD 0%, var(--background) 48%, #F7FAFC 100%);
   color: var(--foreground);
   font-family: "Outfit", sans-serif;
 }

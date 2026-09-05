@@ -103,6 +103,7 @@ const AgencyInvites = lazy(() => import("@/features/agency/pages/AgencyInvites")
 const AgencyStatements = lazy(() => import("@/features/agency/pages/AgencyStatements"));
 const AgencyAuth = lazy(() => import("@/features/auth/pages/AgencyAuth"));
 const PublicLandingPage = lazy(() => import("@/features/marketing/PublicLandingPage"));
+const PortalAccessPage = lazy(() => import("@/features/marketing/PortalAccessPage"));
 const PublicPropertyDiscoveryPage = lazy(() => import("@/features/marketing/PublicPropertyDiscoveryPage"));
 const HealthPage = lazy(() => import("@/shared/pages/HealthPage"));
 const DesignPreview = lazy(() => import("@/features/design-preview/pages/DesignPreview"));
@@ -203,6 +204,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/landing", redirect: "/" },
   { path: "/welcome", redirect: "/" },
   { path: "/pricing", element: PublicLandingPage },
+  { path: "/portal-access", element: PortalAccessPage },
   { path: "/discover/:category", element: PublicPropertyDiscoveryPage },
   { path: "/register", element: RegisterExperience },
   { path: "/health", element: HealthPage },
@@ -508,6 +510,7 @@ export const authOnlyRoutes: RouteDef[] = [
 // ── Fallback routes (unknown state) ─────────────────────────────────
 export const fallbackRoutes: RouteDef[] = [
   { path: "/install", element: InstallApp },
+  { path: "/portal-access", element: PortalAccessPage },
   ...designPreviewPublicRoutes,
   { path: "/auth", element: Auth },
   { path: "/landlord", redirect: "/landlord/login" },

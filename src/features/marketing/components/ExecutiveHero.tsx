@@ -39,7 +39,7 @@ export function ExecutiveHero() {
         </p>
         <div className="mt-7 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
           <Button asChild size="lg" className="btn-brand h-12 min-h-11 px-6">
-            <Link to={PUBLIC_ROUTES.managerSignUp}>
+            <Link to={PUBLIC_ROUTES.portalAccessSignUp}>
               {HERO_CONTENT.primaryCta}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>

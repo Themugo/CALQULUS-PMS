@@ -30,7 +30,7 @@ export function ManagerPortalShell({ children }: ManagerPortalShellProps) {
       accentHex={MANAGER_ACCENT}
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
       badgeIcon={Building2}
-      portalName="Manager"
+      portalName={identity.shortName}
       slogan={identity.tagline}
       description="Run property operations, tenants, leases, billing, payments and maintenance from one connected desk."
       features={[

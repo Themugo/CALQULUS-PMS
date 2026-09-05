@@ -167,6 +167,7 @@ export interface PublicSiteConfig {
     fitMode: HeroFitMode;
     autoplay: boolean;
     intervalMs: number;
+    transitionMs: number;
     overlay: "soft" | "medium" | "strong";
     slides: PublicSiteHeroSlide[];
     floatingCards: PublicSiteHeroPromo[];
@@ -218,7 +219,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
         { id: "home", label: "Home", href: "/", enabled: true },
         { id: "properties", label: "Properties", href: "#property-types", enabled: true },
         { id: "portals", label: "Portals", href: "#portals", enabled: true },
-        { id: "insights", label: "Insights", href: "#insights", enabled: true },
+        { id: "insights", label: "Insights", href: "#insights", enabled: false },
         { id: "pricing", label: "Pricing", href: PUBLIC_ROUTES.pricing, enabled: true },
       ],
       searchLabel: "Search",
@@ -233,17 +234,17 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
       columns: [
         { id: "solutions", title: "Solutions", items: [{ id: "s1", label: "Property Management", href: "#why" }, { id: "s2", label: "Tenant Management", href: "#portals" }, { id: "s3", label: "Lease Management", href: "#why" }, { id: "s4", label: "Financial Management", href: "#why" }, { id: "s5", label: "Maintenance Management", href: "#why" }] },
         { id: "properties", title: "Properties", items: [{ id: "p1", label: "Residentials", href: "/discover/residential" }, { id: "p2", label: "Estates", href: "/discover/estates" }, { id: "p3", label: "Offices", href: "/discover/offices" }, { id: "p4", label: "Institutions", href: "/discover/institutions" }] },
-        { id: "resources", title: "Resources", items: [{ id: "r1", label: "Blog", href: "#insights" }, { id: "r2", label: "Guides", href: "#insights" }, { id: "r3", label: "Help Center", href: "#cta" }, { id: "r4", label: "API", href: "#why" }, { id: "r5", label: "Documentation", href: "#why" }] },
-        { id: "company", title: "Company", items: [{ id: "c1", label: "About Us", href: "#trust" }, { id: "c2", label: "Careers", href: "#cta" }, { id: "c3", label: "Contact", href: "#cta" }, { id: "c4", label: "Privacy Policy", href: PUBLIC_ROUTES.legalPrivacy }, { id: "c5", label: "Terms of Service", href: PUBLIC_ROUTES.legalTerms }] },
+        { id: "resources", title: "Resources", items: [{ id: "r1", label: "Insights", href: "#insights" }, { id: "r2", label: "Portals", href: "#portals" }, { id: "r3", label: "Pricing", href: PUBLIC_ROUTES.pricing }, { id: "r4", label: "Property Search", href: "/discover/residential" }] },
+        { id: "company", title: "Company", items: [{ id: "c1", label: "About Us", href: "#trust" }, { id: "c2", label: "Contact", href: "mailto:enterprise@calqulusrms.com" }, { id: "c3", label: "Privacy Policy", href: PUBLIC_ROUTES.legalPrivacy }, { id: "c4", label: "Terms of Service", href: PUBLIC_ROUTES.legalTerms }] },
       ],
       socials: [
-        { id: "linkedin", label: "in", href: "#", enabled: true },
-        { id: "x", label: "X", href: "#", enabled: true },
-        { id: "facebook", label: "f", href: "#", enabled: true },
-        { id: "instagram", label: "◎", href: "#", enabled: true },
-        { id: "youtube", label: "▶", href: "#", enabled: true },
+        { id: "linkedin", label: "in", href: "#", enabled: false },
+        { id: "x", label: "X", href: "#", enabled: false },
+        { id: "facebook", label: "f", href: "#", enabled: false },
+        { id: "instagram", label: "◎", href: "#", enabled: false },
+        { id: "youtube", label: "▶", href: "#", enabled: false },
       ],
-      newsletterTitle: "Subscribe to our newsletter",
+      newsletterTitle: "Request CALQULUS updates",
       newsletterPlaceholder: "Your email address",
       showNewsletter: true,
     },
@@ -252,6 +253,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     fitMode: "window",
     autoplay: true,
     intervalMs: 30000,
+    transitionMs: 900,
     overlay: "soft",
     slides: [
       {
@@ -261,7 +263,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
         copy: "Manage, automate and grow your real estate portfolio with CALQULUS PMS. Built for every type of property.",
         signature: ["People", "Properties", "Progress"],
         primaryLabel: "Get Started",
-        primaryHref: PUBLIC_ROUTES.managerSignUp,
+        primaryHref: PUBLIC_ROUTES.portalAccessSignUp,
         secondaryLabel: "Explore Portals",
         secondaryHref: "#portals",
         image: PROPERTY_IMAGES.residential,
@@ -325,33 +327,24 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     { id: "f4", eyebrow: "RESIDENTIAL", title: "Parkview Villas", location: "Karen, Nairobi", detail: "4 Bedrooms · Private Garden", price: "KES 250,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
   ],
   highlights: [
-    { id: "h1", value: "10K+", label: "Properties Managed", icon: "property", enabled: true },
-    { id: "h2", value: "2.5K+", label: "Happy Users", icon: "users", enabled: true },
-    { id: "h3", value: "98%", label: "System Uptime", icon: "uptime", enabled: true },
-    { id: "h4", value: "24/7", label: "Expert Support", icon: "support", enabled: true },
+    { id: "h1", value: "Role-based", label: "Workspaces for every stakeholder", icon: "users", enabled: true },
+    { id: "h2", value: "Connected", label: "Property records linked across workflows", icon: "property", enabled: true },
+    { id: "h3", value: "Auditable", label: "Activity visible across core operations", icon: "support", enabled: true },
+    { id: "h4", value: "Configurable", label: "Public experience managed from one studio", icon: "uptime", enabled: true },
   ],
   insights: [
-    { id: "i1", category: "Market Insights", title: "5 Trends Shaping Real Estate in 2024", meta: "5 min read", image: PROPERTY_IMAGES.residential, href: "#insights", enabled: true },
-    { id: "i2", category: "Landlord tips", title: "How to Maximize Rental Income", meta: "4 min read", image: PROPERTY_IMAGES.office, href: "#insights", enabled: true },
-    { id: "i3", category: "Technology", title: "The Future of Smart Buildings", meta: "6 min read", image: PROPERTY_IMAGES.commercial, href: "#insights", enabled: true },
+    { id: "i1", category: "Insights", title: "Publish your first CALQULUS guide", meta: "Admin-managed", image: PROPERTY_IMAGES.residential, href: "#insights", enabled: false },
+    { id: "i2", category: "Insights", title: "Share a property operations story", meta: "Admin-managed", image: PROPERTY_IMAGES.office, href: "#insights", enabled: false },
+    { id: "i3", category: "Insights", title: "Add a market or product update", meta: "Admin-managed", image: PROPERTY_IMAGES.commercial, href: "#insights", enabled: false },
   ],
   trust: {
     eyebrow: "TRUST & PARTNERSHIPS",
-    title: "Trusted by forward-thinking organizations",
-    copy: "Join property teams building clearer, more connected real estate operations with CALQULUS.",
-    logos: [
-      { id: "t1", name: "KenGen", image: null, href: "#", enabled: true },
-      { id: "t2", name: "Safaricom", image: null, href: "#", enabled: true },
-      { id: "t3", name: "Britam", image: null, href: "#", enabled: true },
-      { id: "t4", name: "KCB", image: null, href: "#", enabled: true },
-      { id: "t5", name: "Red Cross", image: null, href: "#", enabled: true },
-      { id: "t6", name: "eabl", image: null, href: "#", enabled: true },
-      { id: "t7", name: "NSSF", image: null, href: "#", enabled: true },
-      { id: "t8", name: "Equity", image: null, href: "#", enabled: true },
-    ],
-    quote: "“CALQULUS has transformed how we manage our properties. The platform is intuitive and powerful.”",
-    person: "James Mwangi",
-    role: "Property Portfolio Manager",
+    title: "Built for serious property operations",
+    copy: "Publish verified organizations, approved partner marks and real customer stories here from Public Site Studio.",
+    logos: [],
+    quote: "Verified customer stories and partner relationships can be published here as they are approved.",
+    person: "Public Site Studio",
+    role: "Managed trust content",
     avatar: null,
   },
     marketingAds: [
@@ -374,9 +367,9 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     title: "Join thousands of property professionals already growing with CALQULUS.",
     copy: "Bring property operations, people and performance into one connected experience.",
     primaryLabel: "Get Started",
-    primaryHref: PUBLIC_ROUTES.managerSignUp,
+    primaryHref: PUBLIC_ROUTES.portalAccessSignUp,
     secondaryLabel: "Contact Sales",
-    secondaryHref: "#cta",
+    secondaryHref: "mailto:enterprise@calqulusrms.com",
   },
   sections: [
     { id: "hero", visible: true, order: 10, variant: "default" },
@@ -403,7 +396,13 @@ function asArray<T>(value: unknown): T[] { return Array.isArray(value) ? value.f
 function validIcon(value: unknown, allowed: readonly string[], fallback: string): string { return typeof value === "string" && allowed.includes(value) ? value : fallback; }
 function safeBool(value: unknown, fallback: boolean): boolean { return typeof value === "boolean" ? value : fallback; }
 function safeText(value: unknown, fallback: string): string { return typeof value === "string" ? value : fallback; }
-function safeUrl(value: unknown, fallback: string): string { return typeof value === "string" && value.trim() ? value : fallback; }
+function safeUrl(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  const url = value.trim();
+  if (!url || /^(?:javascript|data|vbscript):/i.test(url)) return fallback;
+  if (/^(?:https?:\/\/|mailto:|tel:|#|\/|\?)/i.test(url)) return url;
+  return fallback;
+}
 
 export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   if (!isRecord(input)) return DEFAULT_PUBLIC_SITE_CONFIG;
@@ -448,7 +447,7 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
   const columns = sourceColumns.length ? sourceColumns.map((column, i) => ({ id: safeText(column.id, `column-${i}`), title: safeText(column.title, DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.columns[i]?.title ?? ""), items: asArray<Record<string, unknown>>(column.items).map((item, j) => ({ id: safeText(item.id, `item-${i}-${j}`), label: safeText(item.label, "Link"), href: safeUrl(item.href, "#") })) })) : DEFAULT_PUBLIC_SITE_CONFIG.shell.footer.columns;
 
   const normalizedSlides = sourceSlides.length ? sourceSlides.map((slide, i) => ({
-    id: safeText(slide.id, `slide-${i}`), eyebrow: safeText(slide.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].eyebrow), title: safeText(slide.title, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].title), copy: safeText(slide.copy, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].copy), signature: asArray<string>(slide.signature).filter((v) => typeof v === "string"), primaryLabel: safeText(slide.primaryLabel, "Get Started"), primaryHref: safeUrl(slide.primaryHref, PUBLIC_ROUTES.managerSignUp), secondaryLabel: safeText(slide.secondaryLabel, "Explore"), secondaryHref: safeUrl(slide.secondaryHref, "#portals"), image: typeof slide.image === "string" ? slide.image : null, mobileImage: typeof slide.mobileImage === "string" ? slide.mobileImage : null, enabled: safeBool(slide.enabled, true),
+    id: safeText(slide.id, `slide-${i}`), eyebrow: safeText(slide.eyebrow, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].eyebrow), title: safeText(slide.title, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].title), copy: safeText(slide.copy, DEFAULT_PUBLIC_SITE_CONFIG.hero.slides[i % 2].copy), signature: asArray<string>(slide.signature).filter((v) => typeof v === "string"), primaryLabel: safeText(slide.primaryLabel, "Get Started"), primaryHref: safeUrl(slide.primaryHref, PUBLIC_ROUTES.portalAccessSignUp), secondaryLabel: safeText(slide.secondaryLabel, "Explore"), secondaryHref: safeUrl(slide.secondaryHref, "#portals"), image: typeof slide.image === "string" ? slide.image : null, mobileImage: typeof slide.mobileImage === "string" ? slide.mobileImage : null, enabled: safeBool(slide.enabled, true),
   })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
   const heroSlides = normalizedSlides.length ? normalizedSlides : DEFAULT_PUBLIC_SITE_CONFIG.hero.slides;
 
@@ -498,6 +497,7 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
       overlay: hero.overlay === "medium" || hero.overlay === "strong" ? hero.overlay : "soft",
       autoplay: safeBool(hero.autoplay, true),
       intervalMs: typeof hero.intervalMs === "number" && Number.isFinite(hero.intervalMs) ? (hero.intervalMs === 7000 ? DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs : Math.min(Math.max(hero.intervalMs, 5000), 300000)) : DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs,
+      transitionMs: typeof hero.transitionMs === "number" && Number.isFinite(hero.transitionMs) ? Math.min(Math.max(hero.transitionMs, 300), 2000) : DEFAULT_PUBLIC_SITE_CONFIG.hero.transitionMs,
       slides: heroSlides,
       floatingCards: sourcePromos.length ? sourcePromos.map((item, i) => ({ id: safeText(item.id, `promo-${i}`), label: safeText(item.label, "FEATURED"), title: safeText(item.title, "Discover CALQULUS"), copy: safeText(item.copy, "Explore the connected property experience."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#portals"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.floatingCards,
       pills: sourcePills.length ? sourcePills.map((item, i) => ({ id: safeText(item.id, `pill-${i}`), label: safeText(item.label, "CALQULUS"), icon: validIcon(item.icon, ["portals", "secure", "insights", "reliable"], "insights") as PublicSiteHeroPill["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.pills,
@@ -557,9 +557,9 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
       title: safeText(cta.title, DEFAULT_PUBLIC_SITE_CONFIG.cta.title),
       copy: safeText(cta.copy, DEFAULT_PUBLIC_SITE_CONFIG.cta.copy),
       primaryLabel: safeText(cta.primaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.primaryLabel),
-      primaryHref: safeUrl(cta.primaryHref, PUBLIC_ROUTES.managerSignUp),
+      primaryHref: safeUrl(cta.primaryHref, PUBLIC_ROUTES.portalAccessSignUp),
       secondaryLabel: safeText(cta.secondaryLabel, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryLabel),
-      secondaryHref: safeUrl(cta.secondaryHref, "#cta"),
+      secondaryHref: safeUrl(cta.secondaryHref, DEFAULT_PUBLIC_SITE_CONFIG.cta.secondaryHref),
     },
     sections: sourceSections.length ? sourceSections.map((item, i) => ({ id: validIcon(item.id, ["hero", "property-types", "portals", "why", "featured", "trust", "cta"], DEFAULT_PUBLIC_SITE_CONFIG.sections[i % DEFAULT_PUBLIC_SITE_CONFIG.sections.length].id) as PublicSiteSectionId, visible: safeBool(item.visible, true), order: typeof item.order === "number" ? item.order : (i + 1) * 10, variant: item.variant === "compact" || item.variant === "wide" ? item.variant : "default" })) : DEFAULT_PUBLIC_SITE_CONFIG.sections,
     rail: {

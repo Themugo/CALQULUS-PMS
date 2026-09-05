@@ -28,7 +28,7 @@ export function TenantPortalShell({ children }: TenantPortalShellProps) {
       accentHex={TENANT_ACCENT}
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
       badgeIcon={Home}
-      portalName="Tenant"
+      portalName={identity.shortName}
       slogan={identity.tagline}
       description="Your home, connected — rent, payments, maintenance and lease information in one secure place."
       features={[

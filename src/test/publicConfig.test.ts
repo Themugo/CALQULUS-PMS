@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   CONTACT_EMAIL,
-  PUBLIC_NAV,
   PUBLIC_ROUTES,
   homeSectionHref,
 } from "@/features/marketing/publicConfig";
@@ -34,9 +33,9 @@ describe("public marketing config", () => {
     expect(homeSectionHref("contact", "/legal")).toBe("/#contact");
   });
 
-  it("exposes the approved primary navigation hashes", () => {
-    expect(PUBLIC_NAV.map((item) => item.label)).toEqual(["Platform", "Solutions"]);
-    expect(PUBLIC_NAV.map((item) => item.hash)).toEqual(["platform", "solutions"]);
+  it("keeps only the live public navigation concepts and legal routes", () => {
     expect(PUBLIC_ROUTES.legalCookies).toBe("/legal?tab=privacy");
+    expect(PUBLIC_ROUTES.portalAccess).toBe("/portal-access");
+    expect(PUBLIC_ROUTES.pricing).toBe("/pricing");
   });
 });

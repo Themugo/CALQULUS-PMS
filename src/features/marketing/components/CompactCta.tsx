@@ -26,7 +26,7 @@ export function CompactCta() {
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button asChild size="lg" className="btn-brand min-h-11">
-                <Link to={PUBLIC_ROUTES.managerSignUp}>
+                <Link to={PUBLIC_ROUTES.portalAccessSignUp}>
                   {FINAL_CTA.primary}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
@@ -37,7 +37,7 @@ export function CompactCta() {
                 variant="outline"
                 className="min-h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
               >
-                <Link to={PUBLIC_ROUTES.managerSignIn}>{FINAL_CTA.secondary}</Link>
+                <Link to={PUBLIC_ROUTES.portalAccessSignIn}>{FINAL_CTA.secondary}</Link>
               </Button>
             </div>
           </div>

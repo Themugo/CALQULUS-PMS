@@ -56,7 +56,7 @@ export function PublicPricing({ tiers }: PublicPricingProps) {
             className={cn("mt-5 min-h-11 w-full", !tier.customPricing && "btn-brand")}
             variant={tier.customPricing ? "outline" : "default"}
           >
-            <Link to={tier.customPricing ? "/#contact" : "/auth?tab=signup"}>
+            <Link to={tier.customPricing ? "/#contact" : PUBLIC_ROUTES.portalAccessSignUp}>
               {tier.customPricing ? "Talk to us" : `Start with ${tier.displayName}`}
               <ArrowRight className="h-4 w-4" />
             </Link>
