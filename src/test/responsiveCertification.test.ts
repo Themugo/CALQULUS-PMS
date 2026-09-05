@@ -32,17 +32,13 @@ describe("Phase 11 responsive certification contracts", () => {
   });
 
   it("keeps all five tenant mobile nav labels visible", () => {
-    // The mobile nav items live in the shared navigation module; rendering
-    // (and the "no truncate" contract) is owned by the shared desk shell,
-    // which every portal's mobile nav — including the tenant's — renders through.
-    const nav = src("src/shared/navigation/portalNavigation.ts");
-    expect(nav).toContain('label: "Home"');
-    expect(nav).toContain('label: "Bills"');
-    expect(nav).toContain('label: "Fix"');
-    expect(nav).toContain('label: "Docs"');
-    expect(nav).toContain('label: "Me"');
-    const shell = src("src/shared/components/layout/PortalDeskShell.tsx");
-    const mobileNavRender = shell.split("visibleMobileNav.map")[1]?.split("</nav>")[0] ?? "";
+    const layout = src("src/features/tenant-portal/components/TenantLayout.tsx");
+    expect(layout).toContain('label: "Home"');
+    expect(layout).toContain('label: "Bills"');
+    expect(layout).toContain('label: "Fix"');
+    expect(layout).toContain('label: "Docs"');
+    expect(layout).toContain('label: "Me"');
+    const mobileNavRender = layout.split("{MOBILE_NAV.map")[1]?.split("</nav>")[0] ?? "";
     expect(mobileNavRender).toContain("{item.label}");
     expect(mobileNavRender).not.toContain("truncate");
   });

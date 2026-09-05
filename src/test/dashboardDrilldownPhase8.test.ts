@@ -16,9 +16,7 @@ describe("phases 176-177 dashboard drill-down continuity", () => {
   it("keeps maintenance drill-down on the existing maintenance workflow", () => {
     const source = read("features/dashboard/components/OpenMaintenancePreview.tsx");
     expect(source).toContain('navigate("/maintenance")');
-    // Each row's accessible name is now more specific (priority + title)
-    // than the old generic "Open maintenance work order" label.
-    expect(source).toContain("Open ${ticket.priority} priority maintenance: ${ticket.title}");
+    expect(source).toContain("Open maintenance work order");
   });
 
   it("does not introduce a second dashboard stats fetch layer", () => {

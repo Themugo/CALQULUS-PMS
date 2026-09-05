@@ -9,9 +9,7 @@ describe("Manager properties, property detail, and units layout contracts", () =
     const properties = src("src/features/properties/pages/Properties.tsx");
     expect(properties).toContain('title="Properties"');
     expect(properties).toContain("Add property");
-    // Search now goes through the shared SearchFilterBar, which takes the
-    // accessible name as an `ariaLabel` prop rather than a raw attribute.
-    expect(properties).toContain('ariaLabel="Search properties"');
+    expect(properties).toContain('aria-label="Search properties"');
     expect(properties).toContain('aria-label="Filter properties"');
     expect(properties).toContain('<Link to="/units">View units</Link>');
     expect(properties).toContain("<TableHead>Property</TableHead>");
@@ -111,9 +109,8 @@ describe("Manager properties, property detail, and units layout contracts", () =
     expect(routes).toContain('{ path: "/units", element: Units, protected: true, permission: "view_properties" }');
     expect(routes).toContain("MANAGER_PROPERTIES_PREVIEW_PATH");
 
-    // Sidebar now derives its items from the shared navigation module.
-    const nav = src("src/shared/navigation/portalNavigation.ts");
-    expect(nav).toContain('{ label: "Units", href: "/units", icon: Layers, permission: "view_properties" }');
+    const sidebar = src("src/shared/components/layout/Sidebar.tsx");
+    expect(sidebar).toContain('{ name: "Units", href: "/units", icon: Layers, permission: "view_properties" }');
 
     const roles = src("src/features/auth/lib/roleResolution.ts");
     expect(roles).toContain('"/units"');

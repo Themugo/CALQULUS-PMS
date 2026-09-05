@@ -137,7 +137,7 @@ describe("Phase 3 — payment and edge-function source contracts", () => {
     const src = readRepo("supabase/functions/record-payment/index.ts");
     expect(src).toContain('allowedRoles: ["manager", "submanager"]');
     expect(src).toContain("Tenant is outside your assigned properties");
-    expect(src).toContain("p_manager_id: effectiveManagerId");
+    expect(src).toContain("managerId: effectiveManagerId");
   });
 
   it("keeps CORS on an explicit origin allowlist (CSRF for browser callers)", () => {

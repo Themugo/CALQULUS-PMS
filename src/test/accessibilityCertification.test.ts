@@ -64,19 +64,11 @@ describe("Phase 12 accessibility certification contracts", () => {
   });
 
   it("marks the current page on every portal nav", () => {
-    // Manager keeps its own Sidebar; the landlord/agency/webhost/tenant desks
-    // were centralized onto the shared PortalDeskShell, which carries the
-    // aria-current marking for all of them.
     expect(src("src/shared/components/layout/Sidebar.tsx")).toContain('aria-current={active ? "page" : undefined}');
-    expect(src("src/shared/components/layout/PortalDeskShell.tsx")).toContain('aria-current={active ? "page" : undefined}');
-    for (const layout of [
-      "src/features/landlord/components/LandlordLayout.tsx",
-      "src/features/agency/components/AgencyLayout.tsx",
-      "src/features/webhost/components/WebhostLayout.tsx",
-      "src/features/tenant-portal/components/TenantLayout.tsx",
-    ]) {
-      expect(src(layout)).toContain("PortalDeskShell");
-    }
+    expect(src("src/features/landlord/components/LandlordLayout.tsx")).toContain('aria-current={active ? "page" : undefined}');
+    expect(src("src/features/agency/components/AgencyLayout.tsx")).toContain('aria-current={active ? "page" : undefined}');
+    expect(src("src/features/webhost/components/WebhostLayout.tsx")).toContain('aria-current={active ? "page" : undefined}');
+    expect(src("src/features/tenant-portal/components/TenantLayout.tsx")).toContain('aria-current={active ? "page" : undefined}');
   });
 
   it("keeps skip links on public, design-preview, and every desk", () => {
@@ -87,17 +79,10 @@ describe("Phase 12 accessibility certification contracts", () => {
     expect(src("src/features/design-preview/pages/ManagerPropertiesPreviewPage.tsx")).toContain("Skip to main content");
     expect(src("src/features/design-preview/pages/ManagerTenantsPreviewPage.tsx")).toContain("Skip to main content");
     expect(src("src/shared/components/layout/Layout.tsx")).toContain("Skip to main content");
-    // The landlord/agency/webhost/tenant desks render through the shared
-    // PortalDeskShell, which owns the skip link for all of them now.
-    expect(src("src/shared/components/layout/PortalDeskShell.tsx")).toContain("Skip to main content");
-    for (const layout of [
-      "src/features/landlord/components/LandlordLayout.tsx",
-      "src/features/agency/components/AgencyLayout.tsx",
-      "src/features/webhost/components/WebhostLayout.tsx",
-      "src/features/tenant-portal/components/TenantLayout.tsx",
-    ]) {
-      expect(src(layout)).toContain("PortalDeskShell");
-    }
+    expect(src("src/features/landlord/components/LandlordLayout.tsx")).toContain("Skip to main content");
+    expect(src("src/features/agency/components/AgencyLayout.tsx")).toContain("Skip to main content");
+    expect(src("src/features/webhost/components/WebhostLayout.tsx")).toContain("Skip to main content");
+    expect(src("src/features/tenant-portal/components/TenantLayout.tsx")).toContain("Skip to main content");
   });
 
   it("makes lease filter cards and tenant inbox cards keyboard-activatable", () => {

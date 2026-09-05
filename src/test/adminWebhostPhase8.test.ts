@@ -51,25 +51,22 @@ describe("admin + webhost identities", () => {
 
 describe("webhost layout — control plane vs administration", () => {
   const layout = source("features/webhost/components/WebhostLayout.tsx");
-  // Nav groups/items now live in the shared navigation module; WebhostLayout
-  // only owns the visibility/permission gating for them.
-  const nav = source("shared/navigation/portalNavigation.ts");
 
   it("groups nav into Control plane / Administration / Account", () => {
     for (const group of ['"Control plane"', '"Administration"', '"Account"']) {
-      expect(nav).toContain(`label: ${group}`);
+      expect(layout).toContain(`label: ${group}`);
     }
   });
 
   it("prioritizes Applications, Deployments, Operations on the control plane", () => {
-    const controlPlane = nav.split('"Control plane"')[1]?.split('"Administration"')[0] ?? "";
+    const controlPlane = layout.split('"Control plane"')[1]?.split('"Administration"')[0] ?? "";
     for (const item of ['"Dashboard"', '"Applications"', '"Deployments"', '"Operations"']) {
       expect(controlPlane).toContain(`label: ${item}`);
     }
   });
 
   it("keeps admin control (orgs, users, subscriptions, audit, security) in Administration", () => {
-    const admin = nav.split('"Administration"')[1]?.split('"Account"')[0] ?? "";
+    const admin = layout.split('"Administration"')[1]?.split('"Account"')[0] ?? "";
     for (const item of ['"Organizations"', '"Users"', '"Subscriptions"', '"Audit Log"', '"Security"']) {
       expect(admin).toContain(`label: ${item}`);
     }

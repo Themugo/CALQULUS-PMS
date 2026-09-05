@@ -4,34 +4,46 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, EyeOff, Mail, LockKeyhole } from 'lucide-react';
 import { signupSchema, formatValidationErrors } from '@/shared/lib/validations';
-import { supabase, setRememberMe } from '@/integrations/supabase/client';
+import ForgotPasswordDialog from '@/features/auth/components/ForgotPasswordDialog';
+import { BiometricLoginButton } from '@/features/auth/components/BiometricLoginButton';
+import { useBiometricAuth } from '@/shared/hooks/useBiometricAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { trackCommercialEvent } from '@/features/dashboard/lib/commercialMetrics';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
-import { ManagerPortalShell, MANAGER_ACCENT } from '@/features/auth/components/ManagerPortalChrome';
-import { PortalLoginCard } from '@/features/auth/components/PortalLoginScreen';
+import { ManagerPortalShell } from '@/features/auth/components/ManagerPortalChrome';
 
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const isSignup = searchParams.get('tab') === 'signup';
-  const { user, userRole, signIn, signUp, signInWithGoogle, loading } = useAuth();
+  const activeTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
+  const { user, signIn, signUp, loading } = useAuth();
   const { toast } = useToast();
+  const {
+    isAvailable: biometricAvailable,
+    biometryType,
+    hasStoredCredentials,
+    isLoading: biometricLoading,
+    performBiometricLogin,
+    saveCredentials,
+  } = useBiometricAuth();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [rememberMe, setRememberMeState] = useState(true);
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
-
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupFullName, setSignupFullName] = useState('');
+  const [enableBiometric, setEnableBiometric] = useState(false);
+  const [isBiometricLoggingIn, setIsBiometricLoggingIn] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [signupEmailError, setSignupEmailError] = useState('');
 
   const validateEmail = (email: string): boolean => {
@@ -48,37 +60,60 @@ const Auth = () => {
     }
   };
 
-  const redirectForRole = React.useCallback(() => {
-    if (!userRole) return;
-    if (userRole.role === 'manager' || userRole.role === 'submanager') { navigate('/'); return; }
-    if (userRole.role === 'tenant') { navigate('/portal'); return; }
-    if (userRole.role === 'webhost') { navigate('/webhost'); return; }
-    if (userRole.role === 'landlord') { navigate('/landlord/dashboard'); return; }
-    if (userRole.role === 'agency') { navigate('/agency'); return; }
-  }, [userRole, navigate]);
-
-  // Covers both an already-signed-in visit and the return leg of Google
-  // OAuth (a full-page redirect remounts this component with a session
-  // already resolving), so both paths land on the right portal home.
   useEffect(() => {
-    if (user && !loading && userRole) {
-      redirectForRole();
+    const remembered = localStorage.getItem('calqulus:remembered-email:manager');
+    if (remembered) setLoginEmail(remembered);
+  }, []);
+
+  useEffect(() => {
+    if (user && !loading) {
+      navigate('/');
     }
-  }, [user, loading, userRole, redirectForRole]);
+  }, [user, loading, navigate]);
 
   useEffect(() => {
-    document.title = isSignup
+    document.title = activeTab === 'signup'
       ? 'Create manager account | CALQULUS PMS'
       : 'Manager sign-in | CALQULUS PMS';
-  }, [isSignup]);
+  }, [activeTab]);
+
+  const handleBiometricLogin = async () => {
+    setIsBiometricLoggingIn(true);
+    try {
+      const credentials = await performBiometricLogin();
+      if (credentials) {
+        const { error } = await signIn(credentials.email, credentials.password);
+        if (error) {
+          toast({ title: 'Login failed', description: 'Biometric auth succeeded but login failed. Please try again.', variant: 'destructive' });
+        } else {
+          const roleCheck = await ensureSignedInRole(['manager', 'submanager']);
+          if (!roleCheck.ok) {
+            toast({ title: 'Wrong portal', description: roleCheck.message, variant: 'destructive' });
+            return;
+          }
+          toast({ title: 'Welcome back!', description: 'Logged in with biometrics.' });
+          navigate('/');
+        }
+      } else {
+        toast({ title: 'Biometric login failed', description: 'Please try again or use email and password.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Biometric error', description: 'An error occurred during biometric authentication.', variant: 'destructive' });
+    } finally {
+      setIsBiometricLoggingIn(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setRememberMe(rememberMe);
     const { error } = await signIn(loginEmail, loginPassword);
     if (error) {
-      toast({ title: 'Login failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
+      toast({
+        title: 'Login failed',
+        description: sanitizeAuthError(error.message),
+        variant: 'destructive',
+      });
       setIsSubmitting(false);
       return;
     }
@@ -89,27 +124,23 @@ const Auth = () => {
       if (roles.includes('tenant')) { navigate('/portal'); return; }
       if (roles.includes('webhost')) { navigate('/webhost'); return; }
       if (roles.includes('landlord')) { navigate('/landlord/dashboard'); return; }
-      if (roles.includes('agency')) { navigate('/agency'); return; }
-      toast({ title: 'No active role', description: roleCheck.message, variant: 'destructive' });
+      toast({
+        title: 'No active role',
+        description: roleCheck.message,
+        variant: 'destructive',
+      });
       setIsSubmitting(false);
       return;
     }
 
+    if (rememberMe) localStorage.setItem('calqulus:remembered-email:manager', loginEmail);
+    else localStorage.removeItem('calqulus:remembered-email:manager');
+    if (enableBiometric && biometricAvailable) {
+      await saveCredentials(loginEmail, loginPassword);
+    }
     toast({ title: 'Welcome back!', description: 'Signed in successfully.' });
     navigate('/');
     setIsSubmitting(false);
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsGoogleSubmitting(true);
-    setRememberMe(rememberMe);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      toast({ title: 'Google sign-in failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
-      setIsGoogleSubmitting(false);
-    }
-    // On success the browser navigates away to Google; this component
-    // remounts on return and the redirect effect above takes it from there.
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -123,7 +154,11 @@ const Auth = () => {
     }
     const { error } = await signUp(signupEmail, signupPassword, signupFullName, 'manager');
     if (error) {
-      toast({ title: 'Signup failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
+      toast({
+        title: 'Signup failed',
+        description: sanitizeAuthError(error.message),
+        variant: 'destructive',
+      });
     } else {
       supabase.functions.invoke('send-welcome-email', { body: { email: signupEmail, fullName: signupFullName, userType: 'manager' } })
         .catch(() => {});
@@ -150,43 +185,111 @@ const Auth = () => {
     return <AuthLoadingScreen variant="light" />;
   }
 
-  const inviteNote = (
-    <p className="text-center text-sm text-muted-foreground">
-      Invited tenant?{' '}
-      <Link to="/tenant/signup" className="font-medium hover:underline" style={{ color: MANAGER_ACCENT }}>
-        Accept invitation
-      </Link>
-    </p>
-  );
+  return (
+    <ManagerPortalShell formTitle={activeTab === 'signup' ? 'Create your manager account' : 'Welcome back'}>
+      {biometricAvailable && hasStoredCredentials && !biometricLoading && (
+        <div className="mb-6">
+          <BiometricLoginButton biometryType={biometryType} onPress={handleBiometricLogin} isLoading={isBiometricLoggingIn} />
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-  if (isSignup) {
-    return (
-      <ManagerPortalShell>
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-black/10 sm:p-8" aria-label="Create manager account">
-          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">Create your manager account</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Start managing your properties in minutes.</p>
-          <form onSubmit={handleSignup} className="mt-6 space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          if (value === 'signup') setSearchParams({ tab: 'signup' }, { replace: true });
+          else setSearchParams({}, { replace: true });
+        }}
+        className="w-full"
+      >
+        <TabsList className={activeTab === 'login' ? 'hidden' : 'grid w-full grid-cols-2 mb-4'}>
+          <TabsTrigger value="login">Sign In</TabsTrigger>
+          <TabsTrigger value="signup">Create account</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="login" className="space-y-4 mt-2">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="login-email" className="sr-only">Email address</Label>
+              <div className="relative">
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#61708a]" aria-hidden />
+              <Input id="login-email" type="email" placeholder="Email address" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="bg-card border-border pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11" />
+            </div>
+            </div>
+            <div className="space-y-1.5">
+              <div>
+                <Label htmlFor="login-password" className="sr-only">Password</Label>
+              </div>
+              <div className="relative">
+                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#61708a]" aria-hidden />
+                <Input id="login-password" type={showLoginPassword ? "text" : "password"} placeholder="Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="bg-card border-border pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showLoginPassword ? "Hide password" : "Show password"} aria-pressed={showLoginPassword}>
+                  {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-2">
+                <Checkbox id="manager-remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} />
+                <label htmlFor="manager-remember-me" className="text-xs font-medium text-[#1d2d4d] cursor-pointer">Remember me</label>
+              </div>
+              <ForgotPasswordDialog
+                trigger={
+                  <button type="button" className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors">
+                    Forgot password?
+                  </button>
+                }
+              />
+            </div>
+            {biometricAvailable && !hasStoredCredentials && (
+              <div className="flex items-center space-x-2">
+                <Checkbox id="enable-biometric" checked={enableBiometric} onCheckedChange={(c) => setEnableBiometric(c as boolean)} />
+                <label htmlFor="enable-biometric" className="text-sm font-medium leading-none cursor-pointer">
+                  Enable {biometryType === 'faceId' ? 'Face ID' : 'fingerprint'} login
+                </label>
+              </div>
+            )}
+            <Button type="submit" className="w-full btn-brand h-11 font-semibold" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Signing in…
+                </span>
+              ) : (
+                'Login'
+              )}
+            </Button>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="signup" className="space-y-4 mt-2">
+          <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="signup-name" className="text-sm font-medium text-foreground">Full Name</Label>
-              <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="h-11 border-border bg-card text-foreground placeholder:text-muted-foreground" />
+              <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">Email</Label>
-              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required aria-invalid={!!signupEmailError} aria-describedby={signupEmailError ? "signup-email-error" : undefined} className={`h-11 border-border bg-card text-foreground placeholder:text-muted-foreground ${signupEmailError ? 'border-destructive' : ''}`} />
+              <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => handleSignupEmailChange(e.target.value)} required aria-invalid={!!signupEmailError} aria-describedby={signupEmailError ? "signup-email-error" : undefined} className={`bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 ${signupEmailError ? 'border-destructive focus:border-destructive focus-visible:ring-destructive/20' : ''}`} />
               {signupEmailError && (
-                <p id="signup-email-error" role="alert" className="flex items-center gap-1 text-xs text-destructive"><XCircle className="h-3 w-3" aria-hidden="true" />{signupEmailError}</p>
+                <p id="signup-email-error" role="alert" className="text-xs text-destructive flex items-center gap-1"><XCircle className="h-3 w-3" aria-hidden="true" />{signupEmailError}</p>
               )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">Password</Label>
+              <Label htmlFor="signup-password" className="sr-only">Password</Label>
               <div className="relative">
-                <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="h-11 border-border bg-card pr-11 text-foreground placeholder:text-muted-foreground" />
-                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-1.5 top-1/2 inline-flex h-11 min-h-11 w-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label={showSignupPassword ? "Hide password" : "Show password"} aria-pressed={showSignupPassword}>
+                <Input id="signup-password" type={showSignupPassword ? "text" : "password"} placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={8} className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary/20 h-11 pr-11" />
+                <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)} className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors" aria-label={showSignupPassword ? "Hide password" : "Show password"} aria-pressed={showSignupPassword}>
                   {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {signupPassword && (
-                <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-secondary/60 p-3 text-xs">
+                <div className="grid grid-cols-2 gap-1 text-xs p-3 bg-secondary/60 rounded-lg border border-border">
                   {[
                     { key: 'length', label: '8+ characters' },
                     { key: 'uppercase', label: 'Uppercase' },
@@ -195,76 +298,38 @@ const Auth = () => {
                     { key: 'special', label: 'Special char' },
                   ].map(({ key, label }) => (
                     <div key={key} className={`flex items-center gap-1.5 ${passwordStrength[key as keyof typeof passwordStrength] ? 'text-success' : 'text-muted-foreground'}`}>
-                      {passwordStrength[key as keyof typeof passwordStrength] ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                      {passwordStrength[key as keyof typeof passwordStrength]
+                        ? <CheckCircle className="h-3 w-3" />
+                        : <XCircle className="h-3 w-3" />}
                       {label}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-            <Button type="submit" disabled={isSubmitting} className="h-11 w-full text-sm font-semibold text-white hover:brightness-110" style={{ backgroundColor: MANAGER_ACCENT }}>
+            <Button type="submit" className="w-full btn-brand h-11 font-semibold" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   Creating account…
                 </span>
               ) : (
                 'Create manager account'
               )}
             </Button>
-            <p className="text-center text-xs text-muted-foreground">Approval is required before platform billing starts.</p>
-          </form>
-          <p className="mt-5 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <button
-              type="button"
-              className="font-medium hover:underline"
-              style={{ color: MANAGER_ACCENT }}
-              onClick={() => setSearchParams({}, { replace: true })}
-            >
-              Sign in
-            </button>
-          </p>
-          <div className="mt-5 border-t border-border pt-5">{inviteNote}</div>
-        </section>
-      </ManagerPortalShell>
-    );
-  }
-
-  return (
-    <ManagerPortalShell>
-      <PortalLoginCard
-        accentHex={MANAGER_ACCENT}
-        portalLabel="manager"
-        email={loginEmail}
-        onEmailChange={setLoginEmail}
-        password={loginPassword}
-        onPasswordChange={setLoginPassword}
-        showPassword={showLoginPassword}
-        onToggleShowPassword={() => setShowLoginPassword((v) => !v)}
-        rememberMe={rememberMe}
-        onRememberMeChange={setRememberMeState}
-        onSubmit={handleLogin}
-        isSubmitting={isSubmitting}
-        onGoogleSignIn={handleGoogleSignIn}
-        isGoogleSubmitting={isGoogleSubmitting}
-        footNote={
-          <div className="space-y-3">
-            {inviteNote}
-            <p className="text-center text-sm text-muted-foreground">
-              New to CALQULUS?{' '}
-              <button
-                type="button"
-                className="font-medium hover:underline"
-                style={{ color: MANAGER_ACCENT }}
-                onClick={() => setSearchParams({ tab: 'signup' }, { replace: true })}
-              >
-                Create a manager account
-              </button>
+            <p className="text-xs text-muted-foreground text-center">
+              Approval is required before platform billing starts.
             </p>
-          </div>
-        }
-      />
+          </form>
+        </TabsContent>
+      </Tabs>
+
+      <p className="mt-5 text-center text-sm text-muted-foreground">
+        Invited tenant?{' '}
+        <Link to="/tenant/signup" className="font-medium text-primary hover:text-primary-hover">
+          Accept invitation
+        </Link>
+      </p>
     </ManagerPortalShell>
   );
 };

@@ -105,7 +105,6 @@ export interface AuthContextType {
   canAccessProperty: (propertyId: string) => boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string, role: AppRole, tenantId?: string) => Promise<{ error: Error | null }>;
-  signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -416,14 +415,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error ? new Error(error.message) : null };
   }, []);
 
-  const signInWithGoogle = useCallback(async (redirectTo?: string) => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectTo || window.location.href },
-    });
-    return { error: error ? new Error(error.message) : null };
-  }, []);
-
   const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, _tenantId?: string) => {
     const redirectPath = signupRedirectPath(role);
     const { data, error } = await supabase.auth.signUp({ email, password,
@@ -510,14 +501,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
     webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
-    signIn, signUp, signInWithGoogle, signOut,
+    signIn, signUp, signOut,
   }), [
     user, session, userRole, loading,
     isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
     webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
-    signIn, signUp, signInWithGoogle, signOut,
+    signIn, signUp, signOut,
   ]);
 
   return (

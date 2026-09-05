@@ -11,9 +11,7 @@ describe("Manager tenants, tenant detail, and leases layout contracts", () => {
     expect(tenants).toContain("Invite tenant");
     expect(tenants).toContain("Add Tenant");
     expect(tenants).toContain("InviteTenantDialog");
-    // Search now goes through the shared SearchFilterBar, which takes the
-    // accessible name as an `ariaLabel` prop rather than a raw attribute.
-    expect(tenants).toContain('ariaLabel="Search tenants"');
+    expect(tenants).toContain('aria-label="Search tenants"');
     expect(tenants).toContain('label="Tenant"');
     expect(tenants).toContain('label="Property / Unit"');
     expect(tenants).toContain("<TableHead>Lease</TableHead>");

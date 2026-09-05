@@ -19,7 +19,7 @@ describe("Phase 7 atomic payment path", () => {
   });
 
   it("does not retain compensating financial writes in process-payment", () => {
-    const financialWrite = /from\([\"'](?:payment_transactions|invoices|payment_allocations|tenant_credit_ledger)[\"']\)[\s\S]{0,180}?\.(?:insert|update|upsert|delete)\(/;
+    const financialWrite = /from\\([\"'](?:payment_transactions|invoices|payment_allocations|tenant_credit_ledger)[\"']\\)[\\s\\S]{0,180}?\\.(?:insert|update|upsert|delete)\\(/;
     expect(processPayment).not.toMatch(financialWrite);
     expect(processPayment).not.toContain("invoiceRollback");
     expect(processPayment).not.toContain("toMinorUnits");

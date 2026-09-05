@@ -1,5 +1,5 @@
 -- CALQULUS PMS — Tenant Experience & Service Quality Intelligence
--- Deterministic service-quality signals only; no forecasting or likelihood-scoring language.
+-- Deterministic service-quality signals only; no predictive/probabilistic claim.
 
 CREATE INDEX IF NOT EXISTS maintenance_requests_manager_tenant_unit_idx
   ON public.maintenance_requests(manager_id, tenant_email, unit_id, requested_date DESC);

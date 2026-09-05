@@ -70,17 +70,11 @@ function readPreset(role: DevPresetRole): DevPresetAccount | null {
   return { ...meta, email, password };
 }
 
-// Redundant, statically-analyzable guard: `import.meta.env.PROD` (unlike the
-// aliased `env.PROD` above) is replaced with a literal boolean by Vite at
-// build time, so bundlers can dead-code-eliminate this entire branch — and
-// the preset credentials with it — out of production bundles.
-export const DEV_PRESET_ACCOUNTS: DevPresetAccount[] = import.meta.env.PROD
-  ? []
-  : isDevAccessEnabledFromEnv(env)
-    ? PRESET_META.map((entry) => readPreset(entry.role)).filter(
-        (account): account is DevPresetAccount => account !== null,
-      )
-    : [];
+export const DEV_PRESET_ACCOUNTS: DevPresetAccount[] = isDevAccessEnabledFromEnv(env)
+  ? PRESET_META.map((entry) => readPreset(entry.role)).filter(
+      (account): account is DevPresetAccount => account !== null,
+    )
+  : [];
 
 const EMPTY_DEV_ACCOUNT: DevPresetAccount = {
   role: 'manager',

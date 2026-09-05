@@ -40,44 +40,13 @@ if (MISSING_ENV) {
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// ── Remember-me storage toggle ───────────────────────────────────────
-// The "Remember me" checkbox on each portal's login screen controls whether
-// the Supabase session survives closing the browser tab (localStorage) or
-// is cleared when the tab closes (sessionStorage). The preference itself is
-// kept in localStorage — it's a tiny, non-sensitive flag, and it must
-// survive the full-page navigation to Google and back during OAuth sign-in,
-// which a sessionStorage-only flag would risk losing on some browsers.
-const REMEMBER_ME_KEY = 'calqulusrms_remember_me';
-
-export function setRememberMe(remember: boolean): void {
-  try {
-    localStorage.setItem(REMEMBER_ME_KEY, remember ? '1' : '0');
-  } catch {
-    // localStorage unavailable (private mode, etc.) — falls back to the
-    // default (remember = true) below, which is the safest assumption.
-  }
-}
-
-export function getRememberMe(): boolean {
-  try {
-    const raw = localStorage.getItem(REMEMBER_ME_KEY);
-    return raw === null ? true : raw === '1';
-  } catch {
-    return true;
-  }
-}
-
-function activeStore(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem' | 'length' | 'key' | 'clear'> {
-  return getRememberMe() ? localStorage : sessionStorage;
-}
-
 const safeStorage: Storage = {
-  getItem: (k: string) => { try { return activeStore().getItem(k); } catch { return null; } },
-  setItem: (k: string, v: string) => { try { activeStore().setItem(k, v); } catch {} },
-  removeItem: (k: string) => { try { activeStore().removeItem(k); } catch {} },
-  get length() { try { return activeStore().length; } catch { return 0; } },
-  key: (i: number) => { try { return activeStore().key(i); } catch { return null; } },
-  clear: () => { try { activeStore().clear(); } catch {} },
+  getItem: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
+  setItem: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch {} },
+  removeItem: (k: string) => { try { localStorage.removeItem(k); } catch {} },
+  get length() { try { return localStorage.length; } catch { return 0; } },
+  key: (i: number) => { try { return localStorage.key(i); } catch { return null; } },
+  clear: () => { try { localStorage.clear(); } catch {} },
 };
 
 function createNoopProxy(): AppSupabaseClient {

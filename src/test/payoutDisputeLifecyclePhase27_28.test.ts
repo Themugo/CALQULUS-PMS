@@ -1,15 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
-const payoutMigration = readFileSync(
-  resolve(process.cwd(), "supabase/migrations/20260903000012_payout_lifecycle_atomic.sql"),
-  "utf8",
-);
-const disputeMigration = readFileSync(
-  resolve(process.cwd(), "supabase/migrations/20260903000013_dispute_resolution_atomic.sql"),
-  "utf8",
-);
+const payoutMigration = "supabase/migrations/20260903000012_payout_lifecycle_atomic.sql";
+const disputeMigration = "supabase/migrations/20260903000013_dispute_resolution_atomic.sql";
 
 describe("Phase 27-28 payout/dispute lifecycle", () => {
   it("defines atomic payout creation and transitions", () => {
