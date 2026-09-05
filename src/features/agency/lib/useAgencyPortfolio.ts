@@ -1,0 +1,237 @@
+import { useQuery } from "@tanstack/react-query";
+import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/features/auth/AuthContext";
+
+export type AgencyPropertyRow = {
+  id: string;
+  name: string;
+  address: string;
+  units: number;
+  occupied: number;
+  occupancyRate: number;
+  clientId: string | null;
+  clientName: string;
+  collectedMtd: number;
+  outstanding: number;
+};
+
+export type AgencyClientRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  pending: boolean;
+  propertyCount: number;
+  units: number;
+  occupied: number;
+  occupancyRate: number;
+  collectedMtd: number;
+  outstanding: number;
+};
+
+export type AgencyMonthPoint = { month: string; paid: number; pending: number };
+
+function occupancyRate(occupied: number, units: number): number {
+  return units > 0 ? Math.round((occupied / units) * 100) : 0;
+}
+
+function inMonth(date: string | null, start: string, end?: string): boolean {
+  return Boolean(date && date >= start && (!end || date <= end));
+}
+
+export function useAgencyPortfolio() {
+  const { user } = useAuth();
+
+  const query = useQuery({
+    queryKey: ["agency-portfolio", user?.id],
+    enabled: Boolean(user?.id),
+    queryFn: async () => {
+      if (!user) {
+        throw new Error("Not signed in");
+      }
+
+      const now = new Date();
+      const mtdStart = startOfMonth(now).toISOString().slice(0, 10);
+      const seriesStart = startOfMonth(subMonths(now, 5)).toISOString().slice(0, 10);
+
+      const [
+        propertiesRes,
+        linksRes,
+        invoicesRes,
+        expiringRes,
+      ] = await Promise.all([
+        supabase
+          .from("properties")
+          .select("id, name, address, units, occupied")
+          .eq("manager_id", user.id)
+          .order("name"),
+        supabase
+          .from("property_landlords")
+          .select("id, property_id, landlord_user_id, revenue_share_pct")
+          .eq("manager_id", user.id),
+        supabase
+          .from("invoices")
+          .select("property_id, amount, paid_amount, balance_due, status, paid_date, due_date")
+          .eq("manager_id", user.id),
+        supabase
+          .from("leases")
+          .select("id", { count: "exact", head: true })
+          .eq("manager_id", user.id)
+          .eq("status", "expiring"),
+      ]);
+
+      if (propertiesRes.error) throw propertiesRes.error;
+      if (linksRes.error) throw linksRes.error;
+      if (invoicesRes.error) throw invoicesRes.error;
+
+      const properties = (propertiesRes.data ?? []) as {
+        id: string;
+        name: string;
+        address: string | null;
+        units: number | null;
+        occupied: number | null;
+      }[];
+      const links = (linksRes.data ?? []) as {
+        id: string;
+        property_id: string;
+        landlord_user_id: string | null;
+        revenue_share_pct: number | null;
+      }[];
+      const invoices = (invoicesRes.data ?? []) as {
+        property_id: string | null;
+        amount: number | string | null;
+        paid_amount: number | string | null;
+        balance_due: number | string | null;
+        status: string | null;
+        paid_date: string | null;
+        due_date: string | null;
+      }[];
+
+      const landlordIds = [...new Set(links.map((link) => link.landlord_user_id).filter((id): id is string => Boolean(id)))];
+      const { data: profiles } = landlordIds.length
+        ? await supabase.from("profiles").select("id, full_name, email").in("id", landlordIds)
+        : { data: [] as { id: string; full_name: string | null; email: string | null }[] };
+      const profileMap = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+
+      const linkByProperty = new Map(links.map((link) => [link.property_id, link]));
+
+      const collectedByProperty = new Map<string, number>();
+      const outstandingByProperty = new Map<string, number>();
+      let collectedMtd = 0;
+      let outstanding = 0;
+      let overdueInvoices = 0;
+
+      for (const invoice of invoices) {
+        const amount = Number(invoice.amount ?? 0);
+        const paid = Number(invoice.paid_amount ?? (invoice.status === "paid" ? amount : 0));
+        const owed = Number(invoice.balance_due ?? 0);
+        if (invoice.status === "paid" && inMonth(invoice.paid_date, mtdStart)) {
+          collectedMtd += paid;
+          if (invoice.property_id) {
+            collectedByProperty.set(invoice.property_id, (collectedByProperty.get(invoice.property_id) ?? 0) + paid);
+          }
+        }
+        if (invoice.status === "overdue") {
+          overdueInvoices += 1;
+          outstanding += owed || amount;
+          if (invoice.property_id) {
+            outstandingByProperty.set(
+              invoice.property_id,
+              (outstandingByProperty.get(invoice.property_id) ?? 0) + (owed || amount),
+            );
+          }
+        }
+      }
+
+      const propertyRows: AgencyPropertyRow[] = properties.map((property) => {
+        const link = linkByProperty.get(property.id);
+        const profile = link?.landlord_user_id ? profileMap.get(link.landlord_user_id) : undefined;
+        const units = Number(property.units ?? 0);
+        const occupied = Number(property.occupied ?? 0);
+        return {
+          id: property.id,
+          name: property.name,
+          address: property.address ?? "",
+          units,
+          occupied,
+          occupancyRate: occupancyRate(occupied, units),
+          clientId: link?.landlord_user_id ?? null,
+          clientName: profile?.full_name || profile?.email || (link ? "Invitation pending" : "Unlinked"),
+          collectedMtd: collectedByProperty.get(property.id) ?? 0,
+          outstanding: outstandingByProperty.get(property.id) ?? 0,
+        };
+      });
+
+      const clientMap = new Map<string, AgencyClientRow>();
+      for (const property of propertyRows) {
+        if (property.clientName === "Unlinked") continue;
+        const key = property.clientId ?? `pending:${property.id}`;
+        const existing = clientMap.get(key);
+        if (existing) {
+          existing.propertyCount += 1;
+          existing.units += property.units;
+          existing.occupied += property.occupied;
+          existing.collectedMtd += property.collectedMtd;
+          existing.outstanding += property.outstanding;
+          existing.occupancyRate = occupancyRate(existing.occupied, existing.units);
+        } else {
+          clientMap.set(key, {
+            id: key,
+            name: property.clientName,
+            email: property.clientId ? (profileMap.get(property.clientId)?.email ?? null) : null,
+            pending: !property.clientId,
+            propertyCount: 1,
+            units: property.units,
+            occupied: property.occupied,
+            occupancyRate: property.occupancyRate,
+            collectedMtd: property.collectedMtd,
+            outstanding: property.outstanding,
+          });
+        }
+      }
+
+      const clients = [...clientMap.values()].sort((a, b) => b.collectedMtd - a.collectedMtd);
+      const linkedClientCount = new Set(propertyRows.filter((row) => row.clientId).map((row) => row.clientId)).size;
+      const pendingClientCount = links.filter((link) => !link.landlord_user_id).length;
+      const unlinkedCount = propertyRows.filter((row) => row.clientName === "Unlinked").length;
+
+      const series: AgencyMonthPoint[] = [];
+      for (let i = 5; i >= 0; i -= 1) {
+        const monthDate = subMonths(now, i);
+        const start = startOfMonth(monthDate).toISOString().slice(0, 10);
+        const end = endOfMonth(monthDate).toISOString().slice(0, 10);
+        const paid = invoices
+          .filter((invoice) => invoice.status === "paid" && inMonth(invoice.paid_date, start, end))
+          .reduce((sum, invoice) => sum + Number(invoice.paid_amount ?? invoice.amount ?? 0), 0);
+        const pending = invoices
+          .filter((invoice) => (invoice.status === "pending" || invoice.status === "overdue") && inMonth(invoice.due_date, start, end))
+          .reduce((sum, invoice) => sum + Number(invoice.amount ?? 0), 0);
+        series.push({ month: format(monthDate, "MMM"), paid, pending });
+      }
+
+      const totalUnits = propertyRows.reduce((sum, row) => sum + row.units, 0);
+      const totalOccupied = propertyRows.reduce((sum, row) => sum + row.occupied, 0);
+
+      return {
+        properties: propertyRows,
+        clients,
+        clientCount: linkedClientCount + pendingClientCount,
+        unlinkedCount,
+        totalProperties: propertyRows.length,
+        totalUnits,
+        totalOccupied,
+        occupancyRate: occupancyRate(totalOccupied, totalUnits),
+        collectedMtd,
+        outstanding,
+        overdueInvoices,
+        expiringLeases: expiringRes.count ?? 0,
+        series,
+      };
+    },
+  });
+
+  return {
+    ...query,
+    data: query.data,
+  };
+}
