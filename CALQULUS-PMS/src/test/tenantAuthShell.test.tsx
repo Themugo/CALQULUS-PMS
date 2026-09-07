@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TenantPortalShell, TENANT_ACCENT } from "@/features/auth/components/TenantPortalChrome";
 
 function renderShell() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
+    <QueryClientProvider client={queryClient}>
     <MemoryRouter>
       <TenantPortalShell>
         <form onSubmit={(e) => e.preventDefault()}>
           <button type="submit">Sign in</button>
         </form>
       </TenantPortalShell>
-    </MemoryRouter>,
+    </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
@@ -29,7 +33,7 @@ describe("Tenant portal entry chrome", () => {
     const bgImage = container.querySelector('img[alt=""]');
     expect(bgImage).not.toBeNull();
     expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
-    expect(TENANT_ACCENT).toBe("#7C5FD3");
+    expect(TENANT_ACCENT).toBe("#06B6D4");
   });
 
   it("carries the CALQULUS brand mark and portal description", () => {

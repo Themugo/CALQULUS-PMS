@@ -34,7 +34,7 @@ describe("Manager portal entry chrome", () => {
     const bgImage = container.querySelector('img[alt=""]');
     expect(bgImage).not.toBeNull();
     expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
-    expect(MANAGER_ACCENT).toBe("#31577E");
+    expect(MANAGER_ACCENT).toBe("#0074E6");
   });
 
   it("carries the CALQULUS brand mark and portal description", () => {

@@ -10,7 +10,7 @@ export const PLATFORM_BRAND_CONFIG: BrandConfig = {
     logo: null,
     logoDark: null,
     favicon: "/favicon.ico",
-    tagline: "Property operations for Kenya",
+    tagline: "Properties work better with people",
     product: CALQULUS_BRAND.product,
     workspaceName: null,
   },

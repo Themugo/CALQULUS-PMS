@@ -168,7 +168,7 @@ export const PushNotificationSettings: React.FC = () => {
       // Show local notification immediately via ServiceWorker or Notification API
       showLocalNotification("CALQULUS PMS — Test Alert", {
         body: "Web Push Notifications are active! You will receive instant updates for payments, maintenance, and lease events.",
-        icon: "/pwa-192x192.png",
+        icon: "/pwa-192x192.png?v=20260907",
         tag: "test-notification-" + Date.now(),
       });
 

@@ -140,7 +140,7 @@ export function AgencyPortalShell({ children }: AgencyPortalShellProps) {
                   {children}
                 </div>
                 <div className="px-5 pb-4 pt-3 text-center text-xs leading-4.5 text-slate-500">
-                  <span className="font-semibold text-[#123FB7]">Agency workspace</span>
+                  <span className="font-semibold text-[var(--calqulus-primary)]">Agency workspace</span>
                   {" · "}portfolio operations, client service and collections in one place.
                 </div>
               </div>

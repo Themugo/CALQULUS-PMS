@@ -29,10 +29,9 @@ describe("PublicLandingPage", () => {
 
   it("keeps working portal routes on the hero and final CTA", () => {
     renderAt("/");
-    expect(screen.getByRole("link", { name: /get started/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
-    );
+    const getStarted = screen.getAllByRole("link", { name: /get started/i });
+    expect(getStarted.length).toBeGreaterThanOrEqual(1);
+    expect(getStarted.every((link) => link.getAttribute("href") === PUBLIC_ROUTES.managerSignUp)).toBe(true);
     expect(screen.getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
   });
 
@@ -42,7 +41,7 @@ describe("PublicLandingPage", () => {
     const labels = within(primary)
       .getAllByRole("link")
       .map((link) => link.textContent);
-    expect(labels).toEqual(["Home", "Properties", "Portals", "Insights", "Pricing"]);
+    expect(labels).toEqual(["Home", "Properties", "Portals", "Pricing"]);
     expect(primary).not.toHaveTextContent("Platform");
     expect(primary).not.toHaveTextContent("Solutions");
     expect(primary).not.toHaveTextContent("Resources");
@@ -84,7 +83,7 @@ describe("PublicLandingPage", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
-    expect(header.className).toMatch(/bg-\[\#123FB7\]/);
+    expect(header.className).toMatch(/bg-\[linear-gradient/);
     expect(container.querySelector("footer")).toBeTruthy();
     expect(container.querySelector("#platform")).toBeNull();
     expect(container.querySelector("#solutions")).toBeNull();
@@ -119,7 +118,7 @@ describe("PublicLandingPage", () => {
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
-    expect(ctaSection!.className).toMatch(/bg-\[linear-gradient/);
+    expect(ctaSection!.querySelector("div.relative.overflow-hidden")?.className ?? "").toMatch(/bg-\[linear-gradient/);
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
       PUBLIC_ROUTES.managerSignUp,

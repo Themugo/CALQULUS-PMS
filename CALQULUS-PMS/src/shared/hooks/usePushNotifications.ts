@@ -146,8 +146,8 @@ export const usePushNotifications = () => {
   const showLocalNotification = useCallback((title: string, options?: NotificationOptions) => {
     if (permission === "granted") {
       new Notification(title, {
-        icon: "/pwa-192x192.png",
-        badge: "/pwa-192x192.png",
+        icon: "/pwa-192x192.png?v=20260907",
+        badge: "/pwa-192x192.png?v=20260907",
         ...options,
       });
     }

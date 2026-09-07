@@ -29,11 +29,12 @@ describe("PublicLandingPage", () => {
 
   it("keeps working portal routes on the hero and final CTA", () => {
     renderAt("/");
-    expect(screen.getByRole("link", { name: /get started/i })).toHaveAttribute(
+    const hero = screen.getByRole("region", { name: /calqulus property highlights/i });
+    expect(within(hero).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.managerSignUp,
+      PUBLIC_ROUTES.portalAccessSignUp,
     );
-    expect(screen.getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
+    expect(within(hero).getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
   });
 
   it("uses only working primary navigation in a compact order", () => {
@@ -42,7 +43,7 @@ describe("PublicLandingPage", () => {
     const labels = within(primary)
       .getAllByRole("link")
       .map((link) => link.textContent);
-    expect(labels).toEqual(["Home", "Properties", "Portals", "Insights", "Pricing"]);
+    expect(labels).toEqual(["Home", "Properties", "Portals", "Pricing"]);
     expect(primary).not.toHaveTextContent("Platform");
     expect(primary).not.toHaveTextContent("Solutions");
     expect(primary).not.toHaveTextContent("Resources");
@@ -50,11 +51,7 @@ describe("PublicLandingPage", () => {
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: /login/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.managerSignIn,
-    );
-    expect(within(header).getByRole("link", { name: /get started/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
+      PUBLIC_ROUTES.portalAccessSignIn,
     );
   });
 
@@ -119,10 +116,11 @@ describe("PublicLandingPage", () => {
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
-    expect(ctaSection!.className).toMatch(/bg-\[linear-gradient/);
+    const gradientCard = ctaSection!.querySelector("div.relative.overflow-hidden");
+    expect(gradientCard?.className ?? "").toMatch(/bg-\[linear-gradient/);
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.managerSignUp,
+      PUBLIC_ROUTES.portalAccessSignUp,
     );
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /contact sales/i })).toHaveAttribute(
       "href",

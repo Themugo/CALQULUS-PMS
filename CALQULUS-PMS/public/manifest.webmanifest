@@ -1,0 +1,83 @@
+{
+  "name": "CALQULUS PMS \u2014 Property Management",
+  "short_name": "CALQULUS",
+  "description": "The complete property management platform for East Africa. Manage properties, collect rent, track tenants, and grow your portfolio.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "orientation": "portrait",
+  "background_color": "#F1F5F9",
+  "theme_color": "#0A2540",
+  "lang": "en-KE",
+  "categories": [
+    "finance",
+    "productivity",
+    "business"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/pwa-192x192.png?v=20260907",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png?v=20260907",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png?v=20260907",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/calqulus-app-icon.svg?v=20260907",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Manager Portal",
+      "short_name": "Manager",
+      "description": "Go to the manager dashboard",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/pwa-192x192.png?v=20260907",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Tenant Portal",
+      "short_name": "My Rent",
+      "description": "View invoices and pay rent",
+      "url": "/portal",
+      "icons": [
+        {
+          "src": "/pwa-192x192.png?v=20260907",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  }
+}

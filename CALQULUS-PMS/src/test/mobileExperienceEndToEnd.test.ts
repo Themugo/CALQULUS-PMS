@@ -36,7 +36,7 @@ describe("CALQULUS mobile experience end-to-end contract", () => {
   });
 
   it("ships an installable app identity", () => {
-    const manifest = readFileSync(resolve(process.cwd(), "public/manifest.json"), "utf8");
+    const manifest = readFileSync(resolve(process.cwd(), "public/manifest.webmanifest"), "utf8");
     expect(manifest).toContain('"display": "standalone"');
     expect(manifest).toContain('"orientation": "portrait"');
     expect(manifest).toContain("calqulus-app-icon.svg");

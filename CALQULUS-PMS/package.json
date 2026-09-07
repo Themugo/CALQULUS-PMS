@@ -113,7 +113,13 @@
     "gate:reconciliation": "node scripts/deployment-reconciliation-gate.mjs",
     "gate:smoke": "node scripts/production-smoke-gate.mjs",
     "gate:production": "npm run gate:environment && npm run gate:reconciliation",
-    "audit:deployment-workflow": "node scripts/audit-deployment-workflow.mjs"
+    "audit:deployment-workflow": "node scripts/audit-deployment-workflow.mjs",
+    "mobile:doctor": "node scripts/mobile-release-check.mjs",
+    "mobile:assets": "npx @capacitor/assets@3.0.5 generate --iconBackgroundColor \"#0A2540\" --iconBackgroundColorDark \"#0A2540\" --splashBackgroundColor \"#0A2540\" --splashBackgroundColorDark \"#0A2540\"",
+    "mobile:sync": "npm run build && npx cap sync",
+    "mobile:android": "npm run build && npx cap sync android && npx cap open android",
+    "mobile:ios": "npm run build && npx cap sync ios && npx cap open ios",
+    "mobile:init": "npm run build && npx cap add android && npx cap add ios && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

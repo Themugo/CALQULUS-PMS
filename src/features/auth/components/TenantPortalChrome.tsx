@@ -1,5 +1,12 @@
 import type { ReactNode } from "react";
-import { Home, Wallet, Wrench, BellRing, FileText, ShieldCheck } from "lucide-react";
+import {
+  Home,
+  Wallet,
+  Wrench,
+  BellRing,
+  FileText,
+  ShieldCheck,
+} from "lucide-react";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen";
@@ -26,15 +33,30 @@ export function TenantPortalShell({ children }: TenantPortalShellProps) {
     <PortalLoginLayout
       portalId="tenant"
       accentHex={TENANT_ACCENT}
-      backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
+      backgroundImage={
+        identity.backgroundImageUrl || PROPERTY_IMAGES.residential
+      }
       badgeIcon={Home}
       portalName={identity.shortName}
+      headlineLines={["Tenant", "Portal"]}
       slogan={identity.tagline || "Your rental record should travel with you."}
       description="One secure home for rent, contracts, repairs, payments and your property record — whether you are managed or independent."
       features={[
-        { icon: Wallet, label: "Payments", text: "Know what you paid, when you paid it and what remains due." },
-        { icon: FileText, label: "Rental Record", text: "Keep contracts, receipts and property documents together." },
-        { icon: Wrench, label: "Condition & Repairs", text: "Document maintenance and property condition with confidence." },
+        {
+          icon: Wallet,
+          label: "Payments",
+          text: "Know what you paid, when you paid it and what remains due.",
+        },
+        {
+          icon: FileText,
+          label: "Rental Record",
+          text: "Keep contracts, receipts and property documents together.",
+        },
+        {
+          icon: Wrench,
+          label: "Condition & Repairs",
+          text: "Document maintenance and property condition with confidence.",
+        },
       ]}
       trustLabel="Portable record · Secure access · Your history stays with you"
     >

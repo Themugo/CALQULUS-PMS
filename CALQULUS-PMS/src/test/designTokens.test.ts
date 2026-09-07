@@ -10,42 +10,42 @@ describe("CALQULUS design tokens", () => {
     expect(CALQULUS_BRAND.iconFamily).toBe("lucide-react");
   });
 
-  it("uses interactive blue as primary, not gold or cyan", () => {
-    expect(CALQULUS_COLOR.primary).toBe("#123FB7");
-    expect(CALQULUS_COLOR.primaryHover).toBe("#0F35A0");
-    expect(CALQULUS_COLOR.primaryActive).toBe("#0B2B7A");
-    expect(CALQULUS_COLOR.accent).toBe(CALQULUS_COLOR.primary);
+  it("uses accessible CALQULUS blue with cyan/emerald support", () => {
+    expect(CALQULUS_COLOR.primary).toBe("#0074E6");
+    expect(CALQULUS_COLOR.primaryHover).toBe("#0068C9");
+    expect(CALQULUS_COLOR.primaryActive).toBe("#00549F");
+    expect(CALQULUS_COLOR.accent).toBe("#06B6D4");
     expect(CALQULUS_COLOR.primary).not.toBe("#C9A84C");
     expect(CALQULUS_COLOR.primary).not.toBe("#1AD4E4");
   });
 
   it("establishes navy as chrome, not a page fill", () => {
     // Deep navy is remapped to the mid step — darkest scale is out of chrome.
-    expect(CALQULUS_COLOR.navyDeep).toBe("#31577E");
-    expect(CALQULUS_COLOR.navyPrimary).toBe("#173650");
-    expect(CALQULUS_COLOR.navySecondary).toBe("#31577E");
+    expect(CALQULUS_COLOR.navyDeep).toBe("#0A2540");
+    expect(CALQULUS_COLOR.navyPrimary).toBe("#0A2540");
+    expect(CALQULUS_COLOR.navySecondary).toBe("#123B5D");
     expect(CALQULUS_COLOR.navyDeep).not.toBe("#0B2239");
     expect(CALQULUS_COLOR.navyDeep).not.toBe("#000000");
     expect(CALQULUS_COLOR.navyPrimary).not.toBe("#000000");
   });
 
   it("keeps light surfaces as the production background", () => {
-    expect(CALQULUS_COLOR.background).toBe("#F6F8FB");
+    expect(CALQULUS_COLOR.background).toBe("#F1F5F9");
     expect(CALQULUS_COLOR.surface).toBe("#FFFFFF");
     expect(CALQULUS_COLOR.surfaceElevated).toBe("#F6F8FB");
     expect(CALQULUS_COLOR.white).toBe("#FFFFFF");
   });
 
   it("defines the full semantic palette", () => {
-    expect(CALQULUS_COLOR.success).toBe("#2F8061");
-    expect(CALQULUS_COLOR.warning).toBe("#A66A16");
-    expect(CALQULUS_COLOR.danger).toBe("#B94A48");
-    expect(CALQULUS_COLOR.info).toBe("#3E6FAE");
-    expect(CALQULUS_COLOR.border).toBe("#DCE5EF");
-    expect(CALQULUS_COLOR.textPrimary).toBe("#102A43");
-    expect(CALQULUS_COLOR.textMuted).toBe("#5F7185");
+    expect(CALQULUS_COLOR.success).toBe("#10B981");
+    expect(CALQULUS_COLOR.warning).toBe("#F59E0B");
+    expect(CALQULUS_COLOR.danger).toBe("#EF4444");
+    expect(CALQULUS_COLOR.info).toBe("#3B82F6");
+    expect(CALQULUS_COLOR.border).toBe("#E2E8F0");
+    expect(CALQULUS_COLOR.textPrimary).toBe("#0F2942");
+    expect(CALQULUS_COLOR.textMuted).toBe("#64748B");
     expect(CALQULUS_COLOR.focus).toBe(CALQULUS_COLOR.primary);
-    expect(CALQULUS_COLOR.glow).toBe("#123FB7");
+    expect(CALQULUS_COLOR.glow).toBe("#0284FF");
     expect(CALQULUS_COLOR.spark).toBe("#FFF4DF");
   });
 
@@ -69,16 +69,16 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("exposes portal accents without replacing the desk system", () => {
-    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe("#356FE5");
-    expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("Blue");
-    expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe("#2F9B74");
+    expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe("#0074E6");
+    expect(CALQULUS_PORTAL_ACCENT.manager.label).toBe("CALQULUS Blue");
+    expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe("#10B981");
     expect(CALQULUS_PORTAL_ACCENT.landlord.label).toBe("Emerald");
-    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#123FB7");
+    expect(CALQULUS_PORTAL_ACCENT.agency.hex).toBe("#0074E6");
     expect(CALQULUS_PORTAL_ACCENT.agency.label).toBe("CALQULUS Blue");
-    expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#7C5FD3");
-    expect(CALQULUS_PORTAL_ACCENT.tenant.label).toBe("Violet");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Teal");
+    expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#06B6D4");
+    expect(CALQULUS_PORTAL_ACCENT.tenant.label).toBe("Cyan");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#06B6D4");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Cyan");
   });
 
   it("exposes spacing, radius, shadow, type, and field tokens", () => {
@@ -127,7 +127,7 @@ describe("index.css Tailwind v4 production safety", () => {
     expect(css).toContain(`--calqulus-primary: ${CALQULUS_COLOR.primary}`);
     expect(css).toContain(`--calqulus-navy-700: ${CALQULUS_COLOR.navySecondary}`);
     // navy-950 step stays in the scale but is no longer mapped into chrome.
-    expect(css).toContain(`--calqulus-navy-950: #0B2239`);
+    expect(css).toContain(`--calqulus-navy-950: #061A2D`);
     expect(css).toContain(`--calqulus-navy-900: ${CALQULUS_COLOR.navyPrimary}`);
     expect(css).toContain(`--calqulus-success: ${CALQULUS_COLOR.success}`);
     expect(css).toContain(`--calqulus-warning: ${CALQULUS_COLOR.warning}`);

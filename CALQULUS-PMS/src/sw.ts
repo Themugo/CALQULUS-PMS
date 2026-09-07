@@ -72,8 +72,8 @@ self.addEventListener("push", (event: PushEvent) => {
 
   const options: NotificationOptions = {
     body: data.body || "You have a new notification",
-    icon: "/pwa-192x192.png",
-    badge: "/pwa-192x192.png",
+    icon: "/pwa-192x192.png?v=20260907",
+    badge: "/pwa-192x192.png?v=20260907",
     // `vibrate` isn't in the standard NotificationOptions lib.dom types yet.
     ...({ vibrate: [100, 50, 100] } as Record<string, unknown>),
     data: {

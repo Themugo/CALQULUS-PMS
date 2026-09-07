@@ -10,7 +10,7 @@ import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen"
  * "Tenant Portal" headline) via the shared PortalLoginLayout.
  */
 
-export const TENANT_ACCENT = "#7C5FD3";
+export const TENANT_ACCENT = "#06B6D4";
 
 interface TenantPortalShellProps {
   children: ReactNode;

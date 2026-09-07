@@ -27,16 +27,30 @@ export function ManagerPortalShell({ children }: ManagerPortalShellProps) {
     <PortalLoginLayout
       portalId="manager"
       accentHex={MANAGER_ACCENT}
-      backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.residential}
+      backgroundImage={
+        identity.backgroundImageUrl || PROPERTY_IMAGES.residential
+      }
       badgeIcon={Building2}
       portalName="Manager"
       headlineLines={["Manager", "Portal"]}
       slogan={identity.tagline}
       description="Run properties, tenants, leases, billing, payments and maintenance from one connected desk."
       features={[
-        { icon: Building2, label: "Properties", text: "Keep buildings, units and occupancy under control." },
-        { icon: UsersRound, label: "Tenants", text: "Coordinate tenant records, leases and service." },
-        { icon: Wrench, label: "Maintenance", text: "Assign, track and close operational requests." },
+        {
+          icon: Building2,
+          label: "Properties",
+          text: "Keep buildings, units and occupancy under control.",
+        },
+        {
+          icon: UsersRound,
+          label: "Tenants",
+          text: "Coordinate tenant records, leases and service.",
+        },
+        {
+          icon: Wrench,
+          label: "Maintenance",
+          text: "Assign, track and close operational requests.",
+        },
       ]}
       trustLabel="Operations control · Tenant service · Real-time visibility"
     >

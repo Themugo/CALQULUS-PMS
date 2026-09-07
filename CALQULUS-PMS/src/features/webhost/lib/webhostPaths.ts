@@ -77,14 +77,14 @@ export const WEBHOST_SURFACE_IDENTITY = {
     label: "WebHost",
     navLabel: "WebHost control plane",
     brandSubtitle: "WebHost",
-    accent: "#2C9183",
+    accent: "#06B6D4",
     backgroundImageSlot: "office" as const,
   },
   admin: {
     label: "Admin",
     navLabel: "Platform administration",
     brandSubtitle: "Admin",
-    accent: "#4658C9",
+    accent: "#123B5D",
     backgroundImageSlot: "commercial" as const,
   },
 } as const;

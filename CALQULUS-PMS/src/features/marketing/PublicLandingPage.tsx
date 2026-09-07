@@ -10,15 +10,16 @@ import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { DEFAULT_PUBLIC_SITE_CONFIG, type PublicSiteConfig, type PublicSiteSectionId, type PublicSiteRailId, type PublicSiteMarketingAd } from "@/features/marketing/publicSiteConfig";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
+import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 
 const CONTAINER = "mx-auto w-full max-w-[1480px] px-3 sm:px-4 lg:px-6";
 const PROPERTY_ICONS = { home: Home, building: Building2, office: Building2, landmark: Landmark } as const;
 const PORTAL_ICONS = { agency: Building2, manager: Settings2, landlord: TrendingUp, tenant: Home } as const;
 const PORTAL_COLORS = {
-  agency: "#123FB7",
-  manager: "#356FE5",
-  landlord: "#2F9B74",
-  tenant: "#7C5FD3",
+  agency: CALQULUS_PORTAL_ACCENT.agency.hex,
+  manager: CALQULUS_PORTAL_ACCENT.manager.hex,
+  landlord: CALQULUS_PORTAL_ACCENT.landlord.hex,
+  tenant: CALQULUS_PORTAL_ACCENT.tenant.hex,
 } as const;
 const WHY_ICONS = { stack: FileStack, gear: Settings2, chart: BarChart3, leaf: Leaf } as const;
 const HERO_PILL_ICONS = { portals: Users, secure: ShieldCheck, insights: TrendingUp, reliable: Cloud } as const;
@@ -373,7 +374,7 @@ function Trust({ config, ads = [] }: { config: PublicSiteConfig["trust"]; ads?: 
 }
 
 function CTA({ config }: { config: PublicSiteConfig["cta"] }) {
-  return <section id="cta" className="bg-background py-2 sm:py-3"><div className={CONTAINER}><div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#0B2B7A_0%,#123FB7_58%,#07185E_100%)] px-4 py-5 text-white shadow-[0_12px_34px_rgba(18,63,183,0.18)] sm:px-7"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.14),transparent_34%),radial-gradient(circle_at_15%_100%,rgba(118,217,194,0.12),transparent_30%)]"/><div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0 max-w-2xl"><p className="text-xs font-bold tracking-[0.22em] text-white/90">{config.eyebrow}</p><h2 className="mt-1 font-heading text-xl font-semibold leading-[1.12] tracking-[-0.02em] text-white sm:text-2xl">{config.title}</h2><p className="mt-1 max-w-xl text-[13px] leading-5.5 text-white/82 sm:text-sm">{config.copy}</p></div><div className="flex shrink-0 flex-wrap gap-2"><Button asChild className="h-9 rounded-lg bg-white px-4 text-xs font-bold text-[#0B2B7A] shadow-sm hover:bg-white/90"><Link to={config.primaryHref}>{config.primaryLabel}<ArrowRight className="ml-1 h-3.5 w-3.5"/></Link></Button><Button asChild variant="outline" className="h-9 rounded-lg border-white/35 bg-white/10 px-4 text-xs font-semibold text-white hover:bg-white/18 hover:text-white"><NavLink href={config.secondaryHref}>{config.secondaryLabel}</NavLink></Button></div></div></div></div></section>;
+  return <section id="cta" className="bg-background py-2 sm:py-3"><div className={CONTAINER}><div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(135deg,var(--calqulus-navy-900) 0%,var(--calqulus-primary) 58%,#061A2D 100%)] px-4 py-5 text-white shadow-[0_12px_34px_rgba(0,116,230,0.18)] sm:px-7"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.14),transparent_34%),radial-gradient(circle_at_15%_100%,rgba(118,217,194,0.12),transparent_30%)]"/><div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0 max-w-2xl"><p className="text-xs font-bold tracking-[0.22em] text-white/90">{config.eyebrow}</p><h2 className="mt-1 font-heading text-xl font-semibold leading-[1.12] tracking-[-0.02em] text-white sm:text-2xl">{config.title}</h2><p className="mt-1 max-w-xl text-[13px] leading-5.5 text-white/82 sm:text-sm">{config.copy}</p></div><div className="flex shrink-0 flex-wrap gap-2"><Button asChild className="h-9 rounded-lg bg-white px-4 text-xs font-bold text-[var(--calqulus-navy-900)] shadow-sm hover:bg-white/90"><Link to={config.primaryHref}>{config.primaryLabel}<ArrowRight className="ml-1 h-3.5 w-3.5"/></Link></Button><Button asChild variant="outline" className="h-9 rounded-lg border-white/35 bg-white/10 px-4 text-xs font-semibold text-white hover:bg-white/18 hover:text-white"><NavLink href={config.secondaryHref}>{config.secondaryLabel}</NavLink></Button></div></div></div></div></section>;
 }
 
 function MainContent({ config }: { config: PublicSiteConfig }) {

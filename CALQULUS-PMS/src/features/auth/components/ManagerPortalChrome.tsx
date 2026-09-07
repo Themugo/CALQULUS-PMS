@@ -11,7 +11,7 @@ import { PortalLoginLayout } from "@/features/auth/components/PortalLoginScreen"
  * all four portals stay visually and structurally consistent.
  */
 
-export const MANAGER_ACCENT = "#31577E";
+export const MANAGER_ACCENT = "#0074E6";
 
 interface ManagerPortalShellProps {
   children: ReactNode;

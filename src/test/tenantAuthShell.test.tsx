@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TenantPortalShell, TENANT_ACCENT } from "@/features/auth/components/TenantPortalChrome";
 
 function renderShell() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <MemoryRouter>
-      <TenantPortalShell>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <button type="submit">Sign in</button>
-        </form>
-      </TenantPortalShell>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <TenantPortalShell>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <button type="submit">Sign in</button>
+          </form>
+        </TenantPortalShell>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
@@ -35,7 +39,9 @@ describe("Tenant portal entry chrome", () => {
   it("carries the CALQULUS brand mark and portal description", () => {
     renderShell();
     expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/your home, connected/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/one secure home for rent, contracts, repairs, payments and your property record/i),
+    ).toBeInTheDocument();
   });
 
   it("renders the child sign-in form passed to it", () => {

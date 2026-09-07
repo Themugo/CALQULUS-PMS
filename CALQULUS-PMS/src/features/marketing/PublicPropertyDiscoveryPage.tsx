@@ -52,8 +52,8 @@ export default function PublicPropertyDiscoveryPage() {
 
   return (
     <PublicShell>
-      <section className="relative overflow-hidden bg-[#123FB7] text-white">
-        <div className="absolute inset-0"><img src={heroImage} alt="" className="h-full w-full object-cover opacity-45"/><div className="absolute inset-0 bg-gradient-to-r from-[#07185E] via-[#123FB7]/82 to-[#123FB7]/22"/></div>
+      <section className="relative overflow-hidden bg-[var(--calqulus-navy-900)] text-white">
+        <div className="absolute inset-0"><img src={heroImage} alt="" className="h-full w-full object-cover opacity-45"/><div className="absolute inset-0 bg-gradient-to-r from-[var(--calqulus-navy-950)] via-[var(--calqulus-navy-900)]/82 to-[var(--calqulus-primary)]/22"/></div>
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <Button asChild variant="ghost" className="mb-7 -ml-3 text-white/85 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/70">
             <Link to="/"><ArrowLeft className="mr-2 h-4 w-4"/>Back to CALQULUS</Link>

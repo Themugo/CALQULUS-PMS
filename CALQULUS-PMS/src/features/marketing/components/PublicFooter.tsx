@@ -25,7 +25,7 @@ export function PublicFooter() {
     setSubmitted(true);
   };
   return (
-    <footer className="border-t border-[#0B2B7A] bg-[#0D2E7A] text-white">
+    <footer className="border-t border-[var(--calqulus-navy-700)] bg-[linear-gradient(135deg,var(--calqulus-navy-900),var(--calqulus-navy-800))] text-white">
       <div className="mx-auto max-w-[1480px] px-3 py-7 sm:px-4 lg:px-6">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_2fr_1.25fr] lg:items-start">
           <div><BrandMark size="sm" showWordmark subtitleOverride={config.brand.descriptor} wordmarkOverride={config.brand.name} logoUrl={config.brand.logoUrl} inverse fetchPriority="low" forcePlatform/><p className="mt-3 max-w-xs text-[13px] leading-5.5 text-white/72">{config.shell.footer.tagline}</p></div>
