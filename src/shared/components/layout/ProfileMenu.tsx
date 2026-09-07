@@ -61,9 +61,9 @@ export function ProfileMenu() {
   const roleBadgeVariant = isWebhost
     ? "destructive"
     : isAgency
-    ? "indigo"
+    ? "info"
     : isManager
-    ? "gold"
+    ? "default"
     : isSubmanager
     ? "slate"
     : isLandlord

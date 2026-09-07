@@ -51,8 +51,8 @@ export interface ShellPreviewPortal {
   secondaryAction: string;
 }
 
-/** Proposed WebHost accent — preview only, not a production token yet. */
-export const SHELL_PREVIEW_WEBHOST_ACCENT = "#17807A";
+/** WebHost preview accent — aligned to the live cyan control-plane identity. */
+export const SHELL_PREVIEW_WEBHOST_ACCENT = CALQULUS_PORTAL_ACCENT.platform_admin.hex;
 
 export const SHELL_PREVIEW_PORTALS: ShellPreviewPortal[] = [
   {
@@ -133,7 +133,7 @@ export const SHELL_PREVIEW_PORTALS: ShellPreviewPortal[] = [
     subtitle: "Platform",
     accent: CALQULUS_PORTAL_ACCENT.platform_admin.hex,
     dataPortal: "platform_admin",
-    description: "Platform administration with indigo identity.",
+    description: "Platform administration with navy identity.",
     primaryAction: "Review org",
     secondaryAction: "Audit log",
     nav: [
@@ -150,7 +150,7 @@ export const SHELL_PREVIEW_PORTALS: ShellPreviewPortal[] = [
     subtitle: "Control tower",
     accent: SHELL_PREVIEW_WEBHOST_ACCENT,
     dataPortal: "webhost",
-    description: "Proposed WebHost identity — live product currently shares Admin indigo.",
+    description: "WebHost infrastructure identity — cyan control-plane chrome.",
     primaryAction: "Open billing",
     secondaryAction: "Brand studio",
     nav: [

@@ -31,7 +31,7 @@ export const AGENCY_STATUS = {
   dangerText: "var(--destructive-text)",
 } as const;
 
-/** Executive KPI → accent mapping. Collection/share use teal accent only. */
+/** Executive KPI → accent mapping. Collection/share use the cyan role accent only. */
 export const AGENCY_KPI_ACCENT = {
   clients: AGENCY_ACCENT.accent,
   properties: AGENCY_ACCENT.accent,

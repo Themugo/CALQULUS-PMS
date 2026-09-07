@@ -8,13 +8,13 @@ function renderShell() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        <TenantPortalShell>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <button type="submit">Sign in</button>
-          </form>
-        </TenantPortalShell>
-      </MemoryRouter>
+    <MemoryRouter>
+      <TenantPortalShell>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <button type="submit">Sign in</button>
+        </form>
+      </TenantPortalShell>
+    </MemoryRouter>
     </QueryClientProvider>,
   );
 }
@@ -28,20 +28,18 @@ describe("Tenant portal entry chrome", () => {
     expect(headline.querySelectorAll("span.block").length).toBe(2);
   });
 
-  it("uses the tenant violet accent and residential property-photo background", () => {
+  it("uses the tenant cyan accent and residential property-photo background", () => {
     const { container } = renderShell();
     const bgImage = container.querySelector('img[alt=""]');
     expect(bgImage).not.toBeNull();
     expect(bgImage?.getAttribute("src")).toMatch(/property-residential/);
-    expect(TENANT_ACCENT).toBe("#7C5FD3");
+    expect(TENANT_ACCENT).toBe("#06B6D4");
   });
 
   it("carries the CALQULUS brand mark and portal description", () => {
     renderShell();
     expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
-    expect(
-      screen.getByText(/one secure home for rent, contracts, repairs, payments and your property record/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/your rental record should travel with you\./i)).toBeInTheDocument();
   });
 
   it("renders the child sign-in form passed to it", () => {

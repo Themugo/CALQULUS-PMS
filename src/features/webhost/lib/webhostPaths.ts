@@ -48,8 +48,8 @@ export function webhostApplicationPath(appId: string): string {
 
 /**
  * The desk carries two identities on one security model:
- *   control-plane — WebHost infrastructure (teal accent)
- *   admin         — platform control: orgs, users, money, audit (indigo accent)
+ *   control-plane — WebHost infrastructure (cyan accent)
+ *   admin         — platform control: orgs, users, money, audit (navy accent)
  * Authorization never differs between surfaces.
  */
 export type WebhostSurface = "control-plane" | "admin";
@@ -71,20 +71,20 @@ export function webhostSurfaceLabel(surface: WebhostSurface): string {
   return surface === "control-plane" ? "WebHost" : "Admin";
 }
 
-/** Accent override for the Admin surface — control-plane keeps the teal portal accent. */
+/** Accent override for the Admin surface — control-plane uses cyan; Admin uses navy. */
 export const WEBHOST_SURFACE_IDENTITY = {
   "control-plane": {
     label: "WebHost",
     navLabel: "WebHost control plane",
     brandSubtitle: "WebHost",
-    accent: "#2C9183",
+    accent: "#06B6D4",
     backgroundImageSlot: "office" as const,
   },
   admin: {
     label: "Admin",
     navLabel: "Platform administration",
     brandSubtitle: "Admin",
-    accent: "#4658C9",
+    accent: "#123B5D",
     backgroundImageSlot: "commercial" as const,
   },
 } as const;

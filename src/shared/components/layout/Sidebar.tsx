@@ -149,7 +149,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           {collapsed ? (
             <BrandMark size="nav" inverse />
           ) : (
-            <BrandMark size="md" showWordmark subtitle="PMS" inverse />
+            <BrandMark size="md" showWordmark lockup subtitle="PMS" inverse />
           )}
 
           <div className="flex items-center gap-1 flex-shrink-0">

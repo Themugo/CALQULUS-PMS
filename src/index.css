@@ -157,30 +157,30 @@
      Raw Tailwind palette utilities across the app resolve to the muted
      CALQULUS families instead of the default bright scales. One token
      system: blue = brand, green = success, amber/yellow = warning,
-     red = danger, greys = slate-navy, violet/purple/pink = navy identity. */
+     red = danger, greys = slate-navy, legacy purple/pink = navy identity. */
   --color-blue-50: #EAF1FF;
   --color-blue-100: #D8E5FD;
   --color-blue-200: #B9CFFB;
   --color-blue-300: #8FB0F5;
   --color-blue-400: #5F8CEC;
-  --color-blue-500: #356FE5;
-  --color-blue-600: #285FCC;
-  --color-blue-700: #214FAE;
-  --color-blue-800: #1D4189;
-  --color-blue-900: #1A386F;
-  --color-blue-950: #12264A;
+  --color-blue-500: #0074E6;
+  --color-blue-600: #0074E6;
+  --color-blue-700: #005CB8;
+  --color-blue-800: #004A94;
+  --color-blue-900: #123B5D;
+  --color-blue-950: #061A2D;
 
-  --color-slate-50: #F6F8FB;
-  --color-slate-100: #EEF3F8;
-  --color-slate-200: #DCE5EF;
-  --color-slate-300: #C8D5E4;
-  --color-slate-400: #9DADBF;
-  --color-slate-500: #7D8DA0;
-  --color-slate-600: #5F7185;
-  --color-slate-700: #4A5A6E;
-  --color-slate-800: #33445A;
-  --color-slate-900: #1E3247;
-  --color-slate-950: #102A43;
+  --color-slate-50: #F1F5F9;
+  --color-slate-100: #EAF2F8;
+  --color-slate-200: #E2E8F0;
+  --color-slate-300: #CBD5E1;
+  --color-slate-400: #94A3B8;
+  --color-slate-500: #64748B;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1E334A;
+  --color-slate-900: #102A43;
+  --color-slate-950: #0A2540;
   --color-gray-50: var(--color-slate-50);
   --color-gray-100: var(--color-slate-100);
   --color-gray-200: var(--color-slate-200);
@@ -377,7 +377,7 @@
 
 /* ── CALQULUS PMS Design Tokens ──────────────────────────────────────── */
 /* One visual language. Hex values match src/shared/theme/tokens.ts.
-   White = desks. Navy = chrome. Interactive blue = buttons/links/focus.
+   White = desks. Navy = chrome. Interactive blue = buttons/links/focus; cyan and emerald support the identity.
    Portal accents are 2px only. Green/amber/red = success / attention /
    danger. Leftover purple/indigo/teal/gold aliases resolve to navy or
    interactive blue so they cannot introduce a second palette. */
@@ -385,74 +385,70 @@
 @layer base {
   :root {
     /* ── CALQULUS canonical premium navy palette (single source of truth) ── */
-    --calqulus-navy-50: #F4F7FB;
-    --calqulus-navy-100: #E8EEF7;
-    --calqulus-navy-200: #D5E0EF;
-    --calqulus-navy-300: #B8C9DE;
-    --calqulus-navy-400: #8EA8C5;
-    --calqulus-navy-500: #6388AE;
-    --calqulus-navy-600: #426B94;
-    --calqulus-navy-700: #31577E;
-    --calqulus-navy-800: #244766;
-    --calqulus-navy-900: #173650;
-    --calqulus-navy-950: #0B2239;
+    --calqulus-navy-50: #F4F8FC;
+    --calqulus-navy-100: #EAF2F8;
+    --calqulus-navy-200: #D7E4EF;
+    --calqulus-navy-300: #B8CBDC;
+    --calqulus-navy-400: #8FAAC0;
+    --calqulus-navy-500: #668AA6;
+    --calqulus-navy-600: #1F557A;
+    --calqulus-navy-700: #123B5D;
+    --calqulus-navy-800: #0E304D;
+    --calqulus-navy-900: #0A2540;
+    --calqulus-navy-950: #061A2D;
 
-    --calqulus-primary: #123FB7;
-    --calqulus-primary-hover: #0F35A0;
-    --calqulus-primary-active: #0B2B7A;
-    --calqulus-primary-soft: #EAF0FF;
-    --calqulus-primary-light: #8AAFFF;
-    --calqulus-manager: #356FE5;
-    --calqulus-agency: #123FB7;
+    --calqulus-primary: #0074E6;
+    --calqulus-brand-blue: #0284FF;
+    --calqulus-primary-hover: #0068C9;
+    --calqulus-primary-active: #00549F;
+    --calqulus-primary-soft: #E6F3FF;
+    --calqulus-primary-light: #67B7FF;
+    --calqulus-emerald-strong: #047857;
+    --calqulus-cyan-strong: #0E7490;
+    --calqulus-manager: var(--calqulus-primary);
+    --calqulus-agency: var(--calqulus-primary);
 
-    /* WebHost accent — cyan/teal. Thin chrome only; status colours stay semantic. */
-    --calqulus-teal: #3BB7A6;
-    --calqulus-teal-deep: #2C9183;
-    /* Admin accent — indigo. Platform-control surfaces only; status colours stay semantic. */
-    --calqulus-indigo: #4658C9;
-    /* Portal accent hues (deep steps chosen to pass a white-desk check) */
-    --calqulus-emerald: #2F9B74;
-    /* Agency — indigo/cyan family, matches agency portal chrome + marketing role accent. */
-    --calqulus-cyan: #0F766E;
-    /* Tenant — sky/cool blue, matches tenant portal chrome + marketing role accent. */
-    --calqulus-sky: #0284C7;
-    /* Deprecated portal-identity hues kept for design-preview history; not bound to data-portal. */
+    /* Role accents — identity chrome only; status colours remain semantic. */
+    --calqulus-emerald: #10B981;
+    --calqulus-cyan: #06B6D4;
+    --calqulus-tenant: #06B6D4;
+    --calqulus-platform: #06B6D4;
+    --calqulus-admin: #123B5D;
     --calqulus-amber: #C08A37;
-    --calqulus-violet: #7C5FD3;
 
-    --calqulus-background: #F6F8FB;
-    --calqulus-background-soft: #EEF3F8;
-    --calqulus-background-muted: #E8EEF5;
+    --calqulus-background: #F1F5F9;
+    --calqulus-background-soft: #EAF2F8;
+    --calqulus-background-muted: #E2E8F0;
 
     --calqulus-surface: #FFFFFF;
     --calqulus-surface-raised: #FFFFFF;
     --calqulus-surface-soft: #F8FAFC;
-    --calqulus-surface-navy: #EDF3F9;
+    --calqulus-surface-navy: #EAF2F8;
 
-    --calqulus-text: #102A43;
-    --calqulus-text-strong: #0B2239;
-    --calqulus-text-muted: #5F7185;
-    --calqulus-text-subtle: #7D8DA0;
+    --calqulus-text: #0F2942;
+    --calqulus-text-strong: #061A2D;
+    --calqulus-text-muted: #64748B;
+    --calqulus-text-subtle: #94A3B8;
     --calqulus-text-on-navy: #FFFFFF;
-    --calqulus-text-on-navy-muted: #C7D5E5;
+    --calqulus-text-on-navy-muted: #C7D9E8;
 
-    --calqulus-border: #DCE5EF;
-    --calqulus-border-strong: #C8D5E4;
-    --calqulus-border-soft: #E9EFF5;
+    --calqulus-border: #E2E8F0;
+    --calqulus-border-strong: #CBD5E1;
+    --calqulus-border-soft: #EDF2F7;
 
-    --calqulus-success: #2F8061;
-    --calqulus-success-soft: #E8F5EF;
+    --calqulus-success: #10B981;
+    --calqulus-success-soft: #E8FAF3;
     /* Small status text on soft tints needs darker steps for 4.5:1. */
-    --calqulus-success-text: #276A50;
-    --calqulus-warning: #A66A16;
-    --calqulus-warning-soft: #FFF4DF;
+    --calqulus-success-text: #047857;
+    --calqulus-warning: #F59E0B;
+    --calqulus-warning-soft: #FFF7E6;
     /* Small amber text needs a darker step to reach 4.5:1 on white. */
-    --calqulus-warning-text: #855512;
-    --calqulus-danger: #B94A48;
-    --calqulus-danger-soft: #FBEAEA;
-    --calqulus-danger-text: #A53E3C;
-    --calqulus-info: #3E6FAE;
-    --calqulus-info-soft: #EAF2FB;
+    --calqulus-warning-text: #B45309;
+    --calqulus-danger: #EF4444;
+    --calqulus-danger-soft: #FEF2F2;
+    --calqulus-danger-text: #B91C1C;
+    --calqulus-info: #3B82F6;
+    --calqulus-info-soft: #EFF6FF;
 
     --calqulus-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
     --calqulus-shadow-md: 0 8px 24px rgba(16, 42, 67, 0.08);
@@ -502,7 +498,7 @@
     --navy-surface: var(--calqulus-navy-800);
     --secondary-navy: var(--calqulus-navy-700);
     --soft-blue: var(--calqulus-primary-soft);
-    --glow: var(--calqulus-primary);
+    --glow: var(--calqulus-brand-blue);
     --spark: var(--calqulus-warning-soft);
 
     --secondary: var(--calqulus-background);
@@ -556,7 +552,7 @@
     /* App shell sidebar: CALQULUS mid-navy chrome carrying white/slate
        text. One chrome for every portal — role identity stays the 2px
        stripe, never a separate sidebar color system. Active = blue wash. */
-    --sidebar-background: var(--calqulus-navy-700);
+    --sidebar-background: var(--calqulus-navy-900);
     --sidebar-foreground: var(--calqulus-text-on-navy);
     --sidebar-primary: var(--calqulus-primary);
     --sidebar-primary-foreground: #FFFFFF;
@@ -568,12 +564,12 @@
   }
 
   /* Portal identity stripes — secondary accents only. Brand stays
-     CALQULUS NAVY + BLUE; status colors are never brand accents. */
+     CALQULUS NAVY + BLUE/CYAN; status colors are never brand accents. */
   [data-portal="manager"] { --portal-accent: var(--calqulus-manager); }
   [data-portal="landlord"] { --portal-accent: var(--calqulus-emerald); }
   [data-portal="agency"] { --portal-accent: var(--calqulus-agency); }
-  [data-portal="tenant"] { --portal-accent: var(--calqulus-violet); }
-  [data-portal="platform_admin"] { --portal-accent: var(--calqulus-teal-deep); }
+  [data-portal="tenant"] { --portal-accent: var(--calqulus-tenant); }
+  [data-portal="platform_admin"] { --portal-accent: var(--calqulus-platform); }
 
   /* Portal identity becomes the default interactive theme. White-label
      organization branding can override --primary at runtime. */
@@ -586,7 +582,7 @@
     --accent: var(--primary);
   }
   [data-active-portal="landlord"] {
-    --primary: var(--portal-primary, var(--calqulus-emerald));
+    --primary: var(--portal-primary, var(--calqulus-emerald-strong));
     --primary-hover: var(--portal-primary-hover, var(--calqulus-emerald));
     --primary-active: var(--portal-primary-active, var(--calqulus-emerald));
     --primary-text: var(--portal-primary-active, var(--calqulus-emerald));
@@ -594,7 +590,7 @@
     --accent: var(--primary);
   }
   [data-active-portal="agency"] {
-    --primary: var(--portal-primary, var(--calqulus-cyan));
+    --primary: var(--portal-primary, var(--calqulus-primary));
     --primary-hover: var(--portal-primary-hover, var(--calqulus-cyan));
     --primary-active: var(--portal-primary-active, var(--calqulus-cyan));
     --primary-text: var(--portal-primary-active, var(--calqulus-cyan));
@@ -602,19 +598,19 @@
     --accent: var(--primary);
   }
   [data-active-portal="tenant"] {
-    --primary: var(--portal-primary, var(--calqulus-sky));
-    --primary-hover: var(--portal-primary-hover, var(--calqulus-sky));
-    --primary-active: var(--portal-primary-active, var(--calqulus-sky));
-    --primary-text: var(--portal-primary-active, var(--calqulus-sky));
-    --ring: var(--portal-primary-focus, var(--calqulus-sky));
+    --primary: var(--portal-primary, var(--calqulus-cyan-strong));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-tenant));
+    --primary-active: var(--portal-primary-active, var(--calqulus-tenant));
+    --primary-text: var(--portal-primary-active, var(--calqulus-tenant));
+    --ring: var(--portal-primary-focus, var(--calqulus-tenant));
     --accent: var(--primary);
   }
   [data-active-portal="platform_admin"] {
-    --primary: var(--portal-primary, var(--calqulus-teal-deep));
-    --primary-hover: var(--portal-primary-hover, var(--calqulus-teal-deep));
-    --primary-active: var(--portal-primary-active, var(--calqulus-teal-deep));
-    --primary-text: var(--portal-primary-active, var(--calqulus-teal-deep));
-    --ring: var(--portal-primary-focus, var(--calqulus-teal-deep));
+    --primary: var(--portal-primary, var(--calqulus-cyan-strong));
+    --primary-hover: var(--portal-primary-hover, var(--calqulus-platform));
+    --primary-active: var(--portal-primary-active, var(--calqulus-platform));
+    --primary-text: var(--portal-primary-active, var(--calqulus-platform));
+    --ring: var(--portal-primary-focus, var(--calqulus-platform));
     --accent: var(--primary);
   }
 
@@ -727,10 +723,10 @@
   color: var(--foreground);
 }
 
-/* Public website — same light workspace as desks. CALQULUS blue anchors header/footer chrome. */
+/* Public website — same light workspace as desks. deep navy + cyan/blue accents anchor header/footer chrome. */
 @utility public-canvas {
   background-color: var(--background);
-  background-image: radial-gradient(70% 36% at 50% 0%, color-mix(in srgb, var(--calqulus-primary) 5%, transparent) 0%, transparent 72%), linear-gradient(180deg, #F8FAFD 0%, var(--background) 48%, #F7FAFC 100%);
+  background-image: radial-gradient(70% 36% at 50% 0%, color-mix(in srgb, var(--calqulus-primary) 5%, transparent) 0%, transparent 72%), linear-gradient(180deg, #F5FBFD 0%, var(--background) 48%, #F3F8FC 100%);
   color: var(--foreground);
   font-family: "Outfit", sans-serif;
 }
@@ -782,11 +778,11 @@
 /* Premium light hero — tinted blue/navy atmosphere on the shared page
    background. Dark navy stays reserved for chrome, not the page fill. */
 @utility public-hero-surface-light {
-  background-color: #F4F7FB;
+  background-color: #EEF8FB;
   background-image:
     radial-gradient(62% 70% at 84% 4%, color-mix(in srgb, var(--primary) 10%, transparent) 0%, transparent 60%),
     radial-gradient(50% 60% at 2% 96%, color-mix(in srgb, var(--calqulus-navy-200) 55%, transparent) 0%, transparent 68%),
-    linear-gradient(180deg, #FAFCFE 0%, #F4F7FB 100%);
+    linear-gradient(180deg, #F8FCFD 0%, #EEF8FB 100%);
 }
 
 @utility public-hero-title-light {
@@ -814,7 +810,7 @@
 
 /* Plain CSS so Tailwind does not nest @supports inside these backgrounds. */
 /* Property type cards share ONE CALQULUS navy treatment — no per-card
-   brand colors (green/violet/amber overlays removed). */
+   brand colors (green/legacy-purple/amber overlays removed). */
 .public-arch-residential,
 .public-arch-commercial,
 .public-arch-office {
@@ -831,7 +827,7 @@
 }
 
 @utility btn-tenant {
-  background-color: #7c5fd3;
+  background-color: var(--calqulus-cyan-strong);
   color: #ffffff;
   font-weight: 600;
   box-shadow: var(--calqulus-shadow-sm);
@@ -858,7 +854,7 @@
   }
 
   .btn-tenant:hover {
-    background-color: #6a4fc0;
+    background-color: var(--calqulus-cyan);
   }
 
   .safe-area-bottom {

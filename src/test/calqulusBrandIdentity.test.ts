@@ -7,6 +7,7 @@ describe("CALQULUS brand identity", () => {
   it("uses the premium navy, blue, cyan and emerald identity tokens", () => {
     expect(CALQULUS_BRAND.name).toBe("CALQULUS");
     expect(CALQULUS_COLOR.primary).toBe("#0074E6");
+    expect(CALQULUS_COLOR.brandBlue).toBe("#0284FF");
     expect(CALQULUS_COLOR.navyPrimary).toBe("#0A2540");
     expect(CALQULUS_COLOR.accent).toBe("#06B6D4");
     expect(CALQULUS_COLOR.success).toBe("#10B981");

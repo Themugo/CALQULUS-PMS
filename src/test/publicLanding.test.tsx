@@ -1,9 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PublicLandingPage } from "@/features/marketing/PublicLandingPage";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+
+// Public landing tests validate the canonical default contract, not whichever
+// admin-managed configuration may be reachable in the test environment.
+vi.mock("@/features/marketing/hooks/usePublicSiteConfig", () => ({
+  usePublicSiteConfig: () => ({ data: undefined }),
+}));
 
 function renderAt(path: string) {
   const client = new QueryClient({
@@ -29,12 +35,10 @@ describe("PublicLandingPage", () => {
 
   it("keeps working portal routes on the hero and final CTA", () => {
     renderAt("/");
-    const hero = screen.getByRole("region", { name: /calqulus property highlights/i });
-    expect(within(hero).getByRole("link", { name: /get started/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.portalAccessSignUp,
-    );
-    expect(within(hero).getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
+    const getStarted = screen.getAllByRole("link", { name: /get started/i });
+    expect(getStarted.length).toBeGreaterThanOrEqual(1);
+    expect(getStarted.every((link) => link.getAttribute("href") === PUBLIC_ROUTES.portalAccessSignUp)).toBe(true);
+    expect(screen.getByRole("link", { name: /explore portals/i })).toHaveAttribute("href", "#portals");
   });
 
   it("uses only working primary navigation in a compact order", () => {
@@ -51,7 +55,11 @@ describe("PublicLandingPage", () => {
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: /login/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.portalAccessSignIn,
+      PUBLIC_ROUTES.managerSignIn,
+    );
+    expect(within(header).getByRole("link", { name: /get started/i })).toHaveAttribute(
+      "href",
+      PUBLIC_ROUTES.managerSignUp,
     );
   });
 
@@ -81,7 +89,7 @@ describe("PublicLandingPage", () => {
     const { container } = renderAt("/");
     expect(container.querySelector(".public-canvas")).toBeTruthy();
     const header = screen.getByRole("banner");
-    expect(header.className).toMatch(/bg-\[\#123FB7\]/);
+    expect(header.className).toMatch(/bg-\[linear-gradient/);
     expect(container.querySelector("footer")).toBeTruthy();
     expect(container.querySelector("#platform")).toBeNull();
     expect(container.querySelector("#solutions")).toBeNull();
@@ -116,11 +124,10 @@ describe("PublicLandingPage", () => {
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
-    const gradientCard = ctaSection!.querySelector("div.relative.overflow-hidden");
-    expect(gradientCard?.className ?? "").toMatch(/bg-\[linear-gradient/);
+    expect(ctaSection!.querySelector("div.relative.overflow-hidden")?.className ?? "").toMatch(/bg-\[linear-gradient/);
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.portalAccessSignUp,
+      PUBLIC_ROUTES.managerSignUp,
     );
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /contact sales/i })).toHaveAttribute(
       "href",

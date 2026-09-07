@@ -558,7 +558,7 @@ function TenantPagesPreview() {
   return (
     <div className="space-y-6" data-preview="tenant-pages">
       <p className="type-body text-muted-foreground">
-        Tenant is a simple mobile-first home, not an operations dashboard. White surface, navy chrome, 2px violet accent. Pay rent is the primary action.
+        Tenant is a simple mobile-first home, not an operations dashboard. White surface, navy chrome, 2px cyan accent. Pay rent is the primary action.
       </p>
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-lg border border-border overflow-hidden bg-background" data-preview="tenant-mobile">
@@ -719,7 +719,7 @@ function AdminPagesPreview() {
   return (
     <div className="space-y-4" data-preview="admin-pages">
       <p className="type-body text-muted-foreground">
-        Platform Admin is a control tower, not an operations desk. White surface, navy chrome, 2px indigo accent. System health is only shown where a live probe exists. Tenant records are never listed.
+        Platform Admin is a control tower, not an operations desk. White surface, navy chrome, 2px role accent. System health is only shown where a live probe exists. Tenant records are never listed.
       </p>
       {pages.map((page) => (
         <div key={page.title} className="rounded-lg border border-border overflow-hidden bg-background">

@@ -16,11 +16,11 @@ function source(rel: string): string {
 }
 
 describe("admin + webhost identities", () => {
-  it("has an indigo admin accent token alongside the teal webhost accent", () => {
+  it("has a navy admin accent token alongside the cyan webhost accent", () => {
     const css = source("index.css");
-    expect(css).toContain("--calqulus-indigo: #4658C9");
-    expect(css).toContain("--calqulus-teal-deep: #2C9183");
-    expect(ADMIN_SURFACE_ACCENT).toBe("var(--calqulus-indigo)");
+    expect(css).toContain("--calqulus-indigo: #123B5D");
+    expect(css).toContain("--calqulus-teal-deep: #06B6D4");
+    expect(ADMIN_SURFACE_ACCENT).toBe("#123B5D");
   });
 
   it("splits surfaces: control-plane is infrastructure, admin is platform control", () => {
@@ -55,30 +55,34 @@ describe("webhost layout — control plane vs administration", () => {
   // only owns the visibility/permission gating for them.
   const nav = source("shared/navigation/portalNavigation.ts");
 
-  it("groups nav into Control plane / Administration / Account", () => {
-    for (const group of ['"Control plane"', '"Administration"', '"Account"']) {
+  it("groups nav into master control, platform operations, commercial control and account", () => {
+    for (const group of ['"Master control"', '"Platform operations"', '"Commercial control"', '"Access & public experience"', '"Exceptions"', '"Account"']) {
       expect(nav).toContain(`label: ${group}`);
     }
   });
 
-  it("prioritizes Applications, Deployments, Operations on the control plane", () => {
-    const controlPlane = nav.split('"Control plane"')[1]?.split('"Administration"')[0] ?? "";
-    for (const item of ['"Dashboard"', '"Applications"', '"Deployments"', '"Operations"']) {
+  it("keeps Dashboard in master control and prioritizes Applications, Deployments, Operations in platform operations", () => {
+    const master = nav.split('"Master control"')[1]?.split('"Platform operations"')[0] ?? "";
+    const controlPlane = nav.split('"Platform operations"')[1]?.split('"Commercial control"')[0] ?? "";
+    expect(master).toContain('label: "Dashboard"');
+    for (const item of ['"Applications"', '"Deployments"', '"Operations"']) {
       expect(controlPlane).toContain(`label: ${item}`);
     }
   });
 
-  it("keeps admin control (orgs, users, subscriptions, audit, security) in Administration", () => {
-    const admin = nav.split('"Administration"')[1]?.split('"Account"')[0] ?? "";
-    for (const item of ['"Organizations"', '"Users"', '"Subscriptions"', '"Audit Log"', '"Security"']) {
-      expect(admin).toContain(`label: ${item}`);
-    }
+  it("keeps admin control (orgs, users, subscriptions, audit, security) in their current master-control groups", () => {
+    const master = nav.split('"Master control"')[1]?.split('"Platform operations"')[0] ?? "";
+    const commercial = nav.split('"Commercial control"')[1]?.split('"Access & public experience"')[0] ?? "";
+    const access = nav.split('"Access & public experience"')[1]?.split('"Exceptions"')[0] ?? "";
+    for (const item of ['"Organizations"', '"Users"']) expect(master).toContain(`label: ${item}`);
+    for (const item of ['"Subscriptions"', '"Contracts"']) expect(commercial).toContain(`label: ${item}`);
+    for (const item of ['"Audit Log"', '"Security"', '"Public Site"', '"Brand Studio"']) expect(access).toContain(`label: ${item}`);
   });
 
-  it("applies the indigo accent only on admin surfaces", () => {
-    expect(layout).toContain('surface === "admin"');
-    expect(layout).toContain("ADMIN_SURFACE_ACCENT");
-    expect(layout).toContain("webhostSurfaceLabel(surface)");
+  it("applies the resolved surface identity to the shared shell", () => {
+    expect(layout).toContain("WEBHOST_SURFACE_IDENTITY[surface]");
+    expect(layout).toContain("surfaceIdentity.accent");
+    expect(layout).toContain("webhostSurface(location.pathname)");
   });
 });
 

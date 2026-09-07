@@ -31,7 +31,7 @@ export const generateManagerReceipt = (invoice: ManagerInvoice, manager: Manager
   const pageWidth = doc.internal.pageSize.getWidth();
   
   // Colors
-  const primaryColor: [number, number, number] = [147, 51, 234]; // Purple
+  const primaryColor: [number, number, number] = [0, 116, 230]; // CALQULUS Blue
   const darkText: [number, number, number] = [30, 30, 30];
   const grayText: [number, number, number] = [100, 100, 100];
   

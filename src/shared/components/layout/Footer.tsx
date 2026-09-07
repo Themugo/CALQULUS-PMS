@@ -95,7 +95,7 @@ export function Footer({ variant = "default", className = "" }: FooterProps) {
             {/* 1. Brand Area (Spans 2 cols on large screens) */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <BrandMark size="md" showWordmark subtitle="PMS" />
+                <BrandMark size="md" showWordmark lockup subtitle="PMS" />
               </div>
 
               <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-sm">

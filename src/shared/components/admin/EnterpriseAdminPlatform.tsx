@@ -75,7 +75,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "commercial",
     title: "Commercial",
-    accent: "bg-teal",
+    accent: "bg-[var(--calqulus-platform)]",
     items: [
       { value: "licenses", label: "Licenses & Billing", icon: CreditCard },
       { value: "commercial-launch", label: "Commercial Launch", icon: Rocket, iconClass: "text-success" },
@@ -84,12 +84,12 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "product-ecosystem",
     title: "Product Ecosystem",
-    accent: "bg-purple",
+    accent: "bg-[var(--calqulus-admin)]",
     productGroup: true,
     items: [
       { value: "property-os", label: "Property OS", icon: Layers, iconClass: "text-primary" },
       { value: "proptech-ecosystem", label: "PropTech Ecosystem", icon: Globe, iconClass: "text-success" },
-      { value: "ai-copilot", label: "AI Copilot", icon: Bot, iconClass: "text-purple" },
+      { value: "ai-copilot", label: "AI Copilot", icon: Bot, iconClass: "text-[var(--calqulus-admin)]" },
       { value: "native-mobile", label: "Native Mobile", icon: Smartphone, iconClass: "text-success" },
       { value: "ops-excellence", label: "Ops Excellence", icon: Gauge, iconClass: "text-primary" },
     ],

@@ -29,6 +29,8 @@ interface BrandMarkProps {
   wordmarkOverride?: string;
   /** Optional public-site override for the descriptor below the wordmark. */
   subtitleOverride?: string;
+  /** Render the approved horizontal CALQULUS logo lockup when using platform branding. */
+  lockup?: boolean;
 }
 
 /** Shared mark for login, header, sidebar, footer, and mobile chrome. */
@@ -44,6 +46,7 @@ export function BrandMark({
   logoUrl,
   wordmarkOverride,
   subtitleOverride,
+  lockup = false,
 }: BrandMarkProps) {
   const { brand, config } = useWhiteLabel();
   const resolved = forcePlatform ? PLATFORM_BRAND : brand;
@@ -51,11 +54,33 @@ export function BrandMark({
     !forcePlatform && resolved.source === "organization"
       ? (inverse && config.identity.logoDark) || resolved.logoUrl
       : null;
+  const isPlatformDefault = resolved.source === "platform" && !logoUrl && !orgLogo;
   const logoSrc = logoUrl || orgLogo || calqulusPropertyMark;
   const wordmark = wordmarkOverride?.trim() || resolved.name;
   const resolvedSubtitle = subtitleOverride !== undefined ? subtitleOverride : subtitle;
   const square = size !== "hero";
   const priority = fetchPriority ?? (size === "hero" ? "high" : "auto");
+  if (lockup && isPlatformDefault) {
+    return (
+      <img
+        src={inverse ? "/calqulus-logo-dark.svg" : "/calqulus-logo.svg"}
+        alt="CALQULUS Property Management System"
+        width={760}
+        height={180}
+        decoding="async"
+        fetchPriority={priority}
+        className={cn(
+          size === "hero" ? "h-16 w-auto max-w-[22rem]" :
+            size === "lg" ? "h-14 w-auto max-w-[20rem]" :
+              size === "md" ? "h-12 w-auto max-w-[18rem]" :
+                "h-10 w-auto max-w-[16rem]",
+          "object-contain",
+          imgClassName,
+          className,
+        )}
+      />
+    );
+  }
   return (
     <div className={cn("flex items-center gap-2.5 min-w-0", className)}>
       <img

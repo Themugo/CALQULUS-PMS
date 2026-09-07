@@ -170,7 +170,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
           )}
 
           <Button
-            className={`w-full h-12 mt-4 text-base font-semibold ${isOverdue ? 'bg-destructive hover:bg-destructive/90' : 'bg-teal hover:bg-teal/90'} text-white`}
+            className={`w-full h-12 mt-4 text-base font-semibold ${isOverdue ? 'bg-destructive hover:bg-destructive/90' : 'bg-[var(--portal-accent)] hover:bg-[var(--portal-accent)]/90'} text-white`}
             disabled={!hasBalance}
             onClick={payNow}
           >
@@ -205,8 +205,8 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
           disabled={!hasBalance}
           className="rounded-xl border border-border bg-card p-3 flex flex-col items-center text-center active:scale-[0.98] disabled:opacity-50"
         >
-          <div className="h-10 w-10 rounded-xl bg-teal/10 flex items-center justify-center mb-1.5">
-            <Smartphone className="h-5 w-5 text-teal" />
+          <div className="h-10 w-10 rounded-xl bg-[var(--portal-accent)]/10 flex items-center justify-center mb-1.5">
+            <Smartphone className="h-5 w-5 text-[var(--portal-accent)]" />
           </div>
           <p className="font-medium text-xs">Pay rent</p>
         </button>
@@ -323,7 +323,7 @@ const MobileTenantHome: React.FC<MobileTenantHomeProps> = ({
                     <div className="text-right pr-2 shrink-0">
                       <p className="font-bold text-lg">{formatCurrency(amountDue(invoice))}</p>
                     </div>
-                    <Button onClick={() => onPayInvoice(invoice)} className="h-full rounded-none px-4 py-6 bg-teal hover:bg-teal/90 text-white" size="lg">
+                    <Button onClick={() => onPayInvoice(invoice)} className="h-full rounded-none px-4 py-6 bg-[var(--portal-accent)] hover:bg-[var(--portal-accent)]/90 text-white" size="lg">
                       Pay
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>

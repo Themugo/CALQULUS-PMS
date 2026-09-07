@@ -212,7 +212,7 @@ export interface PublicSiteConfig {
 
 export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   version: 1,
-  brand: { name: "CALQULUS", descriptor: "PROPERTY MANAGEMENT SYSTEMS", logoUrl: null },
+  brand: { name: "CALQULUS", descriptor: "PROPERTY MANAGEMENT SYSTEM", logoUrl: null },
   shell: {
     header: {
       nav: [
@@ -228,9 +228,9 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
       utilityWords: ["MANAGE", "GROW", "THRIVE"],
     },
     footer: {
-      tagline: "The complete property management solution for modern real estate professionals.",
+      tagline: "Properties work better with people.",
       copyright: "© {year} CALQULUS PMS. All rights reserved.",
-      endTagline: "Manage · Grow · Thrive",
+      endTagline: "People · Properties · A Smarter Tomorrow",
       columns: [
         { id: "solutions", title: "Solutions", items: [{ id: "s1", label: "Property Management", href: "#why" }, { id: "s2", label: "Tenant Management", href: "#portals" }, { id: "s3", label: "Lease Management", href: "#why" }, { id: "s4", label: "Financial Management", href: "#why" }, { id: "s5", label: "Maintenance Management", href: "#why" }] },
         { id: "properties", title: "Properties", items: [{ id: "p1", label: "Residentials", href: "/discover/residential" }, { id: "p2", label: "Estates", href: "/discover/estates" }, { id: "p3", label: "Offices", href: "/discover/offices" }, { id: "p4", label: "Institutions", href: "/discover/institutions" }] },

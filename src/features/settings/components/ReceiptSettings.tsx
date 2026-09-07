@@ -24,7 +24,7 @@ const defaultSettings: ReceiptSettingsData = {
   // Brand primary blue (CALQULUS_COLOR.primary), not green — a payment
   // receipt is a financial document and money is never colored green
   // by default in this app.
-  primary_color: "#356FE5",
+  primary_color: "#0074E6",
   secondary_color: "#1e293b",
   footer_message: "Thank you for being a valued tenant!",
   include_logo: true,

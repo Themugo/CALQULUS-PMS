@@ -21,42 +21,44 @@ export const CALQULUS_BRAND = {
 
 export const CALQULUS_COLOR = {
   /** Interactive blue — buttons, links, focus, selected controls. */
-  primary: "#123FB7",
-  primaryHover: "#0F35A0",
-  primaryActive: "#0B2B7A",
-  accent: "#123FB7",
+  primary: "#0074E6",
+  /** Brand-board blue — used for logo/atmosphere; interactive blue stays accessible. */
+  brandBlue: "#0284FF",
+  primaryHover: "#0068C9",
+  primaryActive: "#00549F",
+  accent: "#06B6D4",
 
   /** Navy identity — chrome only, never a page fill. `navyDeep` is
       remapped to the mid step with navySecondary; the 950 hex stays
       out of the brand chrome. */
-  navyDeep: "#31577E",
-  navyPrimary: "#173650",
-  navySecondary: "#31577E",
+  navyDeep: "#0A2540",
+  navyPrimary: "#0A2540",
+  navySecondary: "#123B5D",
   /** Navy 600 step used for platform chrome and supporting identity surfaces. */
-  navy600: "#426B94",
+  navy600: "#1F557A",
 
   white: "#FFFFFF",
-  secondary: "#F6F8FB",
-  success: "#2F8061",
-  warning: "#A66A16",
-  danger: "#B94A48",
-  info: "#3E6FAE",
+  secondary: "#F1F5F9",
+  success: "#10B981",
+  warning: "#F59E0B",
+  danger: "#EF4444",
+  info: "#3B82F6",
 
   /** Atmosphere on navy chrome only. */
-  glow: "#123FB7",
+  glow: "#0284FF",
   /** Reserved spark — not used as chrome. */
   spark: "#FFF4DF",
 
-  background: "#F6F8FB",
+  background: "#F1F5F9",
   surface: "#FFFFFF",
   surfaceElevated: "#F6F8FB",
 
-  textPrimary: "#102A43",
-  textSecondary: "#5F7185",
-  textMuted: "#5F7185",
+  textPrimary: "#0F2942",
+  textSecondary: "#64748B",
+  textMuted: "#64748B",
 
-  border: "#DCE5EF",
-  focus: "#123FB7",
+  border: "#E2E8F0",
+  focus: "#0074E6",
 } as const;
 
 /**
@@ -67,33 +69,33 @@ export const CALQULUS_COLOR = {
 export const CALQULUS_PORTAL_ACCENT = {
   manager: {
     id: "manager",
-    label: "Blue",
-    hex: "#356FE5",
+    label: "CALQULUS Blue",
+    hex: "#0074E6",
   },
   landlord: {
     id: "landlord",
     label: "Emerald",
     /** Secondary accent only; status colors stay semantic. Approved vs
         the white-desk check in deriveBrandPalette. */
-    hex: "#2F9B74",
+    hex: "#10B981",
   },
   agency: {
     id: "agency",
     label: "CALQULUS Blue",
     /** Agency is the primary business gateway and follows the sharp CALQULUS blue. */
-    hex: "#123FB7",
+    hex: "#0074E6",
   },
   tenant: {
     id: "tenant",
-    label: "Violet",
-    /** Tenant uses a warm violet identity for a clear residential/persona distinction. */
-    hex: "#7C5FD3",
+    label: "Cyan",
+    /** Tenant uses a clean cyan identity for a clear residential/persona distinction. */
+    hex: "#06B6D4",
   },
   platform_admin: {
     id: "platform_admin",
-    label: "Teal",
-    /** Deep teal step — keeps cyan identity legible on white chrome. */
-    hex: "#2C9183",
+    label: "Cyan",
+    /** Cyan identity step — keeps the platform control surface distinct. */
+    hex: "#06B6D4",
   },
 } as const;
 

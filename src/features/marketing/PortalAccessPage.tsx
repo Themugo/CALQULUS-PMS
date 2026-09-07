@@ -9,12 +9,13 @@ import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { Button } from "@/shared/components/ui/button";
+import { CALQULUS_PORTAL_ACCENT } from "@/shared/theme/tokens";
 
 const PORTAL_META = {
   agency: {
     icon: UsersRound,
-    gradient: "from-[#123FB7] via-[#1658D6] to-transparent",
-    accent: "#123FB7",
+    gradient: "from-[var(--calqulus-primary)] via-[#06B6D4] to-transparent",
+    accent: CALQULUS_PORTAL_ACCENT.agency.hex,
     features: ["Clients", "Portfolios", "Opportunities"],
     signin: PUBLIC_ROUTES.agencyLogin,
     signup: PUBLIC_ROUTES.agencyLogin,
@@ -23,8 +24,8 @@ const PORTAL_META = {
   },
   manager: {
     icon: Settings2,
-    gradient: "from-[#356FE5] via-[#4B78DD] to-transparent",
-    accent: "#356FE5",
+    gradient: "from-[var(--calqulus-primary)] via-[#67B7FF] to-transparent",
+    accent: CALQULUS_PORTAL_ACCENT.manager.hex,
     features: ["Operations", "Maintenance", "Compliance"],
     signin: PUBLIC_ROUTES.managerSignIn,
     signup: PUBLIC_ROUTES.managerSignUp,
@@ -33,8 +34,8 @@ const PORTAL_META = {
   },
   landlord: {
     icon: TrendingUp,
-    gradient: "from-[#2F9B74] via-[#46B48F] to-transparent",
-    accent: "#2F9B74",
+    gradient: "from-[#10B981] via-[#34D399] to-transparent",
+    accent: "#10B981",
     features: ["Earnings", "Properties", "Insights"],
     signin: PUBLIC_ROUTES.landlordLogin,
     signup: PUBLIC_ROUTES.landlordLogin,
@@ -43,8 +44,8 @@ const PORTAL_META = {
   },
   tenant: {
     icon: Home,
-    gradient: "from-[#7C5FD3] via-[#936EE9] to-transparent",
-    accent: "#7C5FD3",
+    gradient: "from-[#06B6D4] via-[#22D3EE] to-transparent",
+    accent: "#06B6D4",
     features: ["Payments", "Requests", "Updates"],
     signin: PUBLIC_ROUTES.tenantLogin,
     signup: "/tenant/signup",

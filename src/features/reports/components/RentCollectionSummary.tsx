@@ -96,8 +96,8 @@ function buildPDF(
 ): jsPDF {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const fw = doc.internal.pageSize.getWidth();
-  const BRAND_BLUE = [30, 111, 217] as [number, number, number];
-  const BRAND_GOLD = [201, 168, 76] as [number, number, number];
+  const BRAND_BLUE = [0, 116, 230] as [number, number, number];
+  const BRAND_NAVY = [10, 37, 64] as [number, number, number];
   const WHITE      = [255, 255, 255] as [number, number, number];
   const DARK       = [30, 30, 30] as [number, number, number];
 
@@ -122,7 +122,7 @@ function buildPDF(
     startY: 36,
     head: [['Total Billed', 'Total Collected', 'Outstanding', 'Collection Rate']],
     body: [[fmtKES(totalBilled), fmtKES(totalCollected), fmtKES(totalOutstanding), `${rate}%`]],
-    headStyles: { fillColor: BRAND_GOLD, textColor: WHITE, fontStyle: 'bold', fontSize: 9 },
+    headStyles: { fillColor: BRAND_NAVY, textColor: WHITE, fontStyle: 'bold', fontSize: 9 },
     bodyStyles: { fontSize: 10, fontStyle: 'bold', halign: 'center' },
     columnStyles: { 3: { textColor: parseFloat(rate) >= 80 ? [16, 185, 129] : [239, 68, 68] } },
     margin: { left: 14, right: 14 },

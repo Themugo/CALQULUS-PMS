@@ -8,7 +8,7 @@ const brandMigration = "supabase/migrations/20260905000004_public_site_brand_svg
 it("public site defaults contain the approved four property categories and four portals", () => {
   expect(DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes.map((item) => item.title)).toEqual(["Residentials", "Estates", "Offices", "Institutions"]);
   expect(DEFAULT_PUBLIC_SITE_CONFIG.portals.map((item) => item.id)).toEqual(["agency", "manager", "landlord", "tenant"]);
-  expect(DEFAULT_PUBLIC_SITE_CONFIG.brand.descriptor).toBe("PROPERTY MANAGEMENT SYSTEMS");
+  expect(DEFAULT_PUBLIC_SITE_CONFIG.brand.descriptor).toBe("PROPERTY MANAGEMENT SYSTEM");
   expect(DEFAULT_PUBLIC_SITE_CONFIG.hero.intervalMs).toBe(30000);
   expect(DEFAULT_PUBLIC_SITE_CONFIG.shell.header.nav.map((item) => item.id)).toEqual(["home", "properties", "portals", "insights", "pricing"]);
 });

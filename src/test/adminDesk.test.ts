@@ -90,10 +90,10 @@ describe("webhost role routing", () => {
 
 describe("platform admin identity", () => {
   it("keeps the platform portal teal while giving WebHost and Admin distinct surface identities", () => {
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#2C9183");
-    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Teal");
-    expect(WEBHOST_SURFACE_IDENTITY["control-plane"].accent).toBe("#2C9183");
-    expect(WEBHOST_SURFACE_IDENTITY.admin.accent).toBe("#4658C9");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.hex).toBe("#06B6D4");
+    expect(CALQULUS_PORTAL_ACCENT.platform_admin.label).toBe("Cyan");
+    expect(WEBHOST_SURFACE_IDENTITY["control-plane"].accent).toBe("#06B6D4");
+    expect(WEBHOST_SURFACE_IDENTITY.admin.accent).toBe("#123B5D");
     expect(WEBHOST_SURFACE_IDENTITY["control-plane"].backgroundImageSlot).toBe("office");
     expect(WEBHOST_SURFACE_IDENTITY.admin.backgroundImageSlot).toBe("commercial");
   });
