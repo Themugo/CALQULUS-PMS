@@ -1154,3 +1154,79 @@
     font-size: 16px;
   }
 }
+
+/* ── CALQULUS native-feel phone layer ───────────────────────────────────
+   The responsive shell remains one codebase, but phones get an app chrome
+   treatment: edge-to-edge safe areas, quieter page chrome, hidden scrollbars,
+   thumb-sized controls and a sheet-style navigation surface. */
+@media (max-width: 767px) {
+  html {
+    min-height: 100dvh;
+    background: var(--background);
+    overscroll-behavior: none;
+  }
+
+  body {
+    min-height: 100dvh;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #root {
+    min-height: 100dvh;
+    isolation: isolate;
+  }
+
+  .mobile-app-surface {
+    min-height: 100dvh;
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-app-background {
+    display: none;
+  }
+
+  .mobile-app-content {
+    padding-top: .75rem;
+    padding-left: .75rem;
+    padding-right: .75rem;
+    scroll-margin-top: 4.5rem;
+  }
+
+  .mobile-app-content :is(table) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-app-surface main,
+  .mobile-app-surface nav,
+  .mobile-app-surface aside {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-app-surface ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .mobile-app-surface {
+    scrollbar-width: none;
+  }
+
+  .mobile-app-surface :is(button, a, input, select, textarea, [role="button"]) {
+    touch-action: manipulation;
+  }
+
+  .mobile-app-surface :is(button, a, [role="button"]) {
+    min-height: 44px;
+  }
+
+  .mobile-app-surface .mobile-app-card,
+  .mobile-app-surface [data-mobile-card="true"] {
+    border-radius: 1rem;
+  }
+
+  /* Prevent iOS Safari from zooming focused form controls. */
+  .mobile-app-surface :is(input, select, textarea) {
+    font-size: 16px;
+  }
+}

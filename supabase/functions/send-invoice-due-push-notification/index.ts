@@ -162,8 +162,8 @@ serve(async (req: Request): Promise<Response> => {
     const notification = {
       title,
       body,
-      icon: "/pwa-192x192.png",
-      badge: "/pwa-192x192.png",
+      icon: "/pwa-192x192.png?v=20260907",
+      badge: "/pwa-192x192.png?v=20260907",
       tag: `invoice-due-${invoiceNumber}-${Date.now()}`,
       requireInteraction: urgency === "high",
       data: {

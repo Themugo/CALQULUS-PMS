@@ -118,7 +118,7 @@ serve(async (req: Request): Promise<Response> => {
     const payload = JSON.stringify({
       title,
       body,
-      icon: icon || "/pwa-192x192.png",
+      icon: icon || "/pwa-192x192.png?v=20260907",
       url: url || "/",
       tag: tag || `notification-${Date.now()}`,
     });

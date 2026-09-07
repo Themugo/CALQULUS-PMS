@@ -82,6 +82,9 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: npm run gate:reconciliation
 
+      - name: Verify mobile release contract
+        run: npm run mobile:doctor
+
       - name: Typecheck
         run: npm run typecheck
 

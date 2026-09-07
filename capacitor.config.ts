@@ -1,25 +1,22 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * Capacitor config for CALQULUS PMS PWA / native app wrapper.
- * The biometricService uses Capacitor.isNativePlatform() to gracefully
- * fall back on web — no native build is required for the web app.
+ * CALQULUS native shell.
  *
- * Server URL is read from the CAPACITOR_SERVER_URL environment variable
- * at build time, falling back to the production domain.
- *
- * If building a native Android/iOS app in future:
- *   1. Update appId to your Play Store / App Store bundle ID
- *   2. Set CAPACITOR_SERVER_URL to your production domain
- *   3. Run: npx cap add android && npx cap add ios
+ * Production native builds intentionally load the bundled `dist` application.
+ * This keeps the Android/iOS app an actual installed application instead of a
+ * WebView pointed at the public website. Set CAPACITOR_SERVER_URL only for
+ * local development when a remote dev server is explicitly required.
  */
 const config: CapacitorConfig = {
-  appId: 'site.calqulus.pms',
-  appName: 'CALQULUS PMS',
-  webDir: 'dist',
+  appId: "site.calqulus.pms",
+  appName: "CALQULUS PMS",
+  webDir: "dist",
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://www.calqulus.site',
     cleartext: false,
+    ...(process.env.CAPACITOR_SERVER_URL
+      ? { url: process.env.CAPACITOR_SERVER_URL }
+      : {}),
   },
 };
 

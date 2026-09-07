@@ -92,7 +92,7 @@ export const MobileInstallBanner = () => {
         <div className="flex items-start gap-4">
           <div className="relative">
             <div className="h-14 w-14 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-primary/20">
-              <img src="/pwa-192x192.png" alt="CALQULUS PMS" className="h-full w-full object-cover" />
+              <img src="/pwa-192x192.png?v=20260907" alt="CALQULUS PMS" className="h-full w-full object-cover" />
             </div>
             <div className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
               <Zap className="h-3 w-3 text-primary-foreground" />

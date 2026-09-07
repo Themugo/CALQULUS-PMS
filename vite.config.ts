@@ -131,35 +131,10 @@ export default defineConfig(({ mode }) => ({
         globIgnores: ["**/vendor-charts-*.js", "**/vendor-pdf-*.js", "**/*.map"],
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
-      manifest: {
-        name: "CALQULUS PMS — Property Management",
-        short_name: "CALQULUS",
-        description: "The complete property management platform for East Africa. Manage properties, collect rent, track tenants, and grow your portfolio.",
-        theme_color: "#0D2744",
-        background_color: "#F7F9FC",
-        display: "standalone",
-        orientation: "portrait",
-        scope: "/",
-        start_url: "/",
-        icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
-        ],
-      },
+      // The canonical manifest is checked into public/manifest.webmanifest.
+      // Keeping one source prevents the browser and native asset tooling from
+      // receiving different app identities.
+      manifest: false,
     }),
   ].filter(Boolean),
   resolve: {

@@ -83,8 +83,8 @@ serve(async (req: Request): Promise<Response> => {
     const notification = {
       title: "💰 Payment Received!",
       body: `${tenantName} paid ${formattedAmount} for ${propertyName}${unitInfo}`,
-      icon: "/pwa-192x192.png",
-      badge: "/pwa-192x192.png",
+      icon: "/pwa-192x192.png?v=20260907",
+      badge: "/pwa-192x192.png?v=20260907",
       tag: `payment-${invoiceNumber}-${Date.now()}`,
       data: {
         url: "/billing",

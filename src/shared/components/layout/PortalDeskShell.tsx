@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, LogOut, Menu, Settings, User, X, Palette, MoreHorizontal } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
@@ -96,6 +96,22 @@ export function PortalDeskShell({
   const { can } = useRBAC();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    if (!sidebarOpen || typeof window === "undefined" || window.innerWidth >= 768) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSidebarOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [sidebarOpen]);
+
   const visibleNavGroups = navGroups
     .map((group) => ({
       ...group,
@@ -113,7 +129,7 @@ export function PortalDeskShell({
 
   return (
     <div className={cn("relative min-h-screen bg-background text-foreground", mobileNav && "mobile-app-surface", className)} style={shellStyle}>
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      <div className="mobile-app-background pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
         <div className="absolute inset-0 bg-[image:var(--portal-shell-image)] bg-cover bg-center opacity-[0.045]" />
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/[0.035]" />
       </div>
@@ -128,20 +144,22 @@ export function PortalDeskShell({
       {sidebarOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-muted/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/35 backdrop-blur-[3px] lg:hidden"
           aria-label="Close menu"
           onClick={closeSidebar}
         />
       ) : null}
 
       <aside
+        aria-label={`${navLabel} navigation`}
         className={cn(
           "fixed left-0 top-0 z-50 flex h-full flex-col border-r border-border bg-card transform transition-transform duration-300 lg:translate-x-0",
           sidebarWidthClass,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          "max-md:left-0 max-md:top-auto max-md:bottom-0 max-md:h-[min(82dvh,720px)] max-md:w-full max-md:max-w-none max-md:rounded-t-[1.5rem] max-md:border-r-0 max-md:border-t max-md:shadow-2xl",
         )}
       >
-        <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-border px-4">
+        <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-border px-4 max-md:h-auto max-md:min-h-16 max-md:pb-3 max-md:pt-3 max-md:safe-area-top">
           <div className="min-w-0">
             <BrandMark size="md" showWordmark subtitle={brandSubtitle ?? identity.shortName} forcePlatform={forcePlatformBrand} />
           </div>
@@ -160,7 +178,8 @@ export function PortalDeskShell({
           <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{identity.tagline}</p>
         </div>
 
-        <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-4" aria-label={navLabel}>
+        <div className="mx-auto mt-2 hidden h-1 w-10 rounded-full bg-muted-foreground/25 max-md:block" aria-hidden />
+        <nav className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-2 py-4 max-md:pb-6" aria-label={navLabel}>
           {visibleNavGroups.map((group) => {
             if (group.items.length === 0) return null;
             const groupId = `nav-group-${group.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
@@ -193,7 +212,7 @@ export function PortalDeskShell({
           })}
         </nav>
 
-        <div className="flex-shrink-0 border-t border-border p-3">
+        <div className="flex-shrink-0 border-t border-border p-3 max-md:pb-[calc(.75rem+env(safe-area-inset-bottom,0px))]">
           {userEmail ? (
             <div className="mb-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
               <p className="text-[9px] font-semibold uppercase tracking-wider text-primary">{identity.shortName}</p>
@@ -212,20 +231,29 @@ export function PortalDeskShell({
       </aside>
 
       <div className={cn("relative z-10 flex min-h-screen min-w-0 flex-col", sidebarOffsetClass)}>
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
+        <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-border bg-background/92 px-3 backdrop-blur-xl sm:px-6 max-md:pt-[env(safe-area-inset-top,0px)] max-md:shadow-[0_1px_0_rgba(15,39,68,0.04)]">
+          <div className="flex min-w-0 items-center gap-2.5">
             <button
               type="button"
-              aria-label="Open menu"
-              className="-ml-1.5 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground lg:hidden"
+              aria-label={`Open ${mobileNavLabel} menu`}
+              className="-ml-1 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-muted/45 p-2 text-foreground transition active:scale-95 hover:bg-muted lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="min-w-0 items-center gap-2 text-sm text-muted-foreground flex">
-              <span className="hidden xs:inline font-semibold text-foreground">{identity.name}</span>
+            <div className="hidden min-w-0 items-center gap-2 text-sm text-muted-foreground lg:flex">
+              <span className="font-semibold text-foreground">{identity.name}</span>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden />
               <span className="truncate max-w-[42vw] sm:max-w-none">{title}</span>
+            </div>
+            <div className="flex min-w-0 items-center gap-2 lg:hidden">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--portal-accent)]/10 ring-1 ring-[var(--portal-accent)]/15">
+                <BrandMark size="sm" showWordmark={false} forcePlatform={forcePlatformBrand} />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--portal-accent)]">{identity.shortName}</p>
+                <p className="truncate text-[15px] font-semibold leading-tight text-foreground">{title}</p>
+              </div>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
@@ -246,7 +274,7 @@ export function PortalDeskShell({
 
         {!hideHeader ? <PageHeader title={title} description={description} actions={actions} className={cn("border-0 px-4 py-4 sm:px-6 lg:px-8", mobileNav && "hidden md:block")} /> : null}
 
-        <main id="main-content" tabIndex={-1} className={cn("mx-auto w-full flex-1 min-w-0 overflow-x-clip px-3 pt-3 outline-none sm:px-6 sm:pt-0 lg:px-8", mobileContentPadding, contentMaxWidth)}>
+        <main id="main-content" tabIndex={-1} className={cn("mx-auto w-full flex-1 min-w-0 overflow-x-clip px-3 pt-3 outline-none sm:px-6 sm:pt-0 lg:px-8", mobileContentPadding, contentMaxWidth, mobileNav && "mobile-app-content")}>
           {children}
         </main>
 

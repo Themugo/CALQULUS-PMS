@@ -119,7 +119,7 @@ const InstallApp = () => {
       {/* Header */}
       <div className="bg-gradient-to-b from-amber-400/15 to-background pt-safe-top pt-8 sm:pt-12 pb-6 sm:pb-8 px-4 text-center">
         <div className="mx-auto mb-3 sm:mb-4 h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden shadow-lg">
-          <img src="/pwa-192x192.png" alt="CALQULUS PMS" className="h-full w-full object-cover" />
+          <img src="/pwa-192x192.png?v=20260907" alt="CALQULUS PMS" className="h-full w-full object-cover" />
         </div>
         <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">CALQULUS PMS</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">Property Management</p>
