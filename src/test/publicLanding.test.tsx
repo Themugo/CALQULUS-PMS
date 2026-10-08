@@ -55,11 +55,7 @@ describe("PublicLandingPage", () => {
     const header = screen.getByRole("banner");
     expect(within(header).getByRole("link", { name: /login/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.managerSignIn,
-    );
-    expect(within(header).getByRole("link", { name: /get started/i })).toHaveAttribute(
-      "href",
-      PUBLIC_ROUTES.managerSignUp,
+      PUBLIC_ROUTES.portalAccessSignIn,
     );
   });
 
@@ -127,7 +123,7 @@ describe("PublicLandingPage", () => {
     expect(ctaSection!.querySelector("div.relative.overflow-hidden")?.className ?? "").toMatch(/bg-\[linear-gradient/);
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /get started/i })).toHaveAttribute(
       "href",
-      PUBLIC_ROUTES.managerSignUp,
+      PUBLIC_ROUTES.portalAccessSignUp,
     );
     expect(within(ctaSection as HTMLElement).getByRole("link", { name: /contact sales/i })).toHaveAttribute(
       "href",

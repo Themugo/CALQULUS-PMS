@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LandlordPortalShell, LANDLORD_ACCENT } from "@/features/auth/components/LandlordPortalChrome";
 
 function renderShell() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <MemoryRouter>
-      <LandlordPortalShell>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <button type="submit">Sign in</button>
-        </form>
-      </LandlordPortalShell>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <LandlordPortalShell>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <button type="submit">Sign in</button>
+          </form>
+        </LandlordPortalShell>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 

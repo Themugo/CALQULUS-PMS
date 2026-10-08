@@ -29,6 +29,7 @@ export function LandlordPortalShell({ children }: LandlordPortalShellProps) {
       backgroundImage={identity.backgroundImageUrl || PROPERTY_IMAGES.commercial}
       badgeIcon={Wallet}
       portalName={identity.shortName}
+      headlineLines={["Landlord", "Portal"]}
       slogan={identity.tagline}
       description="See how your properties are performing — occupancy, collections and your share, at a glance."
       features={[

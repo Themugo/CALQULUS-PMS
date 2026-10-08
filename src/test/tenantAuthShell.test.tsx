@@ -39,7 +39,9 @@ describe("Tenant portal entry chrome", () => {
   it("carries the CALQULUS brand mark and portal description", () => {
     renderShell();
     expect(screen.getAllByText(/CALQULUS/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/your rental record should travel with you\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/one secure home for rent, contracts, repairs, payments and your property record/i),
+    ).toBeInTheDocument();
   });
 
   it("renders the child sign-in form passed to it", () => {

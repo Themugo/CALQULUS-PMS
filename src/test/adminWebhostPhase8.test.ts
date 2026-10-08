@@ -18,8 +18,8 @@ function source(rel: string): string {
 describe("admin + webhost identities", () => {
   it("has a navy admin accent token alongside the cyan webhost accent", () => {
     const css = source("index.css");
-    expect(css).toContain("--calqulus-indigo: #123B5D");
-    expect(css).toContain("--calqulus-teal-deep: #06B6D4");
+    expect(css).toContain('[data-portal="platform_admin"] { --portal-accent: var(--calqulus-platform); }');
+    expect(css).toContain("--calqulus-admin: #123B5D");
     expect(ADMIN_SURFACE_ACCENT).toBe("#123B5D");
   });
 

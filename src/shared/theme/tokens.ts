@@ -24,6 +24,8 @@ export const CALQULUS_COLOR = {
   primary: "#0074E6",
   /** Brand-board blue — used for logo/atmosphere; interactive blue stays accessible. */
   brandBlue: "#0284FF",
+  /** Brand-board lime — logo roof gradient terminus only, never UI chrome. */
+  brandLime: "#84CC16",
   primaryHover: "#0068C9",
   primaryActive: "#00549F",
   accent: "#06B6D4",

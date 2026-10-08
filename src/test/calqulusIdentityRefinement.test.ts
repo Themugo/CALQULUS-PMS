@@ -7,8 +7,8 @@ const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
 describe("CALQULUS identity refinement", () => {
   it("keeps the supplied CALQULUS board palette represented in source", () => {
-    const tokens = readFileSync(resolve(process.cwd(), "src/shared/theme/tokens.ts"), "utf8");
-    const css = readFileSync(resolve(process.cwd(), "src/index.css"), "utf8");
+    const tokens = read("src/shared/theme/tokens.ts");
+    const css = read("src/index.css");
     for (const hex of ["#0A2540", "#0284FF", "#06B6D4", "#10B981", "#84CC16", "#F1F5F9", "#E2E8F0"]) {
       expect(tokens.includes(hex) || css.includes(hex)).toBe(true);
     }
