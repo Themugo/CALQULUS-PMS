@@ -77,8 +77,11 @@ jobs:
                 body: '🤖 Auto-merge enabled! This Dependabot PR will be automatically merged once all required CI checks pass.'
               });
             } catch (error) {
+              // Warn only: a failed check run on the PR head would otherwise
+              // block the merge-when-green gate below forever. The gate job
+              // merges directly via the API and does not need repo auto-merge.
               console.log('Could not enable auto-merge:', error.message);
-              core.setFailed('enableAutoMerge failed: ' + error.message);
+              core.warning('enableAutoMerge failed (repo may have "Allow auto-merge" disabled); the merge-when-green job will still merge once checks pass. ' + error.message);
             }
 
   # Fallback job that runs on a schedule to catch any PRs that might have
@@ -183,15 +186,19 @@ jobs:
                   per_page: 100
                 });
 
-                if (checks.total_count === 0) {
+                // Ignore this workflow's own check runs (pull_request_target
+                // runs attach to the PR head sha) so they never gate the merge.
+                const gateRuns = checks.check_runs.filter(c => c.name !== 'Enable Auto-Merge for Dependabot PR');
+
+                if (gateRuns.length === 0) {
                   console.log(`PR #${pr.number}: skipped - no checks to gate on`);
                   continue;
                 }
-                if (checks.check_runs.some(c => c.status !== 'completed')) {
+                if (gateRuns.some(c => c.status !== 'completed')) {
                   console.log(`PR #${pr.number}: skipped - checks still running`);
                   continue;
                 }
-                if (checks.check_runs.some(c => !['success', 'neutral', 'skipped'].includes(c.conclusion))) {
+                if (gateRuns.some(c => !['success', 'neutral', 'skipped'].includes(c.conclusion))) {
                   console.log(`PR #${pr.number}: skipped - failing checks`);
                   continue;
                 }
@@ -202,7 +209,7 @@ jobs:
                   pull_number: pr.number,
                   merge_method: 'squash'
                 });
-                console.log(`PR #${pr.number}: merged (all ${checks.total_count} checks passed)`);
+                console.log(`PR #${pr.number}: merged (all ${gateRuns.length} checks passed)`);
               } catch (error) {
                 console.log(`PR #${prSummary.number}: merge failed - ${error.message}`);
               }
