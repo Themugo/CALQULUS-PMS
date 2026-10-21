@@ -64,7 +64,7 @@ export default function LandlordSettlementTransparency() {
     },
     enabled: Boolean(user),
   });
-  const rows = query.data?.settlements ?? [];
+  const rows = useMemo(() => query.data?.settlements ?? [], [query.data?.settlements]);
   const summary = query.data?.summary ?? { approved_net: 0, settled_net: 0, settled_count: 0, pending_count: 0 };
   const hasRows = rows.length > 0;
   const latestSettled = useMemo(() => rows.find(r => r.batch_status === "settled"), [rows]);

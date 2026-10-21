@@ -35,7 +35,7 @@ import {
 import { AGENCY_CARD } from "@/features/agency/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
-import ManagerActivityLog from "@/features/dashboard/components/ManagerActivityLog";
+import AgencyActivityLog from "@/features/agency/components/AgencyActivityLog";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import { formatKes } from "@/features/landlord/lib/formatKes";
@@ -72,7 +72,7 @@ export default function AgencyDashboard() {
         expiringLeases: data.expiringLeases,
         unlinkedCount: data.unlinkedCount,
         formatAmount: formatKes,
-        hrefs: { billing: AGENCY_ROUTES.billing, leases: AGENCY_OPS_ROUTES.leases, clients: AGENCY_ROUTES.clients },
+        hrefs: { billing: data.overdueInvoices > 0 ? `${AGENCY_ROUTES.billing}?filter=overdue` : AGENCY_ROUTES.billing, leases: AGENCY_OPS_ROUTES.leases, clients: AGENCY_ROUTES.clients },
       })
     : [];
 
@@ -209,7 +209,7 @@ export default function AgencyDashboard() {
       {/* Operational pulse — color-coded decisions, not decorative numbers. */}
       <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Agency operational pulse">
         {[
-          { label: "Collections", value: data ? formatKes(data.collectedMtd) : "—", detail: "recorded this month", tone: "border-emerald-500/25 bg-emerald-500/[0.045]", icon: CreditCard, href: AGENCY_ROUTES.billing },
+          { label: "Collections", value: data ? formatKes(data.collectedMtd) : "—", detail: "recorded this month", tone: "border-border bg-card", icon: CreditCard, href: AGENCY_ROUTES.billing },
           { label: "Occupancy", value: data ? `${data.occupancyRate}%` : "—", detail: "portfolio occupied", tone: "border-primary/25 bg-primary/[0.045]", icon: Home, href: AGENCY_ROUTES.portfolio },
           { label: "Attention", value: isLoading ? "—" : String(attentionCount), detail: attentionCount ? "items need action" : "nothing urgent", tone: attentionCount ? "border-amber-500/25 bg-amber-500/[0.045]" : "border-border bg-card", icon: attentionCount ? ShieldAlert : Home, href: attentionCount ? AGENCY_ROUTES.dashboard : AGENCY_ROUTES.clients },
           { label: "Maintenance", value: isLoading ? "—" : String(openMaintenance), detail: "open requests", tone: openMaintenance ? "border-orange-500/25 bg-orange-500/[0.045]" : "border-border bg-card", icon: Wrench, href: AGENCY_OPS_ROUTES.maintenance },
@@ -592,7 +592,7 @@ export default function AgencyDashboard() {
       {/* Recent activity */}
       <section className={AGENCY_CARD.panel} aria-labelledby="agency-dashboard-activity">
         <DashboardSectionHeader id="agency-dashboard-activity" eyebrow="Timeline" title="Recent activity" className="mb-3" />
-        <ManagerActivityLog compact limit={8} />
+        <AgencyActivityLog />
       </section>
     </AgencyLayout>
   );

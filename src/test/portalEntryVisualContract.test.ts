@@ -17,7 +17,15 @@ describe("Portal entry visual contract", () => {
     ] as const;
     for (const [portal, file] of files) {
       const source = readFileSync(`src/features/auth/components/${file}`, "utf8");
-      expect(source).toContain(`portalId=\"${portal}\"`);
+      if (portal === "agency") {
+        // Agency uses a bespoke full-bleed shell (not PortalLoginScreen) but
+        // must still read its configured portal identity: background + tagline.
+        expect(source).toContain("identities.agency");
+        expect(source).toContain("backgroundImage");
+        expect(source).toContain("identity.tagline");
+        continue;
+      }
+      expect(source).toContain(`portalId="${portal}"`);
       expect(source).toContain("backgroundImage=");
       expect(source).toContain("slogan=");
     }

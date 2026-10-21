@@ -181,7 +181,7 @@ const Reports: React.FC = () => {
       if (!props?.length) return [];
 
       const propertyIds = props.map((p) => p.id);
-      let invoicesQuery = supabase
+      const invoicesQuery = supabase
         .from('invoices')
         .select('property_id, paid_amount')
         .eq('manager_id', managerId)

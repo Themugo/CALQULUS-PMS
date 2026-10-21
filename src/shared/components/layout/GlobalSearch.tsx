@@ -65,12 +65,15 @@ export function GlobalSearch() {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
+        // Derived from the stable key the effect depends on, so the scope used
+        // for the query always matches the dependency that triggered the run.
+        const scopedPropertyIds = assignedPropertyIdsKey ? assignedPropertyIdsKey.split(',') : [];
         if (!managerId) {
           setResults([]);
           setIsOpen(false);
           return;
         }
-        if (restrictToAssignedProperties && assignedPropertyIds.length === 0) {
+        if (restrictToAssignedProperties && scopedPropertyIds.length === 0) {
           setResults([]);
           setIsOpen(false);
           return;
@@ -99,14 +102,14 @@ export function GlobalSearch() {
           .limit(5);
 
         if (restrictToAssignedProperties) {
-          propertyQuery = propertyQuery.in("id", assignedPropertyIds);
-          tenantQuery = tenantQuery.in("property_id", assignedPropertyIds);
+          propertyQuery = propertyQuery.in("id", scopedPropertyIds);
+          tenantQuery = tenantQuery.in("property_id", scopedPropertyIds);
 
           const { data: scopedTenants } = await supabase
             .from("tenants")
             .select("id")
             .eq("manager_id", managerId)
-            .in("property_id", assignedPropertyIds);
+            .in("property_id", scopedPropertyIds);
           const scopedTenantIds = (scopedTenants || []).map((tenant) => tenant.id);
 
           if (scopedTenantIds.length === 0) {

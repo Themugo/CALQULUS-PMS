@@ -16,6 +16,7 @@ export type CompanySettingsSection = "all" | "organization";
 export const CompanySettings = ({ section: _section = "all" }: { section?: CompanySettingsSection }) => {
   const { toast } = useToast();
   const { isAgency, isManager, user } = useAuth();
+  const userId = user?.id;
   const canManageCompany = isManager || isAgency;
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export const CompanySettings = ({ section: _section = "all" }: { section?: Compa
         const { data, error } = await supabase
           .from("company_settings")
           .select("*")
-          .eq("manager_user_id", user!.id)
+          .eq("manager_user_id", userId)
           .maybeSingle();
 
         if (error) throw error;
@@ -62,10 +63,10 @@ export const CompanySettings = ({ section: _section = "all" }: { section?: Compa
           setCompanyWebsite(data.website || "");
         }
 
-        if (user?.id) {
+        if (userId) {
           const { data: agency } = await supabase.from("agencies")
             .select("phone, email, address, county, kra_pin, registration_number, whatsapp, website")
-            .eq("manager_id", user.id)
+            .eq("manager_id", userId)
             .maybeSingle();
           if (agency) {
             const a = agency as { whatsapp?: string; county?: string; kra_pin?: string; registration_number?: string; phone?: string; email?: string; address?: string };
@@ -91,7 +92,7 @@ export const CompanySettings = ({ section: _section = "all" }: { section?: Compa
     };
 
     void fetchCompanySettings();
-  }, [canManageCompany, toast, user?.id]);
+  }, [canManageCompany, toast, userId]);
 
   const handleSave = async () => {
     setSaving(true);

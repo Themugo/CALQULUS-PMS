@@ -19,6 +19,7 @@
  */
 
 import { serve } from "std/http/server.ts";
+import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getEnv, requireEnv } from "../_shared/env.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
@@ -72,10 +73,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // ── Find or create the auth user bound to the invited email ───────
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(
-      (u) => u.email?.toLowerCase() === invite.email.toLowerCase(),
-    );
+    const existingUser = await findAuthUserByEmail(supabaseAdmin, invite.email);
 
     if (invite.status !== "pending") {
       // Refresh / back-navigation after a successful claim: if this user

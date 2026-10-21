@@ -1,6 +1,7 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const migration = () => require("fs").readFileSync("supabase/migrations/20260904000036_financial_audit_pack_period_end_governance.sql", "utf8");
+const migration = () => readFileSync("supabase/migrations/20260904000036_financial_audit_pack_period_end_governance.sql", "utf8");
 
 describe("period-end financial audit pack governance", () => {
   it("requires a closed period and stores a reproducible snapshot", () => {

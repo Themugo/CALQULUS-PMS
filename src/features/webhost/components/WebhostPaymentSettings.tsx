@@ -81,6 +81,8 @@ const WebhostPaymentSettings: React.FC = () => {
         payment_instructions: settings.payment_instructions || '',
       });
     }
+  // Intentional: reset the draft only when the saved settings row changes, not on every refetch identity.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings?.id, settings?.updated_at]);
 
   // Save mutation — all platform financial settings writes are server-authorized.
@@ -397,6 +399,8 @@ const TierPricingEditor: React.FC = () => {
     const map: Record<string, string> = {};
     tiers.forEach((t: SubscriptionTier) => { map[t.tier_key] = String(t.price_per_property ?? ''); });
     setPrices(map);
+  // Intentional: keyed on tiersKey (id:price) so unrelated refetches don't reset prices being edited.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiersKey]);
 
   const saveTiers = useMutation({

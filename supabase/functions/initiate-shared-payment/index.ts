@@ -91,7 +91,7 @@ serve(withMiddleware({
   if (!managerId) throw errorResponse("Payment configuration error: manager is missing", 500);
   const landlordId = route.landlord_user_id || null;
   const receiverType = landlordId ? "landlord" : "manager";
-  let settings: any = null;
+  let settings: any;
   if (landlordId) {
     const { data } = await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).eq("property_id", invoice.property_id).maybeSingle();
     const { data: globalData } = data ? { data } : await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).is("property_id", null).maybeSingle();

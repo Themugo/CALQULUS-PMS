@@ -105,6 +105,9 @@ export const TenantStatement = ({
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [historyLimit, setHistoryLimit] = useState<number | null>(null);
 
+  const tenantId = tenant?.id;
+  const statementHistoryMonths = tenant?.statement_history_months;
+
   const fetchCompanySettings = async () => {
     const { data, error } = await supabase
       .from("company_settings")
@@ -117,20 +120,20 @@ export const TenantStatement = ({
   };
 
   const fetchInvoices = useCallback(async () => {
-    if (!tenant) return;
+    if (!tenantId) return;
 
     setIsLoading(true);
     
     let query = supabase
       .from("invoices")
       .select("*")
-      .eq("tenant_id", tenant.id)
+      .eq("tenant_id", tenantId)
       .order("due_date", { ascending: false });
     
     // Apply date filter for non-manager views with history limit
-    if (!isManagerView && tenant.statement_history_months) {
+    if (!isManagerView && statementHistoryMonths) {
       const cutoffDate = new Date();
-      cutoffDate.setMonth(cutoffDate.getMonth() - tenant.statement_history_months);
+      cutoffDate.setMonth(cutoffDate.getMonth() - statementHistoryMonths);
       query = query.gte("due_date", cutoffDate.toISOString().split('T')[0]);
     }
     
@@ -146,19 +149,19 @@ export const TenantStatement = ({
       setInvoices(data || []);
     }
     setIsLoading(false);
-  }, [tenant?.id, tenant?.statement_history_months, isManagerView, toast]);
+  }, [tenantId, statementHistoryMonths, isManagerView, toast]);
 
   useEffect(() => {
-    if (tenant && isOpen) {
-      if (!isManagerView && tenant.statement_history_months) {
-        setHistoryLimit(tenant.statement_history_months);
+    if (tenantId && isOpen) {
+      if (!isManagerView && statementHistoryMonths) {
+        setHistoryLimit(statementHistoryMonths);
       } else {
         setHistoryLimit(null);
       }
       fetchInvoices();
       fetchCompanySettings();
     }
-  }, [tenant?.id, tenant?.statement_history_months, isOpen, isManagerView, fetchInvoices]);
+  }, [tenantId, statementHistoryMonths, isOpen, isManagerView, fetchInvoices]);
 
   const totalBilled = invoices.reduce((sum, inv) => sum + Number(inv.amount), 0);
   const totalPaid = invoices

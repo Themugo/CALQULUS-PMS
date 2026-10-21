@@ -1,11 +1,16 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
+import { assertNoForbiddenClientEnv } from "./vite.clientEnvGuard";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => {
+  if (command === "build" && mode === "production") {
+    assertNoForbiddenClientEnv({ ...loadEnv(mode, process.cwd(), "VITE_"), ...process.env });
+  }
+  return {
   server: {
     host: "0.0.0.0",
     port: 3000,
@@ -180,4 +185,5 @@ export default defineConfig(({ mode }) => ({
       ],
     },
   },
-}));
+};
+});

@@ -114,9 +114,16 @@ describe("agency client detail structure", () => {
 });
 
 describe("agency pages keep their own chrome (no nested manager layout)", () => {
-  it("AgencyClients embeds the chrome-free LandlordLinksManager, not the manager page", () => {
+  it("AgencyClients stays on the agency chrome and provisions landlords server-side, not via the manager page", () => {
     const src = source("features/agency/pages/AgencyClients.tsx");
-    expect(src).toContain("LandlordLinksManager");
+    // Landlord-first redesign (239003b): landlord accounts are provisioned by
+    // the create-agency-landlord-account edge function; per-property
+    // link/unlink lives on the agency property page (PropertyDetail →
+    // PropertyLandlordTab).
+    expect(src).toContain("AgencyLayout");
+    expect(src).toContain("create-agency-landlord-account");
+    expect(source("features/agency/pages/AgencyPropertyPage.tsx")).toContain("PropertyDetail");
+    expect(source("features/properties/pages/PropertyDetail.tsx")).toContain("PropertyLandlordTab");
     expect(src).not.toContain("pages/ManagerLandlords");
     expect(src).not.toContain("shared/components/layout/Layout");
   });

@@ -18,16 +18,17 @@ import { supabase } from "@/integrations/supabase/client";
 export function ProfileMenu() {
   const navigate = useNavigate();
   const { user, isManager, isTenant, isSubmanager, isLandlord, isAgency, isWebhost, signOut } = useAuth();
+  const userId = user?.id;
   const [fullName, setFullName] = useState<string>("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) return;
+      if (!userId) return;
       const { data } = await supabase
         .from("profiles")
         .select("full_name, photo_url")
-        .eq("id", user.id)
+        .eq("id", userId)
         .maybeSingle();
       if (data) {
         setFullName(data.full_name || "");
@@ -35,7 +36,7 @@ export function ProfileMenu() {
       }
     };
     fetchProfile();
-  }, [user?.id]);
+  }, [userId]);
 
   const getInitials = (name: string) => {
     if (!name) return user?.email?.substring(0, 2).toUpperCase() || "U";

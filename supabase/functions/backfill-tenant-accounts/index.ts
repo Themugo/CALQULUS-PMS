@@ -1,4 +1,5 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { listAllAuthUsers } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
@@ -258,9 +259,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
 
     // Get existing auth users
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const existingUsersByEmail = new Map(
-      existingUsers?.users?.map(u => [u.email?.toLowerCase(), u]) || []
+      (await listAllAuthUsers(supabaseAdmin)).map(u => [u.email?.toLowerCase(), u])
     );
 
     const results = {

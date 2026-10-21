@@ -1,14 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PublicLandingPage } from "@/features/marketing/PublicLandingPage";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
 
 // Public landing tests validate the canonical default contract, not whichever
 // admin-managed configuration may be reachable in the test environment.
+const mocks = vi.hoisted(() => ({ config: undefined as unknown }));
 vi.mock("@/features/marketing/hooks/usePublicSiteConfig", () => ({
-  usePublicSiteConfig: () => ({ data: undefined }),
+  usePublicSiteConfig: () => ({ data: mocks.config }),
 }));
 
 function renderAt(path: string) {
@@ -75,8 +78,30 @@ describe("PublicLandingPage", () => {
     expect(screen.getAllByText(/\/ property \/ month/i).length).toBeGreaterThan(0);
   });
 
+  it("renders configured trust logos (regression: strip rendered blank)", () => {
+    mocks.config = {
+      ...DEFAULT_PUBLIC_SITE_CONFIG,
+      trust: {
+        ...DEFAULT_PUBLIC_SITE_CONFIG.trust,
+        logos: [
+          { id: "l1", name: "Acme Estates", image: null, href: "#", enabled: true },
+          { id: "l2", name: "Linked Realty", image: null, href: "https://example.com", enabled: true },
+          { id: "l3", name: "Hidden Partner", image: null, href: "#", enabled: false },
+        ],
+      },
+    };
+    try {
+      renderAt("/");
+      expect(screen.getByText("Acme Estates")).toBeInTheDocument();
+      expect(screen.getByText("Linked Realty")).toBeInTheDocument();
+      expect(screen.queryByText("Hidden Partner")).toBeNull();
+    } finally {
+      mocks.config = undefined;
+    }
+  });
+
   it("defaults to a calm 30-second hero cadence with a configurable transition", () => {
-    const source = require("node:fs").readFileSync("src/features/marketing/publicSiteConfig.ts", "utf8");
+    const source = readFileSync("src/features/marketing/publicSiteConfig.ts", "utf8");
     expect(source).toContain("intervalMs: 30000");
     expect(source).toContain("transitionMs: 900");
   });

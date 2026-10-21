@@ -37,13 +37,26 @@ describe("CALQULUS design tokens", () => {
   });
 
   it("defines the full semantic palette", () => {
-    expect(CALQULUS_COLOR.success).toBe("#10B981");
-    expect(CALQULUS_COLOR.warning).toBe("#F59E0B");
-    expect(CALQULUS_COLOR.danger).toBe("#EF4444");
+    // Reverted from #10B981 — that value fails WCAG AA contrast (2.54:1)
+    // against white, both as text (needs 4.5:1) and as a graphical/chart
+    // element (needs 3:1 per WCAG 1.4.11). #2F8061 clears both (~4.79:1).
+    // See accessibilityCertification.test.ts "meets WCAG AA contrast...".
+    expect(CALQULUS_COLOR.success).toBe("#2F8061");
+    // Kept in lockstep with the accessible value locked by
+    // accessibilityCertification.test.ts ("keeps the locked warning fill and
+    // uses a darker amber for small text") — #F59E0B fails WCAG AA large-text
+    // contrast (3:1) against white (~2.15:1); #A66A16 clears it (~4.47:1).
+    expect(CALQULUS_COLOR.warning).toBe("#A66A16");
+    // Reverted from #EF4444 — fails WCAG AA normal-text contrast (3.76:1 vs
+    // white, needs 4.5:1). #B94A48 clears it (~5.08:1).
+    expect(CALQULUS_COLOR.danger).toBe("#B94A48");
     expect(CALQULUS_COLOR.info).toBe("#3B82F6");
     expect(CALQULUS_COLOR.border).toBe("#E2E8F0");
     expect(CALQULUS_COLOR.textPrimary).toBe("#0F2942");
-    expect(CALQULUS_COLOR.textMuted).toBe("#64748B");
+    // Darkened from #64748B — that value fails WCAG AA 4.5:1 against
+    // CALQULUS_COLOR.background (#F1F5F9, ~4.34:1); #5F6E84 clears it
+    // (~4.73:1) and against white (~5.19:1). See accessibilityCertification.test.ts.
+    expect(CALQULUS_COLOR.textMuted).toBe("#5F6E84");
     expect(CALQULUS_COLOR.focus).toBe(CALQULUS_COLOR.primary);
     expect(CALQULUS_COLOR.brandBlue).toBe("#0284FF");
     expect(CALQULUS_COLOR.glow).toBe(CALQULUS_COLOR.brandBlue);

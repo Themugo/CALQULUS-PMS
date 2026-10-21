@@ -25,15 +25,17 @@ describe("Phase 4 portal navigation convergence", () => {
       "/agency/billing",
       "/agency/water-billing",
       "/agency/statements",
+      "/agency/maintenance",
       "/agency/invites",
       "/agency/vacation-notices",
-      "/agency/maintenance",
       "/agency/reports",
       "/agency/settings",
     ]);
     expect(flatten(LANDLORD_NAV_GROUPS)).toEqual([
       "/landlord/dashboard",
       "/landlord/portfolio",
+      "/landlord/management",
+      "/landlord/rules",
       "/landlord/financials",
       "/landlord/statements",
       "/landlord/maintenance",

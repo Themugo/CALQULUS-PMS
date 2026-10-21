@@ -20,7 +20,9 @@ describe("Agency operations desk scope reconciliation", () => {
 
   it("removes the Manager activity feed from the Agency command centre", () => {
     const dashboard = read("src/features/agency/pages/AgencyDashboard.tsx");
-    const activity = read("src/features/agency/components/AgencyActivityLog.tsx");
+    // The component delegates to useAgencyActivityLog, which owns the RPC call.
+    const activity = read("src/features/agency/lib/useAgencyActivityLog.ts");
+    expect(read("src/features/agency/components/AgencyActivityLog.tsx")).toContain("useAgencyActivityLog");
     const sql = read("supabase/migrations/20260906000014_agency_operations_scope_reconciliation.sql");
     expect(dashboard).toContain("AgencyActivityLog");
     expect(dashboard).not.toContain("ManagerActivityLog");

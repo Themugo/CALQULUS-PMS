@@ -10,7 +10,9 @@ describe("CALQULUS brand identity", () => {
     expect(CALQULUS_COLOR.brandBlue).toBe("#0284FF");
     expect(CALQULUS_COLOR.navyPrimary).toBe("#0A2540");
     expect(CALQULUS_COLOR.accent).toBe("#06B6D4");
-    expect(CALQULUS_COLOR.success).toBe("#10B981");
+    // Reverted from #10B981 — fails WCAG AA contrast against white
+    // (see accessibilityCertification.test.ts / designTokens.test.ts).
+    expect(CALQULUS_COLOR.success).toBe("#2F8061");
     expect(CALQULUS_PORTAL_ACCENT.manager.hex).toBe("#0074E6");
     expect(CALQULUS_PORTAL_ACCENT.landlord.hex).toBe("#10B981");
     expect(CALQULUS_PORTAL_ACCENT.tenant.hex).toBe("#06B6D4");

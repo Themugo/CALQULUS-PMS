@@ -41,9 +41,9 @@ export const CALQULUS_COLOR = {
 
   white: "#FFFFFF",
   secondary: "#F1F5F9",
-  success: "#10B981",
-  warning: "#F59E0B",
-  danger: "#EF4444",
+  success: "#2F8061",
+  warning: "#A66A16",
+  danger: "#B94A48",
   info: "#3B82F6",
 
   /** Atmosphere on navy chrome only. */
@@ -57,7 +57,7 @@ export const CALQULUS_COLOR = {
 
   textPrimary: "#0F2942",
   textSecondary: "#64748B",
-  textMuted: "#64748B",
+  textMuted: "#5F6E84",
 
   border: "#E2E8F0",
   focus: "#0074E6",

@@ -22,9 +22,15 @@ describe("Agency portal UX and workflow sweep", () => {
   });
 
   it("keeps every Agency navigation destination on the canonical route surface", () => {
-    const hrefs = [...nav.matchAll(/href:\s*(AGENCY(?:_OPS)?_ROUTES\.[A-Za-z0-9_]+)/g)].map((m) => m[1]);
-    expect(hrefs.length).toBeGreaterThan(10);
-    expect(new Set(hrefs).size).toBe(hrefs.length);
+    // The desk nav must not list a destination twice. AGENCY_MOBILE_NAV is a
+    // deliberate shortcut subset of the same destinations (bottom bar), so it
+    // is checked for canonical routes but excluded from the uniqueness rule.
+    const deskNav = nav.slice(nav.indexOf("export const AGENCY_NAV_GROUPS"), nav.indexOf("export const LANDLORD_NAV_GROUPS"));
+    const pick = (src: string) => [...src.matchAll(/href:\s*(AGENCY(?:_OPS)?_ROUTES\.[A-Za-z0-9_]+)/g)].map((m) => m[1]);
+    const deskHrefs = pick(deskNav);
+    expect(deskHrefs.length).toBeGreaterThan(10);
+    expect(new Set(deskHrefs).size).toBe(deskHrefs.length);
+    const hrefs = pick(nav);
     for (const href of hrefs) expect(paths).toContain(`${href.split(".")[1]}`);
     expect(routes).toContain("AgencyDashboard");
     expect(routes).toContain("AgencySettings");

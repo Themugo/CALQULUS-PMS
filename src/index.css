@@ -427,7 +427,7 @@
 
     --calqulus-text: #0F2942;
     --calqulus-text-strong: #061A2D;
-    --calqulus-text-muted: #64748B;
+    --calqulus-text-muted: #5F6E84;
     --calqulus-text-subtle: #94A3B8;
     --calqulus-text-on-navy: #FFFFFF;
     --calqulus-text-on-navy-muted: #C7D9E8;
@@ -436,15 +436,15 @@
     --calqulus-border-strong: #CBD5E1;
     --calqulus-border-soft: #EDF2F7;
 
-    --calqulus-success: #10B981;
+    --calqulus-success: #2F8061;
     --calqulus-success-soft: #E8FAF3;
     /* Small status text on soft tints needs darker steps for 4.5:1. */
     --calqulus-success-text: #047857;
-    --calqulus-warning: #F59E0B;
+    --calqulus-warning: #A66A16;
     --calqulus-warning-soft: #FFF7E6;
     /* Small amber text needs a darker step to reach 4.5:1 on white. */
     --calqulus-warning-text: #B45309;
-    --calqulus-danger: #EF4444;
+    --calqulus-danger: #B94A48;
     --calqulus-danger-soft: #FEF2F2;
     --calqulus-danger-text: #B91C1C;
     --calqulus-info: #3B82F6;

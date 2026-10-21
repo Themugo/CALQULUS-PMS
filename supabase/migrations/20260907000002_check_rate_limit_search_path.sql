@@ -1,0 +1,11 @@
+-- Pin search_path on the SECURITY DEFINER rate-limit function.
+-- It was created without one (20260506000020_security_hardening.sql), which
+-- leaves it open to search_path hijacking by any role able to create objects
+-- earlier in the path. Behaviour is otherwise unchanged.
+--
+-- NOT changed here (needs owner decision + caller audit): EXECUTE is still
+-- granted to authenticated and p_user_id is caller-supplied, so a signed-in
+-- user could consume another user's hourly budget. Several edge functions call
+-- this with user-scoped clients, so revoking EXECUTE or forcing
+-- p_user_id = auth.uid() would change their behaviour.
+ALTER FUNCTION public.check_rate_limit(uuid, text, integer) SET search_path = public;

@@ -32,6 +32,7 @@ import PreventiveMaintenanceLifecycleCenter from "@/features/dashboard/component
 import MaintenanceAssetLifecycleCenter from "@/features/dashboard/components/MaintenanceAssetLifecycleCenter";
 import PropertySafetyRegulatoryRiskCenter from "@/features/dashboard/components/PropertySafetyRegulatoryRiskCenter";
 import PropertyInspectionComplianceAssuranceCenter from "@/features/dashboard/components/PropertyInspectionComplianceAssuranceCenter";
+import OperationalResilienceRecoveryAssuranceCenter from "@/features/dashboard/components/OperationalResilienceRecoveryAssuranceCenter";
 
 import ManagerOperatingSummary from "@/features/manager/components/ManagerOperatingSummary";
 import ManagerLayout from "@/features/manager/components/ManagerLayout";
@@ -486,6 +487,7 @@ const Dashboard = () => {
                   <MaintenanceAssetLifecycleCenter />
                   <PropertySafetyRegulatoryRiskCenter />
                   <PropertyInspectionComplianceAssuranceCenter />
+                  <OperationalResilienceRecoveryAssuranceCenter />
                 </div>
               )}
 

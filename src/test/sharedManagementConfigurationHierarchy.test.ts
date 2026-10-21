@@ -24,7 +24,11 @@ describe("shared management configuration hierarchy", () => {
 
   it("inherits a broad set of existing agency rule concepts without creating duplicate billing engines", () => {
     for (const key of ["management_modules","financial_modules","payment_rules","billing_rules","amenity_rules","maintenance_rules","vendor_rules","document_rules","communication_rules","security_rules"]) expect(sql).toContain(`'${key}'`);
-    expect(sql).toContain("existing billing, tenant, maintenance, vendor and financial engines");
+    // Structural guard (replaces a prose-comment match): the migration may only
+    // create the shared rule-profile store — never a second billing, payment,
+    // receipt, ledger, tenant, maintenance or vendor engine.
+    const createdTables = [...sql.matchAll(/CREATE TABLE(?: IF NOT EXISTS)?\s+(?:public\.)?([a-z_]+)/gi)].map((m) => m[1]);
+    expect(createdTables).toEqual(["management_rule_profiles"]);
   });
 
   it("exposes the same control surface to manager and landlord portals", () => {

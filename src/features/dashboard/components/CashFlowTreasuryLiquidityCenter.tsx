@@ -19,7 +19,7 @@ const CashFlowTreasuryLiquidityCenter = () => {
     queryKey: ["treasury-control", managerId, horizon], enabled: !!managerId,
     queryFn: async () => { const { data, error } = await supabase.rpc("get_manager_treasury_control", { p_manager_id: managerId!, p_as_of_date: new Date().toISOString().slice(0,10), p_horizon_days: Number(horizon) }); if (error) throw error; return data as any; },
   });
-  useEffect(() => { if (report?.settings) { setBuffer(String(report.settings.minimum_cash_buffer ?? 0)); setHorizon(String(report.settings.forecast_horizon_days ?? horizon)); } }, [report]);
+  useEffect(() => { if (report?.settings) { setBuffer(String(report.settings.minimum_cash_buffer ?? 0)); setHorizon((current) => String(report.settings.forecast_horizon_days ?? current)); } }, [report]);
   const save = useMutation({ mutationFn: async () => { const { error } = await supabase.rpc("upsert_treasury_control_settings", { p_manager_id: managerId!, p_minimum_cash_buffer: Number(buffer), p_forecast_horizon_days: Number(horizon) }); if (error) throw error; }, onSuccess: () => { toast.success("Treasury controls saved"); refetch(); }, onError: (e:any) => toast.error(e.message || "Could not save treasury controls") });
   const status = report?.status;
   const tone = status === "healthy" ? "default" : "destructive";

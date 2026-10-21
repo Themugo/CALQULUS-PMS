@@ -64,7 +64,7 @@ serve(async (req) => {
   // ── Request parsing ────────────────────────────────────────────────
   let reference: string | undefined;
   let checkoutRequestId: string | undefined;
-  let isManagerInvoice = false;
+  let isManagerInvoice: boolean;
   try {
     const body = await req.json();
     reference = body.reference;

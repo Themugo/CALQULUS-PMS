@@ -20,7 +20,10 @@ describe("CALQULUS identity refinement", () => {
     expect(tokens).toContain('primary: "#0074E6"');
     expect(tokens).toContain('navyDeep: "#0A2540"');
     expect(tokens).toContain('accent: "#06B6D4"');
-    expect(tokens).toContain('success: "#10B981"');
+    // success was reverted to the accessible #2F8061 — see
+    // accessibilityCertification.test.ts / designTokens.test.ts. The board
+    // palette's #10B981 is still represented via CALQULUS_PORTAL_ACCENT.landlord.
+    expect(tokens).toContain('success: "#2F8061"');
     expect(css).toContain("--calqulus-tenant: #06B6D4");
     expect(css).toContain("--calqulus-platform: #06B6D4");
     expect(css).toContain('[data-portal="tenant"] { --portal-accent: var(--calqulus-tenant); }');

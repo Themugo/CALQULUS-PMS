@@ -76,7 +76,7 @@ export function TenantLifecycleCommandBar({
           <div className="rounded-lg border border-border bg-background/70 p-2.5">
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><UserRoundCheck className="h-3.5 w-3.5" />Balance</div>
             <p className="mt-1 text-xs font-medium">KES {Math.abs(balance).toLocaleString()}</p>
-            <p className={balance > 0 ? "text-[11px] text-destructive" : "text-[11px] text-emerald-600"}>
+            <p className={balance > 0 ? "text-[11px] text-destructive" : "text-[11px] text-success"}>
               {balance > 0 ? "Outstanding" : "Clear"}
             </p>
           </div>

@@ -18,6 +18,7 @@ interface ManagerProfileData {
 
 const PendingApproval = () => {
   const { signOut, user, userRole } = useAuth();
+  const userId = user?.id;
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [countdown, setCountdown] = useState(30);
@@ -30,13 +31,13 @@ const PendingApproval = () => {
 
   // Auto-poll every 30 seconds to detect approval
   useEffect(() => {
-    if (isTerminal) return;
+    if (isTerminal || !userId) return;
 
     const checkApproval = async () => {
       const { data } = await supabase
         .from('user_roles')
         .select('approval_status')
-        .eq('user_id', user!.id)
+        .eq('user_id', userId)
         .maybeSingle();
 
       if (data?.approval_status === 'approved') {
@@ -58,7 +59,7 @@ const PendingApproval = () => {
       if (pollRef.current) clearInterval(pollRef.current);
       if (cdRef.current) clearInterval(cdRef.current);
     };
-  }, [isTerminal, user?.id, navigate]);
+  }, [isTerminal, userId, navigate]);
 
   // Fetch manager profile to check if suspended (vs simply rejected)
   const { data: managerProfile } = useQuery({

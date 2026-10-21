@@ -6,6 +6,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 
 export const PushNotificationPrompt = () => {
   const { user } = useAuth();
+  const userId = user?.id;
   const {
     isSupported,
     permission,
@@ -27,12 +28,12 @@ export const PushNotificationPrompt = () => {
     }
 
     // Only show if supported, user is logged in, and not already subscribed
-    if (isSupported && user && permission !== "denied" && !isSubscribed) {
+    if (isSupported && userId && permission !== "denied" && !isSubscribed) {
       // Delay showing the prompt to not overwhelm users
       const timer = setTimeout(() => setIsVisible(true), 5000);
       return () => clearTimeout(timer);
     }
-  }, [isSupported, user?.id, permission, isSubscribed]);
+  }, [isSupported, userId, permission, isSubscribed]);
 
   const handleEnable = async () => {
     if (permission === "default") {

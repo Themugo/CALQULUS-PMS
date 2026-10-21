@@ -10,7 +10,7 @@ describe("Phase 33-34 maintenance/expenditure lifecycle", () => {
       "src/features/tenant-portal/pages/TenantMaintenance.tsx",
       "src/features/services/pages/ServicesPage.tsx",
     ].map(read).join("\n");
-    expect(files).not.toMatch(/from\([\"']maintenance_requests[\"']\)[\s\S]{0,400}\.(insert|update|delete|upsert)\(/);
+    expect(files).not.toMatch(/from\(["']maintenance_requests["']\)[\s\S]{0,400}\.(insert|update|delete|upsert)\(/);
     expect(files).toContain("create_maintenance_request_atomic");
     expect(files).toContain("transition_maintenance_request_atomic");
     expect(files).toContain("assign_maintenance_request_atomic");
@@ -18,7 +18,7 @@ describe("Phase 33-34 maintenance/expenditure lifecycle", () => {
 
   it("routes expenditure writes through one manager-scoped RPC", () => {
     const ui = read("src/features/billing/hooks/useBillingData.ts");
-    expect(ui).not.toMatch(/from\([\"']expenditures[\"']\)[\s\S]{0,400}\.(insert|update|delete|upsert)\(/);
+    expect(ui).not.toMatch(/from\(["']expenditures["']\)[\s\S]{0,400}\.(insert|update|delete|upsert)\(/);
     expect(ui).toContain("save_expenditure_atomic");
     const migration = read("supabase/migrations/20260903000017_expenditure_lifecycle_atomic.sql");
     expect(migration).toContain("UNIQUE INDEX");

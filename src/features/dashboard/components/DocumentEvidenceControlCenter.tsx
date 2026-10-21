@@ -64,12 +64,15 @@ export function DocumentEvidenceControlCenter() {
     },
   });
 
+  // Captured once per mount: render must stay pure, and a 30-day expiry window
+  // does not need sub-session precision.
+  const [nowMs] = useState(() => Date.now());
   const counts = useMemo(() => ({
     total: documents.length,
     unverified: documents.filter((d: any) => d.verification_status === "unverified" && d.is_visible).length,
-    expiring: documents.filter((d: any) => d.expires_at && new Date(d.expires_at).getTime() < Date.now() + 30 * 86400000 && d.is_visible).length,
+    expiring: documents.filter((d: any) => d.expires_at && new Date(d.expires_at).getTime() < nowMs + 30 * 86400000 && d.is_visible).length,
     revoked: documents.filter((d: any) => d.verification_status === "revoked").length,
-  }), [documents]);
+  }), [documents, nowMs]);
 
   const upload = async () => {
     if (!managerId || !landlordId || !title.trim() || !file) {

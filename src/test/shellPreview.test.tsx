@@ -35,7 +35,7 @@ describe("Authenticated shell preview", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Home" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay now" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: "WebHost" }));
-    expect(screen.getByText(/proposed webhost identity/i)).toBeInTheDocument();
+    expect(screen.getByText(/webhost infrastructure identity/i)).toBeInTheDocument();
   });
 
   it("exposes loading, empty, and error canvas states", () => {

@@ -142,7 +142,7 @@ serve(async (req) => {
             canonicalAccount = account;
           }
         }
-        const queryResult = await querySafaricomSTK(supabase, reference, transaction.manager_id, canonicalAccount);
+        const queryResult = await querySafaricomSTK(supabase, reference, transaction.manager_id, canonicalAccount, transaction.property_id ?? null);
         if (queryResult) {
           logStep('Safaricom query result', queryResult);
 
@@ -266,22 +266,28 @@ async function querySafaricomSTK(
   supabase: any,
   checkoutRequestId: string,
   managerId: string,
-  canonicalAccount?: Record<string, unknown> | null
+  canonicalAccount?: Record<string, unknown> | null,
+  propertyId?: string | null
 ): Promise<{ ResultCode: number | string | null; ResultDesc: string | null; MpesaReceiptNumber?: string } | null> {
   // Get manager's M-Pesa credentials
-  let settings: any = null;
+  let settings: any;
   const accountId = canonicalAccount?.id as string | undefined;
   const landlordId = canonicalAccount?.landlord_user_id as string | undefined;
-  if (landlordId) {
-    const { data } = await supabase.from('landlord_mpesa_settings')
-      .select('consumer_key,consumer_secret,paybill_shortcode,paybill_passkey,till_shortcode,till_passkey,is_live')
-      .eq('landlord_user_id',landlordId).maybeSingle();
+  // Credentials are scoped per (owner, property) with an owner-wide row
+  // (property_id IS NULL) as fallback — the same precedence as
+  // initiate-mpesa-stk-push. An unscoped maybeSingle() errors out (or picks the
+  // wrong property's credentials) once an owner has more than one settings row.
+  const cols = 'consumer_key,consumer_secret,paybill_shortcode,paybill_passkey,till_shortcode,till_passkey,is_live';
+  const table = landlordId ? 'landlord_mpesa_settings' : 'manager_mpesa_settings';
+  const ownerCol = landlordId ? 'landlord_user_id' : 'manager_user_id';
+  const ownerId = landlordId ?? managerId;
+  if (propertyId) {
+    const { data } = await supabase.from(table).select(cols).eq(ownerCol, ownerId).eq('property_id', propertyId).maybeSingle();
     settings = data;
-  } else {
-    const { data: propertySettings } = await supabase.from('manager_mpesa_settings')
-      .select('consumer_key,consumer_secret,paybill_shortcode,paybill_passkey,till_shortcode,till_passkey,is_live')
-      .eq('manager_user_id',managerId).maybeSingle();
-    settings = propertySettings;
+  }
+  if (!settings) {
+    const { data } = await supabase.from(table).select(cols).eq(ownerCol, ownerId).is('property_id', null).maybeSingle();
+    settings = data;
   }
 
   if (!settings?.consumer_key || !settings?.consumer_secret) {

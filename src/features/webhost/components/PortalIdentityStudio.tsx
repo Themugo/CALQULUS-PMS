@@ -43,6 +43,8 @@ export default function PortalIdentityStudio() {
       primaryHex: typeof next?.primary_hex === "string" ? next.primary_hex : fallback.primaryHex,
       backgroundImageUrl: typeof next?.background_image_url === "string" ? next.background_image_url : "",
     });
+  // Intentional: fallback is derived from the portal, so [identity, portal] fully determines the draft source.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identity, portal]);
 
   const palette = useMemo(() => deriveBrandPalette(draft.primaryHex), [draft.primaryHex]);

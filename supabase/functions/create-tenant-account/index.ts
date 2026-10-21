@@ -1,4 +1,5 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
@@ -515,8 +516,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
 
     // Check if user already exists
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === effEmail.toLowerCase());
+    const existingUser = await findAuthUserByEmail(supabaseAdmin, effEmail);
 
     let userId: string;
     let isNewUser = false;

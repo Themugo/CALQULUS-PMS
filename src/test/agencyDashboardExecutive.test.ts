@@ -7,10 +7,12 @@ const source = readFileSync(resolve(root, "features/agency/pages/AgencyDashboard
 
 describe("Agency executive dashboard", () => {
   it("keeps the executive hierarchy and live workflow entry points", () => {
-    expect(source).toContain("Executive command centre");
-    expect(source).toContain("Portfolio at a glance");
+    // Copy updated for the landlord-first operations centre redesign
+    // (239003b, "Your agency at a glance." / "Client portfolio performance").
+    expect(source).toContain("Your agency at a glance.");
+    expect(source).toContain('title="Portfolio"');
     expect(source).toContain("Needs attention");
-    expect(source).toContain("Client performance");
+    expect(source).toContain("Client portfolio performance");
     expect(source).toContain("Property performance");
     expect(source).toContain("Recent activity");
     expect(source).toContain("AGENCY_ROUTES.clients");
@@ -23,7 +25,10 @@ describe("Agency executive dashboard", () => {
   it("uses agency-blue semantic chrome without success-green money styling", () => {
     expect(source).not.toContain("text-green");
     expect(source).not.toContain("text-success");
-    expect(source).toContain("var(--portal-accent-surface)");
+    expect(source).not.toMatch(/\b(?:emerald|green)-\d{2,3}\b/);
+    expect(source).not.toContain("border-success");
+    // Agency chrome comes from the shared agency theme + primary accent.
+    expect(source).toContain("AGENCY_CARD");
     expect(source).toContain("bg-primary");
   });
 

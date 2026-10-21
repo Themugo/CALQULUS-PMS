@@ -11,6 +11,7 @@
  */
 
 import { serve } from "std/http/server.ts";
+import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { getEnv } from "../_shared/env.ts";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
 
@@ -75,8 +76,7 @@ serve(
       }
 
       // Never invite an email that already holds a webhost role.
-      const { data: existingUsers } = await ctx.supabase.auth.admin.listUsers();
-      const existing = existingUsers?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+      const existing = await findAuthUserByEmail(ctx.supabase, email);
       if (existing) {
         const { data: roles } = await ctx.supabase
           .from("user_roles")

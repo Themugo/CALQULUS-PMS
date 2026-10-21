@@ -183,6 +183,8 @@ const TenantProfilePanel: React.FC<TenantProfilePanelProps> = ({ tenant, onUpdat
 
   React.useEffect(() => {
     if (profile) setForm(profile);
+  // Intentional: re-sync the form only when the record id/version changes; a refetch returning a new object must not overwrite in-progress edits.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id, profile?.updated_at]);
 
   const f = (k: keyof TenantProfileRecord) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>

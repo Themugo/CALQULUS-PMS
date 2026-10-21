@@ -212,7 +212,7 @@ serve(
       const paymentReceiverType: "manager" | "landlord" = route.landlord_user_id ? "landlord" : "manager";
       const landlordId: string | null = route.landlord_user_id ?? null;
 
-      let mpesaSettings: Record<string, unknown> | null = null;
+      let mpesaSettings: Record<string, unknown> | null;
       if (paymentReceiverType === "landlord" && landlordId) {
         const { data } = await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).eq("property_id", propertyId).maybeSingle();
         const { data: globalData } = data ? { data } : await ctx.supabase.from("landlord_mpesa_settings").select("*").eq("landlord_user_id", landlordId).is("property_id", null).maybeSingle();

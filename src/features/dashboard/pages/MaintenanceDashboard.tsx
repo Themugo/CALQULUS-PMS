@@ -31,7 +31,7 @@ export default function MaintenanceDashboard() {
         { data: completedRequests },
         { data: scopedProperties },
       ] = await Promise.all([
-        (() => { let q = supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description, provider_started_at, completion_date, manager_id, property_name').eq('manager_id', managerId).order('created_at', { ascending: false }).limit(50); return q; })(),
+        (() => { const q = supabase.from('maintenance_requests').select('id, title, priority, status, created_at, unit_id, description, provider_started_at, completion_date, manager_id, property_name').eq('manager_id', managerId).order('created_at', { ascending: false }).limit(50); return q; })(),
         supabase.from('maintenance_requests').select('id, title, priority, status, created_at, manager_id, property_name').eq('manager_id', managerId).eq('priority', 'urgent').neq('status', 'completed'),
         supabase.from('maintenance_requests').select('id, manager_id, property_name').eq('manager_id', managerId).eq('status', 'in_progress'),
         supabase.from('maintenance_requests').select('id, created_at, provider_started_at, completion_date, manager_id, property_name').eq('manager_id', managerId).gte('created_at', subDays(new Date(), 90).toISOString()).eq('status', 'completed'),

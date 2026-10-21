@@ -25,7 +25,12 @@ describe("Agency client arrangement and financial integrity foundation", () => {
 
   it("keeps the existing invoice/payment sources of truth", () => {
     expect(sql).toContain("assert_invoice_line_items_total");
-    expect(sql).toContain("process_invoice_payment");
+    // The migration must not define or replace the canonical payment engine:
+    // process_invoice_payment keeps its single source of truth in the payment
+    // financial-integrity migration (verified below), not in the Agency arrangement SQL.
+    expect(sql).not.toMatch(/FUNCTION\s+(?:public\.)?process_invoice_payment/i);
+    const canonical = readFileSync(resolve(process.cwd(), "supabase/migrations/20260819000003_phase4_financial_integrity.sql"), "utf8");
+    expect(canonical).toMatch(/FUNCTION\s+(?:public\.)?process_invoice_payment/i);
     expect(sql).toContain("snapshot_hash");
     expect(sql).not.toContain("CREATE TABLE IF NOT EXISTS public.agency_payments");
     expect(sql).not.toContain("CREATE TABLE IF NOT EXISTS public.agency_invoices");

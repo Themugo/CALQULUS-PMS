@@ -1,4 +1,5 @@
 import { createClient } from "supabase/supabase-js@2";
+import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { getEnv, requireEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
@@ -77,9 +78,7 @@ Deno.serve(async (req: Request) => {
     if (propertyError) throw propertyError;
     if ((properties?.length ?? 0) !== propertyIds.length) return json(req, { error: "One or more selected properties are outside your agency portfolio" }, 403);
 
-    const { data: existingUsers, error: listError } = await admin.auth.admin.listUsers({ perPage: 1000 });
-    if (listError) throw listError;
-    const existingUser = existingUsers.users.find((candidate) => candidate.email?.toLowerCase() === email);
+    const existingUser = await findAuthUserByEmail(admin, email);
 
     let landlordUserId = existingUser?.id ?? null;
     let created = false;

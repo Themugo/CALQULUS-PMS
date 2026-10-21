@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import {
   Banknote,
@@ -18,6 +19,7 @@ import AgencyLayout from "@/features/agency/components/AgencyLayout";
 import Billing from "@/features/billing/pages/Billing";
 import AgencyPaymentRoutingPanel from "@/features/billing/components/AgencyPaymentRoutingPanel";
 import { useAgencyOperationsConfig } from "@/features/agency/lib/useAgencyOperationsConfig";
+import { useAgencyPortfolio } from "@/features/agency/lib/useAgencyPortfolio";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -64,6 +66,9 @@ function friendly(value: string) {
 }
 
 export default function AgencyFinancialWorkbench() {
+  // Dashboard deep links (e.g. ?filter=overdue) target the embedded PMS Billing view.
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("filter") ? "pms-billing" : "agency-financials";
   const { data: config } = useAgencyOperationsConfig();
   const { toast } = useToast();
   const month = useMemo(() => new Date(), []);
@@ -153,49 +158,17 @@ export default function AgencyFinancialWorkbench() {
     },
   });
 
+  const { data: portfolio } = useAgencyPortfolio();
   const { data: invoiceOptions = [] } = useQuery({
     queryKey: ["agency-payment-invoice-options", agencyId],
     enabled: Boolean(agencyId && canRecordEvidence),
     queryFn: async () => {
-      const { data: agency, error: agencyError } = await (supabase as any)
-        .from("agencies")
-        .select("manager_id")
-        .eq("id", agencyId)
-        .maybeSingle();
-      if (agencyError) throw agencyError;
-      if (!agency?.manager_id) return [];
-      const { data, error } = await (supabase as any)
-        .from("invoices")
-        .select("id,invoice_number,amount,balance_due,tenant_id,property_id,unit_id,due_date,status")
-        .eq("manager_id", agency.manager_id)
-        .in("status", ["pending", "overdue", "partially_paid"])
-        .order("due_date", { ascending: true })
-        .limit(250);
+      const { data, error } = await (supabase as any).rpc("get_agency_payment_invoice_options", { p_agency_id: agencyId });
       if (error) throw error;
-      return data ?? [];
+      return Array.isArray(data) ? data : [];
     },
   });
-
-  const { data: properties = [] } = useQuery({
-    queryKey: ["agency-payment-properties", agencyId],
-    enabled: Boolean(agencyId && canRecordEvidence),
-    queryFn: async () => {
-      const { data: agency, error: agencyError } = await (supabase as any)
-        .from("agencies")
-        .select("manager_id")
-        .eq("id", agencyId)
-        .maybeSingle();
-      if (agencyError) throw agencyError;
-      if (!agency?.manager_id) return [];
-      const { data, error } = await (supabase as any)
-        .from("properties")
-        .select("id,name,address")
-        .eq("manager_id", agency.manager_id)
-        .order("name");
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
+  const properties = (portfolio?.properties ?? []).map((property) => ({ id: property.id, name: property.name, address: property.address }));
 
   const externalQueue = evidence.filter((row) => row.destination_type !== "agency" && row.status !== "rejected");
 
@@ -369,7 +342,7 @@ export default function AgencyFinancialWorkbench() {
         </div>
       }
     >
-      <Tabs defaultValue="agency-financials" className="space-y-5">
+      <Tabs defaultValue={initialTab} className="space-y-5">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="agency-financials" className="gap-2"><FileSpreadsheet className="h-4 w-4" />Agency Ledger</TabsTrigger>
           {(canRecordEvidence || canVerifyEvidence) ? <TabsTrigger value="evidence" className="gap-2"><ReceiptText className="h-4 w-4" />Payment Evidence</TabsTrigger> : null}

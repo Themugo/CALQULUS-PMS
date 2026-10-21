@@ -42,9 +42,15 @@ describe("Phase 11 responsive certification contracts", () => {
     expect(nav).toContain('label: "Docs"');
     expect(nav).toContain('label: "Me"');
     const shell = src("src/shared/components/layout/PortalDeskShell.tsx");
-    const mobileNavRender = shell.split("visibleMobileNav.map")[1]?.split("</nav>")[0] ?? "";
+    // 180c8ae: the bottom bar shows the first four destinations plus a "More"
+    // button that opens the full nav (Lease, Receipts, Profile are reached there).
+    const mobileNavRender = shell.split("visibleMobileNav.slice(0, 4).map")[1]?.split("</nav>")[0] ?? "";
     expect(mobileNavRender).toContain("{item.label}");
+    expect(mobileNavRender).toContain("{mobileNavLabel}");
     expect(mobileNavRender).not.toContain("truncate");
+    // Every tenant destination stays reachable from the sidebar drawer.
+    expect(nav).toContain("TENANT_NAV_GROUPS");
+    for (const label of ["Lease", "Receipts", "Profile"]) expect(nav).toContain(`label: "${label}"`);
   });
 
   it("does not hide the maintenance property column in the design preview", () => {

@@ -33,7 +33,11 @@ describe("Agency landlord account workspace", () => {
     expect(page).toContain("Properties & occupants");
     expect(page).toContain("Search landlord or location");
     expect(page).toContain("property.tenantCount");
-    expect(hook).toContain('from("tenants")');
+    // Portfolio data is read through the membership-validated snapshot RPC
+    // (agency staff cannot rely on manager_id = auth.uid()), so tenants arrive
+    // via the snapshot rather than a direct table query.
+    expect(hook).toContain('rpc("get_agency_portfolio_snapshot")');
+    expect(hook).not.toContain('from("tenants")');
     expect(hook).toContain("tenantCountByProperty");
     expect(layout).toContain("Landlord book");
     expect(layout).toContain("agencyClientPath(client.id)");

@@ -169,3 +169,12 @@ describe("checkRateLimit — fail-open for non-sensitive functions", () => {
     expect(ok).toBe(false);
   });
 });
+
+describe("check_rate_limit migration hardening", () => {
+  it("pins search_path on the SECURITY DEFINER function", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { resolve } = await import("node:path");
+    const sql = readFileSync(resolve(process.cwd(), "supabase/migrations/20260907000002_check_rate_limit_search_path.sql"), "utf8");
+    expect(sql).toMatch(/ALTER FUNCTION public\.check_rate_limit\(uuid, text, integer\) SET search_path = public/);
+  });
+});

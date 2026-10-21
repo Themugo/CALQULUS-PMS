@@ -77,13 +77,12 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
     enabled: !!tenantId,
   });
 
-  const payable = bills.filter((b) => b.status !== 'paid' && balanceOf(b) > 0);
+  const payable = useMemo(() => bills.filter((b) => b.status !== 'paid' && balanceOf(b) > 0), [bills]);
   const paidBills = bills.filter((b) => b.status === 'paid');
   const totalDue = payable.reduce((s, b) => s + balanceOf(b), 0);
 
   const selectedBills = useMemo(
     () => payable.filter((b) => selected.has(b.id)),
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     [payable, selected],
   );
   const selectedTotal = selectedBills.reduce((s, b) => s + balanceOf(b), 0);
