@@ -82,6 +82,8 @@ VITE_AUTH_TIMEOUT_MS=15000
 
 #### Option A: Supabase CLI
 
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
+
 ```bash
 # Link to staging project
 supabase link --project-ref YOUR_STAGING_PROJECT_ID
@@ -310,6 +312,8 @@ Monitor Supabase logs:
 
 To reset staging database:
 
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
+
 ```bash
 # Option 1: Supabase CLI
 supabase db reset
@@ -322,6 +326,8 @@ supabase db reset
 ### Data Refresh
 
 To refresh staging with production data (use with caution):
+
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
 
 ```bash
 # Export production data
@@ -569,6 +575,8 @@ git push origin staging
 ### Database Rollback
 
 If migration fails:
+
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
 
 ```bash
 # Rollback last migration

@@ -6,6 +6,7 @@
 - Use a dedicated **read-only** database role; connect from the operator's own terminal. Keep connection strings in your shell/secret manager only.
 - Every session: `PGOPTIONS='-c default_transaction_read_only=on'` (belt and braces: the role itself must lack write grants).
 - Never run `supabase db push`, `db reset`, `migration repair`, `scripts/apply-pending-migrations.mjs`, or any script that writes `docs/audits/*` while following this runbook.
+- Since Phase 2D.1, `scripts/apply-pending-migrations.mjs` refuses unconditionally and `scripts/deployment-reconciliation-gate.mjs` makes no remote contact unless the expected project is named explicitly; neither replaces the checks in this runbook (`PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md`).
 - Outputs are **catalogue metadata only** (names, signatures, flags, counts). Do **not** export tenant, payment, credential or personal data. Row counts are allowed for a fixed list of tables (§4.9).
 - Store exports in a restricted location outside source control; share only the diff summary.
 

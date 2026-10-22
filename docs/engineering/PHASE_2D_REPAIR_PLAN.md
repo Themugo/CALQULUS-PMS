@@ -67,3 +67,6 @@ Groups 6, 8, 9, 11, 17 → **hold; REQUIRES_ORDERED_REPAIR** (R-02/R-03/R-04/R-0
 
 ## 7. Stop conditions (apply to every staged step)
 Any row-count or balance mismatch vs. the pre-change snapshot; any RLS/grant diff not in the change set; any failed smoke test; any `schema_migrations` anomaly. Stop, do not "fix forward" blindly, restore from the rehearsed backup, report.
+
+## 8. Update — Phase 2D.1 (R-14 tooling hazards; findings above are unchanged)
+`apply-pending-migrations.mjs` can no longer execute anything; the reconciliation gate makes no remote contact unless the chain is clean and the expected project is named explicitly; the restore drill is local-only; legacy scripts that rewrite migration files are disabled; unsafe `db push`/`db reset` instructions in documentation carry a do-not-run warning. This does **not** repair any defect in the register above. Details, residual unguarded paths and tests: `PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md`.

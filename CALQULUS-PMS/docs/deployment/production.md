@@ -57,6 +57,8 @@ kill $DEV_PID
 
 ### 3. Deploy to Supabase (if migrations needed)
 
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
+
 ```bash
 # Link Supabase project
 npx supabase link --project-ref aelzsqxllkypbzslxyju
@@ -134,6 +136,8 @@ npx vercel rollback [deployment-url]
 ```
 
 ### Database Rollback
+
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
 
 ```bash
 # Rollback last migration
