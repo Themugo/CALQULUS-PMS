@@ -27,6 +27,8 @@ This migration enforces the 4-tier management structure for CALQULUS RMS:
 
 ### Option 2: Supabase CLI
 
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
+
 ```bash
 supabase link --project-ref aelzsqxllkypbzslxyju
 supabase db push

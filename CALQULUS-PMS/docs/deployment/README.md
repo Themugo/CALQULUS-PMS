@@ -40,6 +40,8 @@ This directory contains deployment-related documentation for CALQULUS RMS.
 
 ### Steps
 
+> **⚠️ Do not run the commands below.** Migration execution (`supabase db push`, `db reset`, `migration repair`) is blocked until Phase 2D reconciliation is complete and a reviewed, authorised procedure exists. Live migration state and project identity are unverified. See `docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md` (PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS).
+
 ```bash
 # 1. Clone and install
 git clone https://github.com/Themugo/CALQULUS-PMS.git

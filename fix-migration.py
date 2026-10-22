@@ -1,3 +1,6 @@
+# PHASE 2D.1 SAFEGUARD: disabled.
+import sys
+sys.exit('REFUSED (Phase 2D.1): this legacy script rewrites files in supabase/migrations/. Migration files must not be edited, renamed or regenerated while reconciliation is unresolved. See docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md.')
 file_path = r"c:\Users\hp\Desktop\CALQULUS-RMS\supabase\migrations\20230101000000_base_schema.sql"
 
 with open(file_path, 'r', encoding='utf-8') as f:
