@@ -1,3 +1,6 @@
+// PHASE 2D.1 SAFEGUARD: disabled.
+console.error('REFUSED (Phase 2D.1): this legacy script rewrites files in supabase/migrations/. Migration files must not be edited, renamed or regenerated while reconciliation is unresolved. See docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md.');
+process.exit(1);
 const fs = require('fs');
 const path = require('path');
 

@@ -3,6 +3,24 @@
 # This proves the SQL corpus can be restored. It is NOT a production PITR test.
 set -euo pipefail
 
+# --- PHASE 2D.1 SAFEGUARD -------------------------------------------------
+# This script DROPs/CREATEs databases and applies every migration file in
+# filename order. It may only ever run against a local throwaway Postgres.
+# Refuse anything that is not an explicit loopback host or unix socket, and
+# anything that could silently redirect libpq (service files, hostaddr).
+# See docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md
+_drill_host="${PGHOST:-127.0.0.1}"
+case "$_drill_host" in
+  127.0.0.1|localhost|::1|/*) ;;
+  *) echo "REFUSED: restore drill only runs against a local Postgres (PGHOST must be loopback or a unix socket path)." >&2; exit 2 ;;
+esac
+if [ -n "${PGSERVICE:-}" ] || [ -n "${PGSERVICEFILE:-}" ] || [ -n "${PGHOSTADDR:-}" ]; then
+  echo "REFUSED: PGSERVICE/PGSERVICEFILE/PGHOSTADDR can redirect psql to a remote server; unset them to run the local drill." >&2
+  exit 2
+fi
+unset _drill_host
+# --------------------------------------------------------------------------
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPORT="$ROOT/docs/audits/RESTORE_DRILL.json"
 MIGDIR="$ROOT/supabase/migrations"

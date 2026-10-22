@@ -1,55 +1,60 @@
 /**
- * apply-pending-migrations.mjs
+ * apply-pending-migrations.mjs — DISABLED (Phase 2D.1, fail closed)
  *
- * Applies Phase 2 + 20260812 RLS migrations to the linked Supabase project.
+ * This script previously ran `npx supabase db push` against whichever project
+ * supabase/config.toml named. That is unsafe while migration reconciliation is
+ * unresolved (duplicate versions, non-CLI filenames, a destructive base
+ * migration, two conflicting project identities, unknown live state).
  *
- * Usage:
- *   node scripts/apply-pending-migrations.mjs --dry-run
- *   npx supabase db push
+ * It now NEVER executes a migration. It has no child-process capability.
  *
- * Requires the Supabase CLI, a linked project (supabase/config.toml project_id),
- * and database access (login or SUPABASE_DB_PASSWORD).
+ *   node scripts/apply-pending-migrations.mjs             -> refuses, exit 1
+ *   node scripts/apply-pending-migrations.mjs --dry-run   -> read-only report; exit 1 while preflight fails
+ *   node scripts/apply-pending-migrations.mjs --target-ref <ref>
+ *                                                         -> still refuses (no approved authorization mechanism)
+ *
+ * See docs/engineering/PHASE_2D_1_MIGRATION_EXECUTION_SAFEGUARDS.md.
  */
-import { execSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { evaluateMigrationPreflight, safeRef, GUIDE_DOC } from './lib/migration-execution-guard.mjs';
 
-const dryRun = process.argv.includes("--dry-run");
-const migrationsDir = join(process.cwd(), "supabase", "migrations");
-const pendingPrefixes = [
-  "20260812000000",
-  "20260812000001",
-  "20260812000002",
-  "20260819000000",
-  "20260819000001",
-  "20260819000002",
-  "20260819000003",
-  "20260819000004",
-  "20260819000005",
+const root = process.cwd();
+const args = process.argv.slice(2);
+
+let dryRun = false;
+let targetRef = null;
+const usage = [];
+for (let i = 0; i < args.length; i++) {
+  const a = args[i];
+  if (a === '--dry-run') { dryRun = true; continue; }
+  if (a === '--target-ref') { targetRef = args[i + 1] ?? ''; i++; continue; }
+  if (a.startsWith('--target-ref=')) { targetRef = a.slice('--target-ref='.length); continue; }
+  usage.push(a); // never echoed: an argument may be a mistyped secret
+}
+
+// Historical, hand-maintained list. NOT a computed set of pending migrations.
+const historicalPrefixes = [
+  '20260812000000', '20260812000001', '20260812000002',
+  '20260819000000', '20260819000001', '20260819000002', '20260819000003', '20260819000004', '20260819000005',
 ];
 
-const files = readdirSync(migrationsDir)
-  .filter((name) => pendingPrefixes.some((p) => name.startsWith(p)))
-  .sort();
-
-console.log("Pending CALQULUS PMS migrations to confirm on live DB:");
-for (const file of files) {
-  console.log(`  - ${file}`);
-}
+const result = evaluateMigrationPreflight({ root, targetRef });
 
 if (dryRun) {
-  console.log("\nDry run only. Apply with: npx supabase db push");
-  process.exit(0);
+  let files = [];
+  try {
+    files = readdirSync(join(root, 'supabase', 'migrations')).filter(n => historicalPrefixes.some(p => n.startsWith(p))).sort();
+  } catch { /* reported by preflight */ }
+  console.log('Historical hard-coded migration list (informational only; NOT verified against any database):');
+  for (const f of files) console.log(`  - ${f}`);
+  console.log('\nDry run: nothing was executed and no database was contacted.');
 }
 
-if (!existsSync(join(process.cwd(), "supabase", "config.toml"))) {
-  console.error("supabase/config.toml missing");
-  process.exit(1);
-}
-
-try {
-  execSync("npx supabase db push", { stdio: "inherit" });
-} catch {
-  console.error("\nCould not push via CLI. Apply the SQL files above in the Supabase SQL editor.");
-  process.exit(1);
-}
+console.error('\nMIGRATION EXECUTION REFUSED');
+console.error('Migration reconciliation and explicit, reviewed authorization are required before any migration may be applied.');
+if (usage.length) console.error(`${usage.length} unrecognised argument(s) ignored (not echoed).`);
+if (targetRef !== null) console.error(`Supplied target: ${safeRef(targetRef)}`);
+for (const r of result.refusals) console.error(`- [${r.code}] ${r.message}`);
+console.error(`\nSee ${GUIDE_DOC}. This script has no execution path in this phase.`);
+process.exit(1);
