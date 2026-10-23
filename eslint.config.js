@@ -17,6 +17,9 @@ export default tseslint.config(
       "fixes",
       "landing",
       "mega",
+      // The stale nested duplicate of the project was removed from the tree. If a local checkout still
+      // has it, its own tsconfig makes typescript-eslint's root ambiguous; never lint it.
+      "CALQULUS-PMS",
     ],
   },
   {
@@ -25,6 +28,7 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
     },
     plugins: {
       "react-hooks": reactHooks,

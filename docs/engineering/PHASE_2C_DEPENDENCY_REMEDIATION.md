@@ -80,3 +80,13 @@ No blanket `npm audit fix`, forced upgrade, dependency removal, or advisory supp
 ## Release decision
 
 **Phase 2C acceptance criteria are not met. Release remains BLOCKED.** This report documents an environment limitation, not a successful remediation. Resume dependency changes only when a clean install and authoritative registry-backed audit can run in an approved connected environment.
+
+## Addendum (2026-10-22): measured baseline and remediation after PR #94 CI failures
+The registry was reachable on this date, so the baseline above is superseded by measured results. This addendum does not change the original (historical) findings.
+
+- **Measured baseline** (`npm audit`, lockfile at `170954a`): 15 vulnerabilities — 3 critical (`@capacitor/android`, `@capacitor/ios`, `dompurify`), 6 high (`vite`, `undici`, `@xmldom/xmldom`, `brace-expansion`, `fast-uri`, `source-map-js`), 6 moderate (`vitest`, `@vitest/coverage-v8`, `@vitest/mocker`, `@capacitor/cli`, `xcode`, `uuid`).
+- **Change made:** lockfile updates within existing semver ranges only (`vite` 8.3.5, `dompurify` 3.4.17, `@capacitor/*` 8.5.3, `undici` 8.12.3, `@xmldom/xmldom` 0.9.12, `fast-uri` 3.1.9, `brace-expansion` 5.0.12, `source-map-js` 1.2.2), plus raising the declared minimum of `vitest` and `@vitest/coverage-v8` from `^4.1.8` to `^4.1.12`. No major-version upgrade, no `--force`, no advisory suppression.
+- **Tool note:** `npm audit fix` and `npm update` (npm 10.9.4) crash with `Cannot read properties of null (reading 'edgesOut')` on this dependency graph. The lockfile was updated with npm 11.21.1 (`npx npm@11 update … --package-lock-only`), and `npm ci` was then verified with npm 10.9.4, the version CI uses.
+- **Result:** `npm audit --audit-level=high` exits 0, and so does `--production`. **3 moderate advisories remain** (`uuid` 7.0.3 via `xcode` via `@capacitor/cli`); no non-breaking fix is available and they were left as-is.
+- **Verified locally:** `npm ci` (exit 0), `npm run typecheck`, `npm run lint` (0 errors), `npm test` and `npm run test:all` (all pass), `npm run build`, `audit:prod`.
+- **Not verified:** runtime behaviour of the upgraded Capacitor, vite and DOMPurify packages in a real mobile or browser session; only the automated checks above were run.

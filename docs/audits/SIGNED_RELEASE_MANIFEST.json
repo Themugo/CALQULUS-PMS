@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T15:53:48.990Z",
+  "generatedAt": "2026-10-22T18:48:54.579Z",
   "releaseCommit": null,
   "artifacts": [
     {
       "path": "package.json",
-      "sha256": "0c48f10ad0588706ace18a3625a7fe95568d5e5ffbcfd81f98cac1d42225eb11",
-      "bytes": 11111
+      "sha256": "f68d469d0a96c40fc33e27d27bbb8799f4246621f2f519643571c85ac9d5628a",
+      "bytes": 12565
     },
     {
       "path": "package-lock.json",
-      "sha256": "16764a542eb0efc6431ba30c25da33a9052207e35d0b1dda8fa82f581a79510e",
-      "bytes": 475133
+      "sha256": "e2668723d56181ab5bca9e45f4aa4481d5b88f47363622dc5e74df1e1677c7cc",
+      "bytes": 477822
     },
     {
       "path": "vite.config.ts",
-      "sha256": "286b9d9d9b3ce6247196fd35de068d523280e8213e95a5d3f7aa20cb4cc83bce",
-      "bytes": 7014
+      "sha256": "1c5198ae564841472e88bbea925b43c93386f3cae659a2cff0a05a0e441ac62a",
+      "bytes": 6608
     },
     {
       "path": "supabase/config.toml",
-      "sha256": "3afd384240c5fd10851e11d809a89dd880717f2fc54d3324460c79f18aacf6d2",
-      "bytes": 4764
+      "sha256": "c6d0c10c84ba6631cf89455093cfb4ef16aa16e854371642a508fe66f16910b4",
+      "bytes": 4637
     }
   ],
   "migrations": [
@@ -491,6 +491,11 @@
       "bytes": 5945
     },
     {
+      "path": "supabase/migrations/20260902000004_payment_lifecycle_credit_atomic.sql",
+      "sha256": "b154a14ee644b7d40c799b8a417f5fb5f649b65a2bf51f8dd9ae607b20f08edb",
+      "bytes": 13589
+    },
+    {
       "path": "supabase/migrations/20260903000000_payment_lifecycle_credit_atomic.sql",
       "sha256": "b154a14ee644b7d40c799b8a417f5fb5f649b65a2bf51f8dd9ae607b20f08edb",
       "bytes": 13589
@@ -611,6 +616,11 @@
       "bytes": 2158
     },
     {
+      "path": "supabase/migrations/20260903000018_contract_lease_lifecycle_atomic.sql",
+      "sha256": "a5c452565d8c8b7758a9465f85855c76580e7068f7d65760eab36d1390e32ef1",
+      "bytes": 11114
+    },
+    {
       "path": "supabase/migrations/20260903000018_property_landlord_relationship_atomic.sql",
       "sha256": "103221315a336c0c8ee1c4505d30d278e13964bf772a5dd71f8d601f17513b96",
       "bytes": 19440
@@ -624,6 +634,16 @@
       "path": "supabase/migrations/20260903000019_team_and_payer_atomic.sql",
       "sha256": "189baad78b144f1a8d6b08c3c35eedb15ba260d069a47b901c6f35dab8ee60d6",
       "bytes": 13345
+    },
+    {
+      "path": "supabase/migrations/20260903000019_water_billing_lifecycle_atomic.sql",
+      "sha256": "51cafdd74940221457e7c34350450dca075ebca1276e21a5609ca5dc51675a3d",
+      "bytes": 16926
+    },
+    {
+      "path": "supabase/migrations/20260903000020_core_portfolio_lifecycle_atomic.sql",
+      "sha256": "7de23dd3274dedc9b32bbe902e8e186a7007ffffa870c590f46daedf0119cd05",
+      "bytes": 20357
     },
     {
       "path": "supabase/migrations/20260903000020_tenant_lifecycle_atomic.sql",
@@ -741,9 +761,19 @@
       "bytes": 1889
     },
     {
+      "path": "supabase/migrations/20260903000041_phase72_workflow_atomic.sql",
+      "sha256": "f075bad3a973b7e6898058f1c19c42343a311705470144286887f935107dca5d",
+      "bytes": 6132
+    },
+    {
       "path": "supabase/migrations/20260903000041_phase74_manager_admin_atomic.sql",
       "sha256": "3a1f897918db54f7e48e5e758d4e9f5931d638f8bda05ecd71213b6e2ab3bcd6",
       "bytes": 6503
+    },
+    {
+      "path": "supabase/migrations/20260903000042_phase73_utility_atomic.sql",
+      "sha256": "dc19611c5c34b1650d51831fcaac0357931f81eea8b6e1eee03b3f523e6f466f",
+      "bytes": 3684
     },
     {
       "path": "supabase/migrations/20260903000042_phase75_webhook_dead_letter_atomic.sql",
@@ -751,9 +781,19 @@
       "bytes": 1350
     },
     {
+      "path": "supabase/migrations/20260903000043_phase76_manager_settings_atomic.sql",
+      "sha256": "93fcd41617acbdd2d751c5cfb346ea1b7fba047b8c0200326f0541eee4d85569",
+      "bytes": 9545
+    },
+    {
       "path": "supabase/migrations/20260903000043_phase78_webhost_admin_atomic.sql",
       "sha256": "dac8c63f8a5b2dc0fb41b7eaf2c7ce17303d525054db51e04b600ab054a3496d",
       "bytes": 7561
+    },
+    {
+      "path": "supabase/migrations/20260903000044_phase77_submanager_atomic.sql",
+      "sha256": "b810c24db3d4769fc862e2d85c7eedcf80b3d23b35a79dfc859b31d57212635b",
+      "bytes": 7166
     },
     {
       "path": "supabase/migrations/20260903000044_phase79_role_admin_boundary.sql",
@@ -814,10 +854,420 @@
       "path": "supabase/migrations/20260903000057_phase92_migration_security_certification.sql",
       "sha256": "99a67694382a20286d3ed5b8765c0bedeb7e637725e2dda16bd25bfbf9bf6c64",
       "bytes": 462
+    },
+    {
+      "path": "supabase/migrations/20260904000000_portal_identity_theme_system.sql",
+      "sha256": "39fe899275dc383b6134db04611ca33fc95cc4f842db8187fa8decfc4057bb0c",
+      "bytes": 4387
+    },
+    {
+      "path": "supabase/migrations/20260904000001_portal_identity_theme_system.sql",
+      "sha256": "39fe899275dc383b6134db04611ca33fc95cc4f842db8187fa8decfc4057bb0c",
+      "bytes": 4387
+    },
+    {
+      "path": "supabase/migrations/20260904000001_property_tenancy_operations_ecosystem.sql",
+      "sha256": "e0704b522717c48c5bcaa6c057d0b3e0d653b33ae13cada0c7cdf6a45fb3b55f",
+      "bytes": 24278
+    },
+    {
+      "path": "supabase/migrations/20260904000002_financial_billing_operations_ecosystem.sql",
+      "sha256": "f9fb67c51408db416612fa69aaa8049852623e371d3e682e0c3b59f2eb5162e0",
+      "bytes": 19369
+    },
+    {
+      "path": "supabase/migrations/20260904000003_billing_due_payment_routing.sql",
+      "sha256": "b3070af4994fcc5d3e56c3ad65a984d284f6d6e1e0b8edcf6c944ba91d15b8fe",
+      "bytes": 31875
+    },
+    {
+      "path": "supabase/migrations/20260904000004_unit_first_multi_payer_bulk_payments.sql",
+      "sha256": "3a3fda2867d8f04618cd47c00a6ddcabf7d68dcebce261262a54f45466e2efa9",
+      "bytes": 20597
+    },
+    {
+      "path": "supabase/migrations/20260904000005_payment_receipt_delivery_and_stk_completion.sql",
+      "sha256": "b366f32c1930e2aebffa06d5aac56b13d0bfde8f24ec1c661e133a137cd8bce1",
+      "bytes": 14192
+    },
+    {
+      "path": "supabase/migrations/20260904000006_unit_payment_reconciliation_portal.sql",
+      "sha256": "23e784067c55ff6ddad2f816e148c83951c3fe85e836c5be27a37d78023491c4",
+      "bytes": 9272
+    },
+    {
+      "path": "supabase/migrations/20260904000007_third_party_payer_portal.sql",
+      "sha256": "f457bb354ea3842d7ac5b4091cb539703ffecf4ece616a1b3f10e8db102a1408",
+      "bytes": 5820
+    },
+    {
+      "path": "supabase/migrations/20260904000008_tenant_share_payment_links.sql",
+      "sha256": "1b1188e32ab8d6d3c5c0f73f79c0651ae4ba62a6066d9d3ede3ed6b854841d25",
+      "bytes": 12083
+    },
+    {
+      "path": "supabase/migrations/20260904000009_payment_configuration_privacy_device_security.sql",
+      "sha256": "20af5294a98e70b029e323b846ddbe732d8c6121b99adacfe97cf34043204964",
+      "bytes": 28967
+    },
+    {
+      "path": "supabase/migrations/20260904000010_payment_authority_convergence.sql",
+      "sha256": "0e03ca326c3984e632bcf0206d88930e0ee5f8d4b54f900c8f19ce8747c71133",
+      "bytes": 11544
+    },
+    {
+      "path": "supabase/migrations/20260904000011_payment_closeout_integrity.sql",
+      "sha256": "148165b7968f13eea4fb89cd0a97d0639a25c659cbd726fdd0206f568d8a0829",
+      "bytes": 3415
+    },
+    {
+      "path": "supabase/migrations/20260904000012_payment_reconciliation_visibility.sql",
+      "sha256": "2ca735a54f923217c98ab6f0765edbea912a57df54638c5a74aa3ad7acee0974",
+      "bytes": 4591
+    },
+    {
+      "path": "supabase/migrations/20260904000013_payment_recovery_idempotency.sql",
+      "sha256": "c0a9fd23f5a03c0972796f5989f5d3cb23f3f085723353969cc97f12e4c5617f",
+      "bytes": 4668
+    },
+    {
+      "path": "supabase/migrations/20260904000014_notification_retry_control.sql",
+      "sha256": "b17dd2e8a3366797b1d1808fb35fba49808d7e7426e33591c43ffb36ec744857",
+      "bytes": 4231
+    },
+    {
+      "path": "supabase/migrations/20260904000015_payment_exception_control_center.sql",
+      "sha256": "8f37aaad08954685a72a97b854ebe4114e32cf1a251acd801606c3c84b81ffa9",
+      "bytes": 4846
+    },
+    {
+      "path": "supabase/migrations/20260904000016_operation_work_queue.sql",
+      "sha256": "e22ca1f7d2ece2d21f32cce96ba8f99f1a7ed0baca6003aff68376b43abae75b",
+      "bytes": 12015
+    },
+    {
+      "path": "supabase/migrations/20260904000017_work_queue_sla_control.sql",
+      "sha256": "bf89bf5b2614984f408a1adb84b510c752dcf4502c17ac2594f6bf635cdf666f",
+      "bytes": 9111
+    },
+    {
+      "path": "supabase/migrations/20260904000018_work_queue_assignment_performance.sql",
+      "sha256": "db7bfbeaf6c7430aa064a409a7ad3f974f56042094dbb24a7b738bf58888a2e8",
+      "bytes": 8054
+    },
+    {
+      "path": "supabase/migrations/20260904000019_management_analytics_reporting.sql",
+      "sha256": "698ef0e178ff2c87ac78413eba43ed7f9defede3bac11ec2380efc3e8b0fd89c",
+      "bytes": 5663
+    },
+    {
+      "path": "supabase/migrations/20260904000020_executive_portfolio_intelligence.sql",
+      "sha256": "74136daf8ea1b3c124c9e577597cd8341567c34000bc18ab42ba2cfa3556710a",
+      "bytes": 7054
+    },
+    {
+      "path": "supabase/migrations/20260904000021_portfolio_financial_intelligence.sql",
+      "sha256": "96e95386afc5b226f88694299d415b85a4fdde9daccccb0835e24eb211ba88be",
+      "bytes": 4938
+    },
+    {
+      "path": "supabase/migrations/20260904000022_revenue_leakage_receivables_intelligence.sql",
+      "sha256": "5d548c028545e19a93f4e1e40ad19715e878191c82a97818f4d4a14f0d617c75",
+      "bytes": 6594
+    },
+    {
+      "path": "supabase/migrations/20260904000023_collections_recovery_automation.sql",
+      "sha256": "8579c325d695812363976fd641ab9000cbe200fff8b0e201446081a64191f5e8",
+      "bytes": 10030
+    },
+    {
+      "path": "supabase/migrations/20260904000024_collections_communications_promise_monitoring.sql",
+      "sha256": "8ae3850c20ca552688d3c78803ae09d03ebcf0fecabc3be87cec03b71fd60e89",
+      "bytes": 9689
+    },
+    {
+      "path": "supabase/migrations/20260904000025_property_revenue_lease_optimization.sql",
+      "sha256": "dfec6e3ed910d3bc4bde8e6987f8f1f1c74ec42d5ad470a7400f639360c07775",
+      "bytes": 6528
+    },
+    {
+      "path": "supabase/migrations/20260904000026_lease_renewal_retention_management.sql",
+      "sha256": "2ecb912d1f7a0d758de95d38133ffa6019cd9361ba73cc5091ffb1698f825f5f",
+      "bytes": 11563
+    },
+    {
+      "path": "supabase/migrations/20260904000027_tenant_retention_churn_intelligence.sql",
+      "sha256": "1a01cf1a303a23f8a42cc551c90b5b73ab5566090619d8b0bf63ad3f70894f2c",
+      "bytes": 6124
+    },
+    {
+      "path": "supabase/migrations/20260904000028_tenant_experience_service_quality_intelligence.sql",
+      "sha256": "83ff516f4085383782bf8606baf43b57d96ae9b3e207d6c5db001238bd3cfebd",
+      "bytes": 11349
+    },
+    {
+      "path": "supabase/migrations/20260904000029_tenant_service_recovery_communications.sql",
+      "sha256": "81d6cc201406a41092f28773edfdbe280152820e702b95b8b5d025416d20b7ac",
+      "bytes": 13465
+    },
+    {
+      "path": "supabase/migrations/20260904000030_post_intelligence_integration_convergence.sql",
+      "sha256": "6e0eae21ec05b04437bd7fabf417efeadef6d378b1390f4e94fb0069b1d6f320",
+      "bytes": 9674
+    },
+    {
+      "path": "supabase/migrations/20260904000031_financial_close_owner_statement_integrity.sql",
+      "sha256": "01444d95ca32d3a5069c093d75decc8f330efc2a6374a418a366e3d0ff5f186c",
+      "bytes": 9537
+    },
+    {
+      "path": "supabase/migrations/20260904000032_owner_payout_settlement_management.sql",
+      "sha256": "d6f5a5953655d049e42d9b4977fe1c6f183ea5a65329dff51f4dcb6f34a41338",
+      "bytes": 11373
+    },
+    {
+      "path": "supabase/migrations/20260904000033_landlord_settlement_transparency.sql",
+      "sha256": "2b214752cd9c70c8303f7e0192ff1c3dac7a3681de05ed7cc04d73f88e79f78f",
+      "bytes": 2898
+    },
+    {
+      "path": "supabase/migrations/20260904000034_document_evidence_governance.sql",
+      "sha256": "591adf4428ce9da797887583c4fcbf2deda83b743b0bb25235549e311d1966ab",
+      "bytes": 8641
+    },
+    {
+      "path": "supabase/migrations/20260904000035_financial_operational_reconciliation_command_center.sql",
+      "sha256": "b84e61a3408e72e005e787e0704261d29e2c95e65664f0c0329edbdae8300eb4",
+      "bytes": 21983
+    },
+    {
+      "path": "supabase/migrations/20260904000036_financial_audit_pack_period_end_governance.sql",
+      "sha256": "4830e6fc151ad9efb99c16b7520e6851d29e27ad2c574bad3b7a81a7c6a0563e",
+      "bytes": 8987
+    },
+    {
+      "path": "supabase/migrations/20260904000037_management_compliance_assurance.sql",
+      "sha256": "213585b5c2bc41e7ac3acd9f2e6ee5a1390ef1ae13b1eb5a518105e8e0a7b174",
+      "bytes": 11358
+    },
+    {
+      "path": "supabase/migrations/20260904000038_controlled_management_reporting_releases.sql",
+      "sha256": "dbac46adced2ba89dc17df076939d094c038c6aabb2eeb6b29c243543ea2f954",
+      "bytes": 11547
+    },
+    {
+      "path": "supabase/migrations/20260904000039_double_entry_ledger_integrity.sql",
+      "sha256": "df49152f636e089cf77089c86b9ae966373cec5f454b76918a6ebfdcfa78aa1c",
+      "bytes": 14936
+    },
+    {
+      "path": "supabase/migrations/20260904000040_ledger_adjustments_reversals_governance.sql",
+      "sha256": "1c7ded5e7698f287939cf5d5ea724f6bcdacfa06a5f4442d8cfe4643ab7751e0",
+      "bytes": 14153
+    },
+    {
+      "path": "supabase/migrations/20260904000041_trial_balance_general_ledger_financial_statements.sql",
+      "sha256": "d4d6aadd41b15742a591a8473769d89c50a84d05855bda5a8563e211b3d7598b",
+      "bytes": 7565
+    },
+    {
+      "path": "supabase/migrations/20260904000042_budget_forecast_variance_control.sql",
+      "sha256": "51138dadb79a69f9bb5d4c039fa686e3ebfb2e8597b0c35367b0250f5702d400",
+      "bytes": 8031
+    },
+    {
+      "path": "supabase/migrations/20260904000043_cash_flow_treasury_liquidity_control.sql",
+      "sha256": "1eb90a6bfa1cd2c6b75ba05c1ada2a3f69518e9b9e6c660234a12d6486e3eab3",
+      "bytes": 9739
+    },
+    {
+      "path": "supabase/migrations/20260904000044_expense_commitment_payables_control.sql",
+      "sha256": "73a07b7f76a9b8855996bed564cc43552f6b1d750eab15856b6be9832fd609cc",
+      "bytes": 13783
+    },
+    {
+      "path": "supabase/migrations/20260904000045_vendor_procurement_contract_performance_control.sql",
+      "sha256": "854838cb5f3c2001a8f6307ffec8dd355cbbbd58416f3def2dad61ca8bf66e0f",
+      "bytes": 13725
+    },
+    {
+      "path": "supabase/migrations/20260904000046_maintenance_procurement_work_order_cost_control.sql",
+      "sha256": "bfbf35b88f8424e9d0a3b6be043bcc456fab31c2087d39377c1691a14b0fd8db",
+      "bytes": 11094
+    },
+    {
+      "path": "supabase/migrations/20260904000047_maintenance_sla_vendor_dispatch_completion_assurance.sql",
+      "sha256": "c76aac463948a2578980949dddb4983fd93a6fc4356ff9e80b84b7d65fd55835",
+      "bytes": 8874
+    },
+    {
+      "path": "supabase/migrations/20260904000048_preventive_maintenance_lifecycle_control.sql",
+      "sha256": "f4fb4fd01dabb2c7d4bc40829506764752264b74310aec7ed8eb8e1d28e48d31",
+      "bytes": 12197
+    },
+    {
+      "path": "supabase/migrations/20260904000049_maintenance_asset_register_condition_lifecycle_intelligence.sql",
+      "sha256": "85071f1971e3182c484ed95d6f3420d4573592784c2cc38a88ef48785f42126b",
+      "bytes": 17239
+    },
+    {
+      "path": "supabase/migrations/20260904000050_property_inspections_compliance_condition_assurance.sql",
+      "sha256": "6bce2d6f21043ca67135b8979663e2051802672b06e09407bfe475c368cfbdcf",
+      "bytes": 21742
+    },
+    {
+      "path": "supabase/migrations/20260904000051_property_safety_regulatory_risk_remediation.sql",
+      "sha256": "b3d02d7d341780a36a9886a7c9b1156fb8385323682efe5cd7ebca21c8eee16a",
+      "bytes": 13934
+    },
+    {
+      "path": "supabase/migrations/20260904000052_security_hardening_audit.sql",
+      "sha256": "81731584e431732f2851688163372113cc2cc868e8f168e7b84263a61c1c62bc",
+      "bytes": 11448
+    },
+    {
+      "path": "supabase/migrations/20260904000053_paystack_webhook_and_reconciliation.sql",
+      "sha256": "f46dc9cbad2da082db55048c1d99525d5d2cd3f0236d1ea8d07f41ba72cc60cd",
+      "bytes": 11945
+    },
+    {
+      "path": "supabase/migrations/20260904000054_schedule_reconcile_paystack.sql",
+      "sha256": "fabc3fe7aba6a72b8f4561d082dc9785b0ff9421380094336aa038ed11875857",
+      "bytes": 1170
+    },
+    {
+      "path": "supabase/migrations/20260905000000_deep_dive_rls_and_authz_hardening.sql",
+      "sha256": "e70f534a8a86a2e7709d84b2ae82aa2fa22b8aefced19d92660cb70a2907df94",
+      "bytes": 13415
+    },
+    {
+      "path": "supabase/migrations/20260905000001_dashboard_arrears_partially_paid_fix.sql",
+      "sha256": "07a79e734d3b534f8dd11b77eb0b1e98beb213268f204364c96ae25baee04a1a",
+      "bytes": 5366
+    },
+    {
+      "path": "supabase/migrations/20260905000001_operational_resilience_recovery_assurance.sql",
+      "sha256": "063b8cf9dbf87887aca9213a6a2db68128b5a4897d85cb436a9052976025960a",
+      "bytes": 13101
+    },
+    {
+      "path": "supabase/migrations/20260905000002_dashboard_arrears_balance_due_fallback_fix.sql",
+      "sha256": "6f721f8011a06f8fd02c316f909a9a328f973b36eff3b918bc3d1ed141463d6b",
+      "bytes": 5189
+    },
+    {
+      "path": "supabase/migrations/20260905000003_public_site_configuration.sql",
+      "sha256": "f2ce15403df5020859e668dee76e5d635550872f79908b99e0f4c67548184f9c",
+      "bytes": 4419
+    },
+    {
+      "path": "supabase/migrations/20260905000004_public_site_brand_svg.sql",
+      "sha256": "0ae14b8167be5345f705ba69c4c21040f27ea162c919320dd1c0e73fc170c012",
+      "bytes": 363
+    },
+    {
+      "path": "supabase/migrations/20260905000005_tenant_portability_identity_and_independent_records.sql",
+      "sha256": "82b45117a714a7417cbd616780bcc33fbba2b48031a7a3d170a05fa77a061a40",
+      "bytes": 29149
+    },
+    {
+      "path": "supabase/migrations/20260905000006_tenant_portability_claims_and_private_documents.sql",
+      "sha256": "baf66d0d4692889351df3aa4419eabab5147d83d8efca5f8d7beb5e6f86d9d36",
+      "bytes": 10023
+    },
+    {
+      "path": "supabase/migrations/20260906000000_agency_service_model_matrix.sql",
+      "sha256": "97e00dc8f7ea00c7bfdb46df604e7649c67758883891dcd55b5e4305fb472f76",
+      "bytes": 14824
+    },
+    {
+      "path": "supabase/migrations/20260906000001_agency_service_runtime_enforcement.sql",
+      "sha256": "29769d0cd77808664756a743b484eb9ab92ee2d43fadf6fb88974b92e8138583",
+      "bytes": 28537
+    },
+    {
+      "path": "supabase/migrations/20260906000002_agency_service_workflow_hardening.sql",
+      "sha256": "0864e710f9d45abf0ba9fc696676c89170ca916246086a439144c99fa2afc9e4",
+      "bytes": 17525
+    },
+    {
+      "path": "supabase/migrations/20260906000003_agency_contract_rules_financial_workbench.sql",
+      "sha256": "8f6f747dffa747d79f8a201cd42d8b1e9a506afc7d1f912fac134dcefc417ae1",
+      "bytes": 38214
+    },
+    {
+      "path": "supabase/migrations/20260906000004_agency_contract_runtime_controls.sql",
+      "sha256": "b6a115b8d5b765414025edb32aae2f6a2a04aae6119c716ae7c9d67e59d108d8",
+      "bytes": 30790
+    },
+    {
+      "path": "supabase/migrations/20260906000005_agency_external_settlement_and_financial_controls.sql",
+      "sha256": "84b8a742a9dc8b38fb5d41e223b04f4bb33a4d5100f10eec3ab1df43f2428647",
+      "bytes": 76047
+    },
+    {
+      "path": "supabase/migrations/20260906000006_agency_payment_scope_rules_tenant_visibility_and_notices.sql",
+      "sha256": "732cb4234f166b5d70f23c3c32a33ced05b4341f098ce822deb1bc44ad6cdbdc",
+      "bytes": 66174
+    },
+    {
+      "path": "supabase/migrations/20260906000007_manager_operating_model.sql",
+      "sha256": "8d75ff0fd9d6388473a55187c4e21f5db0c270cd2fb078d90bac02c7c4052773",
+      "bytes": 15848
+    },
+    {
+      "path": "supabase/migrations/20260906000007_utilities_amenities_contract_document_control.sql",
+      "sha256": "19019e8aba11a830fc365e1b05046356231cd001dc31c55c920544a12b0ad59d",
+      "bytes": 20646
+    },
+    {
+      "path": "supabase/migrations/20260906000008_agency_manager_money_data_boundary_hardening.sql",
+      "sha256": "13923ceec517f810b523e204171cc85baa75485f03678f12daf103fac107fd3b",
+      "bytes": 7266
+    },
+    {
+      "path": "supabase/migrations/20260906000009_landlord_control_center.sql",
+      "sha256": "a58d89b87464ab6873825e849525cf70a81a031a5e9db662be2260587f208a7c",
+      "bytes": 6699
+    },
+    {
+      "path": "supabase/migrations/20260906000010_agency_client_arrangement_financial_integrity.sql",
+      "sha256": "7cfe01b0610bd8234c8c40d7c6ac230624f797b2ba613b3fe23b09808efa44b8",
+      "bytes": 22518
+    },
+    {
+      "path": "supabase/migrations/20260906000011_shared_management_configuration_hierarchy.sql",
+      "sha256": "426b558d0f482f65ebbed7c3823c8c7a27ee308c3b6771920cbfd3e7e56fa252",
+      "bytes": 15153
+    },
+    {
+      "path": "supabase/migrations/20260906000013_agency_landlord_account_provisioning.sql",
+      "sha256": "15c715d38e71ae71a729bf8ccacedf9e63fb30d2a2965b925c3d5ee18be5981b",
+      "bytes": 3007
+    },
+    {
+      "path": "supabase/migrations/20260906000014_agency_operations_scope_reconciliation.sql",
+      "sha256": "aafc291ee971e3d9de86cdce31e6eb5f2722efd3ccc034120ecf0b2b64e49c83",
+      "bytes": 7839
+    },
+    {
+      "path": "supabase/migrations/20260907000001_calqulus_brand_identity_refresh.sql",
+      "sha256": "95b3559a8d6455ea8c565fccbc32c1d6e81ad84b118cef996f4838bf1a5d7e36",
+      "bytes": 463
+    },
+    {
+      "path": "supabase/migrations/20260907000002_check_rate_limit_search_path.sql",
+      "sha256": "6b694636921b8ffbc8ead1216469d694fa3ced4d56752972dbe5ee2d0216cca5",
+      "bytes": 720
+    },
+    {
+      "path": "supabase/migrations/20260907000003_restrict_internal_definer_functions.sql",
+      "sha256": "ab90b65c9e64f2ccc7e3b8d9eea762d2e663076c5e988d92a2b00773fbb2f8ea",
+      "bytes": 2072
     }
   ],
   "credentialsPersisted": false,
-  "manifestSha256": "addd370b4bda31f20ec357834196c8fbda64149594144e2468c343f0516b4200",
+  "manifestSha256": "65d398ead651e24ce98bb4441c99bc88fb4ea74f8ae7ddb7c01259629070f150",
   "signature": null,
   "signatureAlgorithm": null,
   "publicKey": null,

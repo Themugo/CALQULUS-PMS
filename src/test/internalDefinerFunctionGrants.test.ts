@@ -26,7 +26,9 @@ describe("internal SECURITY DEFINER helpers are service-role only", () => {
         e.isDirectory() ? walk(resolve(dir, e.name)) : /\.(ts|tsx)$/.test(e.name) ? [resolve(dir, e.name)] : [],
       );
     const offenders = walk(resolve(root, "src"))
-      .filter((f) => !/\/test\/|integrations\/supabase\/types/.test(f))
+      .map((f) => ({ f, posix: f.replace(/\\/g, "/") }))
+      .filter(({ posix }) => !/\/test\/|integrations\/supabase\/types/.test(posix))
+      .map(({ f }) => f)
       .filter((f) => names.some((n) => readFileSync(f, "utf8").includes(n)));
     expect(offenders).toEqual([]);
   });

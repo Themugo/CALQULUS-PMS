@@ -26,6 +26,9 @@ const SECRETS = {
   PGPASSWORD: "PGPASSWORD-secret-value",
 };
 const posix = process.platform !== "win32";
+// The stale nested copy was removed from the tree in the Phase 2D.1 follow-up; a local checkout may still have it.
+const NESTED = path.join(REPO, "CALQULUS-PMS");
+const hasNested = fs.existsSync(path.join(NESTED, "scripts"));
 
 let dir: string;
 let bin: string;
@@ -75,11 +78,16 @@ function run(script: string, root: string, args: string[] = [], extra: Record<st
 async function lib() {
   return (await import(/* @vite-ignore */ LIB)) as typeof import("../../scripts/lib/migration-execution-guard.mjs");
 }
+// Reads each entry once (no stat-then-read), so there is no check/use race on the path.
 const hashDir = (d: string) => {
   const h = crypto.createHash("sha256");
   for (const f of fs.readdirSync(d, { recursive: true }).map(String).sort()) {
-    const p = path.join(d, f);
-    if (fs.statSync(p).isFile()) { h.update(f); h.update(fs.readFileSync(p)); }
+    let data: Buffer;
+    try { data = fs.readFileSync(path.join(d, f)); } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "EISDIR") continue; // directory entry
+      throw e;
+    }
+    h.update(f); h.update(data);
   }
   return h.digest("hex");
 };
@@ -363,7 +371,7 @@ describe("restore-migrations-drill.sh only targets a local Postgres", () => {
   });
 
   it("the guard precedes the first psql / dump / restore call in both copies", () => {
-    for (const p of [DRILL, path.join(REPO, "CALQULUS-PMS", "scripts", "restore-migrations-drill.sh")]) {
+    for (const p of [DRILL, path.join(NESTED, "scripts", "restore-migrations-drill.sh")].filter((x) => fs.existsSync(x))) {
       const src = fs.readFileSync(p, "utf8");
       const guard = src.indexOf("PHASE 2D.1 SAFEGUARD");
       const firstCall = src.search(/^\s*(psql|pg_dump|pg_restore)\b/m);
@@ -390,7 +398,7 @@ describe("legacy scripts that rewrite migration files are disabled", () => {
   });
 
   it("every legacy script (root and nested copy, including PowerShell) starts with a refusal", () => {
-    for (const base of [REPO, path.join(REPO, "CALQULUS-PMS")]) {
+    for (const base of [REPO, NESTED].filter((b) => fs.existsSync(path.join(b, "fix-migration.cjs")))) {
       for (const f of [...legacy, ...ps1]) {
         const head = fs.readFileSync(path.join(base, f), "utf8").split(/\r?\n/).slice(0, 4).join("\n");
         expect(head, `${base}/${f}`).toContain("PHASE 2D.1 SAFEGUARD");
@@ -399,8 +407,8 @@ describe("legacy scripts that rewrite migration files are disabled", () => {
     }
   });
 
-  it("the nested duplicate apply script cannot execute anything", () => {
-    const p = path.join(REPO, "CALQULUS-PMS", "scripts", "apply-pending-migrations.mjs");
+  it.skipIf(!hasNested)("a leftover nested duplicate apply script cannot execute anything", () => {
+    const p = path.join(NESTED, "scripts", "apply-pending-migrations.mjs");
     expect(fs.readFileSync(p, "utf8")).not.toMatch(/child_process|execSync|spawn/);
     expect(spawnSync(process.execPath, [p], { encoding: "utf8" }).status).toBe(1);
   });
@@ -418,12 +426,12 @@ describe("documentation no longer instructs operators to run unsafe migration co
     return out;
   }
   it("every fenced block containing db push / db reset / migration repair carries the do-not-run warning (root and nested copy)", () => {
-    const bases = [REPO, path.join(REPO, "CALQULUS-PMS")];
+    const bases = [REPO, NESTED].filter((b) => fs.existsSync(path.join(b, "docs")));
     const files = bases.flatMap((b) => [
       ...fs.readdirSync(b).filter((n) => n.endsWith(".md")).map((n) => path.join(b, n)),
       ...walk(path.join(b, "docs")),
     ]).filter((p) => !/docs[\\/]engineering[\\/]PHASE_2/.test(p));
-    expect(files.length).toBeGreaterThan(50);
+    expect(files.length).toBeGreaterThan(25);
     const offenders: string[] = [];
     for (const f of files) {
       const lines = fs.readFileSync(f, "utf8").split(/\r?\n/);

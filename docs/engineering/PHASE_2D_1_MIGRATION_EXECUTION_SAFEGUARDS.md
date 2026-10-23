@@ -11,6 +11,8 @@
 - Baseline test status at HEAD (unchanged by this phase): `referencePortalLoginShell` fails (owner decision pending), and `productionTruthDataIntegrity > removes unreferenced mock analytics components` fails because commit `6746f02` (a revert) restored two files that the test says must not exist. `npm run lint` fails at HEAD with 2,301 parser errors, because the repository contains a nested duplicate project tree (`CALQULUS-PMS/`, 2,013 tracked files) with its own `tsconfig`, which makes typescript-eslint's root directory ambiguous.
 
 ## 3. Every execution path found
+
+> **Update (follow-up, §10):** the nested `CALQULUS-PMS/` copy referred to in E2, E5, E6, E10 and the nested-copy remarks below has since been removed from the tree. Those rows describe the state when the safeguards were written; the root-level safeguards are unchanged.
 "Can change a DB" means the command, as written, can write to a database or to Supabase project state. Line numbers are pre-change.
 
 | # | Path | Can change a DB? | Condition | Safeguard now | Status |
@@ -76,6 +78,8 @@ No existing mechanism provides a secure authorization boundary for applying migr
 5. Rehearse on a restored copy; compare catalogue and sentinel counts; only then plan production under its own approval.
 
 ## 8. Remaining risks and unguarded paths
+
+> **Update (follow-up, §10):** the nested duplicate tree bullet below is resolved by its removal; a stale local checkout of it can still exist on an operator machine and is not protected by anything in this tree.
 - **E4:** an operator can run `npx supabase functions deploy` directly. Edge functions may call RPCs that a CLI-built database lacks (Phase 2D found 175 absent in a CLI-style build).
 - **E7–E9:** scripts that connect to a remote database or API using whatever is in the environment, with no identity check. E8 and E9 can write data.
 - **E11:** the dashboard SQL editor, manual CLI use, and any assistant or tool with Supabase credentials are outside repository control.
@@ -92,3 +96,15 @@ No existing mechanism provides a secure authorization boundary for applying migr
 3. Whether `functions deploy` and the E7–E9 scripts should get the same explicit-target guard (a separate phase).
 4. Whether to design the future authorization mechanism now or after live inventory.
 5. The earlier open items from Phase 2D (read-only operator access, staging/restore copy, unmigrated tables, `referencePortalLoginShell`).
+
+## 10. Addendum (2026-10-22): CI repair after PR #94
+The first CI run of this branch failed on checks that were **already failing on the base branch** or were caused by one finding in this phase's test. Corrections:
+- **CodeQL (high, "file system race condition")** in `src/test/migrationExecutionSafeguards.test.ts`: `hashDir` checked a path with `statSync` and then read it. It now reads each entry once and skips directories on `EISDIR`.
+- **Lint failed repo-wide (2,301 errors at the base commit):** the tracked nested copy `CALQULUS-PMS/` has its own `tsconfig`, so typescript-eslint could not pick a root. `eslint.config.js` now ignores that nested copy and sets `tsconfigRootDir`. Result: 0 errors, 7 warnings (React fast-refresh, pre-existing). The nested copy is still not linted; removing it remains an owner decision (§9).
+- **Two failing tests:** `referencePortalLoginShell` required four distinct portal accents, but the manager and agency logins both used `#0867E8` since the screen was introduced (agency is now navy `#0B3A8C`). `productionTruthDataIntegrity` requires two unused mock analytics components to be absent; a revert (`6746f02`) had restored them, nothing imported them, and they were deleted.
+- **Dependency audit / provenance / supply-chain:** see the Phase 2C addendum. `npm audit --audit-level=high` now passes.
+- **`audit:release-manifest` failed** because `docs/audits/SIGNED_RELEASE_MANIFEST.json` (generated 2026-09-03) no longer matched `package.json`, `package-lock.json`, `vite.config.ts` or `supabase/config.toml`. It was regenerated with `create-signed-release-manifest.mjs`. It is **unsigned** (`EXTERNAL_REQUIRED`) and `releaseCommit` is `null`, as before; it is a hash record, not an approval, and must be regenerated whenever those files or any migration change.
+- **Not fixed, by design:** the "Release integrity gate" job (previously skipped because provenance failed) will now run and is expected to **fail** on `migrationChain` (9 duplicate versions not in the history policy, a Phase 2D finding) and on `deploymentControls` (clean-git-tree check, which CI's own earlier steps can dirty). The history policy was not edited to make it pass. These failures reflect the unresolved reconciliation and keep the release BLOCKED.
+- **Nested duplicate tree removed (follow-up).** Evidence it was a stale snapshot: of its 2,013 files, 2,011 had a counterpart at the repository root and the remaining 2 were the two unused mock components already deleted; 94 files differed, and for the 89 not edited by this phase the root copy had the newer commit in 85 cases (2 equal, 2 only because of uncommitted edits at the time). Nothing at the root (scripts, configuration, workflows, tests) referenced the nested path. It was deleted from the tree; its history remains in git. This also removes its unguarded copies of `deployment-reconciliation-gate.mjs` and `deploy-production.mjs`. The `eslint.config.js` ignore for it is kept so a leftover local copy cannot break lint again.
+- **Release integrity gate caveat (not changed).** The gate runs several audit scripts that rewrite tracked files under `docs/audits/`, and `audit:deployment-controls` then fails with "Git working tree is not clean". On a clean, committed checkout the chain therefore still reports `deploymentControls` FAIL (and `migrationChain`, the real Phase 2D finding). Narrowing that check to source files is a release-governance change and was left for an explicit decision.
+

@@ -200,7 +200,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.12",
     "esbuild": "^0.28.1",
     "eslint": "^10.4.1",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -213,7 +213,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0",
     "vite": "^8.0.15",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.12"
   },
   "description": "Modern property management platform for Kenya and East Africa",
   "author": "CALQULUS PMS",
