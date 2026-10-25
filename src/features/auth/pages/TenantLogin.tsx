@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { UserPlus, Link2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { setRememberMe, supabase } from '@/integrations/supabase/client';
-import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { ensureSignedInRole, sanitizeAuthError, isEmailNotConfirmedError } from '@/features/auth/lib/authFlow';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
 import { TenantPortalShell, TENANT_ACCENT } from '@/features/auth/components/TenantPortalChrome';
 import { PortalLoginCard } from '@/features/auth/components/PortalLoginScreen';
@@ -19,6 +19,7 @@ const TenantLogin = () => {
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMeState] = useState(true);
 
@@ -41,9 +42,11 @@ const TenantLogin = () => {
     setIsSubmitting(true);
     setRememberMe(rememberMe);
 
+    setUnverifiedEmail(null);
     const { error } = await signIn(email, password);
 
     if (error) {
+      if (isEmailNotConfirmedError(error.message)) setUnverifiedEmail(email.trim());
       toast({ title: 'Login failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
       setIsSubmitting(false);
       return;
@@ -61,7 +64,7 @@ const TenantLogin = () => {
         p_rental: (signedInUser?.user_metadata?.rental_record as Record<string, unknown> | null) ?? null,
       });
       if (bootstrapError && !/already registered as a tenant/i.test(bootstrapError.message)) {
-        toast({ title: 'Account setup needs attention', description: bootstrapError.message, variant: 'destructive' });
+        toast({ title: 'Account setup needs attention', description: 'We could not finish setting up your tenant record. Please try again or contact support.', variant: 'destructive' });
         setIsSubmitting(false);
         return;
       }
@@ -107,6 +110,7 @@ const TenantLogin = () => {
   return (
     <TenantPortalShell>
       <PortalLoginCard
+        unverifiedEmail={unverifiedEmail}
         accentHex={TENANT_ACCENT}
         portalLabel="tenant"
         email={email}

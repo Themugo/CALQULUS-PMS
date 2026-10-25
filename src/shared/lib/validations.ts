@@ -177,6 +177,27 @@ export const passwordSchema = z.string()
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character (!@#$%^&*)");
 
+/** Single source for the UI rule checklist so it can never drift from passwordSchema. */
+export const PASSWORD_RULES = [
+  { key: "length", label: "8–72 characters", test: (p: string) => p.length >= 8 && p.length <= 72 },
+  { key: "uppercase", label: "Uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { key: "lowercase", label: "Lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { key: "number", label: "Number", test: (p: string) => /[0-9]/.test(p) },
+  { key: "special", label: "Special character", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+] as const;
+
+export function getPasswordChecks(password: string): Record<(typeof PASSWORD_RULES)[number]["key"], boolean> {
+  return Object.fromEntries(PASSWORD_RULES.map((r) => [r.key, r.test(password)])) as Record<
+    (typeof PASSWORD_RULES)[number]["key"],
+    boolean
+  >;
+}
+
+export const isPasswordStrong = (password: string): boolean => passwordSchema.safeParse(password).success;
+
+/** Version of the Terms/Privacy text a user accepts at signup (client-side record only). */
+export const TERMS_VERSION = "2026-10";
+
 // Auth validation schemas
 export const signupSchema = z.object({
   email: z.string()

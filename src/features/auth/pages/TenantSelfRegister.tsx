@@ -9,6 +9,11 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { CheckCircle, Eye, EyeOff, Home, Loader2, FileText, ShieldCheck, Wrench, ArrowLeft, ArrowRight } from 'lucide-react';
 import { TenantPortalShell, TENANT_ACCENT } from '@/features/auth/components/TenantPortalChrome';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
+import { PASSWORD_RULES, getPasswordChecks, isPasswordStrong, TERMS_VERSION } from '@/shared/lib/validations';
+import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { TermsConsent } from '@/features/auth/components/TermsConsent';
+import { termsMetadata } from '@/features/auth/lib/termsMetadata';
+import { ResendVerificationButton } from '@/features/auth/components/ResendVerificationButton';
 
 const TenantSelfRegister = () => {
   const navigate = useNavigate();
@@ -28,6 +33,7 @@ const TenantSelfRegister = () => {
   const [moveInDate, setMoveInDate] = useState('');
   const [address, setAddress] = useState('');
   const [county, setCounty] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [verificationRequired, setVerificationRequired] = useState(false);
   const [signupEnabled, setSignupEnabled] = useState(true);
@@ -46,7 +52,8 @@ const TenantSelfRegister = () => {
     if (user && !loading) navigate('/portal');
   }, [user, loading, navigate]);
 
-  const passwordStrong = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password);
+  const passwordStrong = isPasswordStrong(password);
+  const passwordChecks = getPasswordChecks(password);
 
   const createAccount = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -55,7 +62,11 @@ const TenantSelfRegister = () => {
       return;
     }
     if (!passwordStrong) {
-      toast({ title: 'Choose a stronger password', description: 'Use at least 8 characters, one uppercase letter, one lowercase letter and one number.', variant: 'destructive' });
+      toast({ title: 'Choose a stronger password', description: 'Use 8–72 characters with an uppercase letter, a lowercase letter, a number and a special character.', variant: 'destructive' });
+      return;
+    }
+    if (!acceptedTerms) {
+      toast({ title: 'Terms required', description: 'Please accept the Terms of Service and Privacy Policy to continue.', variant: 'destructive' });
       return;
     }
     setIsLoading(true);
@@ -68,7 +79,9 @@ const TenantSelfRegister = () => {
           data: {
             full_name: fullName.trim(),
             phone: phone.trim() || null,
+            role: 'tenant',
             account_type: 'independent_tenant',
+            ...termsMetadata(TERMS_VERSION),
             rental_record: {
               property_name: propertyName.trim() || null,
               unit_label: unitLabel.trim() || null,
@@ -106,7 +119,7 @@ const TenantSelfRegister = () => {
         setVerificationRequired(true);
       }
     } catch (error) {
-      toast({ title: 'Registration failed', description: error instanceof Error ? error.message : 'Please try again.', variant: 'destructive' });
+      toast({ title: 'Registration failed', description: error instanceof Error ? sanitizeAuthError(error.message) : 'Please try again.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -116,6 +129,7 @@ const TenantSelfRegister = () => {
     <div className="space-y-5 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary"><ShieldCheck className="h-8 w-8" /></div>
       <div><h2 className="font-heading text-xl font-semibold text-foreground">Check your email to continue</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your independent tenant account is reserved. Confirm your email, then sign in from the Tenant Portal and CALQULUS will finish your portable record setup.</p></div>
+      <div className="flex justify-center"><ResendVerificationButton email={email.trim()} redirectTo={`${window.location.origin}/tenant/login`} /></div>
       <Button className="w-full btn-brand" onClick={() => navigate('/tenant/login')}>Go to tenant login <ArrowRight className="ml-2 h-4 w-4" /></Button>
     </div>
   ) : step === 'done' ? (
@@ -125,15 +139,16 @@ const TenantSelfRegister = () => {
       <Button className="w-full btn-brand" onClick={() => navigate('/portal')}>Open my tenant record <Home className="ml-2 h-4 w-4" /></Button>
     </div>
   ) : step === 'profile' ? (
-    <form onSubmit={(e) => { e.preventDefault(); if (!fullName.trim() || !email.trim()) return; setStep('rental'); }} className="space-y-4">
+    <form onSubmit={(e) => { e.preventDefault(); if (!fullName.trim() || !email.trim() || !acceptedTerms) return; if (!passwordStrong) { toast({ title: 'Choose a stronger password', description: 'Use 8–72 characters with an uppercase letter, a lowercase letter, a number and a special character.', variant: 'destructive' }); return; } setStep('rental'); }} className="space-y-4">
       <div><p className="text-[10px] font-bold tracking-[0.2em] text-primary">INDEPENDENT TENANT</p><h2 className="mt-1 font-heading text-xl font-semibold text-foreground">Keep your rental record with you.</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Free to join. Your account is not tied to a landlord or manager until you choose to link it.</p></div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="tenant-full-name">Full name</Label><Input id="tenant-full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Wanjiru" required /></div>
         <div className="space-y-1.5"><Label htmlFor="tenant-email">Email address</Label><Input id="tenant-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required /></div>
         <div className="space-y-1.5"><Label htmlFor="tenant-phone">Phone</Label><Input id="tenant-phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0712 345 678" /></div>
-        <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="tenant-password">Password</Label><div className="relative"><Input id="tenant-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} placeholder="Choose a secure password" required /><button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>{password ? <p className={`text-xs ${passwordStrong ? 'text-success' : 'text-muted-foreground'}`}>{passwordStrong ? 'Strong enough to continue.' : 'Use 8+ characters with uppercase, lowercase and a number.'}</p> : null}</div>
+        <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="tenant-password">Password</Label><div className="relative"><Input id="tenant-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} maxLength={72} placeholder="Choose a secure password" required /><button type="button" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>{password ? <ul aria-live="polite" className="grid grid-cols-2 gap-1 text-xs">{PASSWORD_RULES.map(({ key, label }) => <li key={key} className={passwordChecks[key] ? 'text-success' : 'text-muted-foreground'}>{passwordChecks[key] ? '✓' : '○'} {label}</li>)}</ul> : null}</div>
       </div>
-      <Button type="submit" className="w-full btn-brand min-h-11" disabled={checkingAvailability || !signupEnabled}>Continue <ArrowRight className="ml-2 h-4 w-4" /></Button>
+      <TermsConsent id="tenant-self-terms" checked={acceptedTerms} onChange={setAcceptedTerms} />
+      <Button type="submit" className="w-full btn-brand min-h-11" disabled={checkingAvailability || !signupEnabled || !acceptedTerms}>Continue <ArrowRight className="ml-2 h-4 w-4" /></Button>
       <p className="text-center text-xs text-muted-foreground">Already have an account? <button type="button" className="font-semibold text-primary" onClick={() => navigate('/tenant/login')}>Sign in</button></p>
     </form>
   ) : (

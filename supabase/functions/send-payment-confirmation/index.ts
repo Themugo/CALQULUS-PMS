@@ -16,18 +16,18 @@ import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { serve } from "std/http/server.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { callerOwnsTenantContact, callerIsWebhost, normaliseEmail } from "../_shared/notifyAuthz.ts";
 
 const log = (step: string, details?: unknown) =>
   console.log(`[payment-confirmation] ${step}`, details ?? "");
 
-function esc(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+function esc(s: unknown): string {
+  return escapeHtml(String(s ?? ""));
 }
+
+const maskEmail = (e: string) => e.replace(/^(.).*(@.*)$/, "$1***$2");
 
 interface ConfirmRequest {
   tenantEmail:         string;
@@ -111,6 +111,32 @@ serve(async (req) => {
 
     if (!tenantEmail || !tenantName) {
       throw new Error("tenantEmail and tenantName are required");
+    }
+    const recipientEmail = normaliseEmail(tenantEmail);
+    if (!recipientEmail) throw new Error("A valid tenantEmail is required");
+
+    // The recipient (and any SMS/WhatsApp number) must belong to one of the
+    // caller's own tenants. Service-role/cron callers are trusted.
+    if (gate.userId) {
+      const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      const isWebhost = await callerIsWebhost(admin, gate.userId);
+      if (!isWebhost) {
+        const emailOk = await callerOwnsTenantContact(admin, gate.userId, { email: recipientEmail });
+        const phones = [
+          ...(sendSms && tenantPhone ? [tenantPhone] : []),
+          ...(sendWhatsapp && tenantWhatsapp ? [tenantWhatsapp] : []),
+        ];
+        let phoneOk = true;
+        for (const p of phones) {
+          if (!(await callerOwnsTenantContact(admin, gate.userId, { phone: p }))) { phoneOk = false; break; }
+        }
+        if (!emailOk || !phoneOk) {
+          return new Response(
+            JSON.stringify({ success: false, error: "Forbidden: recipient is not one of your tenants" }),
+            { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+          );
+        }
+      }
     }
 
     const formattedAmount = new Intl.NumberFormat("en-KE", {
@@ -218,7 +244,7 @@ serve(async (req) => {
 </body>
 </html>`;
 
-    log("Sending confirmation email", { to: tenantEmail, unit });
+    log("Sending confirmation email", { to: maskEmail(recipientEmail), unit: String(unit ?? "").slice(0, 40) });
 
     const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -227,9 +253,9 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${companyName} <noreply@calqulus.site>`,
-        to: [tenantEmail],
-        subject: `✅ Payment Confirmed – Unit ${unit} – ${formattedAmount}`,
+        from: getFromAddress(String(companyName ?? "")),
+        to: [recipientEmail],
+        subject: `✅ Payment Confirmed – Unit ${String(unit ?? "").replace(/[\r\n]+/g, " ").slice(0, 40)} – ${formattedAmount}`,
         html,
       }),
     });

@@ -6,10 +6,17 @@
  */
 
 import { serve } from "std/http/server.ts";
+import { getFromAddress } from "../_shared/email.ts";
 import { getEnv } from "../_shared/env.ts";
 import { formatPhoneNumber, sendSms } from "../_shared/sms.ts";
 import { withMiddleware, validateUUID, validateRequired, errorResponse, successResponse } from "../_shared/middleware.ts";
 import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
+import { escapeHtml } from "../_shared/html.ts";
+
+/** Strip control characters / newlines and cap length for text sent over email/SMS/WhatsApp. */
+const cleanText = (v: unknown, max: number): string =>
+  // eslint-disable-next-line no-control-regex -- intentionally strips control characters
+  String(v ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max);
 
 // Optional vendor keys
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
@@ -81,8 +88,18 @@ serve(
       rateLimit: { maxPerHour: 10, failClosed: false },
     },
     async (req, ctx) => {
-      const { email, phone, tenantName, propertyId, propertyName, unit, monthlyRent, houseDeposit, waterDeposit }: InvitationRequest =
-        await req.json();
+      const body: InvitationRequest = await req.json();
+      const { phone, propertyId, monthlyRent, houseDeposit, waterDeposit } = body;
+      const email = body.email ? String(body.email).trim().toLowerCase() : undefined;
+      const tenantName = cleanText(body.tenantName, 120);
+      const unit = body.unit ? cleanText(body.unit, 40) : undefined;
+      // Display name is re-read from the database below; the request value is
+      // only used to satisfy the required-field check.
+      const requestedPropertyName = body.propertyName;
+      let propertyName = cleanText(requestedPropertyName, 160);
+      if (email && !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)) {
+        throw errorResponse("Invalid email address", 400);
+      }
 
       // Validate required fields
       if (!tenantName || !propertyId || !propertyName) {
@@ -106,7 +123,7 @@ serve(
       // records once the invitation is accepted.
       const { data: propertyRow } = await ctx.supabase
         .from("properties")
-        .select("manager_id")
+        .select("manager_id, name")
         .eq("id", propertyId)
         .maybeSingle();
 
@@ -127,6 +144,11 @@ serve(
       if (!propertyRow.manager_id || !effectiveManagerIds.has(propertyRow.manager_id)) {
         throw errorResponse("Forbidden: this property is not in your managed portfolio", 403);
       }
+
+      if (typeof (propertyRow as { name?: unknown }).name === "string" && (propertyRow as { name: string }).name.trim()) {
+        propertyName = cleanText((propertyRow as { name: string }).name, 160);
+      }
+      const invitationExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
       // Check if invitation already exists (by email OR phone)
       let existingInvitation = null;
@@ -154,6 +176,7 @@ serve(
             tenant_name: tenantName,
             unit: unit || null,
             created_at: new Date().toISOString(),
+            expires_at: invitationExpiry,
           })
           .eq("id", existingInvitation.id)
           .select()
@@ -179,6 +202,7 @@ serve(
             monthly_rent: monthlyRent || null,
             house_deposit: houseDeposit || null,
             water_deposit: waterDeposit || null,
+            expires_at: invitationExpiry,
           })
           .select()
           .single();
@@ -197,7 +221,7 @@ serve(
         .eq("id", ctx.user!.id)
         .maybeSingle();
 
-      const managerName = profile?.full_name || ctx.user!.email;
+      const managerName = cleanText(profile?.full_name || ctx.user!.email, 120);
 
       // Build invitation URL
       const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
@@ -258,10 +282,10 @@ serve(
           </div>
 
           <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 12px 12px;">
-            <h2 style="color: #333; margin-top: 0;">Hi ${tenantName}!</h2>
+            <h2 style="color: #333; margin-top: 0;">Hi ${escapeHtml(tenantName)}!</h2>
 
             <p style="color: #555; font-size: 16px;">
-              <strong>${managerName}</strong> has invited you to join <strong>${propertyName}</strong>${unit ? ` (Unit ${unit})` : ""} as a tenant on CALQULUS RMS.
+              <strong>${escapeHtml(managerName)}</strong> has invited you to join <strong>${escapeHtml(propertyName)}</strong>${unit ? ` (Unit ${escapeHtml(unit)})` : ""} as a tenant on CALQULUS RMS.
             </p>
 
             <p style="color: #555; font-size: 16px;">
@@ -276,7 +300,7 @@ serve(
             </ul>
 
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${invitationUrl}" style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+              <a href="${escapeHtml(invitationUrl)}" style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
                 Accept Invitation
               </a>
             </div>
@@ -289,7 +313,7 @@ serve(
 
             <p style="color: #888; font-size: 12px; text-align: center;">
               If the button doesn't work, copy and paste this link into your browser:<br>
-              <a href="${invitationUrl}" style="color: #10b981;">${invitationUrl}</a>
+              <a href="${escapeHtml(invitationUrl)}" style="color: #10b981;">${escapeHtml(invitationUrl)}</a>
             </p>
           </div>
         </body>
@@ -304,9 +328,9 @@ serve(
           "Authorization": `Bearer ${RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from: getEnv("RESEND_FROM_EMAIL", "CALQULUS RMS <onboarding@resend.dev>"),
+          from: getFromAddress("CALQULUS"),
           to: [email],
-          subject: `You've been invited to join ${propertyName} on CALQULUS RMS`,
+          subject: `You've been invited to join ${propertyName.replace(/[\r\n]+/g, " ")} on CALQULUS RMS`,
           html: emailHtml,
         }),
       });

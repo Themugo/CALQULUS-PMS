@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
@@ -43,7 +44,7 @@ async function sendEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${fromName} <onboarding@resend.dev>`,
+        from: getFromAddress(String(fromName)),
         to: [to],
         subject,
         html: htmlContent,

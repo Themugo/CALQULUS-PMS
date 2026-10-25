@@ -9,9 +9,14 @@ import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { serve } from "std/http/server.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { callerOwnsTenantContact, callerIsWebhost, normaliseEmail } from "../_shared/notifyAuthz.ts";
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0 }).format(n);
-const esc = (s: string) => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const esc = (s: unknown) => escapeHtml(String(s ?? ""));
+// eslint-disable-next-line no-control-regex -- intentionally strips control characters
+const oneLine = (s: unknown, max = 120) => String(s ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, max);
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
@@ -19,13 +24,11 @@ serve(async (req) => {
   const gate = await identifyUserServiceOrCron(req);
   if (!gate.ok) return gate.response;
 
-  // No tenant/invoice id is passed here (raw tenantEmail string), so we
-  // can't verify the specific tenant relationship — but require the caller
-  // be an approved manager/submanager/webhost (the real callers: ReceiptsTab,
-  // PropertyBillingTab, PhysicalDocumentEntry), closing the "any
-  // authenticated user can email arbitrary receipt content to any address"
-  // hole. Service-role/cron callers (process-payment, auto-send-receipt,
-  // reconcile-bank) are unaffected.
+  // Callers: ReceiptsTab, PropertyBillingTab, PhysicalDocumentEntry. The
+  // caller must be an approved manager/submanager/webhost AND the recipient
+  // must be one of the caller's own tenants (checked after the body is read).
+  // Service-role/cron callers (process-payment, auto-send-receipt,
+  // reconcile-bank) are trusted and unaffected.
   if (gate.userId) {
     const access = await checkRoleAccess(gate.userId, ["manager", "submanager", "webhost"]);
     if (!access.allowed) {
@@ -43,7 +46,6 @@ serve(async (req) => {
 
   try {
     const RESEND_API_KEY = getEnv("RESEND_API_KEY");
-    const FROM = getEnv("RESEND_FROM_EMAIL", "onboarding@resend.dev");
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ success: false, error: "RESEND_API_KEY not set" }),
         { status: 503, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
@@ -61,6 +63,21 @@ serve(async (req) => {
     if (!tenantEmail || !invoiceNumber || !amount) {
       return new Response(JSON.stringify({ error: "tenantEmail, invoiceNumber, amount required" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    const recipientEmail = normaliseEmail(tenantEmail);
+    if (!recipientEmail) {
+      return new Response(JSON.stringify({ error: "A valid tenantEmail is required" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    if (gate.userId) {
+      const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      const allowed = (await callerIsWebhost(admin, gate.userId)) ||
+        (await callerOwnsTenantContact(admin, gate.userId, { email: recipientEmail }));
+      if (!allowed) {
+        return new Response(JSON.stringify({ error: "Forbidden: recipient is not one of your tenants" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
     }
 
     const ref = mpesaReceipt || bankRef || "N/A";
@@ -122,9 +139,9 @@ serve(async (req) => {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
-        from: `${companyName} <${FROM}>`,
-        to: [tenantEmail],
-        subject: `Payment Receipt — ${invoiceNumber} — ${fmt(Number(amount))}`,
+        from: getFromAddress(String(companyName)),
+        to: [recipientEmail],
+        subject: `Payment Receipt — ${oneLine(invoiceNumber, 60)} — ${fmt(Number(amount))}`,
         html,
       }),
     });
@@ -132,8 +149,10 @@ serve(async (req) => {
     if (!res.ok) {
       const errText = await res.text();
       if (errText.includes("verify a domain") || errText.includes("testing emails")) {
-        return new Response(JSON.stringify({ success: true, skipped: true, reason: "Domain not verified" }),
-          { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+        // Undelivered receipts must not be reported as success.
+        console.error("send-receipt-email: sending domain not verified with Resend");
+        return new Response(JSON.stringify({ success: false, error: "Email sending domain is not verified" }),
+          { status: 502, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
       }
       throw new Error(`Resend: ${errText}`);
     }
@@ -144,7 +163,7 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error("send-receipt-email error:", error);
-    return new Response(JSON.stringify({ error: error.message }),
+    return new Response(JSON.stringify({ error: "Failed to send receipt email" }),
       { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
   }
 });

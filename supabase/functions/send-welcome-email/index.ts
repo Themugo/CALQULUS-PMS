@@ -1,3 +1,5 @@
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
@@ -121,7 +123,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           <!-- Content -->
           <div style="padding: 30px;">
             <p style="color: #1a1a2e; font-size: 18px; margin-bottom: 20px;">
-              Hello <strong>${fullName}</strong>,
+              Hello <strong>${escapeHtml(String(fullName ?? "").slice(0, 120))}</strong>,
             </p>
             
             <p style="color: #475569; line-height: 1.6;">
@@ -163,9 +165,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [email],
-        subject: `Welcome to CALQULUS RMS, ${fullName}! 🏠`,
+        // eslint-disable-next-line no-control-regex -- intentionally strips control characters
+        subject: `Welcome to CALQULUS RMS, ${String(fullName ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").slice(0, 80)}! 🏠`,
         html: emailHtml,
       }),
     });

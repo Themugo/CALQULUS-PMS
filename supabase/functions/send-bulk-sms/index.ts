@@ -1,6 +1,6 @@
 import { serve } from "std/http/server.ts";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
-import { sendSms, formatPhoneNumber, type SmsRecipient } from "../_shared/sms.ts";
+import { sendSms, tryFormatPhoneNumber, type SmsRecipient } from "../_shared/sms.ts";
 import { planIncludes } from "../_shared/planFeatures.ts";
 import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
 
@@ -68,10 +68,10 @@ serve(
           .in("manager_id", Array.from(effectiveManagerIds));
         const ownedPhones = new Set(
           (ownedTenants ?? [])
-            .map((t: { phone: string | null }) => t.phone && formatPhoneNumber(t.phone))
+            .map((t: { phone: string | null }) => t.phone && tryFormatPhoneNumber(t.phone))
             .filter(Boolean)
         );
-        scopedRecipients = recipients.filter((r) => ownedPhones.has(formatPhoneNumber(r.phoneNumber)));
+        scopedRecipients = recipients.filter((r) => ownedPhones.has(tryFormatPhoneNumber(r.phoneNumber)));
       }
 
       if (!scopedRecipients.length) throw errorResponse("None of the supplied recipients are your own tenants", 403);

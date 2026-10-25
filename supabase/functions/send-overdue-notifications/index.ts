@@ -1,3 +1,6 @@
+import { getFromAddress } from "../_shared/email.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { claimNotification, dedupKey } from "../_shared/notificationDedup.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
@@ -153,6 +156,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Send notifications for each overdue invoice
     for (const invoice of overdueInvoices) {
+      // Once per invoice per day: a cron re-run must not message the tenant again.
+      if (!(await claimNotification(supabase, dedupKey("send-overdue-notifications", invoice.id)))) {
+        continue;
+      }
       const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat("en-US", {
           style: "currency",
@@ -178,7 +185,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: `${companyName} <onboarding@resend.dev>`,
+            from: getFromAddress(String(companyName)),
             to: [invoice.tenant_email],
             subject: `Payment Overdue - Invoice ${invoice.invoice_number}`,
             html: `
@@ -203,7 +210,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
                     <h1>⚠️ Payment Overdue</h1>
                   </div>
                   <div class="content">
-                    <p>Dear ${invoice.tenant_name},</p>
+                    <p>Dear ${escapeHtml(String(invoice.tenant_name ?? ""))},</p>
                     
                     <div class="warning">
                       <strong>Your payment is ${invoice.days_overdue} day${invoice.days_overdue > 1 ? "s" : ""} overdue.</strong>

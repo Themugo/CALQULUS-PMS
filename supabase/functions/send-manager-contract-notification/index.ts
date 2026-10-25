@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
@@ -178,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [managerEmail],
         subject,
         html: htmlContent,

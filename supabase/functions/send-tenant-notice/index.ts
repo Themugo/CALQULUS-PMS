@@ -2,6 +2,7 @@
  * send-tenant-notice — email a saved tenant notice.
  * The notice row is already persisted by the UI; this function only delivers.
  */
+import { getFromAddress } from "../_shared/email.ts";
 import { serve } from "std/http/server.ts";
 import { getEnv } from "../_shared/env.ts";
 import {
@@ -84,7 +85,7 @@ serve(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "CALQULUS PMS <onboarding@resend.dev>",
+          from: getFromAddress("CALQULUS RMS"),
           to: [tenantEmail],
           subject: title,
           html: `

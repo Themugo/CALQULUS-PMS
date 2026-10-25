@@ -215,7 +215,13 @@ export default function ManagerOnboardingPage() {
               Check your inbox for a verification link. If you haven't received it, you can resend or use a different email.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button variant="outline" onClick={skipStep} className="gap-1.5">
+              <Button
+                variant="outline"
+                onClick={skipStep}
+                disabled={!stepMeta.facts?.verifiedEmail}
+                title={stepMeta.facts?.verifiedEmail ? undefined : "Verify your email to continue, or skip for now"}
+                className="gap-1.5"
+              >
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
               <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/onboarding/manager`} />

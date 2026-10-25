@@ -40,17 +40,22 @@ export const signupRedirectPath = (role: AppRole): string => {
 
 export const sanitizeAuthError = (message: string): string => {
   const msg = message.toLowerCase();
-  if (msg.includes("already registered")) return "This email is already registered.";
+  // Neutral wording: must not confirm whether an address has an account.
+  if (msg.includes("already registered")) return "We could not create the account with these details. If you already have an account, sign in or reset your password.";
   if (msg.includes("invalid login credentials")) return "Invalid email or password.";
   if (msg.includes("email not confirmed")) return "Please verify your email address.";
   if (msg.includes("rate limit")) return "Too many attempts. Please try again later.";
   if (msg.includes("jwt expired") || msg.includes("session_not_found") || msg.includes("session missing"))
     return "Your session has expired. Please sign in again.";
-  if (msg.includes("user not found")) return "No account found with these credentials.";
+  if (msg.includes("user not found")) return "Invalid email or password.";
   if (msg.includes("network") || msg.includes("failed to fetch"))
     return "Network error. Please check your connection and try again.";
   return "An unexpected error occurred. Please try again.";
 };
+
+/** True when an auth error means the address is registered but not yet verified. */
+export const isEmailNotConfirmedError = (message: string | undefined | null): boolean =>
+  (message ?? "").toLowerCase().includes("email not confirmed");
 
 const fetchCurrentUserRoles = async (): Promise<AppRole[]> => {
   const {

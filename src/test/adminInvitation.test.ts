@@ -69,8 +69,10 @@ describe("admin invitation email binding + password bar", () => {
   it("enforces the stronger admin password bar (≥10 chars)", () => {
     expect(isAdminPasswordStrong("short")).toBe(false);
     expect(isAdminPasswordStrong("ninechars")).toBe(false);
-    expect(isAdminPasswordStrong("tenchars10")).toBe(true);
-    expect(isAdminPasswordStrong("a-much-longer-passphrase")).toBe(true);
+    // Length alone is not enough: admin passwords also need the shared character classes.
+    expect(isAdminPasswordStrong("tenchars10")).toBe(false);
+    expect(isAdminPasswordStrong("Tenchars10!")).toBe(true);
+    expect(isAdminPasswordStrong("A-much-longer-passphrase-9")).toBe(true);
   });
 });
 

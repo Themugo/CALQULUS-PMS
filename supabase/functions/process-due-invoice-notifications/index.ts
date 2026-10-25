@@ -4,7 +4,10 @@ import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
+import { claimNotification, releaseNotification, dedupKey } from "../_shared/notificationDedup.ts";
+
 const logStep = (step: string, details?: Record<string, unknown>) => {
+  console.log(`[process-due-invoice-notifications] ${step}${details ? " " + JSON.stringify(details) : ""}`);
 };
 
 serve(async (req: Request): Promise<Response> => {
@@ -115,6 +118,13 @@ serve(async (req: Request): Promise<Response> => {
           continue;
         }
 
+        // One notification per invoice per day, even if the cron re-runs.
+        const claimKey = dedupKey("process-due-invoice-notifications", invoice.id);
+        if (!(await claimNotification(supabaseAdmin, claimKey))) {
+          results.skipped++;
+          continue;
+        }
+
         // Call the push notification function
         const pushPayload = {
           tenantId: tenant.id,
@@ -141,13 +151,13 @@ serve(async (req: Request): Promise<Response> => {
         if (pushResponse.ok) {
           logStep("Push notification sent", { 
             invoiceNumber: invoice.invoice_number,
-            tenant: tenant.name,
             daysUntilDue,
             isOverdue
           });
           results.success++;
         } else {
-          const errorText = await pushResponse.text();
+ const errorText = await pushResponse.text();
+          await releaseNotification(supabaseAdmin, claimKey);
           logStep("Push notification failed", { 
             invoiceNumber: invoice.invoice_number,
             error: errorText

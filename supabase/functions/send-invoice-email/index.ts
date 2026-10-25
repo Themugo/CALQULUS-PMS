@@ -3,6 +3,12 @@ import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { callerOwnsTenantContact, callerIsWebhost } from "../_shared/notifyAuthz.ts";
+
+// Decoded attachment cap (base64 is ~4/3 the size of the bytes).
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface SendInvoiceEmailRequest {
@@ -14,16 +20,6 @@ interface SendInvoiceEmailRequest {
   fileName?: string;
   subject?: string;
   body?: string;
-}
-
-// HTML escape function to prevent XSS injection
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 // Validate email format
@@ -68,10 +64,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { data: roleData } = await supabaseClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id", user.id);
 
-    if (roleData?.role !== "manager" && roleData?.role !== "webhost" && roleData?.role !== "submanager") {
+    const callerRoles = (roleData ?? []).map((r: { role: string }) => r.role);
+    if (!callerRoles.some((r: string) => r === "manager" || r === "webhost" || r === "submanager")) {
       console.error("User does not have required permissions");
       return new Response(
         JSON.stringify({ error: "Insufficient permissions" }),
@@ -102,21 +98,52 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Validate email format
     if (!tenantEmail || !isValidEmail(tenantEmail)) {
-      console.error("Invalid email format:", tenantEmail);
+      console.error("Invalid email format");
       return new Response(
         JSON.stringify({ error: "Invalid email address format" }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
 
+    const recipientEmail = tenantEmail.trim().toLowerCase();
+
+    // Recipient must be one of the caller's own tenants (webhost exempt).
+    if (!callerRoles.includes("webhost")) {
+      const owns = await callerOwnsTenantContact(supabaseAdmin, user.id, { email: recipientEmail });
+      if (!owns) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: recipient is not one of your tenants" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Attachment: PDF only, bounded size, safe file name.
+    let attachments: { filename: string; content: string }[] | undefined;
+    if (pdfBase64 || fileName) {
+      const safeName = String(fileName ?? "statement.pdf").replace(/[^A-Za-z0-9._ -]/g, "_").slice(0, 100);
+      if (!pdfBase64 || !/^[A-Za-z0-9+/=\s]+$/.test(pdfBase64) || !/\.pdf$/i.test(safeName)) {
+        return new Response(
+          JSON.stringify({ error: "Attachment must be a base64-encoded .pdf" }),
+          { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+      if (Math.floor((pdfBase64.length * 3) / 4) > MAX_ATTACHMENT_BYTES) {
+        return new Response(
+          JSON.stringify({ error: "Attachment too large (max 10MB)" }),
+          { status: 413, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+        );
+      }
+      attachments = [{ filename: safeName, content: pdfBase64 }];
+    }
+    // eslint-disable-next-line no-control-regex -- intentionally strips control characters
+    const safeSubject = String(subject ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, 200);
+
     // Escape all user-supplied values for HTML
     const safeTenantName = escapeHtml(tenantName);
     const safeCompanyName = escapeHtml(companyName);
     const safeBody = body ? escapeHtml(body).replace(/\n/g, "<br />") : "";
     const isGenericMessage = Boolean(body && !pdfBase64);
-    const attachments = pdfBase64 && fileName
-      ? [{ filename: fileName, content: pdfBase64 }]
-      : undefined;
 
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -125,9 +152,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${safeCompanyName} <noreply@${getEnv("RESEND_FROM_DOMAIN", "resend.dev")}>`,
-        to: [tenantEmail],
-        subject: subject || `Account Statement from ${safeCompanyName}`,
+        from: getFromAddress(String(companyName ?? "")),
+        to: [recipientEmail],
+        subject: safeSubject || `Account Statement from ${String(companyName ?? "").replace(/[\r\n]+/g, " ").slice(0, 80)}`,
         html: isGenericMessage ? `
           <!DOCTYPE html>
           <html>
@@ -209,7 +236,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error sending invoice email:", error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: "Failed to send email" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

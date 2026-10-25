@@ -119,9 +119,9 @@ export async function authenticateUser(
     return {
       success: true,
       user: {
+        ...user.user_metadata,
         id: user.id,
         email: user.email,
-        ...user.user_metadata,
       },
       token,
       supabaseClient,

@@ -1,4 +1,5 @@
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { getFromAddress } from "../_shared/email.ts";
 import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
 
@@ -67,7 +68,7 @@ async function sendActivationEmail(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: `${safeCompany} <onboarding@resend.dev>`,
+      from: getFromAddress(companyName),
       to: [email],
       subject: `Welcome to ${safeCompany} - Activate Your Tenant Portal`,
       html: `

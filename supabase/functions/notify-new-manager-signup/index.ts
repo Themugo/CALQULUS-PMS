@@ -1,4 +1,5 @@
 import { serve } from "std/http/server.ts";
+import { getFromAddress } from "../_shared/email.ts";
 import { Resend } from "resend/resend@2.0.0";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
 import { getEnv } from "../_shared/env.ts";
@@ -40,7 +41,12 @@ serve(
       const safeEmail = escapeHtml(email);
       const safeRole = escapeHtml(role);
 
-      const approval = role === "landlord" ? "approved" : "pending";
+      // Self-service signups are never auto-approved. Landlord roles are granted
+      // only via accept_landlord_invitation; ignore a landlord request here.
+      if (role === "landlord" || role === "tenant") {
+        return { success: true, notified: false };
+      }
+      const approval = "pending";
 
       const { error: roleError } = await ctx.supabase.from("user_roles").upsert({
         user_id: ctx.user.id,
@@ -107,7 +113,7 @@ serve(
     `;
 
       await resend.emails.send({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS"),
         to: webhostEmails,
         subject: `New ${safeRole} signup: ${name} — pending approval`,
         html,

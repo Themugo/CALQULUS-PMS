@@ -15,18 +15,22 @@ export interface ManagerOnboardingFacts {
 }
 
 async function fetchManagerOnboardingFacts(managerId: string): Promise<ManagerOnboardingFacts> {
-  const [settings, properties] = await Promise.all([
+  const [settings, properties, team, authUser] = await Promise.all([
     supabase
       .from("company_settings")
       .select("company_name, brand_config")
       .eq("manager_user_id", managerId)
       .maybeSingle(),
     supabase.from("properties").select("id", { count: "exact", head: true }).eq("manager_id", managerId),
+    supabase.from("manager_submanagers").select("id", { count: "exact", head: true }).eq("manager_id", managerId),
+    supabase.auth.getUser(),
   ]);
 
-  const verifiedEmail = (settings.data as { company_name?: string; brand_config?: { onboarding?: { verifiedEmail?: string } } } | null)?.brand_config?.onboarding?.verifiedEmail ?? null;
+  // Verification is derived from the auth provider, never from a client-written flag.
+  const confirmedUser = authUser.data?.user;
+  const verifiedEmail = confirmedUser?.email_confirmed_at ? (confirmedUser.email ?? null) : null;
   const propertyTypeGroups = ((settings.data as { brand_config?: { onboarding?: { propertyGroups?: string[] } } } | null)?.brand_config?.onboarding?.propertyGroups ?? []) as string[];
-  const invitedTeamCount = 0; // Submanager invites are audit-tracked in activity_logs, not needed here.
+  const invitedTeamCount = team.count ?? 0;
 
   return {
     companyName: (settings.data as { company_name?: string } | null)?.company_name ?? null,

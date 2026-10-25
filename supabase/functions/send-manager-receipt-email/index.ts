@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
@@ -68,7 +69,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <notifications@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [email],
         subject: `Payment Receipt ${receiptNumber} - CALQULUS RMS`,
         html: `

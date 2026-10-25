@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { setRememberMe } from '@/integrations/supabase/client';
-import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { sanitizeAuthError, isEmailNotConfirmedError } from '@/features/auth/lib/authFlow';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
 import { AgencyPortalShell, AGENCY_ACCENT } from '@/features/auth/components/AgencyPortalChrome';
 import { PortalLoginCard } from '@/features/auth/components/PortalLoginScreen';
@@ -16,6 +16,7 @@ const AgencyAuth = () => {
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMeState] = useState(true);
 
@@ -38,8 +39,10 @@ const AgencyAuth = () => {
     if (!email || !password) return;
     setIsSubmitting(true);
     setRememberMe(rememberMe);
+    setUnverifiedEmail(null);
     const { error } = await signIn(email, password);
     if (error) {
+      if (isEmailNotConfirmedError(error.message)) setUnverifiedEmail(email.trim());
       toast({ title: 'Login failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
     }
     setIsSubmitting(false);
@@ -62,6 +65,7 @@ const AgencyAuth = () => {
   return (
     <AgencyPortalShell>
       <PortalLoginCard
+        unverifiedEmail={unverifiedEmail}
         accentHex={AGENCY_ACCENT}
         accentTextHex={AGENCY_ACCENT}
         portalLabel="agency"

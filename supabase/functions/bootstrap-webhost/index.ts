@@ -19,6 +19,7 @@ import { requireEnv, getEnv } from "../_shared/env.ts";
  * After calling: delete or disable this function — it's not needed again.
  */
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { timingSafeEqual } from "../_shared/webhookHelpers.ts";
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 
@@ -43,7 +44,7 @@ serve(async (req) => {
   });
 
   const authHeader = req.headers.get("Authorization") ?? "";
-  if (authHeader !== `Bearer ${SERVICE_KEY}`) {
+  if (!timingSafeEqual(authHeader, `Bearer ${SERVICE_KEY}`)) {
     return Response.json(
       { error: "Unauthorized: service role authentication is required." },
       { status: 401, headers: getCorsHeaders(req) },
@@ -60,7 +61,7 @@ serve(async (req) => {
         { status: 500, headers: getCorsHeaders(req) }
       );
     }
-    if (bootstrapSecret !== BOOTSTRAP_SECRET) {
+    if (!timingSafeEqual(String(bootstrapSecret ?? ""), BOOTSTRAP_SECRET)) {
       return Response.json({ error: "Invalid bootstrap secret" }, { status: 403, headers: getCorsHeaders(req) });
     }
 

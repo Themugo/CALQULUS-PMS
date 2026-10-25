@@ -6,10 +6,19 @@ import { getEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { claimNotification, dedupKey } from "../_shared/notificationDedup.ts";
+import { tryFormatPhoneNumber } from "../_shared/sms.ts";
+
+const maskEmail = (e: string) => String(e ?? "").replace(/^(.).*(@.*)$/, "$1***$2");
+const maskPhone = (p: string) => String(p ?? "").replace(/.(?=.{3})/g, "*");
+const esc = (v: unknown) => escapeHtml(String(v ?? ""));
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  const detailsStr = details ? ` ${JSON.stringify(details)}` : '';
+  console.log(`[send-payment-reminders] ${step}${detailsStr}`);
 };
 
 interface TenantInfo {
@@ -35,7 +44,7 @@ const sendEmail = async (to: string, subject: string, html: string) => {
     throw new Error("Resend API key is not configured");
   }
 
-  const fromEmail = getEnv("RESEND_FROM_EMAIL", "CALQULUS RMS <onboarding@resend.dev>");
+  const fromEmail = getFromAddress("CALQULUS RMS");
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -239,8 +248,14 @@ serve(async (req) => {
         continue; // Skip invoices not matching our reminder criteria
       }
 
+      // Once per invoice per day, even if the job is re-run.
+      if (!(await claimNotification(supabaseClient, dedupKey("send-payment-reminders", invoice.id)))) {
+        logStep("Skipping already-notified invoice", { invoice: invoice.invoice_number });
+        continue;
+      }
+
       logStep(`Processing invoice ${invoice.invoice_number}`, { 
-        tenant: tenant.name, 
+        tenant: "[redacted]", 
         reminderType,
         dueDate: invoice.due_date 
       });
@@ -270,7 +285,7 @@ serve(async (req) => {
                 <p>Payment Reminder</p>
               </div>
               <div class="content">
-                <p>Dear ${tenant.name},</p>
+                <p>Dear ${esc(tenant.name)},</p>
                 <p>${isOverdue 
                   ? 'Your rent payment is now overdue. Please make payment immediately to avoid any penalties.' 
                   : isDueToday 
@@ -280,7 +295,7 @@ serve(async (req) => {
                       : 'This is a friendly reminder about your upcoming rent payment.'}</p>
                 
                 <div class="invoice-box">
-                  <p><strong>Invoice:</strong> ${invoice.invoice_number}</p>
+                  <p><strong>Invoice:</strong> ${esc(invoice.invoice_number)}</p>
                   <p class="amount">KES ${invoice.amount.toLocaleString()}</p>
                   <p class="due-date">Due: ${new Date(invoice.due_date).toLocaleDateString('en-US', { 
                     weekday: 'long', 
@@ -288,7 +303,7 @@ serve(async (req) => {
                     month: 'long', 
                     day: 'numeric' 
                   })}</p>
-                  ${invoice.description ? `<p>${invoice.description}</p>` : ''}
+                  ${invoice.description ? `<p>${esc(invoice.description)}</p>` : ''}
                 </div>
                 
                 <p>Please log in to your tenant portal to view payment options and make your payment.</p>
@@ -310,14 +325,15 @@ serve(async (req) => {
         );
 
         emailsSent++;
-        logStep(`Email sent to ${tenant.email}`);
+        logStep(`Email sent to ${maskEmail(tenant.email)}`);
       } catch (emailError: any) {
-        errors.push(`Email to ${tenant.email}: ${emailError.message}`);
-        logStep(`Email error for ${tenant.email}`, { error: emailError.message });
+        errors.push(`Email to ${maskEmail(tenant.email)}: ${emailError.message}`);
+        logStep(`Email error for ${maskEmail(tenant.email)}`, { error: emailError.message });
       }
 
       // Send SMS
-      if (tenant.phone && atApiKey && atUsername) {
+      const smsPhone = tenant.phone ? tryFormatPhoneNumber(tenant.phone) : null;
+      if (smsPhone && atApiKey && atUsername) {
         try {
           const smsMessage = isOverdue
             ? `🚨 OVERDUE: Your rent payment of KES ${invoice.amount.toLocaleString()} (${invoice.invoice_number}) is overdue. Please pay immediately.`
@@ -343,7 +359,7 @@ serve(async (req) => {
             },
             body: new URLSearchParams({
               username: atUsername,
-              to: tenant.phone,
+              to: smsPhone,
               message: smsMessage,
             }),
             }
@@ -367,15 +383,16 @@ serve(async (req) => {
           }
 
           smsSent++;
-          logStep(`SMS sent to ${tenant.phone}`);
+          logStep(`SMS sent to ${maskPhone(smsPhone)}`);
         } catch (smsError: any) {
-          errors.push(`SMS to ${tenant.phone}: ${smsError.message}`);
-          logStep(`SMS error for ${tenant.phone}`, { error: smsError.message });
+          errors.push(`SMS to ${maskPhone(smsPhone)}: ${smsError.message}`);
+          logStep(`SMS error for ${maskPhone(smsPhone)}`, { error: smsError.message });
         }
       }
 
       // Send WhatsApp
-      if (tenant.whatsapp && WHATSAPP_ACCESS_TOKEN && PHONE_NUMBER_ID) {
+      const waPhone = tenant.whatsapp ? tryFormatPhoneNumber(tenant.whatsapp) : null;
+      if (waPhone && WHATSAPP_ACCESS_TOKEN && PHONE_NUMBER_ID) {
         try {
           const whatsappMessage = isOverdue
             ? `🚨 *PAYMENT OVERDUE*\n\nYour rent payment of KES ${invoice.amount.toLocaleString()} (${invoice.invoice_number}) is overdue.\n\nPlease pay immediately to avoid penalties.`
@@ -387,14 +404,7 @@ serve(async (req) => {
                   ? `📅 *PAYMENT REMINDER*\n\nYour rent of KES ${invoice.amount.toLocaleString()} is due in 3 days.\n\nDue date: ${invoice.due_date}`
                   : `📅 *PAYMENT REMINDER*\n\nYour rent of KES ${invoice.amount.toLocaleString()} is due in 5 days.\n\nDue date: ${invoice.due_date}`;
 
-          let formattedPhone = tenant.whatsapp.replace(/\s+/g, '').replace(/^0/, '+254');
-          if (!formattedPhone.startsWith('+')) {
-            formattedPhone = '+' + formattedPhone;
-          }
-          if (!formattedPhone.startsWith('+254')) {
-            formattedPhone = '+254' + formattedPhone.replace(/^\+/, '');
-          }
-          formattedPhone = formattedPhone.replace('+', '');
+          const formattedPhone = waPhone.replace('+', '');
 
           const whatsappResponse = await fetch(`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`, {
             method: "POST",
@@ -419,10 +429,10 @@ serve(async (req) => {
           }
 
           whatsappSent++;
-          logStep(`WhatsApp sent to ${tenant.whatsapp}`);
+          logStep(`WhatsApp sent to ${maskPhone(waPhone)}`);
         } catch (whatsappError: any) {
-          errors.push(`WhatsApp to ${tenant.whatsapp}: ${whatsappError.message}`);
-          logStep(`WhatsApp error for ${tenant.whatsapp}`, { error: whatsappError.message });
+          errors.push(`WhatsApp to ${maskPhone(waPhone)}: ${whatsappError.message}`);
+          logStep(`WhatsApp error for ${maskPhone(waPhone)}`, { error: whatsappError.message });
         }
       }
     }
@@ -443,7 +453,7 @@ serve(async (req) => {
   } catch (error: any) {
     logStep("ERROR", { message: error.message });
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to send payment reminders" }),
       { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   }

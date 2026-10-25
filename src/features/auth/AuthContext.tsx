@@ -105,7 +105,7 @@ export interface AuthContextType {
   canWrite: (key: keyof Omit<SubmanagerPermissions, 'assigned_property_ids' | 'manager_id' | 'restrict_to_assigned_properties'>) => boolean;
   canAccessProperty: (propertyId: string) => boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, role: AppRole, tenantId?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, role: AppRole, tenantId?: string, extraMetadata?: Record<string, unknown>) => Promise<{ error: Error | null; needsEmailConfirmation?: boolean }>;
   signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
@@ -427,10 +427,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error ? new Error(error.message) : null };
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, _tenantId?: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, _tenantId?: string, extraMetadata?: Record<string, unknown>) => {
     const redirectPath = signupRedirectPath(role);
     const { data, error } = await supabase.auth.signUp({ email, password,
-      options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { full_name: fullName, role } } });
+      options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { ...extraMetadata, full_name: fullName, role } } });
     if (error) return { error: new Error(error.message) };
     if (data.user) {
       // Role rows are created by handle_new_auth_user() and/or the
@@ -447,7 +447,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         trackCommercialEvent('trial_started', { managerId: data.user.id });
       }
     }
-    return { error: null };
+    return { error: null, needsEmailConfirmation: !data.session };
   }, []);
 
   const signOut = useCallback(async () => {

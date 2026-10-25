@@ -1,3 +1,4 @@
+import { isPasswordStrong } from "@/shared/lib/validations";
 /**
  * Pure helpers for the CALQULUS ADMIN invitation flow (Phase 8).
  *
@@ -69,5 +70,5 @@ export function isAdminInvitationEmail(candidate: string, invited: string): bool
 
 /** Admin passwords are held to a stronger bar than customer accounts. */
 export function isAdminPasswordStrong(password: string): boolean {
-  return password.length >= 10;
+  return password.length >= 10 && isPasswordStrong(password);
 }

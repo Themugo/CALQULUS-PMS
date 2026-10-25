@@ -11,6 +11,7 @@
  */
 
 import { serve } from "std/http/server.ts";
+import { getFromAddress } from "../_shared/email.ts";
 import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { getEnv } from "../_shared/env.ts";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
@@ -133,7 +134,7 @@ serve(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "CALQULUS Platform <onboarding@resend.dev>",
+            from: getFromAddress("CALQULUS Platform"),
             to: [email],
             subject: "You've been invited to CALQULUS ADMIN",
             html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">

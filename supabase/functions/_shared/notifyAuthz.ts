@@ -14,6 +14,7 @@
  * of their own tenants.
  */
 import type { SupabaseClient } from "supabase/supabase-js@2";
+import { tryFormatPhoneNumber } from "./sms.ts";
 
 export async function callerRelatesToManager(
   supabaseAdmin: SupabaseClient,
@@ -144,4 +145,96 @@ export async function callerIsWebhost(
     .in("role", ["webhost", "platform_admin"])
     .maybeSingle();
   return !!data;
+}
+
+/** Escape LIKE/ILIKE wildcards so a user-supplied value is matched literally. */
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+export function normaliseEmail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const v = value.trim().toLowerCase();
+  return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(v) && v.length <= 254 ? v : null;
+}
+
+async function callerEffectiveManagerIds(
+  supabaseAdmin: SupabaseClient,
+  callerUserId: string,
+): Promise<string[]> {
+  const { data: roleRow } = await supabaseAdmin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", callerUserId)
+    .in("role", ["manager", "agency", "submanager"])
+    .limit(1)
+    .maybeSingle();
+  const ids = await resolveEffectiveManagerIds(supabaseAdmin, callerUserId, roleRow?.role ?? "manager");
+  return Array.from(ids);
+}
+
+/**
+ * True if the given email and/or phone belongs to a tenant of one of the
+ * caller's effective managers. Used by notification senders that accept a
+ * free-form recipient so they cannot be used to email/SMS arbitrary people
+ * with platform-branded content. Service-role/cron callers must be handled
+ * by the caller of this helper (they are trusted and skip this check).
+ */
+export async function callerOwnsTenantContact(
+  supabaseAdmin: SupabaseClient,
+  callerUserId: string,
+  contact: { email?: unknown; phone?: unknown },
+): Promise<boolean> {
+  const email = normaliseEmail(contact.email);
+  const phone = typeof contact.phone === "string" ? tryFormatPhoneNumber(contact.phone) : null;
+  if (!email && !phone) return false;
+
+  const managerIds = await callerEffectiveManagerIds(supabaseAdmin, callerUserId);
+
+  if (email) {
+    const { data } = await supabaseAdmin
+      .from("tenants")
+      .select("id")
+      .in("manager_id", managerIds)
+      .ilike("email", escapeLike(email))
+      .limit(1);
+    if (data?.length) return true;
+  }
+  if (phone) {
+    const { data } = await supabaseAdmin
+      .from("tenants")
+      .select("phone")
+      .in("manager_id", managerIds)
+      .not("phone", "is", null)
+      .limit(5000);
+    if ((data ?? []).some((t: { phone: string | null }) => t.phone && tryFormatPhoneNumber(t.phone) === phone)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** True if the email belongs to a submanager under one of the caller's effective managers. */
+export async function callerOwnsSubmanagerEmail(
+  supabaseAdmin: SupabaseClient,
+  callerUserId: string,
+  emailInput: unknown,
+): Promise<boolean> {
+  const email = normaliseEmail(emailInput);
+  if (!email) return false;
+  const managerIds = await callerEffectiveManagerIds(supabaseAdmin, callerUserId);
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .ilike("email", escapeLike(email))
+    .limit(1)
+    .maybeSingle();
+  if (!profile?.id) return false;
+  const { data } = await supabaseAdmin
+    .from("manager_submanagers")
+    .select("submanager_user_id")
+    .in("manager_id", managerIds)
+    .eq("submanager_user_id", profile.id)
+    .limit(1);
+  return !!data?.length;
 }

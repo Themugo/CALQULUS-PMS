@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { listAllAuthUsers } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -45,7 +46,7 @@ async function sendActivationEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS Properties <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [email],
         subject: "Activate Your Tenant Portal Account",
         html: `

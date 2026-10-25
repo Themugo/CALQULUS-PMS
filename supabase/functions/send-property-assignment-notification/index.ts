@@ -4,6 +4,12 @@ import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { callerOwnsSubmanagerEmail, callerIsWebhost, normaliseEmail } from "../_shared/notifyAuthz.ts";
+
+// eslint-disable-next-line no-control-regex -- intentionally strips control characters
+const esc = (v: unknown) => escapeHtml(String(v ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, 160));
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface PropertyAssignmentRequest {
@@ -53,29 +59,55 @@ Deno.serve(async (req: Request): Promise<Response> => {
       action 
     }: PropertyAssignmentRequest = await req.json();
 
+    if (action !== 'assigned' && action !== 'updated' && action !== 'removed') {
+      return new Response(JSON.stringify({ error: "action must be 'assigned', 'updated' or 'removed'" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    const recipientEmail = normaliseEmail(submanagerEmail);
+    if (!recipientEmail) {
+      return new Response(JSON.stringify({ error: "A valid submanagerEmail is required" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    if (action !== 'removed' && !Array.isArray(propertyNames)) {
+      return new Response(JSON.stringify({ error: "propertyNames must be an array" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    const names: string[] = (Array.isArray(propertyNames) ? propertyNames : [])
+      .filter((n): n is string => typeof n === "string").slice(0, 50);
+
+    // Recipient must be a submanager of the caller's own organisation.
+    if (gate.userId) {
+      const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      if (!(await callerIsWebhost(admin, gate.userId)) &&
+          !(await callerOwnsSubmanagerEmail(admin, gate.userId, recipientEmail))) {
+        return new Response(JSON.stringify({ error: "Forbidden: recipient is not one of your submanagers" }),
+          { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+      }
+    }
+
     let subject = '';
     let htmlContent = '';
 
     if (action === 'assigned') {
-      subject = `You've been assigned to ${propertyNames.length} ${propertyNames.length === 1 ? 'property' : 'properties'}`;
+      subject = `You've been assigned to ${names.length} ${names.length === 1 ? 'property' : 'properties'}`;
       htmlContent = `
-        <h1>Hello ${submanagerName || 'there'}!</h1>
-        <p>${managerName || 'Your manager'} has assigned you to the following ${propertyNames.length === 1 ? 'property' : 'properties'}:</p>
+        <h1>Hello ${esc(submanagerName) || 'there'}!</h1>
+        <p>${esc(managerName) || 'Your manager'} has assigned you to the following ${names.length === 1 ? 'property' : 'properties'}:</p>
         <ul>
-          ${propertyNames.map(name => `<li><strong>${name}</strong></li>`).join('')}
+          ${names.map(name => `<li><strong>${esc(name)}</strong></li>`).join('')}
         </ul>
-        <p>You can now view and manage data for ${propertyNames.length === 1 ? 'this property' : 'these properties'} in your dashboard.</p>
+        <p>You can now view and manage data for ${names.length === 1 ? 'this property' : 'these properties'} in your dashboard.</p>
         <p>Best regards,<br>CALQULUS RMS Team</p>
       `;
     } else if (action === 'updated') {
       subject = `Your property assignments have been updated`;
       htmlContent = `
-        <h1>Hello ${submanagerName || 'there'}!</h1>
-        <p>${managerName || 'Your manager'} has updated your property assignments.</p>
-        ${propertyNames.length > 0 ? `
-          <p>You now have access to the following ${propertyNames.length === 1 ? 'property' : 'properties'}:</p>
+        <h1>Hello ${esc(submanagerName) || 'there'}!</h1>
+        <p>${esc(managerName) || 'Your manager'} has updated your property assignments.</p>
+        ${names.length > 0 ? `
+          <p>You now have access to the following ${names.length === 1 ? 'property' : 'properties'}:</p>
           <ul>
-            ${propertyNames.map(name => `<li><strong>${name}</strong></li>`).join('')}
+            ${names.map(name => `<li><strong>${esc(name)}</strong></li>`).join('')}
           </ul>
         ` : '<p>You currently have no specific property restrictions and can view all properties.</p>'}
         <p>Best regards,<br>CALQULUS RMS Team</p>
@@ -83,8 +115,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
     } else if (action === 'removed') {
       subject = `Property restrictions removed`;
       htmlContent = `
-        <h1>Hello ${submanagerName || 'there'}!</h1>
-        <p>${managerName || 'Your manager'} has removed your property restrictions.</p>
+        <h1>Hello ${esc(submanagerName) || 'there'}!</h1>
+        <p>${esc(managerName) || 'Your manager'} has removed your property restrictions.</p>
         <p>You now have access to view all properties in the system.</p>
         <p>Best regards,<br>CALQULUS RMS Team</p>
       `;
@@ -97,8 +129,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
-        to: [submanagerEmail],
+        from: getFromAddress("CALQULUS RMS"),
+        to: [recipientEmail],
         subject,
         html: htmlContent,
       }),
@@ -118,7 +150,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-property-assignment-notification:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to send notification" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

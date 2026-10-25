@@ -7,7 +7,10 @@ import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/components/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
 import { CheckCircle, XCircle, Mail, LogIn } from 'lucide-react';
-import { signupSchema, formatValidationErrors, isValidKenyanPhone } from '@/shared/lib/validations';
+import { signupSchema, formatValidationErrors, isValidKenyanPhone, getPasswordChecks, TERMS_VERSION } from '@/shared/lib/validations';
+import { TermsConsent } from '@/features/auth/components/TermsConsent';
+import { termsMetadata } from '@/features/auth/lib/termsMetadata';
+import { scrubUrlParams } from '@/features/auth/lib/urlScrub';
 import { supabase } from '@/integrations/supabase/client';
 import { logError } from '@/shared/lib/errorLogger';
 import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
@@ -50,7 +53,9 @@ interface ClaimedSummary {
 const TenantAuth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const invitationToken = searchParams.get('invitation') || searchParams.get('token');
+  // Read once into state, then scrub from the address bar (see urlScrub.ts).
+  const [invitationToken] = useState<string | null>(() => searchParams.get('invitation') || searchParams.get('token'));
+  useEffect(() => { scrubUrlParams('invitation', 'token'); }, []);
   const isMobile = useIsMobile();
   
   const { user, loading, userRole } = useAuth();
@@ -64,6 +69,7 @@ const TenantAuth = () => {
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [isSelfRegistration, setIsSelfRegistration] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
   
   // Invitation state
@@ -141,6 +147,10 @@ const TenantAuth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptedTerms) {
+      toast({ title: 'Terms required', description: 'Please accept the Terms of Service and Privacy Policy to continue.', variant: 'destructive' });
+      return;
+    }
     setIsSubmitting(true);
 
     const validationResult = signupSchema.safeParse({
@@ -177,11 +187,13 @@ const TenantAuth = () => {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
-        options: { emailRedirectTo: redirectUrl, data: { full_name: signupFullName, phone: signupPhone || null } },
+        options: { emailRedirectTo: redirectUrl, data: { full_name: signupFullName, phone: signupPhone || null, role: 'tenant', ...termsMetadata(TERMS_VERSION) } },
       });
 
       if (authError) {
-        if (!authError.message.toLowerCase().includes('already registered')) {
+        // Structured check (error code / HTTP status) instead of matching message text.
+        const alreadyExists = authError.code === 'user_already_exists' || authError.status === 422;
+        if (!alreadyExists) {
           toast({ title: 'Signup failed', description: sanitizeAuthError(authError.message), variant: 'destructive' });
           setIsSubmitting(false);
           return;
@@ -206,7 +218,7 @@ const TenantAuth = () => {
       });
       if (claimError) {
         logError('TenantAuth.handleSignup.claimInvitation', claimError.message);
-        toast({ title: 'Invitation could not be linked', description: claimError.message, variant: 'destructive' });
+        toast({ title: 'Invitation could not be linked', description: 'This invitation could not be linked to your account. It may have expired or been used already.', variant: 'destructive' });
         setIsSubmitting(false);
         return;
       }
@@ -236,25 +248,14 @@ const TenantAuth = () => {
       await supabase.auth.refreshSession();
     } catch (error) {
       logError('TenantAuth.handleSignup', error);
-      toast({ title: 'Signup failed', description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.', variant: 'destructive' });
+      toast({ title: 'Signup failed', description: error instanceof Error ? sanitizeAuthError(error.message) : 'An unexpected error occurred. Please try again.', variant: 'destructive' });
     }
 
     setIsSubmitting(false);
   };
 
-  // Password strength indicator
-  const getPasswordStrength = (password: string) => {
-    const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
-    };
-    return checks;
-  };
-
-  const passwordStrength = getPasswordStrength(signupPassword);
+  // Password strength indicator (shared rules)
+  const passwordStrength = getPasswordChecks(signupPassword);
 
   if (loading) {
     return (
@@ -451,8 +452,10 @@ const TenantAuth = () => {
                   value={signupPassword}
                   onChange={(e) => setSignupPassword(e.target.value)}
                   required
+                  minLength={8}
+                  maxLength={72}
                 />
-                <div className="space-y-1">
+                <div className="space-y-1" aria-live="polite">
                   {Object.entries(passwordStrength).map(([key, valid]) => (
                     <div key={key} className="flex items-center gap-2 text-xs">
                       {valid ? <CheckCircle className="h-3 w-3 text-success" /> : <XCircle className="h-3 w-3 text-muted-foreground" />}
@@ -468,6 +471,7 @@ const TenantAuth = () => {
                 </div>
               </div>
               
+              <TermsConsent id="tenant-invite-terms-a" checked={acceptedTerms} onChange={setAcceptedTerms} />
               <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -578,9 +582,10 @@ const TenantAuth = () => {
                 onChange={(e) => setSignupPassword(e.target.value)}
                 required
                 minLength={8}
+                maxLength={72}
               />
               {signupPassword && (
-                <div className="text-xs space-y-1 mt-2 p-2 bg-muted rounded border border-border">
+                <div aria-live="polite" className="text-xs space-y-1 mt-2 p-2 bg-muted rounded border border-border">
                   <p className="font-medium text-muted-foreground">Password requirements:</p>
                   <div className="grid grid-cols-2 gap-1">
                     <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-success' : 'text-muted-foreground'}`}>
@@ -607,6 +612,7 @@ const TenantAuth = () => {
                 </div>
               )}
             </div>
+            <TermsConsent id="tenant-invite-terms-b" checked={acceptedTerms} onChange={setAcceptedTerms} />
             <Button 
               type="submit" 
               className="w-full btn-brand" 

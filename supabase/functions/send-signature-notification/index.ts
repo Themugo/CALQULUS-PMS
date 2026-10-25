@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
@@ -139,7 +140,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${safeCompanyName} <onboarding@resend.dev>`,
+        from: getFromAddress(String(safeCompanyName)),
         to: [managerEmail],
         subject: `✅ Contract Signed: ${safeTenantName} signed "${safeContractTitle}"`,
         html: `

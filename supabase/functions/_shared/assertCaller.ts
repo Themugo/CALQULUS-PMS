@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "./webhookHelpers.ts";
 import { getEnv } from "./env.ts";
 import { getCorsHeaders } from "./cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -22,14 +23,14 @@ export function rejectUnlessServiceOrCron(req: Request): Response | null {
 export function isServiceRoleRequest(req: Request): boolean {
   const serviceKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
   const auth = req.headers.get("Authorization") ?? "";
-  return Boolean(serviceKey && auth === `Bearer ${serviceKey}`);
+  return Boolean(serviceKey && timingSafeEqual(auth, `Bearer ${serviceKey}`));
 }
 
 export function isServiceOrCron(req: Request): boolean {
   const cronSecret = getEnv("CRON_SECRET", "");
   const cronHeader = req.headers.get("X-Cron-Secret") ?? "";
   if (isServiceRoleRequest(req)) return true;
-  return Boolean(cronSecret && cronHeader === cronSecret);
+  return Boolean(cronSecret && timingSafeEqual(cronHeader, cronSecret));
 }
 
 export type IdentifiedCaller =

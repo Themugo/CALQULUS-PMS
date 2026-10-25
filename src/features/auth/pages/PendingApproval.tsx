@@ -37,10 +37,10 @@ const PendingApproval = () => {
       const { data } = await supabase
         .from('user_roles')
         .select('approval_status')
-        .eq('user_id', userId)
-        .maybeSingle();
+        .eq('user_id', userId);
 
-      if (data?.approval_status === 'approved') {
+      // A user may hold several role rows; any approved one is enough.
+      if (data?.some((row) => row.approval_status === 'approved')) {
         navigate('/');
       }
     };

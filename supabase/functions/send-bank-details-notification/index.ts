@@ -17,6 +17,7 @@
  *   - The email content (bank name/account/paybill/till) comes from the
  *     fetched `bank_details` row, never from the request body.
  */
+import { getFromAddress } from "../_shared/email.ts";
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -202,7 +203,7 @@ serve(async (req: Request): Promise<Response> => {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
           body: JSON.stringify({
-            from: "CALQULUS RMS <notifications@resend.dev>",
+            from: getFromAddress("CALQULUS RMS"),
             to: [tenant.email],
             subject,
             html: emailHtml,

@@ -24,6 +24,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
 
     // Validate password requirements
+    if (typeof token !== "string" || typeof password !== "string" || password.length > 72) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
     if (password.length < 8) {
       return new Response(
         JSON.stringify({ error: "Password must be at least 8 characters long" }),
@@ -36,10 +42,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const hasLowercase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
 
-    if (!hasUppercase || !hasLowercase || !hasNumber) {
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
       return new Response(
         JSON.stringify({ 
-          error: "Password must contain at least one uppercase letter, one lowercase letter, and one number" 
+          error: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character" 
         }),
         { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
@@ -51,7 +59,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
       requireEnv("SUPABASE_URL"),
       requireEnv("SUPABASE_ANON_KEY")
     );
-    const clientKey = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "activation-anonymous";
+    // Prefer headers set by the platform edge over the client-appendable
+    // first x-forwarded-for hop.
+    const clientKey =
+      req.headers.get("cf-connecting-ip")?.trim() ||
+      req.headers.get("x-real-ip")?.trim() ||
+      req.headers.get("x-forwarded-for")?.split(",").pop()?.trim() ||
+      "activation-anonymous";
     const allowed = await checkRateLimit(rateLimitClient, clientKey, "activate-account", 10, { failClosed: true });
     if (!allowed) return rateLimitResponse(req);
 
@@ -84,6 +98,21 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const { user_id, email } = tokenData[0];
 
+    // Consume the token FIRST (single-use, atomic in the database). Setting the
+    // password before consuming allowed two concurrent requests to both succeed.
+    const { data: tokenUsed, error: useError } = await supabaseAdmin
+      .rpc("use_activation_token", { token_value: token });
+
+    if (useError || !tokenUsed) {
+      if (useError) console.error("Error consuming activation token:", useError);
+      return new Response(
+        JSON.stringify({
+          error: "Invalid or expired activation link. Please contact your property manager for a new activation link."
+        }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+
     // Update the user's password
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       user_id,
@@ -93,22 +122,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if (updateError) {
       console.error("Error updating password:", updateError);
       return new Response(
-        JSON.stringify({ error: "Failed to set password. Please try again." }),
+        JSON.stringify({ error: "Failed to set password. Please request a new activation link." }),
         { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
-    }
-
-    // Mark the token as used
-    const { data: tokenUsed, error: useError } = await supabaseAdmin
-      .rpc("use_activation_token", { token_value: token });
-
-    if (useError) {
-      console.error("Error marking token as used:", useError);
-      // Don't fail the request, the password was already updated
-    }
-
-    if (!tokenUsed) {
-      console.warn("Token may have already been used");
     }
 
     return new Response(
@@ -120,10 +136,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
       { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     console.error("Error in activate-account:", error);
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Activation failed. Please try again." }),
       { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   }

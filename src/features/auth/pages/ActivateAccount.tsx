@@ -7,6 +7,9 @@ import { Label } from "@/shared/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/shared/hooks/use-toast";
 import { errorToast } from "@/shared/lib/errorToast";
+import { PASSWORD_RULES, getPasswordChecks, isPasswordStrong } from "@/shared/lib/validations";
+import { scrubUrlParams } from "@/features/auth/lib/urlScrub";
+import { TermsConsent } from "@/features/auth/components/TermsConsent";
 import { Loader2, Eye, EyeOff, Check, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
@@ -21,7 +24,10 @@ function RequirementItem({ met, text }: { met: boolean; text: string }) {
 const ActivateAccount = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get("token");
+  // Read once, then scrub from the address bar (see urlScrub.ts).
+  const [token] = useState<string | null>(() => searchParams.get("token"));
+  useEffect(() => { scrubUrlParams("token"); }, []);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,13 +40,10 @@ const ActivateAccount = () => {
   const [isActivated, setIsActivated] = useState(false);
 
   // Password requirements
-  const hasMinLength = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
+  const passwordChecks = getPasswordChecks(password);
   const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
 
-  const allRequirementsMet = hasMinLength && hasUppercase && hasLowercase && hasNumber && passwordsMatch;
+  const allRequirementsMet = isPasswordStrong(password) && passwordsMatch && acceptedTerms;
 
   useEffect(() => {
     const validateToken = async () => {
@@ -197,9 +200,14 @@ const ActivateAccount = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="pr-10"
+                  required
+                  minLength={8}
+                  maxLength={72}
                 />
                 <button
                   type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
@@ -218,9 +226,12 @@ const ActivateAccount = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm your password"
                   className="pr-10"
+                  required
                 />
                 <button
                   type="button"
+                  aria-label={showConfirmPassword ? "Hide password confirmation" : "Show password confirmation"}
+                  aria-pressed={showConfirmPassword}
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
@@ -229,14 +240,15 @@ const ActivateAccount = () => {
               </div>
             </div>
 
-            <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+            <div aria-live="polite" className="bg-muted/50 p-3 rounded-lg space-y-2">
               <p className="text-sm font-medium">Password Requirements:</p>
-              <RequirementItem met={hasMinLength} text="At least 8 characters" />
-              <RequirementItem met={hasUppercase} text="One uppercase letter" />
-              <RequirementItem met={hasLowercase} text="One lowercase letter" />
-              <RequirementItem met={hasNumber} text="One number" />
+              {PASSWORD_RULES.map(({ key, label }) => (
+                <RequirementItem key={key} met={passwordChecks[key]} text={label} />
+              ))}
               <RequirementItem met={passwordsMatch} text="Passwords match" />
             </div>
+
+            <TermsConsent id="activate-terms" checked={acceptedTerms} onChange={setAcceptedTerms} />
 
             <Button
               type="submit"

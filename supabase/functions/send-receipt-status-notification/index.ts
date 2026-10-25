@@ -6,6 +6,14 @@ import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { tryFormatPhoneNumber } from "../_shared/sms.ts";
+import { callerOwnsTenantContact, callerIsWebhost, normaliseEmail } from "../_shared/notifyAuthz.ts";
+
+const esc = (v: unknown) => escapeHtml(String(v ?? ""));
+// eslint-disable-next-line no-control-regex -- intentionally strips control characters
+const oneLine = (v: unknown, max: number) => String(v ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, max);
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface ReceiptStatusNotificationRequest {
@@ -28,7 +36,7 @@ const sendEmail = async (to: string, subject: string, html: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "CALQULUS RMS <onboarding@resend.dev>",
+      from: getFromAddress("CALQULUS RMS"),
       to: [to],
       subject,
       html,
@@ -75,6 +83,32 @@ const handler = async (req: Request): Promise<Response> => {
       rejectionReason,
     }: ReceiptStatusNotificationRequest = await req.json();
 
+    if (status !== 'verified' && status !== 'rejected') {
+      return new Response(JSON.stringify({ error: "status must be 'verified' or 'rejected'" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    const recipientEmail = normaliseEmail(tenantEmail);
+    const amountNum = Number(amount);
+    if (!recipientEmail || !Number.isFinite(amountNum)) {
+      return new Response(JSON.stringify({ error: "A valid tenantEmail and numeric amount are required" }),
+        { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+    const smsPhone = tenantPhone ? tryFormatPhoneNumber(tenantPhone) : null;
+
+    // Recipient (email and phone) must belong to one of the caller's tenants.
+    if (gate.userId) {
+      const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      if (!(await callerIsWebhost(admin, gate.userId))) {
+        const emailOk = await callerOwnsTenantContact(admin, gate.userId, { email: recipientEmail });
+        const phoneOk = !smsPhone || await callerOwnsTenantContact(admin, gate.userId, { phone: smsPhone });
+        if (!emailOk || !phoneOk) {
+          return new Response(JSON.stringify({ error: "Forbidden: recipient is not one of your tenants" }),
+            { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+        }
+      }
+    }
+
+    const safeReason = oneLine(rejectionReason, 300);
     const isVerified = status === 'verified';
     const statusColor = isVerified ? '#23856B' : '#C84B4B';
     const statusText = isVerified ? 'Verified' : 'Rejected';
@@ -105,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
             <h1>${emoji} Payment Receipt ${statusText}</h1>
           </div>
           <div class="content">
-            <p>Dear ${tenantName},</p>
+            <p>Dear ${esc(tenantName)},</p>
             <p>${isVerified 
               ? 'Great news! Your payment receipt has been verified by your landlord.' 
               : 'Unfortunately, your payment receipt has been rejected.'}</p>
@@ -113,20 +147,20 @@ const handler = async (req: Request): Promise<Response> => {
             <div class="details">
               <div class="detail-row">
                 <span class="label">Amount:</span>
-                <span class="value">KES ${amount.toLocaleString()}</span>
+                <span class="value">KES ${esc(amountNum.toLocaleString())}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Payment Date:</span>
-                <span class="value">${paymentDate}</span>
+                <span class="value">${esc(paymentDate)}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Payment Method:</span>
-                <span class="value">${paymentMethod}</span>
+                <span class="value">${esc(paymentMethod)}</span>
               </div>
               ${referenceNumber ? `
               <div class="detail-row">
                 <span class="label">Reference:</span>
-                <span class="value">${referenceNumber}</span>
+                <span class="value">${esc(referenceNumber)}</span>
               </div>
               ` : ''}
               <div class="detail-row">
@@ -135,10 +169,10 @@ const handler = async (req: Request): Promise<Response> => {
               </div>
             </div>
             
-            ${!isVerified && rejectionReason ? `
+            ${!isVerified && safeReason ? `
             <div class="rejection-box">
               <strong>Reason for Rejection:</strong>
-              <p>${rejectionReason}</p>
+              <p>${esc(safeReason)}</p>
               <p style="margin-top: 10px; font-size: 14px;">Please upload a new receipt with the correct information or contact your landlord for clarification.</p>
             </div>
             ` : ''}
@@ -154,16 +188,16 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await sendEmail(
-      tenantEmail,
-      `${emoji} Payment Receipt ${statusText} - KES ${amount.toLocaleString()}`,
+      recipientEmail,
+      `${emoji} Payment Receipt ${statusText} - KES ${amountNum.toLocaleString()}`,
       emailHtml
     );
 
     // Send SMS notification if phone number provided
-    if (tenantPhone) {
+    if (smsPhone) {
       const smsMessage = isVerified
-        ? `✅ CALQULUS RMS: Your payment receipt for KES ${amount.toLocaleString()} has been VERIFIED. Thank you!`
-        : `❌ CALQULUS RMS: Your payment receipt for KES ${amount.toLocaleString()} was REJECTED. ${rejectionReason ? `Reason: ${rejectionReason}` : 'Please check your email for details.'}`;
+        ? `✅ CALQULUS RMS: Your payment receipt for KES ${amountNum.toLocaleString()} has been VERIFIED. Thank you!`
+        : `❌ CALQULUS RMS: Your payment receipt for KES ${amountNum.toLocaleString()} was REJECTED. ${safeReason ? `Reason: ${safeReason}` : 'Please check your email for details.'}`;
 
       // Use Africa's Talking for SMS
       const atApiKey = getEnv("AT_API_KEY");
@@ -180,7 +214,7 @@ const handler = async (req: Request): Promise<Response> => {
             },
             body: new URLSearchParams({
               username: atUsername,
-              to: tenantPhone,
+              to: smsPhone,
               message: smsMessage,
             }),
           });
@@ -199,7 +233,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("[RECEIPT-STATUS] Error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to send notification" }),
       { status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   }

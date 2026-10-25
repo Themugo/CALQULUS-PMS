@@ -35,8 +35,10 @@ serve(async (req) => {
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "manager")
+      .eq("approval_status", "approved")
+      .limit(1)
       .maybeSingle();
-    if (!roleRow) throw new Error("Only managers can claim tenants");
+    if (!roleRow) throw new Error("Only approved managers can claim tenants");
 
     const { email, propertyId, unitId }: ClaimRequest = await req.json();
     if (!email) throw new Error("Missing required field: email");
@@ -69,7 +71,7 @@ serve(async (req) => {
       .from("tenants")
       .select("*")
       .is("manager_id", null)
-      .eq("email", email)
+      .eq("email", email.trim().toLowerCase())
       .maybeSingle();
     if (tenantError) throw new Error("Database error looking up tenant");
     if (!tenant) throw new Error("No unregistered tenant found with this email");

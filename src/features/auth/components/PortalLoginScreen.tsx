@@ -12,6 +12,7 @@ import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteCon
 import { usePortalIdentity } from "@/core/product/PortalIdentityProvider";
 import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/features/marketing/publicSiteConfig";
 import ForgotPasswordDialog from "@/features/auth/components/ForgotPasswordDialog";
+import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
 /**
  * Shared login-screen chrome for all four portals (manager, landlord,
@@ -143,6 +144,8 @@ interface PortalLoginCardProps {
   forgotPasswordVariant?: "tenant";
   /** Extra content rendered below the form and the secure-access footer — e.g. signup links, invite notes. */
   footNote?: ReactNode;
+  /** Set after an "email not confirmed" sign-in error to offer a verification resend. */
+  unverifiedEmail?: string | null;
 }
 
 export function PortalLoginCard({
@@ -166,6 +169,7 @@ export function PortalLoginCard({
   isGoogleSubmitting = false,
   forgotPasswordVariant,
   footNote,
+  unverifiedEmail,
 }: PortalLoginCardProps) {
   const { identities } = usePortalIdentity();
   const isKnownPortal = (value: string): value is "manager" | "landlord" | "tenant" | "agency" => ["manager", "landlord", "tenant", "agency"].includes(value);
@@ -287,6 +291,13 @@ export function PortalLoginCard({
       </Button>
 
       <p className="mt-5 text-center text-sm text-muted-foreground">🔒 Secure • Encrypted • Protected</p>
+
+      {unverifiedEmail ? (
+        <div role="status" className="mt-4 flex flex-col items-center gap-2 rounded-lg border border-border bg-secondary/60 p-3 text-center text-sm text-muted-foreground">
+          <p>Your email address is not verified yet.</p>
+          <ResendVerificationButton email={unverifiedEmail} redirectTo={`${typeof window !== "undefined" ? window.location.origin : ""}${typeof window !== "undefined" ? window.location.pathname : ""}`} />
+        </div>
+      ) : null}
 
       {footNote ? <div className="mt-5 border-t border-border pt-5">{footNote}</div> : null}
     </section>

@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -158,7 +159,7 @@ async function sendEmailNotification(
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [managerEmail],
         subject: `📧 New Receipt: ${safeTenantName} uploaded ${formattedAmount} payment proof`,
         html: emailHtml,

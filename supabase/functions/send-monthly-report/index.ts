@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -260,7 +261,7 @@ const handler = async (req: Request): Promise<Response> => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "CALQULUS RMS <onboarding@resend.dev>",
+            from: getFromAddress("CALQULUS RMS"),
             to: [email],
             subject: `Monthly Payment Report - ${monthName}`,
             html: emailHtml,

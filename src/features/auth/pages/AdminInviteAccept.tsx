@@ -1,3 +1,4 @@
+import { scrubUrlParams } from '@/features/auth/lib/urlScrub';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,7 +42,9 @@ const AdminInviteAccept = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const token = searchParams.get('token');
+  // Read once, then scrub from the address bar (see urlScrub.ts).
+  const [token] = useState<string | null>(() => searchParams.get('token'));
+  useEffect(() => { scrubUrlParams('token'); }, []);
 
   const [invitation, setInvitation] = useState<AdminInvitation | null>(null);
   const [tokenState, setTokenState] = useState<AdminInvitationState | null>(null);
@@ -72,7 +75,7 @@ const AdminInviteAccept = () => {
     e.preventDefault();
     if (!invitation) return;
     if (!isAdminPasswordStrong(password)) {
-      toast({ title: 'Password too short', description: 'Admin passwords must be at least 10 characters.', variant: 'destructive' });
+      toast({ title: 'Password too weak', description: 'Admin passwords need at least 10 characters with an uppercase letter, a lowercase letter, a number and a special character.', variant: 'destructive' });
       return;
     }
     if (password !== confirmPassword) {

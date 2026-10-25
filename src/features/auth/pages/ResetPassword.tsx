@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getPasswordChecks, isPasswordStrong } from '@/shared/lib/validations';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/shared/components/ui/button';
@@ -65,18 +66,7 @@ const ResetPassword = () => {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const getPasswordStrength = (password: string) => {
-    const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
-    };
-    return checks;
-  };
-
-  const passwordStrength = getPasswordStrength(password);
+  const passwordStrength = getPasswordChecks(password);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,10 +80,10 @@ const ResetPassword = () => {
       return;
     }
 
-    if (password.length < 8) {
+    if (!isPasswordStrong(password)) {
       toast({
-        title: 'Password too short',
-        description: 'Password must be at least 8 characters long.',
+        title: 'Password too weak',
+        description: 'Use 8–72 characters with an uppercase letter, a lowercase letter, a number and a special character.',
         variant: 'destructive',
       });
       return;
@@ -181,9 +171,10 @@ const ResetPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
+                maxLength={72}
               />
               {password && (
-                <div className="text-xs space-y-1 mt-2 p-2 bg-muted rounded">
+                <div aria-live="polite" className="text-xs space-y-1 mt-2 p-2 bg-muted rounded">
                   <p className="font-medium text-muted-foreground">Password requirements:</p>
                   <div className="grid grid-cols-2 gap-1">
                     <div className={`flex items-center gap-1 ${passwordStrength.length ? 'text-success' : 'text-muted-foreground'}`}>

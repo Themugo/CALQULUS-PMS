@@ -1,3 +1,4 @@
+import { getFromAddress } from "../_shared/email.ts";
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -162,7 +163,7 @@ serve(async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "CALQULUS RMS <onboarding@resend.dev>",
+        from: getFromAddress("CALQULUS RMS"),
         to: [managerProfile.email],
         subject: `🎉 ${safeTenantName} has joined ${safePropertyName} on CALQULUS RMS`,
         html: emailHtml,

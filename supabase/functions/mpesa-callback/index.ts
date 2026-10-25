@@ -234,7 +234,7 @@ serve(async (req) => {
     } else {
       const { error: failureError } = await supabase.rpc("mark_payment_transaction_failed_atomic", {
         p_transaction_id: transaction.id,
-        p_failure_reason: ResultDesc ?? "Payment cancelled or failed",
+        p_failure_reason: resultDesc ?? "Payment cancelled or failed",
       });
       if (failureError) throw new Error(`Failed to persist payment failure state: ${failureError.message}`);
     }

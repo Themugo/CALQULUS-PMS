@@ -6,6 +6,12 @@ import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { getFromAddress } from "../_shared/email.ts";
+import { callerOwnsTenantContact, callerIsWebhost, normaliseEmail } from "../_shared/notifyAuthz.ts";
+
+// eslint-disable-next-line no-control-regex -- intentionally strips control characters
+const esc = (v: unknown) => escapeHtml(String(v ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim().slice(0, 300));
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface DepositRefundEmailRequest {
@@ -86,12 +92,27 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Missing required fields");
     }
 
+    const recipientEmail = normaliseEmail(tenantEmail);
+    if (!recipientEmail) throw new Error("A valid tenantEmail is required");
+    if (refundStatus !== "completed" && refundStatus !== "initiated") throw new Error("Invalid refundStatus");
+    if (!Array.isArray(deductions) || deductions.length > 50) throw new Error("Invalid deductions");
+
+    if (gate.userId) {
+      const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+      if (!(await callerIsWebhost(admin, gate.userId)) &&
+          !(await callerOwnsTenantContact(admin, gate.userId, { email: recipientEmail }))) {
+        return new Response(JSON.stringify({ error: "Forbidden: recipient is not one of your tenants" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const isCompleted = refundStatus === "completed";
     const statusColor = isCompleted ? "#23856B" : "#B7791F";
     const statusText = isCompleted ? "Completed" : "Initiated";
     const headerIcon = isCompleted ? "✓" : "⏳";
 
-    const refundMethodDisplay = refundMethod
+    const refundMethodDisplay = esc(String(refundMethod ?? ""))
       .replace("_", " ")
       .replace(/\b\w/g, (l) => l.toUpperCase());
 
@@ -109,8 +130,8 @@ const handler = async (req: Request): Promise<Response> => {
           <tbody>
             ${deductions.map(d => `
               <tr>
-                <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${d.description}</td>
-                <td style="padding: 8px 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: #dc2626;">-${formatCurrency(d.amount)}</td>
+                <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${esc(d.description)}</td>
+                <td style="padding: 8px 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: #dc2626;">-${esc(formatCurrency(Number(d.amount)))}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -138,12 +159,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     <!-- Company Name -->
     <div style="text-align: center; margin-bottom: 24px;">
-      <p style="color: #666; margin: 0;">${companyName}</p>
+      <p style="color: #666; margin: 0;">${esc(companyName)}</p>
     </div>
 
     <!-- Main Content -->
     <div style="background-color: #f8fafc; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-      <p style="margin: 0 0 16px 0;">Dear <strong>${tenantName}</strong>,</p>
+      <p style="margin: 0 0 16px 0;">Dear <strong>${esc(tenantName)}</strong>,</p>
       <p style="margin: 0 0 16px 0;">
         ${isCompleted 
           ? `Your deposit refund of <strong>${formatCurrency(refundAmount)}</strong> has been successfully processed.`
@@ -160,11 +181,11 @@ const handler = async (req: Request): Promise<Response> => {
       <table style="width: 100%; border-collapse: collapse;">
         <tr style="border-bottom: 1px solid #e2e8f0;">
           <td style="padding: 12px 16px; color: #666;">Property</td>
-          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${property} - ${unit}</td>
+          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${esc(property)} - ${esc(unit)}</td>
         </tr>
         <tr style="border-bottom: 1px solid #e2e8f0;">
           <td style="padding: 12px 16px; color: #666;">Move-out Date</td>
-          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${formatDate(moveOutDate)}</td>
+          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${esc(formatDate(moveOutDate))}</td>
         </tr>
         <tr style="border-bottom: 1px solid #e2e8f0;">
           <td style="padding: 12px 16px; color: #666;">Original Deposit</td>
@@ -181,7 +202,7 @@ const handler = async (req: Request): Promise<Response> => {
         ${refundReference ? `
         <tr style="border-bottom: 1px solid #e2e8f0;">
           <td style="padding: 12px 16px; color: #666;">Reference</td>
-          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${refundReference}</td>
+          <td style="padding: 12px 16px; text-align: right; font-weight: 600;">${esc(refundReference)}</td>
         </tr>
         ` : ''}
         <tr style="background-color: ${statusColor};">
@@ -202,7 +223,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   <!-- Company Footer -->
   <div style="text-align: center; margin-top: 24px; color: #999; font-size: 12px;">
-    <p style="margin: 0;">${companyName}</p>
+    <p style="margin: 0;">${esc(companyName)}</p>
   </div>
 </body>
 </html>
@@ -215,9 +236,9 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${companyName} <onboarding@resend.dev>`,
-        to: [tenantEmail],
-        subject: `Deposit Refund ${statusText} - ${property} ${unit}`,
+        from: getFromAddress(String(companyName ?? "")),
+        to: [recipientEmail],
+        subject: `Deposit Refund ${statusText} - ${String(property ?? "").replace(/[\r\n]+/g, " ").slice(0, 80)} ${String(unit ?? "").replace(/[\r\n]+/g, " ").slice(0, 40)}`,
         html: emailHtml,
       }),
     });
@@ -236,7 +257,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-deposit-refund-notification function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to send notification" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

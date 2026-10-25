@@ -7,6 +7,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { sanitizeAuthError } from '@/features/auth/lib/authFlow';
+import { scrubUrlParams } from '@/features/auth/lib/urlScrub';
+import { TermsConsent } from '@/features/auth/components/TermsConsent';
+import { termsMetadata } from '@/features/auth/lib/termsMetadata';
+import { isPasswordStrong, TERMS_VERSION } from '@/shared/lib/validations';
 import { Building2, CheckCircle, AlertTriangle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 interface Invitation {
@@ -26,7 +31,10 @@ const LandlordInvitationAccept: React.FC = () => {
   const { user, signUp, signIn } = useAuth();
   const { toast } = useToast();
 
-  const token = searchParams.get('token');
+  // Read once, then scrub from the address bar (see urlScrub.ts).
+  const [token] = useState<string | null>(() => searchParams.get('token'));
+  useEffect(() => { scrubUrlParams('token'); }, []);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [property, setProperty] = useState<{ name: string; address: string } | null>(null);
   const [status, setStatus] = useState<'loading' | 'found' | 'expired' | 'accepted' | 'error'>('loading');
@@ -73,8 +81,8 @@ const LandlordInvitationAccept: React.FC = () => {
       toast({ title: 'Welcome!', description: `You now have access to ${property?.name}` });
       navigate('/landlord/dashboard');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to accept';
-      toast({ title: 'Failed to accept', description: message, variant: 'destructive' });
+      void err;
+      toast({ title: 'Failed to accept', description: 'This invitation could not be accepted. It may have expired or been used already.', variant: 'destructive' });
     }
     setSubmitting(false);
   }, [user, invitation, token, toast, navigate, property]);
@@ -88,7 +96,17 @@ const LandlordInvitationAccept: React.FC = () => {
     setSubmitting(true);
     try {
       if (mode === 'register') {
-        const { error } = await signUp(form.email, form.password, form.name, 'landlord');
+        if (!acceptedTerms) {
+          toast({ title: 'Terms required', description: 'Please accept the Terms of Service and Privacy Policy to continue.', variant: 'destructive' });
+          setSubmitting(false);
+          return;
+        }
+        if (!isPasswordStrong(form.password)) {
+          toast({ title: 'Password too weak', description: 'Use 8–72 characters with an uppercase letter, a lowercase letter, a number and a special character.', variant: 'destructive' });
+          setSubmitting(false);
+          return;
+        }
+        const { error } = await signUp(form.email, form.password, form.name, 'landlord', undefined, termsMetadata(TERMS_VERSION));
         if (error) throw error;
         toast({ title: 'Account created', description: 'Please check your email to verify, then you\'ll be linked automatically.' });
       } else {
@@ -96,8 +114,7 @@ const LandlordInvitationAccept: React.FC = () => {
         if (error) throw error;
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed';
-      toast({ title: 'Failed', description: message, variant: 'destructive' });
+      toast({ title: 'Failed', description: err instanceof Error ? sanitizeAuthError(err.message) : 'Something went wrong. Please try again.', variant: 'destructive' });
     }
     setSubmitting(false);
   };
@@ -206,6 +223,7 @@ const LandlordInvitationAccept: React.FC = () => {
                   </button>
                 </div>
               </div>
+              {mode === 'register' && <TermsConsent id="landlord-invite-terms" checked={acceptedTerms} onChange={setAcceptedTerms} />}
               <Button type="submit" className="w-full gap-2" disabled={submitting}>
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                 {mode === 'register' ? 'Create account & accept' : 'Sign in & accept'}

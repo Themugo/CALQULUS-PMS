@@ -182,10 +182,12 @@ export function withMiddleware<T = unknown>(
             );
           }
 
+          // user_metadata is user-writable: spread it FIRST so it can never
+          // override the authenticated id/email.
           user = {
+            ...userData.user.user_metadata,
             id: userData.user.id,
             email: userData.user.email || "",
-            ...userData.user.user_metadata,
           };
         } catch (error) {
           logger.error("Authentication error", { error: String(error) });
@@ -196,7 +198,7 @@ export function withMiddleware<T = unknown>(
         }
       }
 
-      logger.info("User authenticated", { userId: user.id, email: user.email });
+      logger.info("User authenticated", { userId: user.id });
     }
 
     // ─── Authorization ─────────────────────────────────────────────────────

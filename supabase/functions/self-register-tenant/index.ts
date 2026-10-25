@@ -7,7 +7,6 @@
 
 import { serve } from "std/http/server.ts";
 import { withMiddleware, errorResponse, successResponse } from "../_shared/middleware.ts";
-import { getEnv } from "../_shared/env.ts";
 
 interface SelfRegisterRequest {
   name: string;
@@ -23,8 +22,11 @@ serve(
     async (req, ctx) => {
       const { name, phone }: SelfRegisterRequest = await req.json();
 
-      if (!name) {
-        throw errorResponse("Missing required field: name", 400);
+      if (typeof name !== "string" || !name.trim() || name.length > 120) {
+        throw errorResponse("A valid name (max 120 characters) is required", 400);
+      }
+      if (phone !== undefined && phone !== null && (typeof phone !== "string" || phone.length > 20)) {
+        throw errorResponse("Invalid phone number", 400);
       }
 
       // SECURITY: Use verified authenticated email, not client-supplied one
@@ -47,25 +49,8 @@ serve(
         throw errorResponse(registrationError?.message ?? "Failed to register tenant", 400);
       }
 
-      // Send welcome SMS
-      if (phone) {
-        const supabaseUrl = getEnv("SUPABASE_URL");
-        const serviceKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
-
-        fetch(`${supabaseUrl}/functions/v1/send-sms-notification`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${serviceKey}`,
-          },
-          body: JSON.stringify({
-            phoneNumber: phone,
-            message: `Welcome to CALQULUS RMS, ${name}. Your tenant account is active. You can now track rent, receipts, and property records from your portal.`,
-          }),
-        }).catch(() => {
-          // Non-critical, don't fail the request
-        });
-      }
+      // No welcome SMS: the phone number is user-supplied and unverified, so
+      // sending to it would let anyone trigger SMS to arbitrary numbers.
 
       return { tenant: { id: tenantId, name, email } };
     }
