@@ -70,7 +70,6 @@ const LIVE_DESK: Partial<Record<PreviewId, { href: string; label: string }>> = {
   landlord: { href: PUBLIC_ROUTES.landlordLogin, label: "Open Landlord login" },
   agency: { href: PUBLIC_ROUTES.agencyLogin, label: "Open Agency login" },
   tenant: { href: PUBLIC_ROUTES.tenantLogin, label: "Open Tenant login" },
-  platform_admin: { href: PUBLIC_ROUTES.webhostLogin, label: "Open Platform Admin login" },
   login: { href: PUBLIC_ROUTES.managerSignIn, label: "Open live login" },
   properties: { href: "/properties", label: "Open Properties (session required)" },
   tenants: { href: "/tenants", label: "Open Tenants (session required)" },

@@ -28,6 +28,7 @@ import { STALE_TIMES } from "@/shared/hooks/useOptimizedQuery";
 import { WhiteLabelProvider } from "@/core/whiteLabel/WhiteLabelProvider";
 import { PortalIdentityProvider } from "@/core/product/PortalIdentityProvider";
 import PortalDeviceGate from "@/shared/components/PortalDeviceGate";
+import { isAdminHost, isLocalHost, adminSiteOrigin, isAdminPath } from "@/features/auth/lib/adminHost";
 
 // Optimized QueryClient with better caching
 const queryClient = new QueryClient({
@@ -187,7 +188,9 @@ const RoleRoutes = ({ role, allowedRoles, wrapper }: {
 const AppRoutes = () => {
   const { user, loading, userRole, devAccessEnabled } = useAuth();
   const location = useLocation();
-  const isAdminDomain = window.location.hostname.startsWith("admin.");
+  const isAdminDomain = isAdminHost(window.location.hostname);
+  const isLocalDev = isLocalHost(window.location.hostname);
+  const onPublicHost = !isAdminDomain && !isLocalDev;
   const recoveryHash =
     window.location.hash.includes("type=recovery") ||
     window.location.hash.includes("access_token=");
@@ -202,6 +205,21 @@ const AppRoutes = () => {
   }
 
   if (loading) return <PageLoader />;
+
+  // Admin site separation: /webhost/* exists only on the admin host. On the
+  // public site those URLs fall back to the landing page, and a signed-in
+  // administrator is sent to the admin site instead of being served here.
+  if (onPublicHost && !devAccessEnabled) {
+    if (userRole?.role === "webhost") {
+      const target = adminSiteOrigin(window.location);
+      if (target) {
+        window.location.replace(`${target}/webhost`);
+        return <PageLoader />;
+      }
+    } else if (isAdminPath(location.pathname)) {
+      return <Navigate to="/" replace />;
+    }
+  }
 
   if (isDesignPreviewPath(location.pathname)) {
     return <Routes>{designPreviewPublicRoutes.map((route) => renderRoute(route))}</Routes>;
@@ -230,7 +248,13 @@ const AppRoutes = () => {
     return <Routes>{authOnlyRoutes.map(r => renderRoute(r))}</Routes>;
   }
 
-  // Webhost — allow from any domain (not just admin.* subdomain)
+  // Admin host never serves other portals: a signed-in non-admin sees only
+  // the admin sign-in (which tells them access is denied and signs them out).
+  if (isAdminDomain && user && userRole && userRole.role !== "webhost" && !devAccessEnabled) {
+    return <Routes>{adminDomainRoutes.map(r => renderRoute(r))}</Routes>;
+  }
+
+  // Webhost — served on the admin host (public host redirects above)
   if (userRole?.role === "webhost") {
     return <RoleRoutes role="webhost" allowedRoles={["webhost"]} />;
   }
@@ -272,7 +296,13 @@ const AppRoutes = () => {
 
   // Not logged in
   if (!user) {
-    const routes = isAdminDomain ? adminDomainRoutes : publicRoutes;
+    // Local development serves the public site and the admin sign-in together.
+    const localRoutes = [
+      ...adminDomainRoutes.filter((r) => r.path !== "*"),
+      { path: "/webhost", redirect: "/webhost/login" },
+      ...publicRoutes,
+    ];
+    const routes = isAdminDomain ? adminDomainRoutes : isLocalDev ? localRoutes : publicRoutes;
     return <Routes>{routes.map(r => renderRoute(r))}</Routes>;
   }
 

@@ -116,8 +116,12 @@ serve(
         throw errorResponse("Failed to create invitation", 500);
       }
 
-      const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
-      const inviteUrl = `${appUrl}/webhost/invite?token=${inviteToken}`;
+      // Admin invitations point at the separate admin site (ADMIN_SITE_URL),
+      // falling back to admin.<SITE_URL host> so the link never targets the public site.
+      const publicUrl = getEnv("SITE_URL", "https://www.calqulus.site").replace(/\/+$/, "");
+      const adminUrl = (Deno.env.get("ADMIN_SITE_URL") ?? "").trim().replace(/\/+$/, "")
+        || publicUrl.replace(/^(https?:\/\/)(?:www\.)?/i, "$1admin.");
+      const inviteUrl = `${adminUrl}/webhost/invite?token=${inviteToken}`;
 
       // Audit: who invited whom (no token in the log).
       await ctx.supabase.from("activity_logs").insert({

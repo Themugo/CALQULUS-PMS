@@ -224,7 +224,9 @@ export function ProductionDiagnostics() {
   const overall = getOverallStatus();
 
   if (!isOpen) {
-    // Floating button
+    // The floating launcher is a developer aid: visitors never see it in production
+    // (it covered the mobile tab bar). Ctrl+Shift+D still opens the panel anywhere.
+    if (import.meta.env.PROD) return null;
     return (
       <button
         onClick={() => setIsOpen(true)}

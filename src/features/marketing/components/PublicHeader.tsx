@@ -30,8 +30,8 @@ export function PublicHeader() {
     return visibleSections.has(anchor as (typeof config.sections)[number]["id"]);
   });
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--calqulus-navy-700)] bg-[linear-gradient(135deg,var(--calqulus-navy-900),var(--calqulus-navy-800))] text-white shadow-[0_10px_28px_rgba(10,37,64,0.18)]">
-      <div className="mx-auto flex h-[66px] max-w-[1480px] items-center justify-between gap-3 px-3 sm:px-4 lg:px-6">
+    <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] border-b border-[var(--calqulus-navy-700)] bg-[linear-gradient(135deg,var(--calqulus-navy-900),var(--calqulus-navy-800))] text-white shadow-[0_10px_28px_rgba(10,37,64,0.18)]">
+      <div className="mx-auto flex h-14 max-w-[1480px] sm:h-[66px] items-center justify-between gap-3 px-3 sm:px-4 lg:px-6">
         <Link to={PUBLIC_ROUTES.home} className="flex min-w-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success" aria-label="CALQULUS home">
           <BrandMark size="nav" showWordmark lockup subtitleOverride={config.brand.descriptor} wordmarkOverride={config.brand.name} logoUrl={config.brand.logoUrl} fetchPriority="high" forcePlatform inverse />
         </Link>
@@ -41,7 +41,7 @@ export function PublicHeader() {
         <div className="flex items-center gap-1.5">
           <a href={config.rail.visible ? "#quick-search" : "#property-types"} className="hidden h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-[var(--calqulus-navy-800)] text-white transition hover:bg-white/10 sm:flex" aria-label={config.shell.header.searchLabel}><Search className="h-4 w-4"/></a>
           <Button asChild size="sm" className="min-h-9 rounded-lg bg-white px-4 font-heading text-sm font-semibold text-[var(--calqulus-navy-900)] shadow-sm hover:bg-white/90"><Link to={PUBLIC_ROUTES.portalAccessSignIn}>{config.shell.header.signInLabel}</Link></Button>
-          <div className="hidden h-9 w-[58px] flex-col justify-center font-heading text-[10px] font-bold leading-3.5 tracking-[0.22em] text-white/90 xl:flex">{utilityWords.map((word) => <span key={word}>{word}</span>)}</div>
+          <div className="hidden min-h-9 w-auto flex-col justify-center font-heading text-xs font-semibold leading-4 text-white/90 xl:flex">{utilityWords.map((word) => <span key={word}>{word}</span>)}</div>
           <Sheet open={open} onOpenChange={setOpen}>
             <Button type="button" variant="outline" size="icon" className="border-white/20 bg-[var(--calqulus-navy-800)] text-white hover:bg-white/10 hover:text-white lg:hidden" aria-label="Open menu" onClick={() => setOpen(true)}><Menu className="h-4 w-4"/></Button>
             <SheetContent side="right" className="w-[min(100%,20rem)] border-white/15 bg-[var(--calqulus-navy-900)] text-white">

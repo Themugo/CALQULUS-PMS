@@ -27,7 +27,7 @@ const features = [
 const WebhostAuth = () => {
   const { identity } = usePortalIdentity();
   const navigate = useNavigate();
-  const { user, signIn, loading, userRole } = useAuth();
+  const { user, signIn, signOut, loading, userRole } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
@@ -37,10 +37,12 @@ const WebhostAuth = () => {
   useEffect(() => {
     if (user && !loading) {
       if (userRole?.role === 'webhost') navigate('/webhost');
-      else if (userRole?.role === 'manager') navigate('/');
-      else if (userRole?.role === 'tenant') navigate('/portal');
+      else if (userRole) {
+        toast({ title: 'Access denied', description: 'This sign-in is for platform administrators only.', variant: 'destructive' });
+        void signOut();
+      }
     }
-  }, [user, loading, userRole, navigate]);
+  }, [user, loading, userRole, navigate, signOut, toast]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,11 +55,8 @@ const WebhostAuth = () => {
     }
     const roleCheck = await ensureSignedInRole(['webhost']);
     if (!roleCheck.ok) {
-      const roles = roleCheck.roles;
-      if (roles.includes('tenant')) { navigate('/portal'); return; }
-      if (roles.includes('manager')) { navigate('/'); return; }
-      if (roles.includes('landlord')) { navigate('/landlord/dashboard'); return; }
       toast({ title: 'Access denied', description: roleCheck.message, variant: 'destructive' });
+      await signOut();
       setIsSubmitting(false);
       return;
     }
